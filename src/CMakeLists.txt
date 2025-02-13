@@ -6,14 +6,15 @@ if(ENABLE_VULKAN)
     add_compile_definitions(VK_USE_PLATFORM_XLIB_KHR)
 
     set(VULKAN_FILES
-            src/display/x11_direct.h
-            src/display/x11_direct.cpp
-            src/display/glfw_extended.h
-            src/display/glfw_extended.cpp
-            src/display/headless.hpp
-            src/display/headless.cpp
-            ../include/illixr/vk/vk_extension_request.h
-            ../include/illixr/vk/vulkan_objects.hpp
+        src/display/x11_direct.hpp
+        src/display/x11_direct.cpp
+        src/display/glfw_extended.hpp
+        src/display/glfw_extended.cpp
+        src/display/headless.hpp
+        src/display/headless.cpp
+        ../include/illixr/vk/vk_extension_request.hpp
+        ../include/illixr/vk/vulkan_objects.hpp
+        $<TARGET_OBJECTS:illixr_vulkan_utils>
     )
 else ()
     message("Vulkan disabled")

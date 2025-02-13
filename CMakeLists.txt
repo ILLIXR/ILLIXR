@@ -248,6 +248,8 @@ foreach(ITEM IN LISTS ILLIXR_COMPILE_FLAGS)
     set(${ITEM} ON)
 endforeach()
 
+add_subdirectory(utils)
+
 foreach(ITEM IN LISTS PLUGIN_LIST VISUALIZER_LIST)
     string(TOUPPER "USE_${ITEM}" ITEM_UPPER)
     string(TOLOWER ${ITEM} ITEM_LOWER)

@@ -40,8 +40,7 @@ add_custom_target(
 
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
             plugin.hpp
-            utils/hmd.cpp
-            utils/hmd.hpp
+            $<TARGET_OBJECTS:illixr_hmd>
             ../../include/illixr/data_format.hpp
             ../../include/illixr/global_module_defs.hpp
             ../../include/illixr/math_util.hpp
@@ -51,7 +50,7 @@ add_library(${PLUGIN_NAME} SHARED plugin.cpp
             ../../include/illixr/switchboard.hpp
             ../../include/illixr/vk/display_provider.hpp
             ../../include/illixr/vk/render_pass.hpp
-            ../../include/illixr/vk/vulkan_utils.hpp
+            $<TARGET_OBJECTS:illixr_vulkan_utils>
 )
 
 if(ENABLE_MONADO)

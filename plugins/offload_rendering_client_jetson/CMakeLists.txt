@@ -25,16 +25,17 @@ if (ON_JETSON_PLATFORM)
     add_library(${PLUGIN_NAME} SHARED plugin.cpp
             ../../include/illixr/data_format.hpp
             ../../include/illixr/phonebook.hpp
-            ../../include/illixr/switchboard.hpp
-            ../../include/illixr/threadloop.hpp
-            ../../include/illixr/vk/display_provider.hpp
-            ../../include/illixr/vk/vulkan_utils.hpp
-            ../../include/illixr/serializable_data.hpp
-            ../../include/illixr/serializable_data.cpp
-            ${JETSON_MULTIMEDIA_API_CLASSES}
-            decoding/video_decode.h
-            decoding/video_decode.cpp
-    #        decoding/NvVulkanRenderer.cpp
+                ../../include/illixr/data_format.hpp
+                ../../include/illixr/phonebook.hpp
+                ../../include/illixr/switchboard.hpp
+                ../../include/illixr/threadloop.hpp
+                ../../include/illixr/vk/display_provider.hpp
+                $<TARGET_OBJECTS:illixr_vulkan_utils>
+                $<TARGET_OBJECTS:illixr_serializable_data>
+                ${JETSON_MULTIMEDIA_API_CLASSES}
+                decoding/video_decode.h
+                decoding/video_decode.cpp
+                #        decoding/NvVulkanRenderer.cpp
     )
 
     target_link_libraries(${PLUGIN_NAME} drm)

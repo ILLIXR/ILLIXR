@@ -9,8 +9,7 @@ set(PLUGIN_NAME plugin.timewarp_gl${ILLIXR_BUILD_SUFFIX})
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
             plugin.hpp
             shaders/timewarp_shader.hpp
-            utils/hmd.cpp
-            utils/hmd.hpp
+            $<TARGET_OBJECTS:illixr_hmd>
             ../../include/illixr/data_format.hpp
             ../../include/illixr/error_util.hpp
             ../../include/illixr/extended_window.hpp

@@ -1,4 +1,4 @@
-#include "hmd.hpp"
+#include "illixr/hmd.hpp"
 
 #include <cmath>
 
@@ -10,7 +10,7 @@ float HMD::min_float(const float x, const float y) {
     return (x < y) ? x : y;
 }
 
-// A Catmull-Rom spline through the values K[0], K[1], K[2] ... K[numKnots-1] evenly spaced from 0.0 to 1.0
+// A Catmull-Rom spline through the values K[0], K[1], K[2] ... K[num_knots-1] evenly spaced from 0.0 to 1.0
 float HMD::evaluate_catmull_rom_spline(float value, const float* K, int num_knots) {
     const float scaled_value       = (float) (num_knots - 1) * value;
     const float scaled_value_floor = max_float(0.0f, min_float((float) (num_knots - 1), floorf(scaled_value)));
@@ -49,7 +49,7 @@ float HMD::evaluate_catmull_rom_spline(float value, const float* K, int num_knot
     return res;
 }
 
-void HMD::build_distortion_meshes(
+[[maybe_unused]] void HMD::build_distortion_meshes(
     std::array<std::array<std::vector<mesh_coord2d_t>, NUM_COLOR_CHANNELS>, NUM_EYES>& distort_coords, hmd_info_t& hmd_info) {
     const float horizontal_shift_meters = (hmd_info.lens_separation_in_meters / 2) - (hmd_info.visible_meters_wide / 4);
     const float horizontal_shift_view   = horizontal_shift_meters / (hmd_info.visible_meters_wide / 2);
@@ -101,7 +101,7 @@ void HMD::build_distortion_meshes(
     }
 }
 
-void HMD::get_default_hmd_info(int display_pixels_wide, int display_pixels_high, float display_meters_wide,
+[[maybe_unused]] void HMD::get_default_hmd_info(int display_pixels_wide, int display_pixels_high, float display_meters_wide,
                                float display_meters_high, float lens_separation, float meters_per_tan_angle,
                                const float aberration[4], hmd_info_t& hmd_info) {
     hmd_info.display_pixels_wide = display_pixels_wide;

@@ -19,12 +19,13 @@ add_compile_definitions(ILLIXR_LIBAV)
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
         ../../include/illixr/data_format.hpp
         ../../include/illixr/phonebook.hpp
-        ../../include/illixr/switchboard.hpp
-        ../../include/illixr/threadloop.hpp
-        ../../include/illixr/vk/display_provider.hpp
-        ../../include/illixr/vk/vulkan_utils.hpp
-        ../../include/illixr/serializable_data.hpp
-        ../../include/illixr/serializable_data.cpp
+            ../../include/illixr/data_format.hpp
+            ../../include/illixr/phonebook.hpp
+            ../../include/illixr/switchboard.hpp
+            ../../include/illixr/threadloop.hpp
+            ../../include/illixr/vk/display_provider.hpp
+            $<TARGET_OBJECTS:illixr_serializable_data>
+            $<TARGET_OBJECTS:illixr_vulkan_utils>
 )
 
 set_target_properties(${PLUGIN_NAME} PROPERTIES OUTPUT_NAME ${PLUGIN_NAME})

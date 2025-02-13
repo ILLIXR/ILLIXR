@@ -6,7 +6,7 @@
 #include "illixr/threadloop.hpp"
 #include "illixr/vk/display_provider.hpp"
 #include "illixr/vk/render_pass.hpp"
-#include "utils/hmd.hpp"
+#include "illixr/hmd.hpp"
 
 #include <stack>
 #include <vulkan/vulkan.h>

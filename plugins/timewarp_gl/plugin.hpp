@@ -6,7 +6,7 @@
 #include "illixr/relative_clock.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
-#include "utils/hmd.hpp"
+#include "illixr/hmd.hpp"
 
 namespace ILLIXR {
 
