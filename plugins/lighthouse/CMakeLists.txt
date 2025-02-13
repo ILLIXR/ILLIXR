@@ -10,7 +10,9 @@ SET(THREADS_PREFER_PTHREAD_FLAG TRUE)
 
 get_external_for_plugin(LibSurvive)
 
-set(SRC_FILES plugin.cpp)
+set(SRC_FILES plugin.cpp
+    plugin.hpp
+)
 
 add_library(${PLUGIN_NAME} SHARED ${SRC_FILES})
 

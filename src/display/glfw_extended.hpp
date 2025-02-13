@@ -1,15 +1,10 @@
-//
-// Created by steven on 9/17/23.
-//
+#pragma once
 
-#ifndef ILLIXR_GLFW_EXTENDED_H
-#define ILLIXR_GLFW_EXTENDED_H
+#include "display_backend.hpp"
 
-#include "display_backend.h"
+namespace ILLIXR::display {
 
 class glfw_extended : public display_backend {
-    void* window = nullptr;
-
 public:
     glfw_extended();
     /**
@@ -22,7 +17,7 @@ public:
      */
     void setup_display(VkInstance vk_instance, VkPhysicalDevice vk_physical_device) override;
 
-    void poll_window_events();
+    static void poll_window_events();
 
     std::pair<uint32_t, uint32_t> get_framebuffer_size();
     void                          cleanup() override;
@@ -32,6 +27,8 @@ public:
 
 private:
     VkSurfaceKHR create_surface() override;
+
+    void* window_ = nullptr;
 };
 
-#endif // ILLIXR_GLFW_EXTENDED_H
+}

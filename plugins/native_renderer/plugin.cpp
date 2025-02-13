@@ -62,9 +62,9 @@ using namespace ILLIXR;
     }
     this->buffer_pool_ = std::make_shared<vulkan::buffer_pool<fast_pose_type>>(offscreen_images_, depth_images_);
 
-    command_pool_            = vulkan::create_command_pool(display_sink_->vk_device, display_sink_->queues[vulkan::queue::GRAPHICS].family);
-    app_command_buffer_      = vulkan::create_command_buffer(display_sink_->vk_device, command_pool_);
-    timewarp_command_buffer_ = vulkan::create_command_buffer(display_sink_->vk_device, command_pool_);
+    command_pool_            = vulkan::create_command_pool(display_sink_->vk_device_, display_sink_->queues_[vulkan::queue::GRAPHICS].family);
+    app_command_buffer_      = vulkan::create_command_buffer(display_sink_->vk_device_, command_pool_);
+    timewarp_command_buffer_ = vulkan::create_command_buffer(display_sink_->vk_device_, command_pool_);
     create_sync_objects();
     if (!app_->is_external()) {
         create_app_pass();
@@ -87,7 +87,7 @@ using namespace ILLIXR;
 
         if (swapchain_image_index_ == UINT32_MAX) {
             // Acquire the next image from the swapchain
-            auto ret = (vkAcquireNextImageKHR(display_sink_->vk_device, display_sink_->vk_swapchain, UINT64_MAX, image_available_semaphore_,
+            auto ret = (vkAcquireNextImageKHR(display_sink_->vk_device_, display_sink_->vk_swapchain_, UINT64_MAX, image_available_semaphore_,
                                               VK_NULL_HANDLE, &swapchain_image_index_));
 
             // Check if the swapchain is out of date or suboptimal
@@ -98,7 +98,7 @@ using namespace ILLIXR;
                 VK_ASSERT_SUCCESS(ret)
             }
         }
-        VK_ASSERT_SUCCESS(vkResetFences(display_sink_->vk_device, 1, &frame_fence_))
+        VK_ASSERT_SUCCESS(vkResetFences(display_sink_->vk_device_, 1, &frame_fence_))
     }
 
     auto fast_pose = pose_prediction_->get_fast_pose();
@@ -146,7 +146,7 @@ using namespace ILLIXR;
         }
 
         VK_ASSERT_SUCCESS(
-            vulkan::locked_queue_submit(display_sink_->queues[vulkan::queue::queue_type::GRAPHICS], 1, &submit_info, nullptr))
+            vulkan::locked_queue_submit(display_sink_->queues_[vulkan::queue::queue_type::GRAPHICS], 1, &submit_info, nullptr))
 
         // Wait for the application to finish rendering
         VkSemaphoreWaitInfo wait_info{
@@ -157,7 +157,7 @@ using namespace ILLIXR;
             &app_render_finished_semaphore_,        // pSemaphores
             &fired_value                           // pValues
         };
-        VK_ASSERT_SUCCESS(vkWaitSemaphores(display_sink_->vk_device, &wait_info, UINT64_MAX))
+        VK_ASSERT_SUCCESS(vkWaitSemaphores(display_sink_->vk_device_, &wait_info, UINT64_MAX))
         auto pt = fast_pose;
         buffer_pool_->src_release_image(buffer_index, std::move(pt));
     }
@@ -205,7 +205,7 @@ using namespace ILLIXR;
             &timewarp_render_finished_semaphore_ // pSignalSemaphores
         };
 
-        VK_ASSERT_SUCCESS(vulkan::locked_queue_submit(display_sink_->queues[vulkan::queue::queue_type::GRAPHICS], 1,
+        VK_ASSERT_SUCCESS(vulkan::locked_queue_submit(display_sink_->queues_[vulkan::queue::queue_type::GRAPHICS], 1,
                                                       &timewarp_submit_info, frame_fence_))
 
         // Present the rendered image
@@ -215,19 +215,19 @@ using namespace ILLIXR;
             1,                                   // waitSemaphoreCount
             &timewarp_render_finished_semaphore_, // pWaitSemaphores
             1,                                   // swapchainCount
-            &display_sink_->vk_swapchain,                   // pSwapchains
+            &display_sink_->vk_swapchain_,                   // pSwapchains
             &swapchain_image_index_,              // pImageIndices
             nullptr                              // pResults
         };
 
         VkResult ret = VK_SUCCESS;
         {
-            std::lock_guard<std::mutex> lock{*display_sink_->queues[vulkan::queue::queue_type::GRAPHICS].mutex};
-            ret = (vkQueuePresentKHR(display_sink_->queues[vulkan::queue::queue_type::GRAPHICS].vk_queue, &present_info));
+            std::lock_guard<std::mutex> lock{*display_sink_->queues_[vulkan::queue::queue_type::GRAPHICS].mutex};
+            ret = (vkQueuePresentKHR(display_sink_->queues_[vulkan::queue::queue_type::GRAPHICS].vk_queue, &present_info));
         }
 
         // Wait for the previous frame to finish rendering
-        VK_ASSERT_SUCCESS(vkWaitForFences(display_sink_->vk_device, 1, &frame_fence_, VK_TRUE, UINT64_MAX))
+        VK_ASSERT_SUCCESS(vkWaitForFences(display_sink_->vk_device_, 1, &frame_fence_, VK_TRUE, UINT64_MAX))
 
         swapchain_image_index_ = UINT32_MAX;
 
@@ -254,9 +254,9 @@ using namespace ILLIXR;
 
 
 [[maybe_unused]] void native_renderer::recreate_swapchain() {
-    vkDeviceWaitIdle(display_sink_->vk_device);
+    vkDeviceWaitIdle(display_sink_->vk_device_);
     for (auto& framebuffer : swapchain_framebuffers_) {
-        vkDestroyFramebuffer(display_sink_->vk_device, framebuffer, nullptr);
+        vkDestroyFramebuffer(display_sink_->vk_device_, framebuffer, nullptr);
     }
     display_sink_->recreate_swapchain();
     create_swapchain_framebuffers();
@@ -264,10 +264,10 @@ using namespace ILLIXR;
 
 
 void native_renderer::create_swapchain_framebuffers() {
-    swapchain_framebuffers_.resize(display_sink_->swapchain_image_views.size());
+    swapchain_framebuffers_.resize(display_sink_->swapchain_image_views_.size());
 
-    for (ulong i = 0; i < display_sink_->swapchain_image_views.size(); i++) {
-        std::array<VkImageView, 1> attachments = {display_sink_->swapchain_image_views[i]};
+    for (ulong i = 0; i < display_sink_->swapchain_image_views_.size(); i++) {
+        std::array<VkImageView, 1> attachments = {display_sink_->swapchain_image_views_[i]};
 
         assert(timewarp_pass_ != VK_NULL_HANDLE);
         VkFramebufferCreateInfo framebuffer_info{
@@ -277,13 +277,13 @@ void native_renderer::create_swapchain_framebuffers() {
             timewarp_pass_,                            // renderPass
             attachments.size(),                        // attachmentCount
             attachments.data(),                        // pAttachments
-            display_sink_->swapchain_extent.width,     // width
-            display_sink_->swapchain_extent.height,    // height
+            display_sink_->swapchain_extent_.width,     // width
+            display_sink_->swapchain_extent_.height,    // height
             1                                          // layers
         };
 
         VK_ASSERT_SUCCESS(
-            vkCreateFramebuffer(display_sink_->vk_device, &framebuffer_info, nullptr, &swapchain_framebuffers_[i]))
+            vkCreateFramebuffer(display_sink_->vk_device_, &framebuffer_info, nullptr, &swapchain_framebuffers_[i]))
     }
 }
 
@@ -315,7 +315,7 @@ void native_renderer::record_src_command_buffer(vulkan::image_index_t buffer_ind
                 offscreen_framebuffers_[buffer_index][eye], // framebuffer
                 {
                     {0, 0},                                                                             // offset
-                    {display_sink_->swapchain_extent.width / 2, display_sink_->swapchain_extent.height} // extent
+                    {display_sink_->swapchain_extent_.width / 2, display_sink_->swapchain_extent_.height} // extent
                 },                                                                                      // renderArea
                 clear_values.size(),                                                                    // clearValueCount
                 clear_values.data()                                                                     // pClearValues
@@ -364,7 +364,7 @@ void native_renderer::create_sync_objects() {
         0                                        // flags
     };
 
-    vkCreateSemaphore(display_sink_->vk_device, &create_info, nullptr, &app_render_finished_semaphore_);
+    vkCreateSemaphore(display_sink_->vk_device_, &create_info, nullptr, &app_render_finished_semaphore_);
 
     VkSemaphoreCreateInfo semaphore_info{
         VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO, // sType
@@ -377,10 +377,10 @@ void native_renderer::create_sync_objects() {
         VK_FENCE_CREATE_SIGNALED_BIT         // flags
     };
 
-    VK_ASSERT_SUCCESS(vkCreateSemaphore(display_sink_->vk_device, &semaphore_info, nullptr, &image_available_semaphore_))
+    VK_ASSERT_SUCCESS(vkCreateSemaphore(display_sink_->vk_device_, &semaphore_info, nullptr, &image_available_semaphore_))
     VK_ASSERT_SUCCESS(
-        vkCreateSemaphore(display_sink_->vk_device, &semaphore_info, nullptr, &timewarp_render_finished_semaphore_))
-    VK_ASSERT_SUCCESS(vkCreateFence(display_sink_->vk_device, &fence_info, nullptr, &frame_fence_))
+        vkCreateSemaphore(display_sink_->vk_device_, &semaphore_info, nullptr, &timewarp_render_finished_semaphore_))
+    VK_ASSERT_SUCCESS(vkCreateFence(display_sink_->vk_device_, &fence_info, nullptr, &frame_fence_))
 }
 
 
@@ -412,7 +412,7 @@ void native_renderer::create_depth_image(vulkan::vk_image& depth_image) {
     VmaAllocationCreateInfo alloc_info{};
     alloc_info.usage = VMA_MEMORY_USAGE_GPU_ONLY;
 
-    VK_ASSERT_SUCCESS(vmaCreateImage(display_sink_->vma_allocator, &image_info, &alloc_info, &depth_image.image,
+    VK_ASSERT_SUCCESS(vmaCreateImage(display_sink_->vma_allocator_, &image_info, &alloc_info, &depth_image.image,
                                      &depth_image.allocation, &depth_image.allocation_info))
 
     VkImageViewCreateInfo view_info{
@@ -432,7 +432,7 @@ void native_renderer::create_depth_image(vulkan::vk_image& depth_image) {
         } // subresourceRange
     };
 
-    VK_ASSERT_SUCCESS(vkCreateImageView(display_sink_->vk_device, &view_info, nullptr, &depth_image.image_view))
+    VK_ASSERT_SUCCESS(vkCreateImageView(display_sink_->vk_device_, &view_info, nullptr, &depth_image.image_view))
 }
 
 void native_renderer::create_offscreen_pool() {
@@ -463,7 +463,7 @@ void native_renderer::create_offscreen_pool() {
     uint32_t                mem_type_index;
     VmaAllocationCreateInfo alloc_info{.flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT,
                                        .usage = VMA_MEMORY_USAGE_GPU_ONLY};
-    vmaFindMemoryTypeIndexForImageInfo(display_sink_->vma_allocator, &sample_create_info, &alloc_info, &mem_type_index);
+    vmaFindMemoryTypeIndexForImageInfo(display_sink_->vma_allocator_, &sample_create_info, &alloc_info, &mem_type_index);
 
     offscreen_export_mem_alloc_info_.sType = VK_STRUCTURE_TYPE_EXPORT_MEMORY_ALLOCATE_INFO;
     offscreen_export_mem_alloc_info_.handleTypes =
@@ -476,7 +476,7 @@ void native_renderer::create_offscreen_pool() {
     pool_create_info.pMemoryAllocateNext = &offscreen_export_mem_alloc_info_;
     this->offscreen_pool_create_info_     = pool_create_info;
 
-    VK_ASSERT_SUCCESS(vmaCreatePool(display_sink_->vma_allocator, &offscreen_pool_create_info_, &offscreen_pool_));
+    VK_ASSERT_SUCCESS(vmaCreatePool(display_sink_->vma_allocator_, &offscreen_pool_create_info_, &offscreen_pool_));
 }
 
 
@@ -489,14 +489,14 @@ void native_renderer::create_offscreen_target(vulkan::vk_image& image) {
     }
 
     std::vector<uint32_t> queue_family_indices;
-    queue_family_indices.push_back(display_sink_->queues[vulkan::queue::queue_type::GRAPHICS].family);
-    if (display_sink_->queues.find(vulkan::queue::queue_type::COMPUTE) != display_sink_->queues.end() &&
-        display_sink_->queues.find(vulkan::queue::queue_type::COMPUTE)->second.family !=
-            display_sink_->queues[vulkan::queue::queue_type::GRAPHICS].family) {
-        queue_family_indices.push_back(display_sink_->queues[vulkan::queue::queue_type::COMPUTE].family);
+    queue_family_indices.push_back(display_sink_->queues_[vulkan::queue::queue_type::GRAPHICS].family);
+    if (display_sink_->queues_.find(vulkan::queue::queue_type::COMPUTE) != display_sink_->queues_.end() &&
+        display_sink_->queues_.find(vulkan::queue::queue_type::COMPUTE)->second.family !=
+            display_sink_->queues_[vulkan::queue::queue_type::GRAPHICS].family) {
+        queue_family_indices.push_back(display_sink_->queues_[vulkan::queue::queue_type::COMPUTE].family);
     }
-    if (display_sink_->queues.find(vulkan::queue::queue_type::DEDICATED_TRANSFER) != display_sink_->queues.end()) {
-        queue_family_indices.push_back(display_sink_->queues[vulkan::queue::queue_type::DEDICATED_TRANSFER].family);
+    if (display_sink_->queues_.find(vulkan::queue::queue_type::DEDICATED_TRANSFER) != display_sink_->queues_.end()) {
+        queue_family_indices.push_back(display_sink_->queues_[vulkan::queue::queue_type::DEDICATED_TRANSFER].family);
     }
 
     image.image_info = {
@@ -529,7 +529,7 @@ void native_renderer::create_offscreen_target(vulkan::vk_image& image) {
         alloc_info.pool = offscreen_pool_;
     }
 
-    VK_ASSERT_SUCCESS(vmaCreateImage(display_sink_->vma_allocator, &image.image_info, &alloc_info, &image.image, &image.allocation,
+    VK_ASSERT_SUCCESS(vmaCreateImage(display_sink_->vma_allocator_, &image.image_info, &alloc_info, &image.image, &image.allocation,
                                      &image.allocation_info))
 
     assert(image.allocation_info.deviceMemory);
@@ -551,7 +551,7 @@ void native_renderer::create_offscreen_target(vulkan::vk_image& image) {
         } // subresourceRange
     };
 
-    VK_ASSERT_SUCCESS(vkCreateImageView(display_sink_->vk_device, &view_info, nullptr, &image.image_view))
+    VK_ASSERT_SUCCESS(vkCreateImageView(display_sink_->vk_device_, &view_info, nullptr, &image.image_view))
 
     if (DMA_EXPORT) {
         VkMemoryGetFdInfoKHR get_fd_info{VK_STRUCTURE_TYPE_MEMORY_GET_FD_INFO_KHR, // sType
@@ -560,9 +560,9 @@ void native_renderer::create_offscreen_target(vulkan::vk_image& image) {
                                          VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT};
 
         auto GetMemoryFdKHR =
-            reinterpret_cast<PFN_vkGetMemoryFdKHR>(vkGetDeviceProcAddr(display_sink_->vk_device, "vkGetMemoryFdKHR"));
+            reinterpret_cast<PFN_vkGetMemoryFdKHR>(vkGetDeviceProcAddr(display_sink_->vk_device_, "vkGetMemoryFdKHR"));
 
-        VK_ASSERT_SUCCESS(GetMemoryFdKHR(display_sink_->vk_device, &get_fd_info, &image.fd))
+        VK_ASSERT_SUCCESS(GetMemoryFdKHR(display_sink_->vk_device_, &get_fd_info, &image.fd))
     }
 }
 
@@ -582,13 +582,13 @@ void native_renderer::create_offscreen_framebuffers() {
                 app_pass_,                                  // renderPass
                 static_cast<uint32_t>(attachments.size()), // attachmentCount
                 attachments.data(),                        // pAttachments
-                display_sink_->swapchain_extent.width / 2,            // width
-                display_sink_->swapchain_extent.height,               // height
+                display_sink_->swapchain_extent_.width / 2,            // width
+                display_sink_->swapchain_extent_.height,               // height
                 1                                          // layers
             };
 
             VK_ASSERT_SUCCESS(
-                vkCreateFramebuffer(display_sink_->vk_device, &framebuffer_info, nullptr, &offscreen_framebuffers_[i][eye]))
+                vkCreateFramebuffer(display_sink_->vk_device_, &framebuffer_info, nullptr, &offscreen_framebuffers_[i][eye]))
         }
     }
 }
@@ -700,7 +700,7 @@ void native_renderer::create_app_pass() {
         static_cast<uint32_t>(dependencies.size()),            // dependencyCount
         dependencies.data()                                    // pDependencies
     };
-    VK_ASSERT_SUCCESS(vkCreateRenderPass(display_sink_->vk_device, &render_pass_info, nullptr, &app_pass_))
+    VK_ASSERT_SUCCESS(vkCreateRenderPass(display_sink_->vk_device_, &render_pass_info, nullptr, &app_pass_))
 }
 
     /**
@@ -709,7 +709,7 @@ void native_renderer::create_app_pass() {
 void native_renderer::create_timewarp_pass() {
         std::array<VkAttachmentDescription, 1> attchmentDescriptions{{{
             0,                                 // flags
-        display_sink_->swapchain_image_format.format, // format
+        display_sink_->swapchain_image_format_.format, // format
             VK_SAMPLE_COUNT_1_BIT,             // samples
             VK_ATTACHMENT_LOAD_OP_DONT_CARE,   // loadOp
             VK_ATTACHMENT_STORE_OP_STORE,      // storeOp
@@ -760,7 +760,7 @@ void native_renderer::create_timewarp_pass() {
             &dependency                                          // pDependencies
         };
 
-    VK_ASSERT_SUCCESS(vkCreateRenderPass(display_sink_->vk_device, &render_pass_info, nullptr, &timewarp_pass_))
+    VK_ASSERT_SUCCESS(vkCreateRenderPass(display_sink_->vk_device_, &render_pass_info, nullptr, &timewarp_pass_))
 }
 
 PLUGIN_MAIN(native_renderer)

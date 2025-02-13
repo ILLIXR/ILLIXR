@@ -23,8 +23,8 @@ if (ON_JETSON_PLATFORM)
     find_package (Threads)
 
     add_library(${PLUGIN_NAME} SHARED plugin.cpp
-            ../../include/illixr/data_format.hpp
-            ../../include/illixr/phonebook.hpp
+                offload_rendering_client_jetson.cpp
+                offload_rendering_client_jetson.hpp
                 ../../include/illixr/data_format.hpp
                 ../../include/illixr/phonebook.hpp
                 ../../include/illixr/switchboard.hpp

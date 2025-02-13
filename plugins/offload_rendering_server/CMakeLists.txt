@@ -15,9 +15,9 @@ get_external_for_plugin(ILLIXR_FFmpeg)
 add_compile_definitions(ILLIXR_LIBAV)
 
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
-        ../../include/illixr/data_format.hpp
-        ../../include/illixr/phonebook.hpp
-        ../../include/illixr/switchboard.hpp
+            plugin.hpp
+            offload_rendering_server.cpp
+            offload_rendering_server.hpp
             ../../include/illixr/data_format.hpp
             ../../include/illixr/phonebook.hpp
             ../../include/illixr/switchboard.hpp

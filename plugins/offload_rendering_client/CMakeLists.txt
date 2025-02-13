@@ -17,8 +17,8 @@ find_package(CUDAToolkit REQUIRED)
 add_compile_definitions(ILLIXR_LIBAV)
 
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
-        ../../include/illixr/data_format.hpp
-        ../../include/illixr/phonebook.hpp
+            offload_rendering_client.hpp
+            offload_rendering_client.cpp
             ../../include/illixr/data_format.hpp
             ../../include/illixr/phonebook.hpp
             ../../include/illixr/switchboard.hpp

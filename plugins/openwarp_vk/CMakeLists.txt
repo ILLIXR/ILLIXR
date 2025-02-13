@@ -36,9 +36,9 @@ add_custom_target(
 )
 
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
-        utils/hmd.cpp
-        utils/hmd.hpp
-        ../../include/illixr/data_format.hpp
+            plugin.hpp
+            openwarp_vk.hpp
+            openwarp_vk.cpp
             $<TARGET_OBJECTS:illixr_hmd>
             ../../include/illixr/data_format.hpp
             ../../include/illixr/global_module_defs.hpp

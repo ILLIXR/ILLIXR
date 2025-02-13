@@ -1,11 +1,8 @@
-//
-// Created by steven on 11/14/23.
-//
+#pragma once
 
-#ifndef ILLIXR_HEADLESS_HPP
-#define ILLIXR_HEADLESS_HPP
+#include "display_backend.hpp"
 
-#include "display_backend.h"
+namespace ILLIXR::display {
 
 class headless : public display_backend {
 public:
@@ -17,4 +14,4 @@ public:
     display_backend_type  get_type() override;
 };
 
-#endif // ILLIXR_HEADLESS_HPP
+}

@@ -1,16 +1,10 @@
-//
-// Created by steven on 9/17/23.
-//
-
-#ifndef ILLIXR_DISPLAY_BACKEND_H
-#define ILLIXR_DISPLAY_BACKEND_H
+#pragma once
 
 #include "illixr/vk/display_provider.hpp"
 
-class display_backend {
-protected:
-    VkInstance vk_instance;
+namespace ILLIXR::display {
 
+class display_backend {
 public:
     enum display_backend_type { GLFW, X11_DIRECT, HEADLESS };
 
@@ -22,6 +16,9 @@ public:
     virtual std::set<const char*> get_required_device_extensions()   = 0;
 
     virtual display_backend_type get_type() = 0;
+
+protected:
+    VkInstance vk_instance_;
 };
 
-#endif // ILLIXR_DISPLAY_BACKEND_H
+}

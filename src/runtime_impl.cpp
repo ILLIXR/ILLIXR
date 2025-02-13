@@ -1,12 +1,14 @@
 #include "illixr/runtime.hpp"
 
+#ifdef ENABLE_VULKAN
+    #include "illixr/vk/vk_extension_request.hpp"
+    #include "vulkan_display.hpp"
+#endif
+
 #include "illixr/dynamic_lib.hpp"
 #include "illixr/error_util.hpp"
 #include "illixr/extended_window.hpp"
-#ifdef ENABLE_VULKAN
-    #include "illixr/vk/vk_extension_request.h"
-    #include "vulkan_display.hpp"
-#endif
+
 #include "illixr/global_module_defs.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/plugin.hpp"
@@ -145,7 +147,7 @@ public:
         phonebook_.lookup_impl<switchboard>()->stop();
         // After this point, Switchboard's internal thread-workers which power synchronous callbacks are stopped and joined.
 
-        for (const std::unique_ptr<plugin>& plugin : plugins_) {
+        for (const std::shared_ptr<plugin>& plugin : plugins_) {
             plugin->stop();
             // Each plugin gets joined in its stop
         }
@@ -178,7 +180,7 @@ private:
     // I have to keep the dynamic libraries_ in scope until the program is dead
     std::vector<dynamic_lib>             libraries_;
     phonebook                            phonebook_;
-    std::vector<std::unique_ptr<plugin>> plugins_;
+    std::vector<std::shared_ptr<plugin>> plugins_;
 };
 
 extern "C" [[maybe_unused]] runtime* runtime_factory() {
