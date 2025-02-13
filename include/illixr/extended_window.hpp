@@ -8,7 +8,7 @@
 #include <cerrno>
 #include <GL/glx.h>
 #ifndef NDEBUG
-#include <spdlog/spdlog.h>
+    #include <spdlog/spdlog.h>
 #endif
 
 // GLX context magics

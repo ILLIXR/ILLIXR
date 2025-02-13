@@ -34,15 +34,15 @@ public:
      * @brief Get required Vulkan device extensions
      * @return List of required device extension names
      */
-     std::vector<const char*> get_required_devices_extensions() override;
+    std::vector<const char*> get_required_devices_extensions() override;
 
-     void start() override;
+    void start() override;
 
-     void stop() override;
+    void stop() override;
 
- private:
-     std::shared_ptr<offload_rendering_server> offload_rendering_server_plugin_;
-     std::shared_ptr<spdlog::logger>           log_{spdlogger("debug")};
+private:
+    std::shared_ptr<offload_rendering_server> offload_rendering_server_plugin_;
+    std::shared_ptr<spdlog::logger>           log_{spdlogger("debug")};
 };
 
-}
+} // namespace ILLIXR

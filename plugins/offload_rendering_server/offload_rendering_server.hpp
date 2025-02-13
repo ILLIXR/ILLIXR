@@ -2,15 +2,13 @@
 
 #include "illixr/data_format.hpp"
 #include "illixr/pose_prediction.hpp"
+#include "illixr/serializable_data.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
-
-#include "illixr/vk/vulkan_utils.hpp"
-#include "illixr/vk/render_pass.hpp"
 #include "illixr/vk/display_provider.hpp"
-#include "illixr/serializable_data.hpp"
 #include "illixr/vk/ffmpeg_utils.hpp"
-
+#include "illixr/vk/render_pass.hpp"
+#include "illixr/vk/vulkan_utils.hpp"
 
 namespace ILLIXR {
 
@@ -48,11 +46,14 @@ public:
      */
     void setup(VkRenderPass render_pass, uint32_t subpass, std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> _buffer_pool,
                bool input_texture_vulkan_coordinates) override;
+
     /**
      * @brief Indicates this sink does not make use of the rendering pipeline in order for the access masks of the layout
      * transitions to be set properly
      */
-    bool is_external() override { return true; }
+    bool is_external() override {
+        return true;
+    }
 
     /**
      * @brief Cleanup resources on destruction
@@ -67,41 +68,51 @@ public:
     /**
      * @brief Get the true pose (same as fast pose in this implementation)
      */
-    pose_type get_true_pose() const override { return get_fast_pose().pose; }
+    pose_type get_true_pose() const override {
+        return get_fast_pose().pose;
+    }
 
     /**
      * @brief Get predicted pose for a future time point (returns current pose)
      */
     fast_pose_type get_fast_pose(time_point future_time) const override {
-        (void)future_time;
+        (void) future_time;
         return get_fast_pose();
     }
 
     /**
      * @brief Check if fast pose data is reliable
      */
-    bool fast_pose_reliable() const override { return render_pose_.get_ro_nullable() != nullptr; }
+    bool fast_pose_reliable() const override {
+        return render_pose_.get_ro_nullable() != nullptr;
+    }
 
     /**
      * @brief Check if true pose data is reliable (always false in this implementation)
      */
-    bool true_pose_reliable() const override { return false; }
+    bool true_pose_reliable() const override {
+        return false;
+    }
 
     /**
      * @brief Set orientation offset (no-op in this implementation)
      */
-    void set_offset(const Eigen::Quaternionf& orientation) override { (void)orientation; }
+    void set_offset(const Eigen::Quaternionf& orientation) override {
+        (void) orientation;
+    }
 
     /**
      * @brief Get orientation offset (returns identity in this implementation)
      */
-    Eigen::Quaternionf get_offset() override { return {}; }
+    Eigen::Quaternionf get_offset() override {
+        return {};
+    }
 
     /**
      * @brief Correct pose data (no-op in this implementation)
      */
     pose_type correct_pose(const pose_type& pose) const override {
-        (void)pose;
+        (void) pose;
         return {};
     }
 
@@ -109,22 +120,26 @@ public:
      * @brief Record command buffer (no-op in this implementation)
      */
     void record_command_buffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left) override {
-        (void)commandBuffer;
-        (void)framebuffer;
-        (void)buffer_ind;
-        (void)left;
+        (void) commandBuffer;
+        (void) framebuffer;
+        (void) buffer_ind;
+        (void) left;
     }
 
     /**
      * @brief Update uniforms (no-op in this implementation)
      */
-    void update_uniforms(const pose_type& r_pose) override { (void)r_pose; }
+    void update_uniforms(const pose_type& r_pose) override {
+        (void) r_pose;
+    }
 
 protected:
     /**
      * @brief Determines if the current iteration should be skipped
      */
-    skip_option _p_should_skip() override { return threadloop::_p_should_skip(); }
+    skip_option _p_should_skip() override {
+        return threadloop::_p_should_skip();
+    }
 
     /**
      * @brief Main processing loop for frame encoding and transmission
@@ -136,6 +151,7 @@ protected:
      * 4. Tracks performance metrics
      */
     void _p_one_iteration() override;
+
 private:
     /**
      * @brief Sends encoded frame data to the client
@@ -189,14 +205,14 @@ private:
      */
     void ffmpeg_init_encoder();
 
-    std::shared_ptr<spdlog::logger>                      log_;
-    std::shared_ptr<vulkan::display_provider>            display_provider_;
-    std::shared_ptr<switchboard>                         switchboard_;
-    switchboard::network_writer<compressed_frame>        frames_topic_;
-    switchboard::reader<fast_pose_type>                  render_pose_;
-    std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> buffer_pool_;
-    std::vector<std::array<vulkan::ffmpeg_utils::ffmpeg_vk_frame, 2>>  avvk_color_frames_;
-    std::vector<std::array<vulkan::ffmpeg_utils::ffmpeg_vk_frame, 2>>  avvk_depth_frames_;
+    std::shared_ptr<spdlog::logger>                                   log_;
+    std::shared_ptr<vulkan::display_provider>                         display_provider_;
+    std::shared_ptr<switchboard>                                      switchboard_;
+    switchboard::network_writer<compressed_frame>                     frames_topic_;
+    switchboard::reader<fast_pose_type>                               render_pose_;
+    std::shared_ptr<vulkan::buffer_pool<fast_pose_type>>              buffer_pool_;
+    std::vector<std::array<vulkan::ffmpeg_utils::ffmpeg_vk_frame, 2>> avvk_color_frames_;
+    std::vector<std::array<vulkan::ffmpeg_utils::ffmpeg_vk_frame, 2>> avvk_depth_frames_;
 
     int  framerate_ = 144;
     long bitrate_   = OFFLOAD_RENDERING_BITRATE;
@@ -227,4 +243,4 @@ private:
 
     std::atomic<bool> ready_{false};
 };
-}
+} // namespace ILLIXR

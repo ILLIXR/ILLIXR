@@ -6,7 +6,6 @@
 
 using namespace ILLIXR;
 
-
 tcp_network_backend::tcp_network_backend(const std::string& name_, phonebook* pb_)
     : plugin(name_, pb_)
     , switchboard_{pb_->lookup_impl<switchboard>()} {
@@ -139,7 +138,7 @@ void tcp_network_backend::topic_receive(const std::string& topic_name, std::vect
         if (message_str.find("create_topic") == 0) {
             size_t d_pos = message_str.find(delimiter_);
             assert(d_pos != std::string::npos);
-            std::string l_topic_name    = message_str.substr(12, d_pos - 12);
+            std::string l_topic_name  = message_str.substr(12, d_pos - 12);
             std::string serialization = message_str.substr(d_pos + 1);
             networked_topics_.push_back(l_topic_name);
             network::topic_config config;
@@ -166,7 +165,6 @@ void tcp_network_backend::stop() {
     delete peer_socket_;
 }
 
-
 void tcp_network_backend::send_to_peer(const std::string& topic_name, std::string&& message) {
     // packet are in the format
     // total_length:4bytes|topic_name_length:4bytes|topic_name|message
@@ -179,7 +177,6 @@ void tcp_network_backend::send_to_peer(const std::string& topic_name, std::strin
     packet.append(message.begin(), message.end());
     peer_socket_->write_data(packet);
 }
-
 
 extern "C" plugin* this_plugin_factory(phonebook* pb) {
     auto plugin_ptr = std::make_shared<tcp_network_backend>("tcp_network_backend", pb);

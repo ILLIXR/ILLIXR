@@ -619,7 +619,8 @@ public:
     template<typename serializable_event>
     class network_writer : public writer<serializable_event> {
     public:
-        explicit network_writer(topic& topic, ptr<network::network_backend> backend = nullptr, const network::topic_config& config = {})
+        explicit network_writer(topic& topic, ptr<network::network_backend> backend = nullptr,
+                                const network::topic_config& config = {})
             : writer<serializable_event>{topic}
             , backend_{std::move(backend)}
             , config_{config} { }
@@ -783,7 +784,6 @@ private:
     std::unordered_map<std::string, topic> registry_;
     std::shared_mutex                      registry_lock_;
     std::shared_ptr<record_logger>         record_logger_;
-
 };
 
 } // namespace ILLIXR

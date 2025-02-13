@@ -11,15 +11,15 @@ public:
     x11_direct(std::shared_ptr<relative_clock> _rc, switchboard::writer<switchboard::event_wrapper<time_point>> _vsync_topic)
         : clock_{std::move(_rc)}
         , vsync_topic_{_vsync_topic} { };
-    void                       setup_display(VkInstance vk_instance, VkPhysicalDevice vk_physical_device_) override;
-    VkSurfaceKHR               create_surface() override;
-    void                       cleanup() override;
-    std::set<const char*>      get_required_instance_extensions() override;
-    std::set<const char*>      get_required_device_extensions() override;
+    void                              setup_display(VkInstance vk_instance, VkPhysicalDevice vk_physical_device_) override;
+    VkSurfaceKHR                      create_surface() override;
+    void                              cleanup() override;
+    std::set<const char*>             get_required_instance_extensions() override;
+    std::set<const char*>             get_required_device_extensions() override;
     static VkDisplayModePropertiesKHR select_display_mode(std::vector<VkDisplayModePropertiesKHR> modes);
-    void                       tick();
-    bool                       register_display_timings_event(VkDevice vk_device_);
-    display_backend_type       get_type() override;
+    void                              tick();
+    bool                              register_display_timings_event(VkDevice vk_device_);
+    display_backend_type              get_type() override;
 
     VkDisplayKHR               display_;
     std::atomic<bool>          display_timings_event_registered_ = false;
@@ -33,4 +33,4 @@ private:
     VkPhysicalDevice                                            vk_physical_device_;
 };
 
-}
+} // namespace ILLIXR::display

@@ -21,8 +21,8 @@ namespace ILLIXR::vulkan::ffmpeg_utils {
 static std::weak_ptr<vulkan::display_provider> display_provider_ffmpeg;
 
 static void ffmpeg_lock_queue(struct AVHWDeviceContext* ctx, uint32_t queue_family, uint32_t index) {
-    (void)ctx;
-    (void)index;
+    (void) ctx;
+    (void) index;
     if (auto dp = display_provider_ffmpeg.lock()) {
         std::optional<vulkan::queue> queue;
         for (auto& q : dp->queues_) {
@@ -41,8 +41,8 @@ static void ffmpeg_lock_queue(struct AVHWDeviceContext* ctx, uint32_t queue_fami
 }
 
 static void ffmpeg_unlock_queue(struct AVHWDeviceContext* ctx, uint32_t queue_family, uint32_t index) {
-    (void)ctx;
-    (void)index;
+    (void) ctx;
+    (void) index;
     if (auto dp = display_provider_ffmpeg.lock()) {
         std::optional<vulkan::queue> queue;
         for (auto& q : dp->queues_) {

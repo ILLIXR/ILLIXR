@@ -27,8 +27,8 @@ void openwarp_vk::initialize() {
     if (display_provider_->vma_allocator_) {
         this->vma_allocator_ = display_provider_->vma_allocator_;
     } else {
-        this->vma_allocator_ = vulkan::create_vma_allocator(display_provider_->vk_instance_, display_provider_->vk_physical_device_,
-                                                            display_provider_->vk_device_);
+        this->vma_allocator_ = vulkan::create_vma_allocator(
+            display_provider_->vk_instance_, display_provider_->vk_physical_device_, display_provider_->vk_device_);
         deletion_queue_.emplace([=]() {
             vmaDestroyAllocator(vma_allocator_);
         });
@@ -46,18 +46,21 @@ void openwarp_vk::initialize() {
     create_texture_sampler();
 }
 
-void openwarp_vk::setup(VkRenderPass render_pass, uint32_t subpass, std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> buffer_pool,
-           bool input_texture_vulkan_coordinates) {
+void openwarp_vk::setup(VkRenderPass render_pass, uint32_t subpass,
+                        std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> buffer_pool,
+                        bool                                                 input_texture_vulkan_coordinates) {
     std::lock_guard<std::mutex> lock{setup_mutex_};
 
     display_provider_ = phonebook_->lookup_impl<vulkan::display_provider>();
 
-    swapchain_width_  = display_provider_->swapchain_extent_.width == 0 ? display_params::width_pixels : display_provider_->swapchain_extent_.width;
-    swapchain_height_ = display_provider_->swapchain_extent_.height == 0 ? display_params::height_pixels : display_provider_->swapchain_extent_.height;
+    swapchain_width_  = display_provider_->swapchain_extent_.width == 0 ? display_params::width_pixels
+                                                                        : display_provider_->swapchain_extent_.width;
+    swapchain_height_ = display_provider_->swapchain_extent_.height == 0 ? display_params::height_pixels
+                                                                         : display_provider_->swapchain_extent_.height;
 
-    HMD::get_default_hmd_info(static_cast<int>(swapchain_width_), static_cast<int>(swapchain_height_), display_params::width_meters,
-                              display_params::height_meters, display_params::lens_separation, display_params::meters_per_tan_angle,
-                              display_params::aberration, hmd_info_);
+    HMD::get_default_hmd_info(static_cast<int>(swapchain_width_), static_cast<int>(swapchain_height_),
+                              display_params::width_meters, display_params::height_meters, display_params::lens_separation,
+                              display_params::meters_per_tan_angle, display_params::aberration, hmd_info_);
 
     this->input_texture_vulkan_coordinates_ = input_texture_vulkan_coordinates;
     if (!initialized_) {
@@ -226,25 +229,16 @@ void openwarp_vk::record_command_buffer(VkCommandBuffer commandBuffer, VkFramebu
         .clearValueCount = 1,
         .pClearValues    = &clear_color};
 
-    VkViewport dc_viewport{
-        .x        = left ? 0.f : static_cast<float>(swapchain_width_) / 2.f,
-        .y        = 0,
-        .width    = static_cast<float>(swapchain_width_) / 2.f,
-        .height   = static_cast<float>(swapchain_height_),
-        .minDepth = 0.0f,
-        .maxDepth = 1.0f
-    };
+    VkViewport dc_viewport{.x        = left ? 0.f : static_cast<float>(swapchain_width_) / 2.f,
+                           .y        = 0,
+                           .width    = static_cast<float>(swapchain_width_) / 2.f,
+                           .height   = static_cast<float>(swapchain_height_),
+                           .minDepth = 0.0f,
+                           .maxDepth = 1.0f};
 
     VkRect2D dc_scissor{
-        .offset = {
-            .x = left ? 0 : static_cast<int32_t>(swapchain_width_ / 2),
-            .y = 0
-        },
-        .extent = {
-            .width  = static_cast<uint32_t>(swapchain_width_ / 2),
-            .height = static_cast<uint32_t>(swapchain_height_)
-        }
-    };
+        .offset = {.x = left ? 0 : static_cast<int32_t>(swapchain_width_ / 2), .y = 0},
+        .extent = {.width = static_cast<uint32_t>(swapchain_width_ / 2), .height = static_cast<uint32_t>(swapchain_height_)}};
 
     vkCmdBeginRenderPass(commandBuffer, &dc_render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
     vkCmdSetViewport(commandBuffer, 0, 1, &dc_viewport);
@@ -274,75 +268,63 @@ void openwarp_vk::destroy() {
 
 void openwarp_vk::create_offscreen_images() {
     for (int eye = 0; eye < 2; eye++) {
-        VkImageCreateInfo image_info {
-            .sType         = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
-            .pNext         = nullptr,
-            .flags         = 0,
-            .imageType     = VK_IMAGE_TYPE_2D,
-            .format        = VK_FORMAT_R8G8B8A8_UNORM,
-            .extent        = {
-                .width  = static_cast<uint32_t>(swapchain_width_ / 2),
-                .height = static_cast<uint32_t>(swapchain_height_),
-                .depth  = 1
-            },
-            .mipLevels     = 1,
-            .arrayLayers   = 1,
-            .samples       = VK_SAMPLE_COUNT_1_BIT,
-            .tiling        = VK_IMAGE_TILING_OPTIMAL,
-            .usage         = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
-            .sharingMode   = {},
-            .queueFamilyIndexCount = 0,
-            .pQueueFamilyIndices = nullptr,
-            .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED
-        };
+        VkImageCreateInfo image_info{.sType                 = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
+                                     .pNext                 = nullptr,
+                                     .flags                 = 0,
+                                     .imageType             = VK_IMAGE_TYPE_2D,
+                                     .format                = VK_FORMAT_R8G8B8A8_UNORM,
+                                     .extent                = {.width  = static_cast<uint32_t>(swapchain_width_ / 2),
+                                                               .height = static_cast<uint32_t>(swapchain_height_),
+                                                               .depth  = 1},
+                                     .mipLevels             = 1,
+                                     .arrayLayers           = 1,
+                                     .samples               = VK_SAMPLE_COUNT_1_BIT,
+                                     .tiling                = VK_IMAGE_TILING_OPTIMAL,
+                                     .usage                 = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+                                     .sharingMode           = {},
+                                     .queueFamilyIndexCount = 0,
+                                     .pQueueFamilyIndices   = nullptr,
+                                     .initialLayout         = VK_IMAGE_LAYOUT_UNDEFINED};
 
-        VmaAllocationCreateInfo create_info = {
-            .flags          = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT,
-            .usage          = VMA_MEMORY_USAGE_AUTO,
-            .requiredFlags  = {},
-            .preferredFlags = {},
-            .memoryTypeBits = {},
-            .pool           = {},
-            .pUserData      = nullptr,
-            .priority       = 1.0f
-        };
+        VmaAllocationCreateInfo create_info = {.flags          = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT,
+                                               .usage          = VMA_MEMORY_USAGE_AUTO,
+                                               .requiredFlags  = {},
+                                               .preferredFlags = {},
+                                               .memoryTypeBits = {},
+                                               .pool           = {},
+                                               .pUserData      = nullptr,
+                                               .priority       = 1.0f};
 
         VK_ASSERT_SUCCESS(vmaCreateImage(vma_allocator_, &image_info, &create_info, &offscreen_images_[eye],
                                          &offscreen_image_allocs_[eye], nullptr));
 
-        VkImageViewCreateInfo view_info = {
-            .sType            = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-            .pNext            = nullptr,
-            .flags            = {},
-            .image            = offscreen_images_[eye],
-            .viewType         = VK_IMAGE_VIEW_TYPE_2D,
-            .format           = VK_FORMAT_R8G8B8A8_UNORM,
-            .components       = {
-                .r = VK_COMPONENT_SWIZZLE_IDENTITY,
-                .g = VK_COMPONENT_SWIZZLE_IDENTITY,
-                .b = VK_COMPONENT_SWIZZLE_IDENTITY,
-                .a = VK_COMPONENT_SWIZZLE_IDENTITY},
-            .subresourceRange = {
-                .aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT,
-                .baseMipLevel   = 0,
-                .levelCount     = 1,
-                .baseArrayLayer = 0,
-                .layerCount     = 1}
-        };
+        VkImageViewCreateInfo view_info = {.sType            = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+                                           .pNext            = nullptr,
+                                           .flags            = {},
+                                           .image            = offscreen_images_[eye],
+                                           .viewType         = VK_IMAGE_VIEW_TYPE_2D,
+                                           .format           = VK_FORMAT_R8G8B8A8_UNORM,
+                                           .components       = {.r = VK_COMPONENT_SWIZZLE_IDENTITY,
+                                                                .g = VK_COMPONENT_SWIZZLE_IDENTITY,
+                                                                .b = VK_COMPONENT_SWIZZLE_IDENTITY,
+                                                                .a = VK_COMPONENT_SWIZZLE_IDENTITY},
+                                           .subresourceRange = {.aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT,
+                                                                .baseMipLevel   = 0,
+                                                                .levelCount     = 1,
+                                                                .baseArrayLayer = 0,
+                                                                .layerCount     = 1}};
 
         VK_ASSERT_SUCCESS(vkCreateImageView(display_provider_->vk_device_, &view_info, nullptr, &offscreen_image_views_[eye]));
 
-        VkImageCreateInfo depth_image_info {
-            .sType                = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
-            .pNext                = nullptr,
-            .flags                = {},
-            .imageType            = VK_IMAGE_TYPE_2D,
-            .format               = VK_FORMAT_D16_UNORM,
-            .extent = {
-                   .width  = static_cast<uint32_t>(swapchain_width_ / 2),
-                   .height = static_cast<uint32_t>(swapchain_height_),
-                   .depth  = 1
-            },
+        VkImageCreateInfo depth_image_info{
+            .sType                 = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
+            .pNext                 = nullptr,
+            .flags                 = {},
+            .imageType             = VK_IMAGE_TYPE_2D,
+            .format                = VK_FORMAT_D16_UNORM,
+            .extent                = {.width  = static_cast<uint32_t>(swapchain_width_ / 2),
+                                      .height = static_cast<uint32_t>(swapchain_height_),
+                                      .depth  = 1},
             .mipLevels             = 1,
             .arrayLayers           = 1,
             .samples               = VK_SAMPLE_COUNT_1_BIT,
@@ -354,43 +336,36 @@ void openwarp_vk::create_offscreen_images() {
             .initialLayout         = VK_IMAGE_LAYOUT_UNDEFINED,
         };
 
-        VmaAllocationCreateInfo depth_create_info = {
-            .flags          = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT,
-            .usage          = VMA_MEMORY_USAGE_AUTO,
-            .requiredFlags  = {},
-            .preferredFlags = {},
-            .memoryTypeBits = 0,
-            .pool           = {},
-            .pUserData      = nullptr,
-            .priority       = 1.0f
-        };
+        VmaAllocationCreateInfo depth_create_info = {.flags          = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT,
+                                                     .usage          = VMA_MEMORY_USAGE_AUTO,
+                                                     .requiredFlags  = {},
+                                                     .preferredFlags = {},
+                                                     .memoryTypeBits = 0,
+                                                     .pool           = {},
+                                                     .pUserData      = nullptr,
+                                                     .priority       = 1.0f};
 
         VK_ASSERT_SUCCESS(vmaCreateImage(vma_allocator_, &depth_image_info, &depth_create_info, &offscreen_depths_[eye],
                                          &offscreen_depth_allocs_[eye], nullptr));
 
-        VkImageViewCreateInfo depth_view_info = {
-            .sType            = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-            .pNext            = nullptr,
-            .flags            = {},
-            .image            = offscreen_depths_[eye],
-            .viewType         = VK_IMAGE_VIEW_TYPE_2D,
-            .format           = VK_FORMAT_D16_UNORM,
-            .components       = {
-                .r = VK_COMPONENT_SWIZZLE_IDENTITY,
-                .g = VK_COMPONENT_SWIZZLE_IDENTITY,
-                .b = VK_COMPONENT_SWIZZLE_IDENTITY,
-                .a = VK_COMPONENT_SWIZZLE_IDENTITY
-            },
-            .subresourceRange = {
-                .aspectMask     = VK_IMAGE_ASPECT_DEPTH_BIT,
-                .baseMipLevel   = 0,
-                .levelCount     = 1,
-                .baseArrayLayer = 0,
-                .layerCount     = 1
-            }
-        };
+        VkImageViewCreateInfo depth_view_info = {.sType            = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+                                                 .pNext            = nullptr,
+                                                 .flags            = {},
+                                                 .image            = offscreen_depths_[eye],
+                                                 .viewType         = VK_IMAGE_VIEW_TYPE_2D,
+                                                 .format           = VK_FORMAT_D16_UNORM,
+                                                 .components       = {.r = VK_COMPONENT_SWIZZLE_IDENTITY,
+                                                                      .g = VK_COMPONENT_SWIZZLE_IDENTITY,
+                                                                      .b = VK_COMPONENT_SWIZZLE_IDENTITY,
+                                                                      .a = VK_COMPONENT_SWIZZLE_IDENTITY},
+                                                 .subresourceRange = {.aspectMask     = VK_IMAGE_ASPECT_DEPTH_BIT,
+                                                                      .baseMipLevel   = 0,
+                                                                      .levelCount     = 1,
+                                                                      .baseArrayLayer = 0,
+                                                                      .layerCount     = 1}};
 
-        VK_ASSERT_SUCCESS(vkCreateImageView(display_provider_->vk_device_, &depth_view_info, nullptr, &offscreen_depth_views_[eye]));
+        VK_ASSERT_SUCCESS(
+            vkCreateImageView(display_provider_->vk_device_, &depth_view_info, nullptr, &offscreen_depth_views_[eye]));
 
         VkImageView attachments[2] = {offscreen_image_views_[eye], offscreen_depth_views_[eye]};
 
@@ -407,22 +382,21 @@ void openwarp_vk::create_offscreen_images() {
             .layers          = 1,
         };
 
-        VK_ASSERT_SUCCESS(vkCreateFramebuffer(display_provider_->vk_device_, &framebuffer_info, nullptr, &offscreen_framebuffers_[eye]));
+        VK_ASSERT_SUCCESS(
+            vkCreateFramebuffer(display_provider_->vk_device_, &framebuffer_info, nullptr, &offscreen_framebuffers_[eye]));
     }
 }
 
 void openwarp_vk::create_vertex_buffers() {
     // OpenWarp Vertices
-    VkBufferCreateInfo ow_staging_buffer_info = {
-        .sType                 = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-        .pNext                 = nullptr,
-        .flags                 = {},
-        .size                  = sizeof(OpenWarpVertex) * num_openwarp_vertices_,
-        .usage                 = VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-        .sharingMode           = {},
-        .queueFamilyIndexCount = 0,
-        .pQueueFamilyIndices   = nullptr
-    };
+    VkBufferCreateInfo ow_staging_buffer_info = {.sType                 = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+                                                 .pNext                 = nullptr,
+                                                 .flags                 = {},
+                                                 .size                  = sizeof(OpenWarpVertex) * num_openwarp_vertices_,
+                                                 .usage                 = VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+                                                 .sharingMode           = {},
+                                                 .queueFamilyIndexCount = 0,
+                                                 .pQueueFamilyIndices   = nullptr};
 
     VmaAllocationCreateInfo ow_staging_alloc_info = {};
     ow_staging_alloc_info.usage                   = VMA_MEMORY_USAGE_AUTO;
@@ -433,16 +407,14 @@ void openwarp_vk::create_vertex_buffers() {
     VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator_, &ow_staging_buffer_info, &ow_staging_alloc_info, &ow_staging_buffer,
                                       &ow_staging_alloc, nullptr))
 
-    VkBufferCreateInfo ow_buffer_info = {
-        .sType                 = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-        .pNext                 = nullptr,
-        .flags                 = {},
-        .size                  = sizeof(OpenWarpVertex) * num_openwarp_vertices_,
-        .usage                 = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
-        .sharingMode           = {},
-        .queueFamilyIndexCount = 0,
-        .pQueueFamilyIndices   = nullptr
-    };
+    VkBufferCreateInfo ow_buffer_info = {.sType       = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+                                         .pNext       = nullptr,
+                                         .flags       = {},
+                                         .size        = sizeof(OpenWarpVertex) * num_openwarp_vertices_,
+                                         .usage       = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+                                         .sharingMode = {},
+                                         .queueFamilyIndexCount = 0,
+                                         .pQueueFamilyIndices   = nullptr};
 
     VmaAllocationCreateInfo ow_alloc_info = {};
     ow_alloc_info.usage                   = VMA_MEMORY_USAGE_GPU_ONLY;
@@ -470,8 +442,7 @@ void openwarp_vk::create_vertex_buffers() {
     });
 
     // Distortion Correction Vertices
-    VkBufferCreateInfo dc_staging_buffer_info = {
-    };
+    VkBufferCreateInfo dc_staging_buffer_info = {};
 
     VmaAllocationCreateInfo dc_staging_alloc_info = {};
     dc_staging_alloc_info.usage                   = VMA_MEMORY_USAGE_AUTO;
@@ -482,17 +453,15 @@ void openwarp_vk::create_vertex_buffers() {
     VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator_, &dc_staging_buffer_info, &dc_staging_alloc_info, &dc_staging_buffer,
                                       &dc_staging_alloc, nullptr))
 
-    VkBufferCreateInfo dc_buffer_info = {
-        .sType                 = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-        .pNext                 = nullptr,
-        .flags                 = {},
-        .size                  = sizeof(DistortionCorrectionVertex) * num_distortion_vertices_ * HMD::NUM_EYES,
-        .usage                 = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
-        .sharingMode           = {},
-        .queueFamilyIndexCount = 0,
-        .pQueueFamilyIndices   = nullptr
-    };
-    dc_buffer_info.size  = sizeof(DistortionCorrectionVertex) * num_distortion_vertices_ * HMD::NUM_EYES;
+    VkBufferCreateInfo dc_buffer_info = {.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+                                         .pNext = nullptr,
+                                         .flags = {},
+                                         .size  = sizeof(DistortionCorrectionVertex) * num_distortion_vertices_ * HMD::NUM_EYES,
+                                         .usage = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+                                         .sharingMode           = {},
+                                         .queueFamilyIndexCount = 0,
+                                         .pQueueFamilyIndices   = nullptr};
+    dc_buffer_info.size               = sizeof(DistortionCorrectionVertex) * num_distortion_vertices_ * HMD::NUM_EYES;
 
     VmaAllocationCreateInfo dc_alloc_info = {};
     dc_alloc_info.usage                   = VMA_MEMORY_USAGE_GPU_ONLY;
@@ -523,16 +492,14 @@ void openwarp_vk::create_vertex_buffers() {
 
 void openwarp_vk::create_index_buffers() {
     // OpenWarp index buffer
-    VkBufferCreateInfo ow_staging_buffer_info = {
-        .sType                 = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-        .pNext                 = nullptr,
-        .flags                 = {},
-        .size                  = sizeof(uint32_t) * num_openwarp_indices_,
-        .usage                 = VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-        .sharingMode           = {},
-        .queueFamilyIndexCount = 0,
-        .pQueueFamilyIndices   = nullptr
-    };
+    VkBufferCreateInfo ow_staging_buffer_info = {.sType                 = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+                                                 .pNext                 = nullptr,
+                                                 .flags                 = {},
+                                                 .size                  = sizeof(uint32_t) * num_openwarp_indices_,
+                                                 .usage                 = VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+                                                 .sharingMode           = {},
+                                                 .queueFamilyIndexCount = 0,
+                                                 .pQueueFamilyIndices   = nullptr};
 
     VmaAllocationCreateInfo ow_staging_alloc_info = {};
     ow_staging_alloc_info.usage                   = VMA_MEMORY_USAGE_AUTO;
@@ -543,16 +510,14 @@ void openwarp_vk::create_index_buffers() {
     VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator_, &ow_staging_buffer_info, &ow_staging_alloc_info, &ow_staging_buffer,
                                       &ow_staging_alloc, nullptr))
 
-    VkBufferCreateInfo ow_buffer_info = {
-        .sType                 = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-        .pNext                 = nullptr,
-        .flags                 = {},
-        .size                  = sizeof(uint32_t) * num_openwarp_indices_,
-        .usage                 = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
-        .sharingMode           = {},
-        .queueFamilyIndexCount = 0,
-        .pQueueFamilyIndices   = nullptr
-    };
+    VkBufferCreateInfo ow_buffer_info = {.sType       = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+                                         .pNext       = nullptr,
+                                         .flags       = {},
+                                         .size        = sizeof(uint32_t) * num_openwarp_indices_,
+                                         .usage       = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+                                         .sharingMode = {},
+                                         .queueFamilyIndexCount = 0,
+                                         .pQueueFamilyIndices   = nullptr};
 
     VmaAllocationCreateInfo ow_alloc_info = {};
     ow_alloc_info.usage                   = VMA_MEMORY_USAGE_GPU_ONLY;
@@ -580,16 +545,14 @@ void openwarp_vk::create_index_buffers() {
     });
 
     // Distortion correction index buffer
-    VkBufferCreateInfo dc_staging_buffer_info = {
-        .sType                 = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-        .pNext                 = nullptr,
-        .flags                 = {},
-        .size                  = sizeof(uint32_t) * num_distortion_indices_,
-        .usage                 = VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-        .sharingMode           = {},
-        .queueFamilyIndexCount = 0,
-        .pQueueFamilyIndices   = nullptr
-    };
+    VkBufferCreateInfo dc_staging_buffer_info = {.sType                 = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+                                                 .pNext                 = nullptr,
+                                                 .flags                 = {},
+                                                 .size                  = sizeof(uint32_t) * num_distortion_indices_,
+                                                 .usage                 = VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+                                                 .sharingMode           = {},
+                                                 .queueFamilyIndexCount = 0,
+                                                 .pQueueFamilyIndices   = nullptr};
 
     VmaAllocationCreateInfo dc_staging_alloc_info = {};
     dc_staging_alloc_info.usage                   = VMA_MEMORY_USAGE_AUTO;
@@ -600,16 +563,14 @@ void openwarp_vk::create_index_buffers() {
     VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator_, &dc_staging_buffer_info, &dc_staging_alloc_info, &dc_staging_buffer,
                                       &dc_staging_alloc, nullptr))
 
-    VkBufferCreateInfo dc_buffer_info = {
-        .sType                 = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-        .pNext                 = nullptr,
-        .flags                 = {},
-        .size                  = sizeof(uint32_t) * num_distortion_indices_,
-        .usage                 = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
-        .sharingMode           = {},
-        .queueFamilyIndexCount = 0,
-        .pQueueFamilyIndices   = nullptr
-    };
+    VkBufferCreateInfo dc_buffer_info = {.sType       = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+                                         .pNext       = nullptr,
+                                         .flags       = {},
+                                         .size        = sizeof(uint32_t) * num_distortion_indices_,
+                                         .usage       = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+                                         .sharingMode = {},
+                                         .queueFamilyIndexCount = 0,
+                                         .pQueueFamilyIndices   = nullptr};
 
     VmaAllocationCreateInfo dc_alloc_info = {};
     dc_alloc_info.usage                   = VMA_MEMORY_USAGE_GPU_ONLY;
@@ -628,8 +589,7 @@ void openwarp_vk::create_index_buffers() {
     dc_copy_region.size                     = sizeof(uint32_t) * num_distortion_indices_;
     vkCmdCopyBuffer(dc_command_buffer_local, dc_staging_buffer, dc_index_buffer_, 1, &dc_copy_region);
     vulkan::end_one_time_command(display_provider_->vk_device_, command_pool_,
-                                 display_provider_->queues_[vulkan::queue::queue_type::GRAPHICS],
-                                 dc_command_buffer_local);
+                                 display_provider_->queues_[vulkan::queue::queue_type::GRAPHICS], dc_command_buffer_local);
 
     vmaDestroyBuffer(vma_allocator_, dc_staging_buffer, dc_staging_alloc);
 
@@ -683,8 +643,8 @@ void openwarp_vk::generate_distortion_data() {
     //                           rendering_params::far_z, rendering_params::reverse_z);
     // inverse_projection_ = basic_projection_.inverse();
 
-    //float near_z = rendering_params::near_z;
-    //float far_z  = rendering_params::far_z;
+    // float near_z = rendering_params::near_z;
+    // float far_z  = rendering_params::far_z;
 
     // Hacked in projection matrix from Unreal and hardcoded values
     for (int eye = 0; eye < 2; eye++) {
@@ -742,8 +702,8 @@ void openwarp_vk::generate_distortion_data() {
                     // (input_texture_vulkan_coordinates_ ? -1.0f : 1.0f) *
                     (-1.0f +
                      2.0f * (static_cast<float>(hmd_info_.eye_tiles_high - y) / static_cast<float>(hmd_info_.eye_tiles_high)) *
-                            (static_cast<float>(hmd_info_.eye_tiles_high * hmd_info_.tile_pixels_high) /
-                             static_cast<float>(hmd_info_.display_pixels_high)));
+                         (static_cast<float>(hmd_info_.eye_tiles_high * hmd_info_.tile_pixels_high) /
+                          static_cast<float>(hmd_info_.display_pixels_high)));
                 distortion_vertices_[eye * num_distortion_vertices_ + index].pos.z = 0.0f;
 
                 // Use the previously-calculated distort_coords to set the UVs on the distortion mesh
@@ -802,7 +762,7 @@ void openwarp_vk::generate_openwarp_mesh(size_t width, size_t height) {
             size_t index = y * (width + 1) + x;
 
             openwarp_vertices_[index].uv.x = static_cast<float>(x) / static_cast<float>(width);
-            openwarp_vertices_[index].uv.y = (static_cast<float>(height) - static_cast<float>( y)) / static_cast<float>(height);
+            openwarp_vertices_[index].uv.y = (static_cast<float>(height) - static_cast<float>(y)) / static_cast<float>(height);
 
             if (x == 0) {
                 openwarp_vertices_[index].uv.x = -0.5f;
@@ -822,28 +782,26 @@ void openwarp_vk::generate_openwarp_mesh(size_t width, size_t height) {
 }
 
 void openwarp_vk::create_texture_sampler() {
-    VkSamplerCreateInfo sampler_info = {
-        .sType      = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
-        .pNext      = nullptr,
-        .flags      = {},
-        .magFilter  = VK_FILTER_LINEAR, // how to interpolate texels that are magnified on screen
-        .minFilter  = VK_FILTER_LINEAR,
-        .mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR,
+    VkSamplerCreateInfo sampler_info = {.sType     = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
+                                        .pNext     = nullptr,
+                                        .flags     = {},
+                                        .magFilter = VK_FILTER_LINEAR, // how to interpolate texels that are magnified on screen
+                                        .minFilter = VK_FILTER_LINEAR,
+                                        .mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR,
 
-        .addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER,
-        .addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER,
-        .addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER,
+                                        .addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER,
+                                        .addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER,
+                                        .addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER,
 
-        .mipLodBias       = 0.f,
-        .anisotropyEnable = VK_FALSE,
-        .maxAnisotropy    = 0.f,
-        .compareEnable    = VK_FALSE,
-        .compareOp        = VK_COMPARE_OP_ALWAYS,
-        .minLod           = 0.f,
-        .maxLod           = 0.f,
-        .borderColor      = VK_BORDER_COLOR_INT_OPAQUE_BLACK, // black outside the texture
-        .unnormalizedCoordinates = VK_FALSE
-    };
+                                        .mipLodBias       = 0.f,
+                                        .anisotropyEnable = VK_FALSE,
+                                        .maxAnisotropy    = 0.f,
+                                        .compareEnable    = VK_FALSE,
+                                        .compareOp        = VK_COMPARE_OP_ALWAYS,
+                                        .minLod           = 0.f,
+                                        .maxLod           = 0.f,
+                                        .borderColor      = VK_BORDER_COLOR_INT_OPAQUE_BLACK, // black outside the texture
+                                        .unnormalizedCoordinates = VK_FALSE};
 
     VK_ASSERT_SUCCESS(vkCreateSampler(display_provider_->vk_device_, &sampler_info, nullptr, &fb_sampler_))
 
@@ -882,15 +840,16 @@ void openwarp_vk::create_descriptor_set_layouts() {
 
     std::array<VkDescriptorSetLayoutBinding, 3> ow_bindings    = {image_layout_binding, depth_layout_binding,
                                                                   matrix_ubo_layout_binding};
-    VkDescriptorSetLayoutCreateInfo ow_layout_info = {
-        .sType        = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
-        .pNext        = nullptr,
-        .flags        = {},
-        .bindingCount = static_cast<uint32_t>(ow_bindings.size()),
-        .pBindings    = ow_bindings.data() // array of VkDescriptorSetLayoutBinding structs
+    VkDescriptorSetLayoutCreateInfo             ow_layout_info = {
+                    .sType        = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
+                    .pNext        = nullptr,
+                    .flags        = {},
+                    .bindingCount = static_cast<uint32_t>(ow_bindings.size()),
+                    .pBindings    = ow_bindings.data() // array of VkDescriptorSetLayoutBinding structs
     };
 
-    VK_ASSERT_SUCCESS(vkCreateDescriptorSetLayout(display_provider_->vk_device_, &ow_layout_info, nullptr, &ow_descriptor_set_layout_))
+    VK_ASSERT_SUCCESS(
+        vkCreateDescriptorSetLayout(display_provider_->vk_device_, &ow_layout_info, nullptr, &ow_descriptor_set_layout_))
     deletion_queue_.emplace([=]() {
         vkDestroyDescriptorSetLayout(display_provider_->vk_device_, ow_descriptor_set_layout_, nullptr);
     });
@@ -901,18 +860,18 @@ void openwarp_vk::create_descriptor_set_layouts() {
         .descriptorType     = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
         .descriptorCount    = 1,
         .stageFlags         = VK_SHADER_STAGE_FRAGMENT_BIT, // shader stages that can access the descriptor
-        .pImmutableSamplers = nullptr
-    };
+        .pImmutableSamplers = nullptr};
 
     std::array<VkDescriptorSetLayoutBinding, 1> dc_bindings    = {offscreen_image_layout_binding};
-    VkDescriptorSetLayoutCreateInfo dc_layout_info = {
-        .sType        = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
-        .pNext        = nullptr,
-        .flags        = {},
-        .bindingCount = static_cast<uint32_t>(dc_bindings.size()),
-        .pBindings    = dc_bindings.data() // array of VkDescriptorSetLayoutBinding structs
+    VkDescriptorSetLayoutCreateInfo             dc_layout_info = {
+                    .sType        = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
+                    .pNext        = nullptr,
+                    .flags        = {},
+                    .bindingCount = static_cast<uint32_t>(dc_bindings.size()),
+                    .pBindings    = dc_bindings.data() // array of VkDescriptorSetLayoutBinding structs
     };
-    VK_ASSERT_SUCCESS(vkCreateDescriptorSetLayout(display_provider_->vk_device_, &dc_layout_info, nullptr, &dp_descriptor_set_layout_))
+    VK_ASSERT_SUCCESS(
+        vkCreateDescriptorSetLayout(display_provider_->vk_device_, &dc_layout_info, nullptr, &dp_descriptor_set_layout_))
     deletion_queue_.emplace([=]() {
         vkDestroyDescriptorSetLayout(display_provider_->vk_device_, dp_descriptor_set_layout_, nullptr);
     });
@@ -920,16 +879,14 @@ void openwarp_vk::create_descriptor_set_layouts() {
 
 void openwarp_vk::create_uniform_buffers() {
     // Matrix data
-    VkBufferCreateInfo matrix_buffer_info = {
-        .sType                 = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-        .pNext                 = nullptr,
-        .flags                 = {},
-        .size                  = sizeof(WarpMatrices),
-        .usage                 = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-        .sharingMode           = {},
-        .queueFamilyIndexCount = 0,
-        .pQueueFamilyIndices   = nullptr
-    };
+    VkBufferCreateInfo matrix_buffer_info = {.sType                 = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+                                             .pNext                 = nullptr,
+                                             .flags                 = {},
+                                             .size                  = sizeof(WarpMatrices),
+                                             .usage                 = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+                                             .sharingMode           = {},
+                                             .queueFamilyIndexCount = 0,
+                                             .pQueueFamilyIndices   = nullptr};
 
     VmaAllocationCreateInfo createInfo = {};
     createInfo.usage                   = VMA_MEMORY_USAGE_AUTO;
@@ -951,17 +908,15 @@ void openwarp_vk::create_descriptor_pool() {
     poolSizes[1].type            = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
     poolSizes[1].descriptorCount = (2 * buffer_pool_->image_pool.size() + 1) * 2;
 
-    VkDescriptorPoolCreateInfo poolInfo = {
-        .sType         = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
-        .pNext         = nullptr,
-        .flags         = 0,
-        .maxSets       = 0,
-        .poolSizeCount = 0,
-        .pPoolSizes    = nullptr
-    };
-    poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
-    poolInfo.pPoolSizes    = poolSizes.data();
-    poolInfo.maxSets       = (buffer_pool_->image_pool.size() + 1) * 2;
+    VkDescriptorPoolCreateInfo poolInfo = {.sType         = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
+                                           .pNext         = nullptr,
+                                           .flags         = 0,
+                                           .maxSets       = 0,
+                                           .poolSizeCount = 0,
+                                           .pPoolSizes    = nullptr};
+    poolInfo.poolSizeCount              = static_cast<uint32_t>(poolSizes.size());
+    poolInfo.pPoolSizes                 = poolSizes.data();
+    poolInfo.maxSets                    = (buffer_pool_->image_pool.size() + 1) * 2;
 
     VK_ASSERT_SUCCESS(vkCreateDescriptorPool(display_provider_->vk_device_, &poolInfo, nullptr, &descriptor_pool_))
 }
@@ -1045,105 +1000,84 @@ void openwarp_vk::create_descriptor_sets() {
         VK_ASSERT_SUCCESS(
             vkAllocateDescriptorSets(display_provider_->vk_device_, &dc_alloc_info, dp_descriptor_sets_[eye].data()))
 
-        VkDescriptorImageInfo offscreen_image_info = {
-            .sampler     = fb_sampler_,
-            .imageView   = offscreen_image_views_[eye],
-            .imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
-        };
+        VkDescriptorImageInfo offscreen_image_info = {.sampler     = fb_sampler_,
+                                                      .imageView   = offscreen_image_views_[eye],
+                                                      .imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL};
 
         std::array<VkWriteDescriptorSet, 1> dc_descriptor_writes = {
-            VkWriteDescriptorSet{
-                .sType            = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-                .pNext            = nullptr,
-                .dstSet           = dp_descriptor_sets_[eye][0],
-                .dstBinding       = 0,
-                .dstArrayElement  = 0,
-                .descriptorCount  = 1,
-                .descriptorType   = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                .pImageInfo       = &offscreen_image_info,
-                .pBufferInfo      = nullptr,
-                .pTexelBufferView = nullptr
-            }
-        };
+            VkWriteDescriptorSet{.sType            = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+                                 .pNext            = nullptr,
+                                 .dstSet           = dp_descriptor_sets_[eye][0],
+                                 .dstBinding       = 0,
+                                 .dstArrayElement  = 0,
+                                 .descriptorCount  = 1,
+                                 .descriptorType   = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+                                 .pImageInfo       = &offscreen_image_info,
+                                 .pBufferInfo      = nullptr,
+                                 .pTexelBufferView = nullptr}};
 
-        vkUpdateDescriptorSets(display_provider_->vk_device_, static_cast<uint32_t>(dc_descriptor_writes.size()), dc_descriptor_writes.data(),
-                               0, nullptr);
+        vkUpdateDescriptorSets(display_provider_->vk_device_, static_cast<uint32_t>(dc_descriptor_writes.size()),
+                               dc_descriptor_writes.data(), 0, nullptr);
     }
 }
 
 void openwarp_vk::create_openwarp_pipeline() {
     std::cout << "Creating openwarp renderpass" << std::endl;
     // A renderpass also has to be created
-    VkAttachmentDescription color_attachment{
-        .flags          = 0,
-        .format         = VK_FORMAT_R8G8B8A8_UNORM, // this should match the offscreen image
-        .samples        = VK_SAMPLE_COUNT_1_BIT,
-        .loadOp         = VK_ATTACHMENT_LOAD_OP_CLEAR,
-        .storeOp        = VK_ATTACHMENT_STORE_OP_STORE,
-        .stencilLoadOp  = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-        .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
-        .initialLayout  = VK_IMAGE_LAYOUT_UNDEFINED,
-        .finalLayout    = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
-    };
+    VkAttachmentDescription color_attachment{.flags         = 0,
+                                             .format        = VK_FORMAT_R8G8B8A8_UNORM, // this should match the offscreen image
+                                             .samples       = VK_SAMPLE_COUNT_1_BIT,
+                                             .loadOp        = VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                             .storeOp       = VK_ATTACHMENT_STORE_OP_STORE,
+                                             .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+                                             .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                                             .initialLayout  = VK_IMAGE_LAYOUT_UNDEFINED,
+                                             .finalLayout    = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL};
 
-    VkAttachmentReference color_attachment_ref{
-        .attachment = 0,
-        .layout     = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
-    };
+    VkAttachmentReference color_attachment_ref{.attachment = 0, .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL};
 
-    VkAttachmentDescription depth_attachment{
-        .flags = 0,
-        .format         = VK_FORMAT_D16_UNORM, // this should match the offscreen image
-        .samples        = VK_SAMPLE_COUNT_1_BIT,
-        .loadOp         = VK_ATTACHMENT_LOAD_OP_CLEAR,
-        .storeOp        = VK_ATTACHMENT_STORE_OP_STORE,
-        .stencilLoadOp  = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-        .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
-        .initialLayout  = VK_IMAGE_LAYOUT_UNDEFINED,
-        .finalLayout    = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL
-    };
+    VkAttachmentDescription depth_attachment{.flags          = 0,
+                                             .format         = VK_FORMAT_D16_UNORM, // this should match the offscreen image
+                                             .samples        = VK_SAMPLE_COUNT_1_BIT,
+                                             .loadOp         = VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                             .storeOp        = VK_ATTACHMENT_STORE_OP_STORE,
+                                             .stencilLoadOp  = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+                                             .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                                             .initialLayout  = VK_IMAGE_LAYOUT_UNDEFINED,
+                                             .finalLayout    = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL};
 
-    VkAttachmentReference depth_attachment_ref{
-        .attachment = 1,
-        .layout     = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL
-    };
+    VkAttachmentReference depth_attachment_ref{.attachment = 1, .layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL};
 
-    VkSubpassDescription subpass{
-        .flags = 0,
-        .pipelineBindPoint       = VK_PIPELINE_BIND_POINT_GRAPHICS,
-        .inputAttachmentCount    = 0,
-        .pInputAttachments       = nullptr,
-        .colorAttachmentCount    = 1,
-        .pColorAttachments       = &color_attachment_ref,
-        .pResolveAttachments     = nullptr,
-        .pDepthStencilAttachment = &depth_attachment_ref,
-        .preserveAttachmentCount = 0,
-        .pPreserveAttachments    = nullptr
-    };
+    VkSubpassDescription subpass{.flags                   = 0,
+                                 .pipelineBindPoint       = VK_PIPELINE_BIND_POINT_GRAPHICS,
+                                 .inputAttachmentCount    = 0,
+                                 .pInputAttachments       = nullptr,
+                                 .colorAttachmentCount    = 1,
+                                 .pColorAttachments       = &color_attachment_ref,
+                                 .pResolveAttachments     = nullptr,
+                                 .pDepthStencilAttachment = &depth_attachment_ref,
+                                 .preserveAttachmentCount = 0,
+                                 .pPreserveAttachments    = nullptr};
 
     std::array<VkAttachmentDescription, 2> all_attachments = {color_attachment, depth_attachment};
 
-    VkSubpassDependency dependency{
-        .srcSubpass      = 0,
-        .dstSubpass      = VK_SUBPASS_EXTERNAL,
-        .srcStageMask    = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-        .dstStageMask    = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
-        .srcAccessMask   = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-        .dstAccessMask   = VK_ACCESS_SHADER_READ_BIT,
-        .dependencyFlags = 0
-    };
+    VkSubpassDependency dependency{.srcSubpass      = 0,
+                                   .dstSubpass      = VK_SUBPASS_EXTERNAL,
+                                   .srcStageMask    = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+                                   .dstStageMask    = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
+                                   .srcAccessMask   = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+                                   .dstAccessMask   = VK_ACCESS_SHADER_READ_BIT,
+                                   .dependencyFlags = 0};
 
-    VkRenderPassCreateInfo render_pass_info {
-        .sType           = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
-        .pNext           = nullptr,
-        .flags           = 0,
-        .attachmentCount = static_cast<uint32_t>(all_attachments.size()),
-        .pAttachments    = all_attachments.data(),
-        .subpassCount    = 1,
-        .pSubpasses      = &subpass,
-        .dependencyCount = 1,
-        .pDependencies   = &dependency
-    };
+    VkRenderPassCreateInfo render_pass_info{.sType           = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
+                                            .pNext           = nullptr,
+                                            .flags           = 0,
+                                            .attachmentCount = static_cast<uint32_t>(all_attachments.size()),
+                                            .pAttachments    = all_attachments.data(),
+                                            .subpassCount    = 1,
+                                            .pSubpasses      = &subpass,
+                                            .dependencyCount = 1,
+                                            .pDependencies   = &dependency};
 
     VK_ASSERT_SUCCESS(vkCreateRenderPass(display_provider_->vk_device_, &render_pass_info, nullptr, &openwarp_render_pass_));
 
@@ -1159,24 +1093,20 @@ void openwarp_vk::create_openwarp_pipeline() {
     VkShaderModule vert   = vulkan::create_shader_module(device, vulkan::read_file(folder + "/openwarp_mesh.vert.spv"));
     VkShaderModule frag   = vulkan::create_shader_module(device, vulkan::read_file(folder + "/openwarp_mesh.frag.spv"));
 
-    VkPipelineShaderStageCreateInfo vert_stage_info = {
-        .sType               = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-        .pNext               = nullptr,
-        .flags               = {},
-        .stage               = VK_SHADER_STAGE_VERTEX_BIT,
-        .module              = vert,
-        .pName               = "main",
-        .pSpecializationInfo = nullptr
-    };
-    VkPipelineShaderStageCreateInfo frage_stage_info = {
-        .sType               = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-        .pNext               = nullptr,
-        .flags               = {},
-        .stage               = VK_SHADER_STAGE_FRAGMENT_BIT,
-        .module              = frag,
-        .pName               = "main",
-        .pSpecializationInfo = nullptr
-    };
+    VkPipelineShaderStageCreateInfo vert_stage_info  = {.sType  = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+                                                        .pNext  = nullptr,
+                                                        .flags  = {},
+                                                        .stage  = VK_SHADER_STAGE_VERTEX_BIT,
+                                                        .module = vert,
+                                                        .pName  = "main",
+                                                        .pSpecializationInfo = nullptr};
+    VkPipelineShaderStageCreateInfo frage_stage_info = {.sType  = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+                                                        .pNext  = nullptr,
+                                                        .flags  = {},
+                                                        .stage  = VK_SHADER_STAGE_FRAGMENT_BIT,
+                                                        .module = frag,
+                                                        .pName  = "main",
+                                                        .pSpecializationInfo = nullptr};
 
     VkPipelineShaderStageCreateInfo shader_stages[] = {vert_stage_info, frage_stage_info};
 
@@ -1184,74 +1114,65 @@ void openwarp_vk::create_openwarp_pipeline() {
     auto attributeDescriptions = OpenWarpVertex::get_attribute_descriptions();
 
     VkPipelineVertexInputStateCreateInfo vertex_input_info = {
-        .sType                            = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
-        .pNext                            = nullptr,
-        .flags                            = {},
-        .vertexBindingDescriptionCount    = 1,
-        .pVertexBindingDescriptions       = &bindingDescription,
-        .vertexAttributeDescriptionCount  = static_cast<uint32_t>(attributeDescriptions.size()),
-        .pVertexAttributeDescriptions     = attributeDescriptions.data()
-    };
-    VkPipelineInputAssemblyStateCreateInfo input_assembly = {
-        .sType                  = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,
-        .pNext                  = nullptr,
-        .flags                  = {},
-        .topology               = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
-        .primitiveRestartEnable = {}
-    };
+        .sType                           = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
+        .pNext                           = nullptr,
+        .flags                           = {},
+        .vertexBindingDescriptionCount   = 1,
+        .pVertexBindingDescriptions      = &bindingDescription,
+        .vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size()),
+        .pVertexAttributeDescriptions    = attributeDescriptions.data()};
+    VkPipelineInputAssemblyStateCreateInfo input_assembly = {.sType =
+                                                                 VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,
+                                                             .pNext                  = nullptr,
+                                                             .flags                  = {},
+                                                             .topology               = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
+                                                             .primitiveRestartEnable = {}};
 
-    VkPipelineRasterizationStateCreateInfo rasterizer = {
-        .sType                   = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO,
-        .pNext                   = nullptr,
-        .flags                   = {},
-        .depthClampEnable        = VK_FALSE,
-        .rasterizerDiscardEnable = VK_FALSE,
-        .polygonMode             = VK_POLYGON_MODE_FILL,
-        .cullMode                = VK_CULL_MODE_BACK_BIT,
-        .frontFace               = VK_FRONT_FACE_COUNTER_CLOCKWISE,
-        .depthBiasEnable         = VK_FALSE,
-        .depthBiasConstantFactor = 0.f,
-        .depthBiasClamp          = 0.f,
-        .depthBiasSlopeFactor    = 0.f,
-        .lineWidth               = 1.0f
-    };
+    VkPipelineRasterizationStateCreateInfo rasterizer = {.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO,
+                                                         .pNext = nullptr,
+                                                         .flags = {},
+                                                         .depthClampEnable        = VK_FALSE,
+                                                         .rasterizerDiscardEnable = VK_FALSE,
+                                                         .polygonMode             = VK_POLYGON_MODE_FILL,
+                                                         .cullMode                = VK_CULL_MODE_BACK_BIT,
+                                                         .frontFace               = VK_FRONT_FACE_COUNTER_CLOCKWISE,
+                                                         .depthBiasEnable         = VK_FALSE,
+                                                         .depthBiasConstantFactor = 0.f,
+                                                         .depthBiasClamp          = 0.f,
+                                                         .depthBiasSlopeFactor    = 0.f,
+                                                         .lineWidth               = 1.0f};
 
     // disable multisampling
-    VkPipelineMultisampleStateCreateInfo multisampling = {
-        .sType                 = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO,
-        .pNext                 = nullptr,
-        .flags                 = {},
-        .rasterizationSamples  = VK_SAMPLE_COUNT_1_BIT,
-        .sampleShadingEnable   = VK_FALSE,
-        .minSampleShading      = 0,
-        .pSampleMask           = nullptr,
-        .alphaToCoverageEnable = 0,
-        .alphaToOneEnable      = 0
-    };
+    VkPipelineMultisampleStateCreateInfo multisampling = {.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO,
+                                                          .pNext = nullptr,
+                                                          .flags = {},
+                                                          .rasterizationSamples  = VK_SAMPLE_COUNT_1_BIT,
+                                                          .sampleShadingEnable   = VK_FALSE,
+                                                          .minSampleShading      = 0,
+                                                          .pSampleMask           = nullptr,
+                                                          .alphaToCoverageEnable = 0,
+                                                          .alphaToOneEnable      = 0};
 
-    VkPipelineColorBlendAttachmentState color_blend_attachment = {
-        .blendEnable         = VK_FALSE,
-        .srcColorBlendFactor = {},
-        .dstColorBlendFactor = {},
-        .colorBlendOp        = {},
-        .srcAlphaBlendFactor = {},
-        .dstAlphaBlendFactor = {},
-        .alphaBlendOp        = {},
-        .colorWriteMask =
-            VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT
-    };
+    VkPipelineColorBlendAttachmentState color_blend_attachment = {.blendEnable         = VK_FALSE,
+                                                                  .srcColorBlendFactor = {},
+                                                                  .dstColorBlendFactor = {},
+                                                                  .colorBlendOp        = {},
+                                                                  .srcAlphaBlendFactor = {},
+                                                                  .dstAlphaBlendFactor = {},
+                                                                  .alphaBlendOp        = {},
+                                                                  .colorWriteMask      = VK_COLOR_COMPONENT_R_BIT |
+                                                                      VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT |
+                                                                      VK_COLOR_COMPONENT_A_BIT};
 
     // disable blending
-    VkPipelineColorBlendStateCreateInfo color_blending = {
-        .sType           = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,
-        .pNext           = nullptr,
-        .flags           = {},
-        .logicOpEnable   = 0,
-        .logicOp         = {},
-        .attachmentCount = 1,
-        .pAttachments    = &color_blend_attachment,
-        .blendConstants  = {}
-    };
+    VkPipelineColorBlendStateCreateInfo color_blending = {.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,
+                                                          .pNext = nullptr,
+                                                          .flags = {},
+                                                          .logicOpEnable   = 0,
+                                                          .logicOp         = {},
+                                                          .attachmentCount = 1,
+                                                          .pAttachments    = &color_blend_attachment,
+                                                          .blendConstants  = {}};
 
     // enable depth testing
     VkPipelineDepthStencilStateCreateInfo depth_stencil = {
@@ -1260,78 +1181,66 @@ void openwarp_vk::create_openwarp_pipeline() {
         .flags                 = {},
         .depthTestEnable       = VK_TRUE,
         .depthWriteEnable      = VK_TRUE,
-        .depthCompareOp =
-            rendering_params::reverse_z ? VK_COMPARE_OP_GREATER_OR_EQUAL : VK_COMPARE_OP_LESS_OR_EQUAL,
+        .depthCompareOp        = rendering_params::reverse_z ? VK_COMPARE_OP_GREATER_OR_EQUAL : VK_COMPARE_OP_LESS_OR_EQUAL,
         .depthBoundsTestEnable = VK_FALSE,
         .stencilTestEnable     = VK_FALSE,
         .front                 = {},
         .back                  = {},
         .minDepthBounds        = 0.0f,
-        .maxDepthBounds        = 1.0f
-    };
+        .maxDepthBounds        = 1.0f};
 
     // use dynamic state instead of a fixed viewport
     std::vector<VkDynamicState> dynamic_states = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
 
-    VkPipelineDynamicStateCreateInfo dynamic_state_create_info = {
-        .sType             = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
-        .pNext             = nullptr,
-        .flags             = {},
-        .dynamicStateCount = static_cast<uint32_t>(dynamic_states.size()),
-        .pDynamicStates    = dynamic_states.data()
-    };
+    VkPipelineDynamicStateCreateInfo dynamic_state_create_info = {.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
+                                                                  .pNext = nullptr,
+                                                                  .flags = {},
+                                                                  .dynamicStateCount =
+                                                                      static_cast<uint32_t>(dynamic_states.size()),
+                                                                  .pDynamicStates = dynamic_states.data()};
 
-    VkPipelineViewportStateCreateInfo viewport_state_create_info = {
-        .sType         = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
-        .pNext         = nullptr,
-        .flags         = {},
-        .viewportCount = 1,
-        .pViewports    = nullptr,
-        .scissorCount  = 1,
-        .pScissors     = nullptr
-    };
+    VkPipelineViewportStateCreateInfo viewport_state_create_info = {.sType =
+                                                                        VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
+                                                                    .pNext         = nullptr,
+                                                                    .flags         = {},
+                                                                    .viewportCount = 1,
+                                                                    .pViewports    = nullptr,
+                                                                    .scissorCount  = 1,
+                                                                    .pScissors     = nullptr};
 
-    VkPushConstantRange push_constant = {
-        .stageFlags = VK_SHADER_STAGE_VERTEX_BIT,
-        .offset     = 0,
-        .size       = sizeof(uint32_t)
-    };
+    VkPushConstantRange push_constant = {.stageFlags = VK_SHADER_STAGE_VERTEX_BIT, .offset = 0, .size = sizeof(uint32_t)};
 
-    VkPipelineLayoutCreateInfo pipeline_layout_info = {
-        .sType                  = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
-        .pNext                  = nullptr,
-        .flags                  = {},
-        .setLayoutCount         = 1,
-        .pSetLayouts            = &ow_descriptor_set_layout_,
-        .pushConstantRangeCount = 1,
-        .pPushConstantRanges    = &push_constant
-    };
+    VkPipelineLayoutCreateInfo pipeline_layout_info = {.sType                  = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
+                                                       .pNext                  = nullptr,
+                                                       .flags                  = {},
+                                                       .setLayoutCount         = 1,
+                                                       .pSetLayouts            = &ow_descriptor_set_layout_,
+                                                       .pushConstantRangeCount = 1,
+                                                       .pPushConstantRanges    = &push_constant};
 
     VK_ASSERT_SUCCESS(vkCreatePipelineLayout(device, &pipeline_layout_info, nullptr, &ow_pipeline_layout_))
 
-    VkGraphicsPipelineCreateInfo pipeline_info = {
-        .sType               = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
-        .pNext               = nullptr,
-        .flags               = {},
-        .stageCount          = 2,
-        .pStages             = shader_stages,
-        .pVertexInputState   = &vertex_input_info,
-        .pInputAssemblyState = &input_assembly,
-        .pTessellationState  = {},
-        .pViewportState      = &viewport_state_create_info,
-        .pRasterizationState = &rasterizer,
-        .pMultisampleState   = &multisampling,
-        .pDepthStencilState  = &depth_stencil,
-        .pColorBlendState    = &color_blending,
-        .pDynamicState       = &dynamic_state_create_info,
-        .layout              = ow_pipeline_layout_,
-        .renderPass          = openwarp_render_pass_,
-        .subpass             = 0,
-        .basePipelineHandle  = {},
-        .basePipelineIndex   = 0
-    };
-    VK_ASSERT_SUCCESS(
-        vkCreateGraphicsPipelines(display_provider_->vk_device_, VK_NULL_HANDLE, 1, &pipeline_info, nullptr, &openwarp_pipeline_))
+    VkGraphicsPipelineCreateInfo pipeline_info = {.sType               = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
+                                                  .pNext               = nullptr,
+                                                  .flags               = {},
+                                                  .stageCount          = 2,
+                                                  .pStages             = shader_stages,
+                                                  .pVertexInputState   = &vertex_input_info,
+                                                  .pInputAssemblyState = &input_assembly,
+                                                  .pTessellationState  = {},
+                                                  .pViewportState      = &viewport_state_create_info,
+                                                  .pRasterizationState = &rasterizer,
+                                                  .pMultisampleState   = &multisampling,
+                                                  .pDepthStencilState  = &depth_stencil,
+                                                  .pColorBlendState    = &color_blending,
+                                                  .pDynamicState       = &dynamic_state_create_info,
+                                                  .layout              = ow_pipeline_layout_,
+                                                  .renderPass          = openwarp_render_pass_,
+                                                  .subpass             = 0,
+                                                  .basePipelineHandle  = {},
+                                                  .basePipelineIndex   = 0};
+    VK_ASSERT_SUCCESS(vkCreateGraphicsPipelines(display_provider_->vk_device_, VK_NULL_HANDLE, 1, &pipeline_info, nullptr,
+                                                &openwarp_pipeline_))
 
     vkDestroyShaderModule(device, vert, nullptr);
     vkDestroyShaderModule(device, frag, nullptr);
@@ -1465,27 +1374,25 @@ VkPipeline openwarp_vk::create_distortion_correction_pipeline(VkRenderPass rende
 
     VK_ASSERT_SUCCESS(vkCreatePipelineLayout(device, &pipeline_layout_info, nullptr, &dp_pipeline_layout_))
 
-    VkGraphicsPipelineCreateInfo pipeline_info = {
-        .sType               = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
-        .pNext               = nullptr,
-        .flags               = {},
-        .stageCount          = 2,
-        .pStages             = shader_stages,
-        .pVertexInputState   = &vertex_input_info,
-        .pInputAssemblyState = &input_assembly,
-        .pTessellationState  = {},
-        .pViewportState      = &viewport_state_create_info,
-        .pRasterizationState = &rasterizer,
-        .pMultisampleState   = &multisampling,
-        .pDepthStencilState  = nullptr,
-        .pColorBlendState    = &color_blending,
-        .pDynamicState       = &dynamic_state_create_info,
-        .layout              = dp_pipeline_layout_,
-        .renderPass          = render_pass,
-        .subpass             = 0,
-        .basePipelineHandle  = {},
-        .basePipelineIndex   = 0
-    };
+    VkGraphicsPipelineCreateInfo pipeline_info = {.sType               = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
+                                                  .pNext               = nullptr,
+                                                  .flags               = {},
+                                                  .stageCount          = 2,
+                                                  .pStages             = shader_stages,
+                                                  .pVertexInputState   = &vertex_input_info,
+                                                  .pInputAssemblyState = &input_assembly,
+                                                  .pTessellationState  = {},
+                                                  .pViewportState      = &viewport_state_create_info,
+                                                  .pRasterizationState = &rasterizer,
+                                                  .pMultisampleState   = &multisampling,
+                                                  .pDepthStencilState  = nullptr,
+                                                  .pColorBlendState    = &color_blending,
+                                                  .pDynamicState       = &dynamic_state_create_info,
+                                                  .layout              = dp_pipeline_layout_,
+                                                  .renderPass          = render_pass,
+                                                  .subpass             = 0,
+                                                  .basePipelineHandle  = {},
+                                                  .basePipelineIndex   = 0};
 
     VK_ASSERT_SUCCESS(vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipeline_info, nullptr, &pipeline_))
 
@@ -1509,8 +1416,8 @@ Eigen::Matrix4f openwarp_vk::calculate_distortion_transform(const Eigen::Matrix4
     // is which row, and the second argument is which column.)
     Eigen::Matrix4f texCoordProjection;
     texCoordProjection << 0.5f * projection_matrix(0, 0), 0.0f, 0.5f * projection_matrix(0, 2) - 0.5f, 0.0f, 0.0f,
-        -0.5f * projection_matrix(1, 1), 0.5f * projection_matrix(1, 2) - 0.5f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f,
-        0.0f, 1.0f;
+        -0.5f * projection_matrix(1, 1), 0.5f * projection_matrix(1, 2) - 0.5f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+        1.0f;
 
     return texCoordProjection;
 }

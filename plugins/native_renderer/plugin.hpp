@@ -103,13 +103,13 @@ private:
      */
     void create_timewarp_pass();
 
-    const std::shared_ptr<switchboard>          switchboard_;
+    const std::shared_ptr<switchboard>              switchboard_;
     const std::shared_ptr<spdlog::logger>           log_;
-    const std::shared_ptr<pose_prediction>      pose_prediction_;
-    const std::shared_ptr<vulkan::display_provider>         display_sink_;
-    const std::shared_ptr<vulkan::timewarp>             timewarp_;
-    const std::shared_ptr<vulkan::app>                  app_;
-    const std::shared_ptr<const relative_clock> clock_;
+    const std::shared_ptr<pose_prediction>          pose_prediction_;
+    const std::shared_ptr<vulkan::display_provider> display_sink_;
+    const std::shared_ptr<vulkan::timewarp>         timewarp_;
+    const std::shared_ptr<vulkan::app>              app_;
+    const std::shared_ptr<const relative_clock>     clock_;
 
     uint32_t server_width_  = 0;
     uint32_t server_height_ = 0;
@@ -133,18 +133,18 @@ private:
     VkRenderPass app_pass_{};
 
     VkRenderPass timewarp_pass_{};
-    VkSemaphore image_available_semaphore_{};
-    VkSemaphore app_render_finished_semaphore_{};
-    VkSemaphore timewarp_render_finished_semaphore_{};
+    VkSemaphore  image_available_semaphore_{};
+    VkSemaphore  app_render_finished_semaphore_{};
+    VkSemaphore  timewarp_render_finished_semaphore_{};
 
-    VkFence     frame_fence_{};
+    VkFence frame_fence_{};
 
-    uint32_t   swapchain_image_index_    = UINT32_MAX; // set to UINT32_MAX after present
+    uint32_t swapchain_image_index_    = UINT32_MAX; // set to UINT32_MAX after present
     uint64_t timeline_semaphore_value_ = 1;
 
-    int        fps_{};
+    int                                                         fps_{};
     switchboard::reader<switchboard::event_wrapper<time_point>> vsync_;
-    time_point last_fps_update_;
+    time_point                                                  last_fps_update_;
     std::shared_ptr<vulkan::buffer_pool<fast_pose_type>>        buffer_pool_;
 };
 } // namespace ILLIXR

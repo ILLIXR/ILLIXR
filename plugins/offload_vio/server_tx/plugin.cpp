@@ -1,7 +1,7 @@
 #include "plugin.hpp"
 
-#include "illixr/network/net_config.hpp"
 #include "illixr/data_format.hpp"
+#include "illixr/network/net_config.hpp"
 #include "illixr/network/tcpsocket.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/switchboard.hpp"
@@ -26,10 +26,10 @@ using namespace ILLIXR;
 void server_writer::start() {
     plugin::start();
 
-        switchboard_->schedule<pose_type>(id_, "slow_pose", [this](const switchboard::ptr<const pose_type>& datum, std::size_t) {
-            this->send_vio_output(datum);
-        });
-    }
+    switchboard_->schedule<pose_type>(id_, "slow_pose", [this](const switchboard::ptr<const pose_type>& datum, std::size_t) {
+        this->send_vio_output(datum);
+    });
+}
 
 void server_writer::send_vio_output(const switchboard::ptr<const pose_type>& datum) {
     // Construct slow pose for output
@@ -54,8 +54,7 @@ void server_writer::send_vio_output(const switchboard::ptr<const pose_type>& dat
 
     auto* protobuf_imu_int_input = new vio_output_proto::IMUIntInput();
     protobuf_imu_int_input->set_t_offset(imu_int_input->t_offset.count());
-    protobuf_imu_int_input->set_last_cam_integration_time(
-        imu_int_input->last_cam_integration_time.time_since_epoch().count());
+    protobuf_imu_int_input->set_last_cam_integration_time(imu_int_input->last_cam_integration_time.time_since_epoch().count());
 
     auto* imu_params = new vio_output_proto::IMUParams();
     imu_params->set_gyro_noise(imu_int_input->params.gyro_noise);
@@ -111,7 +110,7 @@ void server_writer::send_vio_output(const switchboard::ptr<const pose_type>& dat
     vio_output_params->set_end_server_timestamp(end_pose_time);
 
     // Prepare data delivery
-    std::string data_to_be_sent = vio_output_params->SerializeAsString();
+    std::string       data_to_be_sent = vio_output_params->SerializeAsString();
     const std::string delimiter       = "END!";
 
     vio_pose_writer_.put(std::make_shared<switchboard::event_wrapper<std::string>>(data_to_be_sent + delimiter));

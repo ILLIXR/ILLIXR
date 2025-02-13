@@ -4,14 +4,13 @@
 #include "video_encoder.hpp"
 #include "vio_input.pb.h"
 
-
-//#include "illixr/opencv_data_types.hpp"
-//#include "illixr/phonebook.hpp"
-//#include "illixr/serializable_data.hpp"
-//#include "illixr/stoplight.hpp"
-//#include "illixr/switchboard.hpp"
-//#include "illixr/threadloop.hpp"
-//#include "video_encoder.h"
+// #include "illixr/opencv_data_types.hpp"
+// #include "illixr/phonebook.hpp"
+// #include "illixr/serializable_data.hpp"
+// #include "illixr/stoplight.hpp"
+// #include "illixr/switchboard.hpp"
+// #include "illixr/threadloop.hpp"
+// #include "video_encoder.h"
 
 #include <cassert>
 #include <opencv2/core/mat.hpp>
@@ -27,7 +26,8 @@ using namespace ILLIXR;
     , stoplight_{phonebook_->lookup_impl<stoplight>()}
     , cam_{switchboard_->get_buffered_reader<cam_type>("cam")}
     , imu_cam_writer_{switchboard_->get_network_writer<switchboard::event_wrapper<std::string>>(
-          "compressed_imu_cam", network::topic_config{.serialization_method = network::topic_config::SerializationMethod::PROTOBUF})}
+          "compressed_imu_cam",
+          network::topic_config{.serialization_method = network::topic_config::SerializationMethod::PROTOBUF})}
     , log_(spdlogger(std::getenv("OFFLOAD_VIO_LOG_LEVEL"))) {
     std::srand(std::time(0));
 }
@@ -64,15 +64,15 @@ void offload_writer::_p_one_iteration() {
 }
 
 void offload_writer::send_imu_cam_data(std::optional<time_point>& cam_time) {
-        data_buffer_->set_real_timestamp(
-            std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
-        data_buffer_->set_frame_id(frame_id_);
+    data_buffer_->set_real_timestamp(
+        std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+    data_buffer_->set_frame_id(frame_id_);
 
     std::string data_to_be_sent = data_buffer_->SerializeAsString();
-    std::string delimiter      = "EEND!";
+    std::string delimiter       = "EEND!";
 
     log_->info("{},{}", cam_time.value().time_since_epoch().count(),
-               (double)(clock_->now().time_since_epoch().count() - cam_time.value().time_since_epoch().count()) / 1e6);
+               (double) (clock_->now().time_since_epoch().count() - cam_time.value().time_since_epoch().count()) / 1e6);
     // socket.write(data_to_be_sent + delimitter);
     imu_cam_writer_.put(std::make_shared<switchboard::event_wrapper<std::string>>(data_to_be_sent + delimiter));
 
@@ -137,17 +137,17 @@ void offload_writer::prepare_imu_cam_data(switchboard::ptr<const imu_type> datum
         });
         img_ready_ = false;
 
-        sizes_.push_back((int)this->img0_.size);
+        sizes_.push_back((int) this->img0_.size);
 
         // calculate average sizes
-        //if (sizes_.size() > 100) {
+        // if (sizes_.size() > 100) {
         //    int32_t sum = 0;
         //    for (auto& s : sizes_) {
         //        sum += s;
         //    }
-            // For debugging, prints out average image size after compression and compression ratio
-            // std::cout << "compression ratio: " << img0_size / (sum / sizes_.size()) << " average size after compression "
-            // << sum / sizes_.size() << std::endl;
+        // For debugging, prints out average image size after compression and compression ratio
+        // std::cout << "compression ratio: " << img0_size / (sum / sizes_.size()) << " average size after compression "
+        // << sum / sizes_.size() << std::endl;
         //}
 
         cam_data->set_img0_data((void*) this->img0_.data, this->img0_.size);

@@ -14,4 +14,4 @@ const std::string CLIENT_IP     = "127.0.0.1";
 const int         CLIENT_PORT_1 = 5002;
 const int         CLIENT_PORT_2 = 5003;
 
-} // namespace ILLIXR
+} // namespace ILLIXR::network

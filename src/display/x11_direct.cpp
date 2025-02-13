@@ -2,10 +2,10 @@
 
 #include "illixr/vk/vulkan_utils.hpp"
 #include "X11/extensions/Xrandr.h"
-#include <X11/Xlib.h>
 
 #include <vulkan/vulkan.h>
 #include <vulkan/vulkan_xlib_xrandr.h>
+#include <X11/Xlib.h>
 
 using namespace ILLIXR::display;
 
@@ -39,7 +39,7 @@ void x11_direct::setup_display(VkInstance vk_instance, VkPhysicalDevice vk_physi
         display_select = std::stoi(display_select_str);
     }
 
-    if (display_select >= (int)display_count) {
+    if (display_select >= (int) display_count) {
         ILLIXR::abort("Invalid display selection");
         return;
     }

@@ -26,7 +26,7 @@ ILLIXR::threadloop::skip_option offload_reader::_p_should_skip() {
 void offload_reader::_p_one_iteration() {
     if (vio_pose_reader_.size() > 0) {
         auto                   buffer_ptr   = vio_pose_reader_.dequeue();
-        std::string            buffer_str  = **buffer_ptr;
+        std::string            buffer_str   = **buffer_ptr;
         std::string::size_type end_position = buffer_str.find(delimiter);
         // process the data
         vio_output_proto::VIOOutput vio_output;

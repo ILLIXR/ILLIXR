@@ -1,10 +1,10 @@
 #pragma once
 
 #include "illixr/network/network_backend.hpp"
-#include "illixr/plugin.hpp"
-#include "illixr/switchboard.hpp"
 #include "illixr/network/tcpsocket.hpp"
 #include "illixr/network/topic_config.hpp"
+#include "illixr/plugin.hpp"
+#include "illixr/switchboard.hpp"
 
 namespace ILLIXR {
 
@@ -27,8 +27,8 @@ private:
     void send_to_peer(const std::string& topic_name, std::string&& message);
 
     std::shared_ptr<switchboard> switchboard_;
-    std::atomic<bool>            running_ = true;
-    std::atomic<bool>            ready_   = false;
+    std::atomic<bool>            running_     = true;
+    std::atomic<bool>            ready_       = false;
     network::TCPSocket*          peer_socket_ = nullptr;
 
     std::string self_ip_   = "0.0.0.0";
@@ -43,4 +43,4 @@ private:
     std::string delimiter_ = ":";
 };
 
-}
+} // namespace ILLIXR

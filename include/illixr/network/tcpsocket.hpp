@@ -101,9 +101,10 @@ public:
         int   peer_port = ntohs(peer_address.sin_port);
         return string(peer_ip) + ":" + to_string(peer_port);
     }
-private:
 
-    [[nodiscard]] string::const_iterator write_helper(const string::const_iterator& begin, const string::const_iterator& end) const {
+private:
+    [[nodiscard]] string::const_iterator write_helper(const string::const_iterator& begin,
+                                                      const string::const_iterator& end) const {
         ssize_t bytes_written = write(fd_, &*begin, end - begin);
         return begin + bytes_written;
     }
@@ -113,4 +114,4 @@ private:
     static constexpr size_t BUFFER_SIZE = 1024 * 1024;
 };
 
-}
+} // namespace ILLIXR::network

@@ -14,4 +14,4 @@ public:
     display_backend_type  get_type() override;
 };
 
-}
+} // namespace ILLIXR::display

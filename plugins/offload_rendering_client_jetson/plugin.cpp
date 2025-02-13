@@ -17,13 +17,11 @@
 #include "illixr/vk/render_pass.hpp"
 #include "illixr/vk/vk_extension_request.h"
 #include "illixr/vk/vulkan_utils.hpp"
+#include "offload_rendering_client_jetson.hpp"
 
 #include <bitset>
 #include <cstdlib>
 #include <set>
-
-#include "offload_rendering_client_jetson.hpp"
-
 
 /**
  * @class offload_rendering_client_jetson_loader

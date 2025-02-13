@@ -1,16 +1,16 @@
 #pragma once
 #ifdef ENABLE_MONADO
-#ifndef SKIP_VMA
-#define VMA_IMPLEMENTATION
-#endif
+    #ifndef SKIP_VMA
+        #define VMA_IMPLEMENTATION
+    #endif
 #endif
 
-#include "illixr/vk/display_provider.hpp"
-#include "illixr/threadloop.hpp"
-#include "illixr/switchboard.hpp"
 #include "illixr/hmd.hpp"
-#include "illixr/vk/render_pass.hpp"
 #include "illixr/pose_prediction.hpp"
+#include "illixr/switchboard.hpp"
+#include "illixr/threadloop.hpp"
+#include "illixr/vk/display_provider.hpp"
+#include "illixr/vk/render_pass.hpp"
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -18,7 +18,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/hash.hpp>
-
 #include <mutex>
 #include <stack>
 
@@ -121,23 +120,24 @@ public:
     void setup(VkRenderPass render_pass, uint32_t subpass, std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> buffer_pool_,
                bool input_texture_vulkan_coordinates_) override;
     void partial_destroy();
-void update_uniforms(const pose_type& render_pose) override;
-void record_command_buffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left) override;
-bool is_external() override;
-void destroy() override;
+    void update_uniforms(const pose_type& render_pose) override;
+    void record_command_buffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left) override;
+    bool is_external() override;
+    void destroy() override;
+
 private:
-    void create_offscreen_images();
-    void create_vertex_buffers();
-    void create_index_buffers();
-    void generate_distortion_data();
-    void generate_openwarp_mesh(size_t width, size_t height);
-    void create_texture_sampler();
-    void create_descriptor_set_layouts();
-    void create_uniform_buffers();
-    void create_descriptor_pool();
-    void create_descriptor_sets();
-    void create_openwarp_pipeline();
-    VkPipeline create_distortion_correction_pipeline(VkRenderPass render_pass, [[maybe_unused]] uint32_t subpass);
+    void                   create_offscreen_images();
+    void                   create_vertex_buffers();
+    void                   create_index_buffers();
+    void                   generate_distortion_data();
+    void                   generate_openwarp_mesh(size_t width, size_t height);
+    void                   create_texture_sampler();
+    void                   create_descriptor_set_layouts();
+    void                   create_uniform_buffers();
+    void                   create_descriptor_pool();
+    void                   create_descriptor_sets();
+    void                   create_openwarp_pipeline();
+    VkPipeline             create_distortion_correction_pipeline(VkRenderPass render_pass, [[maybe_unused]] uint32_t subpass);
     static Eigen::Matrix4f create_camera_matrix(const pose_type& pose, int eye);
     static Eigen::Matrix4f calculate_distortion_transform(const Eigen::Matrix4f& projection_matrix);
 
@@ -155,7 +155,7 @@ private:
 
     bool                   compare_images_ = false;
     std::vector<pose_type> fixed_poses_;
-    uint64_t               frame_count_    = 0;
+    uint64_t               frame_count_ = 0;
 
     // Vulkan resources
     std::stack<std::function<void()>> deletion_queue_;
@@ -235,4 +235,4 @@ private:
     friend class openwarp_vk_plugin;
 };
 
-}
+} // namespace ILLIXR

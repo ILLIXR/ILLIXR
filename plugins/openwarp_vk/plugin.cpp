@@ -1,8 +1,8 @@
 
 #include "plugin.hpp"
 
-#include "illixr/switchboard.hpp"
 #include "illixr/hmd.hpp"
+#include "illixr/switchboard.hpp"
 
 using namespace ILLIXR;
 
