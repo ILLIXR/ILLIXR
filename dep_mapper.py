@@ -6,7 +6,8 @@ import glob
 import os
 import re
 import sys
-from typing import List, Dict, Tuple, Set
+from typing import List, Dict, Tuple, Set, Any
+
 try:
     import yaml
 except Exception as _:
@@ -16,7 +17,9 @@ except Exception as _:
 lookup_re = re.compile(r".*lookup_impl<(\S+)>\(\)")  # regex for lookup_impl calls
 comment_re = re.compile(r"(//.*)")                   # regex for inline comments
 class_re = re.compile(r"^\s*class ([a-zA-Z0-9_]+)")  # regex for the start of a class
-inh_class_re = re.compile(r"^\s*class ([a-zA-Z0-9_]+).*:.*public\s+(\S+)")  # regex for child class
+inh_class_re = re.compile(r"^\s*class ([a-zA-Z0-9_]+).*:.*public.*") # regex for child class
+inh_class_sub_re = re.compile(r"public\s+([a-zA-Z0-9_:]+)")
+# inh_class_ml_re = re.compile(r"^\s*[:,].*public\s+([a-zA-Z0-9_:]+)\s*{?")  # regex for child class with multiline definition
 class_end_re = re.compile(r"^\s*};")                 # regex for class/struct ending
 struct_re = re.compile(r"^\s*struct\s+")             # regex for struct
 struct2_re = re.compile(r"^\s*struct\s+.*};$")       # regex for one line struct
@@ -79,8 +82,7 @@ def get_src(path: str, recursive: bool = False) -> List[str]:
     return search_for_files(path, ['cpp'], recursive)
 
 
-def get_classes(files: List[str]) -> Tuple[Dict[str, str], Dict[str, Dict[str, str]],
-                                           Dict[str, List[str]]]:
+def get_classes(files: List[str]) -> tuple[dict[str, str], dict[str, list[Any]], dict[str, list[Any]], list[str]]:
     """
     Searches the input list of files for ``class`` definitions to track inheritance and use of other
     plugins.
@@ -103,7 +105,7 @@ def get_classes(files: List[str]) -> Tuple[Dict[str, str], Dict[str, Dict[str, s
     classes = {}
     inh_classes = {}
     lookups = {}
-
+    system_classes = []
     # loop over all found files (regardless of type)
     for fl in files:
         if fl in skip_list:  # skip the file if requested
@@ -112,12 +114,24 @@ def get_classes(files: List[str]) -> Tuple[Dict[str, str], Dict[str, Dict[str, s
             count = 0
             current = []
             in_struct = False
+            in_class_def = False
+            current_def = None
             # scan each line in the file
             for i, ln in enumerate(fh.readlines()):
                 line = comment_re.sub('', ln)  # strip out inline comments
+                if in_class_def:
+                    in_class_def = False
+                    parents = inh_class_sub_re.findall(line)
+                    for p in parents:
+                        inh_classes[current_def].append({'base': p, 'file': fl})
+                    if line.find("{") < 0:
+                        in_class_def = True
+                        continue
                 cls_start = class_re.match(line)     # look for the start of a class
                 # if this line starts a class, but does not contain and end-of-line character
                 if cls_start and line_end_re.match(line) is None:
+                    if fl.startswith("src/") or fl.startswith("include/"):
+                        system_classes.append(cls_start.group(1))
                     count += 1
                     # track the current class name (even for inner classes)
                     current.append(cls_start.group(1))
@@ -129,7 +143,15 @@ def get_classes(files: List[str]) -> Tuple[Dict[str, str], Dict[str, Dict[str, s
                 if inh_cls:
                     if inh_cls.group(1) in inh_classes:
                         raise Exception(f"Unexpected format {fl}  {i}  {line}")
-                    inh_classes[inh_cls.group(1)] = {'base': inh_cls.group(2), 'file': fl}
+                    inh_classes[inh_cls.group(1)] = []
+                    current_def = inh_cls.group(1)
+                    parents = inh_class_sub_re.findall(line)
+                    for p in parents:
+                        inh_classes[inh_cls.group(1)].append({'base': p, 'file': fl})
+                    if line.find("{") < 0:
+                        in_class_def = True
+                        continue
+                    # inh_classes[inh_cls.group(1)] = {'base': inh_cls.group(2), 'file': fl}
                 lookup_res = lookup_re.match(line)  # search for calls to `lookup_impl`
                 if lookup_res:
                     if lookup_res.group(1) not in lookups:
@@ -155,10 +177,10 @@ def get_classes(files: List[str]) -> Tuple[Dict[str, str], Dict[str, Dict[str, s
             # if we think we are still in a class, but are at the end of the file
             if count != 0:
                 raise Exception(f"Error {fl}   {count}   {current}")
-    return classes, inh_classes, lookups
+    return classes, inh_classes, lookups, system_classes
 
 
-def gather(build: str) -> Tuple[Dict[str, List[Dict[str, str]]], Dict[str, Set[str]], Dict[str, str]]:
+def gather(build: str) -> tuple[dict[Any, list[Any]], dict[Any, set[Any]], dict[str, str], list[str]]:
     """
     Generate mappings of plugin class inheritance, plugin requirements, and plugin interdependencies
     :param build: The build directory
@@ -180,7 +202,8 @@ def gather(build: str) -> Tuple[Dict[str, List[Dict[str, str]]], Dict[str, Set[s
     # get initial file listings
     hdrs = get_headers('include/illixr')
     hdrs += get_headers('include/illixr/vk_util')
-    plugins = glob.glob('plugins/**/plugin.cpp', recursive=True)
+    plugins = glob.glob('plugins/**/*.cpp', recursive=True)
+    hdrs += get_headers('plugins', True)
     hdrs += get_headers('src')
     src = get_src('src')
     ext = get_src(os.path.join(build, '_deps/audio_pipeline/src/Audio_Pipeline'), recursive=True)
@@ -188,24 +211,25 @@ def gather(build: str) -> Tuple[Dict[str, List[Dict[str, str]]], Dict[str, Set[s
 
     full = hdrs + plugins + src + ext
     # extract class information from the files
-    classes, inheritances, lookups = get_classes(full)
+    classes, inheritances, lookups, system_classes = get_classes(full)
 
     deps = {}
 
     # loop over inheritance items and organize them
     for cls, data in inheritances.items():
-        temp = data['file'].split(os.sep)
-        file_name = temp[-1]
+        for d in data:
+            temp = d['file'].split(os.sep)
+            file_name = temp[-1]
 
-        # look specifically for plugins
-        if temp[0] == 'plugins':
-            file_name = temp[1]
-        elif '_deps' in data['file']:
-            file_name = temp[2]
-        data['base'] = data['base'].replace('ILLIXR::', '')
-        if data['base'] not in deps:
-            deps[data['base']] = []
-        deps[data['base']].append({'class': cls, 'from': file_name})
+            # look specifically for plugins
+            if temp[0] == 'plugins':
+                file_name = temp[1]
+            elif '_deps' in d['file']:
+                file_name = temp[2]
+            d['base'] = d['base'].replace('ILLIXR::', '')
+            if d['base'] not in deps:
+                deps[d['base']] = []
+            deps[d['base']].append({'class': cls, 'from': file_name})
 
     invoke = {}
 
@@ -223,7 +247,7 @@ def gather(build: str) -> Tuple[Dict[str, List[Dict[str, str]]], Dict[str, Set[s
             if key not in invoke:
                 invoke[key] = set()
             invoke[key].add(base)
-    return deps, invoke, classes
+    return deps, invoke, classes, system_classes
 
 
 def report_deps(deps: Dict[str, List[Dict[str, str]]]) -> Dict:
@@ -307,7 +331,7 @@ def report_invoke(invoke: Dict[str, Set[str]]) -> None:
         print(line)
 
 
-def report_plugin_invoke(invoke: Dict, deps: Dict) -> None:
+def report_plugin_invoke(invoke: Dict, deps: Dict, sys_cls: List) -> None:
     """
     Print a table of plugins, what plugin type they depend on, and what plugins provide that type
     to stdout.
@@ -334,8 +358,10 @@ def report_plugin_invoke(invoke: Dict, deps: Dict) -> None:
             if pl in deps.keys():
                 dd = []
                 for x in deps[pl]:
-                    dd.append(x.replace('_impl', ''))
-                pl_uses.append({"needs": pl, "provided_by": dd})
+                    if x not in sys_cls:
+                        dd.append(x.replace('_impl', ''))
+                if dd:
+                    pl_uses.append({"needs": pl, "provided_by": dd})
         if pl_uses:
             pl_deps = []
             print(f"{plugin:25s}  {pl_uses[0]['needs']:20s} {', '.join(pl_uses[0]['provided_by'])}")
@@ -499,8 +525,8 @@ if __name__ == '__main__':
     if len(sys.argv) != 2:
         raise Exception("Incorrect number of arguments.")
     _build = sys.argv[1]
-    dependencies, inv, clss = gather(_build)
+    dependencies, inv, clss, sys_cls = gather(_build)
     comb = report_deps(dependencies)
     report_invoke(inv)
-    report_plugin_invoke(inv, comb)
+    report_plugin_invoke(inv, comb, sys_cls)
     process_cmake()

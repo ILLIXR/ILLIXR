@@ -20,14 +20,6 @@ public:
     pose_type          correct_pose(const pose_type& pose) const override;
 
 private:
-    std::pair<Eigen::Matrix<double, 13, 1>, time_point> predict_mean_rk4(double dt) const;
-    static inline Eigen::Matrix<double, 4, 4>           Omega(Eigen::Matrix<double, 3, 1> w);
-    static inline Eigen::Matrix<double, 4, 1>           quatnorm(Eigen::Matrix<double, 4, 1> q_t);
-    static inline Eigen::Matrix<double, 3, 3>           skew_x(const Eigen::Matrix<double, 3, 1>& w);
-    static inline Eigen::Matrix<double, 3, 3>           quat_2_Rot(const Eigen::Matrix<double, 4, 1>& q);
-    static inline Eigen::Matrix<double, 4, 1>           quat_multiply(const Eigen::Matrix<double, 4, 1>& q,
-                                                                      const Eigen::Matrix<double, 4, 1>& p);
-
     mutable std::atomic<bool>                                        first_time_{true};
     const std::shared_ptr<switchboard>                               switchboard_;
     const std::shared_ptr<const relative_clock>                      clock_;

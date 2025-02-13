@@ -38,18 +38,15 @@ private:
 
     private:
         bias_t    imu_bias_;
-        nav_t     navstate_lkf_;
+        nav_t     nav_state_lkf_;
         pim_ptr_t pim_;
     };
 
     void                         clean_imu_vec(time_point timestamp);
     void                         propagate_imu_values(time_point real_time);
-    static std::vector<imu_type> select_imu_readings(const std::vector<imu_type>& imu_data, const time_point time_begin,
-                                                     const time_point time_end);
+    static std::vector<imu_type> select_imu_readings(const std::vector<imu_type>& imu_data, time_point time_begin,
+                                                     time_point time_end);
     static imu_type              interpolate_imu(const imu_type& imu_1, const imu_type& imu_2, time_point timestamp);
-    std::vector<one_euro_filter<Eigen::Array<double, 3, 1>, double>> filters_;
-    bool                                                             has_prev_ = false;
-    Eigen::Matrix<double, 3, 1>                                      prev_euler_angles_;
 
     const std::shared_ptr<switchboard>    switchboard_;
     const std::shared_ptr<relative_clock> clock_;
@@ -59,6 +56,12 @@ private:
 
     // Write IMU Biases for PP
     switchboard::writer<imu_raw_type> imu_raw_;
+
+    std::shared_ptr<spdlog::logger> log_;
+
+    std::vector<one_euro_filter<Eigen::Array<double, 3, 1>, double>> filters_;
+    bool                                                             has_prev_ = false;
+    Eigen::Matrix<double, 3, 1>                                      prev_euler_angles_;
 
     std::vector<imu_type> imu_vector_;
 
