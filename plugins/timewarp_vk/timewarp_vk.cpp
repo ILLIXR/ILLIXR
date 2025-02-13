@@ -12,11 +12,10 @@
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #define GLM_ENABLE_EXPERIMENTAL
+#include <future>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/hash.hpp>
-
-#include <future>
 #include <mutex>
 
 using namespace ILLIXR;
@@ -84,14 +83,15 @@ void timewarp_vk::initialize() {
     if (display_provider_->vma_allocator_) {
         this->vma_allocator_ = display_provider_->vma_allocator_;
     } else {
-        this->vma_allocator_ = vulkan::create_vma_allocator(display_provider_->vk_instance_, display_provider_->vk_physical_device_,
-                                                            display_provider_->vk_device_);
+        this->vma_allocator_ = vulkan::create_vma_allocator(
+            display_provider_->vk_instance_, display_provider_->vk_physical_device_, display_provider_->vk_device_);
         deletion_queue_.emplace([=]() {
             vmaDestroyAllocator(vma_allocator_);
         });
     }
 
-    command_pool_   = vulkan::create_command_pool(display_provider_->vk_device_, display_provider_->queues_[vulkan::queue::queue_type::GRAPHICS].family);
+    command_pool_   = vulkan::create_command_pool(display_provider_->vk_device_,
+                                                  display_provider_->queues_[vulkan::queue::queue_type::GRAPHICS].family);
     command_buffer_ = vulkan::create_command_buffer(display_provider_->vk_device_, command_pool_);
     deletion_queue_.emplace([=]() {
         vkDestroyCommandPool(display_provider_->vk_device_, command_pool_, nullptr);
@@ -102,18 +102,21 @@ void timewarp_vk::initialize() {
     create_texture_sampler();
 }
 
-void timewarp_vk::setup(VkRenderPass render_pass, uint32_t subpass, std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> buffer_pool,
-                        bool input_texture_vulkan_coordinates_in) {
+void timewarp_vk::setup(VkRenderPass render_pass, uint32_t subpass,
+                        std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> buffer_pool,
+                        bool                                                 input_texture_vulkan_coordinates_in) {
     std::lock_guard<std::mutex> lock{setup_mutex_};
 
     display_provider_ = phonebook_->lookup_impl<vulkan::display_provider>();
 
-    swapchain_width_  = display_provider_->swapchain_extent_.width == 0 ? display_params::width_pixels : display_provider_->swapchain_extent_.width;
-    swapchain_height_ = display_provider_->swapchain_extent_.height == 0 ? display_params::height_pixels : display_provider_->swapchain_extent_.height;
+    swapchain_width_  = display_provider_->swapchain_extent_.width == 0 ? display_params::width_pixels
+                                                                        : display_provider_->swapchain_extent_.width;
+    swapchain_height_ = display_provider_->swapchain_extent_.height == 0 ? display_params::height_pixels
+                                                                         : display_provider_->swapchain_extent_.height;
 
-    HMD::get_default_hmd_info(static_cast<int>(swapchain_width_), static_cast<int>(swapchain_height_), display_params::width_meters,
-                              display_params::height_meters, display_params::lens_separation, display_params::meters_per_tan_angle,
-                              display_params::aberration, hmd_info_);
+    HMD::get_default_hmd_info(static_cast<int>(swapchain_width_), static_cast<int>(swapchain_height_),
+                              display_params::width_meters, display_params::height_meters, display_params::lens_separation,
+                              display_params::meters_per_tan_angle, display_params::aberration, hmd_info_);
 
     this->input_texture_vulkan_coordinates_ = input_texture_vulkan_coordinates_in;
     if (!initialized_) {
@@ -135,8 +138,7 @@ void timewarp_vk::setup(VkRenderPass render_pass, uint32_t subpass, std::shared_
     create_pipeline(render_pass, subpass);
     timewarp_render_pass_ = render_pass;
 
-    clamp_edge_ =
-        std::getenv("ILLIXR_TIMEWARP_CLAMP_EDGE") != nullptr && std::stoi(std::getenv("ILLIXR_TIMEWARP_CLAMP_EDGE"));
+    clamp_edge_ = std::getenv("ILLIXR_TIMEWARP_CLAMP_EDGE") != nullptr && std::stoi(std::getenv("ILLIXR_TIMEWARP_CLAMP_EDGE"));
     compare_images_ = std::getenv("ILLIXR_COMPARE_IMAGES") != nullptr && std::stoi(std::getenv("ILLIXR_COMPARE_IMAGES"));
     if (compare_images_) {
         // Note that the Quaternion constructor takes the w component first.
@@ -352,8 +354,8 @@ void timewarp_vk::create_vertex_buffer() {
     VkBufferCopy    copy_region          = {};
     copy_region.size                     = sizeof(vertex) * num_distortion_vertices_ * HMD::NUM_EYES;
     vkCmdCopyBuffer(command_buffer_local, staging_buffer, vertex_buffer_, 1, &copy_region);
-    vulkan::end_one_time_command(display_provider_->vk_device_, command_pool_, display_provider_->queues_[vulkan::queue::queue_type::GRAPHICS],
-                                 command_buffer_local);
+    vulkan::end_one_time_command(display_provider_->vk_device_, command_pool_,
+                                 display_provider_->queues_[vulkan::queue::queue_type::GRAPHICS], command_buffer_local);
 
     vmaDestroyBuffer(vma_allocator_, staging_buffer, staging_alloc);
 
@@ -413,8 +415,8 @@ void timewarp_vk::create_index_buffer() {
     VkBufferCopy    copy_region          = {};
     copy_region.size                     = sizeof(uint32_t) * num_distortion_indices_;
     vkCmdCopyBuffer(command_buffer_local, staging_buffer, index_buffer_, 1, &copy_region);
-    vulkan::end_one_time_command(display_provider_->vk_device_, command_pool_, display_provider_->queues_[vulkan::queue::queue_type::GRAPHICS],
-                                 command_buffer_local);
+    vulkan::end_one_time_command(display_provider_->vk_device_, command_pool_,
+                                 display_provider_->queues_[vulkan::queue::queue_type::GRAPHICS], command_buffer_local);
 
     vmaDestroyBuffer(vma_allocator_, staging_buffer, staging_alloc);
 
@@ -425,10 +427,13 @@ void timewarp_vk::create_index_buffer() {
 
 void timewarp_vk::generate_distortion_data() {
     // Generate reference HMD and physical body dimensions
-    HMD::get_default_hmd_info(static_cast<int>(display_provider_->swapchain_extent_.width == 0 ? display_params::width_pixels : display_provider_->swapchain_extent_.width),
-                              static_cast<int>(display_provider_->swapchain_extent_.height == 0 ? display_params::height_pixels : display_provider_->swapchain_extent_.height),
-                              display_params::width_meters, display_params::height_meters, display_params::lens_separation,
-                              display_params::meters_per_tan_angle, display_params::aberration, hmd_info_);
+    HMD::get_default_hmd_info(
+        static_cast<int>(display_provider_->swapchain_extent_.width == 0 ? display_params::width_pixels
+                                                                         : display_provider_->swapchain_extent_.width),
+        static_cast<int>(display_provider_->swapchain_extent_.height == 0 ? display_params::height_pixels
+                                                                          : display_provider_->swapchain_extent_.height),
+        display_params::width_meters, display_params::height_meters, display_params::lens_separation,
+        display_params::meters_per_tan_angle, display_params::aberration, hmd_info_);
 
     // Construct timewarp meshes and other data
     build_timewarp(hmd_info_);
@@ -501,7 +506,8 @@ void timewarp_vk::create_descriptor_set_layout() {
     layout_info.bindingCount                                = static_cast<uint32_t>(bindings.size());
     layout_info.pBindings                                   = bindings.data(); // array of VkDescriptorSetLayoutBinding structs
 
-    VK_ASSERT_SUCCESS(vkCreateDescriptorSetLayout(display_provider_->vk_device_, &layout_info, nullptr, &descriptor_set_layout_))
+    VK_ASSERT_SUCCESS(
+        vkCreateDescriptorSetLayout(display_provider_->vk_device_, &layout_info, nullptr, &descriptor_set_layout_))
     deletion_queue_.emplace([=]() {
         vkDestroyDescriptorSetLayout(display_provider_->vk_device_, descriptor_set_layout_, nullptr);
     });
@@ -838,9 +844,9 @@ void timewarp_vk::calculate_timewarp_transform(Eigen::Matrix4f& transform, const
     // However, the (i,j) accessors are row-major (i.e, the first argument
     // is which row, and the second argument is which column.)
     Eigen::Matrix4f tex_coord_projection;
-    tex_coord_projection << 0.5f * render_projection_matrix(0, 0), 0.0f, 0.5f * render_projection_matrix(0, 2) - 0.5f, 0.0f, 0.0f,
-        -0.5f * render_projection_matrix(1, 1), 0.5f * render_projection_matrix(1, 2) - 0.5f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f,
-        0.0f, 0.0f, 0.0f, 1.0f;
+    tex_coord_projection << 0.5f * render_projection_matrix(0, 0), 0.0f, 0.5f * render_projection_matrix(0, 2) - 0.5f, 0.0f,
+        0.0f, -0.5f * render_projection_matrix(1, 1), 0.5f * render_projection_matrix(1, 2) - 0.5f, 0.0f, 0.0f, 0.0f, -1.0f,
+        0.0f, 0.0f, 0.0f, 0.0f, 1.0f;
 
     // Calculate the delta between the view matrix used for rendering and
     // a more recent or predicted view matrix based on new sensor input.

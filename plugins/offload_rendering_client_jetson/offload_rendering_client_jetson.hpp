@@ -32,9 +32,9 @@ public:
      */
     offload_rendering_client_jetson(const std::string& name, phonebook* pb);
 
-    //void start() override {
-    //    threadloop::start();
-    //}
+    // void start() override {
+    //     threadloop::start();
+    // }
     /**
      * @brief Initializes the video decoders
      * Sets up hardware-accelerated decoders for color and depth (if enabled) streams
@@ -57,15 +57,18 @@ public:
      * Initializes resources and prepares for frame processing
      */
     void setup(VkRenderPass render_pass, uint32_t subpass,
-                       std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> buffer_pool) override;
+               std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> buffer_pool) override;
+
     void record_command_buffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left) override {
-        (void)commandBuffer;
-        (void)framebuffer;
-        (void)buffer_ind;
-        (void)left;
+        (void) commandBuffer;
+        (void) framebuffer;
+        (void) buffer_ind;
+        (void) left;
     }
 
-    void update_uniforms(const pose_type& render_pose) override { (void)render_pose; }
+    void update_uniforms(const pose_type& render_pose) override {
+        (void) render_pose;
+    }
 
     bool is_external() override {
         return true;
@@ -74,9 +77,9 @@ public:
     void destroy() override;
     void _p_thread_setup() override;
 
-    //skip_option _p_should_skip() override {
-    //    return threadloop::_p_should_skip();
-    //}
+    // skip_option _p_should_skip() override {
+    //     return threadloop::_p_should_skip();
+    // }
 
     /**
      * @brief Handles image layout transitions in Vulkan
@@ -123,7 +126,7 @@ public:
 
 private:
     // Core components
-    std::shared_ptr<switchboard> switchboard_;
+    std::shared_ptr<switchboard>                   switchboard_;
     std::shared_ptr<spdlog::logger>                log_;
     std::shared_ptr<vulkan::display_provider>      display_provider_;
     switchboard::buffered_reader<compressed_frame> frames_reader_;
@@ -155,19 +158,22 @@ private:
     // pose_type                               fixed_pose_;
 
     // Vulkan resources
-    VkCommandPool          command_pool_{};
-    VkFence                blit_fence_;
+    VkCommandPool command_pool_{};
+    VkFence       blit_fence_;
 
     // Performance metrics
     uint16_t                                       fps_counter_{0};
     std::chrono::high_resolution_clock::time_point fps_start_time_{std::chrono::high_resolution_clock::now()};
     std::map<std::string, uint32_t>                metrics_;
+
     // uint64_t                                       frame_count_{0};
     struct MemoryTypeResult {
         bool     found;
         uint32_t typeIndex;
     };
-    static MemoryTypeResult findMemoryType(VkPhysicalDevice physicalDevice, uint32_t typeFilter, VkMemoryPropertyFlags properties);
-    [[maybe_unused]] void submit_command_buffer(VkCommandBuffer vk_command_buffer);
+
+    static MemoryTypeResult findMemoryType(VkPhysicalDevice physicalDevice, uint32_t typeFilter,
+                                           VkMemoryPropertyFlags properties);
+    [[maybe_unused]] void   submit_command_buffer(VkCommandBuffer vk_command_buffer);
 };
-}
+} // namespace ILLIXR

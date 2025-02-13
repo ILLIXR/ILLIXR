@@ -11,7 +11,7 @@ offload_rendering_server::offload_rendering_server(const std::string& name, phon
     , render_pose_{switchboard_->get_reader<fast_pose_type>("render_pose_")} {
     // Only encode and pass depth if requested - otherwise skip it.
     use_pass_depth_ = std::getenv("ILLIXR_USE_DEPTH_IMAGES") != nullptr && std::stoi(std::getenv("ILLIXR_USE_DEPTH_IMAGES"));
-    nalu_only_  = std::getenv("ILLIXR_OFFLOAD_RENDERING_NALU_ONLY") != nullptr &&
+    nalu_only_      = std::getenv("ILLIXR_OFFLOAD_RENDERING_NALU_ONLY") != nullptr &&
         std::stoi(std::getenv("ILLIXR_OFFLOAD_RENDERING_NALU_ONLY"));
     if (use_pass_depth_) {
         log_->debug("Encoding depth images for the client");
@@ -26,17 +26,15 @@ offload_rendering_server::offload_rendering_server(const std::string& name, phon
     log_->warn("Log Time,FPS");
 }
 
-
 void offload_rendering_server::start() {
     threadloop::start();
 }
-
 
 void offload_rendering_server::_p_thread_setup() {
     // Wait for display provider to be ready
     while (display_provider_ == nullptr) {
         try {
-            display_provider_                      = phonebook_->lookup_impl<vulkan::display_provider>();
+            display_provider_       = phonebook_->lookup_impl<vulkan::display_provider>();
             display_provider_ffmpeg = display_provider_;
         } catch (const std::exception& e) {
             log_->debug("Display provider not ready yet");
@@ -75,12 +73,12 @@ void offload_rendering_server::_p_thread_setup() {
     ready_ = true;
 }
 
-
-void offload_rendering_server::setup(VkRenderPass render_pass, uint32_t subpass, std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> buffer_pool,
-                                     bool input_texture_vulkan_coordinates) {
-    (void)render_pass;
-    (void)subpass;
-    (void)input_texture_vulkan_coordinates;
+void offload_rendering_server::setup(VkRenderPass render_pass, uint32_t subpass,
+                                     std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> buffer_pool,
+                                     bool                                                 input_texture_vulkan_coordinates) {
+    (void) render_pass;
+    (void) subpass;
+    (void) input_texture_vulkan_coordinates;
     // Wait for initialization to complete
     while (!ready_) {
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -102,7 +100,6 @@ void offload_rendering_server::setup(VkRenderPass render_pass, uint32_t subpass,
         }
     }
 }
-
 
 void offload_rendering_server::destroy() {
     // Free color frame resources
@@ -126,7 +123,6 @@ void offload_rendering_server::destroy() {
     av_buffer_unref(&device_ctx_);
 }
 
-
 fast_pose_type offload_rendering_server::get_fast_pose() const {
     auto pose = render_pose_.get_ro_nullable();
     if (pose == nullptr) {
@@ -135,7 +131,6 @@ fast_pose_type offload_rendering_server::get_fast_pose() const {
         return *pose;
     }
 }
-
 
 void offload_rendering_server::_p_one_iteration() {
     // Skip if no new frame is available
@@ -197,8 +192,7 @@ void offload_rendering_server::_p_one_iteration() {
         if (use_pass_depth_) {
             ret = avcodec_send_frame(codec_depth_ctx_, encode_src_depth_frames_[eye]);
             if (ret == AVERROR(EAGAIN)) {
-                throw std::runtime_error{
-                    "FFmpeg encoder returned EAGAIN. Internal buffer full? Try using a higher-end GPU."};
+                throw std::runtime_error{"FFmpeg encoder returned EAGAIN. Internal buffer full? Try using a higher-end GPU."};
             }
             AV_ASSERT_SUCCESS(ret);
         }
@@ -217,8 +211,7 @@ void offload_rendering_server::_p_one_iteration() {
         if (use_pass_depth_) {
             ret = avcodec_receive_packet(codec_depth_ctx_, encode_out_depth_packets_[eye]);
             if (ret == AVERROR(EAGAIN)) {
-                throw std::runtime_error{
-                    "FFmpeg encoder returned EAGAIN when receiving packets. This should never happen."};
+                throw std::runtime_error{"FFmpeg encoder returned EAGAIN when receiving packets. This should never happen."};
             }
             AV_ASSERT_SUCCESS(ret);
         }
@@ -240,8 +233,8 @@ void offload_rendering_server::_p_one_iteration() {
     enqueue_for_network_send(pose);
 
     // Log performance metrics every second
-    if (std::chrono::duration_cast<std::chrono::seconds>(std::chrono::high_resolution_clock::now() - fps_start_time_)
-            .count() >= 1) {
+    if (std::chrono::duration_cast<std::chrono::seconds>(std::chrono::high_resolution_clock::now() - fps_start_time_).count() >=
+        1) {
         log_->info("Encoder FPS: {}", fps_counter_);
         fps_start_time_ = std::chrono::high_resolution_clock::now();
         log_->warn("{},{}", fps_start_time_.time_since_epoch().count(), fps_counter_);
@@ -254,7 +247,7 @@ void offload_rendering_server::_p_one_iteration() {
 
         if (use_pass_depth_) {
             log_->info("Depth frame sizes - Left: {} Right: {}", encode_out_depth_packets_[0]->size,
-                      encode_out_depth_packets_[1]->size);
+                       encode_out_depth_packets_[1]->size);
             // std::cout << "depth left: " << encode_out_depth_packets_[0]->size << " depth right: " <<
             // encode_out_depth_packets_[0]->size << std::endl;
         }
@@ -265,7 +258,6 @@ void offload_rendering_server::_p_one_iteration() {
     }
 }
 
-
 void offload_rendering_server::enqueue_for_network_send(fast_pose_type& pose) {
     uint64_t timestamp =
         std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch())
@@ -273,14 +265,13 @@ void offload_rendering_server::enqueue_for_network_send(fast_pose_type& pose) {
 
     if (use_pass_depth_) {
         frames_topic_.put(std::make_shared<compressed_frame>(encode_out_color_packets_[0], encode_out_color_packets_[1],
-                                                            encode_out_depth_packets_[0], encode_out_depth_packets_[1], pose,
-                                                            timestamp, nalu_only_));
+                                                             encode_out_depth_packets_[0], encode_out_depth_packets_[1], pose,
+                                                             timestamp, nalu_only_));
     } else {
         frames_topic_.put(std::make_shared<compressed_frame>(encode_out_color_packets_[0], encode_out_color_packets_[1], pose,
-                                                            timestamp, nalu_only_));
+                                                             timestamp, nalu_only_));
     }
 }
-
 
 void offload_rendering_server::ffmpeg_init_device() {
     this->device_ctx_     = av_hwdevice_ctx_alloc(AV_HWDEVICE_TYPE_VULKAN);
@@ -314,8 +305,9 @@ void offload_rendering_server::ffmpeg_init_device() {
 
     // Configure dedicated transfer queue if available
     if (display_provider_->queues_.find(vulkan::queue::DEDICATED_TRANSFER) != display_provider_->queues_.end()) {
-        vulkan_hwdev_ctx->queue_family_tx_index = static_cast<int>(display_provider_->queues_[vulkan::queue::DEDICATED_TRANSFER].family);
-        vulkan_hwdev_ctx->nb_tx_queues          = 1;
+        vulkan_hwdev_ctx->queue_family_tx_index =
+            static_cast<int>(display_provider_->queues_[vulkan::queue::DEDICATED_TRANSFER].family);
+        vulkan_hwdev_ctx->nb_tx_queues = 1;
     }
 
     // Vulkan Video not used in current implementation
@@ -340,7 +332,6 @@ void offload_rendering_server::ffmpeg_init_device() {
     log_->info("FFmpeg Vulkan hwdevice context initialized");
 }
 
-
 void offload_rendering_server::ffmpeg_init_cuda_device() {
     auto ret = av_hwdevice_ctx_create(&cuda_device_ctx_, AV_HWDEVICE_TYPE_CUDA, nullptr, nullptr, 0);
     AV_ASSERT_SUCCESS(ret);
@@ -349,7 +340,6 @@ void offload_rendering_server::ffmpeg_init_cuda_device() {
     }
     log_->info("FFmpeg CUDA hwdevice context initialized");
 }
-
 
 void offload_rendering_server::ffmpeg_init_frame_ctx() {
     assert(this->buffer_pool_ != nullptr);
@@ -378,7 +368,6 @@ void offload_rendering_server::ffmpeg_init_frame_ctx() {
     AV_ASSERT_SUCCESS(ret);
 }
 
-
 void offload_rendering_server::ffmpeg_init_cuda_frame_ctx() {
     assert(this->buffer_pool_ != nullptr);
     auto cuda_frame_ref = av_hwframe_ctx_alloc(cuda_device_ctx_);
@@ -397,7 +386,6 @@ void offload_rendering_server::ffmpeg_init_cuda_frame_ctx() {
     AV_ASSERT_SUCCESS(ret);
     this->cuda_frame_ctx_ = cuda_frame_ref;
 }
-
 
 void offload_rendering_server::ffmpeg_init_buffer_pool() {
     assert(this->buffer_pool_ != nullptr);
@@ -426,9 +414,10 @@ void offload_rendering_server::ffmpeg_init_buffer_pool() {
             vk_frame->queue_family[0] = display_provider_->queues_[vulkan::queue::GRAPHICS].family;
 
             // Create and configure semaphore for synchronization
-            VkExportSemaphoreCreateInfo export_semaphore_create_info{
-                VK_STRUCTURE_TYPE_EXPORT_SEMAPHORE_CREATE_INFO, nullptr, VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_FD_BIT};
-            vk_frame->sem[0]       = vulkan::create_timeline_semaphore(display_provider_->vk_device_, 0, &export_semaphore_create_info);
+            VkExportSemaphoreCreateInfo export_semaphore_create_info{VK_STRUCTURE_TYPE_EXPORT_SEMAPHORE_CREATE_INFO, nullptr,
+                                                                     VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_FD_BIT};
+            vk_frame->sem[0] =
+                vulkan::create_timeline_semaphore(display_provider_->vk_device_, 0, &export_semaphore_create_info);
             vk_frame->sem_value[0] = 0;
             vk_frame->layout[0]    = VK_IMAGE_LAYOUT_UNDEFINED;
 
@@ -439,13 +428,13 @@ void offload_rendering_server::ffmpeg_init_buffer_pool() {
             if (!av_frame) {
                 throw std::runtime_error{"Failed to allocate FFmpeg frame for color image"};
             }
-            av_frame->format                = AV_PIX_FMT_VULKAN;
-            av_frame->width                 = static_cast<int>(buffer_pool_->image_pool[i][eye].image_info.extent.width);
-            av_frame->height                = static_cast<int>(buffer_pool_->image_pool[i][eye].image_info.extent.height);
-            av_frame->hw_frames_ctx         = av_buffer_ref(frame_ctx_);
-            av_frame->data[0]               = reinterpret_cast<uint8_t*>(vk_frame);
-            av_frame->buf[0]                = av_buffer_create(av_frame->data[0], 0, [](void*, uint8_t*) { }, nullptr, 0);
-            av_frame->pts                   = 0;
+            av_frame->format                 = AV_PIX_FMT_VULKAN;
+            av_frame->width                  = static_cast<int>(buffer_pool_->image_pool[i][eye].image_info.extent.width);
+            av_frame->height                 = static_cast<int>(buffer_pool_->image_pool[i][eye].image_info.extent.height);
+            av_frame->hw_frames_ctx          = av_buffer_ref(frame_ctx_);
+            av_frame->data[0]                = reinterpret_cast<uint8_t*>(vk_frame);
+            av_frame->buf[0]                 = av_buffer_create(av_frame->data[0], 0, [](void*, uint8_t*) { }, nullptr, 0);
+            av_frame->pts                    = 0;
             avvk_color_frames_[i][eye].frame = av_frame;
 
             // Set up depth frame if enabled
@@ -456,14 +445,16 @@ void offload_rendering_server::ffmpeg_init_buffer_pool() {
                 }
 
                 // Configure Vulkan depth frame properties
-                vk_depth_frame->img[0]          = buffer_pool_->depth_image_pool[i][eye].image;
-                vk_depth_frame->tiling          = buffer_pool_->depth_image_pool[i][eye].image_info.tiling;
-                vk_depth_frame->mem[0]          = buffer_pool_->depth_image_pool[i][eye].allocation_info.deviceMemory;
-                vk_depth_frame->size[0]         = buffer_pool_->depth_image_pool[i][eye].allocation_info.size;
-                vk_depth_frame->offset[0]       = static_cast<ptrdiff_t>(buffer_pool_->depth_image_pool[i][eye].allocation_info.offset);
+                vk_depth_frame->img[0]  = buffer_pool_->depth_image_pool[i][eye].image;
+                vk_depth_frame->tiling  = buffer_pool_->depth_image_pool[i][eye].image_info.tiling;
+                vk_depth_frame->mem[0]  = buffer_pool_->depth_image_pool[i][eye].allocation_info.deviceMemory;
+                vk_depth_frame->size[0] = buffer_pool_->depth_image_pool[i][eye].allocation_info.size;
+                vk_depth_frame->offset[0] =
+                    static_cast<ptrdiff_t>(buffer_pool_->depth_image_pool[i][eye].allocation_info.offset);
                 vk_depth_frame->queue_family[0] = display_provider_->queues_[vulkan::queue::GRAPHICS].family;
 
-                vk_depth_frame->sem[0] = vulkan::create_timeline_semaphore(display_provider_->vk_device_, 0, &export_semaphore_create_info);
+                vk_depth_frame->sem[0] =
+                    vulkan::create_timeline_semaphore(display_provider_->vk_device_, 0, &export_semaphore_create_info);
                 vk_depth_frame->sem_value[0] = 0;
                 vk_depth_frame->layout[0]    = VK_IMAGE_LAYOUT_UNDEFINED;
 
@@ -474,9 +465,9 @@ void offload_rendering_server::ffmpeg_init_buffer_pool() {
                 if (!av_depth_frame) {
                     throw std::runtime_error{"Failed to allocate FFmpeg frame for depth image"};
                 }
-                av_depth_frame->format        = AV_PIX_FMT_VULKAN;
-                av_depth_frame->width         = static_cast<int>(buffer_pool_->depth_image_pool[i][eye].image_info.extent.width);
-                av_depth_frame->height        = static_cast<int>(buffer_pool_->depth_image_pool[i][eye].image_info.extent.height);
+                av_depth_frame->format = AV_PIX_FMT_VULKAN;
+                av_depth_frame->width  = static_cast<int>(buffer_pool_->depth_image_pool[i][eye].image_info.extent.width);
+                av_depth_frame->height = static_cast<int>(buffer_pool_->depth_image_pool[i][eye].image_info.extent.height);
                 av_depth_frame->hw_frames_ctx = av_buffer_ref(frame_ctx_);
                 av_depth_frame->data[0]       = reinterpret_cast<uint8_t*>(vk_depth_frame);
                 av_depth_frame->buf[0] = av_buffer_create(av_depth_frame->data[0], 0, [](void*, uint8_t*) { }, nullptr, 0);
@@ -493,7 +484,7 @@ void offload_rendering_server::ffmpeg_init_buffer_pool() {
         encode_src_color_frames_[eye]->format        = AV_PIX_FMT_CUDA;
         encode_src_color_frames_[eye]->hw_frames_ctx = av_buffer_ref(cuda_frame_ctx_);
         encode_src_color_frames_[eye]->width         = static_cast<int>(buffer_pool_->image_pool[0][0].image_info.extent.width);
-        encode_src_color_frames_[eye]->height        = static_cast<int>(buffer_pool_->image_pool[0][0].image_info.extent.height);
+        encode_src_color_frames_[eye]->height = static_cast<int>(buffer_pool_->image_pool[0][0].image_info.extent.height);
 
         // Configure color space properties
         encode_src_color_frames_[eye]->color_range     = AVCOL_RANGE_JPEG;
@@ -510,8 +501,10 @@ void offload_rendering_server::ffmpeg_init_buffer_pool() {
             encode_src_depth_frames_[eye]                = av_frame_alloc();
             encode_src_depth_frames_[eye]->format        = AV_PIX_FMT_CUDA;
             encode_src_depth_frames_[eye]->hw_frames_ctx = av_buffer_ref(cuda_frame_ctx_);
-            encode_src_depth_frames_[eye]->width         = static_cast<int>(buffer_pool_->depth_image_pool[0][0].image_info.extent.width);
-            encode_src_depth_frames_[eye]->height        = static_cast<int>(buffer_pool_->depth_image_pool[0][0].image_info.extent.height);
+            encode_src_depth_frames_[eye]->width =
+                static_cast<int>(buffer_pool_->depth_image_pool[0][0].image_info.extent.width);
+            encode_src_depth_frames_[eye]->height =
+                static_cast<int>(buffer_pool_->depth_image_pool[0][0].image_info.extent.height);
 
             // Configure depth frame color space
             encode_src_depth_frames_[eye]->color_range     = AVCOL_RANGE_JPEG;
@@ -525,7 +518,6 @@ void offload_rendering_server::ffmpeg_init_buffer_pool() {
         }
     }
 }
-
 
 void offload_rendering_server::ffmpeg_init_encoder() {
     // Find hardware-accelerated encoder

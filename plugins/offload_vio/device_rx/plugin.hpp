@@ -17,14 +17,14 @@ public:
 private:
     void receive_vio_output(const vio_output_proto::VIOOutput& vio_output);
 
-    const std::shared_ptr<switchboard>        switchboard_;
-    const std::shared_ptr<relative_clock>     clock_;
+    const std::shared_ptr<switchboard>                                    switchboard_;
+    const std::shared_ptr<relative_clock>                                 clock_;
     switchboard::buffered_reader<switchboard::event_wrapper<std::string>> vio_pose_reader_;
-    switchboard::writer<pose_type>            pose_;
-    switchboard::writer<imu_integrator_input> imu_integrator_input_;
+    switchboard::writer<pose_type>                                        pose_;
+    switchboard::writer<imu_integrator_input>                             imu_integrator_input_;
 
-    network::TCPSocket   socket_;
-    std::string server_ip_;
+    network::TCPSocket socket_;
+    std::string        server_ip_;
 
     std::string delimiter = "END!";
 };

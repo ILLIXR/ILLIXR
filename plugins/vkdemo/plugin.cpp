@@ -51,11 +51,12 @@ void vkdemo::initialize() {
     if (display_provider_->vma_allocator_) {
         this->vma_allocator_ = display_provider_->vma_allocator_;
     } else {
-        this->vma_allocator_ = vulkan::create_vma_allocator(display_provider_->vk_instance_, display_provider_->vk_physical_device_,
-                                                            display_provider_->vk_device_);
+        this->vma_allocator_ = vulkan::create_vma_allocator(
+            display_provider_->vk_instance_, display_provider_->vk_physical_device_, display_provider_->vk_device_);
     }
 
-    command_pool_   = vulkan::create_command_pool(display_provider_->vk_device_, display_provider_->queues_[vulkan::queue::GRAPHICS].family);
+    command_pool_ =
+        vulkan::create_command_pool(display_provider_->vk_device_, display_provider_->queues_[vulkan::queue::GRAPHICS].family);
     command_buffer_ = vulkan::create_command_buffer(display_provider_->vk_device_, command_pool_);
 
     load_model();
@@ -87,8 +88,8 @@ void vkdemo::update_uniforms(const pose_type& fp) {
 }
 
 void vkdemo::record_command_buffer(VkCommandBuffer command_buffer, VkFramebuffer frame_buffer, int buffer_ind, bool left) {
-    (void)frame_buffer;
-    (void)buffer_ind;
+    (void) frame_buffer;
+    (void) buffer_ind;
     vkCmdBindPipeline(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_);
     VkBuffer     vertexBuffers[] = {vertex_buffer_};
     VkDeviceSize offsets[]       = {0};
@@ -189,7 +190,8 @@ void vkdemo::create_descriptor_set_layout() {
     VkDescriptorSetLayoutBinding bindings[]{ubo_layout_binding, sampler_layout_binding, sampled_image_layout_binding};
     layout_info.pBindings = bindings;
 
-    VK_ASSERT_SUCCESS(vkCreateDescriptorSetLayout(display_provider_->vk_device_, &layout_info, nullptr, &descriptor_set_layout_))
+    VK_ASSERT_SUCCESS(
+        vkCreateDescriptorSetLayout(display_provider_->vk_device_, &layout_info, nullptr, &descriptor_set_layout_))
 }
 
 void vkdemo::create_uniform_buffers() {
@@ -313,8 +315,8 @@ void vkdemo::create_descriptor_set() {
                                                                   nullptr                                 // pTexelBufferView
                                                               }}};
 
-    vkUpdateDescriptorSets(display_provider_->vk_device_, static_cast<uint32_t>(descriptor_writes.size()), descriptor_writes.data(),
-                           0, nullptr);
+    vkUpdateDescriptorSets(display_provider_->vk_device_, static_cast<uint32_t>(descriptor_writes.size()),
+                           descriptor_writes.data(), 0, nullptr);
 
     std::vector<VkWriteDescriptorSet> image_descriptor_writes = {};
     for (auto i = 0; i < 2; i++) {
@@ -438,8 +440,7 @@ void vkdemo::load_texture(const std::string& path, int i) {
                             VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 
     vulkan::copy_buffer_to_image(display_provider_->vk_device_, display_provider_->queues_[vulkan::queue::GRAPHICS],
-                                 command_pool_, staging_buffer,
-                                 textures_[i].image, width, height);
+                                 command_pool_, staging_buffer, textures_[i].image, width, height);
 
     image_layout_transition(textures_[i].image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                             VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
@@ -517,8 +518,9 @@ void vkdemo::image_layout_transition(VkImage image, [[maybe_unused]] VkFormat fo
 
     vkCmdPipelineBarrier(command_buffer_local, source_stage, destination_stage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
 
-    vulkan::end_one_time_command(display_provider_->vk_device_, command_pool_, display_provider_->queues_[vulkan::queue::GRAPHICS], command_buffer_local);
-    }
+    vulkan::end_one_time_command(display_provider_->vk_device_, command_pool_,
+                                 display_provider_->queues_[vulkan::queue::GRAPHICS], command_buffer_local);
+}
 
 void vkdemo::load_model() {
     tinyobj::attrib_t                attrib;
@@ -617,14 +619,15 @@ void vkdemo::create_vertex_buffer() {
     memcpy(mapped_data, vertices_.data(), sizeof(vertices_[0]) * vertices_.size());
     vmaUnmapMemory(vma_allocator_, staging_buffer_allocation);
 
-        VkCommandBuffer command_buffer_local = vulkan::begin_one_time_command(display_provider_->vk_device_, command_pool_);
-        VkBufferCopy    copy_region{
-            0,                                    // srcOffset
-            0,                                    // dstOffset
-            sizeof(vertices_[0]) * vertices_.size() // size
-        };
-        vkCmdCopyBuffer(command_buffer_local, staging_buffer, vertex_buffer_, 1, &copy_region);
-        vulkan::end_one_time_command(display_provider_->vk_device_, command_pool_, display_provider_->queues_[vulkan::queue::GRAPHICS], command_buffer_local);
+    VkCommandBuffer command_buffer_local = vulkan::begin_one_time_command(display_provider_->vk_device_, command_pool_);
+    VkBufferCopy    copy_region{
+        0,                                      // srcOffset
+        0,                                      // dstOffset
+        sizeof(vertices_[0]) * vertices_.size() // size
+    };
+    vkCmdCopyBuffer(command_buffer_local, staging_buffer, vertex_buffer_, 1, &copy_region);
+    vulkan::end_one_time_command(display_provider_->vk_device_, command_pool_,
+                                 display_provider_->queues_[vulkan::queue::GRAPHICS], command_buffer_local);
 
     vmaDestroyBuffer(vma_allocator_, staging_buffer, staging_buffer_allocation);
 }
@@ -672,14 +675,15 @@ void vkdemo::create_index_buffer() {
     memcpy(mapped_data, indices_.data(), sizeof(indices_[0]) * indices_.size());
     vmaUnmapMemory(vma_allocator_, staging_buffer_allocation);
 
-        VkCommandBuffer command_buffer_local = vulkan::begin_one_time_command(display_provider_->vk_device_, command_pool_);
-        VkBufferCopy    copy_region{
-            0,                                  // srcOffset
-            0,                                  // dstOffset
-            sizeof(indices_[0]) * indices_.size() // size
-        };
-        vkCmdCopyBuffer(command_buffer_local, staging_buffer, index_buffer_, 1, &copy_region);
-        vulkan::end_one_time_command(display_provider_->vk_device_, command_pool_, display_provider_->queues_[vulkan::queue::GRAPHICS], command_buffer_local);
+    VkCommandBuffer command_buffer_local = vulkan::begin_one_time_command(display_provider_->vk_device_, command_pool_);
+    VkBufferCopy    copy_region{
+        0,                                    // srcOffset
+        0,                                    // dstOffset
+        sizeof(indices_[0]) * indices_.size() // size
+    };
+    vkCmdCopyBuffer(command_buffer_local, staging_buffer, index_buffer_, 1, &copy_region);
+    vulkan::end_one_time_command(display_provider_->vk_device_, command_pool_,
+                                 display_provider_->queues_[vulkan::queue::GRAPHICS], command_buffer_local);
 
     vmaDestroyBuffer(vma_allocator_, staging_buffer, staging_buffer_allocation);
 }
@@ -689,9 +693,11 @@ void vkdemo::create_pipeline(VkRenderPass render_pass, uint32_t subpass) {
         throw std::runtime_error("timewarp_vk::create_pipeline: pipeline already created");
     }
 
-        auto           folder = std::string(SHADER_FOLDER);
-        VkShaderModule vert   = vulkan::create_shader_module(display_provider_->vk_device_, vulkan::read_file(folder + "/demo.vert.spv"));
-        VkShaderModule frag   = vulkan::create_shader_module(display_provider_->vk_device_, vulkan::read_file(folder + "/demo.frag.spv"));
+    auto           folder = std::string(SHADER_FOLDER);
+    VkShaderModule vert =
+        vulkan::create_shader_module(display_provider_->vk_device_, vulkan::read_file(folder + "/demo.vert.spv"));
+    VkShaderModule frag =
+        vulkan::create_shader_module(display_provider_->vk_device_, vulkan::read_file(folder + "/demo.frag.spv"));
 
     VkPipelineShaderStageCreateInfo vert_shader_stage_info{
         VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO, // sType
@@ -736,21 +742,22 @@ void vkdemo::create_pipeline(VkRenderPass render_pass, uint32_t subpass) {
         VK_FALSE                                                     // primitiveRestartEnable
     };
 
-        auto per_eye_extent = VkExtent2D{display_provider_->swapchain_extent_.width / 2, display_provider_->swapchain_extent_.height};
+    auto per_eye_extent =
+        VkExtent2D{display_provider_->swapchain_extent_.width / 2, display_provider_->swapchain_extent_.height};
 
-        VkViewport viewport{
-            0.0f,                                      // x
-            0.0f,                                      // y
-            static_cast<float>(per_eye_extent.width),  // width
-            static_cast<float>(per_eye_extent.height), // height
-            0.0f,                                      // minDepth
-            1.0f                                       // maxDepth
-        };
+    VkViewport viewport{
+        0.0f,                                      // x
+        0.0f,                                      // y
+        static_cast<float>(per_eye_extent.width),  // width
+        static_cast<float>(per_eye_extent.height), // height
+        0.0f,                                      // minDepth
+        1.0f                                       // maxDepth
+    };
 
-        VkRect2D scissor{
-            {0, 0},        // offset
-            per_eye_extent // extent
-        };
+    VkRect2D scissor{
+        {0, 0},        // offset
+        per_eye_extent // extent
+    };
 
     VkPipelineViewportStateCreateInfo viewport_state{
         VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO, // sType
@@ -790,42 +797,42 @@ void vkdemo::create_pipeline(VkRenderPass render_pass, uint32_t subpass) {
         0                                                         // alphaToOneEnable
     };
 
-        VkPipelineColorBlendAttachmentState color_blend_attachment{
-            VK_FALSE, // blendEnable
-            {},       // srcColorBlendFactor
-            {},       // dstColorBlendFactor
-            {},       // colorBlendOp
-            {},       // srcAlphaBlendFactor
-            {},       // dstAlphaBlendFactor
-            {},       // alphaBlendOp
-            VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT |
-                VK_COLOR_COMPONENT_A_BIT // colorWriteMask
-        };
+    VkPipelineColorBlendAttachmentState color_blend_attachment{
+        VK_FALSE, // blendEnable
+        {},       // srcColorBlendFactor
+        {},       // dstColorBlendFactor
+        {},       // colorBlendOp
+        {},       // srcAlphaBlendFactor
+        {},       // dstAlphaBlendFactor
+        {},       // alphaBlendOp
+        VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT |
+            VK_COLOR_COMPONENT_A_BIT // colorWriteMask
+    };
 
-        VkPipelineColorBlendAttachmentState depth_blend_attachment{
-            VK_FALSE, // blendEnable
-            {},       // srcColorBlendFactor
-            {},       // dstColorBlendFactor
-            {},       // colorBlendOp
-            {},       // srcAlphaBlendFactor
-            {},       // dstAlphaBlendFactor
-            {},       // alphaBlendOp
-            VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT |
-                VK_COLOR_COMPONENT_A_BIT // colorWriteMask
-        };
+    VkPipelineColorBlendAttachmentState depth_blend_attachment{
+        VK_FALSE, // blendEnable
+        {},       // srcColorBlendFactor
+        {},       // dstColorBlendFactor
+        {},       // colorBlendOp
+        {},       // srcAlphaBlendFactor
+        {},       // dstAlphaBlendFactor
+        {},       // alphaBlendOp
+        VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT |
+            VK_COLOR_COMPONENT_A_BIT // colorWriteMask
+    };
 
-        VkPipelineColorBlendAttachmentState blend_attachments[2] = {color_blend_attachment, depth_blend_attachment};
+    VkPipelineColorBlendAttachmentState blend_attachments[2] = {color_blend_attachment, depth_blend_attachment};
 
-        VkPipelineColorBlendStateCreateInfo color_blending{
-            VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO, // sType
-            nullptr,                                                  // pNext
-            0,                                                        // flags
-            0,                                                        // logicOpEnable
-            {},                                                       // logicOp
-            2,                                                        // attachmentCount
-            blend_attachments,                                        // pAttachments
-            {0.f, 0.f, 0.f, 0.f}                                      // blendConstants
-        };
+    VkPipelineColorBlendStateCreateInfo color_blending{
+        VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO, // sType
+        nullptr,                                                  // pNext
+        0,                                                        // flags
+        0,                                                        // logicOpEnable
+        {},                                                       // logicOp
+        2,                                                        // attachmentCount
+        blend_attachments,                                        // pAttachments
+        {0.f, 0.f, 0.f, 0.f}                                      // blendConstants
+    };
 
     VkPushConstantRange push_constant_range{
         VK_SHADER_STAGE_FRAGMENT_BIT, // stageFlags
@@ -845,20 +852,20 @@ void vkdemo::create_pipeline(VkRenderPass render_pass, uint32_t subpass) {
 
     VK_ASSERT_SUCCESS(vkCreatePipelineLayout(display_provider_->vk_device_, &pipeline_layout_info, nullptr, &pipeline_layout_))
 
-        VkPipelineDepthStencilStateCreateInfo depth_stencil{
-            VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,                                 // sType
-            nullptr,                                                                                    // pNext
-            0,                                                                                          // flags
-            VK_TRUE,                                                                                    // depthTestEnable
-            VK_TRUE,                                                                                    // depthWriteEnable
-            rendering_params::reverse_z ? VK_COMPARE_OP_GREATER_OR_EQUAL : VK_COMPARE_OP_LESS_OR_EQUAL, // depthCompareOp
-            VK_FALSE,                                                                                   // depthBoundsTestEnable
-            VK_FALSE,                                                                                   // stencilTestEnable
-            {},                                                                                         // front
-            {},                                                                                         // back
-            0.0f,                                                                                       // minDepthBounds
-            1.0f                                                                                        // maxDepthBounds
-        };
+    VkPipelineDepthStencilStateCreateInfo depth_stencil{
+        VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,                                 // sType
+        nullptr,                                                                                    // pNext
+        0,                                                                                          // flags
+        VK_TRUE,                                                                                    // depthTestEnable
+        VK_TRUE,                                                                                    // depthWriteEnable
+        rendering_params::reverse_z ? VK_COMPARE_OP_GREATER_OR_EQUAL : VK_COMPARE_OP_LESS_OR_EQUAL, // depthCompareOp
+        VK_FALSE,                                                                                   // depthBoundsTestEnable
+        VK_FALSE,                                                                                   // stencilTestEnable
+        {},                                                                                         // front
+        {},                                                                                         // back
+        0.0f,                                                                                       // minDepthBounds
+        1.0f                                                                                        // maxDepthBounds
+    };
 
     VkGraphicsPipelineCreateInfo pipeline_info{
         VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO, // sType

@@ -8,7 +8,6 @@
 #include <stack>
 #include <vulkan/vulkan.h>
 
-
 namespace ILLIXR {
 
 class timewarp_vk : public vulkan::timewarp {
@@ -31,6 +30,7 @@ private:
     void create_uniform_buffer();
     void create_descriptor_pool();
     void create_descriptor_sets();
+
     bool is_external() override {
         return false;
     }
@@ -40,13 +40,13 @@ private:
     static void calculate_timewarp_transform(Eigen::Matrix4f& transform, const Eigen::Matrix4f& render_projection_matrix,
                                              const Eigen::Matrix4f& render_view_matrix, const Eigen::Matrix4f& new_view_matrix);
 
-    const phonebook* const                 phonebook_;
-    const std::shared_ptr<switchboard>     switchboard_;
-    const std::shared_ptr<pose_prediction> pose_prediction_;
+    const phonebook* const                                      phonebook_;
+    const std::shared_ptr<switchboard>                          switchboard_;
+    const std::shared_ptr<pose_prediction>                      pose_prediction_;
     switchboard::reader<switchboard::event_wrapper<time_point>> vsync_;
-    bool                                   disable_warp_ = false;
-    std::shared_ptr<vulkan::display_provider> display_provider_ = nullptr;
-    std::mutex                             setup_mutex_;
+    bool                                                        disable_warp_     = false;
+    std::shared_ptr<vulkan::display_provider>                   display_provider_ = nullptr;
+    std::mutex                                                  setup_mutex_;
 
     bool initialized_                      = false;
     bool input_texture_vulkan_coordinates_ = true;
@@ -59,14 +59,14 @@ private:
     std::vector<pose_type> fixed_poses_;
     uint64_t               frame_count_ = 0;
 
-    size_t                                  swapchain_width_ = 0;
-    size_t                                  swapchain_height_ = 0;
+    size_t                                               swapchain_width_  = 0;
+    size_t                                               swapchain_height_ = 0;
     std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> buffer_pool_;
-    VkSampler                               fb_sampler_{};
-    bool                                    clamp_edge_ = false;
-    VkDescriptorPool                        descriptor_pool_{};
-    VkDescriptorSetLayout                   descriptor_set_layout_{};
-    std::array<std::vector<VkDescriptorSet>, 2> descriptor_sets_;
+    VkSampler                                            fb_sampler_{};
+    bool                                                 clamp_edge_ = false;
+    VkDescriptorPool                                     descriptor_pool_{};
+    VkDescriptorSetLayout                                descriptor_set_layout_{};
+    std::array<std::vector<VkDescriptorSet>, 2>          descriptor_sets_;
 
     VkRenderPass timewarp_render_pass_{};
 
@@ -101,4 +101,4 @@ private:
     friend class timewarp_vk_plugin;
 };
 
-}
+} // namespace ILLIXR

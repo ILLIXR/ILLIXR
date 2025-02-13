@@ -34,18 +34,18 @@ private:
     GstMapInfo                            img1_{};
     bool                                  img_ready_ = false;
 
-    std::unique_ptr<video_encoder>         encoder_ = nullptr;
-    std::optional<time_point>              latest_imu_time_;
-    std::optional<time_point>              latest_cam_time_;
-    int                                    frame_id_    = 0;
-    vio_input_proto::IMUCamVec*            data_buffer_ = new vio_input_proto::IMUCamVec();
-    const std::shared_ptr<switchboard>     switchboard_;
-    const std::shared_ptr<relative_clock>  clock_;
-    const std::shared_ptr<stoplight>       stoplight_;
-    switchboard::buffered_reader<cam_type> cam_;
+    std::unique_ptr<video_encoder>                                       encoder_ = nullptr;
+    std::optional<time_point>                                            latest_imu_time_;
+    std::optional<time_point>                                            latest_cam_time_;
+    int                                                                  frame_id_    = 0;
+    vio_input_proto::IMUCamVec*                                          data_buffer_ = new vio_input_proto::IMUCamVec();
+    const std::shared_ptr<switchboard>                                   switchboard_;
+    const std::shared_ptr<relative_clock>                                clock_;
+    const std::shared_ptr<stoplight>                                     stoplight_;
+    switchboard::buffered_reader<cam_type>                               cam_;
     switchboard::network_writer<switchboard::event_wrapper<std::string>> imu_cam_writer_;
-    std::shared_ptr<spdlog::logger>        log_;
-    network::TCPSocket   socket_;
-    std::string server_ip_;
+    std::shared_ptr<spdlog::logger>                                      log_;
+    network::TCPSocket                                                   socket_;
+    std::string                                                          server_ip_;
 };
 } // namespace ILLIXR

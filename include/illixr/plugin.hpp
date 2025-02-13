@@ -96,7 +96,8 @@ public:
         return plugin_logger_;
     }
 
-    [[maybe_unused]] void spd_add_file_sink(const std::string& file_name, const std::string& extension, const std::string& log_level) {
+    [[maybe_unused]] void spd_add_file_sink(const std::string& file_name, const std::string& extension,
+                                            const std::string& log_level) {
         if (!plugin_logger_) {
             throw std::runtime_error("Logger not found");
         }

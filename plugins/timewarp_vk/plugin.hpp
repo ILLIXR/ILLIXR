@@ -12,7 +12,7 @@ public:
     skip_option _p_should_skip() override;
 
 private:
-    std::shared_ptr<timewarp_vk> timewarp_;
+    std::shared_ptr<timewarp_vk>              timewarp_;
     std::shared_ptr<vulkan::display_provider> display_provider_;
 
     int64_t last_print_ = 0;

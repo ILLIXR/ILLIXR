@@ -7,7 +7,6 @@
 #include <stdexcept>
 #include <utility>
 #include <vector>
-
 #include <vulkan/vulkan.h>
 
 #pragma clang diagnostic push
@@ -119,7 +118,7 @@ VkShaderModule ILLIXR::vulkan::create_shader_module(VkDevice device, std::vector
 }
 
 VkSemaphore ILLIXR::vulkan::create_timeline_semaphore(VkDevice device, int initial_value,
-                                             VkExportSemaphoreCreateInfo* export_semaphore_create_info) {
+                                                      VkExportSemaphoreCreateInfo* export_semaphore_create_info) {
     VkSemaphoreTypeCreateInfo timeline_create_info{};
     timeline_create_info.sType         = VK_STRUCTURE_TYPE_SEMAPHORE_TYPE_CREATE_INFO;
     timeline_create_info.pNext         = export_semaphore_create_info;
@@ -178,7 +177,8 @@ void ILLIXR::vulkan::wait_timeline_semaphores(VkDevice device, const std::map<Vk
  * @param vk_device The Vulkan device to use.
  * @return The created VMA allocator.
  */
-VmaAllocator ILLIXR::vulkan::create_vma_allocator(VkInstance vk_instance, VkPhysicalDevice vk_physical_device, VkDevice vk_device) {
+VmaAllocator ILLIXR::vulkan::create_vma_allocator(VkInstance vk_instance, VkPhysicalDevice vk_physical_device,
+                                                  VkDevice vk_device) {
     VmaVulkanFunctions vulkanFunctions{};
     vulkanFunctions.vkGetInstanceProcAddr = &vkGetInstanceProcAddr;
     vulkanFunctions.vkGetDeviceProcAddr   = &vkGetDeviceProcAddr;
@@ -236,7 +236,7 @@ VkCommandBuffer ILLIXR::vulkan::begin_one_time_command(VkDevice vk_device, VkCom
  * @param vk_command_buffer The Vulkan command buffer to use.
  */
 void ILLIXR::vulkan::end_one_time_command(VkDevice vk_device, VkCommandPool vk_command_pool, const queue& q,
-                                 VkCommandBuffer vk_command_buffer) {
+                                          VkCommandBuffer vk_command_buffer) {
     VK_ASSERT_SUCCESS(vkEndCommandBuffer(vk_command_buffer))
 
     VkSubmitInfo submitInfo{
@@ -337,8 +337,8 @@ std::vector<char> ILLIXR::vulkan::read_file(const std::string& path) {
  * @param width The width of the image.
  * @param height The height of the image.
  */
-void ILLIXR::vulkan::copy_buffer_to_image(VkDevice vk_device, queue q, VkCommandPool vk_command_pool, VkBuffer buffer, VkImage image,
-                                 uint32_t width, uint32_t height) {
+void ILLIXR::vulkan::copy_buffer_to_image(VkDevice vk_device, queue q, VkCommandPool vk_command_pool, VkBuffer buffer,
+                                          VkImage image, uint32_t width, uint32_t height) {
     VkCommandBuffer command_buffer = begin_one_time_command(vk_device, vk_command_pool);
 
     VkBufferImageCopy region{
@@ -360,7 +360,8 @@ void ILLIXR::vulkan::copy_buffer_to_image(VkDevice vk_device, queue q, VkCommand
     end_one_time_command(vk_device, vk_command_pool, std::move(q), command_buffer);
 }
 
-swapchain_details ILLIXR::vulkan::query_swapchain_details(VkPhysicalDevice const& physical_device, VkSurfaceKHR const& vk_surface) {
+swapchain_details ILLIXR::vulkan::query_swapchain_details(VkPhysicalDevice const& physical_device,
+                                                          VkSurfaceKHR const&     vk_surface) {
     swapchain_details details;
 
     vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physical_device, vk_surface, &details.capabilities);
@@ -385,7 +386,8 @@ swapchain_details ILLIXR::vulkan::query_swapchain_details(VkPhysicalDevice const
     return details;
 }
 
-queue_families ILLIXR::vulkan::find_queue_families(VkPhysicalDevice const& physical_device, VkSurfaceKHR const& vk_surface, bool no_present) {
+queue_families ILLIXR::vulkan::find_queue_families(VkPhysicalDevice const& physical_device, VkSurfaceKHR const& vk_surface,
+                                                   bool no_present) {
     queue_families indices;
 
     uint32_t queue_family_count = 0;
@@ -431,7 +433,8 @@ queue_families ILLIXR::vulkan::find_queue_families(VkPhysicalDevice const& physi
     return indices;
 }
 
-VkImageView ILLIXR::vulkan::create_image_view(VkDevice device, VkImage image, VkFormat format, VkImageAspectFlags aspect_flags) {
+VkImageView ILLIXR::vulkan::create_image_view(VkDevice device, VkImage image, VkFormat format,
+                                              VkImageAspectFlags aspect_flags) {
     VkImageViewCreateInfo vk_image_view_create_info{VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO};
     vk_image_view_create_info.image                           = image;
     vk_image_view_create_info.viewType                        = VK_IMAGE_VIEW_TYPE_2D;

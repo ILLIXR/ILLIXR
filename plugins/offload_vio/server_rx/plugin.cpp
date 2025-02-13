@@ -25,19 +25,19 @@ ILLIXR::threadloop::skip_option server_reader::_p_should_skip() {
 
 void server_reader::_p_one_iteration() {
     if (imu_cam_reader_.size() > 0) {
-            auto                       buffer_ptr   = imu_cam_reader_.dequeue();
-            std::string                buffer_str   = **buffer_ptr;
-            std::string::size_type     end_position = buffer_str.find(delimiter_);
-            vio_input_proto::IMUCamVec vio_input;
-            bool                       success = vio_input.ParseFromString(buffer_str.substr(0, end_position));
-            if (!success) {
-                log_->error("[offload_vio.server_rx]Error parsing the protobuf, vio input size = {}",
-                            buffer_str.size() - delimiter_.size());
-            } else {
-                receive_vio_input(vio_input);
-            }
+        auto                       buffer_ptr   = imu_cam_reader_.dequeue();
+        std::string                buffer_str   = **buffer_ptr;
+        std::string::size_type     end_position = buffer_str.find(delimiter_);
+        vio_input_proto::IMUCamVec vio_input;
+        bool                       success = vio_input.ParseFromString(buffer_str.substr(0, end_position));
+        if (!success) {
+            log_->error("[offload_vio.server_rx]Error parsing the protobuf, vio input size = {}",
+                        buffer_str.size() - delimiter_.size());
+        } else {
+            receive_vio_input(vio_input);
         }
     }
+}
 
 void server_reader::start() {
     threadloop::start();
@@ -67,17 +67,17 @@ void server_reader::receive_vio_input(const vio_input_proto::IMUCamVec& vio_inpu
         std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
     double msec_to_trans = (curr_time - vio_input.real_timestamp()) / 1e6;
 
-        // Loop through and publish all IMU values first
-        for (int i = 0; i < vio_input.imu_data_size() - 1; i++) {
-            vio_input_proto::IMUData curr_data = vio_input.imu_data(i);
-            imu_.put(imu_.allocate<imu_type>(imu_type{
-                time_point{std::chrono::nanoseconds{curr_data.timestamp()}},
-                Eigen::Vector3d{curr_data.angular_vel().x(), curr_data.angular_vel().y(), curr_data.angular_vel().z()},
-                Eigen::Vector3d{curr_data.linear_accel().x(), curr_data.linear_accel().y(), curr_data.linear_accel().z()}}));
-        }
-        // Publish the Cam value then
-        vio_input_proto::CamData cam_data = vio_input.cam_data();
-        log_->info("{},{}", cam_data.timestamp(), msec_to_trans);
+    // Loop through and publish all IMU values first
+    for (int i = 0; i < vio_input.imu_data_size() - 1; i++) {
+        vio_input_proto::IMUData curr_data = vio_input.imu_data(i);
+        imu_.put(imu_.allocate<imu_type>(imu_type{
+            time_point{std::chrono::nanoseconds{curr_data.timestamp()}},
+            Eigen::Vector3d{curr_data.angular_vel().x(), curr_data.angular_vel().y(), curr_data.angular_vel().z()},
+            Eigen::Vector3d{curr_data.linear_accel().x(), curr_data.linear_accel().y(), curr_data.linear_accel().z()}}));
+    }
+    // Publish the Cam value then
+    vio_input_proto::CamData cam_data = vio_input.cam_data();
+    log_->info("{},{}", cam_data.timestamp(), msec_to_trans);
 
     // Must do a deep copy of the received data (in the form of a string of bytes)
     auto img0_copy = std::string(cam_data.img0_data());

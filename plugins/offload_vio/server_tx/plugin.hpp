@@ -14,8 +14,8 @@ public:
     void send_vio_output(const switchboard::ptr<const pose_type>& datum);
 
 private:
-    const std::shared_ptr<switchboard>        switchboard_;
-    switchboard::reader<imu_integrator_input> imu_int_input_;
+    const std::shared_ptr<switchboard>                                   switchboard_;
+    switchboard::reader<imu_integrator_input>                            imu_int_input_;
     switchboard::network_writer<switchboard::event_wrapper<std::string>> vio_pose_writer_;
 };
 } // namespace ILLIXR

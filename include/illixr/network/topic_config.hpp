@@ -19,4 +19,4 @@ struct topic_config {
     enum SerializationMethod { BOOST, PROTOBUF } serialization_method;
 };
 
-}
+} // namespace ILLIXR::network

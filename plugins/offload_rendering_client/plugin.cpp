@@ -21,7 +21,6 @@
  * - CUDA Toolkit
  */
 
-
 // ILLIXR core headers
 #include "illixr/data_format.hpp"
 #include "illixr/phonebook.hpp"
@@ -38,18 +37,16 @@ extern "C" {
 #include "libswscale_illixr/swscale.h"
 }
 
+#include "offload_rendering_client.hpp"
 
 #include <chrono>
 #include <map>
-
-#include "offload_rendering_client.hpp"
 /**
  * @brief Name of the FFmpeg decoder to use (HEVC/H.265)
  */
 
 using namespace ILLIXR;
 using namespace ILLIXR::vulkan::ffmpeg_utils;
-
 
 /**
  * @class offload_rendering_client_loader

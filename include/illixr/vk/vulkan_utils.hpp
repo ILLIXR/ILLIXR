@@ -115,8 +115,7 @@ VkCommandBuffer begin_one_time_command(VkDevice vk_device, VkCommandPool vk_comm
  * @param vk_queue The Vulkan queue to use.
  * @param vk_command_buffer The Vulkan command buffer to use.
  */
-void end_one_time_command(VkDevice vk_device, VkCommandPool vk_command_pool, const queue& q,
-                          VkCommandBuffer vk_command_buffer);
+void end_one_time_command(VkDevice vk_device, VkCommandPool vk_command_pool, const queue& q, VkCommandBuffer vk_command_buffer);
 
 /**
  * @brief Creates a VkCommandPool.

@@ -21,4 +21,4 @@ protected:
     VkInstance vk_instance_;
 };
 
-}
+} // namespace ILLIXR::display

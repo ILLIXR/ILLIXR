@@ -1,12 +1,12 @@
 #pragma once
 
 #include "illixr/extended_window.hpp"
+#include "illixr/hmd.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/pose_prediction.hpp"
 #include "illixr/relative_clock.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
-#include "illixr/hmd.hpp"
 
 namespace ILLIXR {
 
@@ -26,7 +26,7 @@ public:
     skip_option _p_should_skip() override;
     void        _p_thread_setup() override;
 #endif
-    void        _p_one_iteration() override {}
+    void _p_one_iteration() override { }
 
 private:
     GLubyte*      read_texture_image();

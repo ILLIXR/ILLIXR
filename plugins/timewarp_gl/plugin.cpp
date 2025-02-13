@@ -107,7 +107,7 @@ timewarp_gl::timewarp_gl(const std::string& name, phonebook* pb)
     image_handles_ready_ = false;
 
     switchboard_->schedule<image_handle>(id_, "image_handle", [this](switchboard::ptr<const image_handle> handle, std::size_t) {
-        // only 2 swapchains (for the left and right eye) are supported for now.
+    // only 2 swapchains (for the left and right eye) are supported for now.
 #ifdef ENABLE_MONADO
         static bool left_output_ready = false, right_output_ready = false;
 #else
@@ -128,12 +128,12 @@ timewarp_gl::timewarp_gl(const std::string& name, phonebook* pb)
 #ifdef ENABLE_MONADO
         case swapchain_usage::LEFT_RENDER: {
             this->eye_output_handles_[0] = *handle;
-            left_output_ready              = true;
+            left_output_ready            = true;
             break;
         }
         case swapchain_usage::RIGHT_RENDER: {
             this->eye_output_handles_[1] = *handle;
-            right_output_ready             = true;
+            right_output_ready           = true;
             break;
         }
 #endif
@@ -150,8 +150,7 @@ timewarp_gl::timewarp_gl(const std::string& name, phonebook* pb)
         }
 
         if (this->eye_image_handles_[0].size() == this->eye_swapchains_size_[0] &&
-            this->eye_image_handles_[1].size() == this->eye_swapchains_size_[1] &&
-            left_output_ready && right_output_ready) {
+            this->eye_image_handles_[1].size() == this->eye_swapchains_size_[1] && left_output_ready && right_output_ready) {
             image_handles_ready_ = true;
         }
     });
@@ -160,8 +159,8 @@ timewarp_gl::timewarp_gl(const std::string& name, phonebook* pb)
 
 #ifdef ENABLE_MONADO
     switchboard_->schedule<rendered_frame>(id_, "eyebuffer", [this](switchboard::ptr<const rendered_frame> datum, std::size_t) {
-            this->warp(datum);
-        });
+        this->warp(datum);
+    });
 #endif
 }
 
@@ -760,8 +759,8 @@ void timewarp_gl::warp(const switchboard::ptr<const rendered_frame>& most_recent
                                     }});
 
 #ifdef ENABLE_MONADO
-        // Manually increment the iteration number if timewarp is running as a plugin
-        ++iteration_no;
+    // Manually increment the iteration number if timewarp is running as a plugin
+    ++iteration_no;
 #endif
 
     // Call Hologram

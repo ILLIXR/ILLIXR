@@ -21,9 +21,9 @@
 
 // ILLIXR core headers
 #include "illixr/pose_prediction.hpp"
+#include "illixr/serializable_data.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
-#include "illixr/serializable_data.hpp"
 
 // ILLIXR Vulkan headers
 #include "illixr/vk/display_provider.hpp"
@@ -73,16 +73,18 @@ public:
      * @brief Record command buffer (no-op in this implementation)
      */
     void record_command_buffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left) override {
-        (void)commandBuffer;
-        (void)framebuffer;
-        (void)buffer_ind;
-        (void)left;
+        (void) commandBuffer;
+        (void) framebuffer;
+        (void) buffer_ind;
+        (void) left;
     }
 
     /**
      * @brief Update uniforms (no-op in this implementation)
      */
-    void update_uniforms(const pose_type& render_pose) override { (void)render_pose; }
+    void update_uniforms(const pose_type& render_pose) override {
+        (void) render_pose;
+    }
 
     /**
      * @brief Indicates this is an external renderer
@@ -115,14 +117,14 @@ protected:
     void transition_layout(VkCommandBuffer cmd_buf, AVFrame* frame, VkImageLayout old_layout, VkImageLayout new_layout);
 
     /**
-    * @brief Main processing loop for frame decoding and display
-    *
-    * This method:
-    * 1. Sends the latest pose to the server
-    * 2. Receives and decodes encoded frames
-    * 3. Performs color space conversion
-    * 4. Updates display buffers
-    * 5. Tracks performance metrics
+     * @brief Main processing loop for frame decoding and display
+     *
+     * This method:
+     * 1. Sends the latest pose to the server
+     * 2. Receives and decodes encoded frames
+     * 3. Performs color space conversion
+     * 4. Updates display buffers
+     * 5. Tracks performance metrics
      */
     void _p_one_iteration() override;
 
@@ -231,9 +233,9 @@ private:
     Npp8u*        yuv420_y_plane_ = nullptr;
     Npp8u*        yuv420_u_plane_ = nullptr;
     Npp8u*        yuv420_v_plane_ = nullptr;
-    int           y_step_ = 0;
-    int           u_step_ = 0;
-    int           v_step_ = 0;
+    int           y_step_         = 0;
+    int           u_step_         = 0;
+    int           v_step_         = 0;
 
     uint64_t frame_count_ = 0;
 
@@ -246,4 +248,4 @@ private:
     std::shared_ptr<relative_clock> clock_;
 };
 
-}
+} // namespace ILLIXR

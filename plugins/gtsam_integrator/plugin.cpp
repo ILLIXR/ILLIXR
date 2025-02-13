@@ -161,8 +161,8 @@ void gtsam_integrator::propagate_imu_values(time_point real_time) {
     ImuBias bias      = pim_obj_->bias_hat();
 
 #ifndef NDEBUG
-        // spdlog::get(name_)->debug("Integrating over {} IMU samples", prop_data.size());
-        log_->info("Integrating over {} IMU samples", prop_data.size());
+    // spdlog::get(name_)->debug("Integrating over {} IMU samples", prop_data.size());
+    log_->info("Integrating over {} IMU samples", prop_data.size());
 #endif
 
     for (std::size_t i = 0; i < prop_data.size() - 1; i++) {

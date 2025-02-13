@@ -31,4 +31,4 @@ private:
     void* window_ = nullptr;
 };
 
-}
+} // namespace ILLIXR::display

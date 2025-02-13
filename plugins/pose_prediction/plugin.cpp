@@ -71,16 +71,16 @@ fast_pose_type pose_prediction_impl::get_fast_pose(time_point future_timestamp) 
     if (imu_raw == nullptr) {
 #ifndef NDEBUG
     #ifndef LIGHTHOUSE
-            spdlog::get("illixr")->debug("[POSEPREDICTION] FAST POSE IS SLOW POSE!");
+        spdlog::get("illixr")->debug("[POSEPREDICTION] FAST POSE IS SLOW POSE!");
     #endif
 #endif
-            // No imu_raw, return slow_pose
-            return fast_pose_type{
-                correct_pose(*slow_pose),
-                clock_->now(),
-                future_timestamp,
-            };
-        }
+        // No imu_raw, return slow_pose
+        return fast_pose_type{
+            correct_pose(*slow_pose),
+            clock_->now(),
+            future_timestamp,
+        };
+    }
 
     // slow_pose and imu_raw, do pose prediction
 
@@ -104,11 +104,11 @@ fast_pose_type pose_prediction_impl::get_fast_pose(time_point future_timestamp) 
         }
     }
 
-        // Several timestamps are logged:
-        //       - the prediction compute time (time when this prediction was computed, i.e., now)
-        //       - the prediction target (the time that was requested for this pose.)
-        return fast_pose_type{predicted_pose, clock_->now(), future_timestamp};
-    }
+    // Several timestamps are logged:
+    //       - the prediction compute time (time when this prediction was computed, i.e., now)
+    //       - the prediction target (the time that was requested for this pose.)
+    return fast_pose_type{predicted_pose, clock_->now(), future_timestamp};
+}
 
 void pose_prediction_impl::set_offset(const Eigen::Quaternionf& raw_o_times_offset) {
     std::unique_lock   lock{offset_mutex_};
@@ -131,22 +131,22 @@ Eigen::Quaternionf pose_prediction_impl::apply_offset(const Eigen::Quaternionf& 
 
 bool pose_prediction_impl::fast_pose_reliable() const {
 #ifdef LIGHTHOUSE
-        return true;
+    return true;
 #endif
-        return slow_pose_.get_ro_nullable() && imu_raw_.get_ro_nullable();
-        /*
-          SLAM takes some time to initialize, so initially fast_pose
-          is unreliable.
+    return slow_pose_.get_ro_nullable() && imu_raw_.get_ro_nullable();
+    /*
+      SLAM takes some time to initialize, so initially fast_pose
+      is unreliable.
 
-      In such cases, we might return a fast_pose based only on the
-      IMU data (currently, we just return a zero-pose)., and mark
-      it as "unreliable"
+  In such cases, we might return a fast_pose based only on the
+  IMU data (currently, we just return a zero-pose)., and mark
+  it as "unreliable"
 
-      This way, there always a pose coming out of pose_prediction,
-      representing our best guess at that time, and we indicate
-      how reliable that guess is here.
+  This way, there always a pose coming out of pose_prediction,
+  representing our best guess at that time, and we indicate
+  how reliable that guess is here.
 
-     */
+ */
 }
 
 bool pose_prediction_impl::true_pose_reliable() const {

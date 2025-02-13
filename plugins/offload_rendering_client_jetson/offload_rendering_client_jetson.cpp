@@ -1,6 +1,5 @@
 #include "offload_rendering_client_jetson.hpp"
 
-
 using namespace ILLIXR;
 
 offload_rendering_client_jetson::offload_rendering_client_jetson(const std::string& name, phonebook* pb)
@@ -21,7 +20,6 @@ offload_rendering_client_jetson::offload_rendering_client_jetson(const std::stri
     }
 }
 
-
 void offload_rendering_client_jetson::mmapi_init_decoders() const {
     auto ret = color_decoder_.decoder_init();
     assert(ret == 0);
@@ -32,7 +30,8 @@ void offload_rendering_client_jetson::mmapi_init_decoders() const {
 }
 
 [[maybe_unused]] void offload_rendering_client_jetson::vk_resources_init() {
-    command_pool_ = vulkan::create_command_pool(display_provider_->vk_device_, display_provider_->queues_[vulkan::queue::GRAPHICS].family);
+    command_pool_ =
+        vulkan::create_command_pool(display_provider_->vk_device_, display_provider_->queues_[vulkan::queue::GRAPHICS].family);
 
     blit_color_cb_.resize(buffer_pool_->image_pool.size());
     blit_depth_cb_.resize(buffer_pool_->image_pool.size());
@@ -53,7 +52,6 @@ void offload_rendering_client_jetson::mmapi_init_decoders() const {
         }
     }
 }
-
 
 void offload_rendering_client_jetson::mmapi_import_dmabuf(vulkan::vk_image& eye) {
     // Setup NVIDIA buffer surface parameters
@@ -81,9 +79,9 @@ void offload_rendering_client_jetson::mmapi_import_dmabuf(vulkan::vk_image& eye)
 }
 
 void offload_rendering_client_jetson::setup(VkRenderPass render_pass, uint32_t subpass,
-                   std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> buffer_pool) {
-    (void)render_pass;
-    (void)subpass;
+                                            std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> buffer_pool) {
+    (void) render_pass;
+    (void) subpass;
     this->buffer_pool_ = buffer_pool;
     vk_resources_init();
 
@@ -109,7 +107,8 @@ void offload_rendering_client_jetson::setup(VkRenderPass render_pass, uint32_t s
         for (auto& eye : frame) {
             auto cmd_buf = vulkan::begin_one_time_command(display_provider_->vk_device_, command_pool_);
             transition_layout(cmd_buf, eye.image, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-            vulkan::end_one_time_command(display_provider_->vk_device_, command_pool_, display_provider_->queues_[vulkan::queue::GRAPHICS], cmd_buf);
+            vulkan::end_one_time_command(display_provider_->vk_device_, command_pool_,
+                                         display_provider_->queues_[vulkan::queue::GRAPHICS], cmd_buf);
         }
     }
 
@@ -118,7 +117,8 @@ void offload_rendering_client_jetson::setup(VkRenderPass render_pass, uint32_t s
             for (auto& eye : frame) {
                 auto cmd_buf = vulkan::begin_one_time_command(display_provider_->vk_device_, command_pool_);
                 transition_layout(cmd_buf, eye.image, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-                vulkan::end_one_time_command(display_provider_->vk_device_, command_pool_, display_provider_->queues_[vulkan::queue::GRAPHICS], cmd_buf);
+                vulkan::end_one_time_command(display_provider_->vk_device_, command_pool_,
+                                             display_provider_->queues_[vulkan::queue::GRAPHICS], cmd_buf);
             }
         }
     }
@@ -128,7 +128,8 @@ void offload_rendering_client_jetson::setup(VkRenderPass render_pass, uint32_t s
 
     for (size_t i = 0; i < buffer_pool_->image_pool.size(); i++) {
         for (auto eye = 0; eye < 2; eye++) {
-            layout_transition_start_cmd_bufs_[i][eye] = vulkan::create_command_buffer(display_provider_->vk_device_, command_pool_);
+            layout_transition_start_cmd_bufs_[i][eye] =
+                vulkan::create_command_buffer(display_provider_->vk_device_, command_pool_);
             VkCommandBufferBeginInfo begin_info{};
             begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
             begin_info.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
@@ -141,7 +142,8 @@ void offload_rendering_client_jetson::setup(VkRenderPass render_pass, uint32_t s
             }
             vkEndCommandBuffer(layout_transition_start_cmd_bufs_[i][eye]);
 
-            layout_transition_end_cmd_bufs_[i][eye] = vulkan::create_command_buffer(display_provider_->vk_device_, command_pool_);
+            layout_transition_end_cmd_bufs_[i][eye] =
+                vulkan::create_command_buffer(display_provider_->vk_device_, command_pool_);
             vkBeginCommandBuffer(layout_transition_end_cmd_bufs_[i][eye], &begin_info);
             transition_layout(layout_transition_end_cmd_bufs_[i][eye], buffer_pool_->image_pool[i][eye].image,
                               VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
@@ -160,8 +162,6 @@ void offload_rendering_client_jetson::setup(VkRenderPass render_pass, uint32_t s
     vkCreateFence(display_provider_->vk_device_, &blitFence_info, nullptr, &blit_fence_);
 }
 
-
-
 void offload_rendering_client_jetson::destroy() {
     color_decoder_.decoder_destroy();
     if (use_depth_) {
@@ -169,20 +169,18 @@ void offload_rendering_client_jetson::destroy() {
     }
 }
 
-
 void offload_rendering_client_jetson::_p_thread_setup() {
     mmapi_init_decoders();
     // open file "left.h264" for writing
 
     decode_q_thread = std::make_shared<std::thread>([&]() {
         // auto file = fopen("left.h264", "wb");
-        //auto frame = received_frame_;
+        // auto frame = received_frame_;
         while (running_.load()) {
             queue_bytestream();
         }
     });
 }
-
 
 void offload_rendering_client_jetson::transition_layout(VkCommandBuffer cmd_buf, VkImage image, VkImageLayout old_layout,
                                                         VkImageLayout new_layout) {
@@ -204,8 +202,7 @@ void offload_rendering_client_jetson::transition_layout(VkCommandBuffer cmd_buf,
         barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
         src_stage             = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
         dst_stage             = VK_PIPELINE_STAGE_TRANSFER_BIT;
-    } else if (old_layout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL &&
-               new_layout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
+    } else if (old_layout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && new_layout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
         barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
         barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
         src_stage             = VK_PIPELINE_STAGE_TRANSFER_BIT;
@@ -283,8 +280,9 @@ void offload_rendering_client_jetson::transition_layout(VkCommandBuffer cmd_buf,
         VkMemoryRequirements imageMemoryRequirements{};
         vkGetImageMemoryRequirements(display_provider_->vk_device_, vkImage, &imageMemoryRequirements);
 
-        const MemoryTypeResult memoryTypeResult = findMemoryType(
-            display_provider_->vk_physical_device_, imageMemoryRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+        const MemoryTypeResult memoryTypeResult =
+            findMemoryType(display_provider_->vk_physical_device_, imageMemoryRequirements.memoryTypeBits,
+                           VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
         VkMemoryDedicatedAllocateInfo dedicatedAllocateInfo{};
         dedicatedAllocateInfo.sType = VK_STRUCTURE_TYPE_MEMORY_DEDICATED_ALLOCATE_INFO;
@@ -341,7 +339,6 @@ void offload_rendering_client_jetson::transition_layout(VkCommandBuffer cmd_buf,
     VK_ASSERT_SUCCESS(vkWaitForFences(display_provider_->vk_device_, 1, &blit_fence_, VK_TRUE, UINT64_MAX));
 }
 
-
 void offload_rendering_client_jetson::queue_bytestream() {
     push_pose();
     if (!network_receive()) {
@@ -358,7 +355,6 @@ void offload_rendering_client_jetson::queue_bytestream() {
         depth_decoder_.queue_output_plane_buffer(frame->right_depth_nalu, frame->right_depth_nalu_size);
     }
 }
-
 
 void offload_rendering_client_jetson::_p_one_iteration() {
     if (!ready_) {
@@ -403,16 +399,15 @@ void offload_rendering_client_jetson::_p_one_iteration() {
     buffer_pool_->src_release_image(ind, std::move(decoded_frame_pose));
 
     // Calculate and track latency metrics
-    auto now =
-        time_point{std::chrono::duration<long, std::nano>{std::chrono::high_resolution_clock::now().time_since_epoch()}};
+    auto now = time_point{std::chrono::duration<long, std::nano>{std::chrono::high_resolution_clock::now().time_since_epoch()}};
     auto pipeline_latency = now - decoded_frame_pose.predict_target_time;
 
     metrics_["capture"] += std::chrono::duration_cast<std::chrono::microseconds>(transfer_end - decode_end).count();
     metrics_["pipeline"] += std::chrono::duration_cast<std::chrono::microseconds>(pipeline_latency).count();
 
     // Update FPS and metrics every second
-    if (std::chrono::duration_cast<std::chrono::seconds>(std::chrono::high_resolution_clock::now() - fps_start_time_)
-            .count() >= 1) {
+    if (std::chrono::duration_cast<std::chrono::seconds>(std::chrono::high_resolution_clock::now() - fps_start_time_).count() >=
+        1) {
         log_->info("Decoder FPS: {}", fps_counter_);
         fps_start_time_ = std::chrono::high_resolution_clock::now();
 
@@ -427,17 +422,14 @@ void offload_rendering_client_jetson::_p_one_iteration() {
     }
 }
 
-
 void offload_rendering_client_jetson::push_pose() {
     auto current_pose = pose_prediction_->get_fast_pose();
 
-    auto now =
-        time_point{std::chrono::duration<long, std::nano>{std::chrono::high_resolution_clock::now().time_since_epoch()}};
+    auto now = time_point{std::chrono::duration<long, std::nano>{std::chrono::high_resolution_clock::now().time_since_epoch()}};
     current_pose.predict_target_time   = now;
     current_pose.predict_computed_time = now;
     pose_writer_.put(std::make_shared<fast_pose_type>(current_pose));
 }
-
 
 bool offload_rendering_client_jetson::network_receive() {
     received_frame_ = frames_reader_.dequeue();
@@ -466,8 +458,9 @@ void offload_rendering_client_jetson::stop() {
     threadloop::stop();
 }
 
-
-offload_rendering_client_jetson::MemoryTypeResult offload_rendering_client_jetson::findMemoryType(VkPhysicalDevice physicalDevice, uint32_t typeFilter, VkMemoryPropertyFlags properties) {
+offload_rendering_client_jetson::MemoryTypeResult
+offload_rendering_client_jetson::findMemoryType(VkPhysicalDevice physicalDevice, uint32_t typeFilter,
+                                                VkMemoryPropertyFlags properties) {
     VkPhysicalDeviceMemoryProperties memoryProperties;
     vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memoryProperties);
 

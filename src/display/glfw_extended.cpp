@@ -9,7 +9,7 @@
 using namespace ILLIXR::display;
 
 void glfw_extended::setup_display(VkInstance vk_instance, VkPhysicalDevice vk_physical_device) {
-    (void)vk_physical_device;
+    (void) vk_physical_device;
     this->vk_instance_ = vk_instance;
 }
 
@@ -62,7 +62,7 @@ glfw_extended::glfw_extended() {
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
     window_ = glfwCreateWindow(display_params::width_pixels, display_params::height_pixels, "ILLIXR Eyebuffer Window (Vulkan)",
-                              glfwGetPrimaryMonitor(), nullptr);
+                               glfwGetPrimaryMonitor(), nullptr);
     // window = glfwCreateWindow(display_params::width_pixels, display_params::height_pixels,
     //                           "ILLIXR Eyebuffer Window (Vulkan)", nullptr, nullptr);
 }

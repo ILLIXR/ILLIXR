@@ -37,4 +37,4 @@ public:
      */
     virtual void topic_send(std::string topic_name, std::string&& message) = 0;
 };
-} // namespace ILLIXR
+} // namespace ILLIXR::network

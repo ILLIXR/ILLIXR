@@ -1,14 +1,14 @@
 #include "plugin.hpp"
+
+#include "illixr/error_util.hpp"
+#include "illixr/phonebook.hpp"
+
 #include <chrono>
 #include <cmath>
 #include <optional>
 #include <string>
 
-#include "illixr/error_util.hpp"
-#include "illixr/phonebook.hpp"
-
 using namespace ILLIXR;
-
 
 lighthouse* lighthouse_instance;
 
@@ -42,8 +42,7 @@ void lighthouse::process_slow_pose(SurviveObject* so, survive_long_timecode time
     // rotate 90 degrees around x
     quat = Eigen::AngleAxisf{-M_PI / 2, Eigen::Vector3f::UnitX()} * quat;
     lighthouse_instance->slow_pose_.put(lighthouse_instance->slow_pose_.allocate(
-        lighthouse_instance->clock_->now(), Eigen::Vector3d{pose->Pos[0], pose->Pos[2], -pose->Pos[1]}.cast<float>(),
-        quat));
+        lighthouse_instance->clock_->now(), Eigen::Vector3d{pose->Pos[0], pose->Pos[2], -pose->Pos[1]}.cast<float>(), quat));
 
     lighthouse_instance->slow_pose_count++;
 }
@@ -83,9 +82,6 @@ void lighthouse::_p_one_iteration() {
         last_time       = now;
     }
 }
-
-
-
 
 // This line makes the plugin importable by Spindle
 PLUGIN_MAIN(lighthouse)

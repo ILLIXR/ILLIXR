@@ -34,7 +34,7 @@ public:
 
     void start(std::set<const char*> instance_extensions, std::set<const char*> device_extensions) {
         auto manual_device_selection = std::getenv("ILLIXR_VULKAN_SELECT_GPU");
-        selected_gpu_                 = manual_device_selection ? std::stoi(manual_device_selection) : -1;
+        selected_gpu_                = manual_device_selection ? std::stoi(manual_device_selection) : -1;
 
         char* env_var = std::getenv("ILLIXR_DISPLAY_MODE");
         if (!strcmp(env_var, "glfw")) {
@@ -70,8 +70,8 @@ public:
         if (backend_type_ == display::display_backend::GLFW) {
             backend_ = std::make_shared<display::glfw_extended>();
         } else if (backend_type_ == display::display_backend::X11_DIRECT) {
-            backend_ =
-                std::make_shared<display::x11_direct>(clock_, switchboard_->get_writer<switchboard::event_wrapper<time_point>>("vsync_estimate"));
+            backend_ = std::make_shared<display::x11_direct>(
+                clock_, switchboard_->get_writer<switchboard::event_wrapper<time_point>>("vsync_estimate"));
         } else {
             backend_ = std::make_shared<display::headless>();
         }
@@ -348,9 +348,10 @@ private:
         };
 
         features_ = VkPhysicalDeviceFeatures2{VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2, &timeline_semaphore_features,
-                                             device_features};
+                                              device_features};
 
-        required_device_extensions_.insert(required_device_extensions_.end(), device_extensions.begin(), device_extensions.end());
+        required_device_extensions_.insert(required_device_extensions_.end(), device_extensions.begin(),
+                                           device_extensions.end());
 
         this->enabled_device_extensions_ = required_device_extensions_;
 
@@ -372,51 +373,51 @@ private:
 
         vulkan::queue graphics_queue{};
         vkGetDeviceQueue(vk_device_, indices.graphics_family.value(), 0, &graphics_queue.vk_queue);
-        graphics_queue.family       = indices.graphics_family.value();
-        graphics_queue.type         = vulkan::queue::GRAPHICS;
-        graphics_queue.mutex        = std::make_shared<std::mutex>();
+        graphics_queue.family        = indices.graphics_family.value();
+        graphics_queue.type          = vulkan::queue::GRAPHICS;
+        graphics_queue.mutex         = std::make_shared<std::mutex>();
         queues_[graphics_queue.type] = graphics_queue;
 
         if (indices.present_family.has_value()) {
             vulkan::queue present_queue{};
             vkGetDeviceQueue(vk_device_, indices.present_family.value(), 0, &present_queue.vk_queue);
-            present_queue.family       = indices.present_family.value();
-            present_queue.type         = vulkan::queue::PRESENT;
-            present_queue.mutex        = std::make_shared<std::mutex>();
+            present_queue.family        = indices.present_family.value();
+            present_queue.type          = vulkan::queue::PRESENT;
+            present_queue.mutex         = std::make_shared<std::mutex>();
             queues_[present_queue.type] = present_queue;
         }
 
         if (indices.has_compression()) {
             vulkan::queue encode_queue{};
             vkGetDeviceQueue(vk_device_, indices.encode_family.value(), 0, &encode_queue.vk_queue);
-            encode_queue.family       = indices.encode_family.value();
-            encode_queue.type         = vulkan::queue::ENCODE;
-            encode_queue.mutex        = std::make_shared<std::mutex>();
+            encode_queue.family        = indices.encode_family.value();
+            encode_queue.type          = vulkan::queue::ENCODE;
+            encode_queue.mutex         = std::make_shared<std::mutex>();
             queues_[encode_queue.type] = encode_queue;
 
             vulkan::queue decode_queue{};
             vkGetDeviceQueue(vk_device_, indices.decode_family.value(), 0, &decode_queue.vk_queue);
-            decode_queue.family       = indices.decode_family.value();
-            decode_queue.type         = vulkan::queue::DECODE;
-            decode_queue.mutex        = std::make_shared<std::mutex>();
+            decode_queue.family        = indices.decode_family.value();
+            decode_queue.type          = vulkan::queue::DECODE;
+            decode_queue.mutex         = std::make_shared<std::mutex>();
             queues_[decode_queue.type] = decode_queue;
         }
 
         if (indices.compute_family.has_value()) {
             vulkan::queue compute_queue{};
             vkGetDeviceQueue(vk_device_, indices.compute_family.value(), 0, &compute_queue.vk_queue);
-            compute_queue.family       = indices.compute_family.value();
-            compute_queue.type         = vulkan::queue::COMPUTE;
-            compute_queue.mutex        = std::make_shared<std::mutex>();
+            compute_queue.family        = indices.compute_family.value();
+            compute_queue.type          = vulkan::queue::COMPUTE;
+            compute_queue.mutex         = std::make_shared<std::mutex>();
             queues_[compute_queue.type] = compute_queue;
         }
 
         if (indices.dedicated_transfer.has_value()) {
             vulkan::queue transfer_queue{};
             vkGetDeviceQueue(vk_device_, indices.dedicated_transfer.value(), 0, &transfer_queue.vk_queue);
-            transfer_queue.family       = indices.dedicated_transfer.value();
-            transfer_queue.type         = vulkan::queue::DEDICATED_TRANSFER;
-            transfer_queue.mutex        = std::make_shared<std::mutex>();
+            transfer_queue.family        = indices.dedicated_transfer.value();
+            transfer_queue.type          = vulkan::queue::DEDICATED_TRANSFER;
+            transfer_queue.mutex         = std::make_shared<std::mutex>();
             queues_[transfer_queue.type] = transfer_queue;
         }
 
@@ -463,11 +464,11 @@ private:
         if (swapchain_details.capabilities.currentExtent.width != UINT32_MAX) {
             swapchain_extent_ = swapchain_details.capabilities.currentExtent;
         } else if (std::dynamic_pointer_cast<display::glfw_extended>(backend_) != nullptr) {
-            auto fb_size            = std::dynamic_pointer_cast<display::glfw_extended>(backend_)->get_framebuffer_size();
+            auto fb_size             = std::dynamic_pointer_cast<display::glfw_extended>(backend_)->get_framebuffer_size();
             swapchain_extent_.width  = std::clamp(fb_size.first, swapchain_details.capabilities.minImageExtent.width,
-                                                 swapchain_details.capabilities.maxImageExtent.width);
+                                                  swapchain_details.capabilities.maxImageExtent.width);
             swapchain_extent_.height = std::clamp(fb_size.second, swapchain_details.capabilities.minImageExtent.height,
-                                                 swapchain_details.capabilities.maxImageExtent.height);
+                                                  swapchain_details.capabilities.maxImageExtent.height);
         }
 
         uint32_t image_count = std::max(swapchain_details.capabilities.minImageCount, 2u); // double buffering
@@ -518,8 +519,8 @@ private:
 
         swapchain_image_views_.resize(swapchain_images_.size());
         for (size_t i = 0; i < swapchain_images_.size(); i++) {
-            swapchain_image_views_[i] = vulkan::create_image_view(vk_device_, swapchain_images_[i], swapchain_image_format_.format,
-                                                                 VK_IMAGE_ASPECT_COLOR_BIT);
+            swapchain_image_views_[i] = vulkan::create_image_view(vk_device_, swapchain_images_[i],
+                                                                  swapchain_image_format_.format, VK_IMAGE_ASPECT_COLOR_BIT);
         }
     }
 
