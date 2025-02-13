@@ -27,7 +27,7 @@ using namespace ILLIXR;
     , stoplight_{phonebook_->lookup_impl<stoplight>()}
     , cam_{switchboard_->get_buffered_reader<cam_type>("cam")}
     , imu_cam_writer_{switchboard_->get_network_writer<switchboard::event_wrapper<std::string>>(
-          "compressed_imu_cam", topic_config{.serialization_method = topic_config::SerializationMethod::PROTOBUF})}
+          "compressed_imu_cam", network::topic_config{.serialization_method = network::topic_config::SerializationMethod::PROTOBUF})}
     , log_(spdlogger(std::getenv("OFFLOAD_VIO_LOG_LEVEL"))) {
     std::srand(std::time(0));
 }

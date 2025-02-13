@@ -48,15 +48,15 @@ vkdemo::vkdemo(const phonebook* const pb)
     , clock_{pb->lookup_impl<relative_clock>()} { }
 
 void vkdemo::initialize() {
-    if (display_provider_->vma_allocator) {
-        this->vma_allocator_ = display_provider_->vma_allocator;
+    if (display_provider_->vma_allocator_) {
+        this->vma_allocator_ = display_provider_->vma_allocator_;
     } else {
-        this->vma_allocator_ = vulkan::create_vma_allocator(display_provider_->vk_instance, display_provider_->vk_physical_device,
-                                                            display_provider_->vk_device);
+        this->vma_allocator_ = vulkan::create_vma_allocator(display_provider_->vk_instance_, display_provider_->vk_physical_device_,
+                                                            display_provider_->vk_device_);
     }
 
-    command_pool_   = vulkan::create_command_pool(display_provider_->vk_device, display_provider_->queues[vulkan::queue::GRAPHICS].family);
-    command_buffer_ = vulkan::create_command_buffer(display_provider_->vk_device, command_pool_);
+    command_pool_   = vulkan::create_command_pool(display_provider_->vk_device_, display_provider_->queues_[vulkan::queue::GRAPHICS].family);
+    command_buffer_ = vulkan::create_command_buffer(display_provider_->vk_device_, command_pool_);
 
     load_model();
     bake_models();
@@ -89,7 +89,7 @@ void vkdemo::update_uniforms(const pose_type& fp) {
 void vkdemo::record_command_buffer(VkCommandBuffer command_buffer, VkFramebuffer frame_buffer, int buffer_ind, bool left) {
     (void)frame_buffer;
     (void)buffer_ind;
-    vkCmdBindPipeline(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
+    vkCmdBindPipeline(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_);
     VkBuffer     vertexBuffers[] = {vertex_buffer_};
     VkDeviceSize offsets[]       = {0};
     vkCmdBindVertexBuffers(command_buffer, 0, 1, vertexBuffers, offsets);
@@ -189,7 +189,7 @@ void vkdemo::create_descriptor_set_layout() {
     VkDescriptorSetLayoutBinding bindings[]{ubo_layout_binding, sampler_layout_binding, sampled_image_layout_binding};
     layout_info.pBindings = bindings;
 
-    VK_ASSERT_SUCCESS(vkCreateDescriptorSetLayout(display_provider_->vk_device, &layout_info, nullptr, &descriptor_set_layout_))
+    VK_ASSERT_SUCCESS(vkCreateDescriptorSetLayout(display_provider_->vk_device_, &layout_info, nullptr, &descriptor_set_layout_))
 }
 
 void vkdemo::create_uniform_buffers() {
@@ -236,7 +236,7 @@ void vkdemo::create_descriptor_pool() {
         pool_sizes.data()                              // pPoolSizes
     };
 
-    VK_ASSERT_SUCCESS(vkCreateDescriptorPool(display_provider_->vk_device, &pool_info, nullptr, &descriptor_pool_))
+    VK_ASSERT_SUCCESS(vkCreateDescriptorPool(display_provider_->vk_device_, &pool_info, nullptr, &descriptor_pool_))
 }
 
 void vkdemo::create_texture_sampler_() {
@@ -262,7 +262,7 @@ void vkdemo::create_texture_sampler_() {
         VK_FALSE                          // unnormalizedCoordinates
     };
 
-    VK_ASSERT_SUCCESS(vkCreateSampler(display_provider_->vk_device, &sampler_info, nullptr, &texture_sampler_))
+    VK_ASSERT_SUCCESS(vkCreateSampler(display_provider_->vk_device_, &sampler_info, nullptr, &texture_sampler_))
 }
 
 void vkdemo::create_descriptor_set() {
@@ -275,7 +275,7 @@ void vkdemo::create_descriptor_set() {
         layouts                                         // pSetLayouts
     };
 
-    VK_ASSERT_SUCCESS(vkAllocateDescriptorSets(display_provider_->vk_device, &alloc_info, descriptor_sets_.data()))
+    VK_ASSERT_SUCCESS(vkAllocateDescriptorSets(display_provider_->vk_device_, &alloc_info, descriptor_sets_.data()))
 
     std::array<VkDescriptorBufferInfo, 2> buffer_infos = {{{
                                                                uniform_buffers_[0],          // buffer
@@ -313,7 +313,7 @@ void vkdemo::create_descriptor_set() {
                                                                   nullptr                                 // pTexelBufferView
                                                               }}};
 
-    vkUpdateDescriptorSets(display_provider_->vk_device, static_cast<uint32_t>(descriptor_writes.size()), descriptor_writes.data(),
+    vkUpdateDescriptorSets(display_provider_->vk_device_, static_cast<uint32_t>(descriptor_writes.size()), descriptor_writes.data(),
                            0, nullptr);
 
     std::vector<VkWriteDescriptorSet> image_descriptor_writes = {};
@@ -347,7 +347,7 @@ void vkdemo::create_descriptor_set() {
         });
     }
 
-    vkUpdateDescriptorSets(display_provider_->vk_device, static_cast<uint32_t>(image_descriptor_writes.size()),
+    vkUpdateDescriptorSets(display_provider_->vk_device_, static_cast<uint32_t>(image_descriptor_writes.size()),
                            image_descriptor_writes.data(), 0, nullptr);
 }
 
@@ -437,7 +437,7 @@ void vkdemo::load_texture(const std::string& path, int i) {
     image_layout_transition(textures_[i].image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED,
                             VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 
-    vulkan::copy_buffer_to_image(display_provider_->vk_device, display_provider_->queues[vulkan::queue::GRAPHICS],
+    vulkan::copy_buffer_to_image(display_provider_->vk_device_, display_provider_->queues_[vulkan::queue::GRAPHICS],
                                  command_pool_, staging_buffer,
                                  textures_[i].image, width, height);
 
@@ -463,12 +463,12 @@ void vkdemo::load_texture(const std::string& path, int i) {
         } // subresourceRange
     };
 
-    VK_ASSERT_SUCCESS(vkCreateImageView(display_provider_->vk_device, &view_info, nullptr, &textures_[i].image_view))
+    VK_ASSERT_SUCCESS(vkCreateImageView(display_provider_->vk_device_, &view_info, nullptr, &textures_[i].image_view))
 }
 
 void vkdemo::image_layout_transition(VkImage image, [[maybe_unused]] VkFormat format, VkImageLayout old_layout,
                                      VkImageLayout new_layout) {
-    VkCommandBuffer command_buffer_local = vulkan::begin_one_time_command(display_provider_->vk_device, command_pool_);
+    VkCommandBuffer command_buffer_local = vulkan::begin_one_time_command(display_provider_->vk_device_, command_pool_);
 
     VkImageMemoryBarrier barrier{
         VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER, // sType
@@ -517,7 +517,7 @@ void vkdemo::image_layout_transition(VkImage image, [[maybe_unused]] VkFormat fo
 
     vkCmdPipelineBarrier(command_buffer_local, source_stage, destination_stage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
 
-    vulkan::end_one_time_command(display_provider_->vk_device, command_pool_, display_provider_->queues[vulkan::queue::GRAPHICS], command_buffer_local);
+    vulkan::end_one_time_command(display_provider_->vk_device_, command_pool_, display_provider_->queues_[vulkan::queue::GRAPHICS], command_buffer_local);
     }
 
 void vkdemo::load_model() {
@@ -617,14 +617,14 @@ void vkdemo::create_vertex_buffer() {
     memcpy(mapped_data, vertices_.data(), sizeof(vertices_[0]) * vertices_.size());
     vmaUnmapMemory(vma_allocator_, staging_buffer_allocation);
 
-        VkCommandBuffer command_buffer_local = vulkan::begin_one_time_command(display_provider_->vk_device, command_pool_);
+        VkCommandBuffer command_buffer_local = vulkan::begin_one_time_command(display_provider_->vk_device_, command_pool_);
         VkBufferCopy    copy_region{
             0,                                    // srcOffset
             0,                                    // dstOffset
             sizeof(vertices_[0]) * vertices_.size() // size
         };
         vkCmdCopyBuffer(command_buffer_local, staging_buffer, vertex_buffer_, 1, &copy_region);
-        vulkan::end_one_time_command(display_provider_->vk_device, command_pool_, display_provider_->queues[vulkan::queue::GRAPHICS], command_buffer_local);
+        vulkan::end_one_time_command(display_provider_->vk_device_, command_pool_, display_provider_->queues_[vulkan::queue::GRAPHICS], command_buffer_local);
 
     vmaDestroyBuffer(vma_allocator_, staging_buffer, staging_buffer_allocation);
 }
@@ -672,26 +672,26 @@ void vkdemo::create_index_buffer() {
     memcpy(mapped_data, indices_.data(), sizeof(indices_[0]) * indices_.size());
     vmaUnmapMemory(vma_allocator_, staging_buffer_allocation);
 
-        VkCommandBuffer command_buffer_local = vulkan::begin_one_time_command(display_provider_->vk_device, command_pool_);
+        VkCommandBuffer command_buffer_local = vulkan::begin_one_time_command(display_provider_->vk_device_, command_pool_);
         VkBufferCopy    copy_region{
             0,                                  // srcOffset
             0,                                  // dstOffset
             sizeof(indices_[0]) * indices_.size() // size
         };
         vkCmdCopyBuffer(command_buffer_local, staging_buffer, index_buffer_, 1, &copy_region);
-        vulkan::end_one_time_command(display_provider_->vk_device, command_pool_, display_provider_->queues[vulkan::queue::GRAPHICS], command_buffer_local);
+        vulkan::end_one_time_command(display_provider_->vk_device_, command_pool_, display_provider_->queues_[vulkan::queue::GRAPHICS], command_buffer_local);
 
     vmaDestroyBuffer(vma_allocator_, staging_buffer, staging_buffer_allocation);
 }
 
 void vkdemo::create_pipeline(VkRenderPass render_pass, uint32_t subpass) {
-    if (pipeline != VK_NULL_HANDLE) {
+    if (pipeline_ != VK_NULL_HANDLE) {
         throw std::runtime_error("timewarp_vk::create_pipeline: pipeline already created");
     }
 
         auto           folder = std::string(SHADER_FOLDER);
-        VkShaderModule vert   = vulkan::create_shader_module(display_provider_->vk_device, vulkan::read_file(folder + "/demo.vert.spv"));
-        VkShaderModule frag   = vulkan::create_shader_module(display_provider_->vk_device, vulkan::read_file(folder + "/demo.frag.spv"));
+        VkShaderModule vert   = vulkan::create_shader_module(display_provider_->vk_device_, vulkan::read_file(folder + "/demo.vert.spv"));
+        VkShaderModule frag   = vulkan::create_shader_module(display_provider_->vk_device_, vulkan::read_file(folder + "/demo.frag.spv"));
 
     VkPipelineShaderStageCreateInfo vert_shader_stage_info{
         VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO, // sType
@@ -736,7 +736,7 @@ void vkdemo::create_pipeline(VkRenderPass render_pass, uint32_t subpass) {
         VK_FALSE                                                     // primitiveRestartEnable
     };
 
-        auto per_eye_extent = VkExtent2D{display_provider_->swapchain_extent.width / 2, display_provider_->swapchain_extent.height};
+        auto per_eye_extent = VkExtent2D{display_provider_->swapchain_extent_.width / 2, display_provider_->swapchain_extent_.height};
 
         VkViewport viewport{
             0.0f,                                      // x
@@ -843,7 +843,7 @@ void vkdemo::create_pipeline(VkRenderPass render_pass, uint32_t subpass) {
         &push_constant_range                           // pPushConstantRanges
     };
 
-    VK_ASSERT_SUCCESS(vkCreatePipelineLayout(display_provider_->vk_device, &pipeline_layout_info, nullptr, &pipeline_layout_))
+    VK_ASSERT_SUCCESS(vkCreatePipelineLayout(display_provider_->vk_device_, &pipeline_layout_info, nullptr, &pipeline_layout_))
 
         VkPipelineDepthStencilStateCreateInfo depth_stencil{
             VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,                                 // sType
@@ -883,10 +883,10 @@ void vkdemo::create_pipeline(VkRenderPass render_pass, uint32_t subpass) {
     };
 
     VK_ASSERT_SUCCESS(
-        vkCreateGraphicsPipelines(display_provider_->vk_device, VK_NULL_HANDLE, 1, &pipeline_info, nullptr, &pipeline))
+        vkCreateGraphicsPipelines(display_provider_->vk_device_, VK_NULL_HANDLE, 1, &pipeline_info, nullptr, &pipeline_))
 
-    vkDestroyShaderModule(display_provider_->vk_device, vert, nullptr);
-    vkDestroyShaderModule(display_provider_->vk_device, frag, nullptr);
+    vkDestroyShaderModule(display_provider_->vk_device_, vert, nullptr);
+    vkDestroyShaderModule(display_provider_->vk_device_, frag, nullptr);
 }
 
 [[maybe_unused]] vkdemo_plugin::vkdemo_plugin(const std::string& name, phonebook* pb)

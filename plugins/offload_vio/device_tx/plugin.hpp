@@ -45,7 +45,7 @@ private:
     switchboard::buffered_reader<cam_type> cam_;
     switchboard::network_writer<switchboard::event_wrapper<std::string>> imu_cam_writer_;
     std::shared_ptr<spdlog::logger>        log_;
-    TCPSocket   socket_;
+    network::TCPSocket   socket_;
     std::string server_ip_;
 };
 } // namespace ILLIXR

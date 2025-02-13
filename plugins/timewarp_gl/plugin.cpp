@@ -127,12 +127,12 @@ timewarp_gl::timewarp_gl(const std::string& name, phonebook* pb)
         }
 #ifdef ENABLE_MONADO
         case swapchain_usage::LEFT_RENDER: {
-            this->eye_image_handles_[0] = *handle;
+            this->eye_output_handles_[0] = *handle;
             left_output_ready              = true;
             break;
         }
         case swapchain_usage::RIGHT_RENDER: {
-            this->eye_image_handles_[1] = *handle;
+            this->eye_output_handles_[1] = *handle;
             right_output_ready             = true;
             break;
         }
@@ -663,7 +663,7 @@ void timewarp_gl::warp(const switchboard::ptr<const rendered_frame>& most_recent
 
 #ifdef ENABLE_MONADO
     // signal quad layer in Monado
-    signal_quad_.put(signal_quad_.allocate<signal_to_quad>(++signal_quad_seq_));
+    signal_quad_.put(signal_quad_.allocate(++signal_quad_seq_));
 #else
     // If we're not using Monado, we want to composite the left and right buffers into one
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -776,7 +776,7 @@ void timewarp_gl::warp(const switchboard::ptr<const rendered_frame>& most_recent
 #endif
 }
 
-#ifndef ILLIXR_MONADO
+#ifndef ENABLE_MONADO
 threadloop::skip_option timewarp_gl::_p_should_skip() {
     using namespace std::chrono_literals;
     // Sleep for approximately 90% of the time until the next vsync.

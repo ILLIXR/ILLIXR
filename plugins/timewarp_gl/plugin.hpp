@@ -22,11 +22,11 @@ public:
     void _setup();
     void _prepare_rendering();
     void warp(const switchboard::ptr<const rendered_frame>& most_recent_frame);
-#ifndef ILLIXR_MONADO
+#ifndef ENABLE_MONADO
     skip_option _p_should_skip() override;
     void        _p_thread_setup() override;
-    void        _p_one_iteration() override;
 #endif
+    void        _p_one_iteration() override {}
 
 private:
     GLubyte*      read_texture_image();
@@ -36,7 +36,7 @@ private:
     static void   calculate_time_warp_transform(Eigen::Matrix4f& transform, const Eigen::Matrix4f& render_projection_matrix,
                                                 const Eigen::Matrix4f& render_view_matrix,
                                                 const Eigen::Matrix4f& new_view_matrix);
-#ifndef ILLIXR_MONADO
+#ifndef ENABLE_MONADO
     [[nodiscard]] time_point                get_next_swap_time_estimate() const;
     [[maybe_unused]] [[nodiscard]] duration estimate_time_to_sleep(const double frame_percentage) const;
 #endif
@@ -64,7 +64,7 @@ private:
     std::array<GLuint, 2> eye_output_textures_{};
     std::array<GLuint, 2> eye_framebuffers_{};
 
-#ifdef ILLIXR_MONADO
+#ifdef ENABLE_MONADO
     std::array<image_handle, 2> eye_output_handles_;
 
     // Synchronization helper for Monado

@@ -23,7 +23,7 @@ private:
     switchboard::writer<pose_type>            pose_;
     switchboard::writer<imu_integrator_input> imu_integrator_input_;
 
-    TCPSocket   socket_;
+    network::TCPSocket   socket_;
     std::string server_ip_;
 
     std::string delimiter = "END!";

@@ -17,7 +17,7 @@ using namespace ILLIXR;
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
     , imu_int_input_{switchboard_->get_reader<imu_integrator_input>("imu_integrator_input")}
     , vio_pose_writer_{switchboard_->get_network_writer<switchboard::event_wrapper<std::string>>(
-          "vio_pose", topic_config{.serialization_method = topic_config::SerializationMethod::PROTOBUF})} {
+          "vio_pose", network::topic_config{.serialization_method = network::topic_config::SerializationMethod::PROTOBUF})} {
     spdlogger(std::getenv("OFFLOAD_VIO_LOG_LEVEL"));
 }
 

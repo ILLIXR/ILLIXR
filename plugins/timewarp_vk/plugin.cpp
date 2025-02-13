@@ -9,6 +9,13 @@
 #include "illixr/math_util.hpp"
 #include "illixr/vk/vulkan_utils.hpp"
 
+#define GLM_FORCE_RADIANS
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/hash.hpp>
+
 #include <future>
 #include <mutex>
 
@@ -74,19 +81,20 @@ timewarp_vk::timewarp_vk(const phonebook* const pb)
     , disable_warp_{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_TIMEWARP_DISABLE", "False"))} { }
 
 void timewarp_vk::initialize() {
-    if (display_provider_->vma_allocator) {
-        this->vma_allocator_ = display_provider_->vma_allocator;
+    if (display_provider_->vma_allocator_) {
+        this->vma_allocator_ = display_provider_->vma_allocator_;
     } else {
-        this->vma_allocator_ = vulkan::create_vma_allocator(display_provider_->vk_instance, display_provider_->vk_physical_device, display_provider_->vk_device);
+            this->vma_allocator_ = vulkan::create_vma_allocator(display_provider_->vk_instance_, display_provider_->vk_physical_device_,
+                                                                display_provider_->vk_device_);
         deletion_queue_.emplace([=]() {
             vmaDestroyAllocator(vma_allocator_);
         });
     }
 
-    command_pool_   = vulkan::create_command_pool(display_provider_->vk_device, display_provider_->queues[vulkan::queue::queue_type::GRAPHICS].family);
-    command_buffer_ = vulkan::create_command_buffer(display_provider_->vk_device, command_pool_);
+    command_pool_   = vulkan::create_command_pool(display_provider_->vk_device_, display_provider_->queues_[vulkan::queue::queue_type::GRAPHICS].family);
+    command_buffer_ = vulkan::create_command_buffer(display_provider_->vk_device_, command_pool_);
     deletion_queue_.emplace([=]() {
-        vkDestroyCommandPool(display_provider_->vk_device, command_pool_, nullptr);
+        vkDestroyCommandPool(display_provider_->vk_device_, command_pool_, nullptr);
     });
 
     create_descriptor_set_layout();
@@ -100,8 +108,8 @@ void timewarp_vk::setup(VkRenderPass render_pass, uint32_t subpass, std::shared_
 
     display_provider_ = phonebook_->lookup_impl<vulkan::display_provider>();
 
-    swapchain_width_  = display_provider_->swapchain_extent.width == 0 ? display_params::width_pixels : display_provider_->swapchain_extent.width;
-    swapchain_height_ = display_provider_->swapchain_extent.height == 0 ? display_params::height_pixels : display_provider_->swapchain_extent.height;
+    swapchain_width_  = display_provider_->swapchain_extent_.width == 0 ? display_params::width_pixels : display_provider_->swapchain_extent_.width;
+    swapchain_height_ = display_provider_->swapchain_extent_.height == 0 ? display_params::height_pixels : display_provider_->swapchain_extent_.height;
 
     HMD::get_default_hmd_info(swapchain_width_, swapchain_height_, display_params::width_meters, display_params::height_meters,
                               display_params::lens_separation, display_params::meters_per_tan_angle,
@@ -154,13 +162,13 @@ void timewarp_vk::setup(VkRenderPass render_pass, uint32_t subpass, std::shared_
 }
 
 void timewarp_vk::partial_destroy() {
-    vkDestroyPipeline(display_provider_->vk_device, pipeline, nullptr);
-    pipeline = VK_NULL_HANDLE;
+    vkDestroyPipeline(display_provider_->vk_device_, pipeline_, nullptr);
+    pipeline_ = VK_NULL_HANDLE;
 
-    vkDestroyPipelineLayout(display_provider_->vk_device, pipeline_layout_, nullptr);
+    vkDestroyPipelineLayout(display_provider_->vk_device_, pipeline_layout_, nullptr);
     pipeline_layout_ = VK_NULL_HANDLE;
 
-    vkDestroyDescriptorPool(display_provider_->vk_device, descriptor_pool_, nullptr);
+    vkDestroyDescriptorPool(display_provider_->vk_device_, descriptor_pool_, nullptr);
     descriptor_pool_ = VK_NULL_HANDLE;
 }
 
@@ -257,7 +265,7 @@ void timewarp_vk::record_command_buffer(VkCommandBuffer commandBuffer, VkFramebu
     vkCmdSetViewport(commandBuffer, 0, 1, &tw_viewport);
     vkCmdSetScissor(commandBuffer, 0, 1, &tw_scissor);
 
-    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
+    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_);
     vkCmdBindVertexBuffers(commandBuffer, 0, 1, &vertex_buffer_, &offsets);
     // for (int eye = 0; eye < HMD::NUM_EYES; eye++) {
     //     vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout_, 0, 1,
@@ -340,11 +348,11 @@ void timewarp_vk::create_vertex_buffer() {
     memcpy(mapped_data, vertices.data(), sizeof(vertex) * num_distortion_vertices_ * HMD::NUM_EYES);
     vmaUnmapMemory(vma_allocator_, staging_alloc);
 
-        VkCommandBuffer command_buffer_local = vulkan::begin_one_time_command(display_provider_->vk_device, command_pool_);
+        VkCommandBuffer command_buffer_local = vulkan::begin_one_time_command(display_provider_->vk_device_, command_pool_);
         VkBufferCopy    copy_region          = {};
         copy_region.size                     = sizeof(vertex) * num_distortion_vertices_ * HMD::NUM_EYES;
         vkCmdCopyBuffer(command_buffer_local, staging_buffer, vertex_buffer_, 1, &copy_region);
-        vulkan::end_one_time_command(display_provider_->vk_device, command_pool_, display_provider_->queues[vulkan::queue::queue_type::GRAPHICS],
+        vulkan::end_one_time_command(display_provider_->vk_device_, command_pool_, display_provider_->queues_[vulkan::queue::queue_type::GRAPHICS],
                                      command_buffer_local);
 
     vmaDestroyBuffer(vma_allocator_, staging_buffer, staging_alloc);
@@ -401,11 +409,11 @@ void timewarp_vk::create_index_buffer() {
     memcpy(mapped_data, distortion_indices_.data(), sizeof(uint32_t) * num_distortion_indices_);
     vmaUnmapMemory(vma_allocator_, staging_alloc);
 
-        VkCommandBuffer command_buffer_local = vulkan::begin_one_time_command(display_provider_->vk_device, command_pool_);
+        VkCommandBuffer command_buffer_local = vulkan::begin_one_time_command(display_provider_->vk_device_, command_pool_);
         VkBufferCopy    copy_region          = {};
         copy_region.size                     = sizeof(uint32_t) * num_distortion_indices_;
         vkCmdCopyBuffer(command_buffer_local, staging_buffer, index_buffer_, 1, &copy_region);
-        vulkan::end_one_time_command(display_provider_->vk_device, command_pool_, display_provider_->queues[vulkan::queue::queue_type::GRAPHICS],
+        vulkan::end_one_time_command(display_provider_->vk_device_, command_pool_, display_provider_->queues_[vulkan::queue::queue_type::GRAPHICS],
                                      command_buffer_local);
 
     vmaDestroyBuffer(vma_allocator_, staging_buffer, staging_alloc);
@@ -417,8 +425,8 @@ void timewarp_vk::create_index_buffer() {
 
 void timewarp_vk::generate_distortion_data() {
     // Generate reference HMD and physical body dimensions
-    HMD::get_default_hmd_info(display_provider_->swapchain_extent.width == 0 ? display_params::width_pixels : display_provider_->swapchain_extent.width,
-                              display_provider_->swapchain_extent.height == 0 ? display_params::height_pixels : display_provider_->swapchain_extent.height,
+    HMD::get_default_hmd_info(display_provider_->swapchain_extent_.width == 0 ? display_params::width_pixels : display_provider_->swapchain_extent_.width,
+                              display_provider_->swapchain_extent_.height == 0 ? display_params::height_pixels : display_provider_->swapchain_extent_.height,
                               display_params::width_meters, display_params::height_meters, display_params::lens_separation,
                               display_params::meters_per_tan_angle, display_params::aberration, hmd_info_);
 
@@ -467,10 +475,10 @@ void timewarp_vk::create_texture_sampler() {
     sampler_info.minLod     = 0.f;
     sampler_info.maxLod     = 0.f;
 
-    VK_ASSERT_SUCCESS(vkCreateSampler(display_provider_->vk_device, &sampler_info, nullptr, &fb_sampler_))
+    VK_ASSERT_SUCCESS(vkCreateSampler(display_provider_->vk_device_, &sampler_info, nullptr, &fb_sampler_))
 
     deletion_queue_.emplace([=]() {
-        vkDestroySampler(display_provider_->vk_device, fb_sampler_, nullptr);
+        vkDestroySampler(display_provider_->vk_device_, fb_sampler_, nullptr);
     });
 }
 
@@ -493,9 +501,9 @@ void timewarp_vk::create_descriptor_set_layout() {
     layout_info.bindingCount                                = static_cast<uint32_t>(bindings.size());
     layout_info.pBindings                                   = bindings.data(); // array of VkDescriptorSetLayoutBinding structs
 
-    VK_ASSERT_SUCCESS(vkCreateDescriptorSetLayout(display_provider_->vk_device, &layout_info, nullptr, &descriptor_set_layout_))
+    VK_ASSERT_SUCCESS(vkCreateDescriptorSetLayout(display_provider_->vk_device_, &layout_info, nullptr, &descriptor_set_layout_))
     deletion_queue_.emplace([=]() {
-        vkDestroyDescriptorSetLayout(display_provider_->vk_device, descriptor_set_layout_, nullptr);
+        vkDestroyDescriptorSetLayout(display_provider_->vk_device_, descriptor_set_layout_, nullptr);
     });
 }
 
@@ -544,7 +552,7 @@ void timewarp_vk::create_descriptor_pool() {
         pool_info.pPoolSizes    = pool_sizes.data();
         pool_info.maxSets       = buffer_pool_->image_pool.size() * 2;
 
-    VK_ASSERT_SUCCESS(vkCreateDescriptorPool(display_provider_->vk_device, &pool_info, nullptr, &descriptor_pool_))
+    VK_ASSERT_SUCCESS(vkCreateDescriptorPool(display_provider_->vk_device_, &pool_info, nullptr, &descriptor_pool_))
 }
 
 void timewarp_vk::create_descriptor_sets() {
@@ -563,7 +571,7 @@ void timewarp_vk::create_descriptor_sets() {
             allocInfo.pSetLayouts        = layouts.data();
 
             descriptor_sets_[eye].resize(buffer_pool_->image_pool.size());
-            VK_ASSERT_SUCCESS(vkAllocateDescriptorSets(display_provider_->vk_device, &allocInfo, descriptor_sets_[eye].data()))
+            VK_ASSERT_SUCCESS(vkAllocateDescriptorSets(display_provider_->vk_device_, &allocInfo, descriptor_sets_[eye].data()))
 
             for (size_t i = 0; i < buffer_pool_->image_pool.size(); i++) {
                 VkDescriptorBufferInfo buffer_info = {};
@@ -595,18 +603,18 @@ void timewarp_vk::create_descriptor_sets() {
             descriptor_writes[1].descriptorCount = 1;
             descriptor_writes[1].pImageInfo      = &image_info;
 
-            vkUpdateDescriptorSets(display_provider_->vk_device, static_cast<uint32_t>(descriptor_writes.size()),
+            vkUpdateDescriptorSets(display_provider_->vk_device_, static_cast<uint32_t>(descriptor_writes.size()),
                                    descriptor_writes.data(), 0, nullptr);
         }
     }
 }
 
 VkPipeline timewarp_vk::create_pipeline(VkRenderPass render_pass, [[maybe_unused]] uint32_t subpass) {
-    if (pipeline != VK_NULL_HANDLE) {
+    if (pipeline_ != VK_NULL_HANDLE) {
         throw std::runtime_error("timewarp_vk::create_pipeline: pipeline already created");
     }
 
-    VkDevice device = display_provider_->vk_device;
+    VkDevice device = display_provider_->vk_device_;
 
         auto           folder = std::string(SHADER_FOLDER);
         VkShaderModule vert   = vulkan::create_shader_module(device, vulkan::read_file(folder + "/tw.vert.spv"));
@@ -676,14 +684,14 @@ VkPipeline timewarp_vk::create_pipeline(VkRenderPass render_pass, [[maybe_unused
     // VkViewport viewport = {};
     // viewport.x = 0.0f;
     // viewport.y = 0.0f;
-    // viewport.width = display_provider_->swapchain_extent.width;
-    // viewport.height = display_provider_->swapchain_extent.height;
+    // viewport.width = display_provider_->swapchain_extent_.width;
+    // viewport.height = display_provider_->swapchain_extent_.height;
     // viewport.minDepth = 0.0f;
     // viewport.maxDepth = 1.0f;
 
     // VkRect2D scissor = {};
     // scissor.offset = {0, 0};
-    // scissor.extent = display_provider_->swapchain_extent;
+    // scissor.extent = display_provider_->swapchain_extent_;
 
     // VkPipelineViewportStateCreateInfo viewport_state_create_info = {};
     // viewport_state_create_info.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
@@ -736,11 +744,11 @@ VkPipeline timewarp_vk::create_pipeline(VkRenderPass render_pass, [[maybe_unused
     pipeline_info.renderPass = render_pass;
     pipeline_info.subpass    = 0;
 
-    VK_ASSERT_SUCCESS(vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipeline_info, nullptr, &pipeline))
+    VK_ASSERT_SUCCESS(vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipeline_info, nullptr, &pipeline_))
 
     vkDestroyShaderModule(device, vert, nullptr);
     vkDestroyShaderModule(device, frag, nullptr);
-    return pipeline;
+    return pipeline_;
 }
 
 void timewarp_vk::build_timewarp(HMD::hmd_info_t& hmd_info) {
