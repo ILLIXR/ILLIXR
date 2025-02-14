@@ -73,6 +73,7 @@ public:
         assert(stoplight_->check_should_stop());
         assert(thread_.joinable());
         thread_.join();
+        plugin::stop();
     }
 
     /**

@@ -4,9 +4,15 @@
 #include "illixr/pose_prediction.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
-#include "illixr/vk_util/display_sink.hpp"
-#include "illixr/vk_util/render_pass.hpp"
+#include "illixr/vk/display_provider.hpp"
+#include "illixr/vk/render_pass.hpp"
 
+#define GLM_FORCE_RADIANS
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/hash.hpp>
 #include <map>
 
 namespace ILLIXR {
@@ -58,14 +64,18 @@ struct texture {
     VkImageView   image_view;
 };
 
-class vkdemo : public app {
+class vkdemo : public vulkan::app {
 public:
     explicit vkdemo(const phonebook* const pb);
     void initialize();
-    void setup(VkRenderPass render_pass, uint32_t subpass) override;
+    void setup(VkRenderPass render_pass, uint32_t subpass, std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> _) override;
     void update_uniforms(const pose_type& fp) override;
-    void record_command_buffer(VkCommandBuffer command_buffer, int eye) override;
+    void record_command_buffer(VkCommandBuffer command_buffer, VkFramebuffer frame_buffer, int buffer_ind, bool left) override;
     void destroy() override;
+
+    [[maybe_unused]] bool is_external() override {
+        return false;
+    }
 
 private:
     void update_uniform(const pose_type& pose, int eye);
@@ -83,10 +93,10 @@ private:
     void create_index_buffer();
     void create_pipeline(VkRenderPass render_pass, uint32_t subpass);
 
-    const std::shared_ptr<switchboard>          switchboard_;
-    const std::shared_ptr<pose_prediction>      pose_prediction_;
-    const std::shared_ptr<display_sink>         display_sink_ = nullptr;
-    const std::shared_ptr<const relative_clock> clock_;
+    const std::shared_ptr<switchboard>              switchboard_;
+    const std::shared_ptr<pose_prediction>          pose_prediction_;
+    const std::shared_ptr<vulkan::display_provider> display_provider_ = nullptr;
+    const std::shared_ptr<const relative_clock>     clock_;
 
     Eigen::Matrix4f       basic_projection_;
     std::vector<model>    models_;
