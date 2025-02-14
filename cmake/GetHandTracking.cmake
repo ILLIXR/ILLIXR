@@ -14,7 +14,7 @@ externalproject_add(
         INSTALL_COMMAND ""
 )
 
-set(hand_tracking_deps_${POSTFIX}EXTERNAL Yes)
+set(Hand_Tracking_Deps${POSTFIX}_EXTERNAL Yes PARENT_SCOPE)
 list(APPEND EXTERNAL_LIBRARIES "Hand_Tracking_Deps${POSTFIX}")
 set(EXTERNAL_LIBRARIES ${EXTERNAL_LIBRARIES} PARENT_SCOPE)
 
