@@ -8,14 +8,15 @@ set(PLUGIN_NAME plugin.offload_vio.device_tx${ILLIXR_BUILD_SUFFIX})
 
 # source files, listed individually so that any changes will trigger a rebuild
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
-        video_encoder.cpp
-        video_encoder.h
-        ../../../include/illixr/plugin.hpp
-            ../../../include/illixr/data_format/misc.hpp
-            ../../../include/illixr/data_format/opencv_data_types.hpp
-        ../../../include/illixr/phonebook.hpp
-        ../../../include/illixr/switchboard.hpp
-        )
+            plugin.hpp
+            video_encoder.cpp
+            video_encoder.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/plugin.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/misc.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/opencv_data_types.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/phonebook.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
+)
 
 # if building on CentOS make sure we use the correct OpenCV
 if(BUILD_OPENCV)
@@ -50,8 +51,3 @@ target_link_libraries(${PLUGIN_NAME} ${GST_APP_LIBRARIES} ${GST_VIDEO_LIBRARIES}
 target_compile_features(${PLUGIN_NAME} PRIVATE cxx_std_17)
 
 install(TARGETS ${PLUGIN_NAME} DESTINATION lib)
-
-get_cmake_property(_variableNames VARIABLES)
-foreach (_variableName ${_variableNames})
-    message(STATUS "${_variableName}=${${_variableName}}")
-endforeach()

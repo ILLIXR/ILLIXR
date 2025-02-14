@@ -16,9 +16,9 @@ find_package(glfw3 3.3 REQUIRED)
 find_package(glm REQUIRED)
 
 file(GLOB_RECURSE GLSL_SOURCE_FILES
-        "shaders/*.frag"
-        "shaders/*.vert"
-        )
+     "shaders/*.frag"
+     "shaders/*.vert"
+)
 
 foreach (GLSL ${GLSL_SOURCE_FILES})
     get_filename_component(FILE_NAME ${GLSL} NAME)
@@ -37,14 +37,15 @@ add_custom_target(
 )
 
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
+            plugin.hpp
             third_party/VkBootstrap.cpp
-            ../../include/illixr/vk_util/third_party/VkBootstrap.h
-            ../../include/illixr/vk_util/third_party/VkBootstrapDispatch.h
-            ../../include/illixr/phonebook.hpp
-            ../../include/illixr/switchboard.hpp
-            ../../include/illixr/threadloop.hpp
-            ../../include/illixr/vk_util/display_sink.hpp
-            ../../include/illixr/vk_util/vulkan_utils.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/vk_util/third_party/VkBootstrap.h
+            ${CMAKE_SOURCE_DIR}/include/illixr/vk_util/third_party/VkBootstrapDispatch.h
+            ${CMAKE_SOURCE_DIR}/include/illixr/phonebook.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/threadloop.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/vk_util/display_sink.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/vk_util/vulkan_utils.hpp
 )
 
 add_dependencies(${PLUGIN_NAME} Display_VK_Shaders)

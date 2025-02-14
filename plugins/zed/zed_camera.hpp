@@ -14,7 +14,7 @@ public:
     explicit zed_camera(const std::shared_ptr<switchboard>& sb)
         : sl::Camera()
         , switchboard_{sb}
-        , frame{sl::REFERENCE_FRAME::WORLD} {
+        , frame_{sl::REFERENCE_FRAME::WORLD} {
     } //(switchboard_->get_env_bool("USE_WCS")) ? sl::REFERENCE_FRAME::WORLD : sl::REFERENCE_FRAME::CAMERA} { }
 
     sl::ERROR_CODE open(const sl::InitParameters& params);
@@ -38,7 +38,7 @@ public:
     }
 
     sl::POSITIONAL_TRACKING_STATE getPosition(sl::Pose& pose) {
-        return sl::Camera::getPosition(pose, frame);
+        return sl::Camera::getPosition(pose, frame_);
     }
 
     [[nodiscard]] float getBaseline() const {
@@ -49,6 +49,6 @@ private:
     const std::shared_ptr<switchboard> switchboard_;
     sl::Transform                      initial_position_;
     data_format::camera_data           config_;
-    sl::REFERENCE_FRAME                frame;
+    sl::REFERENCE_FRAME                frame_;
 };
 } // namespace ILLIXR

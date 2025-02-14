@@ -3,9 +3,10 @@
 set(PLUGIN_NAME plugin.fauxpose${ILLIXR_BUILD_SUFFIX})
 
 set(FAUXPOSE_SOURCES plugin.cpp
-    ../../include/illixr/plugin.hpp
-    ../../include/illixr/pose_prediction.hpp
-    ../../include/illixr/data_format/pose.hpp
+    plugin.hpp
+    ${CMAKE_SOURCE_DIR}/include/illixr/plugin.hpp
+    ${CMAKE_SOURCE_DIR}/include/illixr/pose_prediction.hpp
+    ${CMAKE_SOURCE_DIR}/include/illixr/data_format/pose.hpp
 )
 
 add_library(${PLUGIN_NAME} SHARED ${FAUXPOSE_SOURCES})

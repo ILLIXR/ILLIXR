@@ -91,6 +91,13 @@ if(HT_ENABLE_GPU)
 endif()
 include(cmake/HelperFunctions.cmake)
 
+set(VISUALIZER "" CACHE STRING "")
+set(VISUALIZER_TO_USE "ALL" CACHE INTERNAL "")
+if(VISUALIZER)
+    string(TOUPPER ${VISUALIZER} VISUALIZER)
+    set(VISUALIZER_TO_USE ${VISUALIZER} CACHE INTERNAL "")
+endif()
+
 generate_yaml()
 check_plugins()
 
@@ -183,8 +190,11 @@ find_package(Eigen3 REQUIRED)
 #############
 
 find_package(Git REQUIRED)
-
-find_package(Boost REQUIRED CONFIG COMPONENTS filesystem serialization)
+if (CMAKE_VERSION VERSION_LESS "3.30.0")
+    find_package(Boost REQUIRED COMPONENTS filesystem serialization)
+else()
+    find_package(Boost REQUIRED COMPONENTS filesystem serialization CONFIG)
+endif()
 
 find_package(spdlog REQUIRED)
 add_definitions(-DFMT_HEADER_ONLY)
@@ -196,7 +206,7 @@ include(src/CMakeLists.txt)
 
 # set any plugins that are being built
 set(FULL_PLUGIN_LIST "")
-foreach(ITEM IN LISTS PLUGIN_LIST)
+foreach(ITEM IN LISTS PLUGIN_LIST VISUALIZER_LIST)
     string(TOUPPER "USE_${ITEM}" ITEM_UPPER)
     string(TOLOWER ${ITEM} ITEM_LOWER)
     list(APPEND FULL_PLUGIN_LIST ${ITEM})
@@ -260,22 +270,20 @@ set(VISUALIZER "" CACHE STRING "")
 
 find_package(Python3 COMPONENTS Interpreter)
 if(Python3_FOUND)
-    set(dependencies "")
+    add_custom_target(depmaker ALL
+                      BYPRODUCTS "${CMAKE_SOURCE_DIR}/plugins/plugin_deps.yaml"
+                      COMMAND ${CMAKE_SOURCE_DIR}/dep_mapper.py ${CMAKE_BINARY_DIR}
+                      WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    )
     if(USE_AUDIO_PIPELINE)
-        set(dependencies "audio_pipeline ")
+        add_dependencies(depmaker "Audio_Pipeline")
     endif()
     if(USE_OPENVINS)
-        set(dependencies "${dependencies} OpenVINS")
+        add_dependencies(depmaker "OpenVINS")
     endif()
     if(USE_HAND_TRACKING)
         #set(dependencies "${dependencies} ${HT_TARGET_NAME}")
     endif()
-    add_custom_target(depmaker ALL
-                      BYPRODUCTS "${CMAKE_SOURCE_DIR}/plugins/plugin_deps.yaml"
-                      DEPENDS ${dependencies}
-                      COMMAND ${CMAKE_SOURCE_DIR}/dep_mapper.py ${CMAKE_BINARY_DIR}
-                      WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    )
 endif()
 install(FILES "${CMAKE_SOURCE_DIR}/plugins/plugin_deps.yaml"
         DESTINATION $ENV{HOME}/.illixr/profiles)

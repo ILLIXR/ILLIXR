@@ -34,8 +34,8 @@ struct [[maybe_unused]] imu_integrator_input : public switchboard::event {
     duration   t_offset;
     imu_params params;
 
-    Eigen::Vector3d             biasAcc;
-    Eigen::Vector3d             biasGyro;
+    Eigen::Vector3d             bias_acc;
+    Eigen::Vector3d             bias_gyro;
     Eigen::Matrix<double, 3, 1> position;
     Eigen::Matrix<double, 3, 1> velocity;
     Eigen::Quaterniond          quat;
@@ -46,8 +46,8 @@ struct [[maybe_unused]] imu_integrator_input : public switchboard::event {
         : last_cam_integration_time{last_cam_integration_time_}
         , t_offset{t_offset_}
         , params{std::move(params_)}
-        , biasAcc{std::move(biasAcc_)}
-        , biasGyro{std::move(biasGyro_)}
+        , bias_acc{std::move(biasAcc_)}
+        , bias_gyro{std::move(biasGyro_)}
         , position{std::move(position_)}
         , velocity{std::move(velocity_)}
         , quat{std::move(quat_)} { }

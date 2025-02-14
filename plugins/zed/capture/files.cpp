@@ -4,64 +4,64 @@
 
 #include <boost/filesystem.hpp>
 #include <sstream>
-#include <string_view>
+//#include <string_view>
 
 #define COMMA ","
 
 using namespace ILLIXR::zed_capture;
 const std::string d_file = "/data.csv";
 
-boost::filesystem::path files::data_path;
-boost::filesystem::path files::img_path;
+boost::filesystem::path files::data_path_;
+boost::filesystem::path files::img_path_;
 
-boost::filesystem::path files::camL_path;
-boost::filesystem::path files::camR_path;
+boost::filesystem::path files::camL_path_;
+boost::filesystem::path files::camR_path_;
 // boost::filesystem::path files::depth_path;
 // boost::filesystem::path files::conf_path;
 
-std::string files::data_file;
-std::string files::camL_file;
-std::string files::camR_file;
+std::string files::data_file_;
+std::string files::camL_file_;
+std::string files::camR_file_;
 // std::string files::depth_file;
 // std::string files::conf_file;
-std::string files::cam_file;
+std::string files::cam_file_;
 
-files* files::instance = nullptr;
+files* files::instance_ = nullptr;
 
 files* files::getInstance() {
-    if (instance == nullptr)
+    if (instance_ == nullptr)
         throw std::runtime_error("Must be given a path");
-    return instance;
+    return instance_;
 }
 
 files* files::getInstance(const std::string& rt, const std::string& path) {
-    if (instance == nullptr) {
-        instance = new files(rt, path);
+    if (instance_ == nullptr) {
+        instance_ = new files(rt, path);
     }
-    return instance;
+    return instance_;
 }
 
 files::files(const std::string& rt, const std::string& sub_path) {
-    root = rt;
-    std::cout << root << "    " << sub_path << std::endl;
-    data_path = root + sub_path + data_sub_path;
-    img_path  = root + sub_path + img_sub_path;
+    root_ = rt;
+    std::cout << root_ << "    " << sub_path << std::endl;
+    data_path_ = root_ + sub_path + data_sub_path_;
+    img_path_  = root_ + sub_path + img_sub_path_;
 
-    camL_path = img_path.string() + "/camL";
-    camR_path = img_path.string() + "/camR";
-    // depth_path = img_path.string() + "/depth";
-    // conf_path = img_path.string() + "/conf";
+    camL_path_ = img_path_.string() + "/camL";
+    camR_path_ = img_path_.string() + "/camR";
+    // depth_path = img_path_.string() + "/depth";
+    // conf_path = img_path_.string() + "/conf";
 
-    data_file = data_path.string() + d_file;
-    camL_file = camL_path.string() + d_file;
-    camR_file = camR_path.string() + d_file;
+    data_file_ = data_path_.string() + d_file;
+    camL_file_ = camL_path_.string() + d_file;
+    camR_file_ = camR_path_.string() + d_file;
     // depth_file = depth_path.string() + d_file;
     // conf_file = conf_path.string() + d_file;
-    cam_file = data_path.string() + "/cam.csv";
+    cam_file_ = data_path_.string() + "/cam.csv";
 
-    boost::filesystem::create_directories(data_path);
-    boost::filesystem::create_directories(camL_path);
-    boost::filesystem::create_directories(camR_path);
+    boost::filesystem::create_directories(data_path_);
+    boost::filesystem::create_directories(camL_path_);
+    boost::filesystem::create_directories(camR_path_);
     // boost::filesystem::create_directories(depth_path);
     // boost::filesystem::create_directories(conf_path);
 }

@@ -23,27 +23,28 @@ public:
     [[maybe_unused]] static files* getInstance();
     static files*                  getInstance(const std::string& rt, const std::string& path);
 
-    static std::string data_file;
-    static std::string camL_file;
-    static std::string camR_file;
+    static std::string data_file_;
+    static std::string camL_file_;
+    static std::string camR_file_;
     // static std::string depth_file;
     // static std::string conf_file;
-    static std::string cam_file;
+    static std::string cam_file_;
 
-    static boost::filesystem::path data_path;
-    static boost::filesystem::path img_path;
+    static boost::filesystem::path data_path_;
+    static boost::filesystem::path img_path_;
 
-    static boost::filesystem::path camL_path;
-    static boost::filesystem::path camR_path;
+    static boost::filesystem::path camL_path_;
+    static boost::filesystem::path camR_path_;
     // static boost::filesystem::path depth_path;
     // static boost::filesystem::path conf_path;
 
 private:
-    const std::string data_sub_path = "data";
-    const std::string img_sub_path  = "imgs";
-    std::string       root;
     explicit files(const std::string& rt, const std::string& path);
-    static files* instance;
+
+    const std::string data_sub_path_ = "data";
+    const std::string img_sub_path_  = "imgs";
+    std::string       root_;
+    static files* instance_;
 };
 } // namespace ILLIXR::zed_capture
 

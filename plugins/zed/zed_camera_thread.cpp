@@ -14,8 +14,8 @@ void transform_zed_pose(sl::Transform& from_pose, sl::Transform& to_pose, float 
 
 zed_camera_thread::zed_camera_thread(const std::string& name_, phonebook* pb_, std::shared_ptr<zed_camera> zed_cam)
     : threadloop{name_, pb_}
-    , switchboard_{pb->lookup_impl<switchboard>()}
-    , clock_{pb->lookup_impl<RelativeClock>()}
+    , switchboard_{phonebook_->lookup_impl<switchboard>()}
+    , clock_{phonebook_->lookup_impl<relative_clock>()}
     , cam_{switchboard_->get_writer<cam_type_zed>("cam_zed")}
     , zed_cam_{std::move(zed_cam)}
     , image_size_{zed_cam_->getCameraInformation().camera_configuration.resolution} {
@@ -27,11 +27,11 @@ zed_camera_thread::zed_camera_thread(const std::string& name_, phonebook* pb_, s
     depth_zed_.alloc(image_size_.width, image_size_.height, sl::MAT_TYPE::F32_C1, sl::MEM::CPU);
     confidence_zed_.alloc(image_size_.width, image_size_.height, sl::MAT_TYPE::F32_C1, sl::MEM::CPU);
 
-    imageL_ocv_     = slMat2cvMat(imageL_zed_);
-    imageR_ocv_     = slMat2cvMat(imageR_zed_);
-    rgb_ocv_        = slMat2cvMat(rgb_zed_);
-    depth_ocv_      = slMat2cvMat(depth_zed_);
-    confidence_ocv_ = slMat2cvMat(confidence_zed_);
+    imageL_ocv_     = slMat_to_cvMat(imageL_zed_);
+    imageR_ocv_     = slMat_to_cvMat(imageR_zed_);
+    rgb_ocv_        = slMat_to_cvMat(rgb_zed_);
+    depth_ocv_      = slMat_to_cvMat(depth_zed_);
+    confidence_ocv_ = slMat_to_cvMat(confidence_zed_);
 }
 
 threadloop::skip_option zed_camera_thread::_p_should_skip() {
@@ -69,13 +69,13 @@ void zed_camera_thread::_p_one_iteration() {
         sl::Pose zed_pose_right{zed_pose_left};
         transform_zed_pose(zed_pose_left.pose_data, zed_pose_right.pose_data, zed_cam_->getBaseline());
         pose_type left_eye_pose{
-            time_point(_clock_duration(zed_pose_left.timestamp.getNanoseconds())),
+            time_point(clock_duration_(zed_pose_left.timestamp.getNanoseconds())),
             {zed_pose_left.getTranslation().tx, zed_pose_left.getTranslation().ty, zed_pose_left.getTranslation().tz},
             {zed_pose_left.getOrientation().w, zed_pose_left.getOrientation().x, zed_pose_left.getOrientation().y,
              zed_pose_left.getOrientation().z},
             units::UNITS};
         pose_type right_eye_pose{
-            time_point(_clock_duration(zed_pose_right.timestamp.getNanoseconds())),
+            time_point(clock_duration_(zed_pose_right.timestamp.getNanoseconds())),
             {zed_pose_right.getTranslation().tx, zed_pose_right.getTranslation().ty, zed_pose_right.getTranslation().tz},
             {zed_pose_right.getOrientation().w, zed_pose_right.getOrientation().x, zed_pose_right.getOrientation().y,
              zed_pose_right.getOrientation().z},
@@ -83,7 +83,7 @@ void zed_camera_thread::_p_one_iteration() {
         poses = {{units::LEFT_EYE, left_eye_pose}, {units::RIGHT_EYE, right_eye_pose}};
     }
 
-    _clock_duration ts = _clock_duration(zed_cam_->getTimestamp(sl::TIME_REFERENCE::IMAGE).getNanoseconds());
+    clock_duration_ ts = clock_duration_(zed_cam_->getTimestamp(sl::TIME_REFERENCE::IMAGE).getNanoseconds());
     cam_.put(cam_.allocate<cam_type_zed>({time_point{ts}, imageL_ocv_.clone(), imageR_ocv_.clone(), rgb_ocv_.clone(),
                                           depth_ocv_.clone(), confidence_ocv_.clone(), ++serial_no_, poses}));
 

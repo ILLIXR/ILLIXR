@@ -12,10 +12,10 @@ public:
     void _p_one_iteration() override;
 
 private:
-    const std::shared_ptr<switchboard>                   _switchboard;
-    switchboard::writer<data_format::monocular_cam_type> _frame_pub;
-    cv::VideoCapture                                     _capture;
-    bool                                                 _load_video;
+    const std::shared_ptr<switchboard>                   switchboard_;
+    switchboard::writer<data_format::monocular_cam_type> frame_pub_;
+    cv::VideoCapture                                     capture_;
+    bool                                                 load_video_;
 };
 
 } // namespace ILLIXR

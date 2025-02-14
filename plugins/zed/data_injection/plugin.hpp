@@ -18,24 +18,25 @@ public:
     void start() override;
 
 private:
-    const std::shared_ptr<switchboard>                   _switchboard;
-    switchboard::writer<data_format::binocular_cam_type> _frame_img_writer;
-    switchboard::writer<data_format::pose_type>          _frame_pose_writer;
-    switchboard::writer<data_format::camera_data>        _camera_data_writer;
+    void read_cam_data();
+    void read_poses();
+    void load_images_on_the_fly();
 
-    std::map<data_format::image::image_type, cv::Mat> _images;
-    std::map<uint64_t, data_format::pose_data*>       _poses;
-    std::vector<uint64_t>                             _timepoints;
-    data_format::camera_data                          _camera_data;
-    std::string                                       _data_root_path;
-    void                                              read_cam_data();
-    void                                              read_poses();
-    void                                              load_images_on_the_fly();
-    uint64_t                                          _counter;
-    uint64_t                                          _current;
-    uint64_t                                          _step;
-    uint64_t                                          _offset;
-    uint64_t                                          _base_time;
+    const std::shared_ptr<switchboard>                   switchboard_;
+    switchboard::writer<data_format::binocular_cam_type> frame_img_writer_;
+    switchboard::writer<data_format::pose_type>          frame_pose_writer_;
+    switchboard::writer<data_format::camera_data>        camera_data_writer_;
+
+    std::map<data_format::image::image_type, cv::Mat> images_;
+    std::map<uint64_t, data_format::pose_data*>       poses_;
+    std::vector<uint64_t>                             timepoints_;
+    data_format::camera_data                          camera_data_;
+    std::string                                       data_root_path_;
+    uint64_t                                          counter_;
+    uint64_t                                          current_;
+    uint64_t                                          step_;
+    uint64_t                                          offset_;
+    uint64_t                                          base_time_;
 };
 
 } // namespace ILLIXR

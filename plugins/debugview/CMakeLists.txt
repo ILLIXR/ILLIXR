@@ -11,6 +11,7 @@ set(PLUGIN_NAME plugin.debugview${ILLIXR_BUILD_SUFFIX})
 
 # source files, listed individually so that any changes will trigger a rebuild
 set(DEBUGVIEW_SOURCES plugin.cpp
+    plugin.hpp
     ${CMAKE_SOURCE_DIR}/include/illixr/imgui/imgui.cpp
     ${CMAKE_SOURCE_DIR}/include/illixr/imgui/imgui_demo.cpp
     ${CMAKE_SOURCE_DIR}/include/illixr/imgui/imgui_draw.cpp

@@ -1,6 +1,12 @@
 # install dependencies of hand tracking
+if (HT_ENABLE_GPU)
+    set(POSTFIX "_gpu")
+else()
+    set(POSTFIX "")
+endif()
+
 externalproject_add(
-        hand_tracking_dependencies
+        hand_tracking_dependencies${POSTFIX}
         GIT_REPOSITORY https://github.com/ILLIXR/hand_tracking_dependencies.git
         GIT_TAG 818f9fc431108ec4017c30f84a116199d8963813
         PREFIX ${CMAKE_BINARY_DIR}/_deps/hand_tracking_deps
@@ -8,7 +14,11 @@ externalproject_add(
         INSTALL_COMMAND ""
 )
 
-# hand tracking plugin
+set(hand_tracking_deps_${POSTFIX}EXTERNAL Yes)
+list(APPEND EXTERNAL_LIBRARIES "Hand_Tracking_Deps${POSTFIX}")
+set(EXTERNAL_LIBRARIES ${EXTERNAL_LIBRARIES} PARENT_SCOPE)
+
+    # hand tracking plugin
 set(PRFX ${CMAKE_BINARY_DIR}/_deps/hand_tracking)
 set(HT_TARGET_NAME "HAND_TRACKING")
 if(HT_ENABLE_GPU)
@@ -22,5 +32,5 @@ externalproject_add(
         GIT_TAG 29d239b3b0ee790056e59ca47a4664da1447c516
         PREFIX ${PRFX}
         CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DHT_ENABLE_GPU=${HT_ENABLE_GPU} -DTFLIBRARY_POSTFIX=ht -DILLIXR_ROOT=${CMAKE_SOURCE_DIR} -DILLIXR_BUILD_SUFFIX=${ILLIXR_BUILD_SUFFIX} -DBUILD_OXR_INTERFACE=${BUILD_OXR_INTERFACE}
-        DEPENDS hand_tracking_dependencies
+        DEPENDS hand_tracking_dependencies${POSTFIX}
 )

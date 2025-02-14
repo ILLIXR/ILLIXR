@@ -14,13 +14,14 @@ class zed_camera_thread : public threadloop {
 public:
     zed_camera_thread(const std::string& name, phonebook* pb, std::shared_ptr<zed_camera> zed_cam);
     void stop() override;
+
 protected:
     skip_option _p_should_skip() override;
     void        _p_one_iteration() override;
 
 private:
     const std::shared_ptr<switchboard>             switchboard_;
-    const std::shared_ptr<const RelativeClock>     clock_;
+    const std::shared_ptr<const relative_clock>    clock_;
     switchboard::writer<data_format::cam_type_zed> cam_;
     std::shared_ptr<zed_camera>                    zed_cam_;
     sl::Resolution                                 image_size_;

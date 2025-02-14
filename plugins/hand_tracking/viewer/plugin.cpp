@@ -46,10 +46,10 @@ std::string image_type_string(const image::image_type it) {
 
 viewer::viewer(const std::string& name_, phonebook* pb_)
     : plugin{name_, pb_}
-    , _clock{pb->lookup_impl<RelativeClock>()}
-    , _switchboard{pb_->lookup_impl<switchboard>()}
-    , _pose{_switchboard->root_coordinates.position(), _switchboard->root_coordinates.orientation()}
-    , current_frame(nullptr) {
+    , clock_{phonebook_->lookup_impl<relative_clock>()}
+    , switchboard_{pb_->lookup_impl<switchboard>()}
+    , pose_{switchboard_->root_coordinates.position(), switchboard_->root_coordinates.orientation()}
+    , current_frame_(nullptr) {
 }
 
 void viewer::start() {
@@ -73,22 +73,22 @@ void viewer::start() {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
-    _viewport = glfwCreateWindow(640 * 3 + 20, 1000, "ILLIXR Hand Tracking Viewer", nullptr, nullptr);
-    if (_viewport == nullptr) {
-        spdlog::get(name)->error("couldn't create window {}:{}", __FILE__, __LINE__);
+    viewport_ = glfwCreateWindow(640 * 3 + 20, 1000, "ILLIXR Hand Tracking Viewer", nullptr, nullptr);
+    if (viewport_ == nullptr) {
+        spdlog::get(name_)->error("couldn't create window {}:{}", __FILE__, __LINE__);
         ILLIXR::abort();
     }
 
-    glfwSetWindowSize(_viewport, 640 * 3 + 20, 480 * 3 + 20);
+    glfwSetWindowSize(viewport_, 640 * 3 + 20, 480 * 3 + 20);
 
-    glfwMakeContextCurrent(_viewport);
+    glfwMakeContextCurrent(viewport_);
 
     glfwSwapInterval(1);
 
     const GLenum glew_err = glewInit();
     if (glew_err != GLEW_OK) {
         // spdlog::get(name)->error("GLEW Error: {}", glewGetErrorString(glew_err));
-        glfwDestroyWindow(_viewport);
+        glfwDestroyWindow(viewport_);
         ILLIXR::abort("[hand_tracking viewer] Failed to initialize GLEW");
     }
 
@@ -100,11 +100,11 @@ void viewer::start() {
     ImGui::StyleColorsDark();
 
     // Init IMGUI for OpenGL
-    ImGui_ImplGlfw_InitForOpenGL(_viewport, true);
+    ImGui_ImplGlfw_InitForOpenGL(viewport_, true);
     ImGui_ImplOpenGL3_Init(glsl_version.data());
 
-    glGenTextures(2, &(textures[0]));
-    for (unsigned int texture : textures) {
+    glGenTextures(2, &(textures_[0]));
+    for (unsigned int texture : textures_) {
         glBindTexture(GL_TEXTURE_2D, texture);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -114,7 +114,7 @@ void viewer::start() {
     // math_util::projection_fov(&basicProjection, 40.0f, 40.0f, 40.0f, 40.0f, 0.03f, 20.0f);
 
     glfwMakeContextCurrent(nullptr);
-    _switchboard->schedule<ht::ht_frame>(id, "ht", [this](const switchboard::ptr<const ht::ht_frame>& ht_frame, std::size_t) {
+    switchboard_->schedule<ht::ht_frame>(id_, "ht", [this](const switchboard::ptr<const ht::ht_frame>& ht_frame, std::size_t) {
         this->make_gui(ht_frame);
     });
 }
@@ -124,7 +124,7 @@ viewer::~viewer() {
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 
-    glfwDestroyWindow(_viewport);
+    glfwDestroyWindow(viewport_);
 
     RAC_ERRNO_MSG("debugview during destructor");
 
@@ -149,16 +149,16 @@ void viewer::make_position_table() const {
         ImGui::TableSetColumnIndex(0);
         ImGui::Text("Origin");
         ImGui::TableSetColumnIndex(1);
-        ImGui::Text("%.2f, %.2f, %.2f : %.2f, %.2f, %.2f, %.2f", _pose.position.x(), _pose.position.y(), _pose.position.z(),
-                    _pose.orientation.w(), _pose.orientation.x(), _pose.orientation.y(), _pose.orientation.z());
+        ImGui::Text("%.2f, %.2f, %.2f : %.2f, %.2f, %.2f, %.2f", pose_.position.x(), pose_.position.y(), pose_.position.z(),
+                    pose_.orientation.w(), pose_.orientation.x(), pose_.orientation.y(), pose_.orientation.z());
         ImGui::TableNextRow();
         ImGui::TableSetColumnIndex(0);
         ImGui::Text("Current");
         ImGui::TableSetColumnIndex(1);
-        ImGui::Text("%.2f, %.2f, %.2f : %.2f, %.2f, %.2f, %.2f", current_frame->offset_pose.position.x(),
-                    current_frame->offset_pose.position.y(), current_frame->offset_pose.position.z(),
-                    current_frame->offset_pose.orientation.w(), current_frame->offset_pose.orientation.x(),
-                    current_frame->offset_pose.orientation.y(), current_frame->offset_pose.orientation.z());
+        ImGui::Text("%.2f, %.2f, %.2f : %.2f, %.2f, %.2f, %.2f", current_frame_->offset_pose.position.x(),
+                    current_frame_->offset_pose.position.y(), current_frame_->offset_pose.position.z(),
+                    current_frame_->offset_pose.orientation.w(), current_frame_->offset_pose.orientation.x(),
+                    current_frame_->offset_pose.orientation.y(), current_frame_->offset_pose.orientation.z());
         ImGui::EndTable();
     }
     std::string label;
@@ -182,7 +182,7 @@ void viewer::make_position_table() const {
                 // ImGui::TableSetupColumn("Wy");
                 // ImGui::TableSetupColumn("Wz");
                 ImGui::TableHeadersRow();
-                auto points = current_frame->hand_positions.at(static_cast<ht::hand>(idx));
+                auto points = current_frame_->hand_positions.at(static_cast<ht::hand>(idx));
                 bool skip = points.points.empty();
                 for (int row = ht::WRIST; row < ht::PINKY_TIP; row++) {
                     ImGui::TableNextRow();
@@ -242,7 +242,7 @@ void viewer::make_detection_table(units::eyes eye, int idx, const std::string& l
                 ImGui::TableSetupColumn("Rotation");
                 ImGui::TableHeadersRow();
                 for (auto i : ht::hand_map) {
-                    rect current_rect = current_frame->detections.at(eye).palms.at(i);
+                    rect current_rect = current_frame_->detections.at(eye).palms.at(i);
                     ImGui::TableNextRow();
                     ImGui::TableSetColumnIndex(0);
                     ImGui::Text("%s", (i == 0) ? "Left palm" : "Right palm");
@@ -270,7 +270,7 @@ void viewer::make_detection_table(units::eyes eye, int idx, const std::string& l
                 ImGui::TableSetupColumn("Rotation");
                 ImGui::TableHeadersRow();
                 for (auto i : ht::hand_map) {
-                    rect current_rect = current_frame->detections.at(eye).hands.at(i);
+                    rect current_rect = current_frame_->detections.at(eye).hands.at(i);
                     ImGui::TableNextRow();
                     ImGui::TableSetColumnIndex(0);
                     ImGui::Text("%s", (i == 0) ? "Left hand" : "Right hand");
@@ -298,15 +298,15 @@ void viewer::make_detection_table(units::eyes eye, int idx, const std::string& l
                 ImGui::TableSetColumnIndex(0);
                 ImGui::Text("%s", "Confidence");
                 ImGui::TableSetColumnIndex(1);
-                ImGui::Text("%.2f", current_frame->detections.at(eye).confidence.at(ht::LEFT_HAND));
+                ImGui::Text("%.2f", current_frame_->detections.at(eye).confidence.at(ht::LEFT_HAND));
                 ImGui::TableSetColumnIndex(2);
-                ImGui::Text("%.2f", current_frame->detections.at(eye).confidence.at(ht::RIGHT_HAND));
+                ImGui::Text("%.2f", current_frame_->detections.at(eye).confidence.at(ht::RIGHT_HAND));
                 for (int row = ht::WRIST; row <= ht::PINKY_TIP; row++) {
                     ImGui::TableNextRow();
                     ImGui::TableSetColumnIndex(0);
                     ImGui::Text("%s", ht::point_str_map.at(row).c_str());
                     ImGui::TableSetColumnIndex(1);
-                    auto pnt = current_frame->detections.at(eye).points.at(ht::LEFT_HAND).points[row];
+                    auto pnt = current_frame_->detections.at(eye).points.at(ht::LEFT_HAND).points[row];
                     if (pnt.valid) {
                         ImGui::Text("%.2f, %.2f, %.2f", pnt.x(), pnt.y(), pnt.z());
                     } else {
@@ -314,7 +314,7 @@ void viewer::make_detection_table(units::eyes eye, int idx, const std::string& l
                         ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, ImGui::GetColorU32(ImVec4(0.7f, 0.3f, 0.3f, 0.65f)));
                     }
                     ImGui::TableSetColumnIndex(2);
-                    pnt = current_frame->detections.at(eye).points.at(ht::RIGHT_HAND).points[row];
+                    pnt = current_frame_->detections.at(eye).points.at(ht::RIGHT_HAND).points[row];
                     if (pnt.valid) {
                         ImGui::Text("%.2f, %.2f, %.2f", pnt.x(), pnt.y(), pnt.z());
                     } else {
@@ -326,7 +326,7 @@ void viewer::make_detection_table(units::eyes eye, int idx, const std::string& l
                 ImGui::EndTable();
             }
             ImGui::TableSetColumnIndex(1);
-            ImGui::Image((void*) (intptr_t) textures[idx], ImVec2(640, 480));
+            ImGui::Image((void*) (intptr_t) textures_[idx], ImVec2(640, 480));
             ImGui::EndTable();
         }
         ImGui::EndTabItem();
@@ -334,40 +334,40 @@ void viewer::make_detection_table(units::eyes eye, int idx, const std::string& l
 }
 
 void viewer::make_gui(const switchboard::ptr<const ht::ht_frame>& frame) {
-    glfwMakeContextCurrent(_viewport);
+    glfwMakeContextCurrent(viewport_);
     glfwPollEvents();
-    current_frame = frame.get();
+    current_frame_ = frame.get();
 
     if (base_unit_ == units::UNSET) {
-        base_unit_      = current_frame->unit;
+        base_unit_      = current_frame_->unit;
         requested_unit_ = base_unit_;
     }
     std::vector<image::image_type> found_types;
     cv::Mat                        raw_img[2];
     int                            last_idx = 0;
 
-    if (current_frame->find(image::LEFT_EYE_PROCESSED) != current_frame->images.end()) {
+    if (current_frame_->find(image::LEFT_EYE_PROCESSED) != current_frame_->images.end()) {
         found_types.push_back(image::LEFT_EYE_PROCESSED);
-        raw_img[0] = current_frame->at(image::LEFT_EYE).clone();
+        raw_img[0] = current_frame_->at(image::LEFT_EYE).clone();
         last_idx++;
     }
 
-    if (current_frame->find(image::RIGHT_EYE_PROCESSED) != current_frame->images.end()) {
+    if (current_frame_->find(image::RIGHT_EYE_PROCESSED) != current_frame_->images.end()) {
         found_types.push_back(image::RIGHT_EYE_PROCESSED);
-        raw_img[last_idx] = current_frame->at(image::RIGHT_EYE).clone();
+        raw_img[last_idx] = current_frame_->at(image::RIGHT_EYE).clone();
     }
 
-    if (found_types.empty() && current_frame->find(image::RGB_PROCESSED) != current_frame->images.end()) {
+    if (found_types.empty() && current_frame_->find(image::RGB_PROCESSED) != current_frame_->images.end()) {
         found_types.push_back(image::RGB_PROCESSED);
-        raw_img[0] = current_frame->at(image::RGB).clone();
+        raw_img[0] = current_frame_->at(image::RGB).clone();
     }
 
     cv::Mat processed[2];
     cv::Mat combined[2], flattened[2];
     int     d_width, d_height;
-    glfwGetFramebufferSize(_viewport, &d_width, &d_height);
+    glfwGetFramebufferSize(viewport_, &d_width, &d_height);
     glViewport(0, 0, d_width, d_height);
-    glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
+    glClearColor(clear_color_.x * clear_color_.w, clear_color_.y * clear_color_.w, clear_color_.z * clear_color_.w, clear_color_.w);
     glClear(GL_COLOR_BUFFER_BIT);
 
     ImGui_ImplOpenGL3_NewFrame();
@@ -376,43 +376,43 @@ void viewer::make_gui(const switchboard::ptr<const ht::ht_frame>& frame) {
 
     ImGui::NewFrame();
     float proc_time;
-    if (current_frame->detections.count(units::LEFT_EYE) == 1 && current_frame->detections.count(units::RIGHT_EYE) == 1) {
-        raw_img[0]    = current_frame->at(image::LEFT_EYE).clone();
-        raw_img[1]    = current_frame->at(image::RIGHT_EYE).clone();
-        enabled_right = true;
-        tab_label     = "Left Eye Raw";
-        single_eye    = units::LEFT_EYE;
-        detections    = {image::LEFT_EYE_PROCESSED, image::RIGHT_EYE_PROCESSED};
-        proc_time = (float) std::max(current_frame->detections.at(static_cast<const units::eyes>(image::LEFT_EYE)).proc_time,
-                                     current_frame->detections.at(static_cast<const units::eyes>(image::RIGHT_EYE)).proc_time) /
-            (1000.f * 1000.f);
+    if (current_frame_->detections.count(units::LEFT_EYE) == 1 && current_frame_->detections.count(units::RIGHT_EYE) == 1) {
+        raw_img[0]     = current_frame_->at(image::LEFT_EYE).clone();
+        raw_img[1]     = current_frame_->at(image::RIGHT_EYE).clone();
+        enabled_right_ = true;
+        tab_label_     = "Left Eye Raw";
+        single_eye_    = units::LEFT_EYE;
+        detections_    = {image::LEFT_EYE_PROCESSED, image::RIGHT_EYE_PROCESSED};
+        proc_time      = (float) std::max(current_frame_->detections.at(static_cast<const units::eyes>(image::LEFT_EYE)).proc_time,
+                                          current_frame_->detections.at(static_cast<const units::eyes>(image::RIGHT_EYE)).proc_time) /
+                         (1000.f * 1000.f);
     } else {
         image::image_type img_typ;
-        if (current_frame->detections.count(units::LEFT_EYE) == 1) {
-            single_eye = units::LEFT_EYE;
-            detections = {image::LEFT_EYE_PROCESSED};
-            img_typ    = image::LEFT_EYE;
-            proc_time  = (float) current_frame->detections.at(static_cast<const units::eyes>(image::LEFT_EYE)).proc_time /
-                (1000.f * 1000.f);
-        } else if (current_frame->detections.count(units::RIGHT_EYE) == 1) {
-            single_eye = units::RIGHT_EYE;
-            detections = {image::RIGHT_EYE_PROCESSED};
-            img_typ    = image::RIGHT_EYE;
-            proc_time  = (float) current_frame->detections.at(static_cast<const units::eyes>(image::RIGHT_EYE)).proc_time /
-                (1000.f * 1000.f);
+        if (current_frame_->detections.count(units::LEFT_EYE) == 1) {
+            single_eye_ = units::LEFT_EYE;
+            detections_ = {image::LEFT_EYE_PROCESSED};
+            img_typ     = image::LEFT_EYE;
+            proc_time   = (float) current_frame_->detections.at(static_cast<const units::eyes>(image::LEFT_EYE)).proc_time /
+                          (1000.f * 1000.f);
+        } else if (current_frame_->detections.count(units::RIGHT_EYE) == 1) {
+            single_eye_ = units::RIGHT_EYE;
+            detections_ = {image::RIGHT_EYE_PROCESSED};
+            img_typ     = image::RIGHT_EYE;
+            proc_time   = (float) current_frame_->detections.at(static_cast<const units::eyes>(image::RIGHT_EYE)).proc_time /
+                          (1000.f * 1000.f);
         } else {
             return;
         }
-        raw_img[0] = current_frame->at(img_typ).clone();
+        raw_img[0] = current_frame_->at(img_typ).clone();
         raw_img[1].release();
-        enabled_right = false;
-        tab_label     = "Raw";
+        enabled_right_ = false;
+        tab_label_     = "Raw";
     }
 
     for (size_t i = 0; i < 2; i++) {
-        if (i == 1 && !enabled_right)
+        if (i == 1 && !enabled_right_)
             break;
-        processed[i] = current_frame->at(detections[i]).clone();
+        processed[i] = current_frame_->at(detections_[i]).clone();
         cv::Mat mask, inv, r;
         cv::cvtColor(processed[i], mask, cv::COLOR_RGBA2GRAY);
         cv::threshold(mask, mask, 10, 255, cv::THRESH_BINARY);
@@ -420,7 +420,7 @@ void viewer::make_gui(const switchboard::ptr<const ht::ht_frame>& frame) {
         cv::bitwise_and(raw_img[i], raw_img[i], r, mask);
         cv::cvtColor(processed[i], flattened[i], cv::COLOR_RGBA2RGB);
         combined[i] = flattened[i] + r;
-        glBindTexture(GL_TEXTURE_2D, textures[i]);
+        glBindTexture(GL_TEXTURE_2D, textures_[i]);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, combined[i].cols, combined[i].rows, 0, GL_RGB, GL_UNSIGNED_BYTE,
                      combined[i].ptr());
     }
@@ -446,8 +446,8 @@ void viewer::make_gui(const switchboard::ptr<const ht::ht_frame>& frame) {
         ImGui::Separator();
 
         if (ImGui::BeginTabBar("TabBar")) {
-            make_detection_table(single_eye, 0, tab_label);
-            if (enabled_right) {
+            make_detection_table(single_eye_, 0, tab_label_);
+            if (enabled_right_) {
                 make_detection_table(units::RIGHT_EYE, 1, "Right Eye Raw");
             }
             if (ImGui::BeginTabItem("True Position")) {
@@ -461,7 +461,7 @@ void viewer::make_gui(const switchboard::ptr<const ht::ht_frame>& frame) {
     ImGui::Render();
 
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-    glfwSwapBuffers(_viewport);
+    glfwSwapBuffers(viewport_);
 }
 
 PLUGIN_MAIN(viewer)

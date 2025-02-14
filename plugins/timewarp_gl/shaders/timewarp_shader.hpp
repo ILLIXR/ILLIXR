@@ -1,6 +1,6 @@
 #pragma once
 
-const char* const timeWarpChromaticVertexProgramGLSL =
+const char* const time_warp_chromatic_vertex_program_GLSL =
     "#version " GLSL_VERSION "\n"
     "uniform highp mat4x4 TimeWarpStartTransform;\n"
     "uniform highp mat4x4 TimeWarpEndTransform;\n"
@@ -35,7 +35,7 @@ const char* const timeWarpChromaticVertexProgramGLSL =
     "	fragmentUv2 = curUv2.xy * ( 1.0 / max( curUv2.z, 0.00001 ) );\n"
     "}\n";
 
-const char* const timeWarpChromaticFragmentProgramGLSL =
+const char* const time_warp_chromatic_fragment_program_GLSL =
     "#version " GLSL_VERSION "\n"
     "uniform int ArrayLayer;\n"
     "uniform highp sampler2DArray Texture;\n"
@@ -51,17 +51,17 @@ const char* const timeWarpChromaticFragmentProgramGLSL =
     "	outColor.a = 1.0;\n"
     "}\n";
 
-const char* const timeWarpChromaticFragmentProgramGLSL_Alternative = "#version " GLSL_VERSION "\n"
-                                                                     "uniform int ArrayLayer;\n"
-                                                                     "uniform highp sampler2D Texture;\n"
-                                                                     "in mediump vec2 fragmentUv0;\n"
-                                                                     "in mediump vec2 fragmentUv1;\n"
-                                                                     "in mediump vec2 fragmentUv2;\n"
-                                                                     "out lowp vec4 outColor;\n"
-                                                                     "void main()\n"
-                                                                     "{\n"
-                                                                     "	outColor.r = texture( Texture, fragmentUv0 ).r;\n"
-                                                                     "	outColor.g = texture( Texture, fragmentUv1 ).g;\n"
-                                                                     "	outColor.b = texture( Texture, fragmentUv2 ).b;\n"
-                                                                     "	outColor.a = 1.0;\n"
-                                                                     "}\n";
+const char* const time_warp_chromatic_fragment_program_GLSL_alternative = "#version " GLSL_VERSION "\n"
+                                                                          "uniform int ArrayLayer;\n"
+                                                                          "uniform highp sampler2D Texture;\n"
+                                                                          "in mediump vec2 fragmentUv0;\n"
+                                                                          "in mediump vec2 fragmentUv1;\n"
+                                                                          "in mediump vec2 fragmentUv2;\n"
+                                                                          "out lowp vec4 outColor;\n"
+                                                                          "void main()\n"
+                                                                          "{\n"
+                                                                          "	outColor.r = texture( Texture, fragmentUv0 ).r;\n"
+                                                                          "	outColor.g = texture( Texture, fragmentUv1 ).g;\n"
+                                                                          "	outColor.b = texture( Texture, fragmentUv2 ).b;\n"
+                                                                          "	outColor.a = 1.0;\n"
+                                                                          "}\n";
