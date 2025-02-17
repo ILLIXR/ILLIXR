@@ -2,6 +2,11 @@ cmake_minimum_required(VERSION 3.16)
 if (ON_JETSON_PLATFORM)
     project(offload_rendering_client_jetson)
 
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(libdrm REQUIRED libdrm)
+    pkg_check_modules(EGL REQUIRED EGL)
+    pkg_check_modules(GLESv2 REQUIRED glesv2)
+
     set(PLUGIN_NAME plugin.offload_rendering_client_jetson${ILLIXR_BUILD_SUFFIX})
 
     set(CMAKE_CXX_STANDARD 17)
@@ -20,7 +25,7 @@ if (ON_JETSON_PLATFORM)
 
     link_directories(/usr/lib/aarch64-linux-gnu/tegra)
 
-    find_package (Threads)
+    find_package(Threads)
 
     add_library(${PLUGIN_NAME} SHARED plugin.cpp
                 offload_rendering_client_jetson.cpp
@@ -37,28 +42,34 @@ if (ON_JETSON_PLATFORM)
                 #        decoding/NvVulkanRenderer.cpp
     )
 
-    target_link_libraries(${PLUGIN_NAME} illixr_vulkan_utils)
-    target_link_libraries(${PLUGIN_NAME} drm)
-    target_link_libraries(${PLUGIN_NAME} nvjpeg)
-    target_link_libraries(${PLUGIN_NAME} nvv4l2)
-    target_link_libraries(${PLUGIN_NAME} EGL)
-    target_link_libraries(${PLUGIN_NAME} GLESv2)
-    target_link_libraries(${PLUGIN_NAME} X11)
-    target_link_libraries(${PLUGIN_NAME} nvbufsurface)
-    target_link_libraries(${PLUGIN_NAME} nvbufsurftransform)
-    target_link_libraries(${PLUGIN_NAME} nvosd)
-    target_link_libraries(${PLUGIN_NAME} ${CMAKE_THREAD_LIBS_INIT})
-    target_link_libraries(${PLUGIN_NAME} ${Vulkan_LIBRARIES})
-    target_include_directories(${PLUGIN_NAME} BEFORE PUBLIC ${Vulkan_INCLUDE_DIRS} /usr/include/libdrm)
+    target_link_libraries(${PLUGIN_NAME}
+                          illixr_vulkan_utils
+                          ${libdrm_LIBRARIES}
+                          nvjpeg
+                          nvv4l2
+                          ${EGL_LIBRARIES}
+                          ${GLESv2_LIBRARIES}
+                          ${X11_LIBRARIES}
+                          nvbufsurface
+                          nvbufsurftransform
+                          nvosd
+                          ${CMAKE_THREAD_LIBS_INIT}
+                          ${Vulkan_LIBRARIES}
+                          spdlog::spdlog
+    )
+    target_include_directories(${PLUGIN_NAME} BEFORE PUBLIC
+                               ${Vulkan_INCLUDE_DIRS}
+                               ${libdrm_INCLUDE_DIRS}
+                               ${ILLIXR_SOURCE_DIR}/include
+                               ${X11_INCLUDE_DIR}
+                               ${EGL_INCLUDE_DIRS}
+                               ${GLESv2_INCLUDE_DIRS}
+    )
 
     set_target_properties(${PLUGIN_NAME} PROPERTIES OUTPUT_NAME ${PLUGIN_NAME})
     if(Vulkan_EXTERNAL)
         add_dependencies(${PLUGIN_NAME} ${Vulkan_DEP_STR})
     endif()
-
-    target_link_libraries(${PLUGIN_NAME} spdlog::spdlog ${Vulkan_LIBRARIES})
-    target_include_directories(${PLUGIN_NAME} BEFORE PUBLIC ${Vulkan_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR}/include)
-
 
 
     install(TARGETS ${PLUGIN_NAME} DESTINATION lib)
