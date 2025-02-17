@@ -453,7 +453,8 @@ public:
             if (typeid(Specific_event) != topic_.ty()) {
                 spdlog::get("illixr")->error("[switchboard] topic '{}' holds type {}, but caller used type {}", topic_.name(),
                                              topic_.ty().name(), typeid(Specific_event).name());
-                throw std::runtime_error("[switchboard] topic '" + topic_.name() + "' holds type " + topic_.ty().name() + ", but caller used type typeid(specific_event).name())");
+                throw std::runtime_error("[switchboard] topic '" + topic_.name() + "' holds type " + topic_.ty().name() +
+                                         ", but caller used type typeid(specific_event).name())");
             }
         }
 
@@ -664,7 +665,8 @@ private:
                 if (typeid(Specific_event) != _topic.ty()) {
                     spdlog::get("illixr")->error("[switchboard] topic '{}' holds type {}, but caller used type {}", topic_name,
                                                  _topic.ty().name(), typeid(Specific_event).name());
-                    throw std::runtime_error("[switchboard] topic '" + topic_name + "' holds type " + _topic.ty().name() + ", but caller used type " + typeid(Specific_event).name());
+                    throw std::runtime_error("[switchboard] topic '" + topic_name + "' holds type " + _topic.ty().name() +
+                                             ", but caller used type " + typeid(Specific_event).name());
                 }
                 return _topic;
             }

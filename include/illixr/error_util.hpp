@@ -2,12 +2,11 @@
 
 #include "global_module_defs.hpp"
 
+#include <cerrno>
+#include <cstdlib>
 #include <iostream>
 #include <spdlog/spdlog.h>
 #include <string>
-
-    #include <cerrno>
-    #include <cstdlib>
 /**
  * @brief Parameterless macro for report_and_clear_errno.
  */

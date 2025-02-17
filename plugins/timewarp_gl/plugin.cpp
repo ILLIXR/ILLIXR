@@ -703,7 +703,6 @@ void timewarp_gl::warp(const switchboard::ptr<const rendered_frame>& most_recent
                                {render_to_display},
                            }});
 
-
     if (log_count_ > LOG_PERIOD_) {
         const double     time_swap         = duration_to_double<std::milli>(time_after_swap - time_before_swap);
         const double     latency_mtd       = duration_to_double<std::milli>(imu_to_display);

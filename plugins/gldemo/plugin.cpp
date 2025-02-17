@@ -63,18 +63,18 @@ void gldemo::wait_vsync() {
             wait_time += display_params::period;
         }
 
-            if (log_count_ > LOG_PERIOD)
-                spdlog::get(name_)->debug("Waiting until next vsync, in {} ms", duration_to_double<std::milli>(wait_time - now));
+        if (log_count_ > LOG_PERIOD)
+            spdlog::get(name_)->debug("Waiting until next vsync, in {} ms", duration_to_double<std::milli>(wait_time - now));
 
-            // Perform the sleep.
-            // TODO: Consider using Monado-style sleeping, where we nanosleep for
-            // most of the wait, and then spin-wait for the rest?
-            std::this_thread::sleep_for(wait_time - now);
-        } else {
-            if (log_count_ > LOG_PERIOD)
-                spdlog::get(name_)->debug("We haven't rendered yet, rendering immediately");
-        }
+        // Perform the sleep.
+        // TODO: Consider using Monado-style sleeping, where we nanosleep for
+        // most of the wait, and then spin-wait for the rest?
+        std::this_thread::sleep_for(wait_time - now);
+    } else {
+        if (log_count_ > LOG_PERIOD)
+            spdlog::get(name_)->debug("We haven't rendered yet, rendering immediately");
     }
+}
 
 void gldemo::_p_thread_setup() {
     last_time_ = clock_->now();
@@ -149,12 +149,12 @@ void gldemo::_p_one_iteration() {
 
     glFinish();
 
-        if (log_count_ > LOG_PERIOD) {
-            const double frame_duration_s = duration_to_double(clock_->now() - last_time_);
-            spdlog::get(name_)->debug("Submitting frame to buffer {}, frametime: {}, FPS: {}", which_buffer_, frame_duration_s,
-                                     1.0 / frame_duration_s);
-        }
-        last_time_ = clock_->now();
+    if (log_count_ > LOG_PERIOD) {
+        const double frame_duration_s = duration_to_double(clock_->now() - last_time_);
+        spdlog::get(name_)->debug("Submitting frame to buffer {}, frametime: {}, FPS: {}", which_buffer_, frame_duration_s,
+                                  1.0 / frame_duration_s);
+    }
+    last_time_ = clock_->now();
 
     /// Publish our submitted frame handle to Switchboard!
     eye_buffer_.put(eye_buffer_.allocate<rendered_frame>(rendered_frame{

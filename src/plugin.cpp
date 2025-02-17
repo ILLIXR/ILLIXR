@@ -148,8 +148,8 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
     try {
         runtime_ = ILLIXR::runtime_factory();
 
-        /// Activate sleeping at application start for attaching gdb or waiting for another program (openXR application, etc) to start.
-        /// Enable using the ILLIXR_ENABLE_PRE_SLEEP environment variable
+        /// Activate sleeping at application start for attaching gdb or waiting for another program (openXR application, etc) to
+        /// start. Enable using the ILLIXR_ENABLE_PRE_SLEEP environment variable
         const bool enable_pre_sleep = ILLIXR::str_to_bool(getenv_or("ILLIXR_ENABLE_PRE_SLEEP", "False"));
         if (enable_pre_sleep) {
             const pid_t pid = getpid();
@@ -159,7 +159,7 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
             sleep(ILLIXR_PRE_SLEEP_DURATION);
             spdlog::get("illixr")->info("[main] Resuming...");
         }
-       // read in yaml config file
+        // read in yaml config file
         YAML::Node  config;
         std::string exec_path = get_exec_path();
         std::string home_dir  = get_home_dir();

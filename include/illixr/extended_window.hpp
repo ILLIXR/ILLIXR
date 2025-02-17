@@ -1,13 +1,12 @@
 #pragma once
 
-#include <GL/glx.h>
-
 #include "error_util.hpp"
 #include "global_module_defs.hpp"
 #include "phonebook.hpp"
 
 #include <cassert>
 #include <cerrno>
+#include <GL/glx.h>
 #include <spdlog/spdlog.h>
 
 // GLX context magics

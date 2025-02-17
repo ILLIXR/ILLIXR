@@ -534,7 +534,7 @@ void vkdemo::load_model() {
         }
     }
 
-        spdlog::get("illixr")->debug("[vkdemo] Loaded {} textures", textures_.size());
+    spdlog::get("illixr")->debug("[vkdemo] Loaded {} textures", textures_.size());
 
     std::unordered_map<vertex, uint32_t> unique_vertices{};
     for (const auto& shape : shapes) {

@@ -122,7 +122,7 @@ void depthai::callback() {
 
         time_point imu_time_point{*first_real_imu_time_ + std::chrono::nanoseconds(imu_time - *first_imu_time_)};
 
-// Submit to switchboard
+        // Submit to switchboard
         imu_pub_++;
         imu_writer_.put(imu_writer_.allocate<imu_type>({
             imu_time_point,

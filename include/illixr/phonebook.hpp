@@ -1,14 +1,14 @@
 #pragma once
 
 #include <cassert>
+#include <iostream>
 #include <memory>
 #include <mutex>
 #include <shared_mutex>
-#include <typeindex>
-#include <unordered_map>
-#include <iostream>
 #include <spdlog/spdlog.h>
 #include <stdexcept>
+#include <typeindex>
+#include <unordered_map>
 
 namespace ILLIXR {
 
