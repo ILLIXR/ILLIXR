@@ -14,7 +14,6 @@ if(ENABLE_VULKAN)
         src/display/headless.cpp
         ../include/illixr/vk/vk_extension_request.hpp
         ../include/illixr/vk/vulkan_objects.hpp
-        $<TARGET_OBJECTS:illixr_vulkan_utils>
     )
 else ()
     message("Vulkan disabled")
@@ -27,7 +26,9 @@ add_executable(main${ILLIXR_BUILD_SUFFIX}.exe
         ../include/illixr/runtime.hpp
         ../include/illixr/phonebook.hpp
 )
+
 add_library(plugin.main${ILLIXR_BUILD_SUFFIX} SHARED
+            ${VULKAN_FILES}
         src/plugin.cpp
         src/runtime_impl.cpp
         src/illixr.hpp
@@ -49,7 +50,7 @@ if (ENABLE_VULKAN)
     if(Vulkan_DEP_STR)
         add_dependencies(plugin.main${ILLIXR_BUILD_SUFFIX} ${Vulkan_DEP_STR})
     endif()
-    target_link_libraries(plugin.main${ILLIXR_BUILD_SUFFIX} PUBLIC glfw ${Vulkan_LIBRARY})
+    target_link_libraries(plugin.main${ILLIXR_BUILD_SUFFIX} PUBLIC illixr_vulkan_utils glfw ${Vulkan_LIBRARY})
     target_include_directories(plugin.main${ILLIXR_BUILD_SUFFIX} PUBLIC ${Vulkan_INCLUDE_DIRS})
 endif ()
 

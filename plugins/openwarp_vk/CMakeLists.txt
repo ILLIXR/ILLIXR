@@ -49,7 +49,6 @@ add_library(${PLUGIN_NAME} SHARED plugin.cpp
             ../../include/illixr/switchboard.hpp
             ../../include/illixr/vk/display_provider.hpp
             ../../include/illixr/vk/render_pass.hpp
-            $<TARGET_OBJECTS:illixr_vulkan_utils>
 )
 
 if(ENABLE_MONADO)
@@ -61,7 +60,7 @@ add_dependencies(${PLUGIN_NAME} OpenWarp_VK_Shaders)
 
 set_target_properties(${PLUGIN_NAME} PROPERTIES OUTPUT_NAME ${PLUGIN_NAME})
 
-target_link_libraries(${PLUGIN_NAME} ${Vulkan_LIBRARIES} spdlog::spdlog)
+target_link_libraries(${PLUGIN_NAME} PUBLIC illixr_vulkan_utils ${Vulkan_LIBRARIES} spdlog::spdlog)
 target_include_directories(${PLUGIN_NAME} PUBLIC ${Vulkan_INCLUDE_DIRS})
 target_include_directories(${PLUGIN_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${ILLIXR_SOURCE_DIR}/include)
 

@@ -30,7 +30,6 @@ if (ON_JETSON_PLATFORM)
                 ../../include/illixr/switchboard.hpp
                 ../../include/illixr/threadloop.hpp
                 ../../include/illixr/vk/display_provider.hpp
-                $<TARGET_OBJECTS:illixr_vulkan_utils>
                 $<TARGET_OBJECTS:illixr_serializable_data>
                 ${JETSON_MULTIMEDIA_API_CLASSES}
                 decoding/video_decode.h
@@ -38,6 +37,7 @@ if (ON_JETSON_PLATFORM)
                 #        decoding/NvVulkanRenderer.cpp
     )
 
+    target_link_libraries(${PLUGIN_NAME} illixr_vulkan_utils)
     target_link_libraries(${PLUGIN_NAME} drm)
     target_link_libraries(${PLUGIN_NAME} nvjpeg)
     target_link_libraries(${PLUGIN_NAME} nvv4l2)

@@ -25,7 +25,6 @@ add_library(${PLUGIN_NAME} SHARED plugin.cpp
             ../../include/illixr/vk/display_provider.hpp
             ../../include/illixr/vk/ffmpeg_utils.hpp
             $<TARGET_OBJECTS:illixr_serializable_data>
-            $<TARGET_OBJECTS:illixr_vulkan_utils>
 )
 
 set_target_properties(${PLUGIN_NAME} PROPERTIES OUTPUT_NAME ${PLUGIN_NAME})
@@ -36,7 +35,7 @@ if(ILLIXR_FFmpeg_EXTERNAL)
     add_dependencies(${PLUGIN_NAME} ${ILLIXR_FFmpeg_DEP_STR})
 endif()
 
-target_link_libraries(${PLUGIN_NAME} spdlog::spdlog ${Vulkan_LIBRARIES})
+target_link_libraries(${PLUGIN_NAME} PUBLIC illixr_vulkan_utils spdlog::spdlog ${Vulkan_LIBRARIES})
 target_include_directories(${PLUGIN_NAME} BEFORE PUBLIC ${Vulkan_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR}/include)
 
 target_link_libraries(${PLUGIN_NAME} ${libavdevice_illixr_LIBRARIES} ${libavformat_illixr_LIBRARIES} ${libavcodec_illixr_LIBRARIES} ${libavutil_illixr_LIBRARIES})
