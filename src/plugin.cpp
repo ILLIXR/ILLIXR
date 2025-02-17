@@ -151,7 +151,7 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
     try {
         runtime_ = ILLIXR::runtime_factory();
         // set internal env_vars
-        //const std::shared_ptr<switchboard> sb = r->get_switchboard();
+        // const std::shared_ptr<switchboard> sb = r->get_switchboard();
 
 #ifndef NDEBUG
         /// Activate sleeping at application start for attaching gdb. Disables 'catchsegv'.

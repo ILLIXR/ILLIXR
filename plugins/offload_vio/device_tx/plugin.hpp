@@ -1,8 +1,8 @@
 #pragma once
 
 #include "illixr/data_format/imu.hpp"
-#include "illixr/network/tcpsocket.hpp"
 #include "illixr/data_format/opencv_data_types.hpp"
+#include "illixr/network/tcpsocket.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/stoplight.hpp"
 #include "illixr/switchboard.hpp"
@@ -13,7 +13,7 @@
 #if __has_include("vio_input.pb.h")
     #include "vio_input.pb.h"
 #else
-#include "../proto/input_stub.hpp"
+    #include "../proto/input_stub.hpp"
 #endif
 
 #include <boost/lockfree/spsc_queue.hpp>

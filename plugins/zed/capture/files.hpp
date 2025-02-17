@@ -44,7 +44,7 @@ private:
     const std::string data_sub_path_ = "data";
     const std::string img_sub_path_  = "imgs";
     std::string       root_;
-    static files* instance_;
+    static files*     instance_;
 };
 } // namespace ILLIXR::zed_capture
 

@@ -49,8 +49,7 @@ viewer::viewer(const std::string& name_, phonebook* pb_)
     , clock_{phonebook_->lookup_impl<relative_clock>()}
     , switchboard_{pb_->lookup_impl<switchboard>()}
     , pose_{switchboard_->root_coordinates.position(), switchboard_->root_coordinates.orientation()}
-    , current_frame_(nullptr) {
-}
+    , current_frame_(nullptr) { }
 
 void viewer::start() {
     plugin::start();
@@ -183,7 +182,7 @@ void viewer::make_position_table() const {
                 // ImGui::TableSetupColumn("Wz");
                 ImGui::TableHeadersRow();
                 auto points = current_frame_->hand_positions.at(static_cast<ht::hand>(idx));
-                bool skip = points.points.empty();
+                bool skip   = points.points.empty();
                 for (int row = ht::WRIST; row < ht::PINKY_TIP; row++) {
                     ImGui::TableNextRow();
                     ImGui::TableSetColumnIndex(0);
@@ -367,7 +366,8 @@ void viewer::make_gui(const switchboard::ptr<const ht::ht_frame>& frame) {
     int     d_width, d_height;
     glfwGetFramebufferSize(viewport_, &d_width, &d_height);
     glViewport(0, 0, d_width, d_height);
-    glClearColor(clear_color_.x * clear_color_.w, clear_color_.y * clear_color_.w, clear_color_.z * clear_color_.w, clear_color_.w);
+    glClearColor(clear_color_.x * clear_color_.w, clear_color_.y * clear_color_.w, clear_color_.z * clear_color_.w,
+                 clear_color_.w);
     glClear(GL_COLOR_BUFFER_BIT);
 
     ImGui_ImplOpenGL3_NewFrame();
@@ -383,9 +383,10 @@ void viewer::make_gui(const switchboard::ptr<const ht::ht_frame>& frame) {
         tab_label_     = "Left Eye Raw";
         single_eye_    = units::LEFT_EYE;
         detections_    = {image::LEFT_EYE_PROCESSED, image::RIGHT_EYE_PROCESSED};
-        proc_time      = (float) std::max(current_frame_->detections.at(static_cast<const units::eyes>(image::LEFT_EYE)).proc_time,
-                                          current_frame_->detections.at(static_cast<const units::eyes>(image::RIGHT_EYE)).proc_time) /
-                         (1000.f * 1000.f);
+        proc_time =
+            (float) std::max(current_frame_->detections.at(static_cast<const units::eyes>(image::LEFT_EYE)).proc_time,
+                             current_frame_->detections.at(static_cast<const units::eyes>(image::RIGHT_EYE)).proc_time) /
+            (1000.f * 1000.f);
     } else {
         image::image_type img_typ;
         if (current_frame_->detections.count(units::LEFT_EYE) == 1) {
@@ -393,13 +394,13 @@ void viewer::make_gui(const switchboard::ptr<const ht::ht_frame>& frame) {
             detections_ = {image::LEFT_EYE_PROCESSED};
             img_typ     = image::LEFT_EYE;
             proc_time   = (float) current_frame_->detections.at(static_cast<const units::eyes>(image::LEFT_EYE)).proc_time /
-                          (1000.f * 1000.f);
+                (1000.f * 1000.f);
         } else if (current_frame_->detections.count(units::RIGHT_EYE) == 1) {
             single_eye_ = units::RIGHT_EYE;
             detections_ = {image::RIGHT_EYE_PROCESSED};
             img_typ     = image::RIGHT_EYE;
             proc_time   = (float) current_frame_->detections.at(static_cast<const units::eyes>(image::RIGHT_EYE)).proc_time /
-                          (1000.f * 1000.f);
+                (1000.f * 1000.f);
         } else {
             return;
         }

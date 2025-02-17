@@ -1,11 +1,11 @@
 #pragma once
 
+#include "illixr/data_format/imu.hpp"
+#include "illixr/data_format/pose.hpp"
 #include "illixr/data_loading.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/plugin.hpp"
 #include "illixr/switchboard.hpp"
-#include "illixr/data_format/pose.hpp"
-#include "illixr/data_format/imu.hpp"
 
 namespace ILLIXR {
 // These are the first IMU timestamp of the datasets. See line#31 for more info.
@@ -25,8 +25,8 @@ public:
     void feed_ground_truth(const switchboard::ptr<const data_format::imu_type>& datum);
 
 private:
-    const std::shared_ptr<switchboard> switchboard_;
-    switchboard::writer<data_format::pose_type>     true_pose_;
+    const std::shared_ptr<switchboard>          switchboard_;
+    switchboard::writer<data_format::pose_type> true_pose_;
 
     switchboard::writer<switchboard::event_wrapper<Eigen::Vector3f>> ground_truth_offset_;
     const std::map<ullong, sensor_types>                             sensor_data_;

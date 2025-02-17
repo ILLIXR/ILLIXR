@@ -42,14 +42,12 @@ private:
         pim_ptr_t pim_;
     };
 
-    void                         clean_imu_vec(time_point timestamp);
-    void                         propagate_imu_values(time_point real_time);
+    void                                      clean_imu_vec(time_point timestamp);
+    void                                      propagate_imu_values(time_point real_time);
     static std::vector<data_format::imu_type> select_imu_readings(const std::vector<data_format::imu_type>& imu_data,
-                                                                  const time_point time_begin,
-                                                                  const time_point time_end);
-    static data_format::imu_type              interpolate_imu(const data_format::imu_type& imu_1,
-                                                                                     const data_format::imu_type& imu_2,
-                                                                                     time_point timestamp);
+                                                                  const time_point time_begin, const time_point time_end);
+    static data_format::imu_type interpolate_imu(const data_format::imu_type& imu_1, const data_format::imu_type& imu_2,
+                                                 time_point timestamp);
     std::vector<one_euro_filter<Eigen::Array<double, 3, 1>, double>> filters_;
     bool                                                             has_prev_ = false;
     Eigen::Matrix<double, 3, 1>                                      prev_euler_angles_;

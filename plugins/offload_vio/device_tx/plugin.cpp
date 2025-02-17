@@ -8,6 +8,7 @@
 
 using namespace ILLIXR;
 using namespace ILLIXR::data_format;
+
 // #define USE_COMPRESSION
 
 [[maybe_unused]] offload_writer::offload_writer(const std::string& name, phonebook* pb)
@@ -104,13 +105,13 @@ void offload_writer::prepare_imu_cam_data(switchboard::ptr<const imu_type> datum
         send_imu_cam_data(latest_cam_time_);
     }
 
-        switchboard::ptr<const binocular_cam_type> cam;
+    switchboard::ptr<const binocular_cam_type> cam;
 
     if (cam_.size() != 0 && !latest_cam_time_) {
         cam = cam_.dequeue();
 
-            cv::Mat cam_img0 = (cam->at(image::LEFT_EYE)).clone();
-            cv::Mat cam_img1 = (cam->at(image::RIGHT_EYE)).clone();
+        cv::Mat cam_img0 = (cam->at(image::LEFT_EYE)).clone();
+        cv::Mat cam_img1 = (cam->at(image::RIGHT_EYE)).clone();
 
         // size of img0_ before compression
         double cam_img0_size = cam_img0.total() * cam_img0.elemSize();

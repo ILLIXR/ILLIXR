@@ -718,7 +718,7 @@ private:
             // std::string ini_pose =
             // if (!ini_pose.empty()) {
             if (ini_pose) {
-                std::string ini_pose_str(ini_pose);
+                std::string        ini_pose_str(ini_pose);
                 std::stringstream  iss(ini_pose_str);
                 std::string        token;
                 std::vector<float> ip;

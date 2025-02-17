@@ -11,7 +11,6 @@ namespace ILLIXR::data_format {
 //  Points
 //**********************************************************************************
 
-
 /*
  * struct representing a point in 3-D space. It is essentially an Eigen::Vector with some additional functions
  */
@@ -100,8 +99,8 @@ struct [[maybe_unused]] point : Eigen::Vector3f {
  * struct representing a point in 3D space with a flag indicating whether the data are valid/reliable
  */
 struct [[maybe_unused]] point_with_validity : point {
-    bool  valid      = false;       //!< indicates whether the point contains valid data
-    float confidence = 0.;          //!< confidence level of the point's value (0. - 1., with 1. indicating 100% confidence)
+    bool  valid      = false; //!< indicates whether the point contains valid data
+    float confidence = 0.;    //!< confidence level of the point's value (0. - 1., with 1. indicating 100% confidence)
 
     /**
      * Default constructor, places point at the origin
@@ -136,10 +135,11 @@ struct [[maybe_unused]] point_with_validity : point {
 };
 
 /*
- * struct representing a point in 3D space with a flag indicating whether the data are valid/reliable and the units the point is in
+ * struct representing a point in 3D space with a flag indicating whether the data are valid/reliable and the units the point is
+ * in
  */
 struct [[maybe_unused]] point_with_units : point_with_validity {
-    units::measurement_unit unit;    //!< The units this point is in
+    units::measurement_unit unit; //!< The units this point is in
 
     /**
      * Default constructor, places point at the origin
@@ -199,7 +199,8 @@ struct [[maybe_unused]] point_with_units : point_with_validity {
     }
 
     /**
-     * Subtraction operator between two points_with_units, units are not checked, but the validity flag is an AND of the two flags
+     * Subtraction operator between two points_with_units, units are not checked, but the validity flag is an AND of the two
+     * flags
      * @param pnt The point to subtract from this one
      * @return The new point
      */
@@ -340,10 +341,11 @@ inline point_with_units abs(const point_with_units& pnt) {
  * struct containing a vector of points, along with their unit, and overall validity/reliability
  */
 struct [[maybe_unused]] points_with_units {
-    std::vector<point_with_units> points;         //!< The points
-    units::measurement_unit       unit;           //!< The unit of all points
-    bool                          valid;          //!< Indicates the validity of all points, will be true if any point is valid, false indicates no points are valid
-    bool                          fixed = false;  //!< indicates whther the size of the vector has been set
+    std::vector<point_with_units> points; //!< The points
+    units::measurement_unit       unit;   //!< The unit of all points
+    bool valid; //!< Indicates the validity of all points, will be true if any point is valid, false indicates no points are
+                //!< valid
+    bool fixed = false; //!< indicates whther the size of the vector has been set
 
     /**
      * Construct a points_with_units with an empty list
@@ -366,7 +368,8 @@ struct [[maybe_unused]] points_with_units {
         , fixed{true} { }
 
     /**
-     * Construct a points_with_units from a vector of point_with_units objects, units are determined from the points, as is validity
+     * Construct a points_with_units from a vector of point_with_units objects, units are determined from the points, as is
+     * validity
      * @param points_ The points to move into this object
      */
     explicit points_with_units(std::vector<point_with_units> points_)
@@ -396,7 +399,7 @@ struct [[maybe_unused]] points_with_units {
         this->points.resize(other.points.size());
         for (size_t i = 0; i < other.points.size(); i++)
             this->points[i] = other.points[i];
-        this->unit = other.unit;
+        this->unit  = other.unit;
         this->valid = other.valid;
         this->fixed = other.fixed;
         return *this;

@@ -57,7 +57,7 @@ private:
     switchboard::reader<data_format::rgb_depth_type>              rgb_depth_reader_;
     switchboard::buffered_reader<data_format::binocular_cam_type> cam_reader_;
 
-    GLFWwindow*                            gui_window_{};
+    GLFWwindow* gui_window_{};
 
     [[maybe_unused]] uint8_t test_pattern_[TEST_PATTERN_WIDTH][TEST_PATTERN_HEIGHT]{};
 

@@ -46,6 +46,7 @@ void zed_camera_thread::stop() {
     zed_cam_->close();
     threadloop::stop();
 }
+
 void zed_camera_thread::_p_one_iteration() {
     RAC_ERRNO_MSG("zed at start of _p_one_iteration");
 

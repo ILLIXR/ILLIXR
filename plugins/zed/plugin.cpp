@@ -63,8 +63,7 @@ zed_imu_thread::zed_imu_thread(const std::string& name_, phonebook* pb_)
     , cam_publisher_{switchboard_->get_writer<binocular_cam_type>("cam")}
     , rgb_depth_{switchboard_->get_writer<rgb_depth_type>("rgb_depth")}
     , cam_conf_pub_{switchboard_->get_writer<camera_data>("cam_data")}
-    , it_log_{record_logger_} {
-}
+    , it_log_{record_logger_} { }
 
 // destructor
 zed_imu_thread::~zed_imu_thread() {

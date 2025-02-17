@@ -19,7 +19,6 @@
 #include <thread>
 #include <vulkan/vulkan.h>
 
-
 using namespace ILLIXR;
 using namespace ILLIXR::data_format;
 

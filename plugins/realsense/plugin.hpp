@@ -1,8 +1,8 @@
 #pragma once
 
 #include "illixr/data_format/imu.hpp"
-#include "illixr/data_format/opencv_data_types.hpp"
 #include "illixr/data_format/misc.hpp"
+#include "illixr/data_format/opencv_data_types.hpp"
 #include "illixr/data_format/pose.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/relative_clock.hpp"
