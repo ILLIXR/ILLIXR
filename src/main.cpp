@@ -10,8 +10,8 @@
  */
 static void sigint_handler([[maybe_unused]] int sig) {
     assert(sig == SIGINT && "sigint_handler is for SIGINT");
-    if (r) {
-        r->stop();
+    if (runtime_) {
+        runtime_->stop();
     }
 }
 

@@ -1,13 +1,13 @@
 #pragma once
 
-#include <cerrno>
-#include <cstdlib>
 #include "global_module_defs.hpp"
 
 #include <iostream>
 #include <spdlog/spdlog.h>
 #include <string>
 
+    #include <cerrno>
+    #include <cstdlib>
 /**
  * @brief Parameterless macro for report_and_clear_errno.
  */

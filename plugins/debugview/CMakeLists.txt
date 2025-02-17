@@ -11,32 +11,33 @@ set(PLUGIN_NAME plugin.debugview${ILLIXR_BUILD_SUFFIX})
 
 # source files, listed individually so that any changes will trigger a rebuild
 set(DEBUGVIEW_SOURCES plugin.cpp
-        imgui/imgui.cpp
-        imgui/imgui_demo.cpp
-        imgui/imgui_draw.cpp
-        imgui/imgui_impl_glfw.cpp
-        imgui/imgui_impl_opengl3.cpp
-        imgui/imgui_widgets.cpp
-        imgui/imconfig.h
-        imgui/imgui.h
-        imgui/imgui_impl_glfw.h
-        imgui/imgui_impl_opengl3.h
-        imgui/imgui_internal.h
-        imgui/imstb_rectpack.h
-        imgui/imstb_textedit.h
-        imgui/imstb_truetype.h
-        ../../include/illixr/shaders/demo_shader.hpp
-        ../../include/illixr/data_format.hpp
-        ../../include/illixr/opencv_data_types.hpp
-        ../../include/illixr/error_util.hpp
-        ../../include/illixr/gl_util/obj.hpp
-        ../../include/illixr/global_module_defs.hpp
-        ../../include/illixr/math_util.hpp
-        ../../include/illixr/pose_prediction.hpp
-        ../../include/illixr/shader_util.hpp
-        ../../include/illixr/switchboard.hpp
-        ../../include/illixr/threadloop.hpp
-        )
+    plugin.hpp
+    third_party/imgui.cpp
+    third_party/imgui_demo.cpp
+    third_party/imgui_draw.cpp
+    third_party/imgui_impl_glfw.cpp
+    third_party/imgui_impl_opengl3.cpp
+    third_party/imgui_widgets.cpp
+    third_party/imconfig.h
+    third_party/imgui.h
+    third_party/imgui_impl_glfw.h
+    third_party/imgui_impl_opengl3.h
+    third_party/imgui_internal.h
+    third_party/imstb_rectpack.h
+    third_party/imstb_textedit.h
+    third_party/imstb_truetype.h
+    ../../include/illixr/shaders/demo_shader.hpp
+    ../../include/illixr/data_format.hpp
+    ../../include/illixr/opencv_data_types.hpp
+    ../../include/illixr/error_util.hpp
+    ../../include/illixr/gl_util/obj.hpp
+    ../../include/illixr/global_module_defs.hpp
+    ../../include/illixr/math_util.hpp
+    ../../include/illixr/pose_prediction.hpp
+    ../../include/illixr/shader_util.hpp
+    ../../include/illixr/switchboard.hpp
+    ../../include/illixr/threadloop.hpp
+)
 
 add_library(${PLUGIN_NAME} SHARED ${DEBUGVIEW_SOURCES})
 
