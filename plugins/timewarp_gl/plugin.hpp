@@ -1,5 +1,10 @@
 #pragma once
 
+// clang-format off
+#include <GL/glew.h> // GLEW has to be loaded before other GL libraries
+#include <GL/glx.h>
+// clang-format on
+
 #include "illixr/extended_window.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/pose_prediction.hpp"

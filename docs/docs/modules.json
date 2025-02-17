@@ -187,8 +187,8 @@
       ]
     },
     {
-      "name": "orb_slam",
-      "cmake_flag": "USE_ORB_SLAM=ON",
+      "name": "orb_slam3p",
+      "cmake_flag": "USE_ORB_SLAM3=ON",
       "dependencies": [
         "git",
         "boost",
