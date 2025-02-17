@@ -1,6 +1,7 @@
 #pragma once
 
 #include "illixr/data_format/frame.hpp"
+#include "illixr/data_format/misc.hpp"
 #include "illixr/data_format/pose.hpp"
 #include "illixr/extended_window.hpp"
 #include "illixr/phonebook.hpp"
@@ -40,12 +41,12 @@ private:
                                                 const Eigen::Matrix4f& new_view_matrix);
 #ifndef ILLIXR_MONADO
     [[nodiscard]] time_point                get_next_swap_time_estimate() const;
-    [[maybe_unused]] [[nodiscard]] duration estimate_time_to_sleep(const double frame_percentage) const;
+    [[maybe_unused]] [[nodiscard]] duration estimate_time_to_sleep(double frame_percentage) const;
 #endif
 
-    const std::shared_ptr<switchboard>                  switchboard_;
-    const std::shared_ptr<data_format::pose_prediction> pose_prediction_;
-    const std::shared_ptr<const relative_clock>         clock_;
+    const std::shared_ptr<switchboard>          switchboard_;
+    const std::shared_ptr<pose_prediction>      pose_prediction_;
+    const std::shared_ptr<const relative_clock> clock_;
 
     // OpenGL objects
     Display*   display_;
