@@ -1,12 +1,15 @@
 #pragma once
 
+// clang-format off
+#include <GL/glew.h> // must come first
+#include <GL/gl.h>
+// clang-format on
+
 #include "relative_clock.hpp"
 #include "switchboard.hpp"
 
 #undef Success // For 'Success' conflict
 #include <eigen3/Eigen/Dense>
-#include <GL/gl.h>
-#include <GL/glew.h> // must come first
 #include <utility>
 // #undef Complex // For 'Complex' conflict
 

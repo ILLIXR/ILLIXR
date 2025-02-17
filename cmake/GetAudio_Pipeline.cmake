@@ -6,7 +6,7 @@ pkg_check_modules(SPATIALAUDIO REQUIRED spatialaudio)
 
 ExternalProject_Add(Audio_Pipeline
         GIT_REPOSITORY https://github.com/ILLIXR/audio_pipeline.git   # Git repo for source code
-        GIT_TAG 5aaf2e73b0cb3bca76dee3c1fff83686b7c37910              # sha5 hash for specific commit to pull (if there is no specific tag to use)
+        GIT_TAG 0e0630fe77cd8947c4815115119333ff38ae1810              # sha5 hash for specific commit to pull (if there is no specific tag to use)
         PREFIX ${CMAKE_BINARY_DIR}/_deps/audio_pipeline               # the build directory
         DEPENDS ${SpatialAudio_DEP_STR} ${OpenCV_DEP_STR}  # dependencies of this module
         #arguments to pass to CMake

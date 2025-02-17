@@ -246,19 +246,6 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
             std::cout << "A list of plugins must be given on the command line or in a YAML file" << std::endl;
             return EXIT_FAILURE;
         }
-        std::vector<std::string> visualizers;
-        if (options.count("vis")) {
-            visualizers = options["vis"].as<std::vector<std::string>>();
-        } else if (config["visualizers"]) {
-            std::stringstream vss(config["visualizers"].as<std::string>());
-            while (vss.good()) {
-                std::string substr;
-                getline(vss, substr, ',');
-                visualizers.push_back(substr);
-            }
-        }
-        if (!visualizers.empty())
-            plugins.push_back(visualizers[0]);
 
         check_plugins(plugins, dep_map);
         if (config["install_prefix"]) {

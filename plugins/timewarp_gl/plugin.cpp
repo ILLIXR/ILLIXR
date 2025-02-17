@@ -1,3 +1,8 @@
+// clang-format off
+#include <GL/glew.h> // GLEW has to be loaded before other GL libraries
+#include <GL/glx.h>
+// clang-format on
+
 #include "plugin.hpp"
 
 #include "illixr/data_format.hpp" // must appear first
@@ -13,12 +18,7 @@
 #include <iostream>
 #include <memory>
 #include <thread>
-
-// clang-format off
-#include <GL/glew.h> // GLEW has to be loaded before other GL libraries
-#include <GL/glx.h>
 #include <vulkan/vulkan.h>
-// clang-format on
 
 using namespace ILLIXR;
 

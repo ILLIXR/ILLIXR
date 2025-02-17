@@ -52,8 +52,7 @@ int main(int argc, const char* argv[]) {
         "enable_offload", "")("enable_alignment", "")("enable_verbose_errors", "")("enable_pre_sleep", "")(
         "h,help", "Produce help message")("realsense_cam", "", cxxopts::value<std::string>()->default_value("auto"))(
         "p,plugins", "The plugins to use", cxxopts::value<std::vector<std::string>>())(
-        "vis", "The visualizer to use", cxxopts::value<std::vector<std::string>>())("y,yaml", "Yaml config file",
-                                                                                    cxxopts::value<std::string>())(
+        "y,yaml", "Yaml config file", cxxopts::value<std::string>())(
         "r,run",
         "The plugins to run, supersedes plugins entry. This is only necessary if a plugin builds more than one library (e.g. "
         "offload_vio builds 4 libraries) as each must be loaded individually.");
