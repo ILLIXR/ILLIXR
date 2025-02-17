@@ -7,7 +7,9 @@
 
 #include "illixr/dynamic_lib.hpp"
 #include "illixr/error_util.hpp"
-#include "illixr/extended_window.hpp"
+#if !defined(ENABLE_MONADO) && !defined(ENABLE_VULKAN) // the extended window is only needed for our native OpenGL backend
+    #include "illixr/extended_window.hpp"
+#endif
 #include "illixr/global_module_defs.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/plugin.hpp"
