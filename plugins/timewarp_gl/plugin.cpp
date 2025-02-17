@@ -13,7 +13,6 @@
 #include <iostream>
 #include <memory>
 #include <thread>
-
 #include <vulkan/vulkan.h>
 
 using namespace ILLIXR;
