@@ -147,7 +147,8 @@ public:
         if (values_.size() != record_header_->get().get_columns()) {
             spdlog::get("illixr")->error("[record_logger] {} elements passed, but rh for {} only specifies {}.", values_.size(),
                                          record_header_->get().get_name(), record_header_->get().get_columns());
-            abort();
+            throw std::runtime_error("[record_logger] " + std::to_string(values_.size()) + " elements passed, but rh for " +
+                                     record_header_->get().get_name() + " only specifies {}." + std::to_string(record_header_->get().get_columns()));
         }
         for (std::size_t column = 0; column < values_.size(); ++column) {
             if (values_[column].type() != record_header_->get().get_column_type(column)) {
@@ -169,7 +170,6 @@ public:
     ~record() {
         if (record_header_ && !data_use_indicator_.is_used()) {
             spdlog::get("illixr")->error("[record_logger] Record was deleted without being logged.");
-            abort();
         }
     }
 

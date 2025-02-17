@@ -184,7 +184,7 @@ void realsense::configure_camera() {
         spdlog::get(name_)->debug("Setting cam_select_: T26X");
     }
     if (cam_select_ == UNSUPPORTED) {
-        ILLIXR::abort("Supported Realsense device NOT found!");
+        throw std::runtime_error("Supported Realsense device NOT found!");
     }
     if (cam_select_ == T26X) {
         // T26X series has fixed options for accel rate, gyro rate, fisheye resolution, and FPS

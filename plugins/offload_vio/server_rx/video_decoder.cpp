@@ -74,7 +74,7 @@ void video_decoder::create_pipelines() {
     // link elements
     if (!gst_element_link_many(appsrc_img0_, decoder_img0, nvvideoconvert_0, caps_filter_0, appsink_img0_, nullptr) ||
         !gst_element_link_many(appsrc_img1_, decoder_img1, nvvideoconvert_1, caps_filter_1, appsink_img1_, nullptr)) {
-        abort("Failed to link elements");
+        throw std::runtime_error("Failed to link elements");
     }
 
     gst_element_set_state(pipeline_img0_, GST_STATE_PLAYING);
@@ -103,7 +103,7 @@ void video_decoder::enqueue(std::string& img0, std::string& img1) {
     auto ret_img1 = gst_app_src_push_buffer(reinterpret_cast<GstAppSrc*>(appsrc_img1_), buffer_img1);
 
     if (ret_img0 != GST_FLOW_OK || ret_img1 != GST_FLOW_OK) {
-        abort("Failed to push buffer");
+        throw std::runtime_error("Failed to push buffer");
     }
 }
 

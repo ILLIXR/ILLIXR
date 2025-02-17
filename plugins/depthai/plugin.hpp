@@ -27,7 +27,6 @@ private:
     switchboard::writer<rgb_depth_type>         rgb_depth_;
     std::mutex                                  mutex_;
 
-#ifndef NDEBUG
     int imu_packet_{0};
     int imu_pub_{0};
     int rgbd_pub_{0};
@@ -36,7 +35,6 @@ private:
     int right_count_{0};
     int depth_count_{0};
     int all_count_{0};
-#endif
     std::chrono::time_point<std::chrono::steady_clock>                                      first_packet_time_;
     std::chrono::time_point<std::chrono::steady_clock, std::chrono::steady_clock::duration> test_time_point_;
     bool                                                                                    use_raw_ = false;

@@ -1,5 +1,10 @@
 #pragma once
 
+// clang-format off
+#include <GL/glew.h> // must come first
+#include <GL/gl.h>
+// clang-format on
+
 #include "illixr/extended_window.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/pose_prediction.hpp"
@@ -153,10 +158,8 @@ private:
 
     duration offload_duration_{};
 
-#ifndef NDEBUG
     size_t log_count_  = 0;
     size_t LOG_PERIOD_ = 20;
-#endif
 };
 
 } // namespace ILLIXR

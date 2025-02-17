@@ -63,7 +63,7 @@ void load_align_parameters(const std::string& path, Eigen::Matrix3f& align_rot, 
     std::ifstream infile;
     infile.open(path);
     if (!infile.is_open()) {
-        ILLIXR::abort("Open alignment file failed !!!");
+        throw std::runtime_error("Open alignment file failed !!!");
     }
 
     std::string       in;

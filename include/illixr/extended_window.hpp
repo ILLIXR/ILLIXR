@@ -1,12 +1,13 @@
 #pragma once
 
+#include <GL/glx.h>
+
 #include "error_util.hpp"
 #include "global_module_defs.hpp"
 #include "phonebook.hpp"
 
 #include <cassert>
 #include <cerrno>
-#include <GL/glx.h>
 #include <spdlog/spdlog.h>
 
 // GLX context magics
@@ -26,7 +27,7 @@ public:
 
         display_ = XOpenDisplay(nullptr);
         if (display_ == nullptr) {
-            ILLIXR::abort("Cannot connect to X server");
+            throw std::runtime_error("Cannot connect to X server");
         } else {
             // Apparently, XOpenDisplay's _true_ error indication is whether display_ is nullptr.
             // https://cboard.cprogramming.com/linux-programming/119957-xlib-perversity.html
@@ -69,7 +70,7 @@ public:
         int          screen    = DefaultScreen(display_);
         GLXFBConfig* fb_config = glXChooseFBConfig(display_, screen, visual_attribs, &fb_count);
         if (!fb_config) {
-            ILLIXR::abort("Failed to retrieve a framebuffer config");
+            throw std::runtime_error("Failed to retrieve a framebuffer config");
         }
 
         spdlog::get("illixr")->debug("[extended_window] Found {} matching FB configs", fb_count);
@@ -118,7 +119,7 @@ public:
         window_ = XCreateWindow(display_, root, 0, 0, width_, height_, 0, vis_info->depth, InputOutput, vis_info->visual,
                                 CWBackPixel | CWColormap | CWBorderPixel | CWEventMask, &attributes);
         if (!window_) {
-            ILLIXR::abort("Failed to create window");
+            throw std::runtime_error("Failed to create window");
         }
         XStoreName(display_, window_, "ILLIXR Extended Window");
         XMapWindow(display_, window_);

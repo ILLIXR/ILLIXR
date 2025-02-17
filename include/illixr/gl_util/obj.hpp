@@ -89,12 +89,12 @@ public:
         if (!err.empty()) {
             spdlog::get("illixr")->error("[obj] {}", err);
             successfully_loaded_model = false;
-            ILLIXR::abort();
+            throw std::runtime_error("[obj] " + err);
         }
         if (!success) {
             spdlog::get("illixr")->error("[obj] Loading of {} failed.", obj_filename);
             successfully_loaded_model = false;
-            ILLIXR::abort();
+            throw std::runtime_error("[obj] Loading of " + obj_filename + " failed.");
         } else {
             // OBJ file successfully loaded.
 

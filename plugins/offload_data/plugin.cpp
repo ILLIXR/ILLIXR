@@ -93,7 +93,7 @@ void offload_data::write_data_to_disk() {
         is_success_ = stbi_write_png(image_name.c_str(), display_params::width_pixels, display_params::height_pixels, 3,
                                      container_it->image, 0);
         if (!is_success_) {
-            ILLIXR::abort("Image create failed !!! ");
+            throw std::runtime_error("Image create failed !!! ");
         }
 
         // Write pose
