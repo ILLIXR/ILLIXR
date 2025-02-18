@@ -4,24 +4,24 @@
 #include "illixr/global_module_defs.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/plugin.hpp"
-#include "illixr/pose_prediction.hpp"
+#include "illixr/data_format/pose_prediction.hpp"
 
 namespace ILLIXR {
 
-typedef pose_type sensor_types;
+typedef data_format::pose_type sensor_types;
 
-class pose_lookup_impl : public pose_prediction {
+class pose_lookup_impl : public data_format::pose_prediction {
 public:
     explicit pose_lookup_impl(const phonebook* const pb);
-    fast_pose_type     get_fast_pose() const override;
-    pose_type          get_true_pose() const override;
+    data_format::fast_pose_type     get_fast_pose() const override;
+    data_format::pose_type          get_true_pose() const override;
     bool               fast_pose_reliable() const override;
     bool               true_pose_reliable() const override;
     Eigen::Quaternionf get_offset() override;
-    pose_type          correct_pose(const pose_type& pose) const override;
+    data_format::pose_type          correct_pose(const data_format::pose_type& pose) const override;
     void               set_offset(const Eigen::Quaternionf& raw_o_times_offset) override;
     Eigen::Quaternionf apply_offset(const Eigen::Quaternionf& orientation) const;
-    fast_pose_type     get_fast_pose(time_point time) const override;
+    data_format::fast_pose_type     get_fast_pose(time_point time) const override;
 
 private:
     const std::shared_ptr<switchboard>          switchboard_;

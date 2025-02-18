@@ -21,7 +21,7 @@ Reverse Dependencies
 | ZED | zed |
 | CUDA | zed |
 | ECM | global |
-| PkgConfig | global |
+| PkgConfig | global<br> offload_rendering_client_jetson |
 | OpenCV | global |
 | GLEW | global |
 | glu | global |
@@ -33,4 +33,7 @@ Reverse Dependencies
 | Boost | global |
 | spdlog | global |
 | Python3 | global |
+| libdrm | offload_rendering_client_jetson |
+| EGL | offload_rendering_client_jetson |
+| glesv2 | offload_rendering_client_jetson |
 | Yamlcpp | main |

@@ -22,9 +22,7 @@
  */
 
 // ILLIXR core headers
-#include "illixr/data_format.hpp"
-#include "illixr/phonebook.hpp"
-#include "illixr/threadloop.hpp"
+#include "illixr/plugin.hpp"
 
 // ILLIXR Vulkan headers
 #include "illixr/vk/render_pass.hpp"

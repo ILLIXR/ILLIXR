@@ -178,4 +178,42 @@ void unreal_projection(Eigen::Matrix4f* result, const float fov_left, const floa
 
     (*result) = remap_z * openxr_matrix;
 }
+
+/*
+ * Rotation matrix to convert a point from one coordinate system to another, e.g. left hand y up to right hand y up
+ *
+ */
+inline Eigen::Matrix3f rotation(const float alpha, const float beta, const float gamma) {
+    Eigen::Matrix3f rot;
+    double          ra = alpha * M_PI / 180.;
+    double          rb = beta * M_PI / 180.;
+    double          rg = gamma * M_PI / 180;
+    rot << (cos(rg) * cos(rb)), (cos(rg) * sin(rb) * sin(ra) - sin(rg) * cos(ra)),
+        (cos(rg) * sin(rb) * cos(ra) + sin(rg) * sin(ra)), (sin(rg) * cos(rb)),
+        (sin(rg) * sin(rb) * sin(ra) + cos(rg) * cos(ra)), (sin(rg) * sin(rb) * cos(ra) - cos(rg) * sin(ra)), -sin(rb),
+        (cos(rb) * sin(ra)), (cos(rb) * cos(ra));
+    return rot;
+}
+
+const Eigen::Matrix3f invert_x = (Eigen::Matrix3f() << -1., 0., 0., 0., 1., 0., 0., 0., 1.).finished();
+const Eigen::Matrix3f invert_y = (Eigen::Matrix3f() << 1., 0., 0., 0., -1., 0., 0., 0., 1.).finished();
+const Eigen::Matrix3f invert_z = (Eigen::Matrix3f() << 1., 0., 0., 0., 1., 0., 0., 0., -1.).finished();
+const Eigen::Matrix3f identity = Eigen::Matrix3f::Identity();
+
+// from:      IM (image)                        LHYU (left hand y up)              RHYU (right hand y up)             RHZU
+// (right hand z up LHZU (left hand z up)               RHZUXF (right hand z up x forward)                 to:
+const Eigen::Matrix3f conversion[6][6] = {
+    {identity, invert_y, rotation(180., 0., 0.), rotation(-90., 0., 0.), rotation(-90., 0., 90.) * invert_z,
+     rotation(-90., 0., -90.)}, // IM
+    {invert_y, identity, invert_z, rotation(-90., 0., 0.) * invert_y, rotation(90., 0., 90.),
+     rotation(-90., 0., -90.) * invert_y}, // LHYU
+    {rotation(180., 0., 0.), invert_z, identity, rotation(90., 0., 0.), rotation(90., 0., 90.) * invert_z,
+     rotation(-90., 0., 90.) * invert_x* invert_y}, // RHYU
+    {rotation(90., 0., 0.), invert_y* rotation(90., 0., 0.), rotation(-90., 0., 0.), identity, rotation(0., 0., 90.) * invert_y,
+     rotation(0., 0., -90.)}, // RHZU
+    {rotation(90., -90., 0.) * invert_y, rotation(-90., -90., 0.), rotation(0., 90., 90.) * invert_y,
+     invert_x* rotation(0, 0., 90), identity, invert_y}, // LHZU
+    {rotation(90., -90., 0.), rotation(-90., -90., 0.) * invert_y, rotation(0., 90., 90.), rotation(0, 0., 90), invert_y,
+     identity}}; // RHZUXF
+
 } // namespace ILLIXR::math_util

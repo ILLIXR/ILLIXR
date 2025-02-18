@@ -1,8 +1,7 @@
 #pragma once
 
-#include "illixr/data_format.hpp"
-#include "illixr/pose_prediction.hpp"
-#include "illixr/serializable_data.hpp"
+#include "illixr/data_format/pose_prediction.hpp"
+#include "illixr/data_format/serializable_data.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
 #include "illixr/vk/display_provider.hpp"
@@ -25,7 +24,7 @@ namespace ILLIXR {
 class offload_rendering_server
     : public threadloop
     , public vulkan::timewarp
-    , public pose_prediction
+    , public data_format::pose_prediction
     , std::enable_shared_from_this<plugin> {
 public:
     /**
@@ -44,7 +43,7 @@ public:
      * @param _buffer_pool Buffer pool for frame management
      * @param input_texture_vulkan_coordinates Whether input textures use Vulkan coordinates
      */
-    void setup(VkRenderPass render_pass, uint32_t subpass, std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> _buffer_pool,
+    void setup(VkRenderPass render_pass, uint32_t subpass, std::shared_ptr<vulkan::buffer_pool<data_format::fast_pose_type>> _buffer_pool,
                bool input_texture_vulkan_coordinates) override;
 
     /**
@@ -63,19 +62,19 @@ public:
     /**
      * @brief Get the latest pose for rendering
      */
-    fast_pose_type get_fast_pose() const override;
+    data_format::fast_pose_type get_fast_pose() const override;
 
     /**
      * @brief Get the true pose (same as fast pose in this implementation)
      */
-    pose_type get_true_pose() const override {
+    data_format::pose_type get_true_pose() const override {
         return get_fast_pose().pose;
     }
 
     /**
      * @brief Get predicted pose for a future time point (returns current pose)
      */
-    fast_pose_type get_fast_pose(time_point future_time) const override {
+    data_format::fast_pose_type get_fast_pose(time_point future_time) const override {
         (void) future_time;
         return get_fast_pose();
     }
@@ -111,7 +110,7 @@ public:
     /**
      * @brief Correct pose data (no-op in this implementation)
      */
-    pose_type correct_pose(const pose_type& pose) const override {
+    data_format::pose_type correct_pose(const data_format::pose_type& pose) const override {
         (void) pose;
         return {};
     }
@@ -129,7 +128,7 @@ public:
     /**
      * @brief Update uniforms (no-op in this implementation)
      */
-    void update_uniforms(const pose_type& r_pose) override {
+    void update_uniforms(const data_format::pose_type& r_pose) override {
         (void) r_pose;
     }
 
@@ -157,7 +156,7 @@ private:
      * @brief Sends encoded frame data to the client
      * @param pose The pose data associated with the frame
      */
-    void enqueue_for_network_send(fast_pose_type& pose);
+    void enqueue_for_network_send(data_format::fast_pose_type& pose);
 
     /**
      * @brief Initializes the FFmpeg Vulkan device context
@@ -208,9 +207,9 @@ private:
     std::shared_ptr<spdlog::logger>                                   log_;
     std::shared_ptr<vulkan::display_provider>                         display_provider_;
     std::shared_ptr<switchboard>                                      switchboard_;
-    switchboard::network_writer<compressed_frame>                     frames_topic_;
-    switchboard::reader<fast_pose_type>                               render_pose_;
-    std::shared_ptr<vulkan::buffer_pool<fast_pose_type>>              buffer_pool_;
+    switchboard::network_writer<data_format::compressed_frame>        frames_topic_;
+    switchboard::reader<data_format::fast_pose_type>                  render_pose_;
+    std::shared_ptr<vulkan::buffer_pool<data_format::fast_pose_type>> buffer_pool_;
     std::vector<std::array<vulkan::ffmpeg_utils::ffmpeg_vk_frame, 2>> avvk_color_frames_;
     std::vector<std::array<vulkan::ffmpeg_utils::ffmpeg_vk_frame, 2>> avvk_depth_frames_;
 

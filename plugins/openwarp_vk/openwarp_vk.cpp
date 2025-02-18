@@ -1,7 +1,9 @@
 #include "openwarp_vk.hpp"
 
-#include "illixr/data_format.hpp"
 #include "illixr/math_util.hpp"
+
+using namespace ILLIXR;
+using namespace ILLIXR::data_format;
 
 openwarp_vk::openwarp_vk(const phonebook* pb)
     : phonebook_{pb}

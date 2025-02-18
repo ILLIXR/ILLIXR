@@ -3,6 +3,7 @@
 #define OFFLOAD_RENDERING_FFMPEG_DECODER_NAME "hevc"
 
 using namespace ILLIXR;
+using namespace ILLIXR::data_format;
 using namespace ILLIXR::vulkan::ffmpeg_utils;
 
 offload_rendering_client::offload_rendering_client(const std::string& name, phonebook* pb)

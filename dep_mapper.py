@@ -26,7 +26,10 @@ struct2_re = re.compile(r"^\s*struct\s+.*};$")       # regex for one line struct
 line_end_re = re.compile(r".*\s*;\s*(?:[^/]|//.*)$")  # regex for the end of a code line
 version_re = re.compile(r"[><=]+")                   # regex for version numbers
 
-skip_list = ['src/cxxopts.hpp']  # files to skip when scanning for classes etc.
+skip_list = ['src/cxxopts.hpp',
+             "plugins/zed/capture/cxxopts.hpp",
+             "plugins/offload_vio/proto/output_stub.hpp",
+             "plugins/offload_vio/proto/input_stub.hpp"]  # files to skip when scanning for classes etc.
 sep = '-' * 77                   # nominal width of output tables
 
 

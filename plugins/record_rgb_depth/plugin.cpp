@@ -3,6 +3,7 @@
 #include <opencv2/imgcodecs.hpp>
 
 using namespace ILLIXR;
+using namespace ILLIXR::data_format;
 
 [[maybe_unused]] record_rgb_depth::record_rgb_depth(const std::string& name, phonebook* pb)
     : plugin{name, pb}
@@ -40,9 +41,9 @@ void record_rgb_depth::dump_data(const switchboard::ptr<const rgb_depth_type>& d
     std::string rgb_img   = rgb_data_dir_.string() + "/" + std::to_string(timestamp) + ".png";
     std::string depth_img = depth_data_dir_.string() + "/" + std::to_string(timestamp) + ".png";
     rgb_wt_file_ << timestamp << "," << timestamp << ".png " << std::endl;
-    cv::imwrite(rgb_img, datum->rgb);
+    cv::imwrite(rgb_img, datum->at(image::RGB));
     depth_wt_file_ << timestamp << "," << timestamp << ".png " << std::endl;
-    cv::imwrite(depth_img, datum->depth);
+    cv::imwrite(depth_img, datum->at(image::DEPTH));
 }
 
 record_rgb_depth::~record_rgb_depth() {

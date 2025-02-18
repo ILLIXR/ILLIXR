@@ -1,8 +1,8 @@
 #pragma once
 
-#include "illixr/data_format.hpp"
 #include "illixr/phonebook.hpp"
 #include "vulkan_utils.hpp"
+#include "illixr/global_module_defs.hpp"
 
 #include <cstdint>
 

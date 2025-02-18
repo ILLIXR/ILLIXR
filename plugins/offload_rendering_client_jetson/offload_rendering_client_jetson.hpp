@@ -1,8 +1,8 @@
 #pragma once
 
 #include "decoding/video_decode.h"
-#include "illixr/pose_prediction.hpp"
-#include "illixr/serializable_data.hpp"
+#include "illixr/data_format/pose_prediction.hpp"
+#include "illixr/data_format/serializable_data.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
 #include "illixr/vk/display_provider.hpp"
@@ -57,7 +57,7 @@ public:
      * Initializes resources and prepares for frame processing
      */
     void setup(VkRenderPass render_pass, uint32_t subpass,
-               std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> buffer_pool) override;
+               std::shared_ptr<vulkan::buffer_pool<data_format::fast_pose_type>> buffer_pool) override;
 
     void record_command_buffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left) override {
         (void) commandBuffer;
@@ -66,7 +66,7 @@ public:
         (void) left;
     }
 
-    void update_uniforms(const pose_type& render_pose) override {
+    void update_uniforms(const data_format::pose_type& render_pose) override {
         (void) render_pose;
     }
 
@@ -126,13 +126,13 @@ public:
 
 private:
     // Core components
-    std::shared_ptr<switchboard>                   switchboard_;
-    std::shared_ptr<spdlog::logger>                log_;
-    std::shared_ptr<vulkan::display_provider>      display_provider_;
-    switchboard::buffered_reader<compressed_frame> frames_reader_;
-    switchboard::network_writer<fast_pose_type>    pose_writer_;
-    std::shared_ptr<pose_prediction>               pose_prediction_;
-    std::shared_ptr<relative_clock>                clock_;
+    std::shared_ptr<switchboard>                                switchboard_;
+    std::shared_ptr<spdlog::logger>                             log_;
+    std::shared_ptr<vulkan::display_provider>                   display_provider_;
+    switchboard::buffered_reader<data_format::compressed_frame> frames_reader_;
+    switchboard::network_writer<data_format::fast_pose_type>    pose_writer_;
+    std::shared_ptr<data_format::pose_prediction>               pose_prediction_;
+    std::shared_ptr<relative_clock>                             clock_;
 
     // State flags
     std::atomic<bool> ready_{false};
@@ -141,7 +141,8 @@ private:
     // bool              resolutionRequeue{false};
 
     // Buffer management
-    std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> buffer_pool_;
+    std::shared_ptr<vulkan::buffer_pool<data_format::fast_pose_type>> buffer_pool_;
+
     std::vector<std::array<VkCommandBuffer, 2>>          blit_color_cb_;
     std::vector<std::array<VkCommandBuffer, 2>>          blit_depth_cb_;
     std::vector<std::array<VkCommandBuffer, 2>>          layout_transition_start_cmd_bufs_;
@@ -152,8 +153,9 @@ private:
     mmapi_decoder depth_decoder_;
 
     // Frame and pose management
-    std::shared_ptr<const compressed_frame> received_frame_;
-    std::queue<fast_pose_type>              pose_queue_;
+    std::shared_ptr<const data_format::compressed_frame> received_frame_;
+
+    std::queue<data_format::fast_pose_type> pose_queue_;
     std::mutex                              pose_queue_mutex_;
     // pose_type                               fixed_pose_;
 

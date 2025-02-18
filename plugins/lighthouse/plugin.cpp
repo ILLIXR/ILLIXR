@@ -9,6 +9,7 @@
 #include <string>
 
 using namespace ILLIXR;
+using namespace ILLIXR::data_format;
 
 lighthouse* lighthouse_instance;
 
@@ -44,7 +45,7 @@ void lighthouse::process_slow_pose(SurviveObject* so, survive_long_timecode time
     lighthouse_instance->slow_pose_.put(lighthouse_instance->slow_pose_.allocate(
         lighthouse_instance->clock_->now(), Eigen::Vector3d{pose->Pos[0], pose->Pos[2], -pose->Pos[1]}.cast<float>(), quat));
 
-    lighthouse_instance->slow_pose_count++;
+    lighthouse_instance->slow_pose_count_++;
 }
 
 // static void process_fast_pose(SurviveObject* so, survive_long_timecode timecode, const SurvivePose* pose) {
@@ -73,13 +74,13 @@ void lighthouse::_p_one_iteration() {
     survive_poll(s_context_);
 
     auto now = std::chrono::high_resolution_clock::now();
-    auto dt  = now - last_time;
+    auto dt  = now - last_time_;
     if (dt > std::chrono::seconds(1)) {
-        log_->info("slow pose rate: {} Hz", slow_pose_count);
-        log_->info("fast pose rate: {} Hz", fast_pose_count);
-        slow_pose_count = 0;
-        fast_pose_count = 0;
-        last_time       = now;
+        log_->info("slow pose rate: {} Hz", slow_pose_count_);
+        log_->info("fast pose rate: {} Hz", fast_pose_count_);
+        slow_pose_count_ = 0;
+        fast_pose_count_ = 0;
+        last_time_       = now;
     }
 }
 

@@ -70,6 +70,31 @@
       ]
     },
     {
+      "name": "hand_tracking",
+      "cmake_flag": "USE_HAND_TRACKING=ON",
+      "dependencies": [
+        "fmt",
+        "git",
+        "libcpuinfo",
+        "libgles"
+      ]
+    },
+    {
+      "name": "hand_tracking.viewer",
+      "cmake_flag": "USE_HAND_TRACKING.VIEWER=ON",
+      "dependencies": [
+        "OpenCV",
+        "glfw3"
+      ]
+    },
+    {
+      "name": "hand_tracking.webcam",
+      "cmake_flag": "USE_HAND_TRACKING.WEBCAM=ON",
+      "dependencies": [
+        "OpenCV"
+      ]
+    },
+    {
       "name": "native_renderer",
       "cmake_flag": "USE_NATIVE_RENDERER=ON",
       "dependencies": [
@@ -480,6 +505,43 @@
           "CentOS": {
             "9": {
               "pkg": "graphviz hdf5-devel libcurl-devel qwt-qt5-devel qt5-qtbase-devel libyaml-devel zlib-devel openssl-devel",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        }
+      }
+    },
+    {
+      "fmt": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "libfmt-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "libfmt-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "fmt-devel",
+              "postnotes": "",
+              "notes": ""
+            },
+            "38": {
+              "pkg": "fmt-devel",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "fmt-devel",
               "postnotes": "",
               "notes": ""
             }
@@ -1006,7 +1068,7 @@
       }
     },
     {
-      "OpenCV": {
+      "libass": {
         "pkg": {
           "Ubuntu": {
             "20": {
@@ -1519,6 +1581,80 @@
               "postnotes": "",
               "notes": ""
             }
+          }
+        }
+      }
+    },
+    {
+      "libcpuinfo": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "libcpuinfo-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "libcpuinfo-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        },
+        "Fedora": {
+          "37": {
+            "pkg": "",
+            "postnotes": "",
+            "notes": ""
+          },
+          "38": {
+            "pkg": "",
+            "postnotes": "",
+            "notes": ""
+          }
+        },
+        "CentOS": {
+          "9": {
+            "pkg": "",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "libgles": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "libgles-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "libgles-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        },
+        "Fedora": {
+          "37": {
+            "pkg": "",
+            "postnotes": "",
+            "notes": ""
+          },
+          "38": {
+            "pkg": "",
+            "postnotes": "",
+            "notes": ""
+          }
+        },
+        "CentOS": {
+          "9": {
+            "pkg": "",
+            "postnotes": "",
+            "notes": ""
           }
         }
       }
@@ -2225,7 +2361,8 @@
           }
         }
       }
-    },    {
+    },
+    {
       "opencl": {
         "pkg": {
           "Ubuntu": {
@@ -2242,19 +2379,19 @@
           },
           "Fedora": {
             "37": {
-              "pkg": "ocl-icd-opencl-dev",
+              "pkg": "ocl-icd-opencl-devel",
               "postnotes": "",
               "notes": ""
             },
             "38": {
-              "pkg": "ocl-icd-opencl-dev",
+              "pkg": "ocl-icd-opencl-devel",
               "postnotes": "",
               "notes": ""
             }
           },
           "CentOS": {
             "9": {
-              "pkg": "ocl-icd-opencl-dev",
+              "pkg": "ocl-icd-opencl-devel",
               "postnotes": "",
               "notes": ""
             }

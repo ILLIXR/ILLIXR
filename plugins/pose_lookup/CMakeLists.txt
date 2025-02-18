@@ -5,15 +5,16 @@ set(PLUGIN_NAME plugin.pose_lookup${ILLIXR_BUILD_SUFFIX})
 # source files, listed individually so that any changes will trigger a rebuild
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
             plugin.hpp
-            ../../include/illixr/data_loading.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_loading.hpp
             utils.hpp
-            ../../include/illixr/error_util.hpp
-            ../../include/illixr/csv_iterator.hpp
-            ../../include/illixr/data_format.hpp
-            ../../include/illixr/plugin.hpp
-            ../../include/illixr/global_module_defs.hpp
-            ../../include/illixr/phonebook.hpp
-            ../../include/illixr/pose_prediction.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/error_util.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/csv_iterator.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/misc.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/pose.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/plugin.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/global_module_defs.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/phonebook.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/pose_prediction.hpp
 )
 
 target_include_directories(${PLUGIN_NAME} PRIVATE ${ILLIXR_SOURCE_DIR}/include ${Eigen3_INCLUDE_DIRS})

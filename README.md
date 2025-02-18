@@ -194,6 +194,8 @@ The external libraries and softwares included in ILLIXR each have their own lice
 
 -   [OpenCV][52] \ [Apache License 2.0][53]
 
+-   [mediapipe][71] \ [Apache License 2.0][72]
+
 -   [Open-VINS][12] \ [GNU General Public License v3.0][13]
 
 -   [OpenXR][54] \ [Boost Software License 1.0][23]
@@ -277,3 +279,5 @@ You can join
 [60]:   https://github.com/KhronosGroup
 [61]:   https://choosealicense.com/licenses/apache-2.0/
 [62]:   https://choosealicense.com/licenses/mit/
+[71]:   https://github.com/google-ai-edge/mediapipe
+[72]:   https://github.com/google-ai-edge/mediapipe/blob/master/LICENSE

@@ -36,16 +36,17 @@ add_custom_target(
 
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
             plugin.hpp
-            ../../include/illixr/data_format.hpp
-            ../../include/illixr/global_module_defs.hpp
-            ../../include/illixr/math_util.hpp
-            ../../include/illixr/pose_prediction.hpp
-            ../../include/illixr/switchboard.hpp
-            ../../include/illixr/threadloop.hpp
-            ../../include/illixr/vk/display_provider.hpp
-            ../../include/illixr/vk/render_pass.hpp
-            ../../include/illixr/gl_util/lib/tiny_obj_loader.h
-            ../../include/illixr/gl_util/lib/stb_image.h
+            ${CMAKE_SOURCE_DIR}/include/illixr/global_module_defs.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/math_util.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/pose_prediction.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/phonebook.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/threadloop.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/vk/display_provider.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/vk/render_pass.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/vk/vulkan_utils.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/gl_util/lib/tiny_obj_loader.h
+            ${CMAKE_SOURCE_DIR}/include/illixr/gl_util/lib/stb_image.h
 )
 if(Vulkan_EXTERNAL)
     add_dependencies(${PLUGIN_NAME} ${Vulkan_DEP_STR})

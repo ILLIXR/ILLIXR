@@ -6,7 +6,6 @@
 
 #include "plugin.hpp"
 
-#include "illixr/data_format.hpp" // must appear first
 #include "illixr/error_util.hpp"
 #include "illixr/global_module_defs.hpp"
 #include "illixr/math_util.hpp"
@@ -22,6 +21,7 @@
 #include <vulkan/vulkan.h>
 
 using namespace ILLIXR;
+using namespace ILLIXR::data_format;
 
 typedef void (*glx_swap_interval_ext_proc)(Display* display_, GLXDrawable drawable, int interval);
 

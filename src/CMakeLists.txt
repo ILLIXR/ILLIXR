@@ -12,8 +12,8 @@ if(ENABLE_VULKAN)
         src/display/glfw_extended.cpp
         src/display/headless.hpp
         src/display/headless.cpp
-        ../include/illixr/vk/vk_extension_request.hpp
-        ../include/illixr/vk/vulkan_objects.hpp
+        ${CMAKE_SOURCE_DIR}/include/illixr/vk/vk_extension_request.hpp
+        ${CMAKE_SOURCE_DIR}/include/illixr/vk/vulkan_objects.hpp
     )
 else ()
     message("Vulkan disabled")
@@ -23,8 +23,8 @@ add_executable(main${ILLIXR_BUILD_SUFFIX}.exe
         src/main.cpp
         src/illixr.hpp
         src/cxxopts.hpp
-        ../include/illixr/runtime.hpp
-        ../include/illixr/phonebook.hpp
+        ${CMAKE_SOURCE_DIR}/include/illixr/runtime.hpp
+        ${CMAKE_SOURCE_DIR}/include/illixr/phonebook.hpp
 )
 
 add_library(plugin.main${ILLIXR_BUILD_SUFFIX} SHARED
@@ -33,15 +33,18 @@ add_library(plugin.main${ILLIXR_BUILD_SUFFIX} SHARED
         src/runtime_impl.cpp
         src/illixr.hpp
         src/cxxopts.hpp
-        ../include/illixr/runtime.hpp
-        ../include/illixr/phonebook.hpp
+        ${CMAKE_SOURCE_DIR}/include/illixr/runtime.hpp
+        ${CMAKE_SOURCE_DIR}/include/illixr/phonebook.hpp
         ${VULKAN_FILES}
 )
 
 ##############
 # yaml parser
 ##############
-
+if (BUILD_OXR_INTERFACE)
+    target_compile_definitions(plugin.main${ILLIXR_BUILD_SUFFIX} PUBLIC -DOXR_INTERFACE)
+endif()
+message("plugin.main${ILLIXR_BUILD_SUFFIX}")
 get_external(Yamlcpp)
 
 target_compile_definitions(plugin.main${ILLIXR_BUILD_SUFFIX} PRIVATE "ILLIXR_VISUALIZERS='${VIS_NAMES}'")

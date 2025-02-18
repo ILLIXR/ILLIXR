@@ -40,15 +40,14 @@ add_library(${PLUGIN_NAME} SHARED plugin.cpp
             openwarp_vk.hpp
             openwarp_vk.cpp
             $<TARGET_OBJECTS:illixr_hmd>
-            ../../include/illixr/data_format.hpp
-            ../../include/illixr/global_module_defs.hpp
-            ../../include/illixr/math_util.hpp
-            ../../include/illixr/phonebook.hpp
-            ../../include/illixr/plugin.hpp
-            ../../include/illixr/pose_prediction.hpp
-            ../../include/illixr/switchboard.hpp
-            ../../include/illixr/vk/display_provider.hpp
-            ../../include/illixr/vk/render_pass.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/global_module_defs.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/math_util.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/phonebook.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/pose_prediction.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/threadloop.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/vk/display_provider.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/vk/render_pass.hpp
 )
 
 if(ENABLE_MONADO)

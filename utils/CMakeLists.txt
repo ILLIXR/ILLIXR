@@ -5,7 +5,7 @@ add_library(illixr_hmd OBJECT hmd.cpp
 target_include_directories(illixr_hmd PUBLIC ${CMAKE_SOURCE_DIR}/include)
 
 add_library(illixr_serializable_data OBJECT serializable_data.cpp
-            ${CMAKE_SOURCE_DIR}/include/illixr/serializable_data.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/serializable_data.hpp
 )
 
 target_include_directories(illixr_serializable_data PUBLIC ${CMAKE_SOURCE_DIR}/include)

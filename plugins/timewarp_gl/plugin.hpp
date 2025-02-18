@@ -1,9 +1,13 @@
 #pragma once
 
+#include "illixr/data_format/frame.hpp"
+#include "illixr/data_format/misc.hpp"
+#include "illixr/data_format/pose.hpp"
 #include "illixr/extended_window.hpp"
 #include "illixr/hmd.hpp"
 #include "illixr/phonebook.hpp"
-#include "illixr/pose_prediction.hpp"
+#include "illixr/data_format/pose_prediction.hpp"
+#include "illixr/data_format/misc.hpp"
 #include "illixr/relative_clock.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
@@ -21,7 +25,7 @@ public:
     timewarp_gl(const std::string& name, phonebook* pb);
     void _setup();
     void _prepare_rendering();
-    void warp(const switchboard::ptr<const rendered_frame>& most_recent_frame);
+    void warp(const switchboard::ptr<const data_format::rendered_frame>& most_recent_frame);
 #ifndef ENABLE_MONADO
     skip_option _p_should_skip() override;
     void        _p_thread_setup() override;
@@ -31,7 +35,7 @@ public:
 private:
     GLubyte*      read_texture_image();
     static GLuint convert_vk_format_to_GL(int64_t vk_format);
-    void          import_vulkan_image(const vk_image_handle& vk_handle, swapchain_usage usage);
+    void          import_vulkan_image(const data_format::vk_image_handle& vk_handle, data_format::swapchain_usage usage);
     void          build_timewarp(HMD::hmd_info_t& hmd_info);
     static void   calculate_time_warp_transform(Eigen::Matrix4f& transform, const Eigen::Matrix4f& render_projection_matrix,
                                                 const Eigen::Matrix4f& render_view_matrix,
@@ -41,9 +45,9 @@ private:
     [[maybe_unused]] [[nodiscard]] duration estimate_time_to_sleep(const double frame_percentage) const;
 #endif
 
-    const std::shared_ptr<switchboard>          switchboard_;
-    const std::shared_ptr<pose_prediction>      pose_prediction_;
-    const std::shared_ptr<const relative_clock> clock_;
+    const std::shared_ptr<switchboard>                  switchboard_;
+    const std::shared_ptr<data_format::pose_prediction> pose_prediction_;
+    const std::shared_ptr<const relative_clock>         clock_;
 
     // OpenGL objects
     Display*   display_;
@@ -52,11 +56,11 @@ private:
 
     // Shared objects between ILLIXR and the application (either gldemo or Monado)
     bool              rendering_ready_;
-    graphics_api      client_backend_;
+    data_format::graphics_api      client_backend_;
     std::atomic<bool> image_handles_ready_{};
 
     // Left and right eye images
-    std::array<std::vector<image_handle>, 2> eye_image_handles_;
+    std::array<std::vector<data_format::image_handle>, 2> eye_image_handles_;
     std::array<std::vector<GLuint>, 2>       eye_swapchains_;
     std::array<size_t, 2>                    eye_swapchains_size_{};
 
@@ -65,10 +69,10 @@ private:
     std::array<GLuint, 2> eye_framebuffers_{};
 
 #ifdef ENABLE_MONADO
-    std::array<image_handle, 2> eye_output_handles_;
+    std::array<data_format::image_handle, 2> eye_output_handles_;
 
     // Synchronization helper for Monado
-    switchboard::writer<signal_to_quad> signal_quad_;
+    switchboard::writer<data_format::signal_to_quad> signal_quad_;
 
     // When using Monado, timewarp is a plugin and not a threadloop, but we still keep track of the iteration number
     std::size_t iteration_no = 0;
@@ -77,13 +81,13 @@ private:
     static constexpr double DELAY_FRACTION = 0.9;
 
     // Switchboard plug for application eye buffer.
-    switchboard::reader<rendered_frame> eyebuffer_;
+    switchboard::reader<data_format::rendered_frame> eyebuffer_;
 
     // Switchboard plug for publishing vsync estimates
     switchboard::writer<switchboard::event_wrapper<time_point>> vsync_estimate_;
 
     // Switchboard plug for publishing offloaded data
-    switchboard::writer<texture_pose> offload_data_;
+    switchboard::writer<data_format::texture_pose> offload_data_;
     // Timewarp only has vsync estimates with native-gl
     record_coalescer mtp_logger_;
 #endif
@@ -91,7 +95,7 @@ private:
     record_coalescer timewarp_gpu_logger_;
 
     // Switchboard plug for sending hologram calls
-    switchboard::writer<hologram_input> hologram_;
+    switchboard::writer<data_format::hologram_input> hologram_;
 
     GLuint timewarp_shader_program_{};
 

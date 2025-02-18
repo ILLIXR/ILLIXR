@@ -1,7 +1,7 @@
 # CMake module to look for GTSAM
 # if it is not found then it is downloaded and marked for compilation and install
 
-find_package(GTSAM 4.3.0 EXACT)
+find_package(GTSAM 4.3.0 QUIET EXACT)
 
 if(NOT GTSAM_FOUND)
     message("GTSAM NOT FOUND - building from source")

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "illixr/data_format.hpp"
-#include "illixr/opencv_data_types.hpp"
+#include "illixr/data_format/imu.hpp"
+#include "illixr/data_format/opencv_data_types.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/plugin.hpp"
 #include "illixr/switchboard.hpp"
@@ -13,7 +13,7 @@ namespace ILLIXR {
 class record_imu_cam : public plugin {
 public:
     [[maybe_unused]] record_imu_cam(const std::string& name, phonebook* pb);
-    void dump_data(const switchboard::ptr<const imu_type>& datum);
+    void dump_data(const switchboard::ptr<const data_format::imu_type>& datum);
     ~record_imu_cam() override;
 
 private:
@@ -24,7 +24,7 @@ private:
     std::ofstream                      cam1_wt_file_;
     const std::shared_ptr<switchboard> switchboard_;
 
-    switchboard::buffered_reader<cam_type> cam_;
+    switchboard::buffered_reader<data_format::binocular_cam_type> cam_;
 
     const boost::filesystem::path record_data_;
     const boost::filesystem::path cam0_data_dir_;

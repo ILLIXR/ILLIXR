@@ -90,6 +90,8 @@ public:
                            return std::unique_ptr<plugin>{plugin_factory(&phonebook_)};
                        });
 
+        phonebook_.lookup_impl<relative_clock>()->start();
+
 #if /**!defined(ENABLE_MONADO) && **/ defined(ENABLE_VULKAN)
         const std::string display_mode = std::getenv("ILLIXR_DISPLAY_MODE") ? std::getenv("ILLIXR_DISPLAY_MODE") : "glfw";
         if (display_mode != "none") {
@@ -117,8 +119,8 @@ public:
             plugin->start();
         });
 
-        // This actually kicks off the plugins_
-        phonebook_.lookup_impl<relative_clock>()->start();
+        // This actually kicks off the plugins
+
         phonebook_.lookup_impl<stoplight>()->signal_ready();
     }
 
@@ -177,8 +179,12 @@ public:
          */
     }
 
+    std::shared_ptr<switchboard> get_switchboard() override {
+        return phonebook_.lookup_impl<switchboard>();
+    }
+
 private:
-    // I have to keep the dynamic libraries_ in scope until the program is dead
+    // I have to keep the dynamic libraries in scope until the program is dead
     std::vector<dynamic_lib>             libraries_;
     phonebook                            phonebook_;
     std::vector<std::shared_ptr<plugin>> plugins_;

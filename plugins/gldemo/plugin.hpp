@@ -1,10 +1,11 @@
 #pragma once
 
-#include "illixr/data_format.hpp"
+#include "illixr/data_format/frame.hpp"
+#include "illixr/data_format/misc.hpp"
 #include "illixr/extended_window.hpp"
 #include "illixr/gl_util/obj.hpp"
 #include "illixr/phonebook.hpp"
-#include "illixr/pose_prediction.hpp"
+#include "illixr/data_format/pose_prediction.hpp"
 #include "illixr/shader_util.hpp"
 #include "illixr/shaders/demo_shader.hpp"
 #include "illixr/switchboard.hpp"
@@ -35,7 +36,7 @@ private:
 
     const std::unique_ptr<const xlib_gl_extended_window>              ext_window_;
     const std::shared_ptr<switchboard>                                switchboard_;
-    const std::shared_ptr<pose_prediction>                            pose_prediction_;
+    const std::shared_ptr<data_format::pose_prediction>               pose_prediction_;
     const std::shared_ptr<const relative_clock>                       clock_;
     const switchboard::reader<switchboard::event_wrapper<time_point>> vsync_;
 
@@ -43,8 +44,8 @@ private:
     // We're not "writing" the actual buffer data,
     // we're just atomically writing the handle to the
     // correct eye/framebuffer in the "swapchain".
-    switchboard::writer<image_handle>   image_handle_;
-    switchboard::writer<rendered_frame> eye_buffer_;
+    switchboard::writer<data_format::image_handle>   image_handle_;
+    switchboard::writer<data_format::rendered_frame> eye_buffer_;
 
     GLuint eye_textures_[2]{};
     GLuint eye_texture_FBO_{};

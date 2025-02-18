@@ -9,6 +9,8 @@
 #include <utility>
 
 using namespace ILLIXR;
+using namespace ILLIXR::data_format;
+
 // IMU sample time to live in seconds
 constexpr duration IMU_TTL{std::chrono::seconds{5}};
 

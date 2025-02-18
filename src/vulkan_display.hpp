@@ -5,7 +5,6 @@
 #include "display/glfw_extended.hpp"
 #include "display/headless.hpp"
 #include "display/x11_direct.hpp"
-#include "illixr/data_format.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"

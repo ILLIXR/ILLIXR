@@ -1,7 +1,7 @@
 #pragma once
 
 #include "illixr/phonebook.hpp"
-#include "illixr/pose_prediction.hpp"
+#include "illixr/data_format/pose_prediction.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
 #include "illixr/vk/display_provider.hpp"
@@ -103,13 +103,13 @@ private:
      */
     void create_timewarp_pass();
 
-    const std::shared_ptr<switchboard>              switchboard_;
-    const std::shared_ptr<spdlog::logger>           log_;
-    const std::shared_ptr<pose_prediction>          pose_prediction_;
-    const std::shared_ptr<vulkan::display_provider> display_sink_;
-    const std::shared_ptr<vulkan::timewarp>         timewarp_;
-    const std::shared_ptr<vulkan::app>              app_;
-    const std::shared_ptr<const relative_clock>     clock_;
+    const std::shared_ptr<switchboard>                  switchboard_;
+    const std::shared_ptr<spdlog::logger>               log_;
+    const std::shared_ptr<data_format::pose_prediction> pose_prediction_;
+    const std::shared_ptr<vulkan::display_provider>     display_sink_;
+    const std::shared_ptr<vulkan::timewarp>             timewarp_;
+    const std::shared_ptr<vulkan::app>                  app_;
+    const std::shared_ptr<const relative_clock>         clock_;
 
     uint32_t server_width_  = 0;
     uint32_t server_height_ = 0;
@@ -145,6 +145,7 @@ private:
     int                                                         fps_{};
     switchboard::reader<switchboard::event_wrapper<time_point>> vsync_;
     time_point                                                  last_fps_update_;
-    std::shared_ptr<vulkan::buffer_pool<fast_pose_type>>        buffer_pool_;
+
+    std::shared_ptr<vulkan::buffer_pool<data_format::fast_pose_type>> buffer_pool_;
 };
 } // namespace ILLIXR

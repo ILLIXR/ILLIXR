@@ -1,11 +1,17 @@
 #pragma once
 
-#include "illixr/data_format.hpp"
+#include "illixr/data_format/imu.hpp"
+#include "illixr/data_format/pose.hpp"
 #include "illixr/network/tcpsocket.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
-#include "vio_output.pb.h"
+// if the header exists, we are good; if not generate a stub class for IDEs to reduce on-screen errors
+#if __has_include("vio_output.pb.h")
+    #include "vio_output.pb.h"
+#else
+    #include "../proto/output_stub.hpp"
+#endif
 
 namespace ILLIXR {
 class offload_reader : public threadloop {
@@ -20,8 +26,8 @@ private:
     const std::shared_ptr<switchboard>                                    switchboard_;
     const std::shared_ptr<relative_clock>                                 clock_;
     switchboard::buffered_reader<switchboard::event_wrapper<std::string>> vio_pose_reader_;
-    switchboard::writer<pose_type>                                        pose_;
-    switchboard::writer<imu_integrator_input>                             imu_integrator_input_;
+    switchboard::writer<data_format::pose_type>                           pose_;
+    switchboard::writer<data_format::imu_integrator_input>                imu_integrator_input_;
 
     network::TCPSocket socket_;
     std::string        server_ip_;

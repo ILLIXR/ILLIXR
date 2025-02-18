@@ -4,7 +4,6 @@
     #define VMA_IMPLEMENTATION
 #endif
 
-#include "illixr/data_format.hpp"
 #include "illixr/global_module_defs.hpp"
 #include "illixr/math_util.hpp"
 #include "illixr/vk/vulkan_utils.hpp"
@@ -19,6 +18,7 @@
 #include <mutex>
 
 using namespace ILLIXR;
+using namespace ILLIXR::data_format;
 
 struct vertex {
     glm::vec3 pos;

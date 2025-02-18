@@ -1,6 +1,5 @@
 #include "plugin.hpp"
 
-#include "illixr/data_format.hpp"
 #include "illixr/global_module_defs.hpp"
 #include "illixr/math_util.hpp"
 
@@ -23,6 +22,7 @@
 #include <unordered_map>
 
 using namespace ILLIXR;
+using namespace ILLIXR::data_format;
 
 struct model_push_constant {
     [[maybe_unused]] int texture_index;

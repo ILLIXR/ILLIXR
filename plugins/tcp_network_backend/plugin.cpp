@@ -1,9 +1,5 @@
 #include "plugin.hpp"
 
-#include "illixr/network/net_config.hpp"
-
-#include <map>
-
 using namespace ILLIXR;
 
 tcp_network_backend::tcp_network_backend(const std::string& name_, phonebook* pb_)

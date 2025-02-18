@@ -10,15 +10,17 @@ add_library(${PLUGIN_NAME} SHARED plugin.cpp
             plugin.hpp
             shaders/timewarp_shader.hpp
             $<TARGET_OBJECTS:illixr_hmd>
-            ../../include/illixr/data_format.hpp
-            ../../include/illixr/error_util.hpp
-            ../../include/illixr/extended_window.hpp
-            ../../include/illixr/global_module_defs.hpp
-            ../../include/illixr/math_util.hpp
-            ../../include/illixr/pose_prediction.hpp
-            ../../include/illixr/shader_util.hpp
-            ../../include/illixr/switchboard.hpp
-            ../../include/illixr/threadloop.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/frame.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/misc.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/pose.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/error_util.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/extended_window.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/global_module_defs.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/math_util.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/pose_prediction.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/shader_util.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/threadloop.hpp
 )
 
 if(ENABLE_MONADO)

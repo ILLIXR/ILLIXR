@@ -15,8 +15,8 @@ External Dependencies
 | debugview | OpenGL<br>glfw3<br> | <br><br> |
 | timewarp_vk | Monado_vk<br>OpenXR_APP<br>PkgConfig<br>Vulkan<br>glm<br>glslang<br>vulkan<br> | <br><br><br><br><br><br>1.3.268<br> |
 | zed | CUDA<br>Threads<br>ZED<br> | *<br><br>3<br> |
+| global | Boost<br>ECM<br>Eigen3<br>GLEW<br>Git<br>Monado_vk<br>OpenCV<br>OpenXR_APP<br>PkgConfig<br>Python3<br>SQLite3<br>Threads<br>Vulkan<br>X11<br>gl<br>glu<br>spdlog<br> | <br><br><br><br><br><br>4<br><br><br><br><br><br><br><br><br><br><br> |
 | openwarp_vk | Monado_vk<br>OpenXR_APP<br>PkgConfig<br>Vulkan<br>glm<br>glslang<br>vulkan<br> | <br><br><br><br><br><br>1.3.268<br> |
 | vkdemo | PkgConfig<br>Vulkan<br>glslang<br>vulkan<br> | <br>1.3.268<br><br>1.3.268<br> |
-| offload_rendering_client_jetson | PkgConfig<br>Threads<br>Vulkan<br>glslang<br>vulkan<br> | <br><br>1.3.268<br><br>1.3.268<br> |
-| global | Boost<br>ECM<br>Eigen3<br>GLEW<br>Git<br>Monado_vk<br>OpenCV<br>OpenXR_APP<br>PkgConfig<br>Python3<br>SQLite3<br>Threads<br>Vulkan<br>X11<br>gl<br>glu<br>spdlog<br> | <br><br><br><br><br><br>4<br><br><br><br><br><br><br><br><br><br><br> |
+| offload_rendering_client_jetson | EGL<br>PkgConfig<br>Threads<br>Vulkan<br>glesv2<br>glslang<br>libdrm<br>vulkan<br> | <br><br><br>1.3.268<br><br><br><br>1.3.268<br> |
 | main | PkgConfig<br>Vulkan<br>Yamlcpp<br>glfw3<br>glslang<br>vulkan<br>yaml-cpp<br> | <br>1.3.268<br><br>3.3<br><br>1.3.268<br><br> |

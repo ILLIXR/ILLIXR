@@ -19,11 +19,16 @@ add_compile_definitions(ILLIXR_LIBAV)
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
             offload_rendering_client.hpp
             offload_rendering_client.cpp
-            ../../include/illixr/data_format.hpp
-            ../../include/illixr/phonebook.hpp
-            ../../include/illixr/switchboard.hpp
-            ../../include/illixr/threadloop.hpp
-            ../../include/illixr/vk/display_provider.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/pose_prediction.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/phonebook.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/serializable_data.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/threadloop.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/vk/display_provider.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/vk/ffmpeg_utils.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/vk/render_pass.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/vk/vk_extension_request.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/vk/vulkan_utils.hpp
             $<TARGET_OBJECTS:illixr_serializable_data>
 )
 

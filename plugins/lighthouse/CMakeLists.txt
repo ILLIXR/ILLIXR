@@ -12,6 +12,11 @@ get_external_for_plugin(LibSurvive)
 
 set(SRC_FILES plugin.cpp
     plugin.hpp
+    ${CMAKE_SOURCE_DIR}/include/illixr/data_format/pose.hpp
+    ${CMAKE_SOURCE_DIR}/include/illixr/error_util.hpp
+    ${CMAKE_SOURCE_DIR}/include/illixr/phonebook.hpp
+    ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
+    ${CMAKE_SOURCE_DIR}/include/illixr/threadloop.hpp
 )
 
 add_library(${PLUGIN_NAME} SHARED ${SRC_FILES})

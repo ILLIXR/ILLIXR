@@ -1,6 +1,7 @@
 #include "offload_rendering_client_jetson.hpp"
 
 using namespace ILLIXR;
+using namespace ILLIXR::data_format;
 
 offload_rendering_client_jetson::offload_rendering_client_jetson(const std::string& name, phonebook* pb)
     : threadloop{name, pb}

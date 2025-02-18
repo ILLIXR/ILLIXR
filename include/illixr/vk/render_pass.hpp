@@ -1,12 +1,13 @@
 #pragma once
 
-#include <vector>
 #define GLFW_INCLUDE_VULKAN
-#include "illixr/data_format.hpp"
+#include "illixr/data_format/misc.hpp"
+#include "illixr/data_format/pose.hpp"
 #include "illixr/phonebook.hpp"
 #include "vulkan_objects.hpp"
 
 #include <GLFW/glfw3.h>
+#include <vector>
 
 using namespace ILLIXR;
 
@@ -31,7 +32,7 @@ public:
      * @param render_pose For an app pass, this is the pose to use for rendering. For a timewarp pass, this is the pose
      * previously supplied to the app pass.
      */
-    virtual void update_uniforms(const pose_type& render_pose) {
+    virtual void update_uniforms(const data_format::pose_type& render_pose) {
         (void) render_pose;
     };
 
@@ -58,7 +59,7 @@ public:
      * @param buffer_pool The buffer pool to use.
      * @param input_texture_vulkan_coordinates Whether the input texture is in Vulkan coordinates.
      */
-    virtual void setup(VkRenderPass render_pass, uint32_t subpass, std::shared_ptr<buffer_pool<fast_pose_type>> buffer_pool,
+    virtual void setup(VkRenderPass render_pass, uint32_t subpass, std::shared_ptr<buffer_pool<data_format::fast_pose_type>> buffer_pool,
                        bool input_texture_vulkan_coordinates) = 0;
 };
 
@@ -72,6 +73,6 @@ public:
      * @param subpass The subpass to use.
      */
     virtual void setup(VkRenderPass render_pass, uint32_t subpass,
-                       std::shared_ptr<buffer_pool<fast_pose_type>> buffer_pool) = 0;
+                       std::shared_ptr<buffer_pool<data_format::fast_pose_type>> buffer_pool) = 0;
 };
 } // namespace ILLIXR::vulkan

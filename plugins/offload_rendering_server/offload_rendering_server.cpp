@@ -1,6 +1,7 @@
 #include "offload_rendering_server.hpp"
 
 using namespace ILLIXR;
+using namespace ILLIXR::data_format;
 using namespace vulkan::ffmpeg_utils;
 
 offload_rendering_server::offload_rendering_server(const std::string& name, phonebook* pb)

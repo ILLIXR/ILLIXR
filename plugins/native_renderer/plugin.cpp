@@ -18,6 +18,7 @@
 #define DMA_EXPORT                       1
 
 using namespace ILLIXR;
+using namespace ILLIXR::data_format;
 
 [[maybe_unused]] native_renderer::native_renderer(const std::string& name, phonebook* pb)
     : threadloop{name, pb}

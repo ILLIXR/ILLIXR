@@ -1,6 +1,6 @@
 #pragma once
 
-#include "illixr/opencv_data_types.hpp"
+#include "illixr/data_format/opencv_data_types.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/relative_clock.hpp"
 #include "illixr/switchboard.hpp"
@@ -22,9 +22,9 @@ protected:
 
 private:
     // ILLIXR
-    const std::shared_ptr<switchboard>          switchboard_;
-    const std::shared_ptr<const relative_clock> clock_;
-    switchboard::writer<rgb_depth_type>         rgb_depth_;
+    const std::shared_ptr<switchboard>               switchboard_;
+    const std::shared_ptr<const relative_clock>      clock_;
+    switchboard::writer<data_format::rgb_depth_type> rgb_depth_;
 
     // OpenNI
     openni::Status        device_status_ = openni::STATUS_OK;

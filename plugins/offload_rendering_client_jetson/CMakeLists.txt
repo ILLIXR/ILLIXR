@@ -30,11 +30,15 @@ if (ON_JETSON_PLATFORM)
     add_library(${PLUGIN_NAME} SHARED plugin.cpp
                 offload_rendering_client_jetson.cpp
                 offload_rendering_client_jetson.hpp
-                ../../include/illixr/data_format.hpp
-                ../../include/illixr/phonebook.hpp
-                ../../include/illixr/switchboard.hpp
-                ../../include/illixr/threadloop.hpp
-                ../../include/illixr/vk/display_provider.hpp
+                ${CMAKE_SOURCE_DIR}/include/illixr/pose_prediction.hpp
+                ${CMAKE_SOURCE_DIR}/include/illixr/phonebook.hpp
+                ${CMAKE_SOURCE_DIR}/include/illixr/serializable_data.hpp
+                ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
+                ${CMAKE_SOURCE_DIR}/include/illixr/threadloop.hpp
+                ${CMAKE_SOURCE_DIR}/include/illixr/vk/display_provider.hpp
+                ${CMAKE_SOURCE_DIR}/include/illixr/vk/render_pass.hpp
+                ${CMAKE_SOURCE_DIR}/include/illixr/vk/vk_extension_request.hpp
+                ${CMAKE_SOURCE_DIR}/include/illixr/vk/vulkan_utils.hpp
                 $<TARGET_OBJECTS:illixr_serializable_data>
                 ${JETSON_MULTIMEDIA_API_CLASSES}
                 decoding/video_decode.h
