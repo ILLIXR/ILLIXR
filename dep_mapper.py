@@ -2,11 +2,12 @@
 """
 This module will generate a list of plugin dependencies from the header and source files of ILLIXR plugins
 """
+from copy import deepcopy
 import glob
 import os
 import re
 import sys
-from typing import List, Dict, Tuple, Set, Any
+from typing import List, Dict, Set, Any
 
 try:
     import yaml
@@ -15,6 +16,10 @@ except Exception as _:
     sys.exit(0)
 
 lookup_re = re.compile(r".*lookup_impl<(\S+)>\(\)")  # regex for lookup_impl calls
+reader_re = re.compile(r".*->get(?:_buffered)?_reader<(?:ILLIXR::)?(?:data_format::)?(\S+)>.*")
+writer_re = re.compile(r".*->get(?:_network)?_writer<(?:ILLIXR::)?(?:data_format::)?(\S+)>.*")
+plugin_re = re.compile(r"\S*plugins/(\S+)/\S+\.[ch]pp")
+build_re = re.compile(r"\S*build/_deps/([a-zA-Z0-9_]*)/\S+\.[ch]pp")
 comment_re = re.compile(r"(//.*)")                   # regex for inline comments
 class_re = re.compile(r"^\s*class ([a-zA-Z0-9_]+)")  # regex for the start of a class
 inh_class_re = re.compile(r"^\s*class ([a-zA-Z0-9_]+).*:.*public.*") # regex for child class
@@ -25,12 +30,41 @@ struct_re = re.compile(r"^\s*struct\s+")             # regex for struct
 struct2_re = re.compile(r"^\s*struct\s+.*};$")       # regex for one line struct
 line_end_re = re.compile(r".*\s*;\s*(?:[^/]|//.*)$")  # regex for the end of a code line
 version_re = re.compile(r"[><=]+")                   # regex for version numbers
+schedule_re = re.compile(r"\s*\S+->schedule<(\S+)>\s?\(")
+alias_re = re.compile(r"namespace (\S+)\s?=\s?(\S+);")
 
 skip_list = ['src/cxxopts.hpp',
              "plugins/zed/capture/cxxopts.hpp",
              "plugins/offload_vio/proto/output_stub.hpp",
              "plugins/offload_vio/proto/input_stub.hpp"]  # files to skip when scanning for classes etc.
 sep = '-' * 77                   # nominal width of output tables
+
+
+def wrap_line(items: List[str], indent: int = 0, length: int = 50) -> str:
+    """
+    Generate lines of word wrapped text from an input list of items
+    :param items: the line to wrap
+    :param indent: the number of spaces to indent subsequent lines
+    :param length: the max number of characters per line
+    :return: the word wrapped text
+    """
+    out_line = ', '.join(items)
+    if len(out_line) > length:
+        out_line = ""
+        line = ""
+        start = 0
+        idx = 1
+        for i in range(1, len(items)):
+            if len(', '.join(items[start: i])) < length:
+                idx = i
+            else:
+                line += ', '.join(items[start: idx]) + ',\n'
+                out_line += line
+                start = idx
+                line = ' '*indent + "  "
+        line += ', '.join(items[start:])
+        out_line += line
+    return out_line
 
 
 def search_for_files(path: str, extensions: List[str], recursive: bool = False) -> List[str]:
@@ -84,8 +118,25 @@ def get_src(path: str, recursive: bool = False) -> List[str]:
     """
     return search_for_files(path, ['cpp'], recursive)
 
+def get_plugin_name(file_name: str) -> str:
+    """
+    Determines the plugin name from the input file name
 
-def get_classes(files: List[str]) -> tuple[dict[str, str], dict[str, list[Any]], dict[str, list[Any]], list[str]]:
+    :param file_name: the file name
+    :return: the plugin name
+    """
+    if 'plugins' in file_name:
+        p_match = plugin_re.match(file_name)
+    elif 'build' in file_name and '_deps' in file_name:
+        p_match = build_re.match(file_name)
+    else:
+        raise Exception(f"Unknown type {file_name}")
+    if not p_match:
+        raise Exception(f"Cannot determine plugin name from {file_name}")
+    return p_match.group(1).lower().replace("/", ".")
+
+def get_classes(files: List[str]) -> tuple[
+    dict[str, str], dict[str, list[Any]], dict[str, list[Any]], list[str], dict[str, list[str]], dict[str, list[str]]]:
     """
     Searches the input list of files for ``class`` definitions to track inheritance and use of other
     plugins.
@@ -108,7 +159,9 @@ def get_classes(files: List[str]) -> tuple[dict[str, str], dict[str, list[Any]],
     classes = {}
     inh_classes = {}
     lookups = {}
-    system_classes = []
+    readers = {}
+    writers = {}
+    system_classes = ['relative_clock']
     # loop over all found files (regardless of type)
     for fl in files:
         if fl in skip_list:  # skip the file if requested
@@ -116,12 +169,19 @@ def get_classes(files: List[str]) -> tuple[dict[str, str], dict[str, list[Any]],
         with open(fl, 'r') as fh:
             count = 0
             current = []
+            aliases = {}
             in_struct = False
             in_class_def = False
             current_def = None
             # scan each line in the file
             for i, ln in enumerate(fh.readlines()):
                 line = comment_re.sub('', ln)  # strip out inline comments
+                temp = line.strip()
+                if temp.startswith('* '):   # skip multi line comments
+                    continue
+                alias_sr = alias_re.match(line)
+                if alias_sr:
+                    aliases[alias_sr.group(1)] = alias_sr.group(2)
                 if in_class_def:
                     in_class_def = False
                     parents = inh_class_sub_re.findall(line)
@@ -160,6 +220,30 @@ def get_classes(files: List[str]) -> tuple[dict[str, str], dict[str, list[Any]],
                     if lookup_res.group(1) not in lookups:
                         lookups[lookup_res.group(1)] = []
                     lookups[lookup_res.group(1)].append(fl)
+                reader_res = reader_re.match(line)
+                if reader_res:
+                    if "event_wrapper" not in reader_res.group(1):
+                        plug = get_plugin_name(fl)
+                        if plug not in readers:
+                            readers[plug] = []
+                        readers[plug].append(reader_res.group(1).replace('ILLIXR::', '').replace('data_format::', ''))
+                writer_res = writer_re.match(line)
+                if writer_res:
+                    if "event_wrapper" not in writer_res.group(1):
+                        plug = get_plugin_name(fl)
+                        if plug not in writers:
+                            writers[plug] = []
+                        writers[plug].append(writer_res.group(1).replace('ILLIXR::', '').replace('data_format::', ''))
+                sched = schedule_re.match(line)
+                if sched:
+                    item = sched.group(1)
+                    plug = get_plugin_name(fl)
+                    for k, v in aliases.items():
+                        if k + "::" in item:
+                            item = item.replace(k + "::", v + "::")
+                    if plug not in readers:
+                        readers[plug] = []
+                    readers[plug].append(item.replace('ILLIXR::', '').replace('data_format::', ''))
                 # detect the start of a struct definition, this is only used to accurately track class
                 # definitions since structs and classes end in the same fashion
                 if struct_re.match(line):
@@ -180,10 +264,11 @@ def get_classes(files: List[str]) -> tuple[dict[str, str], dict[str, list[Any]],
             # if we think we are still in a class, but are at the end of the file
             if count != 0:
                 raise Exception(f"Error {fl}   {count}   {current}")
-    return classes, inh_classes, lookups, system_classes
+    return classes, inh_classes, lookups, system_classes, readers, writers
 
 
-def gather(build: str) -> tuple[dict[Any, list[Any]], dict[Any, set[Any]], dict[str, str], list[str]]:
+def gather(build: str) -> tuple[
+    dict[Any, list[Any]], dict[Any, set[Any]], dict[str, str], list[str], dict[str, list[str]], dict[str, list[str]]]:
     """
     Generate mappings of plugin class inheritance, plugin requirements, and plugin interdependencies
     :param build: The build directory
@@ -211,10 +296,11 @@ def gather(build: str) -> tuple[dict[Any, list[Any]], dict[Any, set[Any]], dict[
     src = get_src('src')
     ext = get_src(os.path.join(build, '_deps/audio_pipeline/src/Audio_Pipeline'), recursive=True)
     ext += get_src(os.path.join(build, '_deps/OpenVINS/src/OpenVINS'), recursive=True)
+    ext += get_src(os.path.join(build, '_deps/hand_tracking/src/HAND_TRACKING'), recursive=True)
 
     full = hdrs + plugins + src + ext
     # extract class information from the files
-    classes, inheritances, lookups, system_classes = get_classes(full)
+    classes, inheritances, lookups, system_classes, readers, writers = get_classes(full)
 
     deps = {}
 
@@ -229,7 +315,7 @@ def gather(build: str) -> tuple[dict[Any, list[Any]], dict[Any, set[Any]], dict[
                 file_name = temp[1]
             elif '_deps' in d['file']:
                 file_name = temp[2]
-            d['base'] = d['base'].replace('ILLIXR::', '')
+            d['base'] = d['base'].replace('ILLIXR::', '').replace('data_format::', '')
             if d['base'] not in deps:
                 deps[d['base']] = []
             deps[d['base']].append({'class': cls, 'from': file_name})
@@ -239,18 +325,14 @@ def gather(build: str) -> tuple[dict[Any, list[Any]], dict[Any, set[Any]], dict[
     # loop over lookup_impl calls and organize
     for base, used_by in lookups.items():
         for item in used_by:
-            temp = item.split(os.sep)
-            # look specifically for plugins
-            if temp[0] == 'plugins':
-                key = temp[1]
-            elif '_deps' in item:
-                key = temp[2]
-            else:
+            try:
+                key = get_plugin_name(item)
+            except:
                 continue
             if key not in invoke:
                 invoke[key] = set()
             invoke[key].add(base)
-    return deps, invoke, classes, system_classes
+    return deps, invoke, classes, system_classes, readers, writers
 
 
 def report_deps(deps: Dict[str, List[Dict[str, str]]]) -> Dict:
@@ -280,32 +362,22 @@ def report_deps(deps: Dict[str, List[Dict[str, str]]]) -> Dict:
         data.sort()
         line = f"{base:25s}  "
         combined[base] = data
-        temp = ', '.join(data)
-        if len(temp) > 50:
-            start = 0
-            idx = 1
-            for i in range(1, len(data)):
-                if len(', '.join(data[start: i])) < 50:
-                    idx = i
-                else:
-                    line += ', '.join(data[start: idx]) + ','
-                    print(line)
-                    start = idx
-                    line = f"{' ':25s}  "
-            line += ', '.join(data[start:])
-        else:
-            line += temp
+        line += wrap_line(data, 25, 50)
         print(line)
     return combined
 
 
-def report_invoke(invoke: Dict[str, Set[str]]) -> None:
+def report_invoke(invoke: Dict[str, Set[str]], readers: Dict[str, List[str]]) -> None:
     """
     Prints a table of plugins and their dependencies (class names) to stdout
     :param invoke: Listing of dependencies (invoked by calls to ``lookup_impl``)
                      * **key**: plugin name
                      * **value**: listing of dependencies
+    :param readers: Listing of dependencies (invoked by calls to ``get_reader`` or ``get_buffered_reader``)
+                     * **key**: plugin name
+                     * **value**: listing of dependencies
     :type invoke: dict[str, set[str]]
+    :type readers: dict[str, list[str]]
     """
     print("\n\n\n")
     print(f"{'Plugin':25s}  {'Requires':50s}")
@@ -314,27 +386,36 @@ def report_invoke(invoke: Dict[str, Set[str]]) -> None:
     plugins.sort()
     for plugin in plugins:
         uses = list(invoke[plugin])
+        if plugin in readers:
+            uses += readers[plugin]
         uses.sort()
         line = f"{plugin:25s}  "
-        temp = ', '.join(uses)
-        if len(temp) > 50:
-            start = 0
-            idx = 1
-            for i in range(1, len(uses)):
-                if len(', '.join(uses[start: i])) < 50:
-                    idx = i
-                else:
-                    line += ', '.join(uses[start: idx])
-                    print(line)
-                    start = idx
-                    line = f"{' ':25s}  "
-            line += ', '.join(uses[start:])
-        else:
-            line += temp
+        line += wrap_line(uses, 25, 50)
         print(line)
 
 
-def report_plugin_invoke(invoke: Dict, deps: Dict, sys_cls: List) -> None:
+def report_writers(writers: Dict[str, List[str]]) -> None:
+    """
+    Report which plugins provide which items
+    :param writers: listing of plugins and what items they write
+                     * **key**: plugin name
+                     * **value**: listing of items written
+    :type writers: dict[str, list[str]]
+    """
+    print("\n\n\n")
+    print(f"{'Plugin':25s}  {'Provides':50s}")
+    print(sep)
+    plugins = list(writers.keys())
+    plugins.sort()
+    for plugin in plugins:
+        provides = writers[plugin]
+        provides.sort()
+        line = f"{plugin:25s}  "
+        line += wrap_line(provides, 25, 50)
+
+        print(line)
+
+def report_plugin_invoke(invoke: Dict, deps: Dict, system_classes: List, readers: Dict[str, List[str]], writers: Dict[str, List[str]]) -> None:
     """
     Print a table of plugins, what plugin type they depend on, and what plugins provide that type
     to stdout.
@@ -344,6 +425,9 @@ def report_plugin_invoke(invoke: Dict, deps: Dict, sys_cls: List) -> None:
     :param deps: Dictionary of parent classes and their children
                    * **key**: parent class name
                    * **value**: children class names
+    :param system_classes: listing of system classes
+    :param readers: listing of plugins and their readers
+    :param writers: listing of plugins and their writers
     :type invoke: dict[str, set[str]]
     :type deps: dict[str, list[str]]
     """
@@ -352,19 +436,36 @@ def report_plugin_invoke(invoke: Dict, deps: Dict, sys_cls: List) -> None:
     print(sep)
     plugins = list(invoke.keys())
     plugins.sort()
+    providers = {}
+    for plugin, writers in writers.items():
+        for writer in writers:
+            if writer not in providers:
+                providers[writer] = []
+            providers[writer].append(plugin)
     yaml_mapper = {"dep_map": []}
     for plugin in plugins:
         uses = list(invoke[plugin])
+        if plugin in readers:
+            uses += readers[plugin]
         uses.sort()
         pl_uses = []
         for pl in uses:
+            if pl in system_classes:
+                continue
             if pl in deps.keys():
                 dd = []
                 for x in deps[pl]:
-                    if x not in sys_cls:
+                    if x not in system_classes:
                         dd.append(x.replace('_impl', ''))
                 if dd:
                     pl_uses.append({"needs": pl, "provided_by": dd})
+            elif pl in providers.keys():
+                prov_by = providers[pl]
+                prov_by.sort()
+                if plugin not in prov_by:
+                    pl_uses.append({'needs': pl, "provided_by": prov_by})
+            else:
+                print(f"Cannot find something that provides {pl}")
         if pl_uses:
             pl_deps = []
             print(f"{plugin:25s}  {pl_uses[0]['needs']:20s} {', '.join(pl_uses[0]['provided_by'])}")
@@ -374,22 +475,22 @@ def report_plugin_invoke(invoke: Dict, deps: Dict, sys_cls: List) -> None:
                                 })
                 if i > 0:
                     print(f"{' ':25s}  {pl_uses[i]['needs']:20s} {', '.join(pl_uses[i]['provided_by'])}")
-            yaml_mapper["dep_map"].append({'plugin': plugin, 'dependencies': pl_deps})
+            yaml_mapper["dep_map"].append({'plugin': plugin, 'dependencies': deepcopy(pl_deps)})
     yaml.dump(yaml_mapper, open(os.path.join('plugins', 'plugin_deps.yaml'), 'w'))
 
 
-def scan_for_find_package(flname: str) -> Dict[str, str]:
+def scan_for_find_package(file_name: str) -> Dict[str, str]:
     """
     Scan the CMakeLists.txt file for `find_package` or `pkg_search_module` calls
 
-    :param flname: The file to search.
-    :type flname: str
+    :param file_name: The file to search.
+    :type file_name: str
     :return:
     Dictionary of the dependencies found and minimum version, if found.
     :rtype: dict[str, str]
     """
     packages = {}
-    with open(flname, 'r') as fh:
+    with open(file_name, 'r') as fh:
         for ln in fh.readlines():
             line = ln.strip()
             if line.startswith('find_package'):
@@ -411,7 +512,7 @@ def scan_for_find_package(flname: str) -> Dict[str, str]:
                     else:
                         packages[temp[0]] = temp[1]
                 else:
-                    raise Exception(f"Unexpected format {flname}  {line}")
+                    raise Exception(f"Unexpected format {file_name}  {line}")
             elif line.startswith('pkg_search_module') or line.startswith('pkg_check_modules'):
                 start = line.find('(')
                 end = line.find(')')
@@ -423,7 +524,7 @@ def scan_for_find_package(flname: str) -> Dict[str, str]:
                 elif len(temp) == 2:
                     packages[temp[0]] = temp[1]
                 else:
-                    raise Exception(f"Unexpected format {flname}  {line}")
+                    raise Exception(f"Unexpected format {file_name}  {line}")
             elif line.startswith('get_external'):
                 start = line.find('(')
                 end = line.find(')')
@@ -528,8 +629,9 @@ if __name__ == '__main__':
     if len(sys.argv) != 2:
         raise Exception("Incorrect number of arguments.")
     _build = sys.argv[1]
-    dependencies, inv, clss, sys_cls = gather(_build)
+    dependencies, inv, clss, sys_cls, readers_, writers_ = gather(_build)
     comb = report_deps(dependencies)
-    report_invoke(inv)
-    report_plugin_invoke(inv, comb, sys_cls)
+    report_invoke(inv, readers_)
+    report_writers(writers_)
+    report_plugin_invoke(inv, comb, sys_cls, readers_, writers_)
     process_cmake()
