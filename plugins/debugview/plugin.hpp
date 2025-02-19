@@ -10,8 +10,8 @@
 
 #include "illixr/data_format/imu.hpp"
 #include "illixr/data_format/opencv_data_types.hpp"
-#include "illixr/gl_util/obj.hpp"
 #include "illixr/data_format/pose_prediction.hpp"
+#include "illixr/gl_util/obj.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
 

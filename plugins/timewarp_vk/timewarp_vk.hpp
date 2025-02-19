@@ -1,7 +1,7 @@
 #pragma once
 
-#include "illixr/hmd.hpp"
 #include "illixr/data_format/pose_prediction.hpp"
+#include "illixr/hmd.hpp"
 #include "illixr/vk/display_provider.hpp"
 #include "illixr/vk/render_pass.hpp"
 
@@ -14,8 +14,9 @@ class timewarp_vk : public vulkan::timewarp {
 public:
     explicit timewarp_vk(const phonebook* pb);
     void initialize();
-    void setup(VkRenderPass render_pass, uint32_t subpass, std::shared_ptr<vulkan::buffer_pool<data_format::fast_pose_type>> buffer_pool,
-               bool input_texture_vulkan_coordinates_in) override;
+    void setup(VkRenderPass render_pass, uint32_t subpass,
+               std::shared_ptr<vulkan::buffer_pool<data_format::fast_pose_type>> buffer_pool,
+               bool                                                              input_texture_vulkan_coordinates_in) override;
     void partial_destroy();
     void update_uniforms(const data_format::pose_type& render_pose) override;
     void record_command_buffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left) override;
@@ -42,7 +43,7 @@ private:
 
     const phonebook* const                                      phonebook_;
     const std::shared_ptr<switchboard>                          switchboard_;
-    const std::shared_ptr<data_format::pose_prediction>                      pose_prediction_;
+    const std::shared_ptr<data_format::pose_prediction>         pose_prediction_;
     switchboard::reader<switchboard::event_wrapper<time_point>> vsync_;
     bool                                                        disable_warp_     = false;
     std::shared_ptr<vulkan::display_provider>                   display_provider_ = nullptr;
@@ -59,16 +60,16 @@ private:
     std::vector<data_format::pose_type> fixed_poses_;
     uint64_t                            frame_count_ = 0;
 
-    size_t                                               swapchain_width_  = 0;
-    size_t                                               swapchain_height_ = 0;
+    size_t swapchain_width_  = 0;
+    size_t swapchain_height_ = 0;
 
     std::shared_ptr<vulkan::buffer_pool<data_format::fast_pose_type>> buffer_pool_;
 
-    VkSampler                                            fb_sampler_{};
-    bool                                                 clamp_edge_ = false;
-    VkDescriptorPool                                     descriptor_pool_{};
-    VkDescriptorSetLayout                                descriptor_set_layout_{};
-    std::array<std::vector<VkDescriptorSet>, 2>          descriptor_sets_;
+    VkSampler                                   fb_sampler_{};
+    bool                                        clamp_edge_ = false;
+    VkDescriptorPool                            descriptor_pool_{};
+    VkDescriptorSetLayout                       descriptor_set_layout_{};
+    std::array<std::vector<VkDescriptorSet>, 2> descriptor_sets_;
 
     VkRenderPass timewarp_render_pass_{};
 

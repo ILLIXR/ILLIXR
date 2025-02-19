@@ -229,4 +229,4 @@ inline proper_quaternion<Scalar_> operator/(const proper_quaternion<Scalar_>& pq
     return proper_quaternion<Scalar_>(pq.w() / x, pq.x() / x, pq.y() / x, pq.z() / x);
 }
 
-} // namespace ILLIXR
+} // namespace ILLIXR::data_format

@@ -2,10 +2,10 @@
 
 #include "illixr/data_format/frame.hpp"
 #include "illixr/data_format/misc.hpp"
+#include "illixr/data_format/pose_prediction.hpp"
 #include "illixr/extended_window.hpp"
 #include "illixr/gl_util/obj.hpp"
 #include "illixr/phonebook.hpp"
-#include "illixr/data_format/pose_prediction.hpp"
 #include "illixr/shader_util.hpp"
 #include "illixr/shaders/demo_shader.hpp"
 #include "illixr/switchboard.hpp"

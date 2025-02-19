@@ -38,8 +38,8 @@ struct compressed_frame : public switchboard::event {
 #endif
 
     data_format::fast_pose_type pose;
-    uint64_t       sent_time;
-    long           magic = 0;
+    uint64_t                    sent_time;
+    long                        magic = 0;
 
     friend class boost::serialization::access;
 
@@ -211,7 +211,7 @@ struct compressed_frame : public switchboard::event {
         }
     }
 };
-} // namespace ILLIXR
+} // namespace ILLIXR::data_format
 
 namespace boost::serialization {
 template<class Archive>

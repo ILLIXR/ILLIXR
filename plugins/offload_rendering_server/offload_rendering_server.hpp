@@ -43,8 +43,9 @@ public:
      * @param _buffer_pool Buffer pool for frame management
      * @param input_texture_vulkan_coordinates Whether input textures use Vulkan coordinates
      */
-    void setup(VkRenderPass render_pass, uint32_t subpass, std::shared_ptr<vulkan::buffer_pool<data_format::fast_pose_type>> _buffer_pool,
-               bool input_texture_vulkan_coordinates) override;
+    void setup(VkRenderPass render_pass, uint32_t subpass,
+               std::shared_ptr<vulkan::buffer_pool<data_format::fast_pose_type>> _buffer_pool,
+               bool                                                              input_texture_vulkan_coordinates) override;
 
     /**
      * @brief Indicates this sink does not make use of the rendering pipeline in order for the access masks of the layout

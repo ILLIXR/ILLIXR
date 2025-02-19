@@ -205,7 +205,7 @@ private:
     std::shared_ptr<data_format::pose_prediction>               pose_prediction_;
     std::atomic<bool>                                           ready_ = false;
 
-    std::shared_ptr<vulkan::buffer_pool<data_format::fast_pose_type>>              buffer_pool_;
+    std::shared_ptr<vulkan::buffer_pool<data_format::fast_pose_type>> buffer_pool_;
     bool                                                              use_depth_ = false;
     std::vector<std::array<vulkan::ffmpeg_utils::ffmpeg_vk_frame, 2>> avvk_color_frames_;
     std::vector<std::array<vulkan::ffmpeg_utils::ffmpeg_vk_frame, 2>> avvk_depth_frames_;

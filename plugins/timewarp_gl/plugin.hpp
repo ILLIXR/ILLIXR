@@ -3,11 +3,10 @@
 #include "illixr/data_format/frame.hpp"
 #include "illixr/data_format/misc.hpp"
 #include "illixr/data_format/pose.hpp"
+#include "illixr/data_format/pose_prediction.hpp"
 #include "illixr/extended_window.hpp"
 #include "illixr/hmd.hpp"
 #include "illixr/phonebook.hpp"
-#include "illixr/data_format/pose_prediction.hpp"
-#include "illixr/data_format/misc.hpp"
 #include "illixr/relative_clock.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
@@ -55,14 +54,14 @@ private:
     GLXContext context_;
 
     // Shared objects between ILLIXR and the application (either gldemo or Monado)
-    bool              rendering_ready_;
-    data_format::graphics_api      client_backend_;
-    std::atomic<bool> image_handles_ready_{};
+    bool                      rendering_ready_;
+    data_format::graphics_api client_backend_;
+    std::atomic<bool>         image_handles_ready_{};
 
     // Left and right eye images
     std::array<std::vector<data_format::image_handle>, 2> eye_image_handles_;
-    std::array<std::vector<GLuint>, 2>       eye_swapchains_;
-    std::array<size_t, 2>                    eye_swapchains_size_{};
+    std::array<std::vector<GLuint>, 2>                    eye_swapchains_;
+    std::array<size_t, 2>                                 eye_swapchains_size_{};
 
     // Intermediate timewarp framebuffers for left and right eye textures
     std::array<GLuint, 2> eye_output_textures_{};

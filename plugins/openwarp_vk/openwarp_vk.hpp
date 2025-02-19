@@ -5,8 +5,8 @@
     #endif
 #endif
 
-#include "illixr/hmd.hpp"
 #include "illixr/data_format/pose_prediction.hpp"
+#include "illixr/hmd.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
 #include "illixr/vk/display_provider.hpp"
@@ -117,8 +117,9 @@ class openwarp_vk : public vulkan::timewarp {
 public:
     explicit openwarp_vk(const phonebook* pb);
     void initialize();
-    void setup(VkRenderPass render_pass, uint32_t subpass, std::shared_ptr<vulkan::buffer_pool<data_format::fast_pose_type>> buffer_pool_,
-               bool input_texture_vulkan_coordinates_) override;
+    void setup(VkRenderPass render_pass, uint32_t subpass,
+               std::shared_ptr<vulkan::buffer_pool<data_format::fast_pose_type>> buffer_pool_,
+               bool                                                              input_texture_vulkan_coordinates_) override;
     void partial_destroy();
     void update_uniforms(const data_format::pose_type& render_pose) override;
     void record_command_buffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left) override;
@@ -141,10 +142,10 @@ private:
     static Eigen::Matrix4f create_camera_matrix(const data_format::pose_type& pose, int eye);
     static Eigen::Matrix4f calculate_distortion_transform(const Eigen::Matrix4f& projection_matrix);
 
-    const phonebook* const                    phonebook_;
-    const std::shared_ptr<switchboard>        switchboard_;
+    const phonebook* const             phonebook_;
+    const std::shared_ptr<switchboard> switchboard_;
 
-    const std::shared_ptr<data_format::pose_prediction>    pose_prediction_;
+    const std::shared_ptr<data_format::pose_prediction> pose_prediction_;
 
     bool                                      disable_warp_     = false;
     std::shared_ptr<vulkan::display_provider> display_provider_ = nullptr;
@@ -155,11 +156,11 @@ private:
 
     bool using_godot_ = false;
 
-    bool                   compare_images_ = false;
+    bool compare_images_ = false;
 
     std::vector<data_format::pose_type> fixed_poses_;
 
-    uint64_t               frame_count_ = 0;
+    uint64_t frame_count_ = 0;
 
     // Vulkan resources
     std::stack<std::function<void()>> deletion_queue_;
@@ -167,12 +168,12 @@ private:
 
     // Note that each frame occupies 2 elements in the buffer pool:
     // i for the image itself, and i + 1 for the depth image.
-    size_t                                               swapchain_width_{};
-    size_t                                               swapchain_height_{};
+    size_t swapchain_width_{};
+    size_t swapchain_height_{};
 
     std::shared_ptr<vulkan::buffer_pool<data_format::fast_pose_type>> buffer_pool_;
 
-    VkSampler                                            fb_sampler_{};
+    VkSampler fb_sampler_{};
 
     VkDescriptorPool descriptor_pool_{};
     VkCommandPool    command_pool_{};

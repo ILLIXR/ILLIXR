@@ -57,8 +57,9 @@ public:
      * @param buffer_pool The buffer pool to use.
      * @param input_texture_vulkan_coordinates Whether the input texture is in Vulkan coordinates.
      */
-    virtual void setup(VkRenderPass render_pass, uint32_t subpass, std::shared_ptr<buffer_pool<data_format::fast_pose_type>> buffer_pool,
-                       bool input_texture_vulkan_coordinates) = 0;
+    virtual void setup(VkRenderPass render_pass, uint32_t subpass,
+                       std::shared_ptr<buffer_pool<data_format::fast_pose_type>> buffer_pool,
+                       bool                                                      input_texture_vulkan_coordinates) = 0;
 };
 
 // app defines the interface for an application render pass as a service.

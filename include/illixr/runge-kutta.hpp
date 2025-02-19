@@ -7,7 +7,7 @@
 namespace ILLIXR {
 
 const data_format::proper_quaterniond dq_0(1., 0., 0., 0.);    /** Initial quaternion*/
-const Eigen::Vector3d    Gravity(0.0, 0.0, 9.81); /** Gravitational acceleration, at sea level, on Earth*/
+const Eigen::Vector3d                 Gravity(0.0, 0.0, 9.81); /** Gravitational acceleration, at sea level, on Earth*/
 
 /**
  * @brief Generates a skew-symmetric matrix from the given 3-element vector
@@ -39,7 +39,7 @@ inline Eigen::Matrix4d makeOmega(const Eigen::Vector3d& w) {
  * @return The change in orientation
  */
 inline data_format::proper_quaterniond delta_q(const data_format::proper_quaterniond& k_n) {
-        data_format::proper_quaterniond dq(dq_0 + 0.5 * k_n);
+    data_format::proper_quaterniond dq(dq_0 + 0.5 * k_n);
     dq.normalize();
     return dq;
 }
@@ -73,8 +73,9 @@ inline Eigen::Vector3d p_dot(const Eigen::Vector3d& iv, const Eigen::Vector3d& k
  * @param l_acc The acceleration as a vector
  * @return The calculated velocity as a vector
  */
-inline Eigen::Vector3d v_dot(const data_format::proper_quaterniond& dq, const data_format::proper_quaterniond& q, const Eigen::Vector3d& l_acc) {
-        data_format::proper_quaterniond temp = q * dq;
+inline Eigen::Vector3d v_dot(const data_format::proper_quaterniond& dq, const data_format::proper_quaterniond& q,
+                             const Eigen::Vector3d& l_acc) {
+    data_format::proper_quaterniond temp = q * dq;
     temp.normalize();
     return temp.toRotationMatrix() * l_acc - Gravity;
 }
@@ -99,10 +100,11 @@ inline T solve(const T& yn, const T& k1, const T& k2, const T& k3, const T& k4) 
  */
 struct state_plus {
     data_format::proper_quaterniond orientation;
-    Eigen::Vector3d    velocity;
-    Eigen::Vector3d    position;
+    Eigen::Vector3d                 velocity;
+    Eigen::Vector3d                 position;
 
-    [[maybe_unused]] state_plus(const data_format::proper_quaterniond& pq, const Eigen::Vector3d& vel, const Eigen::Vector3d& pos)
+    [[maybe_unused]] state_plus(const data_format::proper_quaterniond& pq, const Eigen::Vector3d& vel,
+                                const Eigen::Vector3d& pos)
         : orientation(pq)
         , velocity(vel)
         , position(pos) { }
@@ -142,8 +144,8 @@ state_plus predict_mean_rk4(double dt, const state_plus& sp, const Eigen::Vector
 
     // y0 ================
     data_format::proper_quaterniond q_0 = sp.orientation; // initial orientation quaternion
-    Eigen::Vector3d    p_0 = sp.position;    // initial position vector
-    Eigen::Vector3d    v_0 = sp.velocity;    // initial velocity vector
+    Eigen::Vector3d                 p_0 = sp.position;    // initial position vector
+    Eigen::Vector3d                 v_0 = sp.velocity;    // initial velocity vector
 
     // Calculate the RK4 coefficients
     // solve orientation
@@ -184,7 +186,7 @@ state_plus predict_mean_rk4(double dt, const state_plus& sp, const Eigen::Vector
     Eigen::Vector3d k4_p = p_dot(v_0, 2. * k3_v) * dt;
 
     // y+dt ================
-    state_plus         state_plus;
+    state_plus                      state_plus;
     data_format::proper_quaterniond dq = solve(dq_0, k1_q, k2_q, k3_q, k4_q);
     dq.normalize();
     state_plus.orientation = q_0 * dq;

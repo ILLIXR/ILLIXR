@@ -1,8 +1,7 @@
 #pragma once
 
-#include "illixr/switchboard.hpp"
-
 #include "display_backend.hpp"
+#include "illixr/switchboard.hpp"
 
 #include <utility>
 

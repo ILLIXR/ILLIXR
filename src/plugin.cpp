@@ -214,11 +214,11 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
         setenv("__GL_SYNC_TO_VBLANK", "1", false);
 
         std::vector<ILLIXR::Dependency> dep_map;
-        std::vector<std::string>        dep_list = {"plugin_deps.yaml", home_dir + "/.illixr/profiles/plugin_deps.yaml",
-                                                    exec_path + "/../share/illixr/profiles/plugin_deps.yaml"
+        std::vector<std::string>        dep_list   = {"plugin_deps.yaml", home_dir + "/.illixr/profiles/plugin_deps.yaml",
+                                                      exec_path + "/../share/illixr/profiles/plugin_deps.yaml"
 
         };
-        bool dep_loaded = false;
+        bool                            dep_loaded = false;
         for (auto& dep_file : dep_list) {
             try {
                 YAML::Node plugin_deps = YAML::LoadFile(dep_file);
@@ -227,12 +227,11 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
                                             "), verifying plugin dependencies.");
 #endif
                 dep_map.reserve(plugin_deps["dep_map"].size());
-                for (const auto &node: plugin_deps["dep_map"])
+                for (const auto& node : plugin_deps["dep_map"])
                     dep_map.push_back(node.as<ILLIXR::Dependency>());
                 dep_loaded = true;
                 break;
-            } catch (YAML::BadFile &bf) {
-            }
+            } catch (YAML::BadFile& bf) { }
         }
 
         if (!dep_loaded)

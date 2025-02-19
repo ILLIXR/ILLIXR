@@ -63,7 +63,7 @@ private:
     std::vector<one_euro_filter<Eigen::Array<double, 3, 1>, double>> filters_;
     bool                                                             has_prev_ = false;
     Eigen::Matrix<double, 3, 1>                                      prev_euler_angles_;
-    std::vector<data_format::imu_type> imu_vector_;
+    std::vector<data_format::imu_type>                               imu_vector_;
 
     // std::vector<pose_type> filtered_poses;
 

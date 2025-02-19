@@ -1,9 +1,9 @@
 #pragma once
 
 #include "illixr/data_format/pose.hpp"
+#include "illixr/data_format/pose_prediction.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/plugin.hpp"
-#include "illixr/data_format/pose_prediction.hpp"
 
 namespace ILLIXR {
 /// Create a "pose_prediction" type service
@@ -24,10 +24,10 @@ public:
         return false;
     }
 
-    data_format::pose_type          correct_pose(const data_format::pose_type& pose) const override;
-    Eigen::Quaternionf get_offset() override;
-    void               set_offset(const Eigen::Quaternionf& raw_o_times_offset) override;
-    data_format::fast_pose_type     get_fast_pose() const override;
+    data_format::pose_type      correct_pose(const data_format::pose_type& pose) const override;
+    Eigen::Quaternionf          get_offset() override;
+    void                        set_offset(const Eigen::Quaternionf& raw_o_times_offset) override;
+    data_format::fast_pose_type get_fast_pose() const override;
     // ********************************************************************
     // get_fast_pose(): returns a "fast_pose_type" with the algorithmically
     //   determined location values.  (Presently moving in a circle, but

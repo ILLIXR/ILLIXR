@@ -76,14 +76,14 @@ struct fast_pose_type : public switchboard::event {
     time_point predict_target_time;   // Time that prediction targeted.
 
     fast_pose_type()
-            : pose{}
-            , predict_computed_time{time_point{}}
-            , predict_target_time{time_point{}} { }
+        : pose{}
+        , predict_computed_time{time_point{}}
+        , predict_target_time{time_point{}} { }
 
     fast_pose_type(pose_type pose_, time_point predict_computed_time_, time_point predict_target_time_)
-            : pose{std::move(pose_)}
-            , predict_computed_time{predict_computed_time_}
-            , predict_target_time{predict_target_time_} { }
+        : pose{std::move(pose_)}
+        , predict_computed_time{predict_computed_time_}
+        , predict_target_time{predict_target_time_} { }
 };
 
 struct [[maybe_unused]] texture_pose : public switchboard::event {

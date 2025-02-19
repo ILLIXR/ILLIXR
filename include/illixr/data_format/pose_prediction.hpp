@@ -30,4 +30,4 @@ protected:
         set_offset(orientation);
     }
 };
-}
+} // namespace ILLIXR::data_format

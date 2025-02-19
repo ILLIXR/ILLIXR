@@ -143,10 +143,10 @@ private:
     // Buffer management
     std::shared_ptr<vulkan::buffer_pool<data_format::fast_pose_type>> buffer_pool_;
 
-    std::vector<std::array<VkCommandBuffer, 2>>          blit_color_cb_;
-    std::vector<std::array<VkCommandBuffer, 2>>          blit_depth_cb_;
-    std::vector<std::array<VkCommandBuffer, 2>>          layout_transition_start_cmd_bufs_;
-    std::vector<std::array<VkCommandBuffer, 2>>          layout_transition_end_cmd_bufs_;
+    std::vector<std::array<VkCommandBuffer, 2>> blit_color_cb_;
+    std::vector<std::array<VkCommandBuffer, 2>> blit_depth_cb_;
+    std::vector<std::array<VkCommandBuffer, 2>> layout_transition_start_cmd_bufs_;
+    std::vector<std::array<VkCommandBuffer, 2>> layout_transition_end_cmd_bufs_;
 
     // Decoders
     mmapi_decoder color_decoder_;
