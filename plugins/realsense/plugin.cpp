@@ -8,6 +8,7 @@
 #include <vector>
 
 using namespace ILLIXR;
+using namespace ILLIXR::data_format;
 
 static constexpr int IMAGE_WIDTH_D4XX  = 640;
 static constexpr int IMAGE_HEIGHT_D4XX = 480;
@@ -23,7 +24,7 @@ static constexpr int IMAGE_HEIGHT_T26X = 800;
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
     , clock_{phonebook_->lookup_impl<relative_clock>()}
     , imu_{switchboard_->get_writer<imu_type>("imu")}
-    , cam_{switchboard_->get_writer<cam_type>("cam")}
+    , cam_{switchboard_->get_writer<binocular_cam_type>("cam")}
     , rgb_depth_{switchboard_->get_writer<rgb_depth_type>("rgb_depth")}
     , realsense_cam_{ILLIXR::getenv_or("REALSENSE_CAM", "auto")} {
     spdlogger(std::getenv("REALSENSE_LOG_LEVEL"));
@@ -106,7 +107,7 @@ void realsense::callback(const rs2::frame& frame) {
                                     .first<rs2::depth_sensor>()
                                     .get_depth_scale(); // for converting measurements into millimeters
             depth.convertTo(converted_depth, CV_32FC1, depth_scale * 1000.f);
-            cam_.put(cam_.allocate<cam_type>({cam_time_point, ir_left, ir_right}));
+            cam_.put(cam_.allocate<binocular_cam_type>({cam_time_point, ir_left, ir_right}));
             rgb_depth_.put(rgb_depth_.allocate<rgb_depth_type>({cam_time_point, rgb, depth}));
         } else if (cam_select_ == T26X) {
             rs2::video_frame fisheye_frame_left  = fs.get_fisheye_frame(1);
@@ -115,7 +116,7 @@ void realsense::callback(const rs2::frame& frame) {
                 cv::Mat(cv::Size(IMAGE_WIDTH_T26X, IMAGE_HEIGHT_T26X), CV_8UC1, (void*) fisheye_frame_left.get_data());
             cv::Mat fisheye_right =
                 cv::Mat(cv::Size(IMAGE_WIDTH_T26X, IMAGE_HEIGHT_T26X), CV_8UC1, (void*) fisheye_frame_right.get_data());
-            cam_.put(cam_.allocate<cam_type>({cam_time_point, fisheye_left, fisheye_right}));
+            cam_.put(cam_.allocate<binocular_cam_type>({cam_time_point, fisheye_left, fisheye_right}));
         }
     }
 };

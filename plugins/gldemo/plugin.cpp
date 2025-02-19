@@ -17,6 +17,7 @@
 #include <thread>
 
 using namespace ILLIXR;
+using namespace ILLIXR::data_format;
 
 // Wake up 1 ms after vsync instead of exactly at vsync to account for scheduling uncertainty
 static constexpr std::chrono::milliseconds VSYNC_SAFETY_DELAY{1};

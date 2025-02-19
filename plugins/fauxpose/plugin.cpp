@@ -37,8 +37,9 @@
 #include <mutex>
 
 using namespace ILLIXR;
+using namespace ILLIXR::data_format;
 
-faux_pose_impl::faux_pose_impl(const phonebook* const pb)
+faux_pose_impl::faux_pose_impl(const phonebook* pb)
     : switchboard_{pb->lookup_impl<switchboard>()}
     , clock_{pb->lookup_impl<relative_clock>()}
     , vsync_estimate_{switchboard_->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")} {

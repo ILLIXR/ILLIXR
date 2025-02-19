@@ -25,7 +25,8 @@
 
 namespace ILLIXR {
 
-static const bool ENABLE_VERBOSE_ERRORS{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_ENABLE_VERBOSE_ERRORS", "False"))};
+static const bool ENABLE_VERBOSE_ERRORS{getenv("ILLIXR_ENABLE_VERBOSE_ERRORS") != nullptr &&
+                                        ILLIXR::str_to_bool(getenv("ILLIXR_ENABLE_VERBOSE_ERRORS"))};
 
 /**
  * @brief Support function to report errno values when debugging.

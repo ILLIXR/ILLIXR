@@ -1,5 +1,5 @@
 # This file was auto generated, take caution if manually editing.
-plugins: pose_lookup,gldemo,debugview,offload_data,audio_pipeline
+plugins: pose_lookup,gldemo,debugview,offload_data,audio_pipeline,openvins
 visualizers: openvins
 enable_offload: false
 enable_alignment: false

@@ -8,6 +8,7 @@
 #define DEPTH_MODE 0
 
 using namespace ILLIXR;
+using namespace ILLIXR::data_format;
 
 [[maybe_unused]] openni_plugin::openni_plugin(const std::string& name, phonebook* pb)
     : threadloop{name, pb}

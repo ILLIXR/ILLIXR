@@ -10,6 +10,7 @@
 #include "illixr/gl_util/lib/stb_image_write.h"
 
 using namespace ILLIXR;
+using namespace ILLIXR::data_format;
 
 [[maybe_unused]] offload_data::offload_data(const std::string& name, phonebook* pb)
     : plugin{name, pb}
@@ -28,7 +29,7 @@ using namespace ILLIXR;
 void offload_data::callback(const switchboard::ptr<const texture_pose>& datum) {
     spdlog::get(name_)->debug("Image index: {}", img_idx_++);
     /// A texture pose is present. Store it back to our container.
-    _offload_data_container.push_back(datum);
+    offload_data_container_.push_back(datum);
 }
 
 offload_data::~offload_data() {
@@ -43,15 +44,15 @@ offload_data::~offload_data() {
 }
 
 void offload_data::write_metadata() {
-    double mean  = std::accumulate(_time_seq.begin(), _time_seq.end(), 0.0) / static_cast<double>(_time_seq.size());
+    double mean  = std::accumulate(time_seq_.begin(), time_seq_.end(), 0.0) / static_cast<double>(time_seq_.size());
     double accum = 0.0;
-    std::for_each(std::begin(_time_seq), std::end(_time_seq), [&](const double d) {
+    std::for_each(std::begin(time_seq_), std::end(time_seq_), [&](const double d) {
         accum += (d - mean) * (d - mean);
     });
-    double stdev = sqrt(accum / static_cast<double>((_time_seq.size() - 1)));
+    double stdev = sqrt(accum / static_cast<double>((time_seq_.size() - 1)));
 
-    auto max = std::max_element(_time_seq.begin(), _time_seq.end());
-    auto min = std::min_element(_time_seq.begin(), _time_seq.end());
+    auto max = std::max_element(time_seq_.begin(), time_seq_.end());
+    auto min = std::min_element(time_seq_.begin(), time_seq_.end());
 
     std::ofstream meta_file(obj_dir_ + "metadata.out");
     if (meta_file.is_open()) {
@@ -59,18 +60,18 @@ void offload_data::write_metadata() {
         meta_file << "max: " << *max << std::endl;
         meta_file << "min: " << *min << std::endl;
         meta_file << "stdev: " << stdev << std::endl;
-        meta_file << "total number: " << _time_seq.size() << std::endl;
+        meta_file << "total number: " << time_seq_.size() << std::endl;
 
         meta_file << "raw time: " << std::endl;
-        for (long& it : _time_seq)
+        for (long& it : time_seq_)
             meta_file << it << " ";
         meta_file << std::endl << std::endl << std::endl;
 
         meta_file << "ordered time: " << std::endl;
-        std::sort(_time_seq.begin(), _time_seq.end(), [](int x, int y) {
+        std::sort(time_seq_.begin(), time_seq_.end(), [](int x, int y) {
             return x > y;
         });
-        for (long& it : _time_seq)
+        for (long& it : time_seq_)
             meta_file << it << " ";
     }
     meta_file.close();
@@ -81,9 +82,9 @@ void offload_data::write_data_to_disk() {
 
     spdlog::get(name_)->info("Writing offloaded images to disk...");
     img_idx_ = 0;
-    for (auto& container_it : _offload_data_container) {
+    for (auto& container_it : offload_data_container_) {
         // Get collecting time for each frame
-        _time_seq.push_back(
+        time_seq_.push_back(
             std::chrono::duration_cast<std::chrono::duration<long, std::milli>>(container_it->offload_duration).count());
 
         std::string image_name = obj_dir_ + std::to_string(img_idx_) + ".png";
@@ -128,11 +129,11 @@ void offload_data::write_data_to_disk() {
         pose_file.close();
 
         // Print progress
-        percent_ = static_cast<int>(100 * (img_idx_ + 1) / _offload_data_container.size());
+        percent_ = static_cast<int>(100 * (img_idx_ + 1) / offload_data_container_.size());
         std::cout << "\r"
                   << "[" << std::string(percent_ / 2, (char) 61u) << std::string(100 / 2 - percent_ / 2, ' ') << "] ";
         std::cout << percent_ << "%"
-                  << " [Image " << img_idx_++ << " of " << _offload_data_container.size() << "]";
+                  << " [Image " << img_idx_++ << " of " << offload_data_container_.size() << "]";
         std::cout.flush();
     }
     std::cout << std::endl;

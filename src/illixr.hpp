@@ -30,8 +30,8 @@
             setenv(#ENV, "False", false);        \
         }                                        \
     }
-#define STR(y)       #y
-#define STRINGIZE(x) STR(x)
+#define _STR(y)      #y
+#define STRINGIZE(x) _STR(x)
 
 constexpr std::chrono::seconds          ILLIXR_RUN_DURATION_DEFAULT{60};
 [[maybe_unused]] constexpr unsigned int ILLIXR_PRE_SLEEP_DURATION{10};

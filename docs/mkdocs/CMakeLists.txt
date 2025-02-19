@@ -1,7 +1,7 @@
 find_package(Python3)
 
 find_program(MKDOCS_EXEC mkdocs
-        HINTS "$ENV{HOME}/.local/bin")
+        HINTS "$ENV{HOME}/.local/bin" "/usr/bin/mkdocs" "/usr/local/bin/mkdocs")
 include(GNUInstallDirs)
 
 if(Python3_FOUND AND MKDOCS_EXEC)

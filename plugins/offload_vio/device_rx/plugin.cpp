@@ -5,6 +5,7 @@
 #include <utility>
 
 using namespace ILLIXR;
+using namespace ILLIXR::data_format;
 
 [[maybe_unused]] offload_reader::offload_reader(const std::string& name, phonebook* pb)
     : threadloop{name, pb}

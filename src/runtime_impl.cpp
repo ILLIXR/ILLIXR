@@ -75,13 +75,15 @@ public:
                            return std::unique_ptr<plugin>{plugin_factory(&phonebook_)};
                        });
 
+        phonebook_.lookup_impl<relative_clock>()->start();
+
         std::for_each(plugins_.cbegin(), plugins_.cend(), [](const auto& plugin) {
             // Well-behaved plugins_ (any derived from threadloop) start there threads here, and then wait on the Stoplight.
             plugin->start();
         });
 
-        // This actually kicks off the plugins_
-        phonebook_.lookup_impl<relative_clock>()->start();
+        // This actually kicks off the plugins
+
         phonebook_.lookup_impl<stoplight>()->signal_ready();
     }
 
@@ -140,8 +142,12 @@ public:
          */
     }
 
+    std::shared_ptr<switchboard> get_switchboard() override {
+        return phonebook_.lookup_impl<switchboard>();
+    }
+
 private:
-    // I have to keep the dynamic libraries_ in scope until the program is dead
+    // I have to keep the dynamic libraries in scope until the program is dead
     std::vector<dynamic_lib>             libraries_;
     phonebook                            phonebook_;
     std::vector<std::unique_ptr<plugin>> plugins_;

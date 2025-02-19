@@ -1,7 +1,3 @@
-//
-// Created by steven on 7/3/22.
-//
-
 #include "video_encoder.hpp"
 
 #include "illixr/error_util.hpp"

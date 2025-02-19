@@ -1,6 +1,7 @@
 #pragma once
 
-#include "illixr/data_format.hpp"
+#include "illixr/data_format/frame.hpp"
+#include "illixr/data_format/misc.hpp"
 #include "illixr/extended_window.hpp"
 #include "illixr/gl_util/obj.hpp"
 #include "illixr/phonebook.hpp"
