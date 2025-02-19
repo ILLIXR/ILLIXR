@@ -4,6 +4,7 @@
 #include <memory>
 
 using namespace ILLIXR;
+using namespace ILLIXR::data_format;
 
 [[maybe_unused]] passthrough_integrator::passthrough_integrator(const std::string& name, phonebook* pb)
     : plugin{name, pb}

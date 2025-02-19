@@ -1,9 +1,4 @@
-//
-// Created by steven on 7/8/22.
-//
-
-#ifndef PLUGIN_VIDEO_DECODER_H
-#define PLUGIN_VIDEO_DECODER_H
+#pragma once
 
 #include "gst/gst.h"
 
@@ -46,5 +41,3 @@ private:
 };
 
 } // namespace ILLIXR
-
-#endif // PLUGIN_VIDEO_DECODER_H

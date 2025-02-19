@@ -1,10 +1,8 @@
 #pragma once
 
-// clang-format off
-#include <GL/glew.h> // GLEW has to be loaded before other GL libraries
-#include <GL/glx.h>
-// clang-format on
-
+#include "illixr/data_format/frame.hpp"
+#include "illixr/data_format/misc.hpp"
+#include "illixr/data_format/pose.hpp"
 #include "illixr/extended_window.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/pose_prediction.hpp"
@@ -26,7 +24,7 @@ public:
     timewarp_gl(const std::string& name, phonebook* pb);
     void _setup();
     void _prepare_rendering();
-    void warp(const switchboard::ptr<const rendered_frame>& most_recent_frame);
+    void warp(const switchboard::ptr<const data_format::rendered_frame>& most_recent_frame);
 #ifndef ILLIXR_MONADO
     skip_option _p_should_skip() override;
     void        _p_thread_setup() override;
@@ -43,7 +41,7 @@ private:
                                                 const Eigen::Matrix4f& new_view_matrix);
 #ifndef ILLIXR_MONADO
     [[nodiscard]] time_point                get_next_swap_time_estimate() const;
-    [[maybe_unused]] [[nodiscard]] duration estimate_time_to_sleep(const double frame_percentage) const;
+    [[maybe_unused]] [[nodiscard]] duration estimate_time_to_sleep(double frame_percentage) const;
 #endif
 
     const std::shared_ptr<switchboard>          switchboard_;
@@ -82,13 +80,13 @@ private:
     static constexpr double DELAY_FRACTION = 0.9;
 
     // Switchboard plug for application eye buffer.
-    switchboard::reader<rendered_frame> eyebuffer_;
+    switchboard::reader<data_format::rendered_frame> eyebuffer_;
 
     // Switchboard plug for publishing vsync estimates
     switchboard::writer<switchboard::event_wrapper<time_point>> vsync_estimate_;
 
     // Switchboard plug for publishing offloaded data
-    switchboard::writer<texture_pose> offload_data_;
+    switchboard::writer<data_format::texture_pose> offload_data_;
     // Timewarp only has vsync estimates with native-gl
     record_coalescer mtp_logger_;
 #endif
@@ -96,7 +94,7 @@ private:
     record_coalescer timewarp_gpu_logger_;
 
     // Switchboard plug for sending hologram calls
-    switchboard::writer<hologram_input> hologram_;
+    switchboard::writer<data_format::hologram_input> hologram_;
 
     GLuint timewarp_shader_program_{};
 

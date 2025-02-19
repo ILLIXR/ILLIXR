@@ -7,11 +7,12 @@
 #include <string>
 
 using namespace ILLIXR;
+using namespace ILLIXR::data_format;
 
 [[maybe_unused]] record_imu_cam::record_imu_cam(const std::string& name, phonebook* pb)
     : plugin{name, pb}
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
-    , cam_{switchboard_->get_buffered_reader<cam_type>("cam")}
+    , cam_{switchboard_->get_buffered_reader<binocular_cam_type>("cam")}
     , record_data_{get_record_data_path()}
     , cam0_data_dir_{record_data_ / "cam0" / "data"}
     , cam1_data_dir_{record_data_ / "cam1" / "data"} {
@@ -53,15 +54,15 @@ void record_imu_cam::dump_data(const switchboard::ptr<const imu_type>& datum) {
                  << "," << linear_a[0] << "," << linear_a[1] << "," << linear_a[2] << std::endl;
 
     // write cam0 and cam1
-    switchboard::ptr<const cam_type> cam;
+    switchboard::ptr<const binocular_cam_type> cam;
     cam                  = cam_.size() == 0 ? nullptr : cam_.dequeue();
     std::string cam0_img = cam0_data_dir_.string() + "/" + std::to_string(timestamp) + ".png";
     std::string cam1_img = cam1_data_dir_.string() + "/" + std::to_string(timestamp) + ".png";
     if (cam != nullptr) {
         cam0_wt_file_ << timestamp << "," << timestamp << ".png " << std::endl;
-        cv::imwrite(cam0_img, cam->img0);
+        cv::imwrite(cam0_img, cam->at(image::LEFT_EYE));
         cam1_wt_file_ << timestamp << "," << timestamp << ".png " << std::endl;
-        cv::imwrite(cam1_img, cam->img1);
+        cv::imwrite(cam1_img, cam->at(image::RIGHT_EYE));
     }
 }
 

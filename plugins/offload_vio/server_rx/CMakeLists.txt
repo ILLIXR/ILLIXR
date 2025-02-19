@@ -11,11 +11,11 @@ add_library(${PLUGIN_NAME} SHARED plugin.cpp
             plugin.hpp
             video_decoder.cpp
             video_decoder.hpp
-            ../../../include/illixr/plugin.hpp
-            ../../../include/illixr/data_format.hpp
-            ../../../include/illixr/opencv_data_types.hpp
-            ../../../include/illixr/phonebook.hpp
-            ../../../include/illixr/switchboard.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/plugin.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/misc.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/opencv_data_types.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/phonebook.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
 )
 
 # if building on CentOS make sure we use the correct OpenCV

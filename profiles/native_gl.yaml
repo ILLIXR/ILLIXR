@@ -1,6 +1,6 @@
 # This file was auto generated, take caution if manually editing.
-plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,ground_truth_slam,gldemo,timewarp_gl,debugview,offload_data,audio_pipeline
-visualizers: openvins
+plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,ground_truth_slam,gldemo,timewarp_gl,debugview,offload_data,audio_pipeline,openvins
+visualizers: openvins,orb_slam3
 enable_offload: false
 enable_alignment: false
 enable_verbose_errors: false
