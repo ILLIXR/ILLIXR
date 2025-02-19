@@ -12,6 +12,7 @@
 #include <vector>
 
 using namespace ILLIXR;
+using namespace ILLIXR::data_format;
 
 constexpr duration IMU_SAMPLE_LIFETIME{std::chrono::seconds{5}};
 

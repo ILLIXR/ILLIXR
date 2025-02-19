@@ -1,18 +1,21 @@
 #include "plugin.hpp"
 
+#include "illixr/data_format/imu.hpp"
+#include "illixr/data_format/opencv_data_types.hpp"
 #include "illixr/error_util.hpp"
 #include "illixr/global_module_defs.hpp"
+#include "illixr/imgui/backends/imgui_impl_glfw.h"
+#include "illixr/imgui/backends/imgui_impl_opengl3.h"
+#include "illixr/imgui/imgui.h"
 #include "illixr/math_util.hpp"
+#include "illixr/pose_prediction.hpp"
 #include "illixr/shader_util.hpp"
 #include "illixr/shaders/demo_shader.hpp"
-#include "third_party/imgui.h"
-#include "third_party/imgui_impl_glfw.h"
-#include "third_party/imgui_impl_opengl3.h"
-
-#include <iostream>
-#include <opencv2/opencv.hpp>
+#include "illixr/switchboard.hpp"
+#include "illixr/threadloop.hpp"
 
 using namespace ILLIXR;
+using namespace ILLIXR::data_format;
 
 // Loosely inspired by
 // http://spointeau.blogspot.com/2013/12/hello-i-am-looking-at-opengl-3.html
@@ -47,7 +50,7 @@ static void glfw_error_callback(int error, const char* description) {
     , fast_pose_reader_{switchboard_->get_reader<imu_raw_type>("imu_raw")}
     //, glfw_context{pb->lookup_impl<global_config>()->glfw_context}
     , rgb_depth_reader_(switchboard_->get_reader<rgb_depth_type>("rgb_depth"))
-    , cam_reader_{switchboard_->get_buffered_reader<cam_type>("cam")} {
+    , cam_reader_{switchboard_->get_buffered_reader<data_format::binocular_cam_type>("cam")} {
     spdlogger(std::getenv("DEBUGVIEW_LOG_LEVEL"));
 }
 
@@ -226,14 +229,14 @@ bool debugview::load_camera_images() {
         use_cam_ = true;
 
     glBindTexture(GL_TEXTURE_2D, camera_texture_[0]);
-    cv::Mat img0{cam_->img0.clone()};
+    cv::Mat img0{cam_->at(image::LEFT_EYE).clone()};
     glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, img0.cols, img0.rows, 0, GL_RED, GL_UNSIGNED_BYTE, img0.ptr());
     camera_texture_size_[0] = Eigen::Vector2i(img0.cols, img0.rows);
     GLint swizzle_mask[]    = {GL_RED, GL_RED, GL_RED, GL_RED};
     glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzle_mask);
 
     glBindTexture(GL_TEXTURE_2D, camera_texture_[1]);
-    cv::Mat img1{cam_->img1.clone()}; /// <- Adding this here to simulate the copy
+    cv::Mat img1{cam_->at(image::RIGHT_EYE).clone()}; /// <- Adding this here to simulate the copy
     glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, img1.cols, img1.rows, 0, GL_RED, GL_UNSIGNED_BYTE, img1.ptr());
     camera_texture_size_[1] = Eigen::Vector2i(img1.cols, img1.rows);
     GLint swizzle_mask1[]   = {GL_RED, GL_RED, GL_RED, GL_RED};
@@ -255,12 +258,12 @@ bool debugview::load_rgb_depth() {
         use_rgb_depth_ = true;
 
     glBindTexture(GL_TEXTURE_2D, rgb_depth_texture_[0]);
-    cv::Mat rgb{rgb_depth_->rgb.clone()};
+    cv::Mat rgb{rgb_depth_->at(image::RGB).clone()};
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, rgb.cols, rgb.rows, 0, GL_RGBA, GL_UNSIGNED_BYTE, rgb.ptr());
     rgbd_texture_size_[0] = Eigen::Vector2i(rgb.cols, rgb.rows);
 
     glBindTexture(GL_TEXTURE_2D, rgb_depth_texture_[1]);
-    cv::Mat depth{rgb_depth_->depth.clone()};
+    cv::Mat depth{rgb_depth_->at(image::DEPTH).clone()};
     glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, depth.cols, depth.rows, 0, GL_DEPTH_COMPONENT, GL_SHORT, depth.ptr());
     rgbd_texture_size_[1] = Eigen::Vector2i(depth.cols, depth.rows);
     GLint swizzle_mask[]  = {GL_RED, GL_RED, GL_RED, 1};

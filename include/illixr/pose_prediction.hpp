@@ -1,12 +1,13 @@
 #pragma once
 
-#include "data_format.hpp"
-#include "phonebook.hpp"
-#include "relative_clock.hpp"
+#include "illixr/data_format/pose.hpp"
+#include "illixr/phonebook.hpp"
+#include "illixr/relative_clock.hpp"
 
 #include <eigen3/Eigen/Geometry>
 
 using namespace ILLIXR;
+using namespace ILLIXR::data_format;
 
 class pose_prediction : public phonebook::service {
 public:

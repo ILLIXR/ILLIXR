@@ -2,12 +2,12 @@
 
 #include "illixr/network/net_config.hpp"
 #include "video_encoder.hpp"
-#include "vio_input.pb.h"
 
 #include <cassert>
 #include <opencv2/core/mat.hpp>
 
 using namespace ILLIXR;
+using namespace ILLIXR::data_format;
 
 // #define USE_COMPRESSION
 
@@ -16,7 +16,7 @@ using namespace ILLIXR;
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
     , clock_{phonebook_->lookup_impl<relative_clock>()}
     , stoplight_{phonebook_->lookup_impl<stoplight>()}
-    , cam_{switchboard_->get_buffered_reader<cam_type>("cam")}
+    , cam_{switchboard_->get_buffered_reader<binocular_cam_type>("cam")}
     , server_ip_(SERVER_IP)
     , server_port_(SERVER_PORT_1) {
     spdlogger(std::getenv("OFFLOAD_VIO_LOG_LEVEL"));
@@ -105,13 +105,13 @@ void offload_writer::prepare_imu_cam_data(switchboard::ptr<const imu_type> datum
         send_imu_cam_data(latest_cam_time_);
     }
 
-    switchboard::ptr<const cam_type> cam;
+    switchboard::ptr<const binocular_cam_type> cam;
 
     if (cam_.size() != 0 && !latest_cam_time_) {
         cam = cam_.dequeue();
 
-        cv::Mat cam_img0 = (cam->img0).clone();
-        cv::Mat cam_img1 = (cam->img1).clone();
+        cv::Mat cam_img0 = (cam->at(image::LEFT_EYE)).clone();
+        cv::Mat cam_img1 = (cam->at(image::RIGHT_EYE)).clone();
 
         // size of img0_ before compression
         double cam_img0_size = cam_img0.total() * cam_img0.elemSize();

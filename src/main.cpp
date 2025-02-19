@@ -42,6 +42,7 @@ static void sigint_handler([[maybe_unused]] int sig) {
 int main(int argc, const char* argv[]) {
     cxxopts::Options options("ILLIXR", "Main program");
     options.show_positional_help();
+    options.allow_unrecognised_options();
     // std::string illixr_data, illixr_demo_data, realsense_cam;
     // illixr_data = illixr_demo_data = realsense_cam = "";
     // bool offload_enable, alignment_enable, enable_verbose_errors, enable_pre_sleep;
@@ -55,7 +56,7 @@ int main(int argc, const char* argv[]) {
                                                                                        cxxopts::value<std::string>())(
         "r,run",
         "The plugins to run, supersedes plugins entry. This is only necessary if a plugin builds more than one library (e.g. "
-        "offload_vio builds 4 libraries) as each must be loaded individually.");
+        "offload_vio builds 4 libraries) as each must be loaded individually.")("openxr", "");
     auto result = options.parse(argc, argv);
     if (result.count("help")) {
         std::cout << options.help() << std::endl;

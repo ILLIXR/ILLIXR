@@ -9,13 +9,14 @@
 #include <string>
 
 using namespace ILLIXR;
+using namespace ILLIXR::data_format;
 
 [[maybe_unused]] depthai::depthai(const std::string& name, phonebook* pb)
     : plugin{name, pb}
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
     , clock_{phonebook_->lookup_impl<relative_clock>()}
     , imu_writer_{switchboard_->get_writer<imu_type>("imu")}
-    , cam_writer_{switchboard_->get_writer<cam_type>("cam")}
+    , cam_writer_{switchboard_->get_writer<binocular_cam_type>("cam")}
     , rgb_depth_{switchboard_->get_writer<rgb_depth_type>("rgb_depth")} // Initialize DepthAI pipeline and device
     , device_{create_camera_pipeline()} {
     spdlogger(std::getenv("DEPTHAI_LOG_LEVEL"));
@@ -93,7 +94,7 @@ void depthai::callback() {
         cv::Mat converted_depth;
         depth.convertTo(converted_depth, CV_32FC1, 1000.f);
 
-        cam_writer_.put(cam_writer_.allocate<cam_type>({cam_time_point, cv::Mat{left_out}, cv::Mat{right_out}}));
+        cam_writer_.put(cam_writer_.allocate<binocular_cam_type>({cam_time_point, cv::Mat{left_out}, cv::Mat{right_out}}));
         rgb_depth_.put(rgb_depth_.allocate<rgb_depth_type>({cam_time_point, cv::Mat{rgb_out}, cv::Mat{converted_depth}}));
     }
 
