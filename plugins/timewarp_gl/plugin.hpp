@@ -42,7 +42,7 @@ private:
                                                 const Eigen::Matrix4f& new_view_matrix);
 #ifndef ENABLE_MONADO
     [[nodiscard]] time_point                get_next_swap_time_estimate() const;
-    [[maybe_unused]] [[nodiscard]] duration estimate_time_to_sleep(const double frame_percentage) const;
+    [[maybe_unused]] [[nodiscard]] duration estimate_time_to_sleep(double frame_percentage) const;
 #endif
 
     const std::shared_ptr<switchboard>                  switchboard_;

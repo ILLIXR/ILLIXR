@@ -215,5 +215,5 @@ const Eigen::Matrix3f conversion[6][6] = {
      invert_x* rotation(0, 0., 90), identity, invert_y}, // LHZU
     {rotation(90., -90., 0.), rotation(-90., -90., 0.) * invert_y, rotation(0., 90., 90.), rotation(0, 0., 90), invert_y,
      identity}}; // RHZUXF
-
+     
 } // namespace ILLIXR::math_util

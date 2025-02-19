@@ -618,16 +618,16 @@ public:
         topic& topic_;
     };
 
-    template<typename serializable_event>
-    class network_writer : public writer<serializable_event> {
+    template<typename Serializable_event>
+    class network_writer : public writer<Serializable_event> {
     public:
         explicit network_writer(topic& topic, ptr<network::network_backend> backend = nullptr,
                                 const network::topic_config& config = {})
-            : writer<serializable_event>{topic}
+            : writer<Serializable_event>{topic}
             , backend_{std::move(backend)}
             , config_{config} { }
 
-        void put(ptr<serializable_event>&& this_specific_event) override {
+        void put(ptr<Serializable_event>&& this_specific_event) override {
             if (backend_->is_topic_networked(this->topic_.name())) {
                 if (config_.serialization_method == network::topic_config::SerializationMethod::BOOST) {
                     auto base_event = std::dynamic_pointer_cast<event>(std::move(this_specific_event));
@@ -648,7 +648,7 @@ public:
                     backend_->topic_send(this->topic_.name(), std::move(message));
                 }
             } else {
-                writer<serializable_event>::put(std::move(this_specific_event));
+                writer<Serializable_event>::put(std::move(this_specific_event));
             }
         }
 

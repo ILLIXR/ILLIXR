@@ -1660,6 +1660,80 @@
       }
     },
     {
+      "libcpuinfo": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "libcpuinfo-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "libcpuinfo-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        },
+        "Fedora": {
+          "37": {
+            "pkg": "",
+            "postnotes": "",
+            "notes": ""
+          },
+          "38": {
+            "pkg": "",
+            "postnotes": "",
+            "notes": ""
+          }
+        },
+        "CentOS": {
+          "9": {
+            "pkg": "",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "libgles": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "libgles-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "libgles-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        },
+        "Fedora": {
+          "37": {
+            "pkg": "",
+            "postnotes": "",
+            "notes": ""
+          },
+          "38": {
+            "pkg": "",
+            "postnotes": "",
+            "notes": ""
+          }
+        },
+        "CentOS": {
+          "9": {
+            "pkg": "",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
       "libopenni2": {
         "pkg": {
           "Ubuntu": {

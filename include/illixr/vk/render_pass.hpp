@@ -9,8 +9,6 @@
 #include <GLFW/glfw3.h>
 #include <vector>
 
-using namespace ILLIXR;
-
 namespace ILLIXR::vulkan {
 
 // render_pass defines the interface for a render pass. For now, it is only used for timewarp and
