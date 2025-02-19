@@ -13,7 +13,7 @@
 namespace ILLIXR {
 class timewarp_vk : public timewarp {
 public:
-    explicit timewarp_vk(const phonebook* const pb);
+    explicit timewarp_vk(const phonebook* pb);
     void initialize();
     void setup(VkRenderPass render_pass, uint32_t subpass, std::array<std::vector<VkImageView>, 2> buffer_pool_in,
                bool input_texture_vulkan_coordinates_in) override;

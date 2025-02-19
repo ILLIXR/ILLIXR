@@ -1,11 +1,6 @@
-//
-// Created by steven on 7/3/22.
-//
-
-#ifndef ILLIXR_COMPRESSION_VIDEO_ENCODER_H
-#define ILLIXR_COMPRESSION_VIDEO_ENCODER_H
-
+#pragma once
 #include "gst/gst.h"
+#include "illixr/switchboard.hpp"
 
 #include <condition_variable>
 #include <functional>
@@ -50,5 +45,3 @@ private:
 };
 
 } // namespace ILLIXR
-
-#endif // ILLIXR_COMPRESSION_VIDEO_ENCODER_H
