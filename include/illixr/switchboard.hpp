@@ -5,6 +5,8 @@
 #include "phonebook.hpp"
 #include "record_logger.hpp"
 
+#include <boost/interprocess/sync/named_mutex.hpp>
+#include <boost/interprocess/sync/scoped_lock.hpp>
 #include <eigen3/Eigen/Core>
 #include <eigen3/Eigen/Geometry>
 #include <iostream>
@@ -21,9 +23,11 @@ static std::chrono::nanoseconds thread_cpu_time() {
 }
 #endif
 
+namespace b_intp = boost::interprocess;
+
 namespace ILLIXR {
 
-using plugin_id_t = std::size_t;
+using plugin_id_t            = std::size_t;
 
 /**
  * @Should be private to Switchboard.
@@ -200,6 +204,8 @@ private:
 
     private:
         static void thread_on_start() {
+            b_intp::named_mutex log_mutex{b_intp::open_or_create, "ILLIXR_LOG_MUTEX"};
+            b_intp::scoped_lock<b_intp::named_mutex> lock(log_mutex);
             spdlog::get("illixr")->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%n] [%^%l%$] [switchboard] thread %t %v");
             spdlog::get("illixr")->debug("start");
             spdlog::get("illixr")->set_pattern("%+");
