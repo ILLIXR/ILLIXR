@@ -48,7 +48,7 @@ In all versions:
 **Build**:
 <div class="code-box-copy">
 <button class="code-box-copy__btn" data-clipboard-target="#dockerfile_full" title="Copy"></button>
-<pre class="language-shell" id="dockerfile_full">docker build -t illixr_v3.3_full Dockerfile.full</pre>
+<pre class="language-shell" id="dockerfile_full">docker build -t illixr:3.3_full -f Dockerfile.full .</pre>
 </div>
 
 **Docker image**: illixr_v3.3_full
@@ -74,7 +74,7 @@ In all versions:
 **Build**:
 <div class="code-box-copy">
 <button class="code-box-copy__btn" data-clipboard-target="#dockerfile_noGPL" title="Copy"></button>
-<pre class="language-shell" id="dockerfile_noGPL">docker build -t illixr_v3.3_noGPL Dockerfile.noGPL</pre>
+<pre class="language-shell" id="dockerfile_noGPL">docker build -t illixr:3.3_noGPL Dockerfile.noGPL</pre>
 </div>
 
 **Docker image**: illixr_v3.3_noGPL
@@ -100,7 +100,7 @@ In all versions:
 **Build**:
 <div class="code-box-copy">
 <button class="code-box-copy__btn" data-clipboard-target="#dockerfile_noLGPL" title="Copy"></button>
-<pre class="language-shell" id="dockerfile_noLGPL">docker build -t illixr_v3.3_noLGPL Dockerfile.noLGPL</pre>
+<pre class="language-shell" id="dockerfile_noLGPL">docker build -t illixr:3.3_noLGPL Dockerfile.noLGPL</pre>
 </div>
 
 **Docker image**: illixr_v3.3_noLGPL
@@ -126,7 +126,7 @@ In all versions:
 **Build**:
 <div class="code-box-copy">
 <button class="code-box-copy__btn" data-clipboard-target="#dockerfile_noZED" title="Copy"></button>
-<pre class="language-shell" id="dockerfile_noZED">docker build -t illixr_v3.3_noZED Dockerfile.noZED</pre>
+<pre class="language-shell" id="dockerfile_noZED">docker build -t illixr:3.3_noZED Dockerfile.noZED</pre>
 </div>
 
 **Docker image**: illixr_v3.3_noZED
@@ -151,7 +151,7 @@ In all versions:
 **Build**:
 <div class="code-box-copy">
 <button class="code-box-copy__btn" data-clipboard-target="#dockerfile_noGPL_ZED" title="Copy"></button>
-<pre class="language-shell" id="dockerfile_noGPL_ZED">docker build -t illixr_v3.3_noGPL_ZED Dockerfile.noGPL_ZED</pre>
+<pre class="language-shell" id="dockerfile_noGPL_ZED">docker build -t illixr:3.3_noGPL_ZED Dockerfile.noGPL_ZED</pre>
 </div>
 
 **Docker image**: illixr_v3.3_noGPL_ZED
@@ -177,7 +177,7 @@ In all versions:
 **Build**:
 <div class="code-box-copy">
 <button class="code-box-copy__btn" data-clipboard-target="#dockerfile_noLGPL_ZED" title="Copy"></button>
-<pre class="language-shell" id="dockerfile_noLGPL_ZED">docker build -t illixr_v3.3_noLGPL_ZED Dockerfile.noLGPL_ZED</pre>
+<pre class="language-shell" id="dockerfile_noLGPL_ZED">docker build -t illixr:3.3_noLGPL_ZED Dockerfile.noLGPL_ZED</pre>
 </div>
 
 **Docker image**: illixr_v3.3_noLGPL_ZED

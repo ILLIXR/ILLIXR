@@ -33,6 +33,8 @@ set(PACKAGE_VERSION_MINOR "2")
 set(PACKAGE_VERSION_PATCH "0")
 set(PACKAGE_VERSION_LABEL "")
 
+set(GPL_LICENSED_CODE "openvins;orb_slam3")
+set(LGPL_LICENSED_CODE "offload_rendering_server;offload_rendering_client")
 # determine the Linux vendor, if it is CentOS then we must rebuild OpenCV to include all the needed components
 if(UNIX)
     execute_process(COMMAND bash -c "awk -F= '/^ID=/{print $2}' /etc/os-release | tr -d '\n' | tr -d '\"'" OUTPUT_VARIABLE OS_FLAVOR)
@@ -82,6 +84,14 @@ set(DATA_FILE "http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vico
 
 option(BUILD_DOCS "Build documentation" OFF)
 option(USE_MONADO "Build for monado use" OFF)
+option(NO_GPL "Do not build GPL licensed code" OFF)
+option(NO_LGPL "Do not build LGPL or GPL licensed code, implies NO_GPL" OFF)
+option(NO_ZED "Do not build and ZED related code" OFF)
+
+if(NO_LGPL)
+    set(NO_GPL ON CACHE BOOL "" FORCE)
+endif()
+
 include(cmake/HelperFunctions.cmake)
 
 set(VISUALIZER "" CACHE STRING "")
@@ -196,6 +206,35 @@ find_package(Threads)
 
 include(src/CMakeLists.txt)
 
+# get any env flags for the build
+if($ENV{ILLIXR_BUILD_FLAGS})
+    string(REPLACE "-D" "" CLI_BUILD_FLAGS "$ENV{ILLIXR_BUILD_FLAGS}")
+    string(REPLACE " " "" CLI_BUILD_FLAGS "${CLI_BUILD_FLAGS}")
+    foreach(FLAG IN LISTS CLI_BUILD_FLAGS)
+        string(REPLACE "=" ";" FLAG_LIST "${FLAG}")
+        list(GET FLAG_LIST 0 ITEM)
+        list(GET FLAG_LIST 1 VALUE)
+        set(${ITEM} ${VALUE} CACHE BOOL "" FORCE)
+    endforeach()
+endif()
+
+if(NO_GPL)
+    if(NO_LGPL)
+        foreach(ITEM IN LISTS LGPL_LICENSED_CODE)
+            string(TOUPPER "USE_${ITEM}" ITEM_UPPER)
+            set(${ITEM_UPPER} OFF)
+        endforeach()
+    endif()
+    foreach(ITEM IN LISTS GPL_LICENSED_CODE)
+        string(TOUPPER "USE_${ITEM}" ITEM_UPPER)
+        set(${ITEM_UPPER} OFF)
+    endforeach()
+endif()
+if(NO_ZED)
+    set(BUILD_ZED_CAPTURE OFF)
+    set(USE_ZED OFF)
+    set(USE_ZED_DATA_INJECTION OFF)
+endif()
 # set any plugins that are being built
 set(FULL_PLUGIN_LIST "")
 foreach(ITEM IN LISTS PLUGIN_LIST VISUALIZER_LIST)

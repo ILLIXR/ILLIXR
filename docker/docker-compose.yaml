@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+    illixr:
+        image: illixr/illixr:3.3_full
+        privileged: true
+        container_name: illixr:3.3_full
+        environment:
+          - DISPLAY=${DISPLAY}
+          - QT_X11_NO_MITSHM=1 # for QT applications
+        build:
+            context: .
+            dockerfile: Dockerfile.full
+        hostname: illixr-docker
+        volumes:
+            - /tmp/.X11-unix:/tmp/.X11-unix
+        deploy:
+            resources:
+                reservations:
+                    devices:
+                      - capabilities: [gpu]
