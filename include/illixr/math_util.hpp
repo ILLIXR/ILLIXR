@@ -59,9 +59,10 @@ inline Eigen::Matrix3f rotation(const float alpha, const float beta, const float
     double          rb = beta * M_PI / 180.;
     double          rg = gamma * M_PI / 180;
     rot << static_cast<float>(cos(rg) * cos(rb)), static_cast<float>(cos(rg) * sin(rb) * sin(ra) - sin(rg) * cos(ra)),
-            static_cast<float>(cos(rg) * sin(rb) * cos(ra) + sin(rg) * sin(ra)), static_cast<float>(sin(rg) * cos(rb)),
-            static_cast<float>(sin(rg) * sin(rb) * sin(ra) + cos(rg) * cos(ra)), static_cast<float>(sin(rg) * sin(rb) * cos(ra) - cos(rg) * sin(ra)),
-            static_cast<float>(-sin(rb)), static_cast<float>(cos(rb) * sin(ra)), static_cast<float>(cos(rb) * cos(ra));
+        static_cast<float>(cos(rg) * sin(rb) * cos(ra) + sin(rg) * sin(ra)), static_cast<float>(sin(rg) * cos(rb)),
+        static_cast<float>(sin(rg) * sin(rb) * sin(ra) + cos(rg) * cos(ra)),
+        static_cast<float>(sin(rg) * sin(rb) * cos(ra) - cos(rg) * sin(ra)), static_cast<float>(-sin(rb)),
+        static_cast<float>(cos(rb) * sin(ra)), static_cast<float>(cos(rb) * cos(ra));
     return rot;
 }
 
