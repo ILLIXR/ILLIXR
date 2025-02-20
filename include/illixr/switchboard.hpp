@@ -27,7 +27,7 @@ namespace b_intp = boost::interprocess;
 
 namespace ILLIXR {
 
-using plugin_id_t            = std::size_t;
+using plugin_id_t = std::size_t;
 
 /**
  * @Should be private to Switchboard.
@@ -204,7 +204,7 @@ private:
 
     private:
         static void thread_on_start() {
-            b_intp::named_mutex log_mutex{b_intp::open_or_create, "ILLIXR_LOG_MUTEX"};
+            b_intp::named_mutex                      log_mutex{b_intp::open_or_create, "ILLIXR_LOG_MUTEX"};
             b_intp::scoped_lock<b_intp::named_mutex> lock(log_mutex);
             spdlog::get("illixr")->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%n] [%^%l%$] [switchboard] thread %t %v");
             spdlog::get("illixr")->debug("start");
