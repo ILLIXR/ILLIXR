@@ -11,7 +11,7 @@ using namespace ILLIXR::zed_capture;
 
 static void glfw_error_callback(int error, const char* description) {
     spdlog::get("illixr")->error("|| glfw error_callback: {}\n|> {}", error, description);
-    ILLIXR::abort();
+    throw std::runtime_error("glfw error_callback " + std::to_string(error) + " " + std::string(description));
 }
 
 void capture::get_camera(const data_format::pose_data& wcf) {

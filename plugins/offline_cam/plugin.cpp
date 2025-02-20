@@ -63,10 +63,8 @@ void offline_cam::_p_one_iteration() {
     auto after_nearest_row = sensor_data_.upper_bound(lookup_time);
 
     if (after_nearest_row == sensor_data_.cend()) {
-#ifndef NDEBUG
         spdlog::get(name_)->warn("Running out of the dataset! Time {} ({} + {}) after last datum {}", lookup_time,
                                  clock_->now().time_since_epoch().count(), dataset_first_time_, sensor_data_.rbegin()->first);
-#endif
         // Handling the last camera images. There's no more rows after the nearest_row, so we set after_nearest_row
         // to be nearest_row to avoiding sleeping at the end.
         nearest_row       = std::prev(after_nearest_row, 1);
@@ -75,10 +73,8 @@ void offline_cam::_p_one_iteration() {
         internal_stop();
     } else if (after_nearest_row == sensor_data_.cbegin()) {
         // Should not happen because lookup_time is bigger than dataset_first_time_
-#ifndef NDEBUG
         spdlog::get(name_)->warn("Time {} ({} + {}) before first datum {}", lookup_time,
                                  clock_->now().time_since_epoch().count(), dataset_first_time_, sensor_data_.cbegin()->first);
-#endif
     } else {
         // Most recent
         nearest_row = std::prev(after_nearest_row, 1);

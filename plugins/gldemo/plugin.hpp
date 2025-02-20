@@ -13,10 +13,8 @@
 
 namespace ILLIXR {
 
-#ifndef NDEBUG
 size_t       log_count_ = 0;
 const size_t LOG_PERIOD = 20;
-#endif
 
 class gldemo : public threadloop {
 public:

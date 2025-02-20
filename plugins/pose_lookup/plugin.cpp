@@ -135,18 +135,14 @@ fast_pose_type pose_lookup_impl::get_fast_pose(time_point time) const {
     auto nearest_row = sensor_data_.upper_bound(lookup_time);
 
     if (nearest_row == sensor_data_.cend()) {
-#ifndef NDEBUG
         spdlog::get("illixr")->debug("[pose_lookup] Time {} ({} + {}) after last datum {}", lookup_time,
                                      std::chrono::nanoseconds(time.time_since_epoch()).count(), dataset_first_time_,
                                      sensor_data_.rbegin()->first);
-#endif
         nearest_row--;
     } else if (nearest_row == sensor_data_.cbegin()) {
-#ifndef NDEBUG
         spdlog::get("illixr")->debug("[pose_lookup] Time {} ({} + {}) before first datum {}", lookup_time,
                                      std::chrono::nanoseconds(time.time_since_epoch()).count(), dataset_first_time_,
                                      sensor_data_.cbegin()->first);
-#endif
     } else {
         // "std::map::upper_bound" returns an iterator to the first pair whose key is GREATER than the argument.
         // I already know we aren't at the begin()

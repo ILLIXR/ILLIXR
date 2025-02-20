@@ -6,18 +6,15 @@
 #include <atomic>
 #include <cassert>
 #include <chrono>
+#include <iostream>
 #include <memory>
 #include <optional>
 #include <spdlog/spdlog.h>
+#include <sstream>
 #include <string>
 #include <unordered_map>
 #include <utility>
 #include <vector>
-
-#ifndef NDEBUG
-    #include <iostream>
-    #include <sstream>
-#endif
 
 namespace ILLIXR {
 
@@ -146,12 +143,13 @@ public:
     record(const record_header& rh, std::vector<std::any> values)
         : record_header_{rh}
         , values_(std::move(values)) {
-#ifndef NDEBUG
         assert(record_header_);
         if (values_.size() != record_header_->get().get_columns()) {
             spdlog::get("illixr")->error("[record_logger] {} elements passed, but rh for {} only specifies {}.", values_.size(),
                                          record_header_->get().get_name(), record_header_->get().get_columns());
-            abort();
+            throw std::runtime_error("[record_logger] " + std::to_string(values_.size()) + " elements passed, but rh for " +
+                                     record_header_->get().get_name() + " only specifies {}." +
+                                     std::to_string(record_header_->get().get_columns()));
         }
         for (std::size_t column = 0; column < values_.size(); ++column) {
             if (values_[column].type() != record_header_->get().get_column_type(column)) {
@@ -160,26 +158,24 @@ public:
                 spdlog::get("illixr")->error("[record_logger] Caller passed: {}; record_header specifies: {}",
                                              values_[column].type().name(),
                                              record_header_->get().get_column_type(column).name());
-                abort();
+                throw std::runtime_error("[record_logger] Caller got wrong type for column " + std::to_string(column) + " of " +
+                                         record_header_->get().get_name() +
+                                         "\n[record_logger] Caller passed: " + values_[column].type().name() +
+                                         "; record_header specifies: " + record_header_->get().get_column_type(column).name());
             }
         }
-#endif
     }
 
     record() = default;
 
     ~record() {
-#ifndef NDEBUG
         if (record_header_ && !data_use_indicator_.is_used()) {
             spdlog::get("illixr")->error("[record_logger] Record was deleted without being logged.");
-            abort();
         }
-#endif
     }
 
     template<typename T>
     T get_value(unsigned column) const {
-#ifndef NDEBUG
         assert(record_header_);
         data_use_indicator_.mark_used();
         if (record_header_->get().get_column_type(column) != typeid(T)) {
@@ -189,7 +185,6 @@ public:
                << "record_header specifies: " << record_header_->get().get_column_type(column).name() << ". ";
             throw std::runtime_error{ss.str()};
         }
-#endif
         return std::any_cast<T>(values_[column]);
     }
 
@@ -199,10 +194,8 @@ public:
     }
 
     [[maybe_unused]] void mark_used() const {
-#ifndef NDEBUG
         assert(record_header_);
         data_use_indicator_.mark_used();
-#endif
     }
 
 private:
@@ -211,9 +204,7 @@ private:
     // and table name_. This is just one pointer.
     std::optional<std::reference_wrapper<const record_header>> record_header_;
     std::vector<std::any>                                      values_;
-#ifndef NDEBUG
-    data_use_indicator data_use_indicator_;
-#endif
+    data_use_indicator                                         data_use_indicator_;
 };
 
 /**
@@ -324,14 +315,13 @@ public:
             // Log coalescer should only be used with
             // In the common case, they will be the same pointer, quickly check the pointers.
             // In the less common case, we check for object-structural equality.
-#ifndef NDEBUG
             if (&r.get_record_header() != &buffer_[0].get_record_header() &&
                 r.get_record_header() == buffer_[0].get_record_header()) {
                 spdlog::get("illixr")->error("[record_logger] Tried to push a record of type {} to a record logger for type {}",
                                              r.get_record_header().to_string(), buffer_[0].get_record_header().to_string());
-                abort();
+                throw std::runtime_error("[record_logger] Tried to push a record of type " + r.get_record_header().to_string() +
+                                         " to a record logger for type " + buffer_[0].get_record_header().to_string());
             }
-#endif
             maybe_flush();
         }
     }

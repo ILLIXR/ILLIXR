@@ -1,10 +1,8 @@
 #pragma once
 
-#ifndef NDEBUG
-    #include <spdlog/spdlog.h>
-#endif
-
 #include "illixr/data_format/unit.hpp"
+
+#include <spdlog/spdlog.h>
 
 namespace ILLIXR::data_format {
 /*
@@ -13,9 +11,7 @@ namespace ILLIXR::data_format {
 template<typename T>
 inline void normalize(T& obj, const float width, const float height, const float depth) {
     if (obj.unit == units::PERCENT) {
-#ifndef NDEBUG
         spdlog::get("illixr")->info("[normalize] already normalized");
-#endif
         return;
     }
     obj.x() /= width;
@@ -35,9 +31,7 @@ inline void denormalize(T& obj, const float width, const float height, const flo
     if (!obj.valid)
         return;
     if (obj.unit != units::PERCENT) {
-#ifndef NDEBUG
         spdlog::get("illixr")->info("[denormalize] already denormalized");
-#endif
         return;
     }
     if (unit_ == units::PERCENT || unit_ == units::UNSET)

@@ -39,7 +39,7 @@ Eigen::Matrix4f look_at(const Eigen::Vector3f& eye, const Eigen::Vector3f& targe
  */
 static void glfw_error_callback(int error, const char* description) {
     spdlog::get("illixr")->error("|| glfw error_callback: {}\n|> {}", error, description);
-    ILLIXR::abort();
+    throw std::runtime_error("|| glfw error_callback: " + std::to_string(error) + "\n|>" + description);
 }
 
 [[maybe_unused]] debugview::debugview(const std::string& name, phonebook* pb)
@@ -404,7 +404,7 @@ void debugview::start() {
     RAC_ERRNO_MSG("debugview at the top of start()");
 
     if (!glfwInit()) {
-        ILLIXR::abort("[debugview] Failed to initialize glfw");
+        throw std::runtime_error("[debugview] Failed to initialize glfw");
     }
     RAC_ERRNO_MSG("debugview after glfwInit");
 
@@ -426,7 +426,7 @@ void debugview::start() {
     gui_window_ = glfwCreateWindow(1600, 1000, "ILLIXR Debug View", nullptr, nullptr);
     if (gui_window_ == nullptr) {
         spdlog::get(name_)->error("couldn't create window {}:{}", __FILE__, __LINE__);
-        ILLIXR::abort();
+        throw std::runtime_error("couldn't create window " + std::string(__FILE__) + ":" + std::to_string(__LINE__));
     }
 
     glfwSetWindowSize(gui_window_, 1600, 1000);
@@ -445,7 +445,7 @@ void debugview::start() {
     if (glew_err != GLEW_OK) {
         spdlog::get(name_)->error("GLEW Error: {}", reinterpret_cast<const char*>(glewGetErrorString(glew_err)));
         glfwDestroyWindow(gui_window_);
-        ILLIXR::abort("[debugview] Failed to initialize GLEW");
+        throw std::runtime_error("[debugview] Failed to initialize GLEW");
     }
     RAC_ERRNO_MSG("debugview after glewInit");
 
@@ -465,9 +465,7 @@ void debugview::start() {
     glBindVertexArray(demo_vao_);
 
     demo_shader_program_ = init_and_link(demo_vertex_shader, demo_fragment_shader);
-#ifndef NDEBUG
     spdlog::get(name_)->debug("Demo app shader program is program {}", demo_shader_program_);
-#endif
 
     vertex_pos_attr     = glGetAttribLocation(demo_shader_program_, "vertexPosition");
     vertex_normal_attr_ = glGetAttribLocation(demo_shader_program_, "vertexNormal");
@@ -479,7 +477,7 @@ void debugview::start() {
     // Load/initialize the demo scene.
     char* obj_dir = std::getenv("ILLIXR_DEMO_DATA");
     if (obj_dir == nullptr) {
-        ILLIXR::abort("Please define ILLIXR_DEMO_DATA.");
+        throw std::runtime_error("Please define ILLIXR_DEMO_DATA.");
     }
 
     demo_scene_ = ObjScene(std::string(obj_dir), "scene.obj");

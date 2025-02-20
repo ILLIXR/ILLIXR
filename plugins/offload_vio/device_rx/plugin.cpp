@@ -28,13 +28,9 @@ using namespace ILLIXR::data_format;
 
 ILLIXR::threadloop::skip_option offload_reader::_p_should_skip() {
     if (!is_socket_connected_) {
-#ifndef NDEBUG
         spdlog::get(name_)->debug("[offload_vio.device_rx]: Connecting to {}:{}", server_ip_, server_port_);
-#endif
         socket_.socket_connect(server_ip_, server_port_);
-#ifndef NDEBUG
         spdlog::get(name_)->debug("[offload_vio.device_rx]: Connected to {}:{}", server_ip_, server_port_);
-#endif
         is_socket_connected_ = true;
     }
     return skip_option::run;

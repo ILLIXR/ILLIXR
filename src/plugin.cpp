@@ -153,9 +153,8 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
         // set internal env_vars
         // const std::shared_ptr<switchboard> sb = r->get_switchboard();
 
-#ifndef NDEBUG
-        /// Activate sleeping at application start for attaching gdb. Disables 'catchsegv'.
-        /// Enable using the ILLIXR_ENABLE_PRE_SLEEP environment variable (see 'runner/runner/main.py:load_tests')
+        /// Activate sleeping at application start for attaching gdb or waiting for another program (openXR application, etc) to
+        /// start. Enable using the ILLIXR_ENABLE_PRE_SLEEP environment variable
         const bool enable_pre_sleep = ILLIXR::str_to_bool(getenv_or("ILLIXR_ENABLE_PRE_SLEEP", "False"));
         if (enable_pre_sleep) {
             const pid_t pid = getpid();
@@ -165,8 +164,7 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
             sleep(ILLIXR_PRE_SLEEP_DURATION);
             spdlog::get("illixr")->info("[main] Resuming...");
         }
-#endif /// NDEBUG
-       // read in yaml config file
+        // read in yaml config file
         YAML::Node  config;
         std::string exec_path = get_exec_path();
         std::string home_dir  = get_home_dir();
@@ -221,19 +219,15 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
         for (auto& dep_file : dep_list) {
             try {
                 YAML::Node plugin_deps = YAML::LoadFile(dep_file);
-#ifndef NDEBUG
                 spdlog::get("illixr")->info("Located plugin dependency map file (" + dep_file +
                                             "), verifying plugin dependencies.");
-#endif
                 dep_map.reserve(plugin_deps["dep_map"].size());
                 for (const auto& node : plugin_deps["dep_map"])
                     dep_map.push_back(node.as<ILLIXR::Dependency>());
                 break;
-            } catch (YAML::BadFile& bf) {
-#ifndef NDEBUG
-                spdlog::get("illixr")->info("Could not load plugin dependency map file (" + dep_file +
-                                            "), cannot verify plugin dependencies.");
-#endif
+            } catch (YAML::BadFile&) {
+                spdlog::get("illixr")->info(
+                    "Could not load plugin dependency map file (plugin_deps.yaml), cannot verify plugin dependencies.");
             }
         }
         bool have_plugins = false;

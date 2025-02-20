@@ -46,13 +46,9 @@ void offload_writer::start() {
     });
     encoder_->init();
 
-#ifndef NDEBUG
     spdlog::get(name_)->debug("[offload_vio.revice_tx] TEST: Connecting to {}:{}", server_ip_, server_port_);
-#endif
     socket_.socket_connect(server_ip_, server_port_);
-#ifndef NDEBUG
     spdlog::get(name_)->debug("[offload_vio.device_tx] Connected to {}:{}", server_ip_, server_port_);
-#endif
 
     switchboard_->schedule<imu_type>(id_, "imu", [this](const switchboard::ptr<const imu_type>& datum, std::size_t) {
         this->prepare_imu_cam_data(datum);

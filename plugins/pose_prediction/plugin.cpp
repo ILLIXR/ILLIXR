@@ -68,9 +68,7 @@ fast_pose_type pose_prediction_impl::get_fast_pose(time_point future_timestamp) 
 
     switchboard::ptr<const imu_raw_type> imu_raw = imu_raw_.get_ro_nullable();
     if (imu_raw == nullptr) {
-#ifndef NDEBUG
         spdlog::get("illixr")->debug("[POSEPREDICTION] FAST POSE IS SLOW POSE!");
-#endif
         // No imu_raw, return slow_pose
         return fast_pose_type{
             .pose                  = correct_pose(*slow_pose),

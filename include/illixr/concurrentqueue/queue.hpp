@@ -1,9 +1,7 @@
 #include <chrono>
 #include <mutex>
 #include <list>
-#ifndef NDEBUG
 #include <spdlog/spdlog.h>
-#endif
 #include <thread>
 
 namespace moodycamel {
@@ -16,9 +14,7 @@ namespace moodycamel {
 		LockQueue(size_t) { }
 
 		bool try_dequeue(T& elem) {
-#ifndef NDEBUG
-            spdlog::get("illixr")->debug("[queue] try_dequeue");
-#endif
+                  spdlog::get("illixr")->debug("[queue] try_dequeue");
 			std::lock_guard{mut};
 			if (!list.empty()) {
 				elem = list.front();

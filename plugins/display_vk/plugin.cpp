@@ -18,7 +18,7 @@ void display_vk::recreate_swapchain() {
                              .set_desired_extent(display_params::width_pixels, display_params::height_pixels)
                              .build();
     if (!swapchain_ret) {
-        ILLIXR::abort("Failed to create Vulkan swapchain. Error: " + swapchain_ret.error().message());
+        throw std::runtime_error("Failed to create Vulkan swapchain. Error: " + swapchain_ret.error().message());
     }
     vkb_swapchain_         = swapchain_ret.value();
     vk_swapchain           = vkb_swapchain_.swapchain;
@@ -34,7 +34,7 @@ void display_vk::poll_window_events() {
 
 void display_vk::setup_glfw() {
     if (!glfwInit()) {
-        ILLIXR::abort("Failed to initialize glfw");
+        throw std::runtime_error("Failed to initialize glfw");
     }
 
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
@@ -62,7 +62,7 @@ void display_vk::setup_vk() {
             })
             .build();
     if (!instance_ret) {
-        ILLIXR::abort("Failed to create Vulkan instance. Error: " + instance_ret.error().message());
+        throw std::runtime_error("Failed to create Vulkan instance. Error: " + instance_ret.error().message());
     }
     vkb_instance_ = instance_ret.value();
     vk_instance   = vkb_instance_.instance;
@@ -79,7 +79,7 @@ void display_vk::setup_vk() {
                                    .select();
 
     if (!physical_device_ret) {
-        ILLIXR::abort("Failed to select Vulkan Physical Device. Error: " + physical_device_ret.error().message());
+        throw std::runtime_error("Failed to select Vulkan Physical Device. Error: " + physical_device_ret.error().message());
     }
     physical_device_   = physical_device_ret.value();
     vk_physical_device = physical_device_.physical_device;
@@ -96,21 +96,21 @@ void display_vk::setup_vk() {
     // enable anisotropic filtering
     auto device_ret = device_builder.add_pNext(&timeline_semaphore_features).build();
     if (!device_ret) {
-        ILLIXR::abort("Failed to create Vulkan device. Error: " + device_ret.error().message());
+        throw std::runtime_error("Failed to create Vulkan device. Error: " + device_ret.error().message());
     }
     vkb_device_ = device_ret.value();
     vk_device   = vkb_device_.device;
 
     auto graphics_queue_ret = vkb_device_.get_queue(vkb::QueueType::graphics);
     if (!graphics_queue_ret) {
-        ILLIXR::abort("Failed to get Vulkan graphics queue. Error: " + graphics_queue_ret.error().message());
+        throw std::runtime_error("Failed to get Vulkan graphics queue. Error: " + graphics_queue_ret.error().message());
     }
     graphics_queue        = graphics_queue_ret.value();
     graphics_queue_family = vkb_device_.get_queue_index(vkb::QueueType::graphics).value();
 
     auto present_queue_ret = vkb_device_.get_queue(vkb::QueueType::present);
     if (!present_queue_ret) {
-        ILLIXR::abort("Failed to get Vulkan present queue. Error: " + present_queue_ret.error().message());
+        throw std::runtime_error("Failed to get Vulkan present queue. Error: " + present_queue_ret.error().message());
     }
     present_queue        = present_queue_ret.value();
     present_queue_family = vkb_device_.get_queue_index(vkb::QueueType::present).value();
@@ -121,7 +121,7 @@ void display_vk::setup_vk() {
                              .set_desired_extent(display_params::width_pixels, display_params::height_pixels)
                              .build();
     if (!swapchain_ret) {
-        ILLIXR::abort("Failed to create Vulkan swapchain. Error: " + swapchain_ret.error().message());
+        throw std::runtime_error("Failed to create Vulkan swapchain. Error: " + swapchain_ret.error().message());
     }
     vkb_swapchain_ = swapchain_ret.value();
     vk_swapchain   = vkb_swapchain_.swapchain;
@@ -131,10 +131,8 @@ void display_vk::setup_vk() {
     swapchain_image_format = vkb_swapchain_.image_format;
     swapchain_extent       = vkb_swapchain_.extent;
 
-#ifndef NDEBUG
     spdlog::get("illixr")->debug("[display_vk] present_mode: {}", vkb_swapchain_.present_mode);
     spdlog::get("illixr")->debug("[display_vk] swapchain_extent: {} {}", swapchain_extent.width, swapchain_extent.height);
-#endif
     vma_allocator = vulkan_utils::create_vma_allocator(vk_instance, vk_physical_device, vk_device);
 }
 

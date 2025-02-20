@@ -18,7 +18,6 @@ static void GLAPIENTRY message_callback([[maybe_unused]] GLenum source, [[maybe_
                                         [[maybe_unused]] GLuint id, [[maybe_unused]] GLenum severity,
                                         [[maybe_unused]] GLsizei length, [[maybe_unused]] const GLchar* message,
                                         [[maybe_unused]] const void* user_param) {
-#ifndef NDEBUG
     if (severity == GL_DEBUG_SEVERITY_NOTIFICATION) {
         /// Don't show message if severity level is notification. Non-fatal.
         return;
@@ -29,9 +28,9 @@ static void GLAPIENTRY message_callback([[maybe_unused]] GLenum source, [[maybe_
     // https://www.khronos.org/opengl/wiki/Debug_Output#Message_Components
     if (severity == GL_DEBUG_SEVERITY_HIGH) {
         /// Fatal error if severity level is high.
-        ILLIXR::abort();
+        throw std::runtime_error("GL_DEBUG_SEVERITY_HIGH [shader_util] GL CALLBACK: " + type_error + " type = " +
+                                 std::to_string(type) + ", severity = " + std::to_string(severity) + ", message = " + message);
     } /// else => severity level low and medium are non-fatal.
-#endif
 }
 
 static GLuint init_and_link(const char* vertex_shader, const char* fragment_shader) {
@@ -51,7 +50,7 @@ static GLuint init_and_link(const char* vertex_shader, const char* fragment_shad
         glGetShaderInfoLog(vertex_shader_handle, GL_MAX_LOG_LENGTH * sizeof(GLchar), &length, gl_buf_log.data());
         const std::string msg{gl_buf_log.begin(), gl_buf_log.end()};
         assert(length == static_cast<GLsizei>(msg.size()) && "Length of log should match GLchar vector contents");
-        ILLIXR::abort("[shader_util] Failed to get vertex_shader_handle: " + msg);
+        throw std::runtime_error("[shader_util] Failed to get vertex_shader_handle: " + msg);
     }
 
     GLint frag_result      = GL_FALSE;
@@ -68,7 +67,7 @@ static GLuint init_and_link(const char* vertex_shader, const char* fragment_shad
         glGetShaderInfoLog(fragment_shader_handle, GL_MAX_LOG_LENGTH * sizeof(GLchar), &length, gl_buf_log.data());
         const std::string msg{gl_buf_log.begin(), gl_buf_log.end()};
         assert(length == static_cast<GLsizei>(msg.size()) && "Length of log should match GLchar vector contents");
-        ILLIXR::abort("[shader_util] Failed to get fragment_shader_handle: " + msg);
+        throw std::runtime_error("[shader_util] Failed to get fragment_shader_handle: " + msg);
     }
 
     // Create program and link shaders
@@ -77,7 +76,7 @@ static GLuint init_and_link(const char* vertex_shader, const char* fragment_shad
     glAttachShader(shader_program, fragment_shader_handle);
     const GLenum gl_err_attach = glGetError();
     if (gl_err_attach != GL_NO_ERROR) {
-        ILLIXR::abort("[shader_util] AttachShader or createProgram failed");
+        throw std::runtime_error("[shader_util] AttachShader or createProgram failed");
     }
 
     ///////////////////
@@ -87,7 +86,7 @@ static GLuint init_and_link(const char* vertex_shader, const char* fragment_shad
 
     const GLenum gl_err_link = glGetError();
     if (gl_err_link != GL_NO_ERROR) {
-        ILLIXR::abort("[shader_util] Linking failed");
+        throw std::runtime_error("[shader_util] Linking failed");
     }
 
     glGetProgramiv(shader_program, GL_LINK_STATUS, &result);
@@ -99,7 +98,7 @@ static GLuint init_and_link(const char* vertex_shader, const char* fragment_shad
         glGetProgramInfoLog(shader_program, GL_MAX_LOG_LENGTH * sizeof(GLchar), &length, gl_buf_log.data());
         const std::string msg{gl_buf_log.begin(), gl_buf_log.end()};
         assert(length == static_cast<GLsizei>(msg.size()) && "Length of log should match GLchar vector contents");
-        ILLIXR::abort("[shader_util] Failed to get shader program: " + msg);
+        throw std::runtime_error("[shader_util] Failed to get shader program: " + msg);
     }
 
     // After successful link, detach shaders from shader program

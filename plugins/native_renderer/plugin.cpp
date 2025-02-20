@@ -156,7 +156,6 @@ void native_renderer::_p_one_iteration() {
         VK_ASSERT_SUCCESS(ret)
     }
 
-    // #ifndef NDEBUG
     // Print the FPS
     if (clock_->now() - last_fps_update_ > std::chrono::milliseconds(1000)) {
         // std::cout << "FPS: " << fps_ << std::endl;
@@ -165,7 +164,6 @@ void native_renderer::_p_one_iteration() {
     } else {
         fps_++;
     }
-    // #endif
 }
 
 [[maybe_unused]] void native_renderer::recreate_swapchain() {

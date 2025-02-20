@@ -19,7 +19,7 @@ units::measurement_unit viewer::base_unit_      = units::UNSET;
  */
 static void glfw_error_callback(int error, const char* description) {
     spdlog::get("illixr")->error("|| glfw error_callback: {}\n|> {}", error, description);
-    ILLIXR::abort();
+    throw std::runtime_error("glfw error_callback " + std::to_string(error) + " " + std::string(description));
 }
 
 /**
@@ -54,7 +54,8 @@ viewer::viewer(const std::string& name_, phonebook* pb_)
 void viewer::start() {
     plugin::start();
     if (!glfwInit()) {
-        ILLIXR::abort("[viewer] Failed to initialize glfw");
+        spdlog::get("illixr")->error("[viewer] Failed to initialize glfw");
+        throw std::runtime_error("[viewer] Failed to initialize glfw");
     }
 
     /// Registering error callback for additional debug info
@@ -75,7 +76,7 @@ void viewer::start() {
     viewport_ = glfwCreateWindow(640 * 3 + 20, 1000, "ILLIXR Hand Tracking Viewer", nullptr, nullptr);
     if (viewport_ == nullptr) {
         spdlog::get(name_)->error("couldn't create window {}:{}", __FILE__, __LINE__);
-        ILLIXR::abort();
+        throw std::runtime_error("couldn't create window " + std::string(__FILE__) + " " + std::to_string(__LINE__));
     }
 
     glfwSetWindowSize(viewport_, 640 * 3 + 20, 480 * 3 + 20);
@@ -88,7 +89,7 @@ void viewer::start() {
     if (glew_err != GLEW_OK) {
         // spdlog::get(name)->error("GLEW Error: {}", glewGetErrorString(glew_err));
         glfwDestroyWindow(viewport_);
-        ILLIXR::abort("[hand_tracking viewer] Failed to initialize GLEW");
+        throw std::runtime_error("[hand_tracking viewer] Failed to initialize GLEW");
     }
 
     // Initialize IMGUI context.

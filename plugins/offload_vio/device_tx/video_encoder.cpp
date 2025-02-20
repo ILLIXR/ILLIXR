@@ -81,7 +81,7 @@ void video_encoder::create_pipelines() {
     // link elements
     if (!gst_element_link_many(appsrc_img0_, nvvideoconvert_0, encoder_img0, appsink_img0_, nullptr) ||
         !gst_element_link_many(appsrc_img1_, nvvideoconvert_1, encoder_img1, appsink_img1_, nullptr)) {
-        abort("Failed to link elements");
+        throw std::runtime_error("Failed to link elements");
     }
 
     gst_element_set_state(pipeline_img0_, GST_STATE_PLAYING);
@@ -113,7 +113,7 @@ void video_encoder::enqueue(cv::Mat& img0, cv::Mat& img1) {
     auto ret_img0 = gst_app_src_push_buffer(reinterpret_cast<GstAppSrc*>(appsrc_img0_), buffer_img0);
     auto ret_img1 = gst_app_src_push_buffer(reinterpret_cast<GstAppSrc*>(appsrc_img1_), buffer_img1);
     if (ret_img0 != GST_FLOW_OK || ret_img1 != GST_FLOW_OK) {
-        abort("Failed to push buffer");
+        throw std::runtime_error("Failed to push buffer");
     }
 }
 

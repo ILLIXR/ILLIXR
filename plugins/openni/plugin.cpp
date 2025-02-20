@@ -92,12 +92,10 @@ bool openni_plugin::camera_initialize() {
     // get depth_ options
     const openni::SensorInfo*               depth_info  = device_.getSensorInfo(openni::SENSOR_DEPTH);
     const openni::Array<openni::VideoMode>& modes_depth = depth_info->getSupportedVideoModes();
-#ifndef NDEBUG
     for (int i = 0; i < modes_depth.getSize(); i++) {
         spdlog::get(name_)->debug("Depth Mode {}: {}x{}, {} fps, {} format", i, modes_depth[i].getResolutionX(),
                                   modes_depth[i].getResolutionY(), modes_depth[i].getFps(), modes_depth[i].getPixelFormat());
     }
-#endif
     device_status_ = depth_.setVideoMode(modes_depth[DEPTH_MODE]);
     if (openni::STATUS_OK != device_status_)
         spdlog::get(name_)->error("error: depth format not supported...");
@@ -109,29 +107,23 @@ bool openni_plugin::camera_initialize() {
     /*_____________________________ COLOR ___________________________*/
     // create color_ channel
     device_status_ = color_.create(device_, openni::SENSOR_COLOR);
-#ifndef NDEBUG
     if (device_status_ != openni::STATUS_OK)
         spdlog::get(name_)->debug("Couldn't find color stream:\n{}", openni::OpenNI::getExtendedError());
-#endif
 
     // get color_ options
     const openni::SensorInfo*               color_info  = device_.getSensorInfo(openni::SENSOR_COLOR);
     const openni::Array<openni::VideoMode>& modes_color = color_info->getSupportedVideoModes();
-#ifndef NDEBUG
     for (int i = 0; i < modes_color.getSize(); i++) {
         spdlog::get(name_)->debug("Color Mode {}: {}x{}, {} fps, {} format", i, modes_color[i].getResolutionX(),
                                   modes_color[i].getResolutionY(), modes_color[i].getFps(), modes_color[i].getPixelFormat());
     }
-#endif
     device_status_ = color_.setVideoMode(modes_color[RGB_MODE]);
     if (openni::STATUS_OK != device_status_)
         spdlog::get(name_)->error("error: color format not supported...");
     // start color_ stream
     device_status_ = color_.start();
-#ifndef NDEBUG
     if (device_status_ != openni::STATUS_OK)
         spdlog::get(name_)->debug("Couldn't start color stream:\n{}", openni::OpenNI::getExtendedError());
-#endif
     int min_fps = std::min(modes_color[RGB_MODE].getFps(), modes_depth[DEPTH_MODE].getFps());
     time_sleep_ = static_cast<uint64_t>((1.0f / static_cast<float>(min_fps)) * 1000);
 

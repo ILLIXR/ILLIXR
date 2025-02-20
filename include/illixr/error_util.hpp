@@ -2,14 +2,11 @@
 
 #include "global_module_defs.hpp"
 
+#include <cerrno>
+#include <cstdlib>
 #include <iostream>
 #include <spdlog/spdlog.h>
 #include <string>
-
-#ifdef NDEBUG
-    #include <cerrno>
-    #include <cstdlib>
-#endif
 /**
  * @brief Parameterless macro for report_and_clear_errno.
  */
@@ -32,7 +29,7 @@ static const bool ENABLE_VERBOSE_ERRORS{getenv("ILLIXR_ENABLE_VERBOSE_ERRORS") !
                                         ILLIXR::str_to_bool(getenv("ILLIXR_ENABLE_VERBOSE_ERRORS"))};
 
 /**
- * @brief Support function to report errno values when debugging (NDEBUG).
+ * @brief Support function to report errno values when debugging.
  *
  * If errno is set, this function will report errno's value and the calling context.
  * It will subsequently clear errno (reset value to 0).
@@ -40,7 +37,6 @@ static const bool ENABLE_VERBOSE_ERRORS{getenv("ILLIXR_ENABLE_VERBOSE_ERRORS") !
  */
 inline void report_and_clear_errno([[maybe_unused]] const std::string& file, [[maybe_unused]] const int& line,
                                    [[maybe_unused]] const std::string& function, [[maybe_unused]] const std::string& msg = "") {
-#ifndef NDEBUG
     if (errno > 0) {
         if (ILLIXR::ENABLE_VERBOSE_ERRORS) {
             spdlog::get("illixr")->error("[error_util] || Errno was set: {} @ {}:{} [{}]", errno, file, line, function);
@@ -50,22 +46,6 @@ inline void report_and_clear_errno([[maybe_unused]] const std::string& file, [[m
         }
         errno = 0;
     }
-#endif /// NDEBUG
-}
-
-/**
- * @brief Exits the application during a fatal error.
- *
- * Switches to using abort during debugging over std::exit so that we can capture
- * SIGABRT for debugging.
- */
-inline void abort(const std::string& msg = "", [[maybe_unused]] const int error_val = 1) {
-    spdlog::get("illixr")->error("[error_util] ** ERROR ** {}", msg);
-#ifndef NDEBUG
-    std::abort();
-#else  /// NDEBUG
-    std::exit(error_val);
-#endif /// NDEBUG
 }
 
 } // namespace ILLIXR

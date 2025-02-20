@@ -47,12 +47,8 @@ void gldemo::wait_vsync() {
         return;
     }
 
-#ifndef NDEBUG
-    if (log_count_ > LOG_PERIOD) {
-        double vsync_in = duration_to_double<std::milli>(**next_vsync - now);
-        spdlog::get(name_)->debug("First vsync is in {} ms", vsync_in);
-    }
-#endif
+    if (log_count_ > LOG_PERIOD)
+        spdlog::get(name_)->debug("First vsync is in {} ms", duration_to_double<std::milli>(**next_vsync - now));
 
     bool has_rendered_this_interval = (now - last_time_) < display_params::period;
 
@@ -68,22 +64,16 @@ void gldemo::wait_vsync() {
             wait_time += display_params::period;
         }
 
-#ifndef NDEBUG
-        if (log_count_ > LOG_PERIOD) {
-            double wait_in = duration_to_double<std::milli>(wait_time - now);
-            spdlog::get(name_)->debug("Waiting until next vsync, in {} ms", wait_in);
-        }
-#endif
+        if (log_count_ > LOG_PERIOD)
+            spdlog::get(name_)->debug("Waiting until next vsync, in {} ms", duration_to_double<std::milli>(wait_time - now));
+
         // Perform the sleep.
         // TODO: Consider using Monado-style sleeping, where we nanosleep for
         // most of the wait, and then spin-wait for the rest?
         std::this_thread::sleep_for(wait_time - now);
     } else {
-#ifndef NDEBUG
-        if (log_count_ > LOG_PERIOD) {
+        if (log_count_ > LOG_PERIOD)
             spdlog::get(name_)->debug("We haven't rendered yet, rendering immediately");
-        }
-#endif
     }
 }
 
@@ -160,15 +150,11 @@ void gldemo::_p_one_iteration() {
 
     glFinish();
 
-#ifndef NDEBUG
-    const double frame_duration_s = duration_to_double(clock_->now() - last_time_);
-    const double fps              = 1.0 / frame_duration_s;
-
     if (log_count_ > LOG_PERIOD) {
+        const double frame_duration_s = duration_to_double(clock_->now() - last_time_);
         spdlog::get(name_)->debug("Submitting frame to buffer {}, frametime: {}, FPS: {}", which_buffer_, frame_duration_s,
-                                  fps);
+                                  1.0 / frame_duration_s);
     }
-#endif
     last_time_ = clock_->now();
 
     /// Publish our submitted frame handle to Switchboard!
@@ -181,13 +167,11 @@ void gldemo::_p_one_iteration() {
 
     which_buffer_ = !which_buffer_;
 
-#ifndef NDEBUG
     if (log_count_ > LOG_PERIOD) {
         log_count_ = 0;
     } else {
         log_count_++;
     }
-#endif
 }
 
 // We override start() to control our own lifecycle
@@ -200,7 +184,7 @@ void gldemo::start() {
     const GLenum glew_err = glewInit();
     if (glew_err != GLEW_OK) {
         spdlog::get(name_)->error("GLEW Error: {}", (void*) glewGetErrorString(glew_err));
-        ILLIXR::abort("Failed to initialize GLEW");
+        throw std::runtime_error("Failed to initialize GLEW");
     }
 
     glEnable(GL_DEBUG_OUTPUT);
@@ -221,9 +205,7 @@ void gldemo::start() {
     glBindVertexArray(demo_vao_);
 
     demo_shader_program_ = init_and_link(demo_vertex_shader, demo_fragment_shader);
-#ifndef NDEBUG
     spdlog::get(name_)->debug("Demo app shader program is program {}", demo_shader_program_);
-#endif
 
     vertex_position_ = glGetAttribLocation(demo_shader_program_, "vertexPosition");
     vertex_normal_   = glGetAttribLocation(demo_shader_program_, "vertexNormal");
@@ -234,7 +216,7 @@ void gldemo::start() {
     // Load/initialize the demo scene
     char* obj_dir = std::getenv("ILLIXR_DEMO_DATA");
     if (obj_dir == nullptr) {
-        ILLIXR::abort("Please define ILLIXR_DEMO_DATA.");
+        throw std::runtime_error("Please define ILLIXR_DEMO_DATA.");
     }
 
     demo_scene_ = ObjScene(std::string(obj_dir), "scene.obj");

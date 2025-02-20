@@ -1,11 +1,9 @@
 #pragma once
 
-#ifndef NDEBUG
-    #include <spdlog/spdlog.h>
-#endif
-
 #include "illixr/data_format/template.hpp"
 #include "illixr/data_format/unit.hpp"
+
+#include <spdlog/spdlog.h>
 
 namespace ILLIXR::data_format {
 /**
@@ -102,9 +100,7 @@ template<>
 inline void normalize<rect>(rect& obj, const float width, const float height, const float depth) {
     (void) depth;
     if (obj.unit == units::PERCENT) {
-#ifndef NDEBUG
         spdlog::get("illixr")->info("[normalize] rect already normalized");
-#endif
         return;
     }
     obj.x_center /= width;
@@ -121,9 +117,7 @@ inline void denormalize<rect>(rect& obj, const float width, const float height, 
     if (!obj.valid)
         return;
     if (obj.unit != units::PERCENT) {
-#ifndef NDEBUG
         spdlog::get("illixr")->info("[denormalize] rect already denormalized");
-#endif
         return;
     }
     if (unit == units::PERCENT)

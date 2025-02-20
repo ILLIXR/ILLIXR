@@ -121,12 +121,10 @@ void gtsam_integrator::propagate_imu_values(time_point real_time) {
         return;
     }
 
-#ifndef NDEBUG
     if (input_values->last_cam_integration_time > last_cam_time_) {
         spdlog::get(name_)->debug("New slow pose has arrived!");
         last_cam_time_ = input_values->last_cam_integration_time;
     }
-#endif
 
     if (pim_obj_ == nullptr) {
         /// We don't have a pim_object -> make and set given the current input
@@ -158,9 +156,7 @@ void gtsam_integrator::propagate_imu_values(time_point real_time) {
     ImuBias prev_bias = pim_obj_->bias_hat();
     ImuBias bias      = pim_obj_->bias_hat();
 
-#ifndef NDEBUG
     spdlog::get(name_)->debug("Integrating over {} IMU samples", prop_data.size());
-#endif
 
     for (std::size_t i = 0; i < prop_data.size() - 1; i++) {
         pim_obj_->integrate_measurement(prop_data[i], prop_data[i + 1]);
@@ -172,11 +168,9 @@ void gtsam_integrator::propagate_imu_values(time_point real_time) {
     gtsam::NavState navstate_k = pim_obj_->predict();
     gtsam::Pose3    out_pose   = navstate_k.pose();
 
-#ifndef NDEBUG
     spdlog::get(name_)->debug("Base Position (x, y, z) = {}, {}, {}", input_values->position(0), input_values->position(1),
                               input_values->position(2));
     spdlog::get(name_)->debug("New Position (x, y, z) = {}, {}, {}", out_pose.x(), out_pose.y(), out_pose.z());
-#endif
 
     auto                        seconds_since_epoch = std::chrono::duration<double>(real_time.time_since_epoch()).count();
     auto                        original_quaternion = out_pose.rotation().toQuaternion();

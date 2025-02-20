@@ -156,10 +156,8 @@ private:
 
     duration offload_duration_{};
 
-#ifndef NDEBUG
     size_t log_count_  = 0;
     size_t LOG_PERIOD_ = 20;
-#endif
 };
 
 } // namespace ILLIXR

@@ -31,13 +31,9 @@ void server_reader::_p_one_iteration() {
     if (read_socket_ == NULL) {
         conn_signal_.put(conn_signal_.allocate<connection_signal>(connection_signal{true}));
         socket_.socket_listen();
-#ifndef NDEBUG
         spdlog::get(name_)->debug("[offload_vio.server_rx]: Waiting for connection!");
-#endif
         read_socket_ = new TCPSocket(socket_.socket_accept()); /* Blocking operation, waiting for client to connect */
-#ifndef NDEBUG
         spdlog::get(name_)->debug("[offload_vio.server_rx]: Connection is established with {}", read_socket_->peer_address());
-#endif
     } else {
         std::string delimitter = "EEND!";
         std::string recv_data  = read_socket_->read_data(); /* Blocking operation, wait for the data to come */

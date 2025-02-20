@@ -180,10 +180,7 @@ GLubyte* timewarp_gl::read_texture_image() {
     // Record the image collection time
     offload_duration_ = clock_->now() - start_get_tex_time;
 
-#ifndef NDEBUG
-    double time = duration_to_double<std::milli>(offload_duration_);
-    spdlog::get(name_)->debug("Texture image collecting time: {} ms", time);
-#endif
+    spdlog::get(name_)->debug("Texture image collecting time: {} ms", duration_to_double<std::milli>(offload_duration_));
 
     return pixels;
 }
@@ -393,7 +390,7 @@ void timewarp_gl::_setup() {
     const GLenum glew_err = glewInit();
     if (glew_err != GLEW_OK) {
         spdlog::get(name_)->error("[timewarp_gl] GLEW Error: {}", reinterpret_cast<const char*>(glewGetErrorString(glew_err)));
-        ILLIXR::abort("[timewarp_gl] Failed to initialize GLEW");
+        throw std::runtime_error("[timewarp_gl] Failed to initialize GLEW");
     }
 
     glEnable(GL_DEBUG_OUTPUT);
@@ -706,8 +703,6 @@ void timewarp_gl::warp(const switchboard::ptr<const rendered_frame>& most_recent
                                {render_to_display},
                            }});
 
-    #ifndef NDEBUG // Timewarp only has vsync estimates if we're running with native-gl
-
     if (log_count_ > LOG_PERIOD_) {
         const double     time_swap         = duration_to_double<std::milli>(time_after_swap - time_before_swap);
         const double     latency_mtd       = duration_to_double<std::milli>(imu_to_display);
@@ -722,7 +717,6 @@ void timewarp_gl::warp(const switchboard::ptr<const rendered_frame>& most_recent
         spdlog::get(name_)->debug("Render-to-display latency: {} ms", latency_rtd);
         spdlog::get(name_)->debug("Next swap in: {} ms in the future", timewarp_estimate);
     }
-    #endif
 
     // For now, it only makes sense to enable offloading in native mode
     // because running timewarp with Monado will not produce a single texture.
@@ -766,13 +760,11 @@ void timewarp_gl::warp(const switchboard::ptr<const rendered_frame>& most_recent
     // Call Hologram
     hologram_.put(hologram_.allocate<hologram_input>(hologram_input(++hologram_seq_)));
 
-#ifndef NDEBUG
     if (log_count_ > LOG_PERIOD_) {
         log_count_ = 0;
     } else {
         log_count_++;
     }
-#endif
 }
 
 #ifndef ILLIXR_MONADO

@@ -131,9 +131,7 @@ private:
             // std::ostringstream os;
             // os << "cpu_timer," << account_name_ << "," << count_duration<duration>(duration_) << "\n";
             if (rand() % 100 == 0) {
-#ifndef NDEBUG
                 spdlog::get("illixr")->info("cpu_timer.hpp is DEPRECATED. See logging.hpp.");
-#endif
             }
         }
 

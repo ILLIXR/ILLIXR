@@ -348,10 +348,8 @@ void vkdemo::create_descriptor_set() {
 void vkdemo::load_texture(const std::string& path, int i) {
     int  width, height, channels;
     auto data = stbi_load(path.c_str(), &width, &height, &channels, 0);
-#ifndef NDEBUG
     spdlog::get("illixr")->debug("[vkdemo] Loaded texture {} with dimensions {}x{} and {} channels", path, width, height,
                                  channels);
-#endif
     if (data == nullptr) {
         throw std::runtime_error("Failed to load texture image!");
     }
@@ -535,9 +533,7 @@ void vkdemo::load_model() {
         }
     }
 
-#ifndef NDEBUG
-    spdlog::get("illixr")->debug("[vkdemo] Loaded {} textures_", textures_.size());
-#endif
+    spdlog::get("illixr")->debug("[vkdemo] Loaded {} textures", textures_.size());
 
     std::unordered_map<vertex, uint32_t> unique_vertices{};
     for (const auto& shape : shapes) {

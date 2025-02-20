@@ -20,9 +20,7 @@ using namespace ILLIXR::data_format;
     , rgb_depth_{switchboard_->get_writer<rgb_depth_type>("rgb_depth")} // Initialize DepthAI pipeline and device
     , device_{create_camera_pipeline()} {
     spdlogger(std::getenv("DEPTHAI_LOG_LEVEL"));
-#ifndef NDEBUG
     spdlog::get(name)->debug("pipeline started");
-#endif
     color_queue_                           = device_.getOutputQueue("preview", 1, false);
     depth_queue_                           = device_.getOutputQueue("depth", 1, false);
     rectif_left_queue_                     = device_.getOutputQueue("rectified_left", 1, false);
@@ -44,7 +42,6 @@ void depthai::callback() {
     bool rectifR_go    = rectif_right_queue_->has<dai::ImgFrame>();
     bool imu_packet_go = imu_queue_->has<dai::IMUData>();
 
-#ifndef NDEBUG
     if (color_go) {
         rgb_count_++;
     }
@@ -57,12 +54,9 @@ void depthai::callback() {
     if (rectifR_go) {
         right_count_++;
     }
-#endif
 
     if (rectifR_go && rectifL_go && depth_go && color_go) {
-#ifndef NDEBUG
         all_count_++;
-#endif
         auto color_frame = color_queue_->tryGet<dai::ImgFrame>();
         auto depth_frame = depth_queue_->tryGet<dai::ImgFrame>();
         auto rectifL     = rectif_left_queue_->tryGet<dai::ImgFrame>();
@@ -104,12 +98,10 @@ void depthai::callback() {
 
     if (imu_packet_go) {
         auto imu_packet = imu_queue_->tryGet<dai::IMUData>();
-#ifndef NDEBUG
         if (imu_packet_ == 0) {
             first_packet_time_ = std::chrono::steady_clock::now();
         }
         imu_packet_++;
-#endif
 
         auto imu_data = imu_packet->packets;
         for (auto& imu_datum : imu_data) {
@@ -131,10 +123,8 @@ void depthai::callback() {
 
         time_point imu_time_point{*first_real_imu_time_ + std::chrono::nanoseconds(imu_time - *first_imu_time_)};
 
-// Submit to switchboard
-#ifndef NDEBUG
+        // Submit to switchboard
         imu_pub_++;
-#endif
         imu_writer_.put(imu_writer_.allocate<imu_type>({
             imu_time_point,
             av,
@@ -144,20 +134,16 @@ void depthai::callback() {
 }
 
 depthai::~depthai() {
-#ifndef NDEBUG
     spdlog::get(name_)->debug("Destructor: Packets Received {} Published: IMU: {} RGB-D: {}", imu_packet_, imu_pub_, rgbd_pub_);
     auto dur = std::chrono::steady_clock::now() - first_packet_time_;
     spdlog::get(name_)->debug("Time since first packet: {} ms",
                               std::chrono::duration_cast<std::chrono::milliseconds>(dur).count());
     spdlog::get(name_)->debug("RGB: {} Left: {} Right: {} Depth: {} All: {}", rgb_count_, left_count_, right_count_,
                               depth_count_, all_count_);
-#endif
 }
 
 dai::Pipeline depthai::create_camera_pipeline() const {
-#ifndef NDEBUG
     spdlog::get(name_)->debug("creating pipeline");
-#endif
     dai::Pipeline p;
 
     // IMU

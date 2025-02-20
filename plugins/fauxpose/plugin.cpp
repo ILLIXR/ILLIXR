@@ -44,20 +44,14 @@ faux_pose_impl::faux_pose_impl(const phonebook* pb)
     , clock_{pb->lookup_impl<relative_clock>()}
     , vsync_estimate_{switchboard_->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")} {
     char* env_input; /* pointer to environment variable input */
-#ifndef NDEBUG
     spdlog::get("illixr")->debug("[fauxpose] Starting Service");
-#endif
 
     // Store the initial time
     if (clock_->is_started()) {
         sim_start_time_ = clock_->now();
-#ifndef NDEBUG
         spdlog::get("illixr")->debug("[fauxpose] Starting Service");
-#endif
     } else {
-#ifndef NDEBUG
         spdlog::get("illixr")->debug("[fauxpose] Warning: the clock isn't started yet");
-#endif
     }
 
     // Set default faux-pose parameters
@@ -77,24 +71,18 @@ faux_pose_impl::faux_pose_impl(const phonebook* pb)
         center_location_[1] = std::strtof(strchrnul(env_input, ',') + 1, nullptr);
         center_location_[2] = std::strtof(strchrnul(strchrnul(env_input, ',') + 1, ',') + 1, nullptr);
     }
-#ifndef NDEBUG
     spdlog::get("illixr")->debug("[fauxpose] Period is {}", period_);
     spdlog::get("illixr")->debug("[fauxpose] Amplitude is {}", amplitude_);
     spdlog::get("illixr")->debug("[fauxpose] Center is {}, {}, {}", center_location_[0], center_location_[1],
                                  center_location_[2]);
-#endif
 }
 
 faux_pose_impl::~faux_pose_impl() {
-#ifndef NDEBUG
     spdlog::get("illixr")->debug("[fauxpose] Ending Service");
-#endif
 }
 
 pose_type faux_pose_impl::correct_pose([[maybe_unused]] const pose_type& pose) const {
-#ifndef NDEBUG
     spdlog::get("illixr")->debug("[fauxpose] Returning (passthru) pose");
-#endif
     return pose;
 }
 
@@ -138,9 +126,7 @@ fast_pose_type faux_pose_impl::get_fast_pose(time_point time) const {
     simulated_pose.orientation = Eigen::Quaternionf(0.707, 0.0, 0.707, 0.0); // (W,X,Y,Z) Facing forward (90deg about Y)
 
     // Return the new pose
-#ifndef NDEBUG
     spdlog::get("illixr")->debug("[fauxpose] Returning pose");
-#endif
     return fast_pose_type{.pose = simulated_pose, .predict_computed_time = clock_->now(), .predict_target_time = time};
 }
 
@@ -149,15 +135,11 @@ fast_pose_type faux_pose_impl::get_fast_pose(time_point time) const {
     // "pose_prediction" is a class inheriting from "phonebook::service"
     //   It is described in "pose_prediction.hpp"
     pb->register_impl<pose_prediction>(std::static_pointer_cast<pose_prediction>(std::make_shared<faux_pose_impl>(pb)));
-#ifndef NDEBUG
     spdlog::get("illixr")->debug("[fauxpose] Starting Plugin");
-#endif
 }
 
 faux_pose::~faux_pose() {
-#ifndef NDEBUG
     spdlog::get("illixr")->debug("[fauxpose] Ending Plugin");
-#endif
 }
 
 // This line makes the plugin importable by Spindle

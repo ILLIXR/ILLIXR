@@ -5,18 +5,16 @@
 #include "phonebook.hpp"
 #include "record_logger.hpp"
 
+#include <boost/interprocess/sync/named_mutex.hpp>
+#include <boost/interprocess/sync/scoped_lock.hpp>
 #include <eigen3/Eigen/Core>
 #include <eigen3/Eigen/Geometry>
 #include <iostream>
 #include <list>
 #include <mutex>
 #include <shared_mutex>
+#include <spdlog/spdlog.h>
 #include <utility>
-
-#ifndef NDEBUG
-    #include <spdlog/spdlog.h>
-#endif
-
 #if __has_include("cpu_timer.hpp")
     #include "cpu_timer.hpp"
 #else
@@ -24,6 +22,8 @@ static std::chrono::nanoseconds thread_cpu_time() {
     return {};
 }
 #endif
+
+namespace b_intp = boost::interprocess;
 
 namespace ILLIXR {
 
@@ -204,11 +204,11 @@ private:
 
     private:
         static void thread_on_start() {
-#ifndef NDEBUG
+            b_intp::named_mutex                      log_mutex{b_intp::open_or_create, "ILLIXR_LOG_MUTEX"};
+            b_intp::scoped_lock<b_intp::named_mutex> lock(log_mutex);
             spdlog::get("illixr")->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%n] [%^%l%$] [switchboard] thread %t %v");
             spdlog::get("illixr")->debug("start");
             spdlog::get("illixr")->set_pattern("%+");
-#endif
         }
 
         void thread_body() {
@@ -290,9 +290,7 @@ private:
     class topic_buffer {
     public:
         topic_buffer() {
-#ifndef NDEBUG
             spdlog::get("illixr")->info("[switchboard] topic buffer created");
-#endif
         }
 
         void enqueue(ptr<const event>&& this_event) {
@@ -460,13 +458,12 @@ public:
     public:
         explicit reader(topic& topic)
             : topic_{topic} {
-#ifndef NDEBUG
             if (typeid(Specific_event) != topic_.ty()) {
                 spdlog::get("illixr")->error("[switchboard] topic '{}' holds type {}, but caller used type {}", topic_.name(),
                                              topic_.ty().name(), typeid(Specific_event).name());
-                abort();
+                throw std::runtime_error("[switchboard] topic '" + topic_.name() + "' holds type " + topic_.ty().name() +
+                                         ", but caller used type typeid(specific_event).name())");
             }
-#endif
         }
 
         /**
@@ -673,20 +670,17 @@ private:
             auto                   found = registry_.find(topic_name);
             if (found != registry_.end()) {
                 topic& _topic = found->second;
-#ifndef NDEBUG
                 if (typeid(Specific_event) != _topic.ty()) {
                     spdlog::get("illixr")->error("[switchboard] topic '{}' holds type {}, but caller used type {}", topic_name,
                                                  _topic.ty().name(), typeid(Specific_event).name());
-                    abort();
+                    throw std::runtime_error("[switchboard] topic '" + topic_name + "' holds type " + _topic.ty().name() +
+                                             ", but caller used type " + typeid(Specific_event).name());
                 }
-#endif
                 return _topic;
             }
         }
 
-#ifndef NDEBUG
         spdlog::get("illixr")->debug("[switchboard] Creating: {} for {}", topic_name, typeid(Specific_event).name());
-#endif
         // Topic not found. Need to create it here.
         const std::unique_lock lock{registry_lock_};
         return registry_.try_emplace(topic_name, topic_name, typeid(Specific_event), record_logger_).first->second;
