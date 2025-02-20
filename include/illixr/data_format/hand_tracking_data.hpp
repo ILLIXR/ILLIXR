@@ -74,15 +74,15 @@ namespace ht {
     const std::vector<hand> hand_map{LEFT_HAND, RIGHT_HAND};
 
     struct hand_points : points_with_units {
-        hand_points(units::measurement_unit unit_ = units::UNSET)
+        explicit hand_points(units::measurement_unit unit_ = units::UNSET)
             : points_with_units(NUM_LANDMARKS, unit_) { }
 
-        hand_points(std::vector<point_with_validity>& pnts, units::measurement_unit unit_ = units::UNSET)
+        explicit hand_points(std::vector<point_with_validity>& pnts, units::measurement_unit unit_ = units::UNSET)
             : points_with_units(pnts, unit_) {
             check();
         }
 
-        hand_points(std::vector<point>& pnts, units::measurement_unit unit_ = units::UNSET, bool valid_ = true)
+        explicit hand_points(std::vector<point>& pnts, units::measurement_unit unit_ = units::UNSET, bool valid_ = true)
             : points_with_units(pnts, unit_, valid_) {
             check();
         }
@@ -101,11 +101,11 @@ namespace ht {
             points.clear();
         }
 
-        void flip_y(const uint im_height = 0) {
+        [[maybe_unused]] void flip_y(const uint im_height = 0) {
             if (unit == units::PERCENT) {
                 for (auto& pnt : points) {
-                    if (pnt.y() -= 0.)
-                        pnt.y() = 1.0 - pnt.y();
+                    if (pnt.y() != 0.)
+                        pnt.y() = 1.0f - pnt.y();
                 }
                 return;
             }
@@ -124,7 +124,11 @@ namespace ht {
         uint64_t                            time;
         bool                                valid = false;
 
-        position() { }
+        position()
+            : points{}
+            , unit(units::measurement_unit::UNSET)
+            , time{0}
+            , valid{false} { }
 
         position(const std::map<ht::hand, ht::hand_points>& pnts, units::measurement_unit unit_, uint64_t time_)
             : points{pnts}
@@ -137,7 +141,7 @@ namespace ht {
         velocity()
             : hand_points() { }
 
-        velocity(units::measurement_unit unit)
+        explicit velocity(units::measurement_unit unit)
             : hand_points(unit) { }
 
         velocity(const hand_points& h1, const hand_points& h2, const float time)
@@ -167,7 +171,12 @@ namespace ht {
 
         std::map<hand, hand_points> points;
 
-        ht_detection() { }
+        ht_detection()
+            : proc_time{0}
+            , palms{{LEFT_HAND, rect()}, {RIGHT_HAND, rect()}}
+            , hands{{LEFT_HAND, rect()}, {RIGHT_HAND, rect()}}
+            , confidence{{LEFT_HAND, 0.}, {RIGHT_HAND, 0.}}
+            , points{{LEFT_HAND, hand_points()}, {RIGHT_HAND, hand_points()}} { }
 
         ht_detection(size_t ptime, rect* lp, rect* rp, rect* lh, rect* rh, float lc, float rc, hand_points* lhp,
                      hand_points* rhp)
@@ -209,7 +218,7 @@ namespace ht {
         }
     };
 
-    // #ifdef BUILD_OXR
+#ifdef ENABLE_OXR
     struct raw_ht_data {
         uint64_t                     time;
         raw_point                    h_points[2][NUM_LANDMARKS];
@@ -343,15 +352,15 @@ namespace ht {
         return os;
     }
 
-    // #endif
+#endif
 
-    inline void transform_point(point_with_units& pnt, const pose_data& pose) {
+    [[maybe_unused]] inline void transform_point(point_with_units& pnt, const pose_data& pose) {
         Eigen::Vector3f new_pnt = pose.orientation * pnt;
         pnt.set(new_pnt + pose.position);
     }
 
-    inline static void transform_points(points_with_units& points, const pose_data& pose, coordinates::reference_space from,
-                                        coordinates::reference_space to) {
+    [[maybe_unused]] inline static void transform_points(points_with_units& points, const pose_data& pose,
+                                                         coordinates::reference_space from, coordinates::reference_space to) {
         if (to == from)
             return;
         if (to == coordinates::WORLD) {
@@ -414,7 +423,8 @@ inline void normalize<ht::ht_detection>(ht::ht_detection& obj, const float width
 }
 
 template<>
-inline void normalize<ht::ht_frame>(ht::ht_frame& obj, const float width, const float height, const float depth) {
+[[maybe_unused]] inline void normalize<ht::ht_frame>(ht::ht_frame& obj, const float width, const float height,
+                                                     const float depth) {
     for (auto& det : obj.detections)
         normalize(det.second, width, height, depth);
     for (auto& hp : obj.hand_positions)
@@ -435,8 +445,8 @@ inline void denormalize<ht::ht_detection>(ht::ht_detection& obj, const float wid
 }
 
 template<>
-inline void denormalize<ht::ht_frame>(ht::ht_frame& obj, const float width, const float height, const float depth,
-                                      units::measurement_unit unit) {
+[[maybe_unused]] inline void denormalize<ht::ht_frame>(ht::ht_frame& obj, const float width, const float height,
+                                                       const float depth, units::measurement_unit unit) {
     for (auto& det : obj.detections)
         denormalize(det.second, width, height, depth, unit);
     for (auto& hp : obj.hand_positions)

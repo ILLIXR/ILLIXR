@@ -59,9 +59,11 @@ ht.left_hand_points[THUMB_TIP]
 
 will get the `point` for the tip of the left thumb.
 
+
 ## Helper plugins
 
 There are two additional plugins which are designed to aid in debugging the `hand_tracking` plugin.
+
 
 ### Viewer
 
@@ -79,6 +81,7 @@ The interface itself is in libopenxr_illixr_ht.so and is designed to be an API L
 automatically detected by libopenxr_loader.so To use the layer you will need both an OpenXR application and runtime. This code is known to be 
 compatible with the Monado runtime, and may be compatible with others. Currently, the hand tracking must receive that data from ILLIXR,
 but as an API Layer the resulting calculations can be retrieved via OpenXR API calls.
+
 [//]: # (- References -)
 [1]: https://ai.google.dev/edge/mediapipe/solutions/vision/hand_landmarker
 [2]: https://registry.khronos.org/OpenXR/specs/1.0/loader.html#openxr-api-layers

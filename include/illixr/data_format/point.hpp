@@ -324,7 +324,7 @@ inline point abs(const point& pnt) {
 /*
  * Take the absolute value of the point
  */
-inline point_with_validity abs(const point_with_validity& pnt) {
+[[maybe_unused]] inline point_with_validity abs(const point_with_validity& pnt) {
     return {abs(point(pnt.x(), pnt.y(), pnt.z())), pnt.valid, pnt.confidence};
 }
 
@@ -333,7 +333,7 @@ inline point_with_validity abs(const point_with_validity& pnt) {
  * @param value The point to take the absolute value of
  * @return A point containing the result
  */
-inline point_with_units abs(const point_with_units& pnt) {
+[[maybe_unused]] inline point_with_units abs(const point_with_units& pnt) {
     return {abs(point(pnt.x(), pnt.y(), pnt.z())), pnt.unit, pnt.valid, pnt.confidence};
 }
 
@@ -542,7 +542,8 @@ struct [[maybe_unused]] points_with_units {
  * @param depth The z bound
  */
 template<>
-    [[maybe_unused]] inline void normalize<points_with_units>(points_with_units& obj, const float width, const float height, const float depth) {
+[[maybe_unused]] inline void normalize<points_with_units>(points_with_units& obj, const float width, const float height,
+                                                          const float depth) {
     if (obj.unit == units::PERCENT) {
         std::cout << "Points are already normalized";
         return;
@@ -561,12 +562,14 @@ template<>
  * @param unit_ the units for the points
  */
 template<>
-    [[maybe_unused]] inline void denormalize<points_with_units>(points_with_units& obj, const float width, const float height, const float depth,
-                                           units::measurement_unit unit_) {
+[[maybe_unused]] inline void denormalize<points_with_units>(points_with_units& obj, const float width, const float height,
+                                                            const float depth, units::measurement_unit unit_) {
     for (auto& pnt : obj.points)
         ::ILLIXR::data_format::denormalize(pnt, width, height, depth, unit_);
     obj.unit = unit_;
 }
+
+#ifdef ENABLE_OXR
 
 struct raw_point {
     float x;
@@ -618,5 +621,5 @@ struct raw_point {
         z   = vec.z();
     }
 };
-
+#endif
 } // namespace ILLIXR::data_format
