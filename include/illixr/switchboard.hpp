@@ -7,6 +7,10 @@
 #include "phonebook.hpp"
 #include "record_logger.hpp"
 
+#ifdef Success
+    #undef Success // For 'Success' conflict
+#endif
+
 #include <eigen3/Eigen/Core>
 #include <eigen3/Eigen/Geometry>
 #include <iostream>
