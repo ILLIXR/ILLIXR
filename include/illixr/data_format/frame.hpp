@@ -1,5 +1,9 @@
 #pragma once
 
+#ifdef Success
+    #undef Success // For 'Success' conflict
+#endif
+
 #include "illixr/data_format/pose.hpp"
 #include "illixr/switchboard.hpp"
 

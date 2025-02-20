@@ -8,14 +8,15 @@ set(PLUGIN_NAME plugin.offload_vio.server_rx${ILLIXR_BUILD_SUFFIX})
 
 # source files, listed individually so that any changes will trigger a rebuild
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
-        video_decoder.cpp
-        video_decoder.h
-        ../../../include/illixr/plugin.hpp
-            ../../../include/illixr/data_format/misc.hpp
-            ../../../include/illixr/data_format/opencv_data_types.hpp
-        ../../../include/illixr/phonebook.hpp
-        ../../../include/illixr/switchboard.hpp
-        )
+            plugin.hpp
+            video_decoder.cpp
+            video_decoder.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/plugin.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/misc.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/opencv_data_types.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/phonebook.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
+)
 
 # if building on CentOS make sure we use the correct OpenCV
 if(BUILD_OPENCV)

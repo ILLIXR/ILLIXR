@@ -6,6 +6,12 @@
 #include <map>
 #include <utility>
 
+/*
+ * The structs in this file were created to hold information about the camera which produced the images. This information
+ * includes: center pixels, fields of view, number of pixels across images, and units. This information is needed by the hand
+ * tracking plugin to determine the actual spatial coordinates of the hands.
+ */
+
 constexpr double T_M_PI = 2 * M_PI;
 
 namespace ILLIXR::data_format {

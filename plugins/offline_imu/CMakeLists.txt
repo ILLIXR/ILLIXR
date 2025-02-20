@@ -4,14 +4,15 @@ set(PLUGIN_NAME plugin.offline_imu${ILLIXR_BUILD_SUFFIX})
 
 # source files, listed individually so that any changes will trigger a rebuild
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
-            ../../include/illixr/data_loading.hpp
-            ../../include/illixr/data_format/imu.hpp
-            ../../include/illixr/managed_thread.hpp
-            ../../include/illixr/relative_clock.hpp
-            ../../include/illixr/switchboard.hpp
-            ../../include/illixr/threadloop.hpp
-            ../../include/illixr/csv_iterator.hpp
-            ../../include/illixr/data_format/misc.hpp
+            plugin.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_loading.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/imu.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/managed_thread.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/relative_clock.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/threadloop.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/csv_iterator.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/misc.hpp
 )
 
 target_compile_features(${PLUGIN_NAME} PRIVATE cxx_std_17)

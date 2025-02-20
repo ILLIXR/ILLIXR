@@ -93,6 +93,13 @@ if(HT_ENABLE_GPU)
 endif()
 include(cmake/HelperFunctions.cmake)
 
+set(VISUALIZER "" CACHE STRING "")
+set(VISUALIZER_TO_USE "ALL" CACHE INTERNAL "")
+if(VISUALIZER)
+    string(TOUPPER ${VISUALIZER} VISUALIZER)
+    set(VISUALIZER_TO_USE ${VISUALIZER} CACHE INTERNAL "")
+endif()
+
 generate_yaml()
 check_plugins()
 
@@ -191,8 +198,6 @@ else()
     find_package(Boost REQUIRED COMPONENTS filesystem serialization CONFIG)
 endif()
 
-find_package(Boost REQUIRED CONFIG COMPONENTS filesystem serialization)
-
 find_package(spdlog REQUIRED)
 add_definitions(-DFMT_HEADER_ONLY)
 
@@ -203,7 +208,7 @@ include(src/CMakeLists.txt)
 
 # set any plugins that are being built
 set(FULL_PLUGIN_LIST "")
-foreach(ITEM IN LISTS PLUGIN_LIST)
+foreach(ITEM IN LISTS PLUGIN_LIST VISUALIZER_LIST)
     string(TOUPPER "USE_${ITEM}" ITEM_UPPER)
     string(TOLOWER ${ITEM} ITEM_LOWER)
     list(APPEND FULL_PLUGIN_LIST ${ITEM})

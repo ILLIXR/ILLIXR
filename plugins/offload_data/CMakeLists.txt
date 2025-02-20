@@ -4,12 +4,13 @@ set(PLUGIN_NAME plugin.offload_data${ILLIXR_BUILD_SUFFIX})
 
 # source files, listed individually so that any changes will trigger a rebuild
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
-            ../../include/illixr/plugin.hpp
-            ../../include/illixr/data_format/pose.hpp
-            ../../include/illixr/error_util.hpp
-            ../../include/illixr/global_module_defs.hpp
-            ../../include/illixr/phonebook.hpp
-            ../../include/illixr/switchboard.hpp
+            plugin.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/plugin.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/pose.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/error_util.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/global_module_defs.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/phonebook.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
 )
 
 target_include_directories(${PLUGIN_NAME} PRIVATE ${Boost_INCLUDE_DIR} ${ILLIXR_SOURCE_DIR}/include ${Eigen3_INCLUDE_DIRS})

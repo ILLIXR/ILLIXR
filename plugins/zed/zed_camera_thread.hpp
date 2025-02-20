@@ -21,7 +21,7 @@ protected:
 
 private:
     const std::shared_ptr<switchboard>             switchboard_;
-    const std::shared_ptr<const RelativeClock>     clock_;
+    const std::shared_ptr<const relative_clock>    clock_;
     switchboard::writer<data_format::cam_type_zed> cam_;
     std::shared_ptr<zed_camera>                    zed_cam_;
     sl::Resolution                                 image_size_;

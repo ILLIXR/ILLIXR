@@ -142,12 +142,11 @@ namespace ht {
 
         velocity(const hand_points& h1, const hand_points& h2, const float time)
             : hand_points() {
-            if (h1.unit != h2.unit) {
-                // TODO: something
-            }
-            if (h1.points.size() != h2.points.size()) {
-                // TODO: something
-            }
+            if (h1.unit != h2.unit)
+                throw std::runtime_error("Incompatible units in velocity calculation.");
+
+            if (h1.points.size() != h2.points.size())
+                throw std::runtime_error("Differing number of points in velocity calculation");
 
             for (int i = WRIST; i != PINKY_TIP; i++) {
                 points[i] = (h2.at(i) - h1.at(i)) / time;

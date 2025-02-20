@@ -105,7 +105,7 @@
     },
     {
       "name": "webcam",
-      "cmake_flag": "WEBCAM=ON",
+      "cmake_flag": "USE_WEBCAM=ON",
       "dependencies": [
         "OpenCV"
       ]

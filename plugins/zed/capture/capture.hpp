@@ -15,42 +15,42 @@ class capture {
 public:
     capture() = delete;
     capture(int fp, const ILLIXR::data_format::pose_data& wcf);
+    ~capture();
     void get_camera(const ILLIXR::data_format::pose_data& wcf);
     void get_config();
     int  get_data();
     void make_gui();
-    ~capture();
 
 private:
-    std::ofstream data_of;
-    std::ofstream camL_of;
-    std::ofstream camR_of;
-    // std::ofstream depth_of;
-    // std::ofstream conf_of;
+    std::ofstream data_of_;
+    std::ofstream camL_of_;
+    std::ofstream camR_of_;
+    // std::ofstream depth_of_;
+    // std::ofstream conf_of_;
 
-    sl::Camera* camera = nullptr;
+    sl::Camera* camera_ = nullptr;
 
-    sl::Mat imageL_zed;
-    sl::Mat imageR_zed;
-    // sl::Mat depth_zed;
-    // sl::Mat conf_zed;
+    sl::Mat imageL_zed_;
+    sl::Mat imageR_zed_;
+    // sl::Mat depth_zed_;
+    // sl::Mat conf_zed_;
 
-    cv::Mat imageL_ocv;
-    cv::Mat imageR_ocv;
-    // cv::Mat  depth_ocv;
-    // cv::Mat  conf_ocv;
-    uint64_t timepoint;
+    cv::Mat imageL_ocv_;
+    cv::Mat imageR_ocv_;
+    // cv::Mat  depth_ocv_;
+    // cv::Mat  conf_ocv_;
+    uint64_t timepoint_;
 
-    sl::Resolution img_size;
+    sl::Resolution img_size_;
 
     sl::RuntimeParameters runtime_params_;
-    sl::Transform         wcs_xform;
+    sl::Transform         wcs_xform_;
 
-    GLFWwindow* _viewport{};
-    GLuint      textures[2];
-    ImVec4      clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-    cv::Mat     raw_img[2];
-    const int   fps;
+    GLFWwindow* viewport_{};
+    GLuint      textures_[2];
+    ImVec4      clear_color_ = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+    cv::Mat     raw_img_[2];
+    const int   fps_;
 };
 
 } // namespace ILLIXR::zed_capture

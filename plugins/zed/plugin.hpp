@@ -25,7 +25,7 @@ private:
     std::shared_ptr<zed_camera>        zed_cam_;
     zed_camera_thread                  camera_thread_;
 
-    const std::shared_ptr<const RelativeClock>           clock_;
+    const std::shared_ptr<const relative_clock>          clock_;
     switchboard::writer<data_format::imu_type>           imu_;
     switchboard::reader<data_format::cam_type_zed>       cam_reader_;
     switchboard::writer<data_format::binocular_cam_type> cam_publisher_;

@@ -8,11 +8,12 @@ set(PLUGIN_NAME plugin.offload_vio.server_tx${ILLIXR_BUILD_SUFFIX})
 
 # source files, listed individually so that any changes will trigger a rebuild
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
-        ../../../include/illixr/plugin.hpp
-            ../../../include/illixr/data_format/misc.hpp
-        ../../../include/illixr/phonebook.hpp
-        ../../../include/illixr/switchboard.hpp
-        )
+            plugin.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/plugin.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/misc.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/phonebook.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
+)
 
 set(protobuf_files
         ${CMAKE_CURRENT_SOURCE_DIR}/../proto/vio_output.proto

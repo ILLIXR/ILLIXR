@@ -54,10 +54,10 @@ void zed_imu_thread::stop() {
 
 zed_imu_thread::zed_imu_thread(const std::string& name_, phonebook* pb_)
     : threadloop{name_, pb_}
-    , switchboard_{pb->lookup_impl<switchboard>()}
+    , switchboard_{phonebook_->lookup_impl<switchboard>()}
     , zed_cam_{start_camera()}
     , camera_thread_{"zed_camera_thread", pb_, zed_cam_}
-    , clock_{pb->lookup_impl<RelativeClock>()}
+    , clock_{phonebook_->lookup_impl<relative_clock>()}
     , imu_{switchboard_->get_writer<imu_type>("imu")}
     , cam_reader_{switchboard_->get_reader<cam_type_zed>("cam_zed")}
     , cam_publisher_{switchboard_->get_writer<binocular_cam_type>("cam")}

@@ -3,11 +3,12 @@ pkg_check_modules(libopenni2 REQUIRED libopenni2)
 set(PLUGIN_NAME plugin.openni${ILLIXR_BUILD_SUFFIX})
 
 set(OPENNI_SOURCES plugin.cpp
-    ../../include/illixr/data_format/opencv_data_types.hpp
-    ../../include/illixr/phonebook.hpp
-    ../../include/illixr/relative_clock.hpp
-    ../../include/illixr/switchboard.hpp
-    ../../include/illixr/threadloop.hpp
+    plugin.hpp
+    ${CMAKE_SOURCE_DIR}/include/illixr/data_format/opencv_data_types.hpp
+    ${CMAKE_SOURCE_DIR}/include/illixr/phonebook.hpp
+    ${CMAKE_SOURCE_DIR}/include/illixr/relative_clock.hpp
+    ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
+    ${CMAKE_SOURCE_DIR}/include/illixr/threadloop.hpp
 )
 add_library(${PLUGIN_NAME} SHARED ${OPENNI_SOURCES})
 
