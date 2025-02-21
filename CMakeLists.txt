@@ -132,6 +132,10 @@ set(RT_SLAM_PLUGINS OFF)
 
 if(YAML_FILE)
     read_yaml(${YAML_FILE})
+    string(REGEX MATCH "/all.yaml" MATCH_FOUND ${YAML_FILE})
+    if (${YAML_FILE} STREQUAL "all.yaml" OR MATCH_FOUND)
+        set(BUILD_DEP_MAP ON)
+    endif()
     if(LOCAL_BUILD_FLAGS)
         add_compile_definitions("${LOCAL_BUILD_FLAGS}")
         string(REPLACE " " ";" TEMP_BUILD_FLAGS "${LOCAL_BUILD_FLAGS}")
@@ -337,28 +341,30 @@ endif()
 # reset this, so it is clean for subsequent runs of cmake
 set(VISUALIZER "" CACHE STRING "")
 
-find_package(Python3 COMPONENTS Interpreter)
-if(Python3_FOUND)
-    add_custom_target(depmaker ALL
-                      BYPRODUCTS "${CMAKE_SOURCE_DIR}/plugins/plugin_deps.yaml"
-                      COMMAND ${CMAKE_SOURCE_DIR}/dep_mapper.py ${CMAKE_BINARY_DIR}
-                      WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    )
-    if(USE_AUDIO_PIPELINE)
-        add_dependencies(depmaker "Audio_Pipeline")
-    endif()
-    if(USE_OPENVINS)
-        add_dependencies(depmaker "OpenVINS")
-    endif()
-    if(USE_HAND_TRACKING)
-        #set(dependencies "${dependencies} ${HT_TARGET_NAME}")
+if(BUILD_DEP_MAP)
+    find_package(Python3 COMPONENTS Interpreter)
+    if(Python3_FOUND)
+        message(STATUS "Rebuilding dep_map")
+        add_custom_target(depmaker ALL
+                          BYPRODUCTS "${CMAKE_SOURCE_DIR}/plugins/plugin_deps.yaml"
+                          COMMAND ${CMAKE_SOURCE_DIR}/dep_mapper.py ${CMAKE_BINARY_DIR}
+                          WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        )
+        if(USE_AUDIO_PIPELINE)
+            add_dependencies(depmaker "Audio_Pipeline")
+        endif()
+        if(USE_OPENVINS)
+            add_dependencies(depmaker "OpenVINS")
+        endif()
+        if(USE_HAND_TRACKING)
+            #set(dependencies "${dependencies} ${HT_TARGET_NAME}")
+        endif()
     endif()
 endif()
 install(FILES "${CMAKE_SOURCE_DIR}/plugins/plugin_deps.yaml"
         DESTINATION $ENV{HOME}/.illixr/profiles)
 install(FILES "${CMAKE_SOURCE_DIR}/plugins/plugin_deps.yaml"
         DESTINATION ${CMAKE_INSTALL_PREFIX}/share/illixr/profiles)
-
 #get_cmake_property(_variableNames VARIABLES)
 #foreach (_variableName ${_variableNames})
 #    message(STATUS "${_variableName}=${${_variableName}}")
