@@ -99,6 +99,7 @@
       "cmake_flag": "USE_NATIVE_RENDERER=ON",
       "dependencies": [
         "OpenCV",
+        "ccache",
         "Vulkan",
         "glfw3",
         "glm",
@@ -137,11 +138,22 @@
       ]
     },
     {
+      "name": "offload_rendering_client_jetson",
+      "cmake_flag": "USE_OFFLOAD_RENDERING_CLIENT=ON",
+      "dependencies": [
+        "libdrm",
+        "EGL",
+        "GLESv2",
+        "Vulkan"
+        ]
+    },
+    {
       "name": "offload_rendering_client",
       "cmake_flag": "USE_OFFLOAD_RENDERING_CLIENT=ON",
       "dependencies": [
         "libaom",
         "cuda-llvm",
+        "ccache",
         "libdav1d",
         "fontconfig",
         "libfreetype",
@@ -172,7 +184,17 @@
         "opencl",
         "opengl",
         "libxcb",
-        "libzimg"
+        "xcb-shm",
+        "libzimg",
+        "libsoxr",
+        "libspeex",
+        "libtheora",
+        "libx264",
+        "libx265",
+        "libgmp",
+        "libmp3lame",
+        "yasm",
+        "cuda-cudart"
       ]
     },
     {
@@ -181,6 +203,7 @@
       "dependencies": [
         "libaom",
         "cuda-llvm",
+        "ccache",
         "libdav1d",
         "fontconfig",
         "libfreetype",
@@ -208,10 +231,20 @@
         "libvpx",
         "libwebp",
         "libxcb",
+        "xcb-shm",
         "libxml2",
         "libzimg",
         "opencl",
-        "opengl"
+        "opengl",
+        "libsoxr",
+        "libspeex",
+        "libtheora",
+        "libx264",
+        "libx265",
+        "libgmp",
+        "libmp3lame",
+        "yasm",
+        "cuda-cudart"
       ]
     },
     {
@@ -274,6 +307,15 @@
       ]
     },
     {
+      "name": "openwarp",
+      "cmake_flag": "OSE_OPENWARP=ON",
+      "dependencies": [
+        "vulkan",
+        "glm",
+        "glslang"
+      ]
+    },
+    {
       "name": "passthrough_integrator",
       "cmake_flag": "USE_PASSTHROUGH_INTEGRATOR=ON",
       "dependencies": []
@@ -326,6 +368,7 @@
       "name": "timewarp_gl",
       "cmake_flag": "USE_TIMEWARP_GL=ON",
       "dependencies": [
+        "ccache",
         "git",
         "glslang",
         "gflags",
@@ -349,6 +392,7 @@
       "name": "timewarp_vk",
       "cmake_flag": "USE_TIMEWARP_VK=ON",
       "dependencies": [
+        "ccache",
         "OpenCV",
         "Vulkan",
         "glfw3",
@@ -372,6 +416,7 @@
       "name": "vkdemo",
       "cmake_flag": "USE_VKDEMO=ON",
       "dependencies": [
+        "ccache",
         "OpenCV",
         "Vulkan",
         "glfw3",
@@ -394,6 +439,14 @@
     {
       "name": "zed",
       "cmake_flag": "USE_ZED=ON",
+      "dependencies": [
+        "OpenCV",
+        "zed_SDK"
+      ]
+    },
+    {
+      "name": "zed.data_injection",
+      "cmake_flag": "USE_ZED_DATA_INJECTION=ON",
       "dependencies": [
         "OpenCV",
         "zed_SDK"
@@ -439,6 +492,43 @@
       }
     },
     {
+      "ccache": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "ccache",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "ccache",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "ccache",
+              "postnotes": "",
+              "notes": ""
+            },
+            "38": {
+              "pkg": "ccache",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "ccache",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        }
+      }
+    },
+    {
       "cuda-llvm": {
         "pkg": {
           "Ubuntu": {
@@ -476,6 +566,43 @@
       }
     },
     {
+      "cuda-cudart": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "cuda-cudart-dev",
+              "postnotes": "",
+              "notes": "The cuda-rt package is version named, you will need to determine which is available for your system."
+            },
+            "22": {
+              "pkg": "cuda-cudart-dev",
+              "postnotes": "",
+              "notes": "The cuda-rt package is version named, you will need to determine which is available for your system."
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "cuda-cudart-devel",
+              "postnotes": "",
+              "notes": "The cuda-rt package is version named, you will need to determine which is available for your system."
+            },
+            "38": {
+              "pkg": "cuda-cudart-devel",
+              "postnotes": "",
+              "notes": "The cuda-rt package is version named, you will need to determine which is available for your system."
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "cuda-cudart-devel",
+              "postnotes": "",
+              "notes": "The cuda-rt package is version named, you will need to determine which is available for your system."
+            }
+          }
+        }
+      }
+    },
+    {
       "ecal": {
         "pkg": {
           "Ubuntu": {
@@ -505,6 +632,43 @@
           "CentOS": {
             "9": {
               "pkg": "graphviz hdf5-devel libcurl-devel qwt-qt5-devel qt5-qtbase-devel libyaml-devel zlib-devel openssl-devel",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        }
+      }
+    },
+    {
+      "EGL": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "libegl-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "libegl-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "egl-devel",
+              "postnotes": "",
+              "notes": ""
+            },
+            "38": {
+              "pkg": "egl-devel",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "egl-devel",
               "postnotes": "",
               "notes": ""
             }
@@ -1084,19 +1248,19 @@
           },
           "Fedora": {
             "37": {
-              "pkg": "libass-dev",
+              "pkg": "libass-devel",
               "postnotes": "",
               "notes": ""
             },
             "38": {
-              "pkg": "libass-dev",
+              "pkg": "libass-devel",
               "postnotes": "",
               "notes": ""
             }
           },
           "CentOS": {
             "9": {
-              "pkg": "libass-dev",
+              "pkg": "libass-devel",
               "postnotes": "",
               "notes": ""
             }
@@ -1121,19 +1285,19 @@
           },
           "Fedora": {
             "37": {
-              "pkg": "libbluray-dev",
+              "pkg": "libbluray-devel",
               "postnotes": "",
               "notes": ""
             },
             "38": {
-              "pkg": "libbluray-dev",
+              "pkg": "libbluray-devel",
               "postnotes": "",
               "notes": ""
             }
           },
           "CentOS": {
             "9": {
-              "pkg": "libbluray-dev",
+              "pkg": "libbluray-devel",
               "postnotes": "",
               "notes": ""
             }
@@ -1232,19 +1396,19 @@
           },
           "Fedora": {
             "37": {
-              "pkg": "libdrm-dev",
+              "pkg": "drm-devel",
               "postnotes": "",
               "notes": ""
             },
             "38": {
-              "pkg": "libdrm-dev",
+              "pkg": "drm-devel",
               "postnotes": "",
               "notes": ""
             }
           },
           "CentOS": {
             "9": {
-              "pkg": "libdrm-dev",
+              "pkg": "drm-devel",
               "postnotes": "",
               "notes": ""
             }
@@ -1319,6 +1483,43 @@
           "CentOS": {
             "9": {
               "pkg": "libfribidi-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        }
+      }
+    },
+    {
+      "libgmp": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "libgmp-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "libgmp-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "libgmp-devel",
+              "postnotes": "",
+              "notes": ""
+            },
+            "38": {
+              "pkg": "libgmp-devel",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "libgmp-devel",
               "postnotes": "",
               "notes": ""
             }
@@ -2400,6 +2601,80 @@
       }
     },
     {
+      "libx264": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "libx264-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "libx264-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "libx264-devel",
+              "postnotes": "",
+              "notes": ""
+            },
+            "38": {
+              "pkg": "",
+              "postnotes": "libx264-devel",
+              "notes": ""
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "",
+              "postnotes": "libx264-devel",
+              "notes": ""
+            }
+          }
+        }
+      }
+    },
+    {
+      "libx265": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "libx265-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "libx265-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "libx265-devel",
+              "postnotes": "",
+              "notes": ""
+            },
+            "38": {
+              "pkg": "libx265-devel",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "libx265-devel",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        }
+      }
+    },
+    {
       "libzimg": {
         "pkg": {
           "Ubuntu": {
@@ -3066,6 +3341,43 @@
       }
     },
     {
+      "xcb-shm": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "libxcb-shm0-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "libxcb-shm0-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "",
+              "postnotes": "",
+              "notes": ""
+            },
+            "38": {
+              "pkg": "",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        }
+      }
+    },
+    {
       "xkbcommon": {
         "pkg": {
           "Ubuntu": {
@@ -3095,6 +3407,43 @@
           "CentOS": {
             "9": {
               "pkg": "libxkbcommon-devel",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        }
+      }
+    },
+    {
+      "yasm": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "yasm",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "yasm",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "yasm",
+              "postnotes": "",
+              "notes": ""
+            },
+            "38": {
+              "pkg": "yasm",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "yasm",
               "postnotes": "",
               "notes": ""
             }
