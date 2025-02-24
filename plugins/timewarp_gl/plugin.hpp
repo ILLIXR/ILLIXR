@@ -29,7 +29,7 @@ public:
     skip_option _p_should_skip() override;
     void        _p_thread_setup() override;
 #endif
-    void _p_one_iteration() override { }
+    void _p_one_iteration() override;
 
 private:
     GLubyte*      read_texture_image();
