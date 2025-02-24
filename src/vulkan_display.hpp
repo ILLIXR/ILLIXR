@@ -129,7 +129,7 @@ private:
         bool enable_validation_layers = std::getenv("ILLIXR_VULKAN_VALIDATION_LAYERS") != nullptr &&
             std::stoi(std::getenv("ILLIXR_VULKAN_VALIDATION_LAYERS"));
 
-        VkApplicationInfo app_info;
+        VkApplicationInfo app_info {};
         app_info.sType              = VK_STRUCTURE_TYPE_APPLICATION_INFO;
         app_info.pApplicationName   = "ILLIXR Vulkan Display";
         app_info.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
@@ -148,7 +148,7 @@ private:
 
         this->enabled_instance_extensions_ = backend_required_instance_extensions_vec;
 
-        VkInstanceCreateInfo create_info;
+        VkInstanceCreateInfo create_info {};
         create_info.sType                   = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
         create_info.pApplicationInfo        = &app_info;
         create_info.enabledExtensionCount   = static_cast<uint32_t>(backend_required_instance_extensions_vec.size());
@@ -168,7 +168,7 @@ private:
             create_info.ppEnabledLayerNames = validation_layers.data();
 
             // debug messenger
-            VkDebugUtilsMessengerCreateInfoEXT debug_messenger_create_info;
+            VkDebugUtilsMessengerCreateInfoEXT debug_messenger_create_info {};
             debug_messenger_create_info.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
             debug_messenger_create_info.messageSeverity =
                 VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
@@ -353,7 +353,7 @@ private:
 
         this->enabled_device_extensions_ = required_device_extensions_;
 
-        VkDeviceCreateInfo create_info;
+        VkDeviceCreateInfo create_info {};
         create_info.sType                   = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
         create_info.pQueueCreateInfos       = queue_create_infos.data();
         create_info.queueCreateInfoCount    = static_cast<uint32_t>(queue_create_infos.size());
@@ -474,7 +474,7 @@ private:
             image_count = swapchain_details.capabilities.maxImageCount;
         }
 
-        VkSwapchainCreateInfoKHR create_info; //{VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR};
+        VkSwapchainCreateInfoKHR create_info {}; //{VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR};
         create_info.sType            = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
         create_info.surface          = vk_surface_;
         create_info.minImageCount    = image_count;
