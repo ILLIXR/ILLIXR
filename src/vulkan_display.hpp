@@ -39,8 +39,7 @@ public:
         if (env_var == nullptr) {
             std::cout << "Defaulting to GLFW for display backend" << std::endl;
             backend_type_ = display::display_backend::GLFW;
-        }
-        else if (!strcmp(env_var, "glfw")) {
+        } else if (!strcmp(env_var, "glfw")) {
             std::cout << "Using GLFW" << std::endl;
             backend_type_ = display::display_backend::GLFW;
         } else if (!strcmp(env_var, "headless")) {
