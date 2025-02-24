@@ -36,7 +36,11 @@ public:
         selected_gpu_                = manual_device_selection ? std::stoi(manual_device_selection) : -1;
 
         char* env_var = std::getenv("ILLIXR_DISPLAY_MODE");
-        if (!strcmp(env_var, "glfw")) {
+        if (env_var == nullptr) {
+            std::cout << "Defaulting to GLFW for display backend" << std::endl;
+            backend_type_ = display::display_backend::GLFW;
+        }
+        else if (!strcmp(env_var, "glfw")) {
             std::cout << "Using GLFW" << std::endl;
             backend_type_ = display::display_backend::GLFW;
         } else if (!strcmp(env_var, "headless")) {
@@ -47,8 +51,7 @@ public:
             backend_type_ = display::display_backend::X11_DIRECT;
             direct_mode_  = true;
         } else {
-            std::cout << "Defaulting to GLFW for display backend_" << std::endl;
-            backend_type_ = display::display_backend::GLFW;
+            throw std::runtime_error("Invalid display mode: " + std::string(env_var));
         }
 
         setup(std::move(instance_extensions), std::move(device_extensions));

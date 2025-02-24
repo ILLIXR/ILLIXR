@@ -32,11 +32,14 @@ using namespace ILLIXR::data_format;
     , vsync_{switchboard_->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")}
     , last_fps_update_{std::chrono::duration<long, std::nano>{0}} {
     if (std::getenv("ILLIXR_SERVER_WIDTH") == nullptr || std::getenv("ILLIXR_SERVER_HEIGHT") == nullptr) {
-        throw std::runtime_error("Please define ILLIXR_SERVER_WIDTH and ILLIXR_SERVER_HEIGHT");
+        // throw std::runtime_error("Please define ILLIXR_SERVER_WIDTH and ILLIXR_SERVER_HEIGHT");
+        log_->warn("Please define ILLIXR_SERVER_WIDTH and ILLIXR_SERVER_HEIGHT. Default values used.");
+        server_width_ = 2560;
+        server_height_ = 1440;
+    } else {
+        server_width_  = std::stoi(std::getenv("ILLIXR_SERVER_WIDTH"));
+        server_height_ = std::stoi(std::getenv("ILLIXR_SERVER_HEIGHT"));
     }
-
-    server_width_  = std::stoi(std::getenv("ILLIXR_SERVER_WIDTH"));
-    server_height_ = std::stoi(std::getenv("ILLIXR_SERVER_HEIGHT"));
 }
 
 /**
