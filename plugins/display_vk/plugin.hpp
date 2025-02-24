@@ -1,6 +1,5 @@
 #pragma once
 
-#include "illixr/data_format.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"

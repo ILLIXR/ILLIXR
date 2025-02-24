@@ -1,7 +1,9 @@
 #pragma once
 
-#include "illixr/data_format.hpp"
-#include "illixr/opencv_data_types.hpp"
+#include "illixr/data_format/imu.hpp"
+#include "illixr/data_format/misc.hpp"
+#include "illixr/data_format/opencv_data_types.hpp"
+#include "illixr/data_format/pose.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/relative_clock.hpp"
 #include "illixr/switchboard.hpp"
@@ -27,15 +29,15 @@ private:
     void find_supported_devices(const rs2::device_list& devices);
     void configure_camera();
 
-    const std::shared_ptr<switchboard>          switchboard_;
-    const std::shared_ptr<const relative_clock> clock_;
-    switchboard::writer<imu_type>               imu_;
-    switchboard::writer<cam_type>               cam_;
-    switchboard::writer<rgb_depth_type>         rgb_depth_;
-    std::mutex                                  mutex_;
-    rs2::pipeline_profile                       profiles_;
-    rs2::pipeline                               pipeline_;
-    rs2::config                                 config_;
+    const std::shared_ptr<switchboard>                   switchboard_;
+    const std::shared_ptr<const relative_clock>          clock_;
+    switchboard::writer<data_format::imu_type>           imu_;
+    switchboard::writer<data_format::binocular_cam_type> cam_;
+    switchboard::writer<data_format::rgb_depth_type>     rgb_depth_;
+    std::mutex                                           mutex_;
+    rs2::pipeline_profile                                profiles_;
+    rs2::pipeline                                        pipeline_;
+    rs2::config                                          config_;
 
     cam_enum cam_select_{UNSUPPORTED};
     bool     D4XXI_found_{false};

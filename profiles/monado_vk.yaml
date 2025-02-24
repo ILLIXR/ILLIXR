@@ -1,5 +1,5 @@
 # This file was auto generated, take caution if manually editing.
-plugins: gtsam_integrator,offline_cam,offline_imu,pose_prediction,timewarp_vk,audio_pipeline
+plugins: gtsam_integrator,offline_cam,offline_imu,pose_prediction,timewarp_vk,audio_pipeline,openvins
 use_monado: true
 build_flags: -DILLIXR_VULKAN
 build_type: Release

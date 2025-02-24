@@ -187,38 +187,40 @@ However, ILLIXR does contain software developed solely by us.
 The external libraries and software included in ILLIXR each have their own licenses and
     must be used according to those licenses:
 
-| Package                            | License<SUP>1</SUP>             |
-|:-----------------------------------|:--------------------------------|
-| [concurrentqueue][P1]              | [BSD-2 clause][L1]<SUP>2</SUP>  |
-| [cxxopts][P2]                      | [MIT][L2]                       |
-| [Depthai Core][P3]                 | [MIT][L3]                       |
-| [FFmpeg][P4]                       | [LGPL v2.1][L4]                 |
-| [filter][P5]                       | [MIT][L5]                       |
-| [glslang][P6]                      | [BSD-3 clause][L6]<SUP>3</SUP>  |
-| [Gtsam][P7]                        | [BSD-2 clause][L7]<SUP>2</SUP>  |
-| [imgui][P8]                        | [MIT][L8]                       |
-| [Monado integration][P9]           | [Boost v1][L9]                  |
-| [Monado Vulkan Integration][P10]   | [Boost v1][L10]                 |
-| [OpenCV][P11]                      | [BSD-3 clause][L11]             |
-| [OpenXR][P12]                      | [Boost v1][L12]                 |
-| [PortAudio][P13]                   | [MIT][L13]                      |
-| [robin-hood-hashing][P14]          | [MIT][L14]                      |
-| [SpatialAudio][P15]                | [LGPL v2.1][L15]                |
-| [SPIRV Headers][P16]               | [MIT][L16]                      |
-| [SPIRV Tools][P17]                 | [Apache v2][L17]                |
-| [SqliteCPP][P18]                   | [MIT][L18]                      |
-| [stb][P19]                         | [MIT][L19]                      |
-| [tinyobjloader][P20]               | [MIT][L20]                      |
-| [Vulkan Headers][P21]              | [Apache v2][L21]                |
-| [Vulkan Loader][P22]               | [Apache v2][L22]                |
-| [Vulkan Utility Libraries][P23]    | [Apache v2][L23]                |
-| [Vulkan Validation Layers][P24]    | [Apache v2][L24]                |
-| [VulkanMemoryAllocator][P25]       | [MIT][L25]                      |
-| [yaml-cpp][P26]                    | [MIT][L26]                      |
-| zed_opencv (Sterolabs)             | [MIT][L27]                      |
-| [libspatialaudio][P28]             | [LGPL v2.1][L28]                |
-| [Monado][P29]                      | [MIT][L29]                      |
-| [moodycamel::ConcurrentQueue][P30] | [BSD-2 clause][L30]<SUP>2</SUP> |
+| Package                            | License<SUP>1</SUP>                    |
+|:-----------------------------------|:---------------------------------------|
+| [concurrentqueue][P1]              | [BSD-2 clause][L1]<SUP>2</SUP>         |
+| [cxxopts][P2]                      | [MIT][L2]                              |
+| [Depthai Core][P3]                 | [MIT][L3]                              |
+| [FFmpeg][P4]                       | [LGPL v2.1][L4]                        |
+| [filter][P5]                       | [MIT][L5]                              |
+| [glslang][P6]                      | [BSD-3 clause][L6]<SUP>3</SUP>         |
+| [Gtsam][P7]                        | [BSD-2 clause][L7]<SUP>2</SUP>         |
+| [imgui][P8]                        | [MIT][L8]                              |
+| [libspatialaudio][P28]             | [LGPL v2.1][L28]                       |
+| [mediapipe][P36]                   | [Apache License 2.0][L36]              |
+| [Monado][P29]                      | [MIT][L29]                             |
+| [Monado integration][P9]           | [Boost v1][L9]                         |
+| [Monado Vulkan Integration][P10]   | [Boost v1][L10]                        |
+| [moodycamel::ConcurrentQueue][P30] | [BSD-2 clause][L30]<SUP>2</SUP>        |
+| [OpenCV][P11]                      | [BSD-3 clause][L11]                    |
+| [Open-VINS][P35]                   | [GNU General Public License v3.0][L35] |
+| [OpenXR][P12]                      | [Boost v1][L12]                        |
+| [PortAudio][P13]                   | [MIT][L13]                             |
+| [robin-hood-hashing][P14]          | [MIT][L14]                             |
+| [SpatialAudio][P15]                | [LGPL v2.1][L15]                       |
+| [SPIRV Headers][P16]               | [MIT][L16]                             |
+| [SPIRV Tools][P17]                 | [Apache v2][L17]                       |
+| [SqliteCPP][P18]                   | [MIT][L18]                             |
+| [stb][P19]                         | [MIT][L19]                             |
+| [tinyobjloader][P20]               | [MIT][L20]                             |
+| [Vulkan Headers][P21]              | [Apache v2][L21]                       |
+| [Vulkan Loader][P22]               | [Apache v2][L22]                       |
+| [Vulkan Utility Libraries][P23]    | [Apache v2][L23]                       |
+| [Vulkan Validation Layers][P24]    | [Apache v2][L24]                       |
+| [VulkanMemoryAllocator][P25]       | [MIT][L25]                             |
+| [yaml-cpp][P26]                    | [MIT][L26]                             |
+| zed_opencv (Sterolabs)             | [MIT][L27]                             |
 
 [//]: # (| [ElasticFusion][P31]               | [ElasticFusion license][L31]     |)
 [//]: # (| [KinectFusion][P32]                | [MIT][L32]                       |)
@@ -320,6 +322,8 @@ You can join
 [P33]:   https://github.com/MartinPersson/HOTlab
 [P34]:   https://github.com/AayushKrChaudhary/RITnet
 [P35]:   https://github.com/rpng/open_vins
+[P36]:   https://github.com/google-ai-edge/mediapipe
+
 
 
 [//]: # (- Licenses -)
@@ -358,3 +362,4 @@ You can join
 [L33]:   https://github.com/MartinPersson/HOTlab/blob/master/docs%20and%20license/COPYING.LESSER.txt
 [L34]:   https://github.com/AayushKrChaudhary/RITnet/blob/master/License.md
 [L35]:   https://www.gnu.org/licenses/gpl-3.0.html
+[L36]:   https://github.com/google-ai-edge/mediapipe/blob/master/LICENSE

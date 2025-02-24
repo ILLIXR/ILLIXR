@@ -1,7 +1,8 @@
 #pragma once
 
-#include "illixr/data_format.hpp"
-#include "illixr/opencv_data_types.hpp"
+#include "illixr/data_format/imu.hpp"
+#include "illixr/data_format/misc.hpp"
+#include "illixr/data_format/opencv_data_types.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/relative_clock.hpp"
 #include "illixr/switchboard.hpp"
@@ -20,12 +21,12 @@ public:
 private:
     dai::Pipeline create_camera_pipeline() const;
 
-    const std::shared_ptr<switchboard>          switchboard_;
-    const std::shared_ptr<const relative_clock> clock_;
-    switchboard::writer<imu_type>               imu_writer_;
-    switchboard::writer<cam_type>               cam_writer_;
-    switchboard::writer<rgb_depth_type>         rgb_depth_;
-    std::mutex                                  mutex_;
+    const std::shared_ptr<switchboard>                   switchboard_;
+    const std::shared_ptr<const relative_clock>          clock_;
+    switchboard::writer<data_format::imu_type>           imu_writer_;
+    switchboard::writer<data_format::binocular_cam_type> cam_writer_;
+    switchboard::writer<data_format::rgb_depth_type>     rgb_depth_;
+    std::mutex                                           mutex_;
 
 #ifndef NDEBUG
     int imu_packet_{0};

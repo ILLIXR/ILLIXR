@@ -8,10 +8,11 @@ find_package(realsense2-gl REQUIRED)
 # source files, listed individually so that any changes will trigger a rebuild
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
             plugin.hpp
-            ../../include/illixr/data_format.hpp
-            ../../include/illixr/opencv_data_types.hpp
-            ../../include/illixr/switchboard.hpp
-            ../../include/illixr/threadloop.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/misc.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/imu.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/opencv_data_types.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/threadloop.hpp
 )
 
 target_include_directories(${PLUGIN_NAME} PRIVATE ${OpenCV_INCLUDE_DIRS} ${Eigen3_INCLUDE_DIRS} ${realsense2_INCLUDE_DIR} ${ILLIXR_SOURCE_DIR}/include)

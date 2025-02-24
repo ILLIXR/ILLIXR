@@ -9,10 +9,10 @@ set(PLUGIN_NAME plugin.offload_vio.server_tx${ILLIXR_BUILD_SUFFIX})
 # source files, listed individually so that any changes will trigger a rebuild
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
             plugin.hpp
-            ../../../include/illixr/plugin.hpp
-            ../../../include/illixr/data_format.hpp
-            ../../../include/illixr/phonebook.hpp
-            ../../../include/illixr/switchboard.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/plugin.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/misc.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/phonebook.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
 )
 
 set(protobuf_files

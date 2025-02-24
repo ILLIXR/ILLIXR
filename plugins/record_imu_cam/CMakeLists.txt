@@ -5,10 +5,10 @@ set(PLUGIN_NAME plugin.record_imu_cam${ILLIXR_BUILD_SUFFIX})
 # source files, listed individually so that any changes will trigger a rebuild
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
             plugin.hpp
-            ../../include/illixr/plugin.hpp
-            ../../include/illixr/data_format.hpp
-            ../../include/illixr/opencv_data_types.hpp
-            ../../include/illixr/switchboard.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/plugin.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/imu.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/opencv_data_types.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
 )
 
 target_include_directories(${PLUGIN_NAME} PRIVATE ${BOOST_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR}/include ${Eigen3_INCLUDE_DIRS})

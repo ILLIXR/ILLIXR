@@ -5,6 +5,8 @@
 #include "phonebook.hpp"
 #include "record_logger.hpp"
 
+#include <eigen3/Eigen/Core>
+#include <eigen3/Eigen/Geometry>
 #include <iostream>
 #include <list>
 #include <mutex>
@@ -689,6 +691,80 @@ private:
         const std::unique_lock lock{registry_lock_};
         return registry_.try_emplace(topic_name, topic_name, typeid(Specific_event), record_logger_).first->second;
     }
+
+    /**
+     * @brief Base coordinate system
+     *
+     * This class reads in and hold the world coordinate system origin. The origin can be provided by the
+     * WCS_ORIGIN environment/yaml variable and can be specified in one of three ways
+     *
+     *    - a set of 3 comma separated values, representing only the origin in x, y, and z coordinates
+     *    - a set of 4 comma separated values, representing only the quaternion of the origin in w, x, y, z
+     *    - a set of 7 comma seperated values, representing both the origin and its quaternion in the form x, y, z, w, wx, wy,
+     * wz
+     *
+     * Any component which is not given defaults to 0 (except w which is set to 1)
+     */
+    class coordinate_system {
+    private:
+        Eigen::Vector3f    position_;
+        Eigen::Quaternionf orientation_;
+
+    public:
+        coordinate_system()
+            : position_{0., 0., 0.}
+            , orientation_{1., 0., 0., 0.} {
+            const char* ini_pose = getenv("WCS_ORIGIN");
+            // std::string ini_pose =
+            // if (!ini_pose.empty()) {
+            if (ini_pose) {
+                std::string        ini_pose_str(ini_pose);
+                std::stringstream  iss(ini_pose_str);
+                std::string        token;
+                std::vector<float> ip;
+                while (!iss.eof() && std::getline(iss, token, ',')) {
+                    ip.emplace_back(std::stof(token));
+                }
+                if (ip.size() == 3) {
+                    position_.x() = ip[0];
+                    position_.y() = ip[1];
+                    position_.z() = ip[2];
+                } else if (ip.size() == 4) {
+                    orientation_.w() = ip[0];
+                    orientation_.x() = ip[1];
+                    orientation_.y() = ip[2];
+                    orientation_.z() = ip[3];
+                } else if (ip.size() == 7) {
+                    position_.x()    = ip[0];
+                    position_.y()    = ip[1];
+                    position_.z()    = ip[2];
+                    orientation_.w() = ip[3];
+                    orientation_.x() = ip[4];
+                    orientation_.y() = ip[5];
+                    orientation_.z() = ip[6];
+                }
+            }
+        }
+
+        /**
+         * Get the position portion of the WCS origin
+         * @return Eigen::Vector3f
+         */
+        [[nodiscard]] const Eigen::Vector3f& position() const {
+            return position_;
+        }
+
+        /**
+         * Get the orientation portion of the WCS origin
+         * @return Eigen::Quaternionf
+         */
+        [[nodiscard]] const Eigen::Quaternionf& orientation() const {
+            return orientation_;
+        }
+    };
+
+public:
+    coordinate_system root_coordinates; //!> The WCS origin
 };
 
 } // namespace ILLIXR
