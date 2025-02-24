@@ -37,7 +37,7 @@ if(WIN32)
     message(FATAL_ERROR "Windows is currently not supported")
 elseif(APPLE)
     message(FATAL_ERROR "MacOS is currently not supported")
-else()
+elif(NOT UNIX)
     message(FATAL_ERROR "Unknown operating system")
 endif()
 
