@@ -6,6 +6,8 @@
 #include <filesystem>
 #include <shared_mutex>
 
+// #define LIGHTHOUSE
+
 using namespace ILLIXR;
 using namespace ILLIXR::data_format;
 
@@ -69,13 +71,15 @@ fast_pose_type pose_prediction_impl::get_fast_pose(time_point future_timestamp) 
     switchboard::ptr<const imu_raw_type> imu_raw = imu_raw_.get_ro_nullable();
     if (imu_raw == nullptr) {
 #ifndef NDEBUG
+    #ifndef LIGHTHOUSE
         spdlog::get("illixr")->debug("[POSEPREDICTION] FAST POSE IS SLOW POSE!");
+    #endif
 #endif
         // No imu_raw, return slow_pose
         return fast_pose_type{
-            .pose                  = correct_pose(*slow_pose),
-            .predict_computed_time = clock_->now(),
-            .predict_target_time   = future_timestamp,
+            correct_pose(*slow_pose),
+            clock_->now(),
+            future_timestamp,
         };
     }
 
@@ -104,8 +108,7 @@ fast_pose_type pose_prediction_impl::get_fast_pose(time_point future_timestamp) 
     // Several timestamps are logged:
     //       - the prediction compute time (time when this prediction was computed, i.e., now)
     //       - the prediction target (the time that was requested for this pose.)
-    return fast_pose_type{
-        .pose = predicted_pose, .predict_computed_time = clock_->now(), .predict_target_time = future_timestamp};
+    return fast_pose_type{predicted_pose, clock_->now(), future_timestamp};
 }
 
 void pose_prediction_impl::set_offset(const Eigen::Quaternionf& raw_o_times_offset) {
@@ -128,20 +131,23 @@ Eigen::Quaternionf pose_prediction_impl::apply_offset(const Eigen::Quaternionf& 
 }
 
 bool pose_prediction_impl::fast_pose_reliable() const {
+#ifdef LIGHTHOUSE
+    return true;
+#endif
     return slow_pose_.get_ro_nullable() && imu_raw_.get_ro_nullable();
     /*
       SLAM takes some time to initialize, so initially fast_pose
       is unreliable.
 
-      In such cases, we might return a fast_pose based only on the
-      IMU data (currently, we just return a zero-pose)., and mark
-      it as "unreliable"
+  In such cases, we might return a fast_pose based only on the
+  IMU data (currently, we just return a zero-pose)., and mark
+  it as "unreliable"
 
-      This way, there always a pose coming out of pose_prediction,
-      representing our best guess at that time, and we indicate
-      how reliable that guess is here.
+  This way, there always a pose coming out of pose_prediction,
+  representing our best guess at that time, and we indicate
+  how reliable that guess is here.
 
-     */
+ */
 }
 
 bool pose_prediction_impl::true_pose_reliable() const {
@@ -160,6 +166,9 @@ Eigen::Quaternionf pose_prediction_impl::get_offset() {
 // Correct the orientation of the pose due to the lopsided IMU in the
 // current Dataset we are using (EuRoC)
 pose_type pose_prediction_impl::correct_pose(const pose_type& pose) const {
+#ifdef LIGHTHOUSE
+    return pose;
+#endif
     pose_type swapped_pose;
 
     // Make any changes to the axes direction below

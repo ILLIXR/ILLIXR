@@ -3,7 +3,6 @@
 #include "illixr/phonebook.hpp"
 #include "illixr/switchboard.hpp"
 
-#include <GL/glx.h>
 #include <string>
 #include <vector>
 
