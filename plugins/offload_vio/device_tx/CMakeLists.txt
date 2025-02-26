@@ -1,6 +1,6 @@
 # module to build and install the offload_vio.device_tx ILLIXR plugin
 
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.22)
 find_package(Protobuf REQUIRED)
 include(../protoc_generate_cpp.cmake)
 
