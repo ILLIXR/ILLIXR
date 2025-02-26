@@ -1,5 +1,6 @@
 ---
 - author.astro-friedel
+- pr.440
 ---
 The hand tracking plugin introduced a large number of **breaking** and non-breaking changes to the base structures used by ILLIXR.
   - **breaking**: the `cam_type` structures have been completely overhauled
