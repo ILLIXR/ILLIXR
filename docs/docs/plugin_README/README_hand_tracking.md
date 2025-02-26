@@ -1,8 +1,8 @@
-# hand_tracking
+# Hand Tracking
 
 ## Summary
 
-`hand_tracking` and `hand_tracking_gpu` are plugins which detects hands in an image. The plugins integrate the Mediapipe hand landmark detection[1] algorithm into the ILLIXR framework. The only difference between `hand_tracking` and `hand_tracking_gpu` are where the data are processed: CPU vs GPU. Their operation and interface are identical.
+`hand_tracking` and `hand_tracking_gpu` are plugins which detects hands in an image. The plugins integrate the Mediapipe hand landmark detection[1] algorithm into the ILLIXR framework. The only difference between `hand_tracking` and `hand_tracking_gpu` are where the data are processed: CPU vs GPU. Their operation and interface are identical. (Currently the GPU version is a work in progress.)
 
 ## Switchboard connection
 
@@ -59,11 +59,30 @@ ht.left_hand_points[THUMB_TIP]
 
 will get the `point` for the tip of the left thumb.
 
+## Environment Variables
+
+The hand tracking utilizes the following environment/yaml file variables to control its processing:
+
+- **HT_INPUT**: the type of images to be fed to the plugin. Values are
+  - **zed**
+  - **cam** (for typical cam_type/binocular images)
+  - **webcam** (single image)
+- **HT_INPUT_TYPE**: descriptor of what image(s) to use. Values are
+  - **LEFT** - only use the left eye image from an input pair
+  - **SINGLE** - same as LEFT
+  - **RIGHT** - only use the right eye image from an input pair
+  - **MULTI** - use both input images
+  - **BOTH** - same as MULTI
+  - **RGB** - only a single input image
+- **WCF_ORIGIN**: the origin pose of the world coordinate system as a string of three, four, or seven numbers. The numbers should be comma separated with no spaces.
+  - **x,y,z** - three coordinate version, representing the position of the origin pose (quaternion will be 1,0,0,0)
+  - **w,wx,wy,wz** - four coordinate version, representing the quaternion of the origin pose (position will be 0,0,0)
+  - **x,y,z,w,wx,wy,wz** - seven coordinate version, representing the full origin pose
+
 
 ## Helper plugins
 
 There are two additional plugins which are designed to aid in debugging the `hand_tracking` plugin.
-
 
 ### Viewer
 
@@ -79,7 +98,7 @@ The `webcam` plugin can feed single frame images to the hand tracking plugin.
 The hand tracking plugin can be built with an OpenXR interface. To build the interface add `-DBUILD_OXR_INTERFACE=ON` to your cmake command line.
 The interface itself is in libopenxr_illixr_ht.so and is designed to be an API Layer[2]. It installs a json file in the user's `.local` directory and is 
 automatically detected by libopenxr_loader.so To use the layer you will need both an OpenXR application and runtime. This code is known to be 
-compatible with the Monado runtime, and may be compatible with others. Currently, the hand tracking must receive that data from ILLIXR,
+compatible with the Monado runtime, and should be compatible with others. Currently, the hand tracking must receive that data from ILLIXR,
 but as an API Layer the resulting calculations can be retrieved via OpenXR API calls.
 
 [//]: # (- References -)

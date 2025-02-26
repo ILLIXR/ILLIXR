@@ -8,7 +8,7 @@ endif()
 externalproject_add(
         hand_tracking_dependencies${POSTFIX}
         GIT_REPOSITORY https://github.com/ILLIXR/hand_tracking_dependencies.git
-        GIT_TAG 818f9fc431108ec4017c30f84a116199d8963813
+        GIT_TAG 8dc45876a9eebc3ad6900fafa5b6ca144e290a9f
         PREFIX ${CMAKE_BINARY_DIR}/_deps/hand_tracking_deps
         CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=Release -DENABLE_GPU=${HT_ENABLE_GPU} -DLIBRARY_POSTFIX=ht
         INSTALL_COMMAND ""
@@ -29,7 +29,7 @@ endif()
 externalproject_add(
         ${HT_TARGET_NAME}
         GIT_REPOSITORY https://github.com/ILLIXR/hand_tracking.git
-        GIT_TAG 2b326ca456f80d8267257b04a17aac7cac729792
+        GIT_TAG aa8d048aecd5dff4af9c4b687cbee5f294f582c6
         PREFIX ${PRFX}
         CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DHT_ENABLE_GPU=${HT_ENABLE_GPU} -DTFLIBRARY_POSTFIX=ht -DILLIXR_ROOT=${CMAKE_SOURCE_DIR} -DILLIXR_BUILD_SUFFIX=${ILLIXR_BUILD_SUFFIX} -DBUILD_OXR_INTERFACE=${BUILD_OXR_INTERFACE} -DBUILD_OXR_TEST=${BUILD_OXR_TEST}
         DEPENDS hand_tracking_dependencies${POSTFIX}
