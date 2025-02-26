@@ -33,8 +33,8 @@ set(PACKAGE_VERSION_MINOR "2")
 set(PACKAGE_VERSION_PATCH "0")
 set(PACKAGE_VERSION_LABEL "")
 
-set(GPL_LICENSED_CODE "openvins;orb_slam3")
-set(LGPL_LICENSED_CODE "offload_rendering_server;offload_rendering_client")
+set(GPL_LICENSED_CODE "openvins;orb_slam3;offload_rendering_server;offload_rendering_client")
+set(LGPL_LICENSED_CODE "")
 # determine the Linux vendor, if it is CentOS then we must rebuild OpenCV to include all the needed components
 if(UNIX)
     execute_process(COMMAND bash -c "awk -F= '/^ID=/{print $2}' /etc/os-release | tr -d '\n' | tr -d '\"'" OUTPUT_VARIABLE OS_FLAVOR)

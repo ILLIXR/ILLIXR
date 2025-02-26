@@ -14,14 +14,15 @@ ARG ZED_SDK_MINOR=2
 ARG ZED_SDK_PATCH=3
 
 USER root
-
+RUN apt-get update
+RUN apt-get install -y libzstd-dev
 RUN apt-get install -y zstd
 
 USER illixr
 WORKDIR /home/illixr
 
 # ZED sdk install
-RUN wget -q -O ZED_SDK_Linux_Ubuntu${UBUNTU_RELEASE_YEAR}.run https://download.stereolabs.com/zedsdk/${ZED_SDK_MAJOR}.${ZED_SDK_MINOR}/cu${CUDA_MAJOR}/ubuntu${UBUNTU_RELEASE_YEAR}
+RUN wget -O ZED_SDK_Linux_Ubuntu${UBUNTU_RELEASE_YEAR}.run https://download.stereolabs.com/zedsdk/${ZED_SDK_MAJOR}.${ZED_SDK_MINOR}/cu${CUDA_MAJOR}/ubuntu${UBUNTU_RELEASE_YEAR}
 RUN chmod +x ZED_SDK_Linux_Ubuntu${UBUNTU_RELEASE_YEAR}.run
 RUN ./ZED_SDK_Linux_Ubuntu${UBUNTU_RELEASE_YEAR}.run --accept -- silent skip_tools skip_python skip_cuda
 RUN rm ZED_SDK_Linux_Ubuntu${UBUNTU_RELEASE_YEAR}.run

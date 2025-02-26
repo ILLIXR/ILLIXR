@@ -24,6 +24,16 @@ We provide several versions of ILLIXR, depending on your needs:
 | [No GPL or ZED](#no-gpl-or-zed)   | Build all plugins and dependencies which are not covered by a GPL license, also do not build ZED related code.         |
 | [No LGPL or ZED](#no-lgpl-or-zed) | Build all plugins and dependencies which are not covered by a LGPL or GPL license, also do not build ZED related code. |
 
+The images can be constructed with the provided script `docksr.sh` which takes the following options:
+```
+  -a : make all possible images (exclusive with all other flags)
+  -f : docker image will have everything (exclusive with all other flags)
+  -g : docker image will have no GPL licensed code (exclusive with -a and -f)
+  -h : print this help and exit
+  -l : docker image will have no LGPL or GPL licensed code, implies -g (exclusive with -a and -f)
+  -z : docker image will not have the ZED SDK (exclusive with -a and -f)
+```
+
 In all versions:
 
  - the ILLIXR code are `git clone`d into `/home/illixr/ILLIXR`
@@ -43,155 +53,186 @@ In all versions:
 
 ### Full Build
 
-**Docker file**: Dockerfile.full
-
 **Build**:
 <div class="code-box-copy">
 <button class="code-box-copy__btn" data-clipboard-target="#dockerfile_full" title="Copy"></button>
-<pre class="language-shell" id="dockerfile_full">docker build -t illixr:3.3_full -f Dockerfile.full .</pre>
+<pre class="language-shell" id="dockerfile_full">docker.sh -f</pre>
 </div>
 
-**Docker image**: illixr_v3.3_full
+**Docker image**: illixr/illixr_full:latest
 
 **Download**:
 <div class="code-box-copy">
 <button class="code-box-copy__btn" data-clipboard-target="#dockerfile_full_dl" title="Copy"></button>
-<pre class="language-shell" id="dockerfile_full_dl">docker pull ghcr.io/illixr/illixr_v3.3_full</pre>
+<pre class="language-shell" id="dockerfile_full_dl">docker pull ghcr.io/illixr/illixr_full:latest</pre>
 </div>
 
 **Run**:
 <div class="code-box-copy">
 <button class="code-box-copy__btn" data-clipboard-target="#dockerfile_full_run" title="Copy"></button>
-<pre class="language-shell" id="dockerfile_full_run">docker run --gpus all -it --privileged illixr_v3.3_full</pre>
+<pre class="language-shell" id="dockerfile_full_run">docker run --gpus all -it --privileged illixr_full:latest</pre>
+</div>
+
+**Docker Compose**
+<div class="code-box-copy">
+<button class="code-box-copy__btn" data-clipboard-target="#dockerfile_full_comp" title="Copy"></button>
+<pre class="language-shell" id="dockerfile_full_comp">export ILLIXR_DOCKER_IMAGE=full
+docker compose -f docker-compose.yaml up</pre>
 </div>
 
 ---
 
 ### No GPL
 
-**Docker file**: Dockerfile.noGPL
-
 **Build**:
 <div class="code-box-copy">
 <button class="code-box-copy__btn" data-clipboard-target="#dockerfile_noGPL" title="Copy"></button>
-<pre class="language-shell" id="dockerfile_noGPL">docker build -t illixr:3.3_noGPL Dockerfile.noGPL</pre>
+<pre class="language-shell" id="dockerfile_noGPL">docker.sh -g</pre>
 </div>
 
-**Docker image**: illixr_v3.3_noGPL
+**Docker image**: illixr/illixr_no_gpl:latest
 
 **Download**:
 <div class="code-box-copy">
 <button class="code-box-copy__btn" data-clipboard-target="#dockerfile_noGPL_dl" title="Copy"></button>
-<pre class="language-shell" id="dockerfile_noGPL_dl">docker pull ghcr.io/illixr/illixr_v3.3_noGPL</pre>
+<pre class="language-shell" id="dockerfile_noGPL_dl">docker pull ghcr.io/illixr/illixr_no_gpl:latest</pre>
 </div>
 
 **Run**:
 <div class="code-box-copy">
 <button class="code-box-copy__btn" data-clipboard-target="#dockerfile_noGPL_run" title="Copy"></button>
-<pre class="language-shell" id="dockerfile_noGPL_run">docker run --gpus all -it --privileged illixr_v3.3_noGPL</pre>
+<pre class="language-shell" id="dockerfile_noGPL_run">docker run --gpus all -it --privileged illixr_no_gpl:latest</pre>
+</div>
+
+**Docker Compose**
+<div class="code-box-copy">
+<button class="code-box-copy__btn" data-clipboard-target="#dockerfile_noGPL_comp" title="Copy"></button>
+<pre class="language-shell" id="dockerfile_noGPL_comp">export ILLIXR_DOCKER_IMAGE=no_gpl
+docker compose -f docker-compose.yaml up</pre>
 </div>
 
 ---
 
 ### No LGPL
 
-**Docker file**: Dockerfile.noLGPL
-
 **Build**:
 <div class="code-box-copy">
 <button class="code-box-copy__btn" data-clipboard-target="#dockerfile_noLGPL" title="Copy"></button>
-<pre class="language-shell" id="dockerfile_noLGPL">docker build -t illixr:3.3_noLGPL Dockerfile.noLGPL</pre>
+<pre class="language-shell" id="dockerfile_noLGPL">docker.sh -l</pre>
 </div>
 
-**Docker image**: illixr_v3.3_noLGPL
+**Docker image**: illixr/illixr_no_lgpl:latest
 
 **Download**:
 <div class="code-box-copy">
 <button class="code-box-copy__btn" data-clipboard-target="#dockerfile_noLGPL_dl" title="Copy"></button>
-<pre class="language-shell" id="dockerfile_noLGPL_dl">docker pull ghcr.io/illixr/illixr_v3.3_noLGPL</pre>
+<pre class="language-shell" id="dockerfile_noLGPL_dl">docker pull ghcr.io/illixr/illixr_no_lgpl:latest</pre>
 </div>
 
 **Run**:
 <div class="code-box-copy">
 <button class="code-box-copy__btn" data-clipboard-target="#dockerfile_noLGPL_run" title="Copy"></button>
-<pre class="language-shell" id="dockerfile_noLGPL_run">docker run --gpus all -it --privileged illixr_v3.3_noLGPL</pre>
+<pre class="language-shell" id="dockerfile_noLGPL_run">docker run --gpus all -it --privileged illixr_no_lgpl:latest</pre>
+</div>
+
+**Docker Compose**
+<div class="code-box-copy">
+<button class="code-box-copy__btn" data-clipboard-target="#dockerfile_noLGPL_comp" title="Copy"></button>
+<pre class="language-shell" id="dockerfile_noLGPL_comp">export ILLIXR_DOCKER_IMAGE=no_lgpl
+docker compose -f docker-compose.yaml up</pre>
 </div>
 
 ---
 
 ### No Zed
 
-**Docker file**: Dockerfile.noZED
-
 **Build**:
 <div class="code-box-copy">
 <button class="code-box-copy__btn" data-clipboard-target="#dockerfile_noZED" title="Copy"></button>
-<pre class="language-shell" id="dockerfile_noZED">docker build -t illixr:3.3_noZED Dockerfile.noZED</pre>
+<pre class="language-shell" id="dockerfile_noZED">docker.sh -z</pre>
 </div>
 
-**Docker image**: illixr_v3.3_noZED
+**Docker image**: illixr/illixr_no_zed:latest
 
 **Download**:
 <div class="code-box-copy">
 <button class="code-box-copy__btn" data-clipboard-target="#dockerfile_noZED_dl" title="Copy"></button>
-<pre class="language-shell" id="dockerfile_noZED_dl">docker pull ghcr.io/illixr/illixr_v3.3_noZED</pre>
+<pre class="language-shell" id="dockerfile_noZED_dl">docker pull ghcr.io/illixr/illixr_no_zed:latest</pre>
 </div>
 
 **Run**:
 <div class="code-box-copy">
 <button class="code-box-copy__btn" data-clipboard-target="#dockerfile_noZED_run" title="Copy"></button>
-<pre class="language-shell" id="dockerfile_noZED_run">docker run --gpus all -it --privileged illixr_v3.3_noZED</pre>
+<pre class="language-shell" id="dockerfile_noZED_run">docker run --gpus all -it --privileged illixr_no_zed:latest</pre>
+</div>
+
+**Docker Compose**
+<div class="code-box-copy">
+<button class="code-box-copy__btn" data-clipboard-target="#dockerfile_noZED_comp" title="Copy"></button>
+<pre class="language-shell" id="dockerfile_noZED_comp">export ILLIXR_DOCKER_IMAGE=no_zed
+docker compose -f docker-compose.yaml up</pre>
 </div>
 
 ---
 
 ### No GPL or ZED
 
-**Docker file**: Dockerfile.noGPL_ZED
 **Build**:
 <div class="code-box-copy">
 <button class="code-box-copy__btn" data-clipboard-target="#dockerfile_noGPL_ZED" title="Copy"></button>
-<pre class="language-shell" id="dockerfile_noGPL_ZED">docker build -t illixr:3.3_noGPL_ZED Dockerfile.noGPL_ZED</pre>
+<pre class="language-shell" id="dockerfile_noGPL_ZED">docker.sh -gz</pre>
 </div>
 
-**Docker image**: illixr_v3.3_noGPL_ZED
+**Docker image**: illixr/illixr_no_gpl_zed:latest
 
 **Download**:
 <div class="code-box-copy">
 <button class="code-box-copy__btn" data-clipboard-target="#dockerfile_noGPL_ZED_dl" title="Copy"></button>
-<pre class="language-shell" id="dockerfile_noGPL_ZED_dl">docker pull ghcr.io/illixr/illixr_v3.3_noGPL_ZED</pre>
+<pre class="language-shell" id="dockerfile_noGPL_ZED_dl">docker pull ghcr.io/illixr/illixr_no_gpl_zed:latest</pre>
 </div>
 
 **Run**:
 <div class="code-box-copy">
 <button class="code-box-copy__btn" data-clipboard-target="#dockerfile_noGPL_ZED_run" title="Copy"></button>
-<pre class="language-shell" id="dockerfile_noGPL_ZED_run">docker run --gpus all -it --privileged illixr_v3.3_noGPL_ZED</pre>
+<pre class="language-shell" id="dockerfile_noGPL_ZED_run">docker run --gpus all -it --privileged illixr_no_gpl_zed:latest</pre>
+</div>
+
+**Docker Compose**
+<div class="code-box-copy">
+<button class="code-box-copy__btn" data-clipboard-target="#dockerfile_noGPL_ZED_comp" title="Copy"></button>
+<pre class="language-shell" id="dockerfile_noGPL_ZED_comp">export ILLIXR_DOCKER_IMAGE=no_gpl_zed
+docker compose -f docker-compose.yaml up</pre>
 </div>
 
 ---
 
 ### No LGPL or ZED
 
-**Docker file**: Dockerfile.noLGPL_ZED
-
 **Build**:
 <div class="code-box-copy">
 <button class="code-box-copy__btn" data-clipboard-target="#dockerfile_noLGPL_ZED" title="Copy"></button>
-<pre class="language-shell" id="dockerfile_noLGPL_ZED">docker build -t illixr:3.3_noLGPL_ZED Dockerfile.noLGPL_ZED</pre>
+<pre class="language-shell" id="dockerfile_noLGPL_ZED">docker.sh -lz</pre>
 </div>
 
-**Docker image**: illixr_v3.3_noLGPL_ZED
+**Docker image**: illixr/illixr_no_lgpl_zed:latest
 
 **Download**:
 <div class="code-box-copy">
 <button class="code-box-copy__btn" data-clipboard-target="#dockerfile_noLGPL_ZED_dl" title="Copy"></button>
-<pre class="language-shell" id="dockerfile_noLGPL_ZED_dl">docker pull ghcr.io/illixr/illixr_v3.3_noLGPL_ZED</pre>
+<pre class="language-shell" id="dockerfile_noLGPL_ZED_dl">docker pull ghcr.io/illixr/illixr_no_lgpl_zed:latest</pre>
 </div>
 
 **Run**:
 <div class="code-box-copy">
 <button class="code-box-copy__btn" data-clipboard-target="#dockerfile_noLGPL_ZED_run" title="Copy"></button>
-<pre class="language-shell" id="dockerfile_noLGPL_ZED_run">docker run --gpus all -it --privileged illixr_v3.3_noLGPL_ZED</pre>
+<pre class="language-shell" id="dockerfile_noLGPL_ZED_run">docker run --gpus all -it --privileged illixr_no_lgpl_zed:latest</pre>
+</div>
+
+**Docker Compose**
+<div class="code-box-copy">
+<button class="code-box-copy__btn" data-clipboard-target="#dockerfile_noLGPL_ZED_comp" title="Copy"></button>
+<pre class="language-shell" id="dockerfile_noLGPL_ZED_comp">export ILLIXR_DOCKER_IMAGE=no_lgpl_zed
+docker compose -f docker-compose.yaml up</pre>
 </div>
 
 
