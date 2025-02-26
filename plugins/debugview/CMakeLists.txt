@@ -15,6 +15,7 @@ set(DEBUGVIEW_SOURCES plugin.cpp
     ${CMAKE_SOURCE_DIR}/include/illixr/imgui/imgui.cpp
     ${CMAKE_SOURCE_DIR}/include/illixr/imgui/imgui_demo.cpp
     ${CMAKE_SOURCE_DIR}/include/illixr/imgui/imgui_draw.cpp
+    ${CMAKE_SOURCE_DIR}/include/illixr/imgui/imgui_tables.cpp
     ${CMAKE_SOURCE_DIR}/include/illixr/imgui/backends/imgui_impl_glfw.cpp
     ${CMAKE_SOURCE_DIR}/include/illixr/imgui/backends/imgui_impl_opengl3.cpp
     ${CMAKE_SOURCE_DIR}/include/illixr/imgui/imgui_widgets.cpp
