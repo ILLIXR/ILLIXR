@@ -14,7 +14,7 @@
 // GLX context magics
 #define GLX_CONTEXT_MAJOR_VERSION_ARB 0x2091
 #define GLX_CONTEXT_MINOR_VERSION_ARB 0x2092
-typedef GLXContext (*glX_create_context_attribs_ARBProc)(Display*, GLXFBConfig, GLXContext, Bool, const int*);
+typedef GLXContext (*glXCreateContextAttribsARBProc)(Display*, GLXFBConfig, GLXContext, Bool, const int*);
 
 namespace ILLIXR {
 class xlib_gl_extended_window : public phonebook::service {
@@ -143,11 +143,11 @@ public:
 #ifndef NDEBUG
         spdlog::get("illixr")->debug("[extended_window] Creating context");
 #endif
-        auto glX_create_context_attribs_ARB =
-            (glX_create_context_attribs_ARBProc) glXGetProcAddressARB((const GLubyte*) "glX_create_context_attribs_ARB");
+        auto glXCreateContextAttribsARB =
+            (glXCreateContextAttribsARBProc) glXGetProcAddressARB((const GLubyte*) "glXCreateContextAttribsARB");
         int context_attribs[] = {GLX_CONTEXT_MAJOR_VERSION_ARB, 3, GLX_CONTEXT_MINOR_VERSION_ARB, 3, None};
 
-        context_ = glX_create_context_attribs_ARB(display_, g_best_fbc, shared_gl_context, True, context_attribs);
+        context_ = glXCreateContextAttribsARB(display_, g_best_fbc, shared_gl_context, True, context_attribs);
 
         // Sync to process errors
         RAC_ERRNO_MSG("extended_window before XSync");
