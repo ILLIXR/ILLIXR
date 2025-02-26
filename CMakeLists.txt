@@ -80,6 +80,8 @@ set(OPENXR_PLUGINS "")
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH}")
 option(COLOR_OUTPUT "Produce color output to the screen" ON)
 option(DATA_FILE "The data file to get" ON)
+option(BUILD_OXR_INTERFACE "Build the OpenXR interface (hand tracking only)" OFF)
+option(BUILD_ZED_CAPTURE "Build the ZED capture program" OFF)
 set(DATA_FILE "http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip")
 
 option(BUILD_DOCS "Build documentation" OFF)
@@ -92,6 +94,11 @@ if(NO_LGPL)
     set(NO_GPL ON CACHE BOOL "" FORCE)
 endif()
 
+option(HT_ENABLE_GPU "Build for GPU use" OFF)
+if(HT_ENABLE_GPU)
+    message(WARNING "Currently gpu processing for hand tracking is not available, turning it off")
+    set(HT_ENABLE_GPU OFF)
+endif()
 include(cmake/HelperFunctions.cmake)
 
 set(VISUALIZER "" CACHE STRING "")
@@ -166,7 +173,7 @@ if(HAVE_CENTOS)
     # see if it has been built yet
     find_package(OpenCV QUIET PATHS ${INTERNAL_OPENCV} NO_DEFAULT_PATH NO_CMAKE_ENVIRONMENT_PATH NO_SYSTEM_ENVIRONMENT_PATH NO_CMAKE_PACKAGE_REGISTRY NO_CMAKE_SYSTEM_PATH NO_CMAKE_SYSTEM_PACKAGE_REGISTRY)
     if(NOT OpenCV_FOUND OR NOT OPENCV_VIZ_FOUND)
-	    message("Building OpenCV")
+        message("Building OpenCV")
         include(cmake/GetOpenCV_Viz.cmake)
         set(OpenCV_DEP_STR OpenCV_Viz)
         set(INTERNAL_OPENCV ${OpenCV_DIR})
@@ -200,6 +207,7 @@ else()
 endif()
 
 find_package(spdlog REQUIRED)
+add_definitions(-DFMT_HEADER_ONLY)
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads)
@@ -280,6 +288,9 @@ if(DATA_FILE)
     endif()
 endif()
 
+if(BUILD_ZED_CAPTURE)
+    add_subdirectory(plugins/zed/capture)
+endif()
 # give a summary of what will be done
 include(cmake/ConfigurationSummary.cmake)
 
@@ -309,7 +320,9 @@ if(Python3_FOUND)
     if(USE_OPENVINS)
         add_dependencies(depmaker "OpenVINS")
     endif()
-
+    if(USE_HAND_TRACKING)
+        #set(dependencies "${dependencies} ${HT_TARGET_NAME}")
+    endif()
 endif()
 install(FILES "${CMAKE_SOURCE_DIR}/plugins/plugin_deps.yaml"
         DESTINATION $ENV{HOME}/.illixr/profiles)

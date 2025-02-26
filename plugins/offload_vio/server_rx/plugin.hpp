@@ -1,13 +1,19 @@
 #pragma once
 
-#include "illixr/data_format.hpp"
+#include "illixr/data_format/imu.hpp"
+#include "illixr/data_format/misc.hpp"
+#include "illixr/data_format/opencv_data_types.hpp"
 #include "illixr/network/tcpsocket.hpp"
-#include "illixr/opencv_data_types.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
 #include "video_decoder.hpp"
-#include "vio_input.pb.h"
+// if the header exists, we are good; if not generate a stub class for IDEs to reduce on-screen errors
+#if __has_include("vio_input.pb.h")
+    #include "vio_input.pb.h"
+#else
+    #include "../proto/input_stub.hpp"
+#endif
 
 #include <boost/lockfree/spsc_queue.hpp>
 
@@ -32,13 +38,13 @@ private:
     cv::Mat                               img1_dst_;
     bool                                  img_ready_ = false;
 
-    const std::shared_ptr<switchboard>     switchboard_;
-    switchboard::writer<imu_type>          imu_;
-    switchboard::writer<cam_type>          cam_;
-    switchboard::writer<connection_signal> conn_signal_;
+    const std::shared_ptr<switchboard>                   switchboard_;
+    switchboard::writer<data_format::imu_type>           imu_;
+    switchboard::writer<data_format::binocular_cam_type> cam_;
+    switchboard::writer<data_format::connection_signal>  conn_signal_;
 
     TCPSocket            socket_;
-    TCPSocket*           read_socket_ = NULL;
+    TCPSocket*           read_socket_ = nullptr;
     std::string          server_ip_;
     [[maybe_unused]] int server_port_;
     std::string          buffer_str_;

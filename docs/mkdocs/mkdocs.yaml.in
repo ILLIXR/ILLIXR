@@ -39,6 +39,7 @@ nav:
         - 'Writing Your Plugin':
             - 'How to Write a Plugin': writing_your_plugin.md
             - 'Modules': modules.md
+        - 'Mediapipe based plugins': adding_mediapipe.md
         - 'Plugin Details':
             - 'Debugview': plugin_README/README_debugview.md
             - 'Display_VK': plugin_README/README_display_vk.md

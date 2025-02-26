@@ -7,6 +7,7 @@
 #include <shared_mutex>
 
 using namespace ILLIXR;
+using namespace ILLIXR::data_format;
 
 pose_prediction_impl::pose_prediction_impl(const phonebook* const pb)
     : switchboard_{pb->lookup_impl<switchboard>()}

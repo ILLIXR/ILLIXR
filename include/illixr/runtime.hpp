@@ -1,6 +1,7 @@
 #pragma once
 
 #include "illixr/phonebook.hpp"
+#include "illixr/switchboard.hpp"
 
 #include <GL/glx.h>
 #include <string>
@@ -32,7 +33,8 @@ public:
         _stop();
     }
 
-    virtual ~runtime() = default;
+    virtual std::shared_ptr<switchboard> get_switchboard() = 0;
+    virtual ~runtime()                                     = default;
 };
 
 extern "C" runtime* runtime_factory();

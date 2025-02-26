@@ -7,6 +7,7 @@
 #include <thread>
 
 using namespace ILLIXR;
+using namespace ILLIXR::data_format;
 
 // combine two maps into one
 std::map<ullong, sensor_types> make_map(const std::map<ullong, lazy_load_image>& cam0,
@@ -26,7 +27,7 @@ inline std::map<ullong, lazy_load_image> read_data(std::ifstream& gt_file, const
     auto                              name = std::regex_replace(file_name, std::regex("\\.csv"), "/");
     for (csv_iterator row{gt_file, 1}; row != csv_iterator{}; ++row) {
         ullong t = std::stoull(row[0]);
-        data[t]  = {name + row[1]};
+        data[t]  = lazy_load_image{name + row[1]};
     }
     return data;
 }
@@ -34,7 +35,7 @@ inline std::map<ullong, lazy_load_image> read_data(std::ifstream& gt_file, const
 [[maybe_unused]] offline_cam::offline_cam(const std::string& name, phonebook* pb)
     : threadloop{name, pb}
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
-    , cam_publisher_{switchboard_->get_writer<cam_type>("cam")}
+    , cam_publisher_{switchboard_->get_writer<binocular_cam_type>("cam")}
     , sensor_data_{make_map(load_data<lazy_load_image>("cam0", "offline_cam", &read_data),
                             load_data<lazy_load_image>("cam1", "offline_cam", &read_data))}
     , dataset_first_time_{sensor_data_.cbegin()->first}
@@ -91,7 +92,7 @@ void offline_cam::_p_one_iteration() {
 
         time_point expected_real_time_given_dataset_time(
             std::chrono::duration<long, std::nano>{nearest_row->first - dataset_first_time_});
-        cam_publisher_.put(cam_publisher_.allocate<cam_type>(cam_type{
+        cam_publisher_.put(cam_publisher_.allocate<binocular_cam_type>(binocular_cam_type{
             expected_real_time_given_dataset_time,
             img0,
             img1,

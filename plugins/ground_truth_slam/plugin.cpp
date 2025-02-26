@@ -5,8 +5,10 @@
 #include <utility>
 
 using namespace ILLIXR;
+using namespace ILLIXR::data_format;
 
 inline std::map<ullong, pose_type> read_data(std::ifstream& gt_file, const std::string& file_name) {
+    (void) file_name;
     std::map<ullong, pose_type> data;
 
     for (csv_iterator row{gt_file, 1}; row != csv_iterator{}; ++row) {
