@@ -1,5 +1,6 @@
 #pragma once
 
+#define VULKAN_REQUIRED
 #include "illixr/data_format/pose_prediction.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/switchboard.hpp"

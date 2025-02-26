@@ -34,6 +34,9 @@ public:
 
     virtual std::shared_ptr<switchboard> get_switchboard() = 0;
     virtual ~runtime()                                     = default;
+protected:
+    bool enable_vulkan_ = false;
+    bool enable_monado_ = false;
 };
 
 extern "C" runtime* runtime_factory();

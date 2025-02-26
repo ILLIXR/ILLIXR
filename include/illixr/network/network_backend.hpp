@@ -1,6 +1,6 @@
 #pragma once
 
-#include "illixr/plugin.hpp"
+#include "illixr/phonebook.hpp"
 #include "topic_config.hpp"
 
 #include <memory>
