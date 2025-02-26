@@ -1014,31 +1014,31 @@
         "pkg": {
           "Ubuntu": {
             "20": {
-              "pkg": "gnutls",
+              "pkg": "libgnutls28-dev",
               "postnotes": "",
               "notes": ""
             },
             "22": {
-              "pkg": "gnutls",
+              "pkg": "libgnutls28-dev",
               "postnotes": "",
               "notes": ""
             }
           },
           "Fedora": {
             "37": {
-              "pkg": "gnutls",
+              "pkg": "libgnutls28-devel",
               "postnotes": "",
               "notes": ""
             },
             "38": {
-              "pkg": "gnutls",
+              "pkg": "libgnutls28-devel",
               "postnotes": "",
               "notes": ""
             }
           },
           "CentOS": {
             "9": {
-              "pkg": "gnutls",
+              "pkg": "libgnutls28-devel",
               "postnotes": "",
               "notes": ""
             }
