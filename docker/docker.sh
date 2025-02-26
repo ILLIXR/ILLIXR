@@ -21,6 +21,11 @@ NO_LGPL=0
 NO_ZED=0
 MAKE_ALL=0
 
+# image names
+WITH_ZED="with_zed"
+WITH_LGPL="with_lgpl"
+WITH_L_ZED="with_zed_lgpl"
+
 BASE_IMAGE="illixr/base_image"
 
 while getopts aglzh opt; do
@@ -107,8 +112,8 @@ BUILD_FLAGS=""
 function build_image {
     docker build \
         --build-arg ILLIXR_VERSION=${ILLIXR_VERSION} \
-        --build-arg PARENT_IMAGE=$1 \
-        --build-arg BUILD_FLAGS=$2 \
+        --build-arg PARENT_IMAGE="$1" \
+        --build-arg BUILD_FLAGS="$2" \
         --tag "illixr/illixr$3:v${ILLIXR_VERSION}" \
         --file build/Dockerfile \
         .
@@ -124,8 +129,8 @@ function build_zed {
         --build-arg ZED_SDK_MAJOR=4 \
         --build-arg ZED_SDK_MINOR=2 \
         --build-arg ZED_SDK_PATCH=3 \
-        --build-arg PARENT_IMAGE=$1 \
-        --tag illixr/with_zed:${ILLIXR_VERSION} \
+        --build-arg PARENT_IMAGE=illixr/"$1" \
+        --tag illixr/"$2":${ILLIXR_VERSION} \
         --file zed/Dockerfile \
         .
 }
@@ -133,26 +138,40 @@ function build_zed {
 function build_lgpl {
     docker build \
         --build-arg ILLIXR_VERSION=${ILLIXR_VERSION} \
-        --build-arg PARENT_IMAGE=$1 \
-        --tag illixr/$2_lgpl:${ILLIXR_VERSION} \
+        --build-arg PARENT_IMAGE="$1" \
+        --tag illixr/"$2":${ILLIXR_VERSION} \
         --file lgpl/Dockerfile \
         .
 }
 
 if [[ $MAKE_ALL -eq 1 ]]; then
+    build_image ${BASE_IMAGE} "-DNO_ZED=ON -DNO_GPL=ON -DNO_LGPL=ON" "_no_LGPL_ZED"
+    build_zed ${BASE_IMAGE} ${WITH_ZED}
+    build_lgpl ${BASE_IMAGE} ${WITH_LGPL}
+    BASE_IMAGE="illixr/${WITH_ZED}"
+    build_image ${BASE_IMAGE} "-DNO_LGPL=ON-DNO_GPL=ON" "_no_LGPL"
+    BASE_IMAGE="illixr/${WITH_LGPL}"
+    build_image ${BASE_IMAGE} "-DNO_ZED=ON -DNO_GPL=ON" "_no_GPL_ZED"
+    build_image ${BASE_IMAGE} "-DNO_ZED=ON" "_no_ZED"
+
+
+    build_zed ${BASE_IMAGE} "${WITH_LGPL}_${WITH_ZED}"
+    BASE_IMAGE="illixr/${WITH_LGPL}_${WITH_ZED}"
+    build_image ${BASE_IMAGE} "" "full"
+    build_image ${BASE_IMAGE} "-DNO_GPL=ON" "_no_GPL"
 
 else
     TAG_TAIL=""
     if [[ $NO_ZED -eq 0 ]]; then
-        build_zed ${BASE_IMAGE}
-        BASE_IMAGE="illixr/with_zed"
-        TAG_TAIL="_ZED"
+        build_zed ${BASE_IMAGE} ${WITH_ZED}
+        BASE_IMAGE="illixr/${WITH_ZED}"
     else
         BUILD_FLAGS="${BUILD_FLAGS} -DNO_ZED=ON"
+        TAG_TAIL="_ZED"
     fi
     if [[ $NO_LGPL -eq 0 ]]; then
-        build_lgpl ${BASE_IMAGE} "with"
-        BASE_IMAGE="illixr/with_lgpl"
+        build_lgpl ${BASE_IMAGE} ${WITH_LGPL}
+        BASE_IMAGE="illixr/${WITH_LGPL}"
     elif [[ $NO_GPL -ne 0 ]]; then
         BUILD_FLAGS="${BUILD_FLAGS} -DNO_GPL=ON"
         TAG_TAIL="_GPL${TAIL_TAG}"
@@ -165,5 +184,5 @@ else
     else
         TAG_TAIL="_no${TAG_TAIL}"
     fi
-    build_image ${BASE_IMAGE} "${BUILD_FLAGS}" ${TAG_TAIL}
+    build_image ${BASE_IMAGE} "${BUILD_FLAGS}" "${TAG_TAIL}"
 fi
