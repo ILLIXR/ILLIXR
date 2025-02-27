@@ -27,7 +27,8 @@ jobs:
 
     - name: Build Docker image
       run: |
-        docker build -t illixr-ci-${GITHUB_SHA::8} -f docker/ci/Dockerfile .
+        cd docker/ci
+        docker build -t illixr-ci-${GITHUB_SHA::8} -f Dockerfile .
 
     - name: Run Docker container
       id: docker_run
