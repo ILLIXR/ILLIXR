@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Ensure .illixr directory exists with proper permissions
+mkdir -p $HOME/.illixr/profiles
+chmod -R 777 $HOME/.illixr
+
 cd /opt/ILLIXR
 mkdir build
 cd build
