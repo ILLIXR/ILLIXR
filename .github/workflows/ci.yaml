@@ -10,6 +10,9 @@ jobs:
   illixr-ci:
     runs-on: [self-hosted]
     
+    env:
+      DISPLAY: :1
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -26,7 +29,7 @@ jobs:
       id: docker_run
       continue-on-error: true
       run: |
-        docker run --rm -e DISPLAY=:1 -e NVIDIA_VISIBLE_DEVICES=all -e NVIDIA_DRIVER_CAPABILITIES=all -v $GITHUB_WORKSPACE:/opt/ILLIXR -v /tmp/.X11-unix:/tmp/.X11-unix --runtime=nvidia illixr-ci-${GITHUB_SHA::8}
+        docker run --rm -e DISPLAY=$DISPLAY -e NVIDIA_VISIBLE_DEVICES=all -e NVIDIA_DRIVER_CAPABILITIES=all -v $GITHUB_WORKSPACE:/opt/ILLIXR -v /tmp/.X11-unix:/tmp/.X11-unix --runtime=nvidia illixr-ci-${GITHUB_SHA::8}
         echo "status=$?" >> $GITHUB_OUTPUT
 
     - name: Set commit status
