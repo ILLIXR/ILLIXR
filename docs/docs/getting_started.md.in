@@ -179,8 +179,9 @@ This will set env environment variables `DATA_SOURCE` to `/home/my/data` and `PR
 ```yaml
 plugins: fauxpose,gldemo,debugview,audio_pipeline
 enable_offload: false
-DATA_SOURCE: /home/my/data
-PROCESS_DATA: true
+env_vars:
+  DATA_SOURCE: /home/my/data
+  PROCESS_DATA: true
 ```
 
 Here, the keywords `plugins` and `enable_offload` are ignored, as they are expected options. The `DATA_SOURCE` and `PROCESS_DATA` entries will cause environment variables to be set to the respective values. *Note:* the names and values of the environment variables are case sensitive. *Note:* the `get_env_bool` considers any of 'y', 'yes', 'true', and 'on' (case-insensitive) to be `true`.
