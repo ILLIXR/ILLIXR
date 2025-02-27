@@ -1,5 +1,7 @@
 name: Docker Build and Test
 
+runs-on: [self-hosted]
+
 on:
   push:
     branches: [ main, misc/ci ]
