@@ -43,7 +43,7 @@ profile:
 
 profile:
   name: native_gl_slam
-  plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,ground_truth_slam,gldemo,timewarp_gl,debugview,offload_data,audio_pipeline
+  plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,ground_truth_slam,gldemo,timewarp_gl,debugview,offload_data
   visualizers: orb_slam3
   enable_offload: false
   enable_alignment: false
