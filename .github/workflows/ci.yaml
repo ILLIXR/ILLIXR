@@ -35,7 +35,6 @@ jobs:
 
     - name: Run Docker container
       id: docker_run
-      continue-on-error: true
       run: |
         # Get the UID and GID of the runner user
         HOST_UID=$(id -u)
