@@ -13,13 +13,6 @@ jobs:
       DISPLAY: :1
 
     steps:
-    - name: Set commit status as pending
-      uses: myrotvorets/set-commit-status-action@v2.0.1
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        status: pending
-        context: ILLIXR native Vulkan graphics-enabled tests
-
     - name: Checkout repository
       uses: actions/checkout@v4
 
@@ -48,14 +41,6 @@ jobs:
           --user $HOST_UID:$HOST_GID \
           --runtime=nvidia \
           illixr-ci-${GITHUB_SHA::8}
-    
-    - name: Set final commit status
-      uses: myrotvorets/set-commit-status-action@v2.0.1
-      if: always()
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        status: ${{ job.status }}
-        context: ILLIXR native Vulkan graphics-enabled tests
     
     - name: Clean up Docker images
       if: always()
