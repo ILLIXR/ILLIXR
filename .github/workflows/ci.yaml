@@ -1,9 +1,9 @@
 name: ILLIXR CI
 on:
   push:
-    branches: [ main, misc/ci ]
+    branches: [ main, master, misc/ci ]
   pull_request:
-    branches: [ main, misc/ci ]
+    branches: [ main, master, misc/ci ]
 
 jobs:
   illixr-native-vulkan-ci:
