@@ -18,11 +18,14 @@ RUN apt-get update
 RUN apt-get install -y libzstd-dev
 RUN apt-get install -y zstd
 
+RUN groupadd -U illixr zed
 USER illixr
 WORKDIR /home/illixr
 
 # ZED sdk install
 RUN wget -O ZED_SDK_Linux_Ubuntu${UBUNTU_RELEASE_YEAR}.run https://download.stereolabs.com/zedsdk/${ZED_SDK_MAJOR}.${ZED_SDK_MINOR}/cu${CUDA_MAJOR}/ubuntu${UBUNTU_RELEASE_YEAR}
 RUN chmod +x ZED_SDK_Linux_Ubuntu${UBUNTU_RELEASE_YEAR}.run
-RUN ./ZED_SDK_Linux_Ubuntu${UBUNTU_RELEASE_YEAR}.run --accept -- silent skip_tools skip_python skip_cuda
+RUN ./ZED_SDK_Linux_Ubuntu${UBUNTU_RELEASE_YEAR}.run --accept -- silent skip_python skip_cuda
 RUN rm ZED_SDK_Linux_Ubuntu${UBUNTU_RELEASE_YEAR}.run
+RUN cd /usr/local/zed/resources
+RUN cd /usr/local/zed/lib/

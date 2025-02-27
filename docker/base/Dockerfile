@@ -46,5 +46,12 @@ RUN rm -rf /var/lib/apt/lists/*
 # give user illixr passwordless sudo (required for ZED install)
 RUN useradd -m -d /home/illixr illixr && adduser illixr sudo
 RUN echo "illixr ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/illixr-user
+
+# set up environment
+#  have to force this otherwise CMake won't see it
+ENV SHELL=/bin/sh
+# docker doesn't set this for some reason
+ENV USER=illixr
+
 USER illixr
 WORKDIR /home/illixr

@@ -132,6 +132,8 @@ echo -e "#  Building image${B_SUFFIX} : ${IMAGES}"
 echo "# --------------------------------------------------------------------------"
 
 # build root image
+echo ""
+echo "Building base image"
 docker build \
     --build-arg ILLIXR_VERSION=${ILLIXR_VERSION} \
     --build-arg CUDA_MAJOR=${CUDA_MAJOR} \
@@ -141,10 +143,13 @@ docker build \
     --tag ${BASE_IMAGE}:${ILLIXR_VERSION} \
     --file base/Dockerfile \
     .
-
+echo ""
+echo "Base image complete"
 BUILD_FLAGS=""
 
 function build_image {
+    echo""
+    echo "Building final image illixr_$3 from $1 with flags $2"
     docker build \
         --build-arg ILLIXR_VERSION=${ILLIXR_VERSION} \
         --build-arg PARENT_IMAGE="$1" \
@@ -155,7 +160,10 @@ function build_image {
 }
 
 function build_zed {
+    echo ""
+    echo "Building ZED image $2 from $1"
     docker build \
+        --progress plain \
         --build-arg ILLIXR_VERSION=${ILLIXR_VERSION} \
         --build-arg CUDA_MAJOR=${CUDA_MAJOR} \
         --build-arg CUDA_MINOR=${CUDA_MINOR} \
@@ -168,18 +176,24 @@ function build_zed {
         --tag "illixr/$2:${ILLIXR_VERSION}" \
         --file zed/Dockerfile \
         .
+    echo ""
+    echo "ZED build complete"
 }
 
 function build_lgpl {
+    echo "Building LGPL image $2 from $1"
     docker build \
         --build-arg ILLIXR_VERSION=${ILLIXR_VERSION} \
         --build-arg PARENT_IMAGE="$1" \
         --tag "illixr/$2:${ILLIXR_VERSION}" \
         --file lgpl/Dockerfile \
         .
+    echo ""
+    echo "LGPL build complete"
 }
 
 function build_gpl {
+    echo "Building GPL image $2 from $1"
     docker build \
         --build-arg ILLIXR_VERSION=${ILLIXR_VERSION} \
         --build-arg CUDA_MAJOR=${CUDA_MAJOR} \
@@ -188,6 +202,8 @@ function build_gpl {
         --tag "illixr/$2:${ILLIXR_VERSION}" \
         --file gpl/Dockerfile \
         .
+    echo ""
+    echo "GPL build complete"
 }
 
 if [[ $MAKE_ALL -eq 1 ]]; then
@@ -214,7 +230,6 @@ if [[ $MAKE_ALL -eq 1 ]]; then
 else
     TAG_TAIL=""
     if [[ $NO_ZED -eq 0 ]]; then
-        echo "${BASE_IMAGE}     ZED"
         build_zed ${BASE_IMAGE} ${WITH_ZED}
         BASE_IMAGE="illixr/${WITH_ZED}"
     else
@@ -242,6 +257,6 @@ else
     else
         TAG_TAIL="_no${TAG_TAIL}"
     fi
-    echo "${BASE_IMAGE}"
+
     build_image ${BASE_IMAGE} "${BUILD_FLAGS}" "${TAG_TAIL}"
 fi
