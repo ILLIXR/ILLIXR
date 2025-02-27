@@ -96,6 +96,44 @@ struct [[maybe_unused]] texture_pose : public switchboard::event {
         , render_quaternion{std::move(render_quaternion_)} { }
 };
 
-typedef std::map<units::eyes, pose_type> multi_pose_map;
+[[maybe_unused]] typedef std::map<units::eyes, pose_type> multi_pose_map;
 
+#ifdef ENABLE_OXR
+
+struct raw_pose {
+    float x;
+    float y;
+    float z;
+    float w;
+    float wx;
+    float wy;
+    float wz;
+    bool  valid;
+
+    raw_pose()
+        : x{0.f}
+        , y{0.f}
+        , z{0.f}
+        , w{0.f}
+        , wx{0.f}
+        , wy{0.f}
+        , wz{0.f}
+        , valid{false} { }
+
+    raw_pose(const pose_data& pd) {
+        copy(pd);
+    }
+
+    void copy(const pose_data& pd) {
+        x     = pd.position.x();
+        y     = pd.position.y();
+        z     = pd.position.z();
+        w     = pd.orientation.w();
+        wx    = pd.orientation.x();
+        wy    = pd.orientation.y();
+        wz    = pd.orientation.z();
+        valid = pd.valid;
+    }
+};
+#endif
 } // namespace ILLIXR::data_format
