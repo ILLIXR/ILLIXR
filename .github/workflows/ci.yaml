@@ -1,7 +1,5 @@
 name: Docker Build and Test
 
-runs-on: [self-hosted]
-
 on:
   push:
     branches: [ main, misc/ci ]
@@ -9,8 +7,8 @@ on:
     branches: [ main, misc/ci ]
 
 jobs:
-  build-and-test:
-    runs-on: ubuntu-latest
+  illixr-ci:
+    runs-on: [self-hosted]
     
     steps:
     - name: Checkout repository
