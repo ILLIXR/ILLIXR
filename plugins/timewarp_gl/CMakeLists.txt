@@ -14,15 +14,16 @@ add_library(${PLUGIN_NAME} SHARED plugin.cpp
             shaders/timewarp_shader.hpp
             utils/hmd.cpp
             utils/hmd.hpp
-            ../../include/illixr/data_format.hpp
-            ../../include/illixr/error_util.hpp
-            ../../include/illixr/extended_window.hpp
-            ../../include/illixr/global_module_defs.hpp
-            ../../include/illixr/math_util.hpp
-            ../../include/illixr/pose_prediction.hpp
-            ../../include/illixr/shader_util.hpp
-            ../../include/illixr/switchboard.hpp
-            ../../include/illixr/threadloop.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/misc.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/frame.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/error_util.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/extended_window.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/global_module_defs.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/math_util.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/pose_prediction.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/shader_util.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/threadloop.hpp
 )
 
 target_include_directories(${PLUGIN_NAME} PRIVATE ${X11_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} ${GLU_INCLUDE_DIR} ${gl_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR}/include ${Eigen3_INCLUDE_DIRS})

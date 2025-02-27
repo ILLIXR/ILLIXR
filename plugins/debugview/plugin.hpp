@@ -8,8 +8,9 @@
 #include <GLFW/glfw3.h> // Also loading first, just to be safe
 // clang-format on
 
+#include "illixr/data_format/imu.hpp"
+#include "illixr/data_format/opencv_data_types.hpp"
 #include "illixr/gl_util/obj.hpp"
-#include "illixr/opencv_data_types.hpp"
 #include "illixr/pose_prediction.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
@@ -51,11 +52,12 @@ private:
     const std::shared_ptr<switchboard>     switchboard_;
     const std::shared_ptr<pose_prediction> pose_prediction_;
 
-    switchboard::reader<pose_type>         slow_pose_reader_;
-    switchboard::reader<imu_raw_type>      fast_pose_reader_;
-    switchboard::reader<rgb_depth_type>    rgb_depth_reader_;
-    switchboard::buffered_reader<cam_type> cam_reader_;
-    GLFWwindow*                            gui_window_{};
+    switchboard::reader<data_format::pose_type>                   slow_pose_reader_;
+    switchboard::reader<data_format::imu_raw_type>                fast_pose_reader_;
+    switchboard::reader<data_format::rgb_depth_type>              rgb_depth_reader_;
+    switchboard::buffered_reader<data_format::binocular_cam_type> cam_reader_;
+
+    GLFWwindow* gui_window_{};
 
     [[maybe_unused]] uint8_t test_pattern_[TEST_PATTERN_WIDTH][TEST_PATTERN_HEIGHT]{};
 
@@ -70,11 +72,11 @@ private:
 
     Eigen::Vector3f tracking_position_offset_ = Eigen::Vector3f{0.0f, 0.0f, 0.0f};
 
-    switchboard::ptr<const cam_type>       cam_;
-    switchboard::ptr<const rgb_depth_type> rgb_depth_;
-    bool                                   use_cam_       = false;
-    bool                                   use_rgb_depth_ = false;
-    // std::vector<std::optional<cv::Mat>> camera_data = {std::nullopt, std::nullopt};
+    switchboard::ptr<const data_format::binocular_cam_type> cam_;
+    switchboard::ptr<const data_format::rgb_depth_type>     rgb_depth_;
+    bool                                                    use_cam_       = false;
+    bool                                                    use_rgb_depth_ = false;
+
     GLuint                           camera_texture_[2]{};
     Eigen::Vector2i                  camera_texture_size_[2] = {Eigen::Vector2i::Zero(), Eigen::Vector2i::Zero()};
     GLuint                           rgb_depth_texture_[2]{};

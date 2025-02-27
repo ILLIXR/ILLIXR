@@ -164,6 +164,9 @@ plugin name to the `all_plugins` list in `profiles/plugins.yaml`.
 
 External plugins with external dependencies are a bit more work, but are straight forward. See how Audio Pipeline is handled.
 
+For a plugin which uses the mediapipe framework (e.g. hand_tracking) see [Mediapipe Based Plugins][16] for 
+additional information.
+
 ## Tutorial
 
 You can extend ILLIXR for your own purposes.
@@ -344,3 +347,4 @@ To add your own functionality via the plugin interface:
 [13]:   api/html/classILLIXR_1_1plugin.html
 [14]:   api/html/classILLIXR_1_1switchboard.html
 [15]:   glossary.md#plugin
+[16]:  adding_mediapipe.md

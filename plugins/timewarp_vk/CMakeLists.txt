@@ -39,16 +39,16 @@ add_library(${PLUGIN_NAME} SHARED plugin.cpp
             plugin.hpp
             utils/hmd.cpp
             utils/hmd.hpp
-            ../../include/illixr/data_format.hpp
-            ../../include/illixr/global_module_defs.hpp
-            ../../include/illixr/math_util.hpp
-            ../../include/illixr/phonebook.hpp
-            ../../include/illixr/plugin.hpp
-            ../../include/illixr/pose_prediction.hpp
-            ../../include/illixr/switchboard.hpp
-            ../../include/illixr/vk_util/display_sink.hpp
-            ../../include/illixr/vk_util/render_pass.hpp
-            ../../include/illixr/vk_util/vulkan_utils.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/misc.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/global_module_defs.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/math_util.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/phonebook.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/plugin.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/pose_prediction.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/vk_util/display_sink.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/vk_util/render_pass.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/vk_util/vulkan_utils.hpp
 )
 
 add_dependencies(${PLUGIN_NAME} Timewarp_VK_Shaders)

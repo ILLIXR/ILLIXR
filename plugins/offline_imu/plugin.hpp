@@ -1,6 +1,7 @@
 #pragma once
 
-#include "illixr/data_format.hpp"
+#include "illixr/data_format/imu.hpp"
+#include "illixr/data_format/misc.hpp"
 #include "illixr/managed_thread.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/relative_clock.hpp"
@@ -32,7 +33,7 @@ private:
     const std::shared_ptr<switchboard>             switchboard_;
     const std::map<ullong, sensor_types>           sensor_data_;
     std::map<ullong, sensor_types>::const_iterator sensor_data_it_;
-    switchboard::writer<imu_type>                  imu_;
+    switchboard::writer<data_format::imu_type>     imu_;
 
     // Timestamp of the first IMU value from the dataset
     ullong dataset_first_time_;

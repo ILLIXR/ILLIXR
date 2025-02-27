@@ -1,4 +1,4 @@
-all_plugins: audio_pipeline,debugview,depthai,gldemo,ground_truth_slam,gtsam_integrator,offline_cam,offline_imu,offload_data,offload_vio.device_rx,offload_vio.device_tx,offload_vio.server_rx,offload_vio.server_tx,passthrough_integrator,pose_lookup,pose_prediction,realsense,record_imu_cam,rk4_integrator,timewarp_gl,zed,fauxpose,display_vk,native_renderer,timewarp_vk,vkdemo,openni,record_rgb_depth
+all_plugins: audio_pipeline,debugview,depthai,gldemo,ground_truth_slam,gtsam_integrator,offline_cam,offline_imu,offload_data,offload_vio.device_rx,offload_vio.device_tx,offload_vio.server_rx,offload_vio.server_tx,passthrough_integrator,pose_lookup,pose_prediction,realsense,record_imu_cam,rk4_integrator,timewarp_gl,zed,fauxpose,display_vk,native_renderer,timewarp_vk,vkdemo,openni,record_rgb_depth,webcam,hand_tracking,hand_tracking.viewer,hand_tracking_gpu,zed.data_injection
 all_visualizers: openvins
 
 profiles:
@@ -21,8 +21,7 @@ profiles:
       enable_pre_sleep: False
 
   - monado_gl:
-    plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,timewarp_gl,audio_pipeline
-    visualizers: openvins
+    plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,timewarp_gl,audio_pipeline,openvins
     build_flags: -DILLIXR_MONADO
     use_monado: true
     env_vars:
@@ -32,8 +31,7 @@ profiles:
       enable_pre_sleep: false
 
   - monado_vk:
-    plugins: gtsam_integrator,offline_cam,offline_imu,pose_prediction,timewarp_vk,audio_pipeline
-    visualizers: openvins
+    plugins: gtsam_integrator,offline_cam,offline_imu,pose_prediction,timewarp_vk,audio_pipeline,openvins
     use_monado: true
     build_flags: -DILLIXR_VULKAN
     build_type: Release
@@ -44,8 +42,7 @@ profiles:
       enable_pre_sleep: False
 
   - native_gl:
-    plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,ground_truth_slam,gldemo,timewarp_gl,debugview,offload_data,audio_pipeline
-    visualizers: openvins
+    plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,ground_truth_slam,gldemo,timewarp_gl,debugview,offload_data,openvins
     env_vars:
       enable_offload: false
       enable_alignment: false
@@ -53,8 +50,7 @@ profiles:
       enable_pre_sleep: false
 
   - native_vk:
-    plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,display_vk,timewarp_vk,vkdemo,native_renderer,debugview
-    visualizers: openvins
+    plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,display_vk,timewarp_vk,vkdemo,native_renderer,debugview,openvins
     build_flags: -DILLIXR_VULKAN
     build_type: Release
     env_vars:
@@ -64,8 +60,7 @@ profiles:
       enable_pre_sleep: false
 
   - native_lookup:
-    plugins: pose_lookup,gldemo,debugview,offload_data,audio_pipeline
-    visualizers: openvins
+    plugins: pose_lookup,gldemo,debugview,offload_data,openvins
     env_vars:
       enable_offload: false
       enable_alignment: false
@@ -82,14 +77,13 @@ profiles:
       enable_pre_sleep: False
 
   - offload_monado_vk:
-    plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,timewarp_vk,offload_vio.device_rx,offload_vio.device_tx,audio_pipeline
-    visualizers: openvins
+    plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,timewarp_vk,offload_vio.device_rx,offload_vio.device_tx,audio_pipeline,openvins
     use_monado: true
     build_flags: -DILLIXR_VULKAN
     env_vars:
       enable_offload: false
       enable_alignment: false
-      enable_verbose_errors: true
+      enable_verbose_errors: false
       enable_pre_sleep: false
 
   - offload_server:
@@ -108,3 +102,24 @@ profiles:
       enable_alignment: false
       enable_verbose_errors: false
       enable_pre_sleep: false
+
+  - hand_tracking:
+    plugins: zed,hand_tracking,hand_tracking.viewer
+    enable_offload: false
+    enable_alignment: false
+    enable_verbose_errors: false
+    enable_pre_sleep: false
+
+  - hand_tracking_gpu:
+    plugins: zed,hand_tracking_gpu,hand_tracking.viewer
+    enable_offload: false
+    enable_alignment: false
+    enable_verbose_errors: false
+    enable_pre_sleep: false
+
+  - test_hand_tracking:
+    plugins: zed.data_injection,hand_tracking,hand_tracking.viewer
+    enable_offload: false
+    enable_alignment: false
+    enable_verbose_errors: false
+    enable_pre_sleep: false

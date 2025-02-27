@@ -23,7 +23,7 @@ This page details the structure of ILLIXR's [_plugins_][41] and how they interac
     -   Asynchronously *reads* `fast_pose` on `imu_raw` topic. ([_IMU_][36] biases are unused).
     -   Asynchronously *reads* `slow_pose` on `slow_pose` topic.
     -   Synchronously *reads* `imu` on `imu` topic.
-    -   Asynchronously *reads* buffered `cam_type` on `cam` topic.
+    -   Asynchronously *reads* buffered `binocular_cam_type` on `cam` topic.
 
 -   [`gldemo`][5]:
     Renders a static scene (into left and right [_eye buffers_][34]) given the [_pose_][37]
@@ -69,7 +69,7 @@ This page details the structure of ILLIXR's [_plugins_][41] and how they interac
 
     Topic details:
 
-    -   *Publishes* `cam_type` on `cam` topic.
+    -   *Publishes* `binocular_cam_type` on `cam` topic.
 -   [`pose_prediction`][17]:
     Uses the latest [_IMU_][36] value to predict a [_pose_][37] for a future point in time.
     Implements the `pose_prediction` service (defined in `common`),
@@ -134,6 +134,36 @@ ILLIXR supports additional plugins to replace some of the default plugins.
 
     Topic details:
     -   *Publishes* `pose_position` on `fast_pose` topic.
+
+-   [`hand_tracking`][43]:
+    Detects and identifies hands in an image, CPU based calculations. The output from this plugin can be used to track hand movements and recognize hand gestures.
+
+    Topic details:
+    
+    -   Synchronously *reads/subscribes* to one of `frame_type` on `webcam` topic, `binocular_cam_type` on `cam` topic, or `cam_type_zed` on `cam_zed` topic. This is selectable at run time via an environment variable.
+    -   *Publishes* `ht_frame` on `ht` topic.
+
+-   [`hand_tracking_gpu`][43]:
+    Detects and identifies hands in an image, GPU based calculations. The output from this plugin can be used to track hand movements and recognize hand gestures.
+
+    Topic details:
+
+    -   Synchronously *reads/subscribes* to one of `frame_type` on `webcam` topic, `binocular_cam_type` on `cam` topic, or `cam_type_zed` on `cam_zed` topic. This is selectable at run time via an environment variable.
+    -   *Publishes* `ht_frame` on `ht` topic.
+
+-   [`hand_tracking.viewer`][43]:
+    Reads the output of the `hand_tracking` plugin and displays the results on the screen. This is most useful for debugging. The capabilites of this plugin will be merged into the `debugview` plugin in the future.
+
+    Topic details:
+
+    -   Synchronously *reads/subscribes* to `ht_frame` on `ht` topic.
+
+-   [`webcam`][44]:
+    Uses a webcam to capture images for input into the `hand_tracking` plugin. This plugin is useful for debugging and is not meant to be used in a production pipeline.
+
+    Topic details:
+
+    -   *Publishes* `monocular_cam_type` on `webcam` topic.
 
 -   [`hologram`][9]:
     Adapts the eyebuffer for use on a holographic display.
@@ -254,3 +284,5 @@ See [Getting Started][31] for more information on adding plugins to a [_profile_
 [40]:   glossary.md#profile
 [41]:   glossary.md#plugin
 [42]:	plugin_README/README_fauxpose.md
+[43]:   plugin_README/README_hand_tracking.md#viewer
+[44]:   plugin_README/README_webcam.md

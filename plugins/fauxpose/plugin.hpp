@@ -1,6 +1,6 @@
 #pragma once
 
-#include "illixr/data_format.hpp"
+#include "illixr/data_format/pose.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/plugin.hpp"
 #include "illixr/pose_prediction.hpp"
@@ -9,7 +9,7 @@ namespace ILLIXR {
 /// Create a "pose_prediction" type service
 class faux_pose_impl : public pose_prediction {
 public:
-    explicit faux_pose_impl(const phonebook* const pb);
+    explicit faux_pose_impl(const phonebook* pb);
     ~faux_pose_impl() override;
 
     pose_type get_true_pose() const override {

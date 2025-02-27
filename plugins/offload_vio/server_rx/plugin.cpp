@@ -2,9 +2,9 @@
 
 #include "illixr/network/net_config.hpp"
 #include "video_decoder.hpp"
-#include "vio_input.pb.h"
 
 using namespace ILLIXR;
+using namespace ILLIXR::data_format;
 
 // #define USE_COMPRESSION
 
@@ -12,7 +12,7 @@ using namespace ILLIXR;
     : threadloop{name, pb}
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
     , imu_{switchboard_->get_writer<imu_type>("imu")}
-    , cam_{switchboard_->get_writer<cam_type>("cam")}
+    , cam_{switchboard_->get_writer<binocular_cam_type>("cam")}
     , conn_signal_{switchboard_->get_writer<connection_signal>("connection_signal")}
     , server_ip_(SERVER_IP)
     , server_port_(SERVER_PORT_1)
@@ -132,7 +132,7 @@ void server_reader::receive_vio_input(const vio_input_proto::IMUCamVec& vio_inpu
     cv::Mat img1(cam_data.rows(), cam_data.cols(), CV_8UC1, img1_copy.data());
     // Without compression end
 #endif
-    cam_.put(cam_.allocate<cam_type>(cam_type{
+    cam_.put(cam_.allocate<binocular_cam_type>(binocular_cam_type{
         time_point{std::chrono::nanoseconds{cam_data.timestamp()}},
         img0.clone(),
         img1.clone(),

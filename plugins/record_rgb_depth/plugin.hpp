@@ -1,6 +1,6 @@
 #pragma once
 
-#include "illixr/opencv_data_types.hpp"
+#include "illixr/data_format/opencv_data_types.hpp"
 #include "illixr/plugin.hpp"
 #include "illixr/switchboard.hpp"
 
@@ -11,7 +11,7 @@ namespace ILLIXR {
 class record_rgb_depth : public plugin {
 public:
     [[maybe_unused]] record_rgb_depth(const std::string& name, phonebook* pb);
-    void dump_data(const switchboard::ptr<const rgb_depth_type>& datum);
+    void dump_data(const switchboard::ptr<const data_format::rgb_depth_type>& datum);
     ~record_rgb_depth() override;
 
 private:
