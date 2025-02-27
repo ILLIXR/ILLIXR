@@ -1,10 +1,6 @@
 #!/bin/bash
 
-vkcube
-
-# Ensure .illixr directory exists with proper permissions
-mkdir -p $HOME/.illixr/profiles
-chmod -R 777 $HOME/.illixr
+eval $( fixuid )
 
 cd /opt/ILLIXR
 mkdir build
