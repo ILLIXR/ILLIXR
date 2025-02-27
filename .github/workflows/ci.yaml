@@ -50,7 +50,6 @@ jobs:
           --user $HOST_UID:$HOST_GID \
           --runtime=nvidia \
           illixr-ci-${GITHUB_SHA::8}
-        echo "exit_code=$?" >> "$GITHUB_OUTPUT"
     
     - name: Set final commit status
       uses: myrotvorets/set-commit-status-action@v2.0.1
