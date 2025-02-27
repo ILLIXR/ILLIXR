@@ -9,7 +9,7 @@ on:
 jobs:
   illixr-ci:
     runs-on: [self-hosted]
-    
+
     env:
       DISPLAY: :1
 
@@ -24,6 +24,10 @@ jobs:
     - name: Build Docker image
       run: |
         docker build -t illixr-ci-${GITHUB_SHA::8} -f docker/ci/Dockerfile .
+      
+    - name: Print runner user
+      run: |
+        whoami
 
     - name: Run Docker container
       id: docker_run
