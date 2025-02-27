@@ -1,5 +1,4 @@
-name: Docker Build and Test
-
+name: ILLIXR CI
 on:
   push:
     branches: [ main, misc/ci ]
@@ -7,7 +6,7 @@ on:
     branches: [ main, misc/ci ]
 
 jobs:
-  illixr-ci:
+  illixr-native-vulkan-ci:
     runs-on: [self-hosted]
 
     env:
@@ -19,7 +18,7 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         status: pending
-        context: ILLIXR compilation and tests
+        context: ILLIXR native Vulkan graphics-enabled tests
 
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -56,7 +55,7 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         status: ${{ job.status }}
-        context: ILLIXR compilation and tests
+        context: ILLIXR native Vulkan graphics-enabled tests
     
     - name: Clean up Docker images
       if: always()
