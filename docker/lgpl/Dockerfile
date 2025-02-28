@@ -1,0 +1,9 @@
+ARG PARENT_IMAGE="illixr/base"
+ARG ILLIXR_VERSION="3.3"
+
+FROM ${PARENT_IMAGE}:${ILLIXR_VERSION}
+
+USER root
+RUN apt-get update
+
+USER illixr
