@@ -4,7 +4,8 @@ use_monado: true
 build_flags: -DILLIXR_VULKAN
 build_type: Release
 visualizers: openvins,orb_slam3
-enable_offload: False
-enable_alignment: False
-enable_verbose_errors: False
-enable_pre_sleep: False
+env_vars:
+  enable_offload: False
+  enable_alignment: False
+  enable_verbose_errors: False
+  enable_pre_sleep: False

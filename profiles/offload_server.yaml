@@ -1,8 +1,9 @@
 # This file was auto generated, take caution if manually editing.
 plugins: offload_vio.server_rx,offload_vio.server_tx
-duration: 90
 visualizers: openvins,orb_slam3
-enable_offload: False
-enable_alignment: False
-enable_verbose_errors: False
-enable_pre_sleep: False
+env_vars:
+  enable_offload: False
+  enable_alignment: False
+  enable_verbose_errors: False
+  enable_pre_sleep: False
+  duration: 90

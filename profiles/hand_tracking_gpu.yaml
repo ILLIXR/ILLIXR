@@ -1,7 +1,8 @@
 # This file was auto generated, take caution if manually editing.
 plugins: zed,hand_tracking_gpu,hand_tracking.viewer
 visualizers: openvins,orb_slam3
-enable_offload: false
-enable_alignment: false
-enable_verbose_errors: false
-enable_pre_sleep: false
+env_vars:
+  enable_offload: false
+  enable_alignment: false
+  enable_verbose_errors: false
+  enable_pre_sleep: false

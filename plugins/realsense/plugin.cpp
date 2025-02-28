@@ -26,8 +26,8 @@ static constexpr int IMAGE_HEIGHT_T26X = 800;
     , imu_{switchboard_->get_writer<imu_type>("imu")}
     , cam_{switchboard_->get_writer<binocular_cam_type>("cam")}
     , rgb_depth_{switchboard_->get_writer<rgb_depth_type>("rgb_depth")}
-    , realsense_cam_{ILLIXR::getenv_or("REALSENSE_CAM", "auto")} {
-    spdlogger(std::getenv("REALSENSE_LOG_LEVEL"));
+    , realsense_cam_{switchboard_->get_env("REALSENSE_CAM", "auto")} {
+    spdlogger(switchboard_->get_env_char("REALSENSE_LOG_LEVEL"));
     accel_data_.iteration = -1;
     config_.disable_all_streams();
     configure_camera();
