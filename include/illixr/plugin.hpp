@@ -12,6 +12,16 @@
 #include <typeinfo>
 #include <utility>
 
+extern "C" {
+bool needs_vulkan() {
+#ifdef VULKAN_REQUIRED
+    return true;
+#else
+    return false;
+#endif
+}
+}
+
 namespace ILLIXR {
 
 using plugin_id_t = std::size_t;

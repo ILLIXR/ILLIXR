@@ -1,4 +1,5 @@
 #pragma once
+#define VULKAN_REQUIRED
 
 #include "illixr/data_format/frame.hpp"
 #include "illixr/data_format/misc.hpp"

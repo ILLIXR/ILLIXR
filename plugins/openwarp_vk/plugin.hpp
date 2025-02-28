@@ -1,4 +1,5 @@
 #pragma once
+#define VULKAN_REQUIRED
 
 #include "illixr/phonebook.hpp"
 #include "illixr/threadloop.hpp"

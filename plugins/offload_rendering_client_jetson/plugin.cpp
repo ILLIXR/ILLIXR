@@ -5,6 +5,7 @@
  * This plugin implements the client-side functionality for offloaded rendering on Jetson devices.
  * It handles video decoding, pose synchronization, and Vulkan-based display integration.
  */
+#define VULKAN_REQUIRED
 
 #include "decoding/video_decode.h"
 #include "illixr/data_format/pose_prediction.hpp"

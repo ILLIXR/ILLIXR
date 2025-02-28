@@ -20,6 +20,7 @@
  * - Vulkan SDK
  * - CUDA Toolkit
  */
+#define VULKAN_REQUIRED
 
 // ILLIXR core headers
 #include "illixr/plugin.hpp"
