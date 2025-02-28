@@ -27,7 +27,7 @@
 #endif /// RAC_ERRNO_MSG
 
 namespace ILLIXR {
-
+// can't use switchboard interface here
 static const bool ENABLE_VERBOSE_ERRORS{getenv("ILLIXR_ENABLE_VERBOSE_ERRORS") != nullptr &&
                                         ILLIXR::str_to_bool(getenv("ILLIXR_ENABLE_VERBOSE_ERRORS"))};
 

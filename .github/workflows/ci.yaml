@@ -1,0 +1,53 @@
+name: ILLIXR CI
+on:
+  push:
+    branches: [ main, master, misc/ci ]
+  pull_request:
+    branches: [ main, master, misc/ci ]
+
+jobs:
+  illixr-native-vulkan-ci:
+    runs-on: [self-hosted]
+
+    env:
+      DISPLAY: :1
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Give xhost access on host machine
+      run: |
+        xhost +local:docker
+
+    - name: Build Docker image
+      run: |
+        cd docker/ci
+        docker build -t illixr-ci-${GITHUB_SHA::8} -f Dockerfile .
+
+    - name: Run Docker container
+      id: docker_run
+      run: |
+        # Get the UID and GID of the runner user
+        HOST_UID=$(id -u)
+        HOST_GID=$(id -g)
+        
+        docker run --rm \
+          -e DISPLAY=$DISPLAY \
+          -e NVIDIA_VISIBLE_DEVICES=all \
+          -e NVIDIA_DRIVER_CAPABILITIES=all \
+          -v $GITHUB_WORKSPACE:/opt/ILLIXR \
+          -v /tmp/.X11-unix:/tmp/.X11-unix \
+          --user $HOST_UID:$HOST_GID \
+          --runtime=nvidia \
+          illixr-ci-${GITHUB_SHA::8}
+    
+    - name: Clean up Docker images
+      if: always()
+      run: |
+        # Remove the current workflow's image
+        docker rmi illixr-ci-${GITHUB_SHA::8} || true
+        
+        # Remove images and cache older than 7 days
+        docker system prune -af --filter "until=168h" || true
+    
