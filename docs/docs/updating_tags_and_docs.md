@@ -24,22 +24,9 @@ For releases, perform these steps from `master` once the desired features have b
 
 ## Updating Documentation
 
-Perform these steps from the root directory of the project.
-
-1. Create the directory where the generated files will be placed:
+To generate the documentation (will pick up any changes) be sure to add `-DBUILD_DOCS=ON` to your cmake flags. Then from the build directory run:
 
     <!--- language: lang-none -->
 
-        mkdir -p site/api
-
-1. Run `doxygen` to generate API documentation:
-
-    <!--- language: lang-none -->
-
-        doxygen doxygen.conf
-
-1. Run `mkdocs` to deploy new documentation:
-
-    <!--- language: lang-none -->
-
-        mkdocs gh-deploy
+        cmake --build . -t docs  # this will put the generated documentation in <build_path>/docs/docs
+        cmake --install .        # this will install the generated docs in your install directory under `share/doc/ILLIXR/docs`
