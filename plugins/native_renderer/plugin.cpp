@@ -15,7 +15,6 @@
 #include "illixr/gl_util/lib/tiny_obj_loader.h"
 
 #define NATIVE_RENDERER_BUFFER_POOL_SIZE 3
-#define DMA_EXPORT                       1
 
 using namespace ILLIXR;
 using namespace ILLIXR::data_format;
@@ -31,16 +30,17 @@ using namespace ILLIXR::data_format;
     , clock_{phonebook_->lookup_impl<relative_clock>()}
     , vsync_{switchboard_->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")}
     , last_fps_update_{std::chrono::duration<long, std::nano>{0}} {
-    if (switchboard_->get_env_char("ILLIXR_SERVER_WIDTH") == nullptr ||
-        switchboard_->get_env_char("ILLIXR_SERVER_HEIGHT") == nullptr) {
-        // throw std::runtime_error("Please define ILLIXR_SERVER_WIDTH and ILLIXR_SERVER_HEIGHT");
-        log_->warn("Please define ILLIXR_SERVER_WIDTH and ILLIXR_SERVER_HEIGHT. Default values used.");
-        server_width_  = 2560;
-        server_height_ = 1440;
+    if (switchboard_->get_env_char("ILLIXR_WIDTH") == nullptr ||
+        switchboard_->get_env_char("ILLIXR_HEIGHT") == nullptr) {
+        log_->warn("Please define ILLIXR_WIDTH and ILLIXR_HEIGHT. Default values 2560x1440 used.");
+        width_  = 2560;
+        height_ = 1440;
     } else {
-        server_width_  = std::stoi(switchboard_->get_env_char("ILLIXR_SERVER_WIDTH"));
-        server_height_ = std::stoi(switchboard_->get_env_char("ILLIXR_SERVER_HEIGHT"));
+        width_  = std::stoi(switchboard_->get_env_char("ILLIXR_WIDTH"));
+        height_ = std::stoi(switchboard_->get_env_char("ILLIXR_HEIGHT"));
     }
+    
+    export_dma_ = switchboard_->get_env_bool("ILLIXR_EXPORT_DMA");
 }
 
 /**
@@ -395,8 +395,8 @@ void native_renderer::create_depth_image(vulkan::vk_image& depth_image) {
         VK_IMAGE_TYPE_2D,                    // imageType
         VK_FORMAT_D32_SFLOAT,                // format
         {
-            server_width_,                                                        // width
-            server_height_,                                                       // height
+            width_,                                                               // width
+            height_,                                                              // height
             1                                                                     // depth
         },                                                                        // extent
         1,                                                                        // mipLevels
@@ -446,16 +446,16 @@ void native_renderer::create_offscreen_pool() {
         VK_IMAGE_TYPE_2D,                    // imageType
         VK_FORMAT_B8G8R8A8_UNORM,            // format
         {
-            server_width_,                                             // width
-            server_height_,                                            // height
-            1                                                          // depth
-        },                                                             // extent
-        1,                                                             // mipLevels
-        1,                                                             // arrayLayers
-        VK_SAMPLE_COUNT_1_BIT,                                         // samples
-        DMA_EXPORT ? VK_IMAGE_TILING_LINEAR : VK_IMAGE_TILING_OPTIMAL, // tiling
+            width_,                                                     // width
+            height_,                                                    // height
+            1                                                           // depth
+        },                                                              // extent
+        1,                                                              // mipLevels
+        1,                                                              // arrayLayers
+        VK_SAMPLE_COUNT_1_BIT,                                          // samples
+        export_dma_ ? VK_IMAGE_TILING_LINEAR : VK_IMAGE_TILING_OPTIMAL, // tiling
         static_cast<VkImageUsageFlags>(
-            (VK_IMAGE_USAGE_TRANSFER_DST_BIT | (DMA_EXPORT ? 0 : VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT)) |
+            (VK_IMAGE_USAGE_TRANSFER_DST_BIT | (export_dma_ ? 0 : VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT)) |
             (timewarp_->is_external() ? VK_IMAGE_USAGE_TRANSFER_SRC_BIT : VK_IMAGE_USAGE_SAMPLED_BIT)), // usage
         {},                                                                                             // sharingMode
         0,                                                                                              // queueFamilyIndexCount
@@ -469,7 +469,7 @@ void native_renderer::create_offscreen_pool() {
 
     offscreen_export_mem_alloc_info_.sType = VK_STRUCTURE_TYPE_EXPORT_MEMORY_ALLOCATE_INFO;
     offscreen_export_mem_alloc_info_.handleTypes =
-        DMA_EXPORT ? VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT : VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT;
+        export_dma_ ? VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT : VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT;
 
     VmaPoolCreateInfo pool_create_info   = {};
     pool_create_info.memoryTypeIndex     = mem_type_index;
@@ -485,7 +485,7 @@ void native_renderer::create_offscreen_target(vulkan::vk_image& image) {
     if (timewarp_->is_external() || app_->is_external()) {
         assert(offscreen_pool_ != VK_NULL_HANDLE);
         image.export_image_info = {VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_IMAGE_CREATE_INFO, nullptr,
-                                   DMA_EXPORT ? VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT
+                                   export_dma_ ? VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT
                                               : VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT};
     }
 
@@ -507,8 +507,8 @@ void native_renderer::create_offscreen_target(vulkan::vk_image& image) {
         VK_IMAGE_TYPE_2D,                                                                       // imageType
         VK_FORMAT_B8G8R8A8_UNORM,                                                               // format
         {
-            server_width_,       // width
-            server_height_,      // height
+            width_,              // width
+            height_,             // height
             1                    // depth
         },                       // extent
         1,                       // mipLevels
@@ -516,7 +516,7 @@ void native_renderer::create_offscreen_target(vulkan::vk_image& image) {
         VK_SAMPLE_COUNT_1_BIT,   // samples
         VK_IMAGE_TILING_OPTIMAL, // tiling
         static_cast<VkImageUsageFlags>(
-            (VK_IMAGE_USAGE_TRANSFER_DST_BIT | (DMA_EXPORT ? 0 : VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT)) |
+            (VK_IMAGE_USAGE_TRANSFER_DST_BIT | (export_dma_ ? 0 : VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT)) |
             (timewarp_->is_external() ? VK_IMAGE_USAGE_TRANSFER_SRC_BIT : VK_IMAGE_USAGE_SAMPLED_BIT)), // usage
         VK_SHARING_MODE_CONCURRENT,                                                                     // sharingMode
         static_cast<uint32_t>(queue_family_indices.size()),                                             // queueFamilyIndexCount
@@ -553,7 +553,7 @@ void native_renderer::create_offscreen_target(vulkan::vk_image& image) {
 
     VK_ASSERT_SUCCESS(vkCreateImageView(display_sink_->vk_device_, &view_info, nullptr, &image.image_view))
 
-    if (DMA_EXPORT) {
+    if (export_dma_) {
         VkMemoryGetFdInfoKHR get_fd_info{VK_STRUCTURE_TYPE_MEMORY_GET_FD_INFO_KHR, // sType
                                          nullptr,                                  // pNext
                                          image.allocation_info.deviceMemory,       // memory
