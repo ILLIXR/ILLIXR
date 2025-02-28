@@ -155,7 +155,7 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
         // const std::shared_ptr<switchboard> sb = r->get_switchboard();
 
         // set internal env_vars
-        const std::shared_ptr<switchboard> switchboard_ = runtime_->get_switchboard();
+        std::shared_ptr<switchboard> switchboard_ = runtime_->get_switchboard();
 
         // read in yaml config file
         YAML::Node  config;
