@@ -26,7 +26,7 @@ using namespace ILLIXR;
     , app_{phonebook_->lookup_impl<app>()}
     , clock_{phonebook_->lookup_impl<relative_clock>()}
     , last_fps_update_{std::chrono::duration<long, std::nano>{0}} {
-    spdlogger(std::getenv("NATIVE_RENDERER_LOG_LEVEL"));
+    spdlogger(switchboard_->get_env_char("NATIVE_RENDERER_LOG_LEVEL"));
 }
 
 void native_renderer::_p_thread_setup() {

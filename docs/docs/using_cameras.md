@@ -43,11 +43,11 @@ In order to add your camera's calibration extrinsics, you need to modify your ch
 
 4. **Run ILLIXR with ZED:**  
 
-    Uncomment `zed` in `configs/rt_slam_plugins.yaml` and run ILLIXR normally.
+    Add `zed` to the plugins list in any yaml profile file and run ILLIXR normally.
 
 ## Intel Realsense 
 
-ILLIXR has been tested with Inteal RealSense D455, but it should work with any D or T series RealSense Camera. 
+ILLIXR has been tested with Intel RealSense D455, but it should work with any D or T series RealSense Camera. 
 
 1. **Install librealsense (if you haven't already):**
 
@@ -65,7 +65,7 @@ ILLIXR has been tested with Inteal RealSense D455, but it should work with any D
 
 3. **Run ILLIXR with RealSense:**  
 
-    Uncomment `realsense` in `configs/rt_slam_plugins.yaml` and run ILLIXR normally.
+    Add `realsense` to the plugins list in any yaml profile file and run ILLIXR normally.
     
     *Note:* We will release the corresponding `#define realsense` soon for OpenVINS + Realsense
 

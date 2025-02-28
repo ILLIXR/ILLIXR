@@ -43,7 +43,7 @@ faux_pose_impl::faux_pose_impl(const phonebook* pb)
     : switchboard_{pb->lookup_impl<switchboard>()}
     , clock_{pb->lookup_impl<relative_clock>()}
     , vsync_estimate_{switchboard_->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")} {
-    char* env_input; /* pointer to environment variable input */
+    const char* env_input; /* pointer to environment variable input */
 #ifndef NDEBUG
     spdlog::get("illixr")->debug("[fauxpose] Starting Service");
 #endif
@@ -66,13 +66,13 @@ faux_pose_impl::faux_pose_impl(const phonebook* pb)
     amplitude_       = 2.0;
 
     // Adjust parameters based on environment variables
-    if ((env_input = getenv("FAUXPOSE_PERIOD"))) {
+    if ((env_input = switchboard_->get_env_char("FAUXPOSE_PERIOD"))) {
         period_ = std::strtof(env_input, nullptr);
     }
-    if ((env_input = getenv("FAUXPOSE_AMPLITUDE"))) {
+    if ((env_input = switchboard_->get_env_char("FAUXPOSE_AMPLITUDE"))) {
         amplitude_ = std::strtof(env_input, nullptr);
     }
-    if ((env_input = getenv("FAUXPOSE_CENTER"))) {
+    if ((env_input = switchboard_->get_env_char("FAUXPOSE_CENTER"))) {
         center_location_[0] = std::strtof(env_input, nullptr);
         center_location_[1] = std::strtof(strchrnul(env_input, ',') + 1, nullptr);
         center_location_[2] = std::strtof(strchrnul(strchrnul(env_input, ',') + 1, ',') + 1, nullptr);
