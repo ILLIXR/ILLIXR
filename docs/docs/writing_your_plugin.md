@@ -7,7 +7,7 @@ To add a new plugin
 1. create a new subdirectory in the `plugins` directory named for your plugin (no spaces)
 2. put your code in this new subdirectory (additional subdirectories containing parts of your code are allowed)
 3. create a CMakeLists.txt file in this new subdirectory. See the template below
-4. add the plugin to the `profiles/plugins.yaml` file, the name must match the subdirectory you created; it should go in the `internal_plugins` entry
+4. add the plugin to the `profiles/plugins.yaml` file, the name must match the subdirectory you created; it should go in the `all_plugins` entry
 
 For the examples below is for a plugin called tracker, so just replace any instance of tracker with
 the name of your plugin.
@@ -150,7 +150,7 @@ named `GetPlotter.cmake` (case matters, it must match the call to `get_external`
 
 ### External Plugins
 For plugins that are external packages (e.g. Audio_Pipeline) you need only create a `GetX.cmake` file as above and add the
-plugin name to the `external_plugins` list in `profiles/plugins.yaml`.
+plugin name to the `all_plugins` list in `profiles/plugins.yaml`.
 
 External plugins with external dependencies are a bit more work, but are straight forward. See how Audio Pipeline is handled.
 
@@ -245,7 +245,6 @@ To add your own functionality via the plugin interface:
         the ILLIXR runtime.
     Reading and writing from Phonebook and Switchboard is optional,
         but nearly every plugin does it.
-    See `default_plugins.md` for more details.
 
     First, we can query the [`phonebook`][11] to get various services
         including [`switchboard`][14].

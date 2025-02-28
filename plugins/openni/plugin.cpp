@@ -15,7 +15,7 @@ using namespace ILLIXR::data_format;
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
     , clock_{phonebook_->lookup_impl<relative_clock>()}
     , rgb_depth_{switchboard_->get_writer<rgb_depth_type>("rgb_depth")} {
-    spdlogger(std::getenv("OPENNI_LOG_LEVEL"));
+    spdlogger(switchboard_->get_env_char("OPENNI_LOG_LEVEL"));
     if (!camera_initialize()) {
         spdlog::get(name)->error("Initialization failed");
         exit(0);
