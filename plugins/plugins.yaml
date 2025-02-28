@@ -3,10 +3,9 @@ all_visualizers: openvins
 
 profiles:
   - ci:
-    plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,ground_truth_slam,gldemo,timewarp_gl,audio_pipeline
-    build_type: Debug
+    plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,ground_truth_slam,vkdemo,timewarp_vk,native_renderer,debugview
     env_vars:
-      duration: 10
+      duration: 15
       enable_offload:   False
       enable_alignment: False
       enable_verbose_errors: False
