@@ -50,7 +50,7 @@ int main(int argc, const char* argv[]) {
     // long run_dur = 0;
     options.add_options()("d,duration", "The duration to run for", cxxopts::value<long>())(
         "data", "The data", cxxopts::value<std::string>())("demo_data", "The demo data", cxxopts::value<std::string>())(
-            "enable_offload", "")("enable_alignment", "")("enable_verbose_errors", "")("enable_pre_sleep", "")("enable_monado", "")(
+        "enable_offload", "")("enable_alignment", "")("enable_verbose_errors", "")("enable_pre_sleep", "")("enable_monado", "")(
         "h,help", "Produce help message")("realsense_cam", "", cxxopts::value<std::string>()->default_value("auto"))(
         "p,plugins", "The plugins to use", cxxopts::value<std::vector<std::string>>())("y,yaml", "Yaml config file",
                                                                                        cxxopts::value<std::string>())(

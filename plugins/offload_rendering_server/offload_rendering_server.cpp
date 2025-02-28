@@ -11,8 +11,9 @@ offload_rendering_server::offload_rendering_server(const std::string& name, phon
     , frames_topic_{switchboard_->get_network_writer<compressed_frame>("compressed_frames", {})}
     , render_pose_{switchboard_->get_reader<fast_pose_type>("render_pose_")} {
     // Only encode and pass depth if requested - otherwise skip it.
-    use_pass_depth_ = switchboard_->get_env_char("ILLIXR_USE_DEPTH_IMAGES") != nullptr && std::stoi(switchboard_->get_env_char("ILLIXR_USE_DEPTH_IMAGES"));
-    nalu_only_      = switchboard_->get_env_char("ILLIXR_OFFLOAD_RENDERING_NALU_ONLY") != nullptr &&
+    use_pass_depth_ = switchboard_->get_env_char("ILLIXR_USE_DEPTH_IMAGES") != nullptr &&
+        std::stoi(switchboard_->get_env_char("ILLIXR_USE_DEPTH_IMAGES"));
+    nalu_only_ = switchboard_->get_env_char("ILLIXR_OFFLOAD_RENDERING_NALU_ONLY") != nullptr &&
         std::stoi(switchboard_->get_env_char("ILLIXR_OFFLOAD_RENDERING_NALU_ONLY"));
     if (use_pass_depth_) {
         log_->debug("Encoding depth images for the client");

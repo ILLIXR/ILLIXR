@@ -33,7 +33,7 @@ public:
 #ifndef ENABLE_MONADO
     skip_option _p_should_skip() override;
     void        _p_thread_setup() override;
-    void _p_one_iteration() override;
+    void        _p_one_iteration() override;
 #endif
 
 private:
@@ -149,7 +149,7 @@ private:
 
     bool disable_warp_;
 
-    bool enable_offload_;
+    bool             enable_offload_;
     record_coalescer timewarp_gpu_logger_;
     // Switchboard plug for sending hologram calls
     switchboard::writer<data_format::hologram_input> hologram_;

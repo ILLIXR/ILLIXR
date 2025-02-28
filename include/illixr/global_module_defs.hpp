@@ -98,8 +98,8 @@ inline bool str_to_bool(const std::string& var) {
     std::string temp = var;
     std::transform(temp.begin(), temp.end(), temp.begin(), ::toupper);
     return (temp == "TRUE" || temp == "1") ? true
-        : (temp == "FALSE") ? false
-                            : throw std::runtime_error("Invalid conversion from std::string to bool");
+        : (temp == "FALSE")                ? false
+                                           : throw std::runtime_error("Invalid conversion from std::string to bool");
 }
 
 } // namespace ILLIXR

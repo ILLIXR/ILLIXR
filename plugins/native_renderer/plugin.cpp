@@ -31,7 +31,8 @@ using namespace ILLIXR::data_format;
     , clock_{phonebook_->lookup_impl<relative_clock>()}
     , vsync_{switchboard_->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")}
     , last_fps_update_{std::chrono::duration<long, std::nano>{0}} {
-    if (switchboard_->get_env_char("ILLIXR_SERVER_WIDTH") == nullptr || switchboard_->get_env_char("ILLIXR_SERVER_HEIGHT") == nullptr) {
+    if (switchboard_->get_env_char("ILLIXR_SERVER_WIDTH") == nullptr ||
+        switchboard_->get_env_char("ILLIXR_SERVER_HEIGHT") == nullptr) {
         // throw std::runtime_error("Please define ILLIXR_SERVER_WIDTH and ILLIXR_SERVER_HEIGHT");
         log_->warn("Please define ILLIXR_SERVER_WIDTH and ILLIXR_SERVER_HEIGHT. Default values used.");
         server_width_  = 2560;

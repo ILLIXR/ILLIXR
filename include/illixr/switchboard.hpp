@@ -905,7 +905,7 @@ private:
             : position_{0., 0., 0.}
             , orientation_{1., 0., 0., 0.} {
             const char* ini_pose = getenv("WCS_ORIGIN");
-            //  =
+            // =
             // if (!ini_pose.empty()) {
             if (ini_pose) {
                 std::string        ini_pose_str(ini_pose);

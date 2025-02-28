@@ -15,11 +15,11 @@
 #ifndef DOUBLE_INCLUDE
 extern "C" {
 bool needs_vulkan() {
-#ifdef VULKAN_REQUIRED
+    #ifdef VULKAN_REQUIRED
     return true;
-#else
+    #else
     return false;
-#endif
+    #endif
 }
 }
 #endif

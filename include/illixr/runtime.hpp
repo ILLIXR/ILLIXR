@@ -32,8 +32,11 @@ public:
         _stop();
     }
 
-    std::shared_ptr<switchboard> get_switchboard() { return switchboard_; }
-    virtual ~runtime()                                     = default;
+    std::shared_ptr<switchboard> get_switchboard() {
+        return switchboard_;
+    }
+
+    virtual ~runtime() = default;
 
 protected:
     bool                         enable_vulkan_ = false;

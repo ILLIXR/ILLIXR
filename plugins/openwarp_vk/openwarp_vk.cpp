@@ -10,14 +10,16 @@ openwarp_vk::openwarp_vk(const phonebook* pb)
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
     , pose_prediction_{phonebook_->lookup_impl<pose_prediction>()}
     , disable_warp_{switchboard_->get_env_bool("ILLIXR_TIMEWARP_DISABLE", "False")} {
-    if (switchboard_->get_env_char("ILLIXR_OPENWARP_WIDTH") == nullptr || switchboard_->get_env_char("ILLIXR_OPENWARP_HEIGHT") == nullptr) {
+    if (switchboard_->get_env_char("ILLIXR_OPENWARP_WIDTH") == nullptr ||
+        switchboard_->get_env_char("ILLIXR_OPENWARP_HEIGHT") == nullptr) {
         throw std::runtime_error("Please define ILLIXR_OPENWARP_WIDTH and ILLIXR_OPENWARP_HEIGHT");
     }
 
     openwarp_width_  = std::stoi(switchboard_->get_env_char("ILLIXR_OPENWARP_WIDTH"));
     openwarp_height_ = std::stoi(switchboard_->get_env_char("ILLIXR_OPENWARP_HEIGHT"));
 
-    using_godot_ = switchboard_->get_env_char("ILLIXR_USING_GODOT") != nullptr && std::stoi(switchboard_->get_env_char("ILLIXR_USING_GODOT"));
+    using_godot_ = switchboard_->get_env_char("ILLIXR_USING_GODOT") != nullptr &&
+        std::stoi(switchboard_->get_env_char("ILLIXR_USING_GODOT"));
     if (using_godot_)
         std::cout << "Using Godot projection matrices!" << std::endl;
     else
@@ -88,7 +90,8 @@ void openwarp_vk::setup(VkRenderPass render_pass, uint32_t subpass,
     create_offscreen_images();
     create_descriptor_sets();
 
-    compare_images_ = switchboard_->get_env_char("ILLIXR_COMPARE_IMAGES") != nullptr && std::stoi(switchboard_->get_env_char("ILLIXR_COMPARE_IMAGES"));
+    compare_images_ = switchboard_->get_env_char("ILLIXR_COMPARE_IMAGES") != nullptr &&
+        std::stoi(switchboard_->get_env_char("ILLIXR_COMPARE_IMAGES"));
     if (compare_images_) {
         // Note that the Quaternion constructor takes the w component first.
         assert(switchboard_->get_env_char("ILLIXR_POSE_FILE") != nullptr);

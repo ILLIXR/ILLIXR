@@ -49,7 +49,7 @@ public:
         phonebook_.register_impl<record_logger>(std::make_shared<sqlite_record_logger>());
         phonebook_.register_impl<gen_guid>(std::make_shared<gen_guid>());
         phonebook_.register_impl<switchboard>(std::make_shared<switchboard>(&phonebook_));
-        switchboard_ = phonebook_.lookup_impl<switchboard>();
+        switchboard_   = phonebook_.lookup_impl<switchboard>();
         enable_monado_ = switchboard_->get_env_bool("ENABLE_MONADO", "False"); // can't use switchboard interface here
         enable_vulkan_ = false;
         phonebook_.register_impl<stoplight>(std::make_shared<stoplight>());
@@ -78,7 +78,8 @@ public:
         }
         if (enable_vulkan_) {
             // get env var ILLIXR_DISPLAY_MODE
-            std::string display_mode = switchboard_->get_env_char("ILLIXR_DISPLAY_MODE") ? switchboard_->get_env_char("ILLIXR_DISPLAY_MODE") : "glfw";
+            std::string display_mode =
+                switchboard_->get_env_char("ILLIXR_DISPLAY_MODE") ? switchboard_->get_env_char("ILLIXR_DISPLAY_MODE") : "glfw";
             if (display_mode != "none")
                 phonebook_.register_impl<vulkan::display_provider>(std::make_shared<display_vk>(&phonebook_));
         }
@@ -94,7 +95,8 @@ public:
         phonebook_.lookup_impl<relative_clock>()->start();
 
         if (enable_vulkan_) {
-            const std::string display_mode = switchboard_->get_env_char("ILLIXR_DISPLAY_MODE") ? switchboard_->get_env_char("ILLIXR_DISPLAY_MODE") : "glfw";
+            const std::string display_mode =
+                switchboard_->get_env_char("ILLIXR_DISPLAY_MODE") ? switchboard_->get_env_char("ILLIXR_DISPLAY_MODE") : "glfw";
             if (display_mode != "none") {
                 std::set<const char*> instance_extensions;
                 std::set<const char*> device_extensions;
