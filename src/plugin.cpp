@@ -3,7 +3,7 @@
 #include "illixr/switchboard.hpp"
 
 #ifndef ILLIXR_INSTALL_PATH
-#error "ILLIXR_INSTALL_PATH must be defined"
+    #error "ILLIXR_INSTALL_PATH must be defined"
 #endif
 #ifndef BOOST_DATE_TIME_NO_LIB
     #define BOOST_DATE_TIME_NO_LIB
@@ -170,14 +170,15 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
             std::cout << "Reading " << options["yaml"].as<std::string>() << std::endl;
             auto                     config_file_full = options["yaml"].as<std::string>();
             std::string              config_file      = config_file_full.substr(config_file_full.find_last_of("/\\") + 1);
-            std::vector<std::string> config_list      = {config_file,
-                                                         config_file_full,
-                                                         home_dir + "/.illixr/profiles/" + config_file_full,
-                                                         home_dir + "/.illixr/profiles/" + config_file,
-                                                         home_dir + "/" + config_file_full,
-                                                         home_dir + "/" + config_file,
-                                                         std::string(ILLIXR_INSTALL_PATH) + "/../share/illixr/profiles/" + config_file_full,
-                                                         std::string(ILLIXR_INSTALL_PATH) + "/../share/illixr/profiles/" + config_file};
+            std::vector<std::string> config_list      = {
+                config_file,
+                config_file_full,
+                home_dir + "/.illixr/profiles/" + config_file_full,
+                home_dir + "/.illixr/profiles/" + config_file,
+                home_dir + "/" + config_file_full,
+                home_dir + "/" + config_file,
+                std::string(ILLIXR_INSTALL_PATH) + "/../share/illixr/profiles/" + config_file_full,
+                std::string(ILLIXR_INSTALL_PATH) + "/../share/illixr/profiles/" + config_file};
             for (auto& filepath : config_list) {
                 try {
                     config = YAML::LoadFile(filepath);
