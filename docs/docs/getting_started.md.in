@@ -6,15 +6,12 @@ builds each requested plugin, builds the main ILLIXR binary, and (optionally) in
 ILLIXR currently only builds on Linux systems, and has been tested on the following configurations:
 
 - Ubuntu
-    - 20.04
     - 22.04
+    - 24.04
 - Fedora[^1]
-    - 37
-    - 38
-- CentOS[^1]
-    - stream9
+    - 37+
 
-[^1]: Primary development is aimed at Ubuntu systems, full support for Fedora and CentOS may lag behind.
+[^1]: Primary development is aimed at Ubuntu systems, full support for Fedora may lag behind.
 
 Other versions of these operating systems may work, but will likely require some manual installation of dependencies.
 For other Linux distributions (e.g. RHEL) it will require significant manual installation of dependencies as many
@@ -74,8 +71,8 @@ Use the following to install the dependencies for the selected plugins:
 
 #### Build command
 
-Use the following to build and install ILLIXR. You can specify the install location by giving the path to `CMAKE_INSTALL_PREFIX`. 
-If you want the default install path then do not add the option to the command line. 
+Use the following to build and install ILLIXR. You can specify the install location by giving the path to `CMAKE_INSTALL_PREFIX`.
+If you want the default install path then do not add the option to the command line.
 Note that if your install prefix requires sudo privileges then you will need to run both the build and install under sudo (this is due to the way cmake builds and installs some of the pre-packaged dependencies during the build phase).
 
 <div id="cmake" class="code-box-copy">
@@ -85,7 +82,7 @@ Note that if your install prefix requires sudo privileges then you will need to 
 
 Common CMake command line arguments (always prepend with a `-D`):
 
--  ***CMAKE_INSTALL_PREFIX*** 
+-  ***CMAKE_INSTALL_PREFIX***
    The root path to install the libraries and binary to. This defaults to `/usr/local`.
 -  ***CMAKE_BUILD_TYPE***
    The build type to do: Debug, Release, RelWithDebInfo
@@ -233,7 +230,6 @@ If you want to add your own plugin, see [Writing Your Plugin][11].
     const operatingSystems = {};
     const profiles = [];
     var selectedOS = "";
-    var selectedOSv = "";
     const plugins = new Set();
     const module_json = @MODULE_JSON@;
 
@@ -283,12 +279,9 @@ If you want to add your own plugin, see [Writing Your Plugin][11].
         if(selectedOS == "Ubuntu") {
             sudoLine = "sudo apt-get install libglew-dev libglu1-mesa-dev libsqlite3-dev libx11-dev libgl-dev pkg-config libopencv-dev libeigen3-dev libc6-dev libspdlog-dev";
             postnotes.innerHTML = "";
-        } else if(selectedOS == "Fedora") {
+        } else {
             sudoLine = "sudo dnf install glew-devel mesa-libGLU-devel sqlite-devel libX11-devel mesa-libGL-devel pkgconf-pkg-config opencv-devel eigen3-devel glibc-devel spdlog-devel";
             postnotes.innerHTML = "Potential issues:<ul><li>If cmake is having trouble with some of the package-config (.pc) files used to locate packages you may need to run the following:" + makeCopyable("sudo sed -i 's/\^\[ \\t\]\*//g' /usr/lib64/pkgconfig/*", "postF") + "</li><li>If the build step is having issues finding some of the include files you may need the following:" + makeCopyable("sudo ln -s /usr/include /include", "post2F") + "</li></ul>";
-        } else {
-            sudoLine = "sudo yum install glew-devel mesa-libGLU-devel sqlite-devel libX11-devel mesa-libGL-devel pkgconf-pkg-config vtk-devel eigen3-devel glibc-devel spdlog-devel";
-            postnotes.innerHTML = "Potential issues:<ul><li>If cmake is having trouble with some of the package-config (.pc) files used to locate packages you may need to run the following:" + makeCopyable("sudo sed -i 's/\^\[ \\t\]\*//g' /usr/lib64/pkgconfig/*", "postC") + "</li><li>If the build step is having issues finding some of the include files you may need the following:" + makeCopyable("sudo ln -s /usr/include /include", "post2C") + "</li></ul>";
         }
 
         for(let m in dependencies) {
@@ -297,21 +290,21 @@ If you want to add your own plugin, see [Writing Your Plugin][11].
                 checked ||= document.getElementById(p).checked;
             }
             if(checked) {
-                sudoLine += " " + dependencies[m].pkg[selectedOS][selectedOSv].pkg;
-                if(dependencies[m].pkg[selectedOS][selectedOSv].postnotes !== "") {
-                    pkgnotes += "<P>" + dependencies[m].pkg[selectedOS][selectedOSv].postnotes;
+                sudoLine += " " + dependencies[m].pkg[selectedOS].pkg;
+                if(dependencies[m].pkg[selectedOS].postnotes !== "") {
+                    pkgnotes += "<P>" + dependencies[m].pkg[selectedOS].postnotes;
                 }
-                if(dependencies[m].pkg[selectedOS][selectedOSv].notes !== "") {
+                if(dependencies[m].pkg[selectedOS].notes !== "") {
                     if(pkginfo !== "") {
                         pkginfo += "<P>";
                     }
-                    pkginfo +=  dependencies[m].pkg[selectedOS][selectedOSv].notes;
+                    pkginfo +=  dependencies[m].pkg[selectedOS].notes;
                 }
             }
         }
 
         if(document.getElementById("withVirt").checked) {
-            sudoLine += " " + dependencies["qemu"].pkg[selectedOS][selectedOSv].pkg;
+            sudoLine += " " + dependencies["qemu"].pkg[selectedOS].pkg;
         }
 
         if(pkginfo !== "") {
@@ -355,7 +348,6 @@ If you want to add your own plugin, see [Writing Your Plugin][11].
     function updateOS(os_str) {
         const items = os_str.split(".");
         selectedOS = items[0];
-        selectedOSv = items[1];
         updateSudo();
     }
     function checkAll() {
@@ -389,20 +381,19 @@ If you want to add your own plugin, see [Writing Your Plugin][11].
         for(let x in operatingSystems) {
             let txt = x + ":";
             for(let ver of operatingSystems[x]) {
-                txt += "<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type='radio' id='" + x + "." + ver + "' name='os_choice' value='" + x + "." + ver + "' onclick='updateOS(this.value);'>" + ver;
+                txt += "<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type='radio' id='" + x + "' name='os_choice' value='" + x + "' onclick='updateOS(this.value);'>" + ver;
             }
             let cell = osrow.insertCell(-1);
             cell.style.verticalAlign = "top";
             cell.innerHTML = txt;
         }
         selectedOS = "Ubuntu";
-        selectedOSv = "22";
-        document.getElementById(selectedOS + "." + selectedOSv).checked = true;
+        document.getElementById(selectedOS).checked = true;
         let tabRef = document.getElementById("profile_table");
 
         let count = 0;
         let currentRow = tabRef.insertRow(-1);
-        
+
         let profilecell = currentRow.insertCell(-1);
         profilecell.innerHTML = "<b>Profiles:</b>";
         profilecell.setAttribute("colspan", profiles.length + 2);

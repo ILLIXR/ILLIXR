@@ -8,7 +8,7 @@
 #
 ########################################################################################
 
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.22)
 
 set(CMAKE_VERBOSE_MAKEFILE True)
 
@@ -90,13 +90,6 @@ if(HT_ENABLE_GPU)
     set(HT_ENABLE_GPU OFF)
 endif()
 include(cmake/HelperFunctions.cmake)
-
-set(VISUALIZER "" CACHE STRING "")
-set(VISUALIZER_TO_USE "ALL" CACHE INTERNAL "")
-if(VISUALIZER)
-    string(TOUPPER ${VISUALIZER} VISUALIZER)
-    set(VISUALIZER_TO_USE ${VISUALIZER} CACHE INTERNAL "")
-endif()
 
 generate_yaml()
 check_plugins()
@@ -206,7 +199,7 @@ include(src/CMakeLists.txt)
 
 # set any plugins that are being built
 set(FULL_PLUGIN_LIST "")
-foreach(ITEM IN LISTS PLUGIN_LIST VISUALIZER_LIST)
+foreach(ITEM IN LISTS PLUGIN_LIST)
     string(TOUPPER "USE_${ITEM}" ITEM_UPPER)
     string(TOLOWER ${ITEM} ITEM_LOWER)
     list(APPEND FULL_PLUGIN_LIST ${ITEM})
@@ -264,9 +257,6 @@ if(ILLIXR_PROFILE_NAMES)
                 DESTINATION ${CMAKE_INSTALL_PREFIX}/share/illixr/profiles)
     endforeach()
 endif()
-
-# reset this, so it is clean for subsequent runs of cmake
-set(VISUALIZER "" CACHE STRING "")
 
 find_package(Python3 COMPONENTS Interpreter)
 if(Python3_FOUND)
