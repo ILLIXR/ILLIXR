@@ -66,9 +66,9 @@ timewarp_gl::timewarp_gl(const std::string& name, phonebook* pb)
     , signal_quad_{switchboard_->get_writer<signal_to_quad>("signal_quad")}
 #endif
     , hologram_{switchboard_->get_writer<hologram_input>("hologram_in")}
-    , disable_warp_{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_TIMEWARP_DISABLE", "False"))}
-    , enable_offload_{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_OFFLOAD_ENABLE", "False"))} {
-    spdlogger(std::getenv("TIMEWARP_GL_LOG_LEVEL"));
+    , disable_warp_{switchboard_->get_env_bool(ILLIXR::getenv_or("ILLIXR_TIMEWARP_DISABLE", "False"))}
+    , enable_offload_{switchboard_->get_env_bool(ILLIXR::getenv_or("ILLIXR_OFFLOAD_ENABLE", "False"))} {
+    spdlogger(switchboard_->get_env_char("TIMEWARP_GL_LOG_LEVEL"));
 #ifndef ILLIXR_MONADO
     const std::shared_ptr<xlib_gl_extended_window> x_win = phonebook_->lookup_impl<xlib_gl_extended_window>();
     display_                                             = x_win->display_;

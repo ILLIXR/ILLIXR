@@ -159,7 +159,7 @@ static std::size_t gen_serial_no() {
 class should_profile_class {
 public:
     should_profile_class() {
-        const char* ILLIXR_STDOUT_METRICS = getenv("ILLIXR_STDOUT_METRICS");
+        const char* ILLIXR_STDOUT_METRICS = getenv("ILLIXR_STDOUT_METRICS"); // can't use switchboard interface here
         actually_should_profile_          = ILLIXR_STDOUT_METRICS && (strcmp(ILLIXR_STDOUT_METRICS, "y") == 0);
     }
 
