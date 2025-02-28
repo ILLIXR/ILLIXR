@@ -21,7 +21,7 @@ set(SRC_FILES plugin.cpp
 
 add_library(${PLUGIN_NAME} SHARED ${SRC_FILES})
 
-target_include_directories(${PLUGIN_NAME} PUBLIC ${Eigen3_INCLUDE_DIRS} ${survive_INCLUDE_DIRS})
+target_include_directories(${PLUGIN_NAME} PUBLIC ${Eigen3_INCLUDE_DIRS} ${survive_INCLUDE_DIRS} ${survive_INCLUDE_DIRS}/redist)
 
 if (LibSurvive_EXTERNAL)
     add_dependencies(${PLUGIN_NAME} LibSurvive_ext)

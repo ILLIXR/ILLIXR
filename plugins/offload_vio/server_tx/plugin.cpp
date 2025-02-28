@@ -23,7 +23,7 @@ using namespace ILLIXR::data_format;
     , imu_int_input_{switchboard_->get_reader<imu_integrator_input>("imu_integrator_input")}
     , vio_pose_writer_{switchboard_->get_network_writer<switchboard::event_wrapper<std::string>>(
           "vio_pose", network::topic_config{.serialization_method = network::topic_config::SerializationMethod::PROTOBUF})} {
-    spdlogger(std::getenv("OFFLOAD_VIO_LOG_LEVEL"));
+    spdlogger(switchboard_->get_env_char("OFFLOAD_VIO_LOG_LEVEL"));
 }
 
 // This schedule function cant go in the constructor because there seems to be an issue with

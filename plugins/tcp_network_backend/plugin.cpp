@@ -6,20 +6,20 @@ tcp_network_backend::tcp_network_backend(const std::string& name_, phonebook* pb
     : plugin(name_, pb_)
     , switchboard_{pb_->lookup_impl<switchboard>()} {
     // read environment variables
-    if (std::getenv("ILLIXR_TCP_HOST_IP")) {
-        self_ip_ = std::getenv("ILLIXR_TCP_HOST_IP");
+    if (switchboard_->get_env_char("ILLIXR_TCP_HOST_IP")) {
+        self_ip_ = switchboard_->get_env_char("ILLIXR_TCP_HOST_IP");
     }
 
-    if (std::getenv("ILLIXR_TCP_HOST_PORT")) {
-        self_port_ = std::stoi(std::getenv("ILLIXR_TCP_HOST_PORT"));
+    if (switchboard_->get_env_char("ILLIXR_TCP_HOST_PORT")) {
+        self_port_ = std::stoi(switchboard_->get_env_char("ILLIXR_TCP_HOST_PORT"));
     }
 
-    if (std::getenv("ILLIXR_TCP_PEER_IP")) {
-        peer_ip_ = std::getenv("ILLIXR_TCP_PEER_IP");
+    if (switchboard_->get_env_char("ILLIXR_TCP_PEER_IP")) {
+        peer_ip_ = switchboard_->get_env_char("ILLIXR_TCP_PEER_IP");
     }
 
-    if (std::getenv("ILLIXR_TCP_PEER_PORT")) {
-        peer_port_ = std::stoi(std::getenv("ILLIXR_TCP_PEER_PORT"));
+    if (switchboard_->get_env_char("ILLIXR_TCP_PEER_PORT")) {
+        peer_port_ = std::stoi(switchboard_->get_env_char("ILLIXR_TCP_PEER_PORT"));
     }
 
     if (peer_port_ != 0) {

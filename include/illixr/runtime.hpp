@@ -32,11 +32,13 @@ public:
         _stop();
     }
 
-    virtual std::shared_ptr<switchboard> get_switchboard() = 0;
+    std::shared_ptr<switchboard> get_switchboard() { return switchboard_; }
     virtual ~runtime()                                     = default;
+
 protected:
-    bool enable_vulkan_ = false;
-    bool enable_monado_ = false;
+    bool                         enable_vulkan_ = false;
+    bool                         enable_monado_ = false;
+    std::shared_ptr<switchboard> switchboard_;
 };
 
 extern "C" runtime* runtime_factory();

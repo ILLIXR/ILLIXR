@@ -1,5 +1,6 @@
 #pragma once
 
+#define DOUBLE_INCLUDE
 #include "illixr/data_format/pose_prediction.hpp"
 #include "illixr/data_format/serializable_data.hpp"
 #include "illixr/switchboard.hpp"
@@ -8,6 +9,7 @@
 #include "illixr/vk/ffmpeg_utils.hpp"
 #include "illixr/vk/render_pass.hpp"
 #include "illixr/vk/vulkan_utils.hpp"
+#undef DOUBLE_INCLUDE
 
 namespace ILLIXR {
 

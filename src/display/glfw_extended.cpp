@@ -8,7 +8,9 @@
 
 using namespace ILLIXR::display;
 
-void glfw_extended::setup_display(VkInstance vk_instance, VkPhysicalDevice vk_physical_device) {
+void glfw_extended::setup_display(const std::shared_ptr<switchboard> sb, VkInstance vk_instance,
+                                  VkPhysicalDevice vk_physical_device) {
+    (void) sb;
     (void) vk_physical_device;
     this->vk_instance_ = vk_instance;
 }

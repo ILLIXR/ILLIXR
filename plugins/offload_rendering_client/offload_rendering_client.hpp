@@ -18,13 +18,13 @@
  * Configuration is controlled through environment variables:
  * - ILLIXR_USE_DEPTH_IMAGES: Enable depth frame reception/decoding
  */
-
+#define DOUBLE_INCLUDE
 // ILLIXR core headers
 #include "illixr/data_format/pose_prediction.hpp"
 #include "illixr/data_format/serializable_data.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
-
+#undef DOUBLE_INCLUDE
 // ILLIXR Vulkan headers
 #include "illixr/vk/display_provider.hpp"
 #include "illixr/vk/ffmpeg_utils.hpp"

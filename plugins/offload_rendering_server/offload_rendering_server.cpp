@@ -11,9 +11,9 @@ offload_rendering_server::offload_rendering_server(const std::string& name, phon
     , frames_topic_{switchboard_->get_network_writer<compressed_frame>("compressed_frames", {})}
     , render_pose_{switchboard_->get_reader<fast_pose_type>("render_pose_")} {
     // Only encode and pass depth if requested - otherwise skip it.
-    use_pass_depth_ = std::getenv("ILLIXR_USE_DEPTH_IMAGES") != nullptr && std::stoi(std::getenv("ILLIXR_USE_DEPTH_IMAGES"));
-    nalu_only_      = std::getenv("ILLIXR_OFFLOAD_RENDERING_NALU_ONLY") != nullptr &&
-        std::stoi(std::getenv("ILLIXR_OFFLOAD_RENDERING_NALU_ONLY"));
+    use_pass_depth_ = switchboard_->get_env_char("ILLIXR_USE_DEPTH_IMAGES") != nullptr && std::stoi(switchboard_->get_env_char("ILLIXR_USE_DEPTH_IMAGES"));
+    nalu_only_      = switchboard_->get_env_char("ILLIXR_OFFLOAD_RENDERING_NALU_ONLY") != nullptr &&
+        std::stoi(switchboard_->get_env_char("ILLIXR_OFFLOAD_RENDERING_NALU_ONLY"));
     if (use_pass_depth_) {
         log_->debug("Encoding depth images for the client");
     } else {
@@ -45,7 +45,7 @@ void offload_rendering_server::_p_thread_setup() {
     log_->info("Obtained display provider");
 
     // Configure encoding bitrate from environment or use default
-    auto bitrate_env = std::getenv("ILLIXR_OFFLOAD_RENDERING_BITRATE");
+    auto bitrate_env = switchboard_->get_env_char("ILLIXR_OFFLOAD_RENDERING_BITRATE");
     if (bitrate_env == nullptr) {
         bitrate_ = OFFLOAD_RENDERING_BITRATE;
     } else {
@@ -57,7 +57,7 @@ void offload_rendering_server::_p_thread_setup() {
     log_->info("Using bitrate: {}", bitrate_);
 
     // Configure framerate from environment or use default
-    auto framerate_env = std::getenv("ILLIXR_OFFLOAD_RENDERING_FRAMERATE");
+    auto framerate_env = switchboard_->get_env_char("ILLIXR_OFFLOAD_RENDERING_FRAMERATE");
     if (framerate_env == nullptr) {
         framerate_ = 144;
     } else {

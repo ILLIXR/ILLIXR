@@ -9,7 +9,8 @@
 
 using namespace ILLIXR::display;
 
-void x11_direct::setup_display(VkInstance vk_instance, VkPhysicalDevice vk_physical_device) {
+void x11_direct::setup_display(const std::shared_ptr<switchboard> switchboard_, VkInstance vk_instance,
+                               VkPhysicalDevice vk_physical_device) {
     this->vk_instance_        = vk_instance;
     this->vk_physical_device_ = vk_physical_device;
 
@@ -30,7 +31,7 @@ void x11_direct::setup_display(VkInstance vk_instance, VkPhysicalDevice vk_physi
         std::cout << "\t[" << index++ << "] " << display.displayName << std::endl;
     }
 
-    auto display_select_str = std::getenv("ILLIXR_DIRECT_MODE_DISPLAY");
+    auto display_select_str = switchboard_->get_env_char("ILLIXR_DIRECT_MODE_DISPLAY");
     int  display_select     = 0;
     if (display_select_str == nullptr) {
         std::cout << "ILLIXR_DIRECT_MODE_DISPLAY not set, defaulting to the first display ("
@@ -160,7 +161,7 @@ bool x11_direct::register_display_timings_event(VkDevice vk_device) {
         return false;
     }
 
-    auto display_event_info = (VkDisplayEventInfoEXT) {
+    auto display_event_info = (VkDisplayEventInfoEXT){
         .sType        = VK_STRUCTURE_TYPE_DISPLAY_EVENT_INFO_EXT,
         .pNext        = nullptr,
         .displayEvent = VK_DISPLAY_EVENT_TYPE_FIRST_PIXEL_OUT_EXT,

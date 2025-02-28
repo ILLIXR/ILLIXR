@@ -77,7 +77,7 @@ timewarp_vk::timewarp_vk(const phonebook* const pb)
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
     , pose_prediction_{phonebook_->lookup_impl<pose_prediction>()}
     , vsync_{switchboard_->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")}
-    , disable_warp_{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_TIMEWARP_DISABLE", "False"))} { }
+    , disable_warp_{switchboard_->get_env_bool("ILLIXR_TIMEWARP_DISABLE", "False")} { }
 
 void timewarp_vk::initialize() {
     if (display_provider_->vma_allocator_) {
@@ -138,12 +138,12 @@ void timewarp_vk::setup(VkRenderPass render_pass, uint32_t subpass,
     create_pipeline(render_pass, subpass);
     timewarp_render_pass_ = render_pass;
 
-    clamp_edge_ = std::getenv("ILLIXR_TIMEWARP_CLAMP_EDGE") != nullptr && std::stoi(std::getenv("ILLIXR_TIMEWARP_CLAMP_EDGE"));
-    compare_images_ = std::getenv("ILLIXR_COMPARE_IMAGES") != nullptr && std::stoi(std::getenv("ILLIXR_COMPARE_IMAGES"));
+    clamp_edge_ = switchboard_->get_env_char("ILLIXR_TIMEWARP_CLAMP_EDGE") != nullptr && std::stoi(switchboard_->get_env_char("ILLIXR_TIMEWARP_CLAMP_EDGE"));
+    compare_images_ = switchboard_->get_env_char("ILLIXR_COMPARE_IMAGES") != nullptr && std::stoi(switchboard_->get_env_char("ILLIXR_COMPARE_IMAGES"));
     if (compare_images_) {
         // Note that the Quaternion constructor takes the w component first.
-        assert(std::getenv("ILLIXR_POSE_FILE") != nullptr);
-        std::string pose_filename = std::string(std::getenv("ILLIXR_POSE_FILE"));
+        assert(switchboard_->get_env_char("ILLIXR_POSE_FILE") != nullptr);
+        std::string pose_filename = switchboard_->get_env("ILLIXR_POSE_FILE");
         std::cout << "Reading file from " << pose_filename << std::endl;
 
         std::ifstream pose_file(pose_filename);

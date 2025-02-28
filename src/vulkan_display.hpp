@@ -32,10 +32,10 @@ public:
     }
 
     void start(std::set<const char*> instance_extensions, std::set<const char*> device_extensions) {
-        auto manual_device_selection = std::getenv("ILLIXR_VULKAN_SELECT_GPU");
+        auto manual_device_selection = switchboard_->get_env_char("ILLIXR_VULKAN_SELECT_GPU");
         selected_gpu_                = manual_device_selection ? std::stoi(manual_device_selection) : -1;
 
-        char* env_var = std::getenv("ILLIXR_DISPLAY_MODE");
+        const char* env_var = switchboard_->get_env_char("ILLIXR_DISPLAY_MODE");
         if (env_var == nullptr) {
             std::cout << "Defaulting to GLFW for display backend" << std::endl;
             backend_type_ = display::display_backend::GLFW;
@@ -83,12 +83,12 @@ public:
 
         create_vk_instance(std::move(instance_extensions));
         if (backend_type_ == display::display_backend::GLFW) {
-            backend_->setup_display(vk_instance_, nullptr);
+            backend_->setup_display(switchboard_, vk_instance_, nullptr);
             vk_surface_ = backend_->create_surface();
             select_physical_device();
         } else {
             select_physical_device();
-            backend_->setup_display(vk_instance_, vk_physical_device_);
+            backend_->setup_display(switchboard_, vk_instance_, vk_physical_device_);
             vk_surface_ = backend_->create_surface();
         }
 
@@ -126,8 +126,8 @@ public:
 private:
     void create_vk_instance(const std::set<const char*>& instance_extensions) {
         // Enable validation layers if ILLIXR_VULKAN_VALIDATION_LAYERS is set to 1
-        bool enable_validation_layers = std::getenv("ILLIXR_VULKAN_VALIDATION_LAYERS") != nullptr &&
-            std::stoi(std::getenv("ILLIXR_VULKAN_VALIDATION_LAYERS"));
+        bool enable_validation_layers = switchboard_->get_env_char("ILLIXR_VULKAN_VALIDATION_LAYERS") != nullptr &&
+            std::stoi(switchboard_->get_env_char("ILLIXR_VULKAN_VALIDATION_LAYERS"));
 
         VkApplicationInfo app_info{};
         app_info.sType              = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -273,8 +273,7 @@ private:
         for (const auto& device : suitable_devices) {
             VkPhysicalDeviceProperties device_properties;
             vkGetPhysicalDeviceProperties(device, &device_properties);
-            std::cout << "\t"
-                      << "[" << index << "] " << device_properties.deviceName << std::endl;
+            std::cout << "\t" << "[" << index << "] " << device_properties.deviceName << std::endl;
             index++;
         }
         if (!unsuitable_devices.empty()) {

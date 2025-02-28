@@ -23,7 +23,7 @@ using namespace ILLIXR::data_format;
 [[maybe_unused]] native_renderer::native_renderer(const std::string& name, phonebook* pb)
     : threadloop{name, pb}
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
-    , log_(spdlogger(std::getenv("NATIVE_RENDERER_LOG_LEVEL")))
+    , log_(spdlogger(switchboard_->get_env_char("NATIVE_RENDERER_LOG_LEVEL")))
     , pose_prediction_{phonebook_->lookup_impl<pose_prediction>()}
     , display_sink_{phonebook_->lookup_impl<vulkan::display_provider>()}
     , timewarp_{phonebook_->lookup_impl<vulkan::timewarp>()}
@@ -31,14 +31,14 @@ using namespace ILLIXR::data_format;
     , clock_{phonebook_->lookup_impl<relative_clock>()}
     , vsync_{switchboard_->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")}
     , last_fps_update_{std::chrono::duration<long, std::nano>{0}} {
-    if (std::getenv("ILLIXR_SERVER_WIDTH") == nullptr || std::getenv("ILLIXR_SERVER_HEIGHT") == nullptr) {
+    if (switchboard_->get_env_char("ILLIXR_SERVER_WIDTH") == nullptr || switchboard_->get_env_char("ILLIXR_SERVER_HEIGHT") == nullptr) {
         // throw std::runtime_error("Please define ILLIXR_SERVER_WIDTH and ILLIXR_SERVER_HEIGHT");
         log_->warn("Please define ILLIXR_SERVER_WIDTH and ILLIXR_SERVER_HEIGHT. Default values used.");
         server_width_  = 2560;
         server_height_ = 1440;
     } else {
-        server_width_  = std::stoi(std::getenv("ILLIXR_SERVER_WIDTH"));
-        server_height_ = std::stoi(std::getenv("ILLIXR_SERVER_HEIGHT"));
+        server_width_  = std::stoi(switchboard_->get_env_char("ILLIXR_SERVER_WIDTH"));
+        server_height_ = std::stoi(switchboard_->get_env_char("ILLIXR_SERVER_HEIGHT"));
     }
 }
 

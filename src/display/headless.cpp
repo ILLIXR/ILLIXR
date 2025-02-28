@@ -2,7 +2,9 @@
 
 using namespace ILLIXR::display;
 
-void headless::setup_display(VkInstance vk_instance, VkPhysicalDevice vk_physical_device) {
+void headless::setup_display(const std::shared_ptr<switchboard> sb, VkInstance vk_instance,
+                             VkPhysicalDevice vk_physical_device) {
+    (void) sb;
     (void) vk_instance;
     (void) vk_physical_device;
 }

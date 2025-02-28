@@ -23,7 +23,7 @@
 using namespace ILLIXR;
 using namespace ILLIXR::data_format;
 
-typedef void (*glx_swap_interval_ext_proc)(Display* display_, GLXDrawable drawable, int interval);
+typedef void (*glXSwapIntervalEXTProc)(Display* display_, GLXDrawable drawable, int interval);
 
 const record_header timewarp_gpu_record{"timewarp_gpu",
                                         {
@@ -42,12 +42,6 @@ const record_header mtp_record{"mtp_record",
                                    {"render_to_display", typeid(std::chrono::nanoseconds)},
                                }};
 
-#ifdef ENABLE_MONADO
-typedef plugin timewarp_type;
-#else
-typedef threadloop timewarp_type;
-#endif
-
 timewarp_gl::timewarp_gl(const std::string& name, phonebook* pb)
     : timewarp_type{name, pb}
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
@@ -58,19 +52,19 @@ timewarp_gl::timewarp_gl(const std::string& name, phonebook* pb)
     , vsync_estimate_{switchboard_->get_writer<switchboard::event_wrapper<time_point>>("vsync_estimate")}
     , offload_data_{switchboard_->get_writer<texture_pose>("texture_pose")}
     , mtp_logger_{record_logger_}
-    // TODO: Use #198 to configure this. Delete getenv_or.
+    // TODO: Use #198 to configure this.
     // This is useful for experiments which seek to evaluate the end-effect of timewarp vs no-timewarp.
     // Timewarp poses a "second channel" by which pose data can correct the video stream,
     // which results in a "multipath" between the pose and the video stream.
     // In production systems, this is certainly a good thing, but it makes the system harder to analyze.
-    , disable_warp_{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_TIMEWARP_DISABLE", "False"))}
-    , enable_offload_{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_OFFLOAD_ENABLE", "False"))}
+    , disable_warp_{switchboard_->get_env_bool("ILLIXR_TIMEWARP_DISABLE", "False")}
+    , enable_offload_{switchboard_->get_env_bool("ILLIXR_OFFLOAD_ENABLE", "False")}
 #else
     , signal_quad_{switchboard_->get_writer<signal_to_quad>("signal_quad")}
 #endif
     , timewarp_gpu_logger_{record_logger_}
     , hologram_{switchboard_->get_writer<hologram_input>("hologram_in")} {
-    spdlogger(std::getenv("TIMEWARP_GL_LOG_LEVEL"));
+    spdlogger(switchboard_->get_env_char("TIMEWARP_GL_LOG_LEVEL"));
 #ifndef ENABLE_MONADO
     const std::shared_ptr<xlib_gl_extended_window> x_win = phonebook_->lookup_impl<xlib_gl_extended_window>();
     display_                                             = x_win->display_;
@@ -385,7 +379,7 @@ void timewarp_gl::_setup() {
 
     // set swap interval for 1
     // TODO do we still need this if timewarp is not doing the presenting?
-    auto glx_swap_interval_ext = (glx_swap_interval_ext_proc) glXGetProcAddressARB((const GLubyte*) "glx_swap_interval_ext");
+    auto glx_swap_interval_ext = (glXSwapIntervalEXTProc) glXGetProcAddressARB((const GLubyte*) "glx_swap_interval_ext");
     glx_swap_interval_ext(display_, root_window_, 1);
 
     // Init and verify GLEW

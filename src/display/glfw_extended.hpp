@@ -15,7 +15,8 @@ public:
      *
      * @throws runtime_error If GLFW initialization fails.
      */
-    void setup_display(VkInstance vk_instance, VkPhysicalDevice vk_physical_device) override;
+    void setup_display(const std::shared_ptr<switchboard> sb, VkInstance vk_instance,
+                       VkPhysicalDevice vk_physical_device) override;
 
     static void poll_window_events();
 

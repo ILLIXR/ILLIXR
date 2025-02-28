@@ -14,7 +14,11 @@
 
 namespace ILLIXR {
 
+#ifdef ENABLE_MONADO
+typedef plugin timewarp_type;
+#else
 typedef threadloop timewarp_type;
+#endif
 
 class timewarp_gl : public timewarp_type {
 public:
@@ -29,8 +33,8 @@ public:
 #ifndef ENABLE_MONADO
     skip_option _p_should_skip() override;
     void        _p_thread_setup() override;
-#endif
     void _p_one_iteration() override;
+#endif
 
 private:
     GLubyte*      read_texture_image();
@@ -92,11 +96,6 @@ private:
     record_coalescer mtp_logger_;
 #endif
 
-    record_coalescer timewarp_gpu_logger_;
-
-    // Switchboard plug for sending hologram calls
-    switchboard::writer<data_format::hologram_input> hologram_;
-
     GLuint timewarp_shader_program_{};
 
     time_point time_last_swap_{};
@@ -151,6 +150,9 @@ private:
     bool disable_warp_;
 
     bool enable_offload_;
+    record_coalescer timewarp_gpu_logger_;
+    // Switchboard plug for sending hologram calls
+    switchboard::writer<data_format::hologram_input> hologram_;
 
     // PBO buffer for reading texture image
     GLuint PBO_buffer_{};

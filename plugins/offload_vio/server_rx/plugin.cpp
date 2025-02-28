@@ -15,7 +15,7 @@ using namespace ILLIXR::data_format;
     , imu_{switchboard_->get_writer<imu_type>("imu")}
     , cam_{switchboard_->get_writer<binocular_cam_type>("cam")}
     , imu_cam_reader_{switchboard_->get_buffered_reader<switchboard::event_wrapper<std::string>>("compressed_imu_cam")}
-    , log_(spdlogger(std::getenv("OFFLOAD_VIO_LOG_LEVEL"))) {
+    , log_(spdlogger(switchboard_->get_env_char("OFFLOAD_VIO_LOG_LEVEL"))) {
     log_->info("Camera Time,Uplink Time(ms)");
 }
 

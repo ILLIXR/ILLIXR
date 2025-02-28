@@ -18,7 +18,7 @@ offload_rendering_client::offload_rendering_client(const std::string& name, phon
     display_provider_ffmpeg = display_provider_;
 
     // Configure depth frame handling
-    use_depth_ = std::getenv("ILLIXR_USE_DEPTH_IMAGES") != nullptr && std::stoi(std::getenv("ILLIXR_USE_DEPTH_IMAGES"));
+    use_depth_ = switchboard_->get_env_char("ILLIXR_USE_DEPTH_IMAGES") != nullptr && std::stoi(switchboard_->get_env_char("ILLIXR_USE_DEPTH_IMAGES"));
     log_->debug(use_depth_ ? "Encoding depth images for the client" : "Not encoding depth images for the client");
 }
 

@@ -23,7 +23,7 @@ using ImuBias = gtsam::imuBias::ConstantBias;
     , imu_integrator_input_{switchboard_->get_reader<imu_integrator_input>("imu_integrator_input")}
     , imu_raw_{switchboard_->get_writer<imu_raw_type>("imu_raw")}
     , log_(spdlogger(nullptr)) {
-    // spdlogger((std::getenv("GTSAM_INTEGRATOR_LOG_LEVEL"));
+    // spdlogger((switchboard_->get_env_char("GTSAM_INTEGRATOR_LOG_LEVEL"));
     // spd_add_file_sink("gtsam", "csv", "debug");
     switchboard_->schedule<imu_type>(id_, "imu", [&](const switchboard::ptr<const imu_type>& datum, size_t) {
         callback(datum);

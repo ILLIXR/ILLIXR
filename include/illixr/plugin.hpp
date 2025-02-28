@@ -12,6 +12,7 @@
 #include <typeinfo>
 #include <utility>
 
+#ifndef DOUBLE_INCLUDE
 extern "C" {
 bool needs_vulkan() {
 #ifdef VULKAN_REQUIRED
@@ -21,6 +22,7 @@ bool needs_vulkan() {
 #endif
 }
 }
+#endif
 
 namespace ILLIXR {
 
