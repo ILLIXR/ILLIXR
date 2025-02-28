@@ -2,7 +2,8 @@
 plugins: pose_lookup,timewarp_vk
 build_flags: ENABLE_MONADO
 visualizers: openvins
-enable_offload: False
-enable_alignment: False
-enable_verbose_errors: False
-enable_pre_sleep: False
+env_vars:
+  enable_offload: false
+  enable_alignment: false
+  enable_verbose_errors: false
+  enable_pre_sleep: false

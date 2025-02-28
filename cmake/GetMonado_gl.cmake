@@ -1,7 +1,7 @@
 # module to download, build and install the Monado_gl ILLIXR plugin
 
 # get dependencies
-get_external(Vulkan)
+get_external_for_plugin(Vulkan)
 
 find_package(gflags REQUIRED)
 find_package(JPEG REQUIRED)

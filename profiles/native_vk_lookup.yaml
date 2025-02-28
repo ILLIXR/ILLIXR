@@ -1,7 +1,8 @@
 # This file was auto generated, take caution if manually editing.
 plugins: pose_lookup,timewarp_vk,vkdemo,native_renderer
 visualizers: openvins
-enable_offload: false
-enable_alignment: false
-enable_verbose_errors: false
-enable_pre_sleep: false
+env_vars:
+  enable_offload: false
+  enable_alignment: false
+  enable_verbose_errors: false
+  enable_pre_sleep: false

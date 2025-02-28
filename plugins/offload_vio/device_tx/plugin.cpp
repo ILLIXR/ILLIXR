@@ -3,14 +3,6 @@
 #include "illixr/network/topic_config.hpp"
 #include "video_encoder.hpp"
 
-// #include "illixr/opencv_data_types.hpp"
-// #include "illixr/phonebook.hpp"
-// #include "illixr/serializable_data.hpp"
-// #include "illixr/stoplight.hpp"
-// #include "illixr/switchboard.hpp"
-// #include "illixr/threadloop.hpp"
-// #include "video_encoder.h"
-
 #include <cassert>
 #include <opencv2/core/mat.hpp>
 

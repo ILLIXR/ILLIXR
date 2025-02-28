@@ -44,7 +44,7 @@ void spdlogger(const std::string& name, const char* log_level) {
 class runtime_impl : public runtime {
 public:
     explicit runtime_impl() {
-        spdlogger("illixr", std::getenv("ILLIXR_LOG_LEVEL"));
+        spdlogger("illixr", std::getenv("ILLIXR_LOG_LEVEL")); // can't use switchboard interface here
         phonebook_.register_impl<relative_clock>(std::make_shared<relative_clock>());
         phonebook_.register_impl<record_logger>(std::make_shared<sqlite_record_logger>());
         phonebook_.register_impl<gen_guid>(std::make_shared<gen_guid>());

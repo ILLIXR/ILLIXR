@@ -1,7 +1,7 @@
 find_package(glfw3 QUIET)
-if(NOT glfw3_FOUND)
+if (NOT glfw3_FOUND)
     pkg_search_module(glfw3 REQUIRED glfw3)
-endif()
+endif ()
 
 find_package(OpenGL REQUIRED)
 
@@ -18,14 +18,12 @@ add_library(illixr_serializable_data OBJECT serializable_data.cpp
 
 target_include_directories(illixr_serializable_data PUBLIC ${CMAKE_SOURCE_DIR}/include)
 
-if (ENABLE_VULKAN)
-    add_library(illixr_vulkan_utils STATIC vulkan_utils.cpp
-                vulkan_utils.hpp
-    )
+add_library(illixr_vulkan_utils STATIC vulkan_utils.cpp
+            vulkan_utils.hpp
+)
 
-    target_include_directories(illixr_vulkan_utils PUBLIC ${CMAKE_SOURCE_DIR}/include)
-    target_link_libraries(illixr_vulkan_utils PUBLIC spdlog::spdlog)
-endif()
+target_include_directories(illixr_vulkan_utils PUBLIC ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(illixr_vulkan_utils PUBLIC spdlog::spdlog)
 
 add_library(illixr_imgui STATIC
             imgui/imconfig.h

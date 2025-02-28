@@ -41,6 +41,12 @@ namespace ILLIXR {
 
 using plugin_id_t = std::size_t;
 
+const std::vector<std::string> ignore_vars = {"plugins"};
+const std::vector<std::string> ENV_VARS    = {
+    "ILLIXR_ENABLE_PRE_SLEEP",
+    "ILLIXR_LOG_LEVEL",
+    "ILLIXR_RUN_DURATION",
+};
 /**
  * @Should be private to Switchboard.
  */
@@ -667,7 +673,16 @@ public:
      */
     explicit switchboard(const phonebook* pb)
         : phonebook_{pb}
-        , record_logger_{pb ? pb->lookup_impl<record_logger>() : nullptr} { }
+        , record_logger_{pb ? pb->lookup_impl<record_logger>() : nullptr} {
+        for (const auto& item : ENV_VARS) {
+            char* value = getenv(item.c_str());
+            if (value) {
+                env_vars_[item] = value;
+            } else {
+                env_vars_[item] = "";
+            }
+        }
+    }
 
     [[maybe_unused]] bool topic_exists(const std::string& topic_name) {
         const std::shared_lock lock{registry_lock_};
@@ -683,6 +698,81 @@ public:
         } else {
             throw std::runtime_error("Topic not found");
         }
+    }
+
+    /**
+     * @brief Set the local environment variable to the given value
+     */
+    void set_env(const std::string& var, const std::string& val) {
+        env_vars_[var] = val;
+        setenv(var.c_str(), val.c_str(), 1);
+    }
+
+    /**
+     * @brief Get a vector of the currently known environment variables
+     */
+    std::vector<std::string> env_names() const {
+        std::vector<std::string> keys(env_vars_.size());
+        std::transform(env_vars_.begin(), env_vars_.end(), keys.begin(), [](auto pair) {
+            return pair.first;
+        });
+        return keys;
+    }
+
+    /**
+     * @brief Switchboard access point for environment variables
+     *
+     * If the given variable `var` has a non-empty entry in the map, that value is returned. If the
+     * entry is empty then the system getenv is called. If this is non-empty then that value is stored
+     * and returned, otherwise the default value is returned (not stored).
+     */
+    std::string get_env(const std::string& var, std::string _default = "") {
+        try {
+            if (!env_vars_.at(var).empty())
+                return env_vars_.at(var);
+            env_vars_.at(var) = _default;
+            return _default;
+        } catch (std::out_of_range&) {
+            char* val = std::getenv(var.c_str());
+            if (val) {
+                set_env(var, val); // store it locally for faster retrieval
+                return {val};
+            }
+            return _default;
+        }
+    }
+
+    /**
+     * @brief Get the boolean value of the given environment variable
+     */
+    bool get_env_bool(const std::string& var, const std::string& def = "false") {
+        std::string val = get_env(var, def);
+        // see if we are dealing with an int value
+        try {
+            const int i_val = std::stoi(val);
+            if (i_val <= 0)
+                return false;
+            return true;
+        } catch (...) { }
+
+        const std::vector<std::string> affirmative{"yes", "y", "true", "on"};
+        for (auto s : affirmative) {
+            if (std::equal(val.begin(), val.end(), s.begin(), s.end(), [](char a, char b) {
+                    return std::tolower(a) == std::tolower(b);
+                }))
+                return true;
+        }
+        return false;
+    }
+
+    /**
+     * @brief Get a char* of the given environment variable
+     */
+    const char* get_env_char(const std::string& var, const std::string _default = "") {
+        std::string val = get_env(var, _default);
+        if (val.empty())
+            return nullptr;
+        return strdup(val.c_str());
     }
 
     /**
@@ -760,6 +850,12 @@ public:
     }
 
 private:
+    const phonebook*                             phonebook_;
+    std::unordered_map<std::string, topic>       registry_;
+    std::shared_mutex                            registry_lock_;
+    std::shared_ptr<record_logger>               record_logger_;
+    std::unordered_map<std::string, std::string> env_vars_;
+
     template<typename Specific_event>
     topic& try_register_topic(const std::string& topic_name) {
         {
@@ -856,11 +952,6 @@ private:
             return orientation_;
         }
     };
-
-    const phonebook*                       phonebook_;
-    std::unordered_map<std::string, topic> registry_;
-    std::shared_mutex                      registry_lock_;
-    std::shared_ptr<record_logger>         record_logger_;
 
 public:
     coordinate_system root_coordinates; //!> The WCS origin
