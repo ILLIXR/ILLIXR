@@ -2,6 +2,15 @@
 
 eval $( fixuid )
 
+# Print uid, gid, and user
+echo "UID: $(id -u)"
+echo "GID: $(id -g)"
+echo "User: $(id -un)"
+
+# Print all environment variables
+echo "Environment variables:"
+env
+
 cd /opt/ILLIXR
 mkdir build
 cd build

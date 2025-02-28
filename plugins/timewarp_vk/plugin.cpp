@@ -68,7 +68,7 @@ timewarp_vk::timewarp_vk(const phonebook* const pb)
     : phonebook_{pb}
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
     , pose_prediction_{phonebook_->lookup_impl<pose_prediction>()}
-    , disable_warp_{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_TIMEWARP_DISABLE", "False"))} { }
+    , disable_warp_{switchboard_->get_env_bool("ILLIXR_TIMEWARP_DISABLE", "False")} { }
 
 void timewarp_vk::initialize() {
     display_sink_ = phonebook_->lookup_impl<display_sink>();
