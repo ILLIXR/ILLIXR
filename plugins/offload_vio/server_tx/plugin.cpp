@@ -23,7 +23,7 @@ using namespace ILLIXR::data_format;
     , imu_int_input_{switchboard_->get_reader<imu_integrator_input>("imu_integrator_input")}
     , client_ip_(CLIENT_IP)
     , client_port_(CLIENT_PORT_2) {
-    spdlogger(std::getenv("OFFLOAD_VIO_LOG_LEVEL"));
+    spdlogger(switchboard_->get_env_char("OFFLOAD_VIO_LOG_LEVEL"));
     socket_.socket_set_reuseaddr();
     socket_.socket_bind(SERVER_IP, SERVER_PORT_2);
     socket_.enable_no_delay();

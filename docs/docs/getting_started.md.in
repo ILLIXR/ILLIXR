@@ -104,17 +104,18 @@ The CMake process will also create a [_YAML_][2] file call `illixr.yaml` which c
 To run the ILLIXR binary just call `main.<>.exe` with any of the following command line arguments. (the `&lt;&gt;` indicate
 an infix specifying the build type, for `Debug` use `dbg`, for `Release` use `opt`, for `RelWithDebInfo` use `optdbg`)
 
-- --duration=&lt;&gt;, the duration to run for in seconds (default is 60)
-- --data=&lt;&gt;, the data file to use
-- --demo_data=&lt;&gt;, the demo data to use
-- --enable_offload, ??
-- --enable_alignment, ??
-- --enable_verbose_errors, give more information about errors
-- --enable_pre_sleep, ??
 - -p,--plugins=&lt;&gt;, comma separated list of plugins to use (case sensitive, all lowercase, no spaces)
 - -r,--run=&lt;&gt;, comma separated list of plugins to use (case sensitive, all lowercase, no spaces), supersedes plugins entry.  This is only necessary if a plugin builds more than one library (e.g. offload_vio builds 4 libraries) as each must be loaded individually.
 - -y,--yaml&lt;&gt;, the [profile][23] file to use which specifies some or all of the above arguments (e.g. the generated `illixr.yaml`)
 - --vis, the visualizer to use (openvins currently)
+- --<ANY ENVIRONMENT VARIABLE NAME>, you can specify any variable the ILLIXR uses on the command line. Common ones are:
+  - --duration=&lt;&gt;, the duration to run for in seconds (default is 60)
+  - --data=&lt;&gt;, the data file to use
+  - --demo_data=&lt;&gt;, the demo data to use
+  - --enable_offload
+  - --enable_alignment
+  - --enable_verbose_errors, give more information about errors
+  - --enable_pre_sleep, force ILLIXR to sleep for the given number of seconds before starting the plugins (this is useful for attaching a debugger)
 
 Regarding parameters for the binary, the following priority will be used:
 1. If the parameter is specified on the command line it will have the highest priority
@@ -127,15 +128,16 @@ An example of a [_YAML_][2] [profile][23] file is
 plugins: timewarp_gl,gldemo,ground_truth_slam,offload_vio
 run: timewarp_gl,gldemo,ground_truth_slam,offload_vio.device_rx
 visualizers: openvins
-duration: 5
-data: data/mav0
-demo_data: demo_data
 build_type: Debug
 install_prefix: /home/user/illixr
-enable_offload: true
-enable_alignment: false
-enable_verbose_errors: false
-enable_pre_sleep: false
+env_vars:
+  duration: 5
+  data: data/mav0
+  demo_data: demo_data
+  enable_offload: true
+  enable_alignment: false
+  enable_verbose_errors: false
+  enable_pre_sleep: false
 ```
 
 Where the entries are defined as (* indicates required field):
@@ -149,6 +151,40 @@ Where the entries are defined as (* indicates required field):
 - visualizers
 : Comma separated list of visualizers to build or load at runtime (currently openvins is available). At runtime, if multiple visualizers are listed, only the first one will be used.
 
+- build_type
+: The type of build to perform (Debug, Release, or RelWithDebInfo). Ignored at run time.
+
+- install_prefix
+: The root path to where the compiled libraries and binaries should be installed. (e.g. specifying /home/user will install libraries in /home/user/lib and binaries in /home/user/bin). **Note**: The prefix is also used for installing any packages that were downloaded and build from external repositories (e.g. DBoW2, GTSAM, etc). At runtime this path is added to *LD_LIBRARY_PATH* to aid in finding the plugin libraries.
+
+- env_vars
+: environment variables to use, any environment variable ILLIXR uses can be set here and will be valid during program execution.
+
+
+In general, you should not edit a [profile][23] file directly. The exception to this is when you are testing things on your own machine. [Profile][23] files are generated automatically from the master `profiles/plugins.yaml` during the cmake configuration stage. This is done so that any changes to a [profile][23] or the addition or removal of a [plugin][22] can be managed from a single file. The build system will generate an *illixr.yaml* file which contains entries from the command line and any input profile file and can be freely edited (it is generated every time `cmake` is called).
+
+## Environment Variables
+
+ILLIXR and several of its dependencies use environment variables to steer processing and define quasi-constant values. Traditionally, one would use std::getenv and std::setenv to get and set these items. However, in ILLIXR the switchboard acts as an interface to these functions with `get_env` (returns std::string), `get_env_bool` (returns bool), `get_env_char` (returns char*), and `set_env`. Using the switchboard interfaces allows for environment variables to be set from the command line and/or yaml file. It is strongly encouraged to the switchboard interface wherever possible. Any items given on the command line which do not match expected command line arguments are considered to be environment variables. For example:
+
+```bash
+main.dbg.exe --yaml=my.yaml --DATA_SOURCE=/home/my/data --PROCESS_DATA
+```
+
+This will set env environment variables `DATA_SOURCE` to `/home/my/data` and `PROCESS_DATA` to `True`. For yaml files, any items not in the expected set will be considered to be environment variables. For example:
+
+```yaml
+plugins: fauxpose,gldemo,debugview,audio_pipeline
+enable_offload: false
+env_vars:
+  DATA_SOURCE: /home/my/data
+  PROCESS_DATA: true
+```
+
+Here, the keywords `plugins` and `enable_offload` are ignored, as they are expected options. The `DATA_SOURCE` and `PROCESS_DATA` entries will cause environment variables to be set to the respective values. *Note:* the names and values of the environment variables are case sensitive. *Note:* the `get_env_bool` considers any of 'y', 'yes', 'true', and 'on' (case-insensitive) to be `true`.
+
+### Common Environment Variables
+
 - duration
 : The duration to run ILLIXR for in seconds.
 
@@ -157,12 +193,6 @@ Where the entries are defined as (* indicates required field):
 
 - demo_data
 : The path to the demonstration data to use at runtime (ignored by build steps)
-
-- build_type
-: The type of build to perform (Debug, Release, or RelWithDebInfo). Ignored at run time.
-
-- install_prefix
-: The root path to where the compiled libraries and binaries should be installed. (e.g. specifying /home/user will install libraries in /home/user/lib and binaries in /home/user/bin). **Note**: The prefix is also used for installing any packages that were downloaded and build from external repositories (e.g. DBoW2, GTSAM, etc). At runtime this path is added to *LD_LIBRARY_PATH* to aid in finding the plugin libraries.
 
 - enable_offload
 : ? Default is *false*
@@ -174,9 +204,9 @@ Where the entries are defined as (* indicates required field):
 : Controls the verbosity of error messages. Default is *false*
 
 - enable_pre_sleep
-: ? Default is *false*
+: Force ILLIXR to sleep for the given number of seconds before starting the plugins (this is useful for attaching a debugger), Default is 0, indicating no sleeping.
 
-In general, you should not edit a [profile][23] file directly. The exception to this is when you are testing things on your own machine. [Profile][23] files are generated automatically from the master `profiles/plugins.yaml` during the cmake configuration stage. This is done so that any changes to a [profile][23] or the addition or removal of a [plugin][22] can be managed from a single file. The build system will generate an *illixr.yaml* file which contains entries from the command line and any input profile file and can be freely edited (it is generated every time `cmake` is called).
+Each plugin can define environment variables to use. See the documentation of each plugin for details.
 
 ## ILLIXR Graphics Backends
 

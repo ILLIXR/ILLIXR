@@ -1,7 +1,9 @@
 # This file was auto generated, take caution if manually editing.
 plugins: offload_vio.server_rx,offload_vio.server_tx
-duration: 90
-enable_offload: False
-enable_alignment: False
-enable_verbose_errors: False
-enable_pre_sleep: False
+visualizers: 
+env_vars:
+  enable_offload: False
+  enable_alignment: False
+  enable_verbose_errors: False
+  enable_pre_sleep: False
+  duration: 90
