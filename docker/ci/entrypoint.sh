@@ -2,6 +2,15 @@
 
 eval $( fixuid )
 
+# Print uid, gid, and user
+echo "UID: $(id -u)"
+echo "GID: $(id -g)"
+echo "User: $(id -un)"
+
+# Print all environment variables
+echo "Environment variables:"
+env
+
 cd /opt/ILLIXR
 mkdir build
 cd build
@@ -20,5 +29,8 @@ export PATH=/opt/ILLIXR/build/install/bin:$PATH
 export XDG_RUNTIME_DIR=/tmp/runtime-docker
 mkdir -p ${XDG_RUNTIME_DIR}
 chmod 700 ${XDG_RUNTIME_DIR}
+
+# Set display variable if not already set
+export DISPLAY=${DISPLAY:-:1}
 
 ./main.opt.exe -y ../illixr.yaml
