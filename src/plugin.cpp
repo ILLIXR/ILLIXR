@@ -160,7 +160,8 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
         // read in yaml config file
         YAML::Node  config;
         std::string exec_path = get_exec_path();
-        std::string home_dir  = get_home_dir();
+        setenv("ILLIXR_BINARY_PATH", exec_path.c_str(), 1);
+        std::string home_dir = get_home_dir();
         if (options.count("yaml")) {
             std::cout << "Reading " << options["yaml"].as<std::string>() << std::endl;
             auto                     config_file_full = options["yaml"].as<std::string>();

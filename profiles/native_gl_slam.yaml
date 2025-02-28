@@ -1,5 +1,5 @@
 # This file was auto generated, take caution if manually editing.
-plugins: zed,hand_tracking,hand_tracking.viewer
+plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,ground_truth_slam,gldemo,timewarp_gl,debugview,offload_data,orb_slam3
 visualizers: openvins,orb_slam3
 env_vars:
   enable_offload: false
