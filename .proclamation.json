@@ -1,0 +1,26 @@
+{
+  "#": "This is a config file for Proclamation, the changelog combiner: https://gitlab.com/proclamation/proclamation",
+  "SPDX-License-Identifier: CC0-1.0": "",
+  "SPDX-FileCopyrightText: 2020-2023 Collabora, Ltd. and the Proclamation contributors": "",
+  "$schema": "https://proclamation.gitlab.io/proclamation/proclamation.schema.json",
+  "project_name": "ILLIXR",
+  "base_url": "https://github.com/ILLIXR/ILLIXR",
+  "news_filename": "CHANGELOG.md",
+  "sections": {
+    "Release Notes": {
+      "directory": "changes/notes"
+    },
+    "Plugins": {
+      "directory": "changes/plugins"
+    },
+    "Infrastructure": {
+      "directory": "changes/infrastructure"
+    },
+    "Misc": {
+      "directory": "changes/misc"
+    },
+    "Issues": {
+      "directory": "changes/issues"
+    }
+  }
+}
