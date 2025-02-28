@@ -18,7 +18,7 @@ jobs:
 
     - name: Give xhost access on host machine
       run: |
-        xhost +local:root
+        xhost +local:docker
 
     - name: Build Docker image
       run: |
