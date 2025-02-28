@@ -125,9 +125,8 @@ public:
 
 private:
     void create_vk_instance(const std::set<const char*>& instance_extensions) {
-        // Enable validation layers if ILLIXR_VULKAN_VALIDATION_LAYERS is set to 1
-        bool enable_validation_layers = switchboard_->get_env_char("ILLIXR_VULKAN_VALIDATION_LAYERS") != nullptr &&
-            std::stoi(switchboard_->get_env_char("ILLIXR_VULKAN_VALIDATION_LAYERS"));
+        // Enable validation layers if ILLIXR_VULKAN_VALIDATION_LAYERS is set to true.
+        bool enable_validation_layers = switchboard_->get_env_bool("ILLIXR_VULKAN_VALIDATION_LAYERS");
 
         VkApplicationInfo app_info{};
         app_info.sType              = VK_STRUCTURE_TYPE_APPLICATION_INFO;
