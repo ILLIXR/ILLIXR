@@ -3,7 +3,7 @@ all_visualizers: openvins
 
 profiles:
   - ci:
-    plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,ground_truth_slam,vkdemo,timewarp_vk,native_renderer,debugview
+    plugins: offline_imu,offline_cam,gtsam_integrator,openvins,pose_prediction,ground_truth_slam,vkdemo,timewarp_vk,native_renderer,debugview
     env_vars:
       duration: 15
       enable_offload:   False
@@ -12,7 +12,7 @@ profiles:
       enable_pre_sleep: False
 
   - headless:
-    plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,ground_truth_slam,gldemo,audio_pipeline
+    plugins: offline_imu,offline_cam,gtsam_integrator,openvins,pose_prediction,ground_truth_slam,gldemo,audio_pipeline
     env_vars:
       enable_offload: False
       enable_alignment: False
@@ -60,7 +60,7 @@ profiles:
 # Defaults to offline datasets and OpenVINS for VIO.
 
   - monado_timewarp_gl:
-    plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,timewarp_gl,audio_pipeline
+    plugins: offline_imu,offline_cam,gtsam_integrator,openvins,pose_prediction,timewarp_gl,audio_pipeline
     build_flags: ENABLE_MONADO
     env_vars:
       enable_offload: false
@@ -69,7 +69,7 @@ profiles:
       enable_pre_sleep: false
 
   - monado_timewarp_vk:
-    plugins: gtsam_integrator,offline_cam,offline_imu,pose_prediction,timewarp_vk
+    plugins: offline_imu,offline_cam,gtsam_integrator,openvins,pose_prediction,timewarp_vk
     build_flags: ENABLE_MONADO
     env_vars:
       enable_offload: false
@@ -78,7 +78,7 @@ profiles:
       enable_pre_sleep: false
 
   - monado_openwarp_vk:
-    plugins: gtsam_integrator,offline_cam,offline_imu,pose_prediction,openwarp_vk
+    plugins: offline_imu,offline_cam,gtsam_integrator,openvins,pose_prediction,openwarp_vk
     build_flags: ENABLE_MONADO
     env_vars:
       enable_offload: false
@@ -90,7 +90,7 @@ profiles:
 # Defaults to offline datasets and OpenVINS.
 
   - native_timewarp_gl:
-    plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,ground_truth_slam,gldemo,timewarp_gl,debugview,offload_data,audio_pipeline
+    plugins: offline_imu,offline_cam,gtsam_integrator,openvins,pose_prediction,ground_truth_slam,gldemo,timewarp_gl,debugview,offload_data,audio_pipeline
     env_vars:
       enable_offload: false
       enable_alignment: false
@@ -98,7 +98,7 @@ profiles:
       enable_pre_sleep: false
 
   - native_timewarp_vk:
-    plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,timewarp_vk,vkdemo,native_renderer,debugview
+    plugins: offline_imu,offline_cam,gtsam_integrator,openvins,pose_prediction,timewarp_vk,vkdemo,native_renderer,debugview
     env_vars:
       enable_offload: false
       enable_alignment: false
@@ -106,7 +106,7 @@ profiles:
       enable_pre_sleep: false
 
   - native_openwarp_vk:
-    plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,openwarp_vk,vkdemo,native_renderer,debugview
+    plugins: offline_imu,offline_cam,gtsam_integrator,openvins,pose_prediction,openwarp_vk,vkdemo,native_renderer,debugview
     env_vars:
       enable_offload: false
       enable_alignment: false
@@ -162,7 +162,7 @@ profiles:
       enable_pre_sleep: false
 
   - offload_rendering_client_jetson:
-    plugins: offload_rendering_client_jetson,native_renderer,tcp_network_backend,timewarp_vk,openwarp_vk,offline_imu,offline_cam,gtsam_integrator,pose_prediction,pose_lookup,vkdemo,zed
+    plugins: offload_rendering_client_jetson,native_renderer,tcp_network_backend,timewarp_vk,openwarp_vk,offline_imu,offline_cam,gtsam_integrator,openvins,pose_prediction,pose_lookup,vkdemo,zed
     env_vars:
       enable_offload: False
       enable_alignment: False
@@ -180,13 +180,15 @@ profiles:
       enable_pre_sleep: false
 
   - offload_rendering_vio_server:
-    plugins: tcp_network_backend,offload_rendering_server,offload_vio.server_rx,offload_vio.server_tx
+    plugins: tcp_network_backend,offload_rendering_server,openvins,offload_vio.server_rx,offload_vio.server_tx
     build_flags: ENABLE_MONADO
     env_vars:
       enable_offload: false
       enable_alignment: false
       enable_verbose_errors: false
       enable_pre_sleep: false
+
+# Hand Tracking.
 
   - hand_tracking:
     plugins: zed,hand_tracking,hand_tracking.viewer
