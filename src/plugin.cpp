@@ -305,6 +305,9 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
             setenv("LD_LIBRARY_PATH", temp_path.c_str(), true);
         }
 
+        // prevent double free
+        switchboard_.reset();
+
         RAC_ERRNO_MSG("main after creating runtime");
 
         std::vector<std::string> lib_paths;
