@@ -154,7 +154,7 @@ private:
     bool initialized_                      = false;
     bool input_texture_vulkan_coordinates_ = true;
 
-    bool using_godot_ = false;
+    bool using_godot_         = false;
     bool offloaded_rendering_ = false;
 
     uint64_t frame_count_ = 0;

@@ -612,24 +612,17 @@ void openwarp_vk::generate_distortion_data() {
 
     // Construct perspective projection matrices
     for (int eye = 0; eye < 2; eye++) {
-
-        if (!offloaded_rendering_)
-        {
-            if (!using_godot_) 
-            {
+        if (!offloaded_rendering_) {
+            if (!using_godot_) {
                 math_util::unreal_projection(&basic_projection_[eye], index_params::fov_left[eye], index_params::fov_right[eye],
-                    index_params::fov_up[eye], index_params::fov_down[eye]);
-            }
-            else 
-            {
+                                             index_params::fov_up[eye], index_params::fov_down[eye]);
+            } else {
                 math_util::godot_projection(&basic_projection_[eye], index_params::fov_left[eye], index_params::fov_right[eye],
-                    index_params::fov_up[eye], index_params::fov_down[eye]);
+                                            index_params::fov_up[eye], index_params::fov_down[eye]);
             }
 
             inverse_projection_[eye] = basic_projection_[eye];
-        }
-        else
-        {
+        } else {
             float scale = 1.0f;
             if (switchboard_->get_env_char("ILLIXR_OVERSCAN") != nullptr) {
                 scale = std::stof(switchboard_->get_env_char("ILLIXR_OVERSCAN"));
@@ -642,12 +635,9 @@ void openwarp_vk::generate_distortion_data() {
             // The server can render at a larger FoV, so the inverse should account for that.
             // The FOVs provided to the server should match the ones provided to Monado.
             Eigen::Matrix4f server_fov;
-            if (!using_godot_)
-            {
+            if (!using_godot_) {
                 math_util::unreal_projection(&server_fov, fov_left, fov_right, fov_up, fov_down);
-            }
-            else
-            {
+            } else {
                 math_util::godot_projection(&server_fov, fov_left, fov_right, fov_up, fov_down);
             }
 
