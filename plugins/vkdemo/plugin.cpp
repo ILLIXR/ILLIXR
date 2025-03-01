@@ -72,10 +72,12 @@ void vkdemo::initialize() {
     vertices_.clear();
     indices_.clear();
 
-    // Construct perspective projection matrix
-    math_util::projection_fov(&basic_projection_, display_params::fov_x / 2.0f, display_params::fov_x / 2.0f,
-                              display_params::fov_y / 2.0f, display_params::fov_y / 2.0f, rendering_params::near_z,
-                              rendering_params::far_z, rendering_params::reverse_z);
+    // Construct perspective projection matrix (using the same projection matrix as Unreal Engine, by default).
+    for (int eye = 0; eye < 2; eye++)
+    {
+        math_util::unreal_projection(&basic_projection_[eye], index_params::fov_left[eye], index_params::fov_right[eye],
+                                     index_params::fov_up[eye], index_params::fov_down[eye]);
+    }
 }
 
 void vkdemo::setup(VkRenderPass render_pass, uint32_t subpass, std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> _) {
@@ -137,7 +139,7 @@ void vkdemo::update_uniform(const pose_type& pose, int eye) {
 
     auto* ubo = (uniform_buffer_object*) uniform_buffer_allocation_infos_[eye].pMappedData;
     memcpy(&ubo->model_view, &model_view, sizeof(model_view));
-    memcpy(&ubo->proj, &basic_projection_, sizeof(basic_projection_));
+    memcpy(&ubo->proj, &basic_projection_[eye], sizeof(basic_projection_[eye]));
 }
 
 void vkdemo::bake_models() {
@@ -756,8 +758,8 @@ void vkdemo::create_pipeline(VkRenderPass render_pass, uint32_t subpass) {
     };
 
     VkRect2D scissor{
-        {0, 0},        // offset
-        per_eye_extent // extent
+        {0, 0},         // offset
+        per_eye_extent  // extent
     };
 
     VkPipelineViewportStateCreateInfo viewport_state{

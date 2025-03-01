@@ -100,7 +100,7 @@ private:
     const std::shared_ptr<vulkan::display_provider>     display_provider_ = nullptr;
     const std::shared_ptr<const relative_clock>         clock_;
 
-    Eigen::Matrix4f       basic_projection_;
+    Eigen::Matrix4f       basic_projection_[2];
     std::vector<model>    models_;
     std::vector<vertex>   vertices_;
     std::vector<uint32_t> indices_;

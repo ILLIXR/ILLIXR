@@ -32,14 +32,14 @@ using namespace ILLIXR::data_format;
     , last_fps_update_{std::chrono::duration<long, std::nano>{0}} {
     if (switchboard_->get_env_char("ILLIXR_WIDTH") == nullptr ||
         switchboard_->get_env_char("ILLIXR_HEIGHT") == nullptr) {
-        log_->warn("Please define ILLIXR_WIDTH and ILLIXR_HEIGHT. Default values 2560x1440 used.");
-        width_  = 2560;
-        height_ = 1440;
+        log_->warn("Please define ILLIXR_WIDTH and ILLIXR_HEIGHT. Default values used.");
+        width_  = display_sink_->swapchain_extent_.width;
+        height_ = display_sink_->swapchain_extent_.height;
     } else {
         width_  = std::stoi(switchboard_->get_env_char("ILLIXR_WIDTH"));
         height_ = std::stoi(switchboard_->get_env_char("ILLIXR_HEIGHT"));
     }
-    
+
     export_dma_ = switchboard_->get_env_bool("ILLIXR_EXPORT_DMA");
 }
 
@@ -395,7 +395,7 @@ void native_renderer::create_depth_image(vulkan::vk_image& depth_image) {
         VK_IMAGE_TYPE_2D,                    // imageType
         VK_FORMAT_D32_SFLOAT,                // format
         {
-            width_,                                                               // width
+            width_ / 2,                                                           // width
             height_,                                                              // height
             1                                                                     // depth
         },                                                                        // extent
@@ -446,7 +446,7 @@ void native_renderer::create_offscreen_pool() {
         VK_IMAGE_TYPE_2D,                    // imageType
         VK_FORMAT_B8G8R8A8_UNORM,            // format
         {
-            width_,                                                     // width
+            width_ / 2,                                                 // width
             height_,                                                    // height
             1                                                           // depth
         },                                                              // extent
@@ -507,7 +507,7 @@ void native_renderer::create_offscreen_target(vulkan::vk_image& image) {
         VK_IMAGE_TYPE_2D,                                                                       // imageType
         VK_FORMAT_B8G8R8A8_UNORM,                                                               // format
         {
-            width_,              // width
+            width_ / 2,          // width
             height_,             // height
             1                    // depth
         },                       // extent
