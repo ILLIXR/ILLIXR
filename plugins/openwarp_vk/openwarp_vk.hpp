@@ -155,10 +155,7 @@ private:
     bool input_texture_vulkan_coordinates_ = true;
 
     bool using_godot_ = false;
-
-    bool compare_images_ = false;
-
-    std::vector<data_format::pose_type> fixed_poses_;
+    bool offloaded_rendering_ = false;
 
     uint64_t frame_count_ = 0;
 

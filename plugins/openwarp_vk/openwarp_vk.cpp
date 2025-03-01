@@ -18,8 +18,7 @@ openwarp_vk::openwarp_vk(const phonebook* pb)
     openwarp_width_  = std::stoi(switchboard_->get_env_char("ILLIXR_OPENWARP_WIDTH"));
     openwarp_height_ = std::stoi(switchboard_->get_env_char("ILLIXR_OPENWARP_HEIGHT"));
 
-    using_godot_ = switchboard_->get_env_char("ILLIXR_USING_GODOT") != nullptr &&
-        std::stoi(switchboard_->get_env_char("ILLIXR_USING_GODOT"));
+    using_godot_ = switchboard_->get_env_bool("ILLIXR_USING_GODOT");
     if (using_godot_)
         std::cout << "Using Godot projection matrices!" << std::endl;
     else
@@ -90,29 +89,7 @@ void openwarp_vk::setup(VkRenderPass render_pass, uint32_t subpass,
     create_offscreen_images();
     create_descriptor_sets();
 
-    compare_images_ = switchboard_->get_env_char("ILLIXR_COMPARE_IMAGES") != nullptr &&
-        std::stoi(switchboard_->get_env_char("ILLIXR_COMPARE_IMAGES"));
-    if (compare_images_) {
-        // Note that the Quaternion constructor takes the w component first.
-        assert(switchboard_->get_env_char("ILLIXR_POSE_FILE") != nullptr);
-        std::string pose_filename = std::string(switchboard_->get_env_char("ILLIXR_POSE_FILE"));
-        std::cout << "Reading file from " << pose_filename << std::endl;
-
-        std::ifstream pose_file(pose_filename);
-        std::string   line;
-        while (std::getline(pose_file, line)) {
-            float             p_x, p_y, p_z;
-            float             q_x, q_y, q_z, q_w;
-            std::stringstream ss(line);
-            ss >> p_x >> p_y >> p_z >> q_x >> q_y >> q_z >> q_w;
-
-            fixed_poses_.emplace_back(time_point(), Eigen::Vector3f(p_x, p_y, p_z), Eigen::Quaternion(q_w, q_x, q_y, q_z));
-        }
-
-        std::cout << "Read " << fixed_poses_.size() << "poses" << std::endl;
-
-        pose_file.close();
-    }
+    this->offloaded_rendering_ = switchboard_->get_env_bool("ILLIXR_OFFLOADING_RENDERING");
 }
 
 void openwarp_vk::partial_destroy() {
@@ -145,15 +122,6 @@ void openwarp_vk::update_uniforms(const pose_type& render_pose) {
     num_update_uniforms_calls_++;
 
     pose_type latest_pose = disable_warp_ ? render_pose : pose_prediction_->get_fast_pose().pose;
-    if (compare_images_) {
-        // To be safe, start capturing at 200 frames and wait for 100 frames before trying the next pose.
-        // (this should be reflected in the screenshot layer)
-        int pose_index = std::clamp(static_cast<int>(frame_count_ - 150) / 100, 0, static_cast<int>(fixed_poses_.size()) - 1);
-        latest_pose    = fixed_poses_[pose_index];
-
-        std::cout << "Using pose:" << latest_pose.position.x() << " " << latest_pose.position.y() << " "
-                  << latest_pose.position.z() << std::endl;
-    }
 
     for (int eye = 0; eye < 2; eye++) {
         Eigen::Matrix4f renderedCameraMatrix = create_camera_matrix(render_pose, eye);
@@ -642,51 +610,49 @@ void openwarp_vk::generate_distortion_data() {
     const std::size_t num_elems_pos_uv = HMD::NUM_EYES * num_distortion_vertices_;
     distortion_vertices_.resize(num_elems_pos_uv);
 
-    // Construct perspective projection matrix
-    // math_util::projection_fov(&basic_projection_, display_params::fov_x / 2.0f, display_params::fov_x / 2.0f,
-    //                           display_params::fov_y / 2.0f, display_params::fov_y / 2.0f, rendering_params::near_z,
-    //                           rendering_params::far_z, rendering_params::reverse_z);
-    // inverse_projection_ = basic_projection_.inverse();
-
-    // float near_z = rendering_params::near_z;
-    // float far_z  = rendering_params::far_z;
-
-    // Hacked in projection matrix from Unreal and hardcoded values
+    // Construct perspective projection matrices
     for (int eye = 0; eye < 2; eye++) {
-        math_util::unreal_projection(&basic_projection_[eye], index_params::fov_left[eye], index_params::fov_right[eye],
-                                     index_params::fov_up[eye], index_params::fov_down[eye]);
 
-        float scale = 1.0f;
-        if (switchboard_->get_env_char("ILLIXR_OVERSCAN") != nullptr) {
-            scale = std::stof(switchboard_->get_env_char("ILLIXR_OVERSCAN"));
+        if (!offloaded_rendering_)
+        {
+            if (!using_godot_) 
+            {
+                math_util::unreal_projection(&basic_projection_[eye], index_params::fov_left[eye], index_params::fov_right[eye],
+                    index_params::fov_up[eye], index_params::fov_down[eye]);
+            }
+            else 
+            {
+                math_util::godot_projection(&basic_projection_[eye], index_params::fov_left[eye], index_params::fov_right[eye],
+                    index_params::fov_up[eye], index_params::fov_down[eye]);
+            }
+
+            inverse_projection_[eye] = basic_projection_[eye];
         }
-        float tan_left  = server_params::fov_left[eye];
-        float tan_right = server_params::fov_right[eye];
-        float tan_up    = server_params::fov_up[eye];
-        float tan_down  = server_params::fov_down[eye];
-        float fov_left  = std::atan(tan_left);
-        float fov_right = std::atan(tan_right);
-        float fov_up    = std::atan(tan_up);
-        float fov_down  = std::atan(tan_down);
-        tan_left        = std::tan(fov_left * scale);
-        tan_right       = std::tan(fov_right * scale);
-        tan_up          = std::tan(fov_up * scale);
-        tan_down        = std::tan(fov_down * scale);
+        else
+        {
+            float scale = 1.0f;
+            if (switchboard_->get_env_char("ILLIXR_OVERSCAN") != nullptr) {
+                scale = std::stof(switchboard_->get_env_char("ILLIXR_OVERSCAN"));
+            }
+            float fov_left  = scale * server_params::fov_left[eye];
+            float fov_right = scale * server_params::fov_right[eye];
+            float fov_up    = scale * server_params::fov_up[eye];
+            float fov_down  = scale * server_params::fov_down[eye];
 
-        // The server can render at a larger FoV, so the inverse should account for that.
-        // The FOVs provided to the server should match the ones provided to Monado.
-        Eigen::Matrix4f l_server_fov;
-        if (using_godot_) {
-            math_util::godot_projection(&basic_projection_[eye], index_params::fov_left[eye], index_params::fov_right[eye],
-                                        index_params::fov_up[eye], index_params::fov_down[eye]);
-            math_util::godot_projection(&l_server_fov, tan_left, tan_right, tan_up, tan_down);
-        } else {
-            math_util::unreal_projection(&basic_projection_[eye], index_params::fov_left[eye], index_params::fov_right[eye],
-                                         index_params::fov_up[eye], index_params::fov_down[eye]);
-            math_util::unreal_projection(&l_server_fov, tan_left, tan_right, tan_up, tan_down);
+            // The server can render at a larger FoV, so the inverse should account for that.
+            // The FOVs provided to the server should match the ones provided to Monado.
+            Eigen::Matrix4f server_fov;
+            if (!using_godot_)
+            {
+                math_util::unreal_projection(&server_fov, fov_left, fov_right, fov_up, fov_down);
+            }
+            else
+            {
+                math_util::godot_projection(&server_fov, fov_left, fov_right, fov_up, fov_down);
+            }
+
+            inverse_projection_[eye] = server_fov.inverse();
         }
-
-        inverse_projection_[eye] = l_server_fov.inverse();
     }
 
     for (int eye = 0; eye < HMD::NUM_EYES; eye++) {
@@ -697,8 +663,6 @@ void openwarp_vk::generate_distortion_data() {
 
                 // Set the physical distortion mesh coordinates. These are rectangular/gridlike, not distorted.
                 // The distortion is handled by the UVs, not the actual mesh coordinates!
-                // distortion_positions[eye * num_distortion_vertices_ + index].x = (-1.0f + eye + ((float) x /
-                // hmd_info_.eye_tiles_high));
                 distortion_vertices_[eye * num_distortion_vertices_ + index].pos.x =
                     (-1.0f + 2 * (static_cast<float>(x) / static_cast<float>(hmd_info_.eye_tiles_high)));
 
@@ -947,12 +911,9 @@ void openwarp_vk::create_descriptor_sets() {
                                                 .imageView   = buffer_pool_->image_pool[image_idx][eye].image_view,
                                                 .imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL};
 
-            // assert(buffer_pool_[eye][0] != VK_NULL_HANDLE);
-
             VkDescriptorImageInfo depth_info = {.sampler     = fb_sampler_,
                                                 .imageView   = buffer_pool_->depth_image_pool[image_idx][eye].image_view,
                                                 .imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL};
-            // assert(buffer_pool_[eye][1] != VK_NULL_HANDLE);
 
             VkDescriptorBufferInfo buffer_info = {
                 .buffer = ow_matrices_uniform_buffer_, .offset = 0, .range = sizeof(WarpMatrices)};
@@ -1344,11 +1305,6 @@ VkPipeline openwarp_vk::create_distortion_correction_pipeline(VkRenderPass rende
                                                           .attachmentCount = 1,
                                                           .pAttachments    = &color_blend_attachment,
                                                           .blendConstants  = {}};
-
-    // disable depth testing
-    // VkPipelineDepthStencilStateCreateInfo depth_stencil = {};
-    // depth_stencil.sType                                 = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
-    // depth_stencil.depthTestEnable                       = VK_FALSE;
 
     // use dynamic state instead of a fixed viewport
     std::vector<VkDynamicState> dynamic_states = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
