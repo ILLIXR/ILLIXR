@@ -56,8 +56,6 @@ private:
     std::stack<std::function<void()>> deletion_queue_;
     VmaAllocator                      vma_allocator_{};
 
-    bool                                compare_images_ = false;
-    std::vector<data_format::pose_type> fixed_poses_;
     uint64_t                            frame_count_ = 0;
 
     size_t swapchain_width_  = 0;

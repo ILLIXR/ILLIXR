@@ -138,31 +138,7 @@ void timewarp_vk::setup(VkRenderPass render_pass, uint32_t subpass,
     create_pipeline(render_pass, subpass);
     timewarp_render_pass_ = render_pass;
 
-    clamp_edge_ = switchboard_->get_env_char("ILLIXR_TIMEWARP_CLAMP_EDGE") != nullptr &&
-        std::stoi(switchboard_->get_env_char("ILLIXR_TIMEWARP_CLAMP_EDGE"));
-    compare_images_ = switchboard_->get_env_char("ILLIXR_COMPARE_IMAGES") != nullptr &&
-        std::stoi(switchboard_->get_env_char("ILLIXR_COMPARE_IMAGES"));
-    if (compare_images_) {
-        // Note that the Quaternion constructor takes the w component first.
-        assert(switchboard_->get_env_char("ILLIXR_POSE_FILE") != nullptr);
-        std::string pose_filename = switchboard_->get_env("ILLIXR_POSE_FILE");
-        std::cout << "Reading file from " << pose_filename << std::endl;
-
-        std::ifstream pose_file(pose_filename);
-        std::string   line;
-        while (std::getline(pose_file, line)) {
-            float             p_x, p_y, p_z;
-            float             q_x, q_y, q_z, q_w;
-            std::stringstream ss(line);
-            ss >> p_x >> p_y >> p_z >> q_x >> q_y >> q_z >> q_w;
-
-            fixed_poses_.emplace_back(time_point(), Eigen::Vector3f(p_x, p_y, p_z), Eigen::Quaternion(q_w, q_x, q_y, q_z));
-        }
-
-        std::cout << "Read " << fixed_poses_.size() << "poses" << std::endl;
-
-        pose_file.close();
-    }
+    clamp_edge_ = switchboard_->get_env_bool("ILLIXR_TIMEWARP_CLAMP_EDGE");
 }
 
 void timewarp_vk::partial_destroy() {
@@ -195,16 +171,6 @@ void timewarp_vk::update_uniforms(const pose_type& render_pose) {
     pose_type latest_pose = disable_warp_
         ? render_pose
         : (next_vsync == nullptr ? pose_prediction_->get_fast_pose().pose : pose_prediction_->get_fast_pose(**next_vsync).pose);
-    if (compare_images_) {
-        // To be safe, start capturing at 200 frames and wait for 100 frames before trying the next pose.
-        // (this should be reflected in the screenshot layer)
-        int pose_index = std::clamp(static_cast<int>(frame_count_ - 150) / 100, 0, static_cast<int>(fixed_poses_.size()) - 1);
-        latest_pose    = fixed_poses_[pose_index];
-
-        std::cout << "At frame " << frame_count_ << std::endl;
-        std::cout << "Using pose " << latest_pose.position.x() << " " << latest_pose.position.y() << " "
-                  << latest_pose.position.z();
-    }
 
     view_matrix_begin.block(0, 0, 3, 3) = latest_pose.orientation.toRotationMatrix();
 
@@ -271,15 +237,9 @@ void timewarp_vk::record_command_buffer(VkCommandBuffer commandBuffer, VkFramebu
 
     vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_);
     vkCmdBindVertexBuffers(commandBuffer, 0, 1, &vertex_buffer_, &offsets);
-    // for (int eye = 0; eye < HMD::NUM_EYES; eye++) {
-    //     vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout_, 0, 1,
-    //     &descriptor_sets_[eye][buffer_ind], 0, nullptr); vkCmdBindIndexBuffer(commandBuffer, index_buffer_, 0,
-    //     VK_INDEX_TYPE_UINT32); vkCmdDrawIndexed(commandBuffer, num_distortion_indices_, 1, 0, num_distortion_vertices_ *
-    //     eye, 0);
-    // }
+
     auto eye = static_cast<uint32_t>(left ? 0 : 1);
     vkCmdPushConstants(commandBuffer, pipeline_layout_, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(uint32_t), &eye);
-
     vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout_, 0, 1,
                             &descriptor_sets_[!left][buffer_ind], 0, nullptr);
     vkCmdBindIndexBuffer(commandBuffer, index_buffer_, 0, VK_INDEX_TYPE_UINT32);
@@ -688,26 +648,7 @@ VkPipeline timewarp_vk::create_pipeline(VkRenderPass render_pass, [[maybe_unused
     depth_stencil.sType                                 = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
     depth_stencil.depthTestEnable                       = VK_FALSE;
 
-    // use dynamic state instead
-    // VkViewport viewport = {};
-    // viewport.x = 0.0f;
-    // viewport.y = 0.0f;
-    // viewport.width = display_provider_->swapchain_extent_.width;
-    // viewport.height = display_provider_->swapchain_extent_.height;
-    // viewport.minDepth = 0.0f;
-    // viewport.maxDepth = 1.0f;
-
-    // VkRect2D scissor = {};
-    // scissor.offset = {0, 0};
-    // scissor.extent = display_provider_->swapchain_extent_;
-
-    // VkPipelineViewportStateCreateInfo viewport_state_create_info = {};
-    // viewport_state_create_info.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-    // viewport_state_create_info.viewportCount = 1;
-    // viewport_state_create_info.pViewports = &viewport;
-    // viewport_state_create_info.scissorCount = 1;
-    // viewport_state_create_info.pScissors = &scissor;
-
+    // use dynamic state for viewport / scissor
     std::vector<VkDynamicState> dynamic_states = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
 
     VkPipelineDynamicStateCreateInfo dynamic_state_create_info = {};
@@ -808,8 +749,6 @@ void timewarp_vk::build_timewarp(HMD::hmd_info_t& hmd_info) {
 
                 // Set the physical distortion mesh coordinates. These are rectangular/grid-like, not distorted.
                 // The distortion is handled by the UVs, not the actual mesh coordinates!
-                // distortion_positions_[eye * num_distortion_vertices_ + index].x = (-1.0f + eye + ((float) x /
-                // hmdInfo.eyeTilesWide));
                 distortion_positions_[eye * num_distortion_vertices_ + index].x =
                     (-1.0f + 2 * (static_cast<float>(x) / static_cast<float>(hmd_info.eye_tiles_wide)));
 
