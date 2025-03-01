@@ -30,8 +30,7 @@ using namespace ILLIXR::data_format;
     , clock_{phonebook_->lookup_impl<relative_clock>()}
     , vsync_{switchboard_->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")}
     , last_fps_update_{std::chrono::duration<long, std::nano>{0}} {
-    if (switchboard_->get_env_char("ILLIXR_WIDTH") == nullptr ||
-        switchboard_->get_env_char("ILLIXR_HEIGHT") == nullptr) {
+    if (switchboard_->get_env_char("ILLIXR_WIDTH") == nullptr || switchboard_->get_env_char("ILLIXR_HEIGHT") == nullptr) {
         log_->warn("Please define ILLIXR_WIDTH and ILLIXR_HEIGHT. Default values used.");
         width_  = display_sink_->swapchain_extent_.width;
         height_ = display_sink_->swapchain_extent_.height;
@@ -486,7 +485,7 @@ void native_renderer::create_offscreen_target(vulkan::vk_image& image) {
         assert(offscreen_pool_ != VK_NULL_HANDLE);
         image.export_image_info = {VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_IMAGE_CREATE_INFO, nullptr,
                                    export_dma_ ? VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT
-                                              : VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT};
+                                               : VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT};
     }
 
     std::vector<uint32_t> queue_family_indices;

@@ -112,9 +112,9 @@ private:
     const std::shared_ptr<vulkan::app>                  app_;
     const std::shared_ptr<const relative_clock>         clock_;
 
-    uint32_t width_  = 0;
-    uint32_t height_ = 0;
-    bool export_dma_ = false;
+    uint32_t width_      = 0;
+    uint32_t height_     = 0;
+    bool     export_dma_ = false;
 
     VkCommandPool   command_pool_{};
     VkCommandBuffer app_command_buffer_{};

@@ -73,8 +73,7 @@ void vkdemo::initialize() {
     indices_.clear();
 
     // Construct perspective projection matrix (using the same projection matrix as Unreal Engine, by default).
-    for (int eye = 0; eye < 2; eye++)
-    {
+    for (int eye = 0; eye < 2; eye++) {
         math_util::unreal_projection(&basic_projection_[eye], index_params::fov_left[eye], index_params::fov_right[eye],
                                      index_params::fov_up[eye], index_params::fov_down[eye]);
     }
@@ -758,8 +757,8 @@ void vkdemo::create_pipeline(VkRenderPass render_pass, uint32_t subpass) {
     };
 
     VkRect2D scissor{
-        {0, 0},         // offset
-        per_eye_extent  // extent
+        {0, 0},        // offset
+        per_eye_extent // extent
     };
 
     VkPipelineViewportStateCreateInfo viewport_state{
