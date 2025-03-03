@@ -3,9 +3,10 @@
 set -o pipefail
 set -e
 
-cd $(dirname $0)
+ROOT_DIR=$(dirname $0)
+cd "${ROOT_DIR}"
 
-ILLIXR_VERSION=3.3
+ILLIXR_VERSION=$(cat ../VERSION)
 CUDA_MAJOR=12
 CUDA_MINOR=6
 CUDA_PATCH=3
@@ -33,15 +34,16 @@ BASE_IMAGE="illixr/base_image"
 function print_help {
     cat <<EOF
 
-$0 [-afghlz]
+$0 [-afghlr:z]
 
 This script can be used to generate ILLIXR Docker images
-  -a : make all possible images (exclusive with all other flags)
-  -f : docker image will have everything (exclusive with all other flags)
-  -g : docker image will have no GPL licensed code (exclusive with -a and -f)
-  -h : print this help and exit
-  -l : docker image will have no LGPL or GPL licensed code, implies -g (exclusive with -a and -f)
-  -z : docker image will not have the ZED SDK (exclusive with -a and -f)
+  -a           : make all possible images (exclusive with all other flags)
+  -f           : docker image will have everything (exclusive with all other flags)
+  -g           : docker image will have no GPL licensed code (exclusive with -a and -f)
+  -h           : print this help and exit
+  -l           : docker image will have no LGPL or GPL licensed code, implies -g (exclusive with -a and -f)
+  -r <version> : the version for the images, defaults to value in VERSION file
+  -z           : docker image will not have the ZED SDK (exclusive with -a and -f)
 EOF
 }
 
@@ -149,7 +151,7 @@ BUILD_FLAGS=""
 
 function build_image {
     echo""
-    echo "Building final image illixr_$3 from $1 with flags $2"
+    echo "Building final image illixr$3 from $1 with flags $2"
     docker build \
         --build-arg ILLIXR_VERSION=${ILLIXR_VERSION} \
         --build-arg PARENT_IMAGE="$1" \
@@ -207,24 +209,35 @@ function build_gpl {
 }
 
 if [[ $MAKE_ALL -eq 1 ]]; then
-    printf "----------------------------\n BUILDING no-lgpl-zed\n----------------------------\n"
+    echo "----------------------------"
+    echo " BUILDING no-lgpl-zed"
+    echo "----------------------------"
     build_image ${BASE_IMAGE} "-DNO_ZED=ON -DNO_GPL=ON -DNO_LGPL=ON" "_no_lgpl_zed"
     build_zed ${BASE_IMAGE} ${WITH_ZED}
     build_gpl ${BASE_IMAGE} ${WITH_GPL}
     BASE_IMAGE="illixr/${WITH_ZED}"
-    printf "----------------------------\n BUILDING no-lgpl\n----------------------------\n"
+    echo "----------------------------"
+    echo " BUILDING no-lgpl"
+    echo "----------------------------"
     build_image ${BASE_IMAGE} "-DNO_LGPL=ON-DNO_GPL=ON" "_no_lgpl"
     BASE_IMAGE="illixr/${WITH_GPL}"
-    printf "----------------------------\n BUILDING no-gpl-zed\n----------------------------\n"
+    echo "----------------------------"
+    echo " BUILDING no-gpl-zed"
+    echo "----------------------------"
     build_image ${BASE_IMAGE} "-DNO_ZED=ON -DNO_GPL=ON" "_no_gpl_zed"
-    printf "----------------------------\n BUILDING no-zed\n----------------------------\n"
+    echo "----------------------------"
+    echo " BUILDING no-zed"
+    echo "----------------------------"
     build_image ${BASE_IMAGE} "-DNO_ZED=ON" "_no_zed"
-
     build_zed ${BASE_IMAGE} "${WITH_GPL_ZED}"
     BASE_IMAGE="illixr/${WITH_GPL_ZED}"
-    printf "----------------------------\n BUILDING full\n----------------------------\n"
+    echo "----------------------------"
+    echo " BUILDING full"
+    echo "----------------------------"
     build_image ${BASE_IMAGE} "" "full"
-    printf "----------------------------\n BUILDING no-gpl\n----------------------------\n"
+    echo "----------------------------"
+    echo " BUILDING no-gpl"
+    echo "----------------------------"
     build_image ${BASE_IMAGE} "-DNO_GPL=ON" "_no_gpl"
 
 else
