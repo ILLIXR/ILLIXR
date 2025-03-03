@@ -99,6 +99,10 @@ struct [[maybe_unused]] texture_pose : public switchboard::event {
 [[maybe_unused]] typedef std::map<units::eyes, pose_type> multi_pose_map;
 
 #ifdef ENABLE_OXR
+/*
+ * The struct below is utilized when working with OpenXR. The internal variables are in a basic form since OpenXR uses
+ * C, rather than C++ (e.g. pose contains just floats, instead of Eigen::Vector and Eigen::Quaternion)
+ */
 
 struct raw_pose {
     float x;

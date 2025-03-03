@@ -219,6 +219,10 @@ namespace ht {
     };
 
 #ifdef ENABLE_OXR
+    /*
+     * The struct below is utilized when working with OpenXR. The internal variables are in a basic form since OpenXR uses
+     * C, rather than C++ (e.g. vectors are replaced with arrays)
+     */
     struct raw_ht_data {
         uint64_t                     time;
         raw_point                    h_points[2][NUM_LANDMARKS];
