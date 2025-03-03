@@ -28,6 +28,7 @@ chmod 755 data.zip
 
 # print ls -l data.zip
 ls -l data.zip
+cat /home/illixr/.illixr/profiles/plugin_deps.yaml
 
 # Configure and build
 cmake .. -DYAML_FILE=profiles/native_vk.yaml -DCMAKE_INSTALL_PREFIX=/opt/ILLIXR/build/install -DCMAKE_BUILD_TYPE=Debug
