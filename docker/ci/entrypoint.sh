@@ -30,7 +30,7 @@ chmod 755 data.zip
 ls -l data.zip
 
 # Configure and build
-cmake .. -DYAML_FILE=profiles/native_vk.yaml -DCMAKE_INSTALL_PREFIX=/opt/ILLIXR/build/install
+cmake .. -DYAML_FILE=profiles/native_vk.yaml -DCMAKE_INSTALL_PREFIX=/opt/ILLIXR/build/install -DCMAKE_BUILD_TYPE=Debug
 cmake --build . -j$NPROC
 cmake --install .
 
@@ -46,4 +46,4 @@ chmod 700 ${XDG_RUNTIME_DIR}
 # Set display variable if not already set
 export DISPLAY=${DISPLAY:-:1}
 
-./main.opt.exe -y ../illixr.yaml
+./main.dbg.exe -y ../illixr.yaml
