@@ -26,6 +26,9 @@ cp /opt/data/data.zip ./
 chown $(id -u):$(id -g) data.zip
 chmod 755 data.zip
 
+# print ls -l data.zip
+ls -l data.zip
+
 # Configure and build
 cmake .. -DYAML_FILE=profiles/native_vk.yaml -DCMAKE_INSTALL_PREFIX=/opt/ILLIXR/build/install
 cmake --build . -j$NPROC
