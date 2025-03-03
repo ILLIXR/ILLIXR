@@ -11,6 +11,9 @@ echo "User: $(id -un)"
 echo "Environment variables:"
 env
 
+# Test vkcube
+timeout 5 vkcube
+
 cd /opt/ILLIXR
 mkdir build
 cd build
