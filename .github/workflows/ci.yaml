@@ -31,6 +31,8 @@ jobs:
         # Get the UID and GID of the runner user
         HOST_UID=$(id -u)
         HOST_GID=$(id -g)
+
+        HOST_DATA_PATH="${{ vars.HOST_DATA_PATH }}"
         
         docker run --rm \
           -e DISPLAY=$DISPLAY \
@@ -38,7 +40,7 @@ jobs:
           -e NVIDIA_DRIVER_CAPABILITIES=all \
           -v $GITHUB_WORKSPACE:/opt/ILLIXR \
           -v /tmp/.X11-unix:/tmp/.X11-unix \
-          -v ${{ vars.HOST_DATA_PATH }}:/opt/data \
+          -v $HOST_DATA_PATH:/opt/data \
           --user $HOST_UID:$HOST_GID \
           --runtime=nvidia \
           illixr-ci-${GITHUB_SHA::8}
