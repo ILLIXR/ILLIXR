@@ -11,17 +11,23 @@ echo "User: $(id -un)"
 echo "Environment variables:"
 env
 
+# get nproc
+NPROC=$(nproc)
+
 # Test vkcube
 timeout 5 vkcube
 
 cd /opt/ILLIXR
 mkdir build
 cd build
-cp /opt/data/data.zip ./
-cmake .. -DYAML_FILE=profiles/native_vk.yaml -DCMAKE_INSTALL_PREFIX=/opt/ILLIXR/build/install
 
-# get nproc
-NPROC=$(nproc)
+# Copy data and change permissions
+cp /opt/data/data.zip ./
+chown $(id -u):$(id -g) data.zip
+chmod 755 data.zip
+
+# Configure and build
+cmake .. -DYAML_FILE=profiles/native_vk.yaml -DCMAKE_INSTALL_PREFIX=/opt/ILLIXR/build/install
 cmake --build . -j$NPROC
 cmake --install .
 
