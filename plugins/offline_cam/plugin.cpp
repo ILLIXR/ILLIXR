@@ -36,13 +36,13 @@ inline std::map<ullong, lazy_load_image> read_data(std::ifstream& gt_file, const
     : threadloop{name, pb}
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
     , cam_publisher_{switchboard_->get_writer<binocular_cam_type>("cam")}
-    , sensor_data_{make_map(load_data<lazy_load_image>("cam0", "offline_cam", &read_data),
-                            load_data<lazy_load_image>("cam1", "offline_cam", &read_data))}
+    , sensor_data_{make_map(load_data<lazy_load_image>("cam0", "offline_cam", &read_data, switchboard_),
+                            load_data<lazy_load_image>("cam1", "offline_cam", &read_data, switchboard_))}
     , dataset_first_time_{sensor_data_.cbegin()->first}
     , last_timestamp_{0}
     , clock_{phonebook_->lookup_impl<relative_clock>()}
     , next_row_{sensor_data_.cbegin()} {
-    spdlogger(std::getenv("OFFLINE_CAM_LOG_LEVEL"));
+    spdlogger(switchboard_->get_env_char("OFFLINE_CAM_LOG_LEVEL"));
 }
 
 ILLIXR::threadloop::skip_option offline_cam::_p_should_skip() {

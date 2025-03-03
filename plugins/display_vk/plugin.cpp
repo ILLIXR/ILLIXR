@@ -155,6 +155,9 @@ void display_vk_plugin::start() {
 
 void display_vk_plugin::stop() {
     running_ = false;
+    if (main_thread_.joinable()) {
+        main_thread_.join();
+    }
 }
 
 void display_vk_plugin::main_loop() {

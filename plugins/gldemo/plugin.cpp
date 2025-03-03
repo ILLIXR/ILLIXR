@@ -31,7 +31,7 @@ static constexpr std::chrono::milliseconds VSYNC_SAFETY_DELAY{1};
     , vsync_{switchboard_->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")}
     , image_handle_{switchboard_->get_writer<image_handle>("image_handle")}
     , eye_buffer_{switchboard_->get_writer<rendered_frame>("eyebuffer")} {
-    spdlogger(std::getenv("GLDEMO_LOG_LEVEL"));
+    spdlogger(switchboard_->get_env_char("GLDEMO_LOG_LEVEL"));
 }
 
 // Essentially, a crude equivalent of XRWaitFrame.
