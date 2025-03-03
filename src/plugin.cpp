@@ -177,8 +177,8 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
                 home_dir + "/.illixr/profiles/" + config_file,
                 home_dir + "/" + config_file_full,
                 home_dir + "/" + config_file,
-                std::string(ILLIXR_INSTALL_PATH) + "/../share/illixr/profiles/" + config_file_full,
-                std::string(ILLIXR_INSTALL_PATH) + "/../share/illixr/profiles/" + config_file};
+                std::string(ILLIXR_INSTALL_PATH) + "/share/illixr/profiles/" + config_file_full,
+                std::string(ILLIXR_INSTALL_PATH) + "/share/illixr/profiles/" + config_file};
             for (auto& filepath : config_list) {
                 try {
                     config = YAML::LoadFile(filepath);
@@ -246,7 +246,7 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
 
         std::vector<ILLIXR::Dependency> dep_map;
         std::vector<std::string>        dep_list = {"plugin_deps.yaml", home_dir + "/.illixr/profiles/plugin_deps.yaml",
-                                                    std::string(ILLIXR_INSTALL_PATH) + "/../share/illixr/profiles/plugin_deps.yaml"
+                                                    std::string(ILLIXR_INSTALL_PATH) + "/share/illixr/profiles/plugin_deps.yaml"
 
         };
         for (auto& dep_file : dep_list) {
