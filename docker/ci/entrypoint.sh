@@ -17,6 +17,7 @@ timeout 5 vkcube
 cd /opt/ILLIXR
 mkdir build
 cd build
+cp /opt/data/data.zip ./
 cmake .. -DYAML_FILE=profiles/native_vk.yaml -DCMAKE_INSTALL_PREFIX=/opt/ILLIXR/build/install
 
 # get nproc

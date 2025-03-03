@@ -38,6 +38,7 @@ jobs:
           -e NVIDIA_DRIVER_CAPABILITIES=all \
           -v $GITHUB_WORKSPACE:/opt/ILLIXR \
           -v /tmp/.X11-unix:/tmp/.X11-unix \
+          -v ${{ vars.HOST_DATA_PATH }}:/opt/data \
           --user $HOST_UID:$HOST_GID \
           --runtime=nvidia \
           illixr-ci-${GITHUB_SHA::8}
