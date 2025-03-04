@@ -20,6 +20,9 @@
       "name": "audio_pipeline",
       "cmake_flag": "USE_AUDIO_PIPELINE=ON",
       "dependencies": [
+        "git",
+        "portaudio",
+        "spatialaudio"
       ]
     },
     {
@@ -27,8 +30,7 @@
       "cmake_flag": "USE_DEBUGVIEW=ON",
       "dependencies": [
         "glfw3",
-        "OpenCV",
-        "opengl"
+        "OpenCV"
       ]
     },
     {

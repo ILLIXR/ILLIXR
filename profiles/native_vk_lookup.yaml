@@ -1,6 +1,5 @@
 # This file was auto generated, take caution if manually editing.
 plugins: pose_lookup,timewarp_vk,vkdemo,native_renderer
-visualizers: openvins,orb_slam3
 env_vars:
   enable_offload: false
   enable_alignment: false

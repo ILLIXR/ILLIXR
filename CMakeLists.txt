@@ -8,7 +8,7 @@
 #
 ########################################################################################
 
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.22)
 
 set(CMAKE_VERBOSE_MAKEFILE True)
 
@@ -123,13 +123,6 @@ endif()
 
 include(cmake/HelperFunctions.cmake)
 
-set(VISUALIZER "" CACHE STRING "")
-set(VISUALIZER_TO_USE "ALL" CACHE INTERNAL "")
-if(VISUALIZER)
-    string(TOUPPER ${VISUALIZER} VISUALIZER)
-    set(VISUALIZER_TO_USE ${VISUALIZER} CACHE INTERNAL "")
-endif()
-
 generate_yaml()
 check_plugins()
 
@@ -219,8 +212,6 @@ add_definitions(-DFMT_HEADER_ONLY)
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads)
 
-include(src/CMakeLists.txt)
-
 # get any env flags for the build
 if($ENV{ILLIXR_BUILD_FLAGS})
     string(REPLACE "-D" "" CLI_BUILD_FLAGS "$ENV{ILLIXR_BUILD_FLAGS}")
@@ -255,7 +246,7 @@ set(FULL_PLUGIN_LIST "")
 
 add_subdirectory(utils)
 
-foreach(ITEM IN LISTS PLUGIN_LIST VISUALIZER_LIST)
+foreach(ITEM IN LISTS PLUGIN_LIST)
     string(TOUPPER "USE_${ITEM}" ITEM_UPPER)
     string(TOLOWER ${ITEM} ITEM_LOWER)
     list(APPEND FULL_PLUGIN_LIST ${ITEM})
@@ -326,9 +317,6 @@ if(ILLIXR_PROFILE_NAMES)
                 DESTINATION ${CMAKE_INSTALL_PREFIX}/share/illixr/profiles)
     endforeach()
 endif()
-
-# reset this, so it is clean for subsequent runs of cmake
-set(VISUALIZER "" CACHE STRING "")
 
 if(BUILD_DEP_MAP)
     find_package(Python3 COMPONENTS Interpreter)

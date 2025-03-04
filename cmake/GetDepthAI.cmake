@@ -10,10 +10,8 @@ if(depthai_FOUND)
 else()
     EXTERNALPROJECT_ADD(DepthAI_ext
             GIT_REPOSITORY https://github.com/luxonis/depthai-core.git   # Git repo for source code
-            GIT_TAG 4ff860838726a5e8ac0cbe59128c58a8f6143c6c             # sha5 hash for specific commit to pull (if there is no specific tag to use)
+            GIT_TAG v2.29.0                                              # sha5 hash for specific commit to pull (if there is no specific tag to use)
             PREFIX ${CMAKE_BINARY_DIR}/_deps/depthai                     # the build directory
-            # the code needs to be patched to build on some systems
-            PATCH_COMMAND ${PROJECT_SOURCE_DIR}/cmake/do_patch.sh -p ${PROJECT_SOURCE_DIR}/cmake/Depthai.patch
             #arguments to pass to CMake
             CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=Release ${DEPTHAI_CMAKE_ARGS} -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_LIBDIR=lib
             )
