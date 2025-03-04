@@ -316,6 +316,13 @@
       ]
     },
     {
+      "name": "orb_slam3",
+      "cmake_flag": "USE_ORB_SLAM3=ON",
+      "dependencies": [
+        "fmt"
+      ]
+    },
+    {
       "name": "passthrough_integrator",
       "cmake_flag": "USE_PASSTHROUGH_INTEGRATOR=ON",
       "dependencies": []

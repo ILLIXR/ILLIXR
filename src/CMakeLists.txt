@@ -48,14 +48,13 @@ target_compile_definitions(plugin.main${ILLIXR_BUILD_SUFFIX} PRIVATE "ILLIXR_VIS
 if(Vulkan_DEP_STR)
     add_dependencies(plugin.main${ILLIXR_BUILD_SUFFIX} ${Vulkan_DEP_STR})
 endif()
-target_link_libraries(plugin.main${ILLIXR_BUILD_SUFFIX} PUBLIC illixr_vulkan_utils glfw ${Vulkan_LIBRARY})
-target_include_directories(plugin.main${ILLIXR_BUILD_SUFFIX} PUBLIC ${Vulkan_INCLUDE_DIRS})
 
+target_compile_definitions(plugin.main${ILLIXR_BUILD_SUFFIX} PRIVATE ILLIXR_INSTALL_PATH="${CMAKE_INSTALL_PREFIX}")
 target_include_directories(main${ILLIXR_BUILD_SUFFIX}.exe PUBLIC ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(main${ILLIXR_BUILD_SUFFIX}.exe dl stdc++fs plugin.main${ILLIXR_BUILD_SUFFIX})
 
-target_include_directories(plugin.main${ILLIXR_BUILD_SUFFIX} PUBLIC ${Boost_INCLUDE_DIR} ${X11_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} ${SQLite3_INCLUDE_DIR} ${GLU_INCLUDE_DIR} ${gl_INCLUDE_DIRS} ${yaml-cpp_INCLUDE_DIRS} ${CMAKE_SOURCE_DIR}/include)
-target_link_libraries(plugin.main${ILLIXR_BUILD_SUFFIX} PUBLIC ${X11_LIBRARIES} ${GLEW_LIBRARIES} ${SQLite3_LIBRARIES} ${glu_LDFLAGS} ${gl_LIBRARIES} dl Threads::Threads stdc++fs ${yaml-cpp_LIBRARIES} spdlog::spdlog Boost::serialization)
+target_include_directories(plugin.main${ILLIXR_BUILD_SUFFIX} PUBLIC ${Boost_INCLUDE_DIR} ${X11_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} ${SQLite3_INCLUDE_DIR} ${GLU_INCLUDE_DIR} ${gl_INCLUDE_DIRS} ${yaml-cpp_INCLUDE_DIRS} ${CMAKE_SOURCE_DIR}/include ${Vulkan_INCLUDE_DIRS})
+target_link_libraries(plugin.main${ILLIXR_BUILD_SUFFIX} PUBLIC ${X11_LIBRARIES} ${GLEW_LIBRARIES} ${SQLite3_LIBRARIES} ${glu_LDFLAGS} ${gl_LIBRARIES} dl Threads::Threads stdc++fs ${yaml-cpp_LIBRARIES} spdlog::spdlog Boost::serialization illixr_vulkan_utils glfw ${Vulkan_LIBRARY})
 
 install(TARGETS main${ILLIXR_BUILD_SUFFIX}.exe DESTINATION bin)
 install(TARGETS plugin.main${ILLIXR_BUILD_SUFFIX} DESTINATION lib)
