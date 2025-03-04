@@ -212,7 +212,8 @@ void gtsam_integrator::propagate_imu_values(time_point real_time) {
         Eigen::AngleAxisd(filtered_angles(1, 0), Eigen::Vector3d::UnitY()) *
         Eigen::AngleAxisd(filtered_angles(2, 0), Eigen::Vector3d::UnitZ());
 
-    Eigen::MatrixWrapper<Eigen::Array<double, 3, 1, 0, 3, 1>> filtered_pos{filters_[4](out_pose.translation().array(), seconds_since_epoch).matrix()};
+    Eigen::MatrixWrapper<Eigen::Array<double, 3, 1, 0, 3, 1>> filtered_pos{
+        filters_[4](out_pose.translation().array(), seconds_since_epoch).matrix()};
 
     imu_raw_.put(imu_raw_.allocate<imu_raw_type>(
         imu_raw_type{prev_bias.gyroscope(), prev_bias.accelerometer(), bias.gyroscope(), bias.accelerometer(),
