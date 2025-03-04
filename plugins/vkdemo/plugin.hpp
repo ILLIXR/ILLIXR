@@ -1,7 +1,7 @@
 #pragma once
 
 #include <functional>
-#include <stack> 
+#include <stack>
 
 #define VULKAN_REQUIRED
 #include "illixr/data_format/pose_prediction.hpp"
@@ -111,9 +111,9 @@ private:
     std::array<std::vector<VkImageView>, 2> buffer_pool_;
 
     std::stack<std::function<void()>> deletion_queue_;
-    VmaAllocator                     vma_allocator_{};
-    VkCommandPool                    command_pool_{};
-    [[maybe_unused]] VkCommandBuffer command_buffer_{};
+    VmaAllocator                      vma_allocator_{};
+    VkCommandPool                     command_pool_{};
+    [[maybe_unused]] VkCommandBuffer  command_buffer_{};
 
     VkDescriptorSetLayout          descriptor_set_layout_{};
     VkDescriptorPool               descriptor_pool_{};

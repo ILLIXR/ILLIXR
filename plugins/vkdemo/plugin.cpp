@@ -53,7 +53,7 @@ void vkdemo::initialize() {
     } else {
         this->vma_allocator_ = vulkan::create_vma_allocator(
             display_provider_->vk_instance_, display_provider_->vk_physical_device_, display_provider_->vk_device_);
-        
+
         deletion_queue_.emplace([=]() {
             vmaDestroyAllocator(vma_allocator_);
         });
@@ -115,7 +115,7 @@ void vkdemo::record_command_buffer(VkCommandBuffer command_buffer, VkFramebuffer
     }
 }
 
-void vkdemo::destroy() { 
+void vkdemo::destroy() {
     vkDeviceWaitIdle(display_provider_->vk_device_);
 
     // drain deletion_queue_

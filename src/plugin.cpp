@@ -246,8 +246,8 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
         setenv("__GL_SYNC_TO_VBLANK", "1", false);
 
         std::vector<ILLIXR::Dependency> dep_map;
-        std::vector<std::string>        dep_list = {"plugin_deps.yaml", home_dir + "/.illixr/profiles/plugin_deps.yaml",
-                                                    std::string(ILLIXR_INSTALL_PATH) + "/share/illixr/profiles/plugin_deps.yaml"
+        std::vector<std::string>        dep_list   = {"plugin_deps.yaml", home_dir + "/.illixr/profiles/plugin_deps.yaml",
+                                                      std::string(ILLIXR_INSTALL_PATH) + "/share/illixr/profiles/plugin_deps.yaml"
 
         };
         bool                            dep_loaded = false;
