@@ -435,7 +435,8 @@ queue_families ILLIXR::vulkan::find_queue_families(VkPhysicalDevice const& physi
 
 VkImageView ILLIXR::vulkan::create_image_view(VkDevice device, VkImage image, VkFormat format,
                                               VkImageAspectFlags aspect_flags) {
-    VkImageViewCreateInfo vk_image_view_create_info{VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO};
+    VkImageViewCreateInfo vk_image_view_create_info{};
+    vk_image_view_create_info.sType                           = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
     vk_image_view_create_info.image                           = image;
     vk_image_view_create_info.viewType                        = VK_IMAGE_VIEW_TYPE_2D;
     vk_image_view_create_info.format                          = format;

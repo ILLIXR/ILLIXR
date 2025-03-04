@@ -179,9 +179,10 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
                     break;
                 } catch (YAML::BadFile&) { }
             }
-
-            if (config.size() == 0)
+            if (config.size() == 0) {
+                spdlog::get("illixr")->error("Could not load given config file: " + config_file_full);
                 throw std::runtime_error("Could not load given config file: " + config_file_full);
+            }
             config_list.clear();
         }
 
@@ -233,7 +234,6 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
         GET_BOOL(alignment_enable, ILLIXR_ALIGNMENT_ENABLE)
         GET_BOOL(enable_verbose_errors, ILLIXR_ENABLE_VERBOSE_ERRORS)
         GET_BOOL(enable_pre_sleep, ILLIXR_ENABLE_PRE_SLEEP)
-        GET_BOOL(enable_monado, ENABLE_MONADO)
         GET_STRING(realsense_cam, REALSENSE_CAM)
 
         setenv("__GL_MaxFramesAllowed", "1", false);

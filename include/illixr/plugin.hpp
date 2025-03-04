@@ -21,6 +21,14 @@ bool needs_vulkan() {
     return false;
     #endif
 }
+
+bool needs_monado() {
+    #ifdef MONADO_REQUIRED
+    return true;
+    #else
+    return false;
+    #endif
+}
 }
 #endif
 

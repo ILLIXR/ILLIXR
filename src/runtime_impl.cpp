@@ -24,6 +24,7 @@
 
 using namespace ILLIXR;
 typedef bool (*n_vulkan_t)();
+typedef bool (*n_monado_t)();
 
 void spdlogger(const std::string& name, const char* log_level) {
     if (!log_level) {
@@ -50,7 +51,7 @@ public:
         phonebook_.register_impl<gen_guid>(std::make_shared<gen_guid>());
         phonebook_.register_impl<switchboard>(std::make_shared<switchboard>(&phonebook_));
         switchboard_   = phonebook_.lookup_impl<switchboard>();
-        enable_monado_ = switchboard_->get_env_bool("ENABLE_MONADO", "False"); // can't use switchboard interface here
+        enable_monado_ = false;
         enable_vulkan_ = false;
         phonebook_.register_impl<stoplight>(std::make_shared<stoplight>());
     }
@@ -64,6 +65,7 @@ public:
         });
         for (auto& i : libraries_) {
             enable_vulkan_ = enable_vulkan_ || i.get<n_vulkan_t>("needs_vulkan")();
+            enable_monado_ = enable_monado_ || i.get<n_monado_t>("needs_monado")();
         }
         RAC_ERRNO_MSG("runtime_impl after creating the dynamic libraries");
 
