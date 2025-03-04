@@ -1,4 +1,4 @@
-# ILLIXR
+![ILLIXR logo](docs/docs/images/LogoWithHeader.svg)
 
 [![NCSA licensed](https://img.shields.io/badge/license-NCSA-blue.svg)](LICENSE)
 [![ILLIXR CI](https://github.com/ILLIXR/ILLIXR/actions/workflows/ci.yaml/badge.svg)](https://github.com/ILLIXR/ILLIXR/actions/workflows/ci.yaml)
@@ -33,28 +33,25 @@ implementations of a given component.
 ILLIXR currently contains the following components:
 
 - *Perception*
-    - Eye Tracking
-        1. [RITNet][3] **
-    - Scene Reconstruction
-        1. [ElasticFusion][2] **
-        2. [KinectFusion][40] **
     - Simultaneous Localization and Mapping
-        1. [OpenVINS][1] **
+        1. [OpenVINS][1]<SUP>1</SUP>
     - Cameras and IMUs
         1. [ZED Mini][42]
         2. [Intel RealSense][41]
 
 - *Visual*
     - [Chromatic aberration correction][5]
-    - [Computational holography for adaptive multi-focal displays][6] **
     - [Lens distortion correction][5]
-    - [Asynchronous Reprojection (TimeWarp)][5]
+    - [Asynchronous Reprojection (TimeWarp)]
+
+- *Head Tracking*
+    - [ORB_SLAM3][6]<SUP>1</SUP>
 
 - *Aural*
-    - [Audio encoding][4] **
-    - [Audio playback][4] **
+    - [Audio encoding][4]<SUP>1</SUP>
+    - [Audio playback][4]<SUP>1</SUP>
 
-(** Source is hosted in an external repository under the [ILLIXR project][7].)
+<SUP>1</SUP> Source is hosted in an external repository under the [ILLIXR project][7].
 
 We continue to add more components (new components and new implementations).
 
@@ -91,21 +88,13 @@ We request that you cite our following [paper][8] when you use ILLIXR for a publ
 We would also appreciate it if you send us a citation once your work has been published.
 
 ```
-@ARTICLE {illixr,
-author = {M. Huzaifa and R. Desai and S. Grayson and X. Jiang and Y. Jing and J. Lee and F. Lu and Y. Pang and J. Ravichandran and F. Sinclair and B. Tian and H. Yuan and J. Zhang and S. V. Adve},
-journal = {IEEE Micro},
-title = {ILLIXR: An Open Testbed to Enable Extended Reality Systems Research},
-year = {2022},
-volume = {42},
-number = {04},
-issn = {1937-4143},
-pages = {97-106},
-abstract = {We present Illinois Extended Reality testbed (ILLIXR), the first fully open-source XR system and research testbed. ILLIXR enables system innovations with end-to-end co-designed hardware, compiler, OS, and algorithms, and driven by end-user perceived Quality-of-Experience (QoE) metrics. Using ILLIXR, we provide the first comprehensive quantitative analysis of performance, power, and QoE for a complete XR system and its individual components. We describe several implications of our results that propel new directions in architecture, systems, and algorithms research for domain-specific systems in general, and XR in particular.},
-keywords = {x reality;pipelines;measurement;visualization;cameras;runtime;headphones},
-doi = {10.1109/MM.2022.3161018},
-publisher = {IEEE Computer Society},
-address = {Los Alamitos, CA, USA},
-month = {jul}
+@inproceedings{huzaifa2021illixr,
+  title={ILLIXR: Enabling end-to-end extended reality research},
+  author={Huzaifa, Muhammad and Desai, Rishi and Grayson, Samuel and Jiang, Xutao and Jing, Ying and Lee, Jae and Lu, Fang and Pang, Yihan and Ravichandran, Joseph and Sinclair, Finn and Tian, Boyuan and Yuan, Hengzhi and Zhang, Jeffrey and Adve, Sarita V.},
+  booktitle={2021 IEEE International Symposium on Workload Characterization (IISWC)},
+  pages={24--38},
+  year={2021},
+  organization={IEEE}
 }
 ```
 
@@ -189,38 +178,48 @@ must be used according to those licenses:
 
 | Package                            | License<SUP>1</SUP>                                |
 |:-----------------------------------|:---------------------------------------------------|
-| [concurrentqueue][P1]              | [BSD-2 clause][L1]<SUP>2</SUP>                     |
+| [abseil-cpp][P48]                  | [Apache v2][L48]                                   |
+| [ARM NEON 2 x86 SSE][P42]          | [BSD-2 clause][L42]<SUP>2</SUP>                    |
+| [concurrentqueue][P1]              | [BSD-2 clause][L1]                                 |
 | [cxxopts][P2]                      | [MIT][L2]                                          |
 | [Depthai Core][P3]                 | [MIT][L3]                                          |
+| EGL-Registry][P47]                 | None given                                         |
+| [farmhash][P46]                    | [MIT][L46]                                         |
 | [FFmpeg][P4]                       | [GNU General Public License v3.0][L35]<SUP>3</SUP> |
 | [filter][P5]                       | [MIT][L5]                                          |
+| [flatbuffers][P44]                 | [Apache v2][L44]                                   |
+| [gemmlowp][P43]                    | [Apache v2][L43]                                   |
 | [glslang][P6]                      | [BSD-3 clause][L6]<SUP>4</SUP>                     |
 | [Gtsam][P7]                        | [BSD-2 clause][L7]<SUP>2</SUP>                     |
 | [imgui][P8]                        | [MIT][L8]                                          |
-| [mediapipe][P36]                   | [Apache License 2.0][L36]                          |
+| [mediapipe][P36]                   | [Apache v2][L36]                                   |
 | [Monado][P29]                      | [MIT][L29]                                         |
 | [Monado integration][P9]           | [Boost v1][L9]                                     |
 | [Monado Vulkan Integration][P10]   | [Boost v1][L10]                                    |
 | [moodycamel::ConcurrentQueue][P30] | [BSD-2 clause][L30]<SUP>2</SUP>                    |
-| [OpenCV][P11]                      | [BSD-3 clause][L11]                                |
+| [OouraFFT][P45]                    | [MIT-like][L45]                                    |
 | [Open-VINS][P35]                   | [GNU General Public License v3.0][L35]             |
 | [OpenXR][P12]                      | [Boost v1][L12]                                    |
+| [protobuf][L41]                    | [BSD-3 clause][L41]                                |
+| [pthreadpool][P40]                 | [BSD-2 clause][L40]<SUP>2</SUP>                    |
 | [robin-hood-hashing][P14]          | [MIT][L14]                                         |
-| [SpatialAudio][P15]                | [LGPL v2.1][L15]                                   |
+| [ruy][P39]                         | [Apache v2][P39]                                   |
 | [SPIRV Headers][P16]               | [MIT][L16]                                         |
 | [SPIRV Tools][P17]                 | [Apache v2][L17]                                   |
 | [SqliteCPP][P18]                   | [MIT][L18]                                         |
 | [stb][P19]                         | [MIT][L19]                                         |
+| [tensorflow-lite][P38]             | [Apache v2][L38]                                   |
 | [tinyobjloader][P20]               | [MIT][L20]                                         |
 | [Vulkan Headers][P21]              | [Apache v2][L21]                                   |
 | [Vulkan Loader][P22]               | [Apache v2][L22]                                   |
 | [Vulkan Utility Libraries][P23]    | [Apache v2][L23]                                   |
 | [Vulkan Validation Layers][P24]    | [Apache v2][L24]                                   |
 | [VulkanMemoryAllocator][P25]       | [MIT][L25]                                         |
+| [XNNPACK][P37]                     | [BSD-3 clause][L37]                                |
 | [yaml-cpp][P26]                    | [MIT][L26]                                         |
 | zed_opencv (Sterolabs)             | [MIT][L27]                                         |
 
-<SUP>1</SUP> Current as of April 14, 2024.
+<SUP>1</SUP> Current as of March 5, 2025.
 
 <SUP>2</SUP> Also known as the Simplified BSD License.
 
@@ -237,37 +236,21 @@ permissively licensed software.
 ## Get in Touch
 
 Whether you are a computer architect, a compiler writer, a systems person, work on XR related algorithms
-or applications, or just anyone interested in XR research, development, or products,
-we would love to hear from you and hope you will contribute!
-You can join
-the [ILLIXR consortium][37],
-[Discord][47],
-or [mailing list][48],
-or send us an [email][49],
-or just send us a pull request!
+or applications, or just anyone interested in XR research, development, or products, we would love to hear from you and hope you will contribute!
+You can join the [ILLIXR consortium][37], [Discord][47], or [mailing list][48], or send us an [email][49], or just send us a pull request!
 
 
 [//]: # (- References -)
-
 [1]:    https://github.com/ILLIXR/open_vins
-
 [2]:    https://github.com/ILLIXR/ElasticFusion
-
 [3]:    https://github.com/ILLIXR/RITnet
-
 [4]:    https://github.com/ILLIXR/audio_pipeline
-
 [5]:    https://github.com/ILLIXR/visual_postprocessing
-
-[6]:    https://github.com/ILLIXR/HOTlab
-
+[6]:    https://github.com/ILLIXR/ORB_SLAM3
 [7]:    https://github.com/ILLIXR
 [8]:    https://ieeexplore.ieee.org/abstract/document/9741292
-
 [9]:    http://rsim.cs.illinois.edu
-
 [10]:   https://monado.dev
-
 [11]:   https://research.fb.com/programs/openeds-challenge
 [12]:   https://github.com/rpng/open_vins
 [13]:   https://www.gnu.org/licenses/gpl-3.0.html
@@ -278,43 +261,24 @@ or just send us a pull request!
 [21]:   https://www.gnu.org/licenses/lgpl-3.0.html
 [22]:   https://gitlab.freedesktop.org/monado/monado
 [23]:   https://choosealicense.com/licenses/bsl-1.0
-
 [24]:   https://gitter.im/ILLIXR/community
-
 [25]:   https://github.com/ILLIXR/ILLIXR/releases
-
 [26]:   https://www.khronos.org/openxr
-
 [33]:   https://illixr.github.io/ILLIXR/getting_started/
-
 [34]:   https://illixr.github.io/ILLIXR/LICENSE/
-
 [35]:   https://illixr.github.io/ILLIXR/illixr_plugins/
-
 [36]:   https://illixr.github.io/ILLIXR/writing_your_plugin/
-
 [37]:   http://illixr.org
-
 [38]:   https://github.com/ILLIXR/ILLIXR
-
 [39]:   https://github.com/ILLIXR/ILLIXR/releases/tag/v3.1.0
-
-[41]:   https://github.com/ILLIXR/ILLIXR/tree/master/realsense
-
+[41]:   https://www.intelrealsense.com/
 [42]:   https://www.stereolabs.com/zed-mini/
-
 [43]:   https://youtu.be/ZY98lWksnpM
-
 [44]:   https://ws.engr.illinois.edu/sitemanager/getfile.asp?id=2971
-
 [45]:   https://youtu.be/GVcCW8WgEDY
-
 [47]:   https://discord.gg/upkvy7x3W4
-
 [48]:   mailto:lists@lists.cs.illinois.edu?subject=sub%20illixr-community
-
 [49]:   mailto:illixr@cs.illinois.edu
-
 [50]:   https://illixr.org/open_meetings
 [51]:   https://ffmpeg.org/
 [52]:   https://github.com/ILLIXR/opencv
@@ -367,8 +331,18 @@ or just send us a pull request!
 [P34]:   https://github.com/AayushKrChaudhary/RITnet
 [P35]:   https://github.com/rpng/open_vins
 [P36]:   https://github.com/google-ai-edge/mediapipe
-
-
+[P37]:   https://github.com/ILLIXR/XNNPACK
+[P38]:   https://github.com/ILLIXR/tensorflow-lite
+[P39]:   https://github.com/ILLIXR/ruy
+[P40]:   https://github.com/Maratyszcza/pthreadpool
+[P41]:   https://github.com/protocolbuffers/protobuf
+[P42]:   https://github.com/intel/ARM_NEON_2_x86_SSE
+[P43]:   https://github.com/google/gemmlowp
+[P44]:   https://github.com/google/flatbuffers
+[P45]:   https://github.com/petewarden/OouraFFT
+[P46]:   https://github.com/google/farmhash
+[P47]:   https://github.com/KhronosGroup/EGL-Registry
+[P48]:   https://github.com/abseil/abseil-cpp
 
 [//]: # (- Licenses -)
 [L1]:   https://github.com/cameron314/concurrentqueue/blob/master/LICENSE.md
@@ -407,3 +381,14 @@ or just send us a pull request!
 [L34]:   https://github.com/AayushKrChaudhary/RITnet/blob/master/License.md
 [L35]:   https://www.gnu.org/licenses/gpl-3.0.html
 [L36]:   https://github.com/google-ai-edge/mediapipe/blob/master/LICENSE
+[L37]:   https://github.com/ILLIXR/XNNPACK/blob/master/LICENSE
+[L38]:   https://github.com/ILLIXR/tensorflow-lite/blob/main/LICENSE
+[L39]:   https://github.com/ILLIXR/ruy/blob/master/LICENSE
+[L40]:   https://github.com/Maratyszcza/pthreadpool/blob/master/LICENSE
+[L41]:   https://github.com/protocolbuffers/protobuf/blob/main/LICENSE
+[L42]:   https://github.com/intel/ARM_NEON_2_x86_SSE/blob/master/LICENSE
+[L43]:   https://github.com/google/gemmlowp/blob/master/LICENSE
+[L44]:   https://github.com/google/flatbuffers/blob/master/LICENSE
+[L45]:   https://github.com/petewarden/OouraFFT?tab=readme-ov-file
+[L46]:   https://github.com/google/farmhash?tab=MIT-1-ov-file#readme
+[L48]:   https://github.com/abseil/abseil-cpp/blob/master/LICENSE
