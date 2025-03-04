@@ -180,13 +180,11 @@ However, ILLIXR does contain software developed solely by us.
 The external libraries and softwares included in ILLIXR each have their own licenses and
     must be used according to those licenses:
 
--   [ElasticFusion][14] \ [ElasticFusion license][15]
+-   [DepthAI][15] \ [MIT License][16]
 
--   [KinectFusion][40] \ [MIT License][46]
+-   [FFmpeg][51] \ [GNU Lesser General Public License v2.1][19]
 
 -   [GTSAM][27] \ [Simplified BSD License][28]
-
--   [HOTlab][20] \ [GNU Lesser General Public License v3.0][21]
 
 -   [libspatialaudio][18] \ [GNU Lesser General Public License v2.1][19]
 
@@ -194,11 +192,19 @@ The external libraries and softwares included in ILLIXR each have their own lice
 
 -   [moodycamel::ConcurrentQueue][31] \ [Simplified BSD License][32]
 
--   [mediapipe][51] \ [Apache License 2.0][52]
+-   [OpenCV][52] \ [Apache License 2.0][53]
+
+-   [mediapipe][71] \ [Apache License 2.0][72]
 
 -   [Open-VINS][12] \ [GNU General Public License v3.0][13]
 
--   [RITnet][16] \ [MIT License][17]
+-   [OpenXR][54] \ [Boost Software License 1.0][23]
+
+-   [PortAudio][56] \ [MIT License][57]
+
+-   [YamlCPP][58] \ [MIT License][59]
+
+-   [Vulkan][60] (multiple components) \ [Apache License 2.0][] [MIT][61]
 
 Note that ILLIXR's extensibility allows the source to be configured and compiled using only
     permissively licensed software.
@@ -232,13 +238,10 @@ You can join
 [11]:   https://research.fb.com/programs/openeds-challenge
 [12]:   https://github.com/rpng/open_vins
 [13]:   https://www.gnu.org/licenses/gpl-3.0.html
-[14]:   https://github.com/mp3guy/ElasticFusion
-[15]:   https://github.com/mp3guy/ElasticFusion/blob/master/LICENSE.txt
-[16]:   https://github.com/AayushKrChaudhary/RITnet
-[17]:   https://github.com/AayushKrChaudhary/RITnet/blob/master/License.md
+[15]:   https://github.com/luxonis/depthai-core
+[16]:   https://github.com/luxonis/depthai-core/blob/main/LICENSE
 [18]:   https://github.com/videolabs/libspatialaudio
 [19]:   https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
-[20]:   https://github.com/MartinPersson/HOTlab
 [21]:   https://www.gnu.org/licenses/lgpl-3.0.html
 [22]:   https://gitlab.freedesktop.org/monado/monado
 [23]:   https://choosealicense.com/licenses/bsl-1.0
@@ -256,16 +259,25 @@ You can join
 [37]:   http://illixr.org
 [38]:   https://github.com/ILLIXR/ILLIXR
 [39]:   https://github.com/ILLIXR/ILLIXR/releases/tag/v3.1.0
-[40]:   https://github.com/ILLIXR/KinectFusionApp/tree/illixr-integration
 [41]:   https://github.com/ILLIXR/ILLIXR/tree/master/realsense
 [42]:   https://www.stereolabs.com/zed-mini/
 [43]:   https://youtu.be/ZY98lWksnpM
 [44]:   https://ws.engr.illinois.edu/sitemanager/getfile.asp?id=2971
 [45]:   https://youtu.be/GVcCW8WgEDY
-[46]:   https://github.com/chrdiller/KinectFusionApp/blob/master/LICENSE.txt
 [47]:   https://discord.gg/upkvy7x3W4
 [48]:   mailto:lists@lists.cs.illinois.edu?subject=sub%20illixr-community
 [49]:   mailto:illixr@cs.illinois.edu
 [50]:   https://illixr.org/open_meetings
-[51]:   https://github.com/google-ai-edge/mediapipe
-[52]:   https://github.com/google-ai-edge/mediapipe/blob/master/LICENSE
+[51]:   https://ffmpeg.org/
+[52]:   https://github.com/ILLIXR/opencv
+[53]:   https://github.com/opencv/opencv/blob/4.x/LICENSE
+[54]:   https://github.com/ILLIXR/Monado_OpenXR_Simple_Example
+[56]:   https://github.com/PortAudio/portaudio
+[57]:   https://github.com/PortAudio/portaudio/blob/master/LICENSE.txt
+[58]:   https://github.com/jbeder/yaml-cpp
+[59]:   https://github.com/jbeder/yaml-cpp/blob/master/LICENSE
+[60]:   https://github.com/KhronosGroup
+[61]:   https://choosealicense.com/licenses/apache-2.0/
+[62]:   https://choosealicense.com/licenses/mit/
+[71]:   https://github.com/google-ai-edge/mediapipe
+[72]:   https://github.com/google-ai-edge/mediapipe/blob/master/LICENSE

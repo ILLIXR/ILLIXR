@@ -8,7 +8,6 @@
 #include "illixr/imgui/backends/imgui_impl_opengl3.h"
 #include "illixr/imgui/imgui.h"
 #include "illixr/math_util.hpp"
-#include "illixr/pose_prediction.hpp"
 #include "illixr/shader_util.hpp"
 #include "illixr/shaders/demo_shader.hpp"
 #include "illixr/switchboard.hpp"

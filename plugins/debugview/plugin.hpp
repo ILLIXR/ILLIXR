@@ -10,8 +10,8 @@
 
 #include "illixr/data_format/imu.hpp"
 #include "illixr/data_format/opencv_data_types.hpp"
+#include "illixr/data_format/pose_prediction.hpp"
 #include "illixr/gl_util/obj.hpp"
-#include "illixr/pose_prediction.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
 
@@ -49,8 +49,8 @@ public:
 
 private:
     // GLFWwindow * const glfw_context;
-    const std::shared_ptr<switchboard>     switchboard_;
-    const std::shared_ptr<pose_prediction> pose_prediction_;
+    const std::shared_ptr<switchboard>                  switchboard_;
+    const std::shared_ptr<data_format::pose_prediction> pose_prediction_;
 
     switchboard::reader<data_format::pose_type>                   slow_pose_reader_;
     switchboard::reader<data_format::imu_raw_type>                fast_pose_reader_;

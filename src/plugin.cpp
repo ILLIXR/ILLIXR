@@ -124,8 +124,8 @@ void check_plugins(std::vector<std::string>& plugins, const std::vector<ILLIXR::
                     }
                 }
                 if (!rdep_found) {
-                    throw std::runtime_error(
-                        "Missing plugin dependency. Plugin " + *it + " requires a provider of " + item +
+                    spdlog::get("illixr")->warn(
+                        "Potential missing plugin dependency. Plugin " + *it + " requests a provider of " + item +
                         " to be included in the plugin list. This can be provided by one of the following plugins: " +
                         boost::algorithm::join(needs, ", "));
                 }
@@ -179,9 +179,10 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
                     break;
                 } catch (YAML::BadFile&) { }
             }
-
-            if (config.size() == 0)
+            if (config.size() == 0) {
+                spdlog::get("illixr")->error("Could not load given config file: " + config_file_full);
                 throw std::runtime_error("Could not load given config file: " + config_file_full);
+            }
             config_list.clear();
         }
 
@@ -239,10 +240,11 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
         setenv("__GL_SYNC_TO_VBLANK", "1", false);
 
         std::vector<ILLIXR::Dependency> dep_map;
-        std::vector<std::string>        dep_list = {"plugin_deps.yaml", home_dir + "/.illixr/profiles/plugin_deps.yaml",
-                                                    exec_path + "/../share/illixr/profiles/plugin_deps.yaml"
+        std::vector<std::string>        dep_list   = {"plugin_deps.yaml", home_dir + "/.illixr/profiles/plugin_deps.yaml",
+                                                      exec_path + "/../share/illixr/profiles/plugin_deps.yaml"
 
         };
+        bool                            dep_loaded = false;
         for (auto& dep_file : dep_list) {
             try {
                 YAML::Node plugin_deps = YAML::LoadFile(dep_file);
@@ -253,14 +255,14 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
                 dep_map.reserve(plugin_deps["dep_map"].size());
                 for (const auto& node : plugin_deps["dep_map"])
                     dep_map.push_back(node.as<ILLIXR::Dependency>());
+                dep_loaded = true;
                 break;
-            } catch (YAML::BadFile& bf) {
-#ifndef NDEBUG
-                spdlog::get("illixr")->info("Could not load plugin dependency map file (" + dep_file +
-                                            "), cannot verify plugin dependencies.");
-#endif
-            }
+            } catch (YAML::BadFile& bf) { }
         }
+
+        if (!dep_loaded)
+            spdlog::get("illixr")->info("Could not load plugin dependency map file, cannot verify plugin dependencies.");
+
         bool have_plugins = false;
         // run entry supersedes plugins entry
         for (auto item : {"plugins", "run"}) {
