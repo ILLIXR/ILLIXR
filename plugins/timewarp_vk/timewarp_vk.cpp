@@ -585,9 +585,7 @@ VkPipeline timewarp_vk::create_pipeline(VkRenderPass render_pass, [[maybe_unused
     VkDevice device = display_provider_->vk_device_;
 
     auto           folder = std::string(SHADER_FOLDER);
-    std::cout << "Creating timewarp verteX" << std::endl;
     VkShaderModule vert   = vulkan::create_shader_module(device, vulkan::read_file(folder + "/tw.vert.spv"));
-    std::cout << "Creating timewarp fragment" << std::endl;
     VkShaderModule frag   = vulkan::create_shader_module(device, vulkan::read_file(folder + "/tw.frag.spv"));
 
     VkPipelineShaderStageCreateInfo vert_stage_info = {};

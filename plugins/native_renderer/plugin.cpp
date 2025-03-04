@@ -268,7 +268,7 @@ void native_renderer::_p_one_iteration() {
     // #ifndef NDEBUG
     // Print the FPS
     if (clock_->now() - last_fps_update_ > std::chrono::milliseconds(1000)) {
-        std::cout << "renderer FPS: " << fps_ << std::endl;
+        log_->info("FPS: {}", fps_); 
         fps_             = 0;
         last_fps_update_ = clock_->now();
     } else {
