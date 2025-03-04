@@ -25,7 +25,7 @@ static void glfw_error_callback(int error, const char* description) {
 /**
  * @brief Callback function to handle glfw errors
  */
-std::string image_type_string(const image::image_type it) {
+[[maybe_unused]] std::string image_type_string(const image::image_type it) {
     switch (it) {
     case image::LEFT_EYE:
     case image::LEFT_EYE_PROCESSED:
@@ -154,10 +154,10 @@ void viewer::make_position_table() const {
         ImGui::TableSetColumnIndex(0);
         ImGui::Text("Current");
         ImGui::TableSetColumnIndex(1);
-        ImGui::Text("%.2f, %.2f, %.2f : %.2f, %.2f, %.2f, %.2f", current_frame_->offset_pose.position.x(),
-                    current_frame_->offset_pose.position.y(), current_frame_->offset_pose.position.z(),
-                    current_frame_->offset_pose.orientation.w(), current_frame_->offset_pose.orientation.x(),
-                    current_frame_->offset_pose.orientation.y(), current_frame_->offset_pose.orientation.z());
+        ImGui::Text("%.2f, %.2f, %.2f : %.2f, %.2f, %.2f, %.2f", current_frame_->wcs_offset.position.x(),
+                    current_frame_->wcs_offset.position.y(), current_frame_->wcs_offset.position.z(),
+                    current_frame_->wcs_offset.orientation.w(), current_frame_->wcs_offset.orientation.x(),
+                    current_frame_->wcs_offset.orientation.y(), current_frame_->wcs_offset.orientation.z());
         ImGui::EndTable();
     }
     std::string label;

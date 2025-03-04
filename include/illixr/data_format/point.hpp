@@ -324,7 +324,7 @@ inline point abs(const point& pnt) {
 /*
  * Take the absolute value of the point
  */
-inline point_with_validity abs(const point_with_validity& pnt) {
+[[maybe_unused]] inline point_with_validity abs(const point_with_validity& pnt) {
     return {abs(point(pnt.x(), pnt.y(), pnt.z())), pnt.valid, pnt.confidence};
 }
 
@@ -333,7 +333,7 @@ inline point_with_validity abs(const point_with_validity& pnt) {
  * @param value The point to take the absolute value of
  * @return A point containing the result
  */
-inline point_with_units abs(const point_with_units& pnt) {
+[[maybe_unused]] inline point_with_units abs(const point_with_units& pnt) {
     return {abs(point(pnt.x(), pnt.y(), pnt.z())), pnt.unit, pnt.valid, pnt.confidence};
 }
 
@@ -475,7 +475,7 @@ struct [[maybe_unused]] points_with_units {
      * Multiply all points by a matrix
      * @param ref_frm The matrix to multiply all points by
      */
-    void mult(const Eigen::Matrix3f& ref_frm) {
+    [[maybe_unused]] void mult(const Eigen::Matrix3f& ref_frm) {
         for (point& pnt : points)
             pnt = ref_frm * pnt;
     }
@@ -495,7 +495,7 @@ struct [[maybe_unused]] points_with_units {
      * @param y_lim upper limit of y values
      * @param z_lim upper limit of z values
      */
-    void enforce_bounds(const float x_lim = -1., const float y_lim = -1, const float z_lim = -1) {
+    [[maybe_unused]] void enforce_bounds(const float x_lim = -1., const float y_lim = -1, const float z_lim = -1) {
         for (auto& pnt : points) {
             if (!pnt.valid)
                 continue;
@@ -523,7 +523,7 @@ struct [[maybe_unused]] points_with_units {
     /**
      * Update the struct validity flag based on the point's flags
      */
-    void check_validity() {
+    [[maybe_unused]] void check_validity() {
         valid = false;
         for (point_with_validity& pnt : points) {
             if (pnt.valid) {
@@ -542,7 +542,8 @@ struct [[maybe_unused]] points_with_units {
  * @param depth The z bound
  */
 template<>
-inline void normalize<points_with_units>(points_with_units& obj, const float width, const float height, const float depth) {
+[[maybe_unused]] inline void normalize<points_with_units>(points_with_units& obj, const float width, const float height,
+                                                          const float depth) {
     if (obj.unit == units::PERCENT) {
         std::cout << "Points are already normalized";
         return;
@@ -561,11 +562,68 @@ inline void normalize<points_with_units>(points_with_units& obj, const float wid
  * @param unit_ the units for the points
  */
 template<>
-inline void denormalize<points_with_units>(points_with_units& obj, const float width, const float height, const float depth,
-                                           units::measurement_unit unit_) {
+[[maybe_unused]] inline void denormalize<points_with_units>(points_with_units& obj, const float width, const float height,
+                                                            const float depth, units::measurement_unit unit_) {
     for (auto& pnt : obj.points)
         ::ILLIXR::data_format::denormalize(pnt, width, height, depth, unit_);
     obj.unit = unit_;
 }
 
+#ifdef ENABLE_OXR
+/*
+ * The struct below is utilized when working with OpenXR. The internal variables are in a basic form since OpenXR uses
+ * C, rather than C++ (e.g. points do not inherit from Eigen::Vector)
+ */
+
+struct raw_point {
+    float x;
+    float y;
+    float z;
+    bool  valid;
+
+    raw_point()
+        : x{0.f}
+        , y{0.f}
+        , z{0.f}
+        , valid{false} { }
+
+    [[maybe_unused]] explicit raw_point(const point_with_units& pnt)
+        : x{pnt.x()}
+        , y{pnt.y()}
+        , z{pnt.z()}
+        , valid{pnt.valid} { }
+
+    void copy(const point_with_units& pnt) {
+        x     = pnt.x();
+        y     = pnt.y();
+        z     = pnt.z();
+        valid = pnt.valid;
+    }
+
+    [[maybe_unused]] void mult(const Eigen::Matrix3f& ref_frm) {
+        Eigen::Vector3f vec{x, y, z};
+        vec = ref_frm * vec;
+        x   = vec.x();
+        y   = vec.y();
+        z   = vec.z();
+    }
+
+    void transform(const pose_data& pose) {
+        Eigen::Vector3f vec{x, y, z};
+        vec = (Eigen::Vector3f)((pose.orientation * vec) + pose.position);
+        x   = vec.x();
+        y   = vec.y();
+        z   = vec.z();
+    }
+
+    [[maybe_unused]] void de_transform(const pose_data& pose) {
+        Eigen::Vector3f vec{x, y, z};
+        vec -= pose.position;
+        vec = (Eigen::Vector3f)((pose.orientation.inverse() * vec));
+        x   = vec.x();
+        y   = vec.y();
+        z   = vec.z();
+    }
+};
+#endif
 } // namespace ILLIXR::data_format

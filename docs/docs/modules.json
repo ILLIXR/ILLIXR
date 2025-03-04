@@ -76,7 +76,8 @@
         "fmt",
         "git",
         "libcpuinfo",
-        "libgles"
+        "libgles",
+        "fp16"
       ]
     },
     {
@@ -88,8 +89,8 @@
       ]
     },
     {
-      "name": "hand_tracking.webcam",
-      "cmake_flag": "USE_HAND_TRACKING.WEBCAM=ON",
+      "name": "webcam",
+      "cmake_flag": "USE_WEBCAM=ON",
       "dependencies": [
         "OpenCV"
       ]
@@ -456,7 +457,7 @@
     },
     {
       "name": "zed.data_injection",
-      "cmake_flag": "USE_ZED_DATA_INJECTION=ON",
+      "cmake_flag": "USE_ZED.DATA_INJECTION=ON",
       "dependencies": [
         "OpenCV",
         "zed_SDK"
@@ -716,6 +717,43 @@
           "CentOS": {
             "9": {
               "pkg": "fmt-devel",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        }
+      }
+    },
+    {
+      "fp16": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "libfp16-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "libfp16-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "FP16-devel",
+              "postnotes": "",
+              "notes": ""
+            },
+            "38": {
+              "pkg": "FP16-devel",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "FP16-devel",
               "postnotes": "",
               "notes": ""
             }
