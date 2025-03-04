@@ -1,5 +1,5 @@
 all_plugins: audio_pipeline,debugview,depthai,gldemo,ground_truth_slam,gtsam_integrator,offline_cam,offline_imu,offload_data,offload_vio.device_rx,offload_vio.device_tx,offload_vio.server_rx,offload_vio.server_tx,passthrough_integrator,pose_lookup,pose_prediction,realsense,record_imu_cam,rk4_integrator,timewarp_gl,zed,fauxpose,display_vk,native_renderer,timewarp_vk,vkdemo,openni,record_rgb_depth,webcam,hand_tracking,hand_tracking.viewer,hand_tracking_gpu,zed.data_injection
-all_visualizers: openvins
+all_visualizers: openvins,orb_slam3
 
 profiles:
   - ci:
@@ -49,6 +49,14 @@ profiles:
       enable_verbose_errors: false
       enable_pre_sleep: false
 
+  - native_gl_slam:
+    plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,ground_truth_slam,gldemo,timewarp_gl,debugview,offload_data,orb_slam3
+    env_vars:
+      enable_offload: false
+      enable_alignment: false
+      enable_verbose_errors: false
+      enable_pre_sleep: false
+
   - native_vk:
     plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,display_vk,timewarp_vk,vkdemo,native_renderer,debugview,openvins
     build_flags: -DILLIXR_VULKAN
@@ -68,7 +76,7 @@ profiles:
       enable_pre_sleep: false
 
   - offload_device:
-    plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,ground_truth_slam,gldemo,debugview,timewarp_gl,offload_vio.device_rx,offload_vio.device_tx,audio_pipeline
+    plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,ground_truth_slam,gldemo,debugview,timewarp_gl,offload_vio.device_rx,offload_vio.device_tx,audio_pipeline, openvins
     env_vars:
       duration: 85
       enable_offload: False
@@ -96,7 +104,7 @@ profiles:
       enable_pre_sleep: False
 
   - fauxpose:
-    plugins: fauxpose,gldemo,debugview,audio_pipeline
+    plugins: fauxpose,gldemo,debugview,audio_pipeline,openvins
     env_vars:
       enable_offload: false
       enable_alignment: false
