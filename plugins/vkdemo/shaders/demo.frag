@@ -5,7 +5,6 @@ layout(binding = 2) uniform texture2D tex[4];
 layout(location = 0) in vec2 uv;
 layout(location = 0) out vec4 outColor;
 layout(location = 1) out vec4 outDepth;
-layout (depth_unchanged) out float gl_FragDepth;
 
 layout(push_constant) uniform PER_OBJECT { int tex_ind; } pc;
 

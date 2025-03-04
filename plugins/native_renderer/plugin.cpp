@@ -42,6 +42,23 @@ using namespace ILLIXR::data_format;
     export_dma_ = switchboard_->get_env_bool("ILLIXR_EXPORT_DMA");
 }
 
+native_renderer::~native_renderer() {
+    vkDeviceWaitIdle(display_sink_->vk_device_);
+
+    app_->destroy();
+    timewarp_->destroy();
+
+    for (auto& framebuffer : swapchain_framebuffers_) {
+        vkDestroyFramebuffer(display_sink_->vk_device_, framebuffer, nullptr);
+    }
+
+    // drain deletion_queue_
+    while (!deletion_queue_.empty()) {
+        deletion_queue_.top()();
+        deletion_queue_.pop();
+    }
+}
+
 /**
  * @brief Sets up the thread for the plugin.
  *
@@ -70,6 +87,10 @@ void native_renderer::_p_thread_setup() {
         vulkan::create_command_pool(display_sink_->vk_device_, display_sink_->queues_[vulkan::queue::GRAPHICS].family);
     app_command_buffer_      = vulkan::create_command_buffer(display_sink_->vk_device_, command_pool_);
     timewarp_command_buffer_ = vulkan::create_command_buffer(display_sink_->vk_device_, command_pool_);
+    deletion_queue_.emplace([=]() {
+        vkDestroyCommandPool(display_sink_->vk_device_, command_pool_, nullptr);
+    });
+
     create_sync_objects();
     if (!app_->is_external()) {
         create_app_pass();
@@ -77,7 +98,6 @@ void native_renderer::_p_thread_setup() {
     if (!timewarp_->is_external()) {
         create_timewarp_pass();
     }
-    create_sync_objects();
     if (!app_->is_external()) {
         create_offscreen_framebuffers();
     }
@@ -367,7 +387,10 @@ void native_renderer::create_sync_objects() {
         0                                        // flags
     };
 
-    vkCreateSemaphore(display_sink_->vk_device_, &create_info, nullptr, &app_render_finished_semaphore_);
+    VK_ASSERT_SUCCESS(vkCreateSemaphore(display_sink_->vk_device_, &create_info, nullptr, &app_render_finished_semaphore_))
+    deletion_queue_.emplace([=]() {
+        vkDestroySemaphore(display_sink_->vk_device_, app_render_finished_semaphore_, nullptr);
+    });
 
     VkSemaphoreCreateInfo semaphore_info{
         VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO, // sType
@@ -381,9 +404,20 @@ void native_renderer::create_sync_objects() {
     };
 
     VK_ASSERT_SUCCESS(vkCreateSemaphore(display_sink_->vk_device_, &semaphore_info, nullptr, &image_available_semaphore_))
+    deletion_queue_.emplace([=]() {
+        vkDestroySemaphore(display_sink_->vk_device_, image_available_semaphore_, nullptr);
+    });
+
     VK_ASSERT_SUCCESS(
         vkCreateSemaphore(display_sink_->vk_device_, &semaphore_info, nullptr, &timewarp_render_finished_semaphore_))
+    deletion_queue_.emplace([=]() {
+        vkDestroySemaphore(display_sink_->vk_device_, timewarp_render_finished_semaphore_, nullptr);
+    });
+
     VK_ASSERT_SUCCESS(vkCreateFence(display_sink_->vk_device_, &fence_info, nullptr, &frame_fence_))
+    deletion_queue_.emplace([=]() {
+        vkDestroyFence(display_sink_->vk_device_, frame_fence_, nullptr);
+    });
 }
 
 void native_renderer::create_depth_image(vulkan::vk_image& depth_image) {
@@ -416,6 +450,9 @@ void native_renderer::create_depth_image(vulkan::vk_image& depth_image) {
 
     VK_ASSERT_SUCCESS(vmaCreateImage(display_sink_->vma_allocator_, &image_info, &alloc_info, &depth_image.image,
                                      &depth_image.allocation, &depth_image.allocation_info))
+    deletion_queue_.emplace([=]() {
+        vmaDestroyImage(display_sink_->vma_allocator_, depth_image.image, depth_image.allocation);
+    });
 
     VkImageViewCreateInfo view_info{
         VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO, // sType
@@ -435,6 +472,9 @@ void native_renderer::create_depth_image(vulkan::vk_image& depth_image) {
     };
 
     VK_ASSERT_SUCCESS(vkCreateImageView(display_sink_->vk_device_, &view_info, nullptr, &depth_image.image_view))
+    deletion_queue_.emplace([=]() {
+        vkDestroyImageView(display_sink_->vk_device_, depth_image.image_view, nullptr);
+    });
 }
 
 void native_renderer::create_offscreen_pool() {
@@ -478,6 +518,9 @@ void native_renderer::create_offscreen_pool() {
     this->offscreen_pool_create_info_    = pool_create_info;
 
     VK_ASSERT_SUCCESS(vmaCreatePool(display_sink_->vma_allocator_, &offscreen_pool_create_info_, &offscreen_pool_));
+    deletion_queue_.emplace([=]() {
+        vmaDestroyPool(display_sink_->vma_allocator_, offscreen_pool_);
+    });
 }
 
 void native_renderer::create_offscreen_target(vulkan::vk_image& image) {
@@ -530,8 +573,10 @@ void native_renderer::create_offscreen_target(vulkan::vk_image& image) {
 
     VK_ASSERT_SUCCESS(vmaCreateImage(display_sink_->vma_allocator_, &image.image_info, &alloc_info, &image.image,
                                      &image.allocation, &image.allocation_info))
-
     assert(image.allocation_info.deviceMemory);
+    deletion_queue_.emplace([=]() {
+        vmaDestroyImage(display_sink_->vma_allocator_, image.image, image.allocation);
+    });
 
     VkImageViewCreateInfo view_info{
         VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO, // sType
@@ -563,6 +608,10 @@ void native_renderer::create_offscreen_target(vulkan::vk_image& image) {
 
         VK_ASSERT_SUCCESS(GetMemoryFdKHR(display_sink_->vk_device_, &get_fd_info, &image.fd))
     }
+
+    deletion_queue_.emplace([=]() {
+        vkDestroyImageView(display_sink_->vk_device_, image.image_view, nullptr);
+    });
 }
 
 void native_renderer::create_offscreen_framebuffers() {
@@ -587,6 +636,10 @@ void native_renderer::create_offscreen_framebuffers() {
 
             VK_ASSERT_SUCCESS(
                 vkCreateFramebuffer(display_sink_->vk_device_, &framebuffer_info, nullptr, &offscreen_framebuffers_[i][eye]))
+
+            deletion_queue_.emplace([=]() {
+                vkDestroyFramebuffer(display_sink_->vk_device_, offscreen_framebuffers_[i][eye], nullptr);
+            });
         }
     }
 }
@@ -698,6 +751,9 @@ void native_renderer::create_app_pass() {
         dependencies.data()                                    // pDependencies
     };
     VK_ASSERT_SUCCESS(vkCreateRenderPass(display_sink_->vk_device_, &render_pass_info, nullptr, &app_pass_))
+    deletion_queue_.emplace([=]() {
+        vkDestroyRenderPass(display_sink_->vk_device_, app_pass_, nullptr);
+    });
 }
 
 /**
@@ -758,6 +814,9 @@ void native_renderer::create_timewarp_pass() {
     };
 
     VK_ASSERT_SUCCESS(vkCreateRenderPass(display_sink_->vk_device_, &render_pass_info, nullptr, &timewarp_pass_))
+    deletion_queue_.emplace([=]() {
+        vkDestroyRenderPass(display_sink_->vk_device_, timewarp_pass_, nullptr);
+    });
 }
 
 PLUGIN_MAIN(native_renderer)

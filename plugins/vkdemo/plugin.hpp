@@ -1,6 +1,9 @@
 #pragma once
-#define VULKAN_REQUIRED
 
+#include <functional>
+#include <stack> 
+
+#define VULKAN_REQUIRED
 #include "illixr/data_format/pose_prediction.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/switchboard.hpp"
@@ -107,6 +110,7 @@ private:
 
     std::array<std::vector<VkImageView>, 2> buffer_pool_;
 
+    std::stack<std::function<void()>> deletion_queue_;
     VmaAllocator                     vma_allocator_{};
     VkCommandPool                    command_pool_{};
     [[maybe_unused]] VkCommandBuffer command_buffer_{};

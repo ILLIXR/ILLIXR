@@ -57,7 +57,7 @@ std::set<const char*> glfw_extended::get_required_instance_extensions() {
 
 glfw_extended::glfw_extended() {
     if (!glfwInit()) {
-        ILLIXR::abort("Failed to initalize glfw");
+        ILLIXR::abort("Failed to initialize glfw");
     }
 
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);

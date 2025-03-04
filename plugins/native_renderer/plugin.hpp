@@ -1,5 +1,8 @@
 #pragma once
 
+#include <functional>
+#include <stack>
+
 #define VULKAN_REQUIRED
 #include "illixr/data_format/pose_prediction.hpp"
 #include "illixr/phonebook.hpp"
@@ -13,6 +16,7 @@ namespace ILLIXR {
 class native_renderer : public threadloop {
 public:
     [[maybe_unused]] native_renderer(const std::string& name, phonebook* pb);
+    virtual ~native_renderer() override;
 
     /**
      * @brief Sets up the thread for the plugin.
@@ -115,6 +119,8 @@ private:
     uint32_t width_      = 0;
     uint32_t height_     = 0;
     bool     export_dma_ = false;
+
+    std::stack<std::function<void()>> deletion_queue_;
 
     VkCommandPool   command_pool_{};
     VkCommandBuffer app_command_buffer_{};
