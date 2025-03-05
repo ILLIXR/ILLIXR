@@ -306,8 +306,7 @@
       "name": "orb_slam3",
       "cmake_flag": "USE_ORB_SLAM3=ON",
       "dependencies": [
-        "fmt",
-        "patch"
+        "fmt"
       ]
     },
     {

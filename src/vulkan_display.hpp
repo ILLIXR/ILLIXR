@@ -531,9 +531,9 @@ private:
         vkDeviceWaitIdle(vk_device_);
         destroy_swapchain();
 
-        vkDestroyDevice(vk_device_, nullptr);
-
         vmaDestroyAllocator(vma_allocator_);
+
+        vkDestroyDevice(vk_device_, nullptr);
 
         if (!direct_mode_) {
             vkDestroySurfaceKHR(vk_instance_, vk_surface_, nullptr);

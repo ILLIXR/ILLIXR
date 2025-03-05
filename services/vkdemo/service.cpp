@@ -53,11 +53,18 @@ void vkdemo::initialize() {
     } else {
         this->vma_allocator_ = vulkan::create_vma_allocator(
             display_provider_->vk_instance_, display_provider_->vk_physical_device_, display_provider_->vk_device_);
+
+        deletion_queue_.emplace([=]() {
+            vmaDestroyAllocator(vma_allocator_);
+        });
     }
 
     command_pool_ =
         vulkan::create_command_pool(display_provider_->vk_device_, display_provider_->queues_[vulkan::queue::GRAPHICS].family);
     command_buffer_ = vulkan::create_command_buffer(display_provider_->vk_device_, command_pool_);
+    deletion_queue_.emplace([=]() {
+        vkDestroyCommandPool(display_provider_->vk_device_, command_pool_, nullptr);
+    });
 
     load_model();
     bake_models();
@@ -108,7 +115,15 @@ void vkdemo::record_command_buffer(VkCommandBuffer command_buffer, VkFramebuffer
     }
 }
 
-void vkdemo::destroy() { }
+void vkdemo::destroy() {
+    vkDeviceWaitIdle(display_provider_->vk_device_);
+
+    // drain deletion_queue_
+    while (!deletion_queue_.empty()) {
+        deletion_queue_.top()();
+        deletion_queue_.pop();
+    }
+}
 
 void vkdemo::update_uniform(const pose_type& pose, int eye) {
     Eigen::Matrix4f model_matrix = Eigen::Matrix4f::Identity();
@@ -193,6 +208,10 @@ void vkdemo::create_descriptor_set_layout() {
 
     VK_ASSERT_SUCCESS(
         vkCreateDescriptorSetLayout(display_provider_->vk_device_, &layout_info, nullptr, &descriptor_set_layout_))
+
+    deletion_queue_.emplace([=]() {
+        vkDestroyDescriptorSetLayout(display_provider_->vk_device_, descriptor_set_layout_, nullptr);
+    });
 }
 
 void vkdemo::create_uniform_buffers() {
@@ -214,6 +233,10 @@ void vkdemo::create_uniform_buffers() {
 
         VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator_, &buffer_info, &alloc_info, &uniform_buffers_[i],
                                           &uniform_buffer_allocations_[i], &uniform_buffer_allocation_infos_[i]))
+
+        deletion_queue_.emplace([=]() {
+            vmaDestroyBuffer(vma_allocator_, uniform_buffers_[i], uniform_buffer_allocations_[i]);
+        });
     }
 }
 
@@ -240,6 +263,9 @@ void vkdemo::create_descriptor_pool() {
     };
 
     VK_ASSERT_SUCCESS(vkCreateDescriptorPool(display_provider_->vk_device_, &pool_info, nullptr, &descriptor_pool_))
+    deletion_queue_.emplace([=]() {
+        vkDestroyDescriptorPool(display_provider_->vk_device_, descriptor_pool_, nullptr);
+    });
 }
 
 void vkdemo::create_texture_sampler_() {
@@ -266,6 +292,9 @@ void vkdemo::create_texture_sampler_() {
     };
 
     VK_ASSERT_SUCCESS(vkCreateSampler(display_provider_->vk_device_, &sampler_info, nullptr, &texture_sampler_))
+    deletion_queue_.emplace([=]() {
+        vkDestroySampler(display_provider_->vk_device_, texture_sampler_, nullptr);
+    });
 }
 
 void vkdemo::create_descriptor_set() {
@@ -448,6 +477,10 @@ void vkdemo::load_texture(const std::string& path, int i) {
 
     vmaDestroyBuffer(vma_allocator_, staging_buffer, staging_buffer_allocation);
 
+    deletion_queue_.emplace([=]() {
+        vmaDestroyImage(vma_allocator_, textures_[i].image, textures_[i].image_memory);
+    });
+
     VkImageViewCreateInfo view_info{
         VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO, // sType
         nullptr,                                  // pNext
@@ -466,6 +499,9 @@ void vkdemo::load_texture(const std::string& path, int i) {
     };
 
     VK_ASSERT_SUCCESS(vkCreateImageView(display_provider_->vk_device_, &view_info, nullptr, &textures_[i].image_view))
+    deletion_queue_.emplace([=]() {
+        vkDestroyImageView(display_provider_->vk_device_, textures_[i].image_view, nullptr);
+    });
 }
 
 void vkdemo::image_layout_transition(VkImage image, [[maybe_unused]] VkFormat format, VkImageLayout old_layout,
@@ -632,6 +668,10 @@ void vkdemo::create_vertex_buffer() {
                                  display_provider_->queues_[vulkan::queue::GRAPHICS], command_buffer_local);
 
     vmaDestroyBuffer(vma_allocator_, staging_buffer, staging_buffer_allocation);
+
+    deletion_queue_.emplace([=]() {
+        vmaDestroyBuffer(vma_allocator_, vertex_buffer_, buffer_allocation);
+    });
 }
 
 void vkdemo::create_index_buffer() {
@@ -688,11 +728,15 @@ void vkdemo::create_index_buffer() {
                                  display_provider_->queues_[vulkan::queue::GRAPHICS], command_buffer_local);
 
     vmaDestroyBuffer(vma_allocator_, staging_buffer, staging_buffer_allocation);
+
+    deletion_queue_.emplace([=]() {
+        vmaDestroyBuffer(vma_allocator_, index_buffer_, buffer_allocation);
+    });
 }
 
 void vkdemo::create_pipeline(VkRenderPass render_pass, uint32_t subpass) {
     if (pipeline_ != VK_NULL_HANDLE) {
-        throw std::runtime_error("timewarp_vk::create_pipeline: pipeline already created");
+        throw std::runtime_error("vkdemo::create_pipeline: pipeline already created");
     }
 
     auto           folder = std::string(SHADER_FOLDER);
@@ -853,6 +897,9 @@ void vkdemo::create_pipeline(VkRenderPass render_pass, uint32_t subpass) {
     };
 
     VK_ASSERT_SUCCESS(vkCreatePipelineLayout(display_provider_->vk_device_, &pipeline_layout_info, nullptr, &pipeline_layout_))
+    deletion_queue_.emplace([=]() {
+        vkDestroyPipelineLayout(display_provider_->vk_device_, pipeline_layout_, nullptr);
+    });
 
     VkPipelineDepthStencilStateCreateInfo depth_stencil{
         VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,                                 // sType
@@ -893,6 +940,9 @@ void vkdemo::create_pipeline(VkRenderPass render_pass, uint32_t subpass) {
 
     VK_ASSERT_SUCCESS(
         vkCreateGraphicsPipelines(display_provider_->vk_device_, VK_NULL_HANDLE, 1, &pipeline_info, nullptr, &pipeline_))
+    deletion_queue_.emplace([=]() {
+        vkDestroyPipeline(display_provider_->vk_device_, pipeline_, nullptr);
+    });
 
     vkDestroyShaderModule(display_provider_->vk_device_, vert, nullptr);
     vkDestroyShaderModule(display_provider_->vk_device_, frag, nullptr);

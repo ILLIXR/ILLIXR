@@ -8,6 +8,11 @@
 
 using namespace ILLIXR::display;
 
+static bool initialized_glfw() {
+    (void) glfwGetKeyScancode(0);
+    return glfwGetError(NULL) != GLFW_NOT_INITIALIZED;
+}
+
 void glfw_extended::setup_display(const std::shared_ptr<switchboard> sb, VkInstance vk_instance,
                                   VkPhysicalDevice vk_physical_device) {
     (void) sb;
@@ -43,8 +48,11 @@ std::pair<uint32_t, uint32_t> glfw_extended::get_framebuffer_size() {
 }
 
 void glfw_extended::cleanup() {
-    glfwDestroyWindow((GLFWwindow*) window_);
-    glfwTerminate();
+    // If another plugin (e.g., debugview) already te
+    if (initialized_glfw()) {
+        glfwDestroyWindow((GLFWwindow*) window_);
+        glfwTerminate();
+    }
 }
 
 std::set<const char*> glfw_extended::get_required_instance_extensions() {
@@ -56,17 +64,17 @@ std::set<const char*> glfw_extended::get_required_instance_extensions() {
 }
 
 glfw_extended::glfw_extended() {
-    if (!glfwInit()) {
-        ILLIXR::abort("Failed to initalize glfw");
+    if (!initialized_glfw()) {
+        if (!glfwInit()) {
+            ILLIXR::abort("Failed to initialize glfw");
+        }
     }
 
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
     window_ = glfwCreateWindow(display_params::width_pixels, display_params::height_pixels, "ILLIXR Eyebuffer Window (Vulkan)",
-                               glfwGetPrimaryMonitor(), nullptr);
-    // window = glfwCreateWindow(display_params::width_pixels, display_params::height_pixels,
-    //                           "ILLIXR Eyebuffer Window (Vulkan)", nullptr, nullptr);
+                               nullptr, nullptr);
 }
 
 std::set<const char*> glfw_extended::get_required_device_extensions() {

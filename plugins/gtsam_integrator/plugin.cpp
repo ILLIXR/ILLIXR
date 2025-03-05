@@ -21,10 +21,8 @@ using ImuBias = gtsam::imuBias::ConstantBias;
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
     , clock_{phonebook_->lookup_impl<relative_clock>()}
     , imu_integrator_input_{switchboard_->get_reader<imu_integrator_input>("imu_integrator_input")}
-    , imu_raw_{switchboard_->get_writer<imu_raw_type>("imu_raw")}
-    , log_(spdlogger(nullptr)) {
-    // spdlogger((switchboard_->get_env_char("GTSAM_INTEGRATOR_LOG_LEVEL"));
-    // spd_add_file_sink("gtsam", "csv", "debug");
+    , imu_raw_{switchboard_->get_writer<imu_raw_type>("imu_raw")} {
+    spdlogger(switchboard_->get_env_char("GTSAM_INTEGRATOR_LOG_LEVEL"));
     switchboard_->schedule<imu_type>(id_, "imu", [&](const switchboard::ptr<const imu_type>& datum, size_t) {
         callback(datum);
     });
@@ -126,8 +124,7 @@ void gtsam_integrator::propagate_imu_values(time_point real_time) {
 
 #ifndef NDEBUG
     if (input_values->last_cam_integration_time > last_cam_time_) {
-        // spdlog::get(name_)->debug("New slow pose has arrived!");
-        log_->debug("New slow pose has arrived!");
+        spdlog::get(name_)->debug("New slow pose has arrived!");
         last_cam_time_ = input_values->last_cam_integration_time;
     }
 #endif
@@ -162,10 +159,7 @@ void gtsam_integrator::propagate_imu_values(time_point real_time) {
     ImuBias prev_bias = pim_obj_->bias_hat();
     ImuBias bias      = pim_obj_->bias_hat();
 
-#ifndef NDEBUG
-    // spdlog::get(name_)->debug("Integrating over {} IMU samples", prop_data.size());
-    log_->info("Integrating over {} IMU samples", prop_data.size());
-#endif
+    spdlog::get(name_)->debug("Integrating over {} IMU samples", prop_data.size());
 
     for (std::size_t i = 0; i < prop_data.size() - 1; i++) {
         pim_obj_->integrate_measurement(prop_data[i], prop_data[i + 1]);
@@ -177,11 +171,9 @@ void gtsam_integrator::propagate_imu_values(time_point real_time) {
     gtsam::NavState navstate_k = pim_obj_->predict();
     gtsam::Pose3    out_pose   = navstate_k.pose();
 
-#ifndef NDEBUG
     spdlog::get(name_)->debug("Base Position (x, y, z) = {}, {}, {}", input_values->position(0), input_values->position(1),
                               input_values->position(2));
     spdlog::get(name_)->debug("New Position (x, y, z) = {}, {}, {}", out_pose.x(), out_pose.y(), out_pose.z());
-#endif
 
     auto                        seconds_since_epoch = std::chrono::duration<double>(real_time.time_since_epoch()).count();
     auto                        original_quaternion = out_pose.rotation().toQuaternion();

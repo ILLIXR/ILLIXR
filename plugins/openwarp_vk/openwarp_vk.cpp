@@ -20,9 +20,9 @@ openwarp_vk::openwarp_vk(const phonebook* pb)
 
     using_godot_ = switchboard_->get_env_bool("ILLIXR_USING_GODOT");
     if (using_godot_)
-        std::cout << "Using Godot projection matrices!" << std::endl;
+        spdlog::get("illixr")->info("[OPENWARP] Using Godot projection matrices");
     else
-        std::cout << "Godot not enabled - defaulting to Unreal projection matrices and reverse Z" << std::endl;
+        spdlog::get("illixr")->info("[OPENWARP] Using Unreal projection matrices");
 }
 
 // For objects that only need to be created a single time and do not need to change.
@@ -690,7 +690,7 @@ void openwarp_vk::generate_distortion_data() {
 }
 
 void openwarp_vk::generate_openwarp_mesh(size_t width, size_t height) {
-    std::cout << "Generating reprojection mesh, size (" << width << ", " << height << ")" << std::endl;
+    spdlog::get("illixr")->info("[OPENWARP] Generating reprojection mesh with resolution ({}, {})", width, height);
 
     // width and height are not in # of verts, but in # of faces.
     num_openwarp_indices_  = 2 * 3 * width * height;
@@ -861,11 +861,10 @@ void openwarp_vk::create_uniform_buffers() {
 
 void openwarp_vk::create_descriptor_pool() {
     std::array<VkDescriptorPoolSize, 2> poolSizes = {};
-    std::cout << buffer_pool_->image_pool.size() << std::endl;
-    poolSizes[0].type            = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    poolSizes[0].descriptorCount = buffer_pool_->image_pool.size() * 2;
-    poolSizes[1].type            = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-    poolSizes[1].descriptorCount = (2 * buffer_pool_->image_pool.size() + 1) * 2;
+    poolSizes[0].type                             = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    poolSizes[0].descriptorCount                  = buffer_pool_->image_pool.size() * 2;
+    poolSizes[1].type                             = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    poolSizes[1].descriptorCount                  = (2 * buffer_pool_->image_pool.size() + 1) * 2;
 
     VkDescriptorPoolCreateInfo poolInfo = {.sType         = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
                                            .pNext         = nullptr,
@@ -883,7 +882,6 @@ void openwarp_vk::create_descriptor_pool() {
 void openwarp_vk::create_descriptor_sets() {
     for (int eye = 0; eye < 2; eye++) {
         // OpenWarp descriptor sets
-        std::cout << eye << std::endl;
         std::vector<VkDescriptorSetLayout> ow_layout = {buffer_pool_->image_pool.size(), ow_descriptor_set_layout_};
         VkDescriptorSetAllocateInfo        ow_alloc_info{.sType              = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
                                                          .pNext              = nullptr,
@@ -978,7 +976,6 @@ void openwarp_vk::create_descriptor_sets() {
 }
 
 void openwarp_vk::create_openwarp_pipeline() {
-    std::cout << "Creating openwarp renderpass" << std::endl;
     // A renderpass also has to be created
     VkAttachmentDescription color_attachment{.flags         = 0,
                                              .format        = VK_FORMAT_R8G8B8A8_UNORM, // this should match the offscreen image
@@ -1036,8 +1033,6 @@ void openwarp_vk::create_openwarp_pipeline() {
                                             .pDependencies   = &dependency};
 
     VK_ASSERT_SUCCESS(vkCreateRenderPass(display_provider_->vk_device_, &render_pass_info, nullptr, &openwarp_render_pass_));
-
-    std::cout << "Openwarp renderpass created" << std::endl;
 
     if (openwarp_pipeline_ != VK_NULL_HANDLE) {
         throw std::runtime_error("openwarp_vk::create_pipeline: pipeline already created");

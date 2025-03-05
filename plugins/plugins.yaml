@@ -96,16 +96,16 @@ profiles:
       enable_verbose_errors: false
       enable_pre_sleep: false
 
-  - native_gl_slam:
-    plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,ground_truth_slam,gldemo,timewarp_gl,debugview,offload_data,orb_slam3
+  - native_timewarp_vk:
+    plugins: offline_imu,offline_cam,gtsam_integrator,openvins,pose_prediction,timewarp_vk,vkdemo,native_renderer,debugview
     env_vars:
       enable_offload: false
       enable_alignment: false
       enable_verbose_errors: false
       enable_pre_sleep: false
 
-  - native_timewarp_vk:
-    plugins: offline_imu,offline_cam,gtsam_integrator,openvins,pose_prediction,timewarp_vk,vkdemo,native_renderer,debugview
+  - native_gl_slam:
+    plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,ground_truth_slam,gldemo,timewarp_gl,debugview,offload_data,orb_slam3
     env_vars:
       enable_offload: false
       enable_alignment: false
