@@ -28,7 +28,7 @@
 /*   * (This version uploaded to ILLIXR GitHub)                              */
 /*                                                                           */
 
-#include "plugin.hpp"
+#include "service.hpp"
 
 #include <cstdlib>
 #include <eigen3/Eigen/Core>

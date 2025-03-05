@@ -36,22 +36,66 @@ ILLIXR currently contains the following components:
     - Simultaneous Localization and Mapping
         1. [OpenVINS][1]<SUP>1</SUP>
     - Cameras and IMUs
-        1. [ZED Mini][42]
-        2. [Intel RealSense][41]
+        1. [zed][PL35] supporting [ZED Mini][42]
+        2. [realsense][PL36] supporting [Intel RealSense][41]
+        3. [webcam][PL37]
 
 - *Visual*
-    - [Chromatic aberration correction][5]
-    - [Lens distortion correction][5]
-    - [Asynchronous Reprojection (TimeWarp)]
+    - [Chromatic aberration correction]
+    - [Lens distortion correction]
+    - Asynchronous Reprojection [TimeWarp][PL38], both [OpenGL][2] and [Vulkan][3] based
 
-- *Head Tracking*
-    - [ORB_SLAM3][6]<SUP>1</SUP>
+- *Detection and Tracking*
+    - Head tracking [ORB_SLAM3][6]<SUP>1</SUP>
+    - [Hand tracking][5]<SUP>1</SUP>
+    - [openni][PL54]
+    - [lighthouse][PL55]
+    - [depthai][PL56]
 
 - *Aural*
     - [Audio encoding][4]<SUP>1</SUP>
     - [Audio playback][4]<SUP>1</SUP>
 
+- *Data Recording*
+    - [offload_data][PL46]
+    - [record_imu_cam][PL39]
+    - [record_rgb_depth][PL40]
+    - zed_capture (standalone executable)
+
+- *Data Reading/Injection*
+    - [offline_cam][PL41]
+    - [offline_imu][PL42]
+    - [zed.data_injection][PL43]
+    - [vkdemo][PL57]
+
+- *Visualization*
+    - [debugview][PL44]
+    - [hand_tracking.viewer][PL45]
+
+- *Renderers/Reprojection*
+    - [gldemo][PL47]
+    - [openwarp][PL58]
+    - [native_renderer][PL59]
+
+- *Data Testing*
+    - [ground_truth_slam][PL48]
+
+- *Pose Providers*
+    - [gtsam_integrator][PL49]
+    - [fauxpose][PL50]
+    - [pose_prediction][PL51]
+    - [pose_lookup][PL52]
+    - [rk4_integrator][PL53]
+
+- *Offloading/Remote Work*
+    - [offload_vio][PL60]
+    - [offload_rendering_client][PL61]
+    - [offload_rendering_client_jetson][PL62]
+    - [offload_rendering_server][PL63]
+    - [tcp_network_backend][PL64]
+
 <SUP>1</SUP> Source is hosted in an external repository under the [ILLIXR project][7].
+<BR><SUP>2</SUP> Source is in the main ILLIXR [repository][38] under plugins.
 
 We continue to add more components (new components and new implementations).
 
@@ -183,7 +227,7 @@ must be used according to those licenses:
 | [concurrentqueue][P1]              | [BSD-2 clause][L1]                                 |
 | [cxxopts][P2]                      | [MIT][L2]                                          |
 | [Depthai Core][P3]                 | [MIT][L3]                                          |
-| EGL-Registry][P47]                 | None given                                         |
+| [EGL-Registry][P47]                | None given                                         |
 | [farmhash][P46]                    | [MIT][L46]                                         |
 | [FFmpeg][P4]                       | [GNU General Public License v3.0][L35]<SUP>3</SUP> |
 | [filter][P5]                       | [MIT][L5]                                          |
@@ -242,27 +286,16 @@ You can join the [ILLIXR consortium][37], [Discord][47], or [mailing list][48], 
 
 [//]: # (- References -)
 [1]:    https://github.com/ILLIXR/open_vins
-[2]:    https://github.com/ILLIXR/ElasticFusion
-[3]:    https://github.com/ILLIXR/RITnet
+[2]:    https://www.opengl.org/
+[3]:    https://www.vulkan.org/
 [4]:    https://github.com/ILLIXR/audio_pipeline
-[5]:    https://github.com/ILLIXR/visual_postprocessing
+[5]:    https://github.com/ILLIXR/hand_tracking
 [6]:    https://github.com/ILLIXR/ORB_SLAM3
 [7]:    https://github.com/ILLIXR
 [8]:    https://ieeexplore.ieee.org/abstract/document/9741292
 [9]:    http://rsim.cs.illinois.edu
 [10]:   https://monado.dev
 [11]:   https://research.fb.com/programs/openeds-challenge
-[12]:   https://github.com/rpng/open_vins
-[13]:   https://www.gnu.org/licenses/gpl-3.0.html
-[15]:   https://github.com/luxonis/depthai-core
-[16]:   https://github.com/luxonis/depthai-core/blob/main/LICENSE
-[18]:   https://github.com/videolabs/libspatialaudio
-[19]:   https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
-[21]:   https://www.gnu.org/licenses/lgpl-3.0.html
-[22]:   https://gitlab.freedesktop.org/monado/monado
-[23]:   https://choosealicense.com/licenses/bsl-1.0
-[24]:   https://gitter.im/ILLIXR/community
-[25]:   https://github.com/ILLIXR/ILLIXR/releases
 [26]:   https://www.khronos.org/openxr
 [33]:   https://illixr.github.io/ILLIXR/getting_started/
 [34]:   https://illixr.github.io/ILLIXR/LICENSE/
@@ -280,19 +313,38 @@ You can join the [ILLIXR consortium][37], [Discord][47], or [mailing list][48], 
 [48]:   mailto:lists@lists.cs.illinois.edu?subject=sub%20illixr-community
 [49]:   mailto:illixr@cs.illinois.edu
 [50]:   https://illixr.org/open_meetings
-[51]:   https://ffmpeg.org/
-[52]:   https://github.com/ILLIXR/opencv
-[53]:   https://github.com/opencv/opencv/blob/4.x/LICENSE
-[54]:   https://github.com/ILLIXR/Monado_OpenXR_Simple_Example
-[56]:   https://github.com/PortAudio/portaudio
-[57]:   https://github.com/PortAudio/portaudio/blob/master/LICENSE.txt
-[58]:   https://github.com/jbeder/yaml-cpp
-[59]:   https://github.com/jbeder/yaml-cpp/blob/master/LICENSE
-[60]:   https://github.com/KhronosGroup
-[61]:   https://choosealicense.com/licenses/apache-2.0/
-[62]:   https://choosealicense.com/licenses/mit/
-[71]:   https://github.com/google-ai-edge/mediapipe
-[72]:   https://github.com/google-ai-edge/mediapipe/blob/master/LICENSE
+
+[//]: # (- Plugins -)
+[PL35]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-zed
+[PL36]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-realsense
+[PL37]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-webcam
+[PL38]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-timewarp
+[PL39]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-record-imu-cam
+[PL40]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-record-rgb-depth
+[PL41]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-offline-cam
+[PL42]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-offline-imu
+[PL43]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-zed-data-injection
+[PL44]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-debugview
+[PL45]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-hand-tracking-viewer
+[PL46]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-offload-data
+[PL47]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-gldemo
+[PL48]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-ground-truth-slam
+[PL49]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-gtsam-integrator
+[PL50]:   https://illixr.github.io/ILLIXR/illixr_services/index.html#service-fauxpose
+[PL51]:   https://illixr.github.io/ILLIXR/illixr_services/index.html#service-pose-prediction
+[PL52]:   https://illixr.github.io/ILLIXR/illixr_services/index.html#service-pose-lookup
+[PL53]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-rk4-integrator
+[PL54]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-openni
+[PL55]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-lighthouse
+[PL56]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-depthai
+[PL57]:   https://illixr.github.io/ILLIXR/illixr_services/index.html#service-vkdemo
+[PL58]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-openwarp-vk
+[PL59]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-native-renderer
+[PL60]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-offload-vio
+[PL61]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-offload-rendering-client
+[PL62]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-offload-rendering-client-jetson
+[PL63]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-offload-rendering-server
+[PL64]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-tcp-network-backend
 
 
 [//]: # (- Third Party Packages -)

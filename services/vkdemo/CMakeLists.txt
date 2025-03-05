@@ -34,8 +34,8 @@ add_custom_target(
         DEPENDS ${SPIRV_BINARY_FILES}
 )
 
-add_library(${PLUGIN_NAME} SHARED plugin.cpp
-            plugin.hpp
+add_library(${PLUGIN_NAME} SHARED service.cpp
+            service.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/global_module_defs.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/math_util.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/data_format/pose_prediction.hpp

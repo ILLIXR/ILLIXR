@@ -2,7 +2,7 @@
 
 ## Summary
 
-`openwarp_vk` is an Vulkan-based translational reprojection service intended for use in the ILLIXR architecture. 
+`openwarp_vk` is a Vulkan-based translational reprojection service intended for use in the ILLIXR architecture. 
 
 ## Phonebook Service
 

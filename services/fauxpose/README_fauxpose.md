@@ -16,7 +16,7 @@ through environment variables.
 
 ## Usage
 The "FauxPose" plugin must be included in the YAML configuration file
-prior to any rendering plugin (such as "debugview" or "gldemo").  Also
+prior to any rendering plugin (such as "debugview" or "gldemo").  Also,
 no other pose-generating plugin should be included.  (In the standard
 configuration this requires removing the "rt_slam_plugins" -- usually
 by commenting out the line:
@@ -35,4 +35,3 @@ three of these values can be overridden through environment variables:
 	* FAUXPOSE_PERIOD=<n>
 	* FAUXPOSE_AMPLITUDE=<n>
 	* FAUXPOSE_CENTER=<x,y,z>
-

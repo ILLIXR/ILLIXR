@@ -3,8 +3,8 @@
 set(PLUGIN_NAME plugin.pose_prediction${ILLIXR_BUILD_SUFFIX})
 
 # source files, listed individually so that any changes will trigger a rebuild
-add_library(${PLUGIN_NAME} SHARED plugin.cpp
-            plugin.hpp
+add_library(${PLUGIN_NAME} SHARED service.cpp
+            service.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/plugin.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/data_format/imu.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/phonebook.hpp

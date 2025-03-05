@@ -19,7 +19,6 @@ endif()
 foreach(item IN ZIP_LISTS PLUGIN_NAMES PLUGIN_DEFINITIONS PLUGIN_SOURCES)
     set(PLUGIN_NAME "${item_0}")
 
-    message("++++  ${item_0}   ${item_1}   ${item_2}")
     # source files, listed individually so that any changes will trigger a rebuild
     add_library(${PLUGIN_NAME} SHARED
                 ${item_2}
@@ -40,11 +39,9 @@ foreach(item IN ZIP_LISTS PLUGIN_NAMES PLUGIN_DEFINITIONS PLUGIN_SOURCES)
     )
 
     if(NOT ${item_1} STREQUAL "x")
-        message("ADDING ${item_1}")
         target_compile_definitions(${PLUGIN_NAME} PUBLIC ${item_1})
         target_compile_definitions(${PLUGIN_NAME} PRIVATE MONADO_REQUIRED)
         target_include_directories(${PLUGIN_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-        message("-----------------------  ${CMAKE_CURRENT_SOURCE_DIR} =============================")
     endif()
 
     target_include_directories(${PLUGIN_NAME} PRIVATE ${X11_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} ${GLU_INCLUDE_DIR} ${gl_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR}/include ${Eigen3_INCLUDE_DIRS} ${Vulkan_INCLUDE_DIRS})

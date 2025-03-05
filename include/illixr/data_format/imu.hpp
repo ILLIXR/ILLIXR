@@ -5,7 +5,9 @@
 #include <eigen3/Eigen/Dense>
 
 namespace ILLIXR::data_format {
-
+/**
+ * Inertial Measurement Unit representation
+ */
 struct [[maybe_unused]] imu_type : switchboard::event {
     time_point      time;
     Eigen::Vector3d angular_v;
@@ -28,7 +30,9 @@ typedef struct {
     double                      nominal_rate;
 } imu_params;
 
-// IMU biases, initialization params, and slow pose needed by the IMU integrator
+/**
+ * IMU biases, initialization params, and slow pose needed by the IMU integrator
+ */
 struct [[maybe_unused]] imu_integrator_input : public switchboard::event {
     time_point last_cam_integration_time;
     duration   t_offset;
@@ -53,7 +57,9 @@ struct [[maybe_unused]] imu_integrator_input : public switchboard::event {
         , quat{std::move(quat_)} { }
 };
 
-// Output of the IMU integrator to be used by pose prediction
+/**
+ * Output of the IMU integrator to be used by pose prediction
+ */
 struct [[maybe_unused]] imu_raw_type : public switchboard::event {
     // Biases from the last two IMU integration iterations used by RK4 for pose predict
     Eigen::Matrix<double, 3, 1> w_hat;
