@@ -1,4 +1,4 @@
-![ILLIXR logo](docs/docs/images/LogoWithHeader.svg)
+![ILLIXR logo](docs/docs/images/LogoWithHeader.png)
 
 [![NCSA licensed](https://img.shields.io/badge/license-NCSA-blue.svg)](LICENSE)
 [![ILLIXR CI](https://github.com/ILLIXR/ILLIXR/actions/workflows/ci.yaml/badge.svg)](https://github.com/ILLIXR/ILLIXR/actions/workflows/ci.yaml)
@@ -14,17 +14,16 @@
     >
 </a>
 
-Illinois Extended Reality testbed or ILLIXR (pronounced like elixir) is
-the first fully open-source Extended Reality (XR) system and testbed.
-The modular, extensible, and [OpenXR][26]-compatible ILLIXR runtime
-integrates state-of-the-art XR components into a complete XR system.
-The testbed is part of the broader [ILLIXR consortium][37],
-an industry-supported community effort to democratize XR systems
-research, development, and benchmarking.
+Illinois Extended Reality testbed or ILLIXR (pronounced like elixir) is the first fully open-source Extended Reality (
+XR) system and testbed. The modular, extensible, and [OpenXR][26]-compatible ILLIXR runtime integrates state-of-the-art
+XR components into a complete XR system. The testbed is part of the broader [ILLIXR consortium][37], an
+industry-supported community effort to democratize XR systems research, development, and benchmarking.
 
-You can find the complete ILLIXR system [here][38].
+The current ILLIXR release is [v3.3][51]. Source code is available from our GitHub [repository][38], which also contains
+instructions for building fully contained Docker images. Docker images can also be downloaded from a hub (see [here][52]
+for instructions.)
 
-ILLIXR also provides its components in standalone configurations to enable architects and
+ILLIXR provides its components in standalone configurations to enable architects and
 system designers to research each component in isolation.
 The standalone components are packaged together in the as of the [v3.1.0 release][39] of ILLIXR.
 
@@ -97,8 +96,7 @@ ILLIXR currently contains the following components:
 <SUP>1</SUP> Source is hosted in an external repository under the [ILLIXR project][7].
 <BR><SUP>2</SUP> Source is in the main ILLIXR [repository][38] under plugins.
 
-We continue to add more components (new components and new implementations).
-
+We continue to refine and add new components and implementations.
 Many of the current components of ILLIXR were developed by domain experts and obtained from
 publicly available repositories.
 They were modified for one or more of the following reasons: fixing compilation, adding features,
@@ -142,9 +140,10 @@ We would also appreciate it if you send us a citation once your work has been pu
 }
 ```
 
-## Getting Started and Documentation
+## Contributing and Documentation
 
-For more information, see our [Getting Started page][33].
+We welcome anyone to contribute to ILLIXR. If you wish to contribute, please see out contribution [guide][53]. Full
+documentation, including API specifications, can be found at our [Getting Started page][33].
 
 ## Acknowledgements
 
@@ -152,7 +151,7 @@ The ILLIXR project started in [Sarita Adve’s research group][9],
 co-led by PhD candidate Muhammad Huzaifa, at the University of Illinois at Urbana-Champaign.
 Other major contributors include
 Rishi Desai,
-Doug Friedel,
+Douglas Friedel,
 Samuel Grayson,
 Xutao Jiang,
 Ying Jing,
@@ -244,6 +243,7 @@ must be used according to those licenses:
 | [OouraFFT][P45]                    | [MIT-like][L45]                                    |
 | [Open-VINS][P35]                   | [GNU General Public License v3.0][L35]             |
 | [OpenXR][P12]                      | [Boost v1][L12]                                    |
+| [ORB_SLAM3][P49]                   | [GNU General Public License v3.0][L49]             |
 | [protobuf][L41]                    | [BSD-3 clause][L41]                                |
 | [pthreadpool][P40]                 | [BSD-2 clause][L40]<SUP>2</SUP>                    |
 | [robin-hood-hashing][P14]          | [MIT][L14]                                         |
@@ -272,175 +272,337 @@ licensed under GPL v3.0
 
 <SUP>4</SUP> This software is covered by multiple open source licenses, see the link for details.
 
-The optional [Open-VINS][P35] plugin (available from a secondary repository) is licensed under [GPL v3.0][L35].
-
-Note that ILLIXR's extensibility allows the source to be configured and compiled using only
-permissively licensed software.
+Any LGPL or GPL licensed code are contained in optional components. ILLIXR's extensibility allows the source to be configured and compiled using only
+permissively licensed software, if desired. See out [Getting Started][33] page for instructions.
 
 ## Get in Touch
 
 Whether you are a computer architect, a compiler writer, a systems person, work on XR related algorithms
-or applications, or just anyone interested in XR research, development, or products, we would love to hear from you and hope you will contribute!
-You can join the [ILLIXR consortium][37], [Discord][47], or [mailing list][48], or send us an [email][49], or just send us a pull request!
+or applications, or just anyone interested in XR research, development, or products, we would love to hear from you and
+hope you will contribute!
+You can join the [ILLIXR consortium][37], [Discord][47], or [mailing list][48], or send us an [email][49], or just send
+us a pull request!
 
 
 [//]: # (- References -)
+
 [1]:    https://github.com/ILLIXR/open_vins
+
 [2]:    https://www.opengl.org/
+
 [3]:    https://www.vulkan.org/
+
 [4]:    https://github.com/ILLIXR/audio_pipeline
+
 [5]:    https://github.com/ILLIXR/hand_tracking
+
 [6]:    https://github.com/ILLIXR/ORB_SLAM3
+
 [7]:    https://github.com/ILLIXR
+
 [8]:    https://ieeexplore.ieee.org/abstract/document/9741292
+
 [9]:    http://rsim.cs.illinois.edu
+
 [10]:   https://monado.dev
+
 [11]:   https://research.fb.com/programs/openeds-challenge
+
 [26]:   https://www.khronos.org/openxr
+
 [33]:   https://illixr.github.io/ILLIXR/getting_started/
+
 [34]:   https://illixr.github.io/ILLIXR/LICENSE/
+
 [35]:   https://illixr.github.io/ILLIXR/illixr_plugins/
+
 [36]:   https://illixr.github.io/ILLIXR/writing_your_plugin/
+
 [37]:   http://illixr.org
+
 [38]:   https://github.com/ILLIXR/ILLIXR
+
 [39]:   https://github.com/ILLIXR/ILLIXR/releases/tag/v3.1.0
+
 [41]:   https://www.intelrealsense.com/
+
 [42]:   https://www.stereolabs.com/zed-mini/
+
 [43]:   https://youtu.be/ZY98lWksnpM
+
 [44]:   https://ws.engr.illinois.edu/sitemanager/getfile.asp?id=2971
+
 [45]:   https://youtu.be/GVcCW8WgEDY
+
 [47]:   https://discord.gg/upkvy7x3W4
+
 [48]:   mailto:lists@lists.cs.illinois.edu?subject=sub%20illixr-community
+
 [49]:   mailto:illixr@cs.illinois.edu
+
 [50]:   https://illixr.org/open_meetings
 
+[51]:   https://github.com/ILLIXR/ILLIXR/releases/tag/v3.3.0
+
+[52]:   https://illixr.github.io/ILLIXR/docker/
+
+[53]:   https://illixr.github.io/ILLIXR/contributing/contributing/
+
 [//]: # (- Plugins -)
+
 [PL35]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-zed
+
 [PL36]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-realsense
+
 [PL37]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-webcam
+
 [PL38]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-timewarp
+
 [PL39]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-record-imu-cam
+
 [PL40]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-record-rgb-depth
+
 [PL41]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-offline-cam
+
 [PL42]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-offline-imu
+
 [PL43]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-zed-data-injection
+
 [PL44]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-debugview
+
 [PL45]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-hand-tracking-viewer
+
 [PL46]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-offload-data
+
 [PL47]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-gldemo
+
 [PL48]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-ground-truth-slam
+
 [PL49]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-gtsam-integrator
+
 [PL50]:   https://illixr.github.io/ILLIXR/illixr_services/index.html#service-fauxpose
+
 [PL51]:   https://illixr.github.io/ILLIXR/illixr_services/index.html#service-pose-prediction
+
 [PL52]:   https://illixr.github.io/ILLIXR/illixr_services/index.html#service-pose-lookup
+
 [PL53]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-rk4-integrator
+
 [PL54]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-openni
+
 [PL55]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-lighthouse
+
 [PL56]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-depthai
+
 [PL57]:   https://illixr.github.io/ILLIXR/illixr_services/index.html#service-vkdemo
+
 [PL58]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-openwarp-vk
+
 [PL59]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-native-renderer
+
 [PL60]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-offload-vio
+
 [PL61]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-offload-rendering-client
+
 [PL62]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-offload-rendering-client-jetson
+
 [PL63]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-offload-rendering-server
+
 [PL64]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-tcp-network-backend
 
 
 [//]: # (- Third Party Packages -)
+
 [P1]:   https://github.com/cameron314/concurrentqueue
+
 [P2]:   https://github.com/jarro2783/cxxopts
+
 [P3]:   https://github.com/luxonis/depthai-core
+
 [P4]:   https://github.com/ILLIXR/FFmpeg/
+
 [P5]:   https://github.com/casiez/OneEuroFilter
+
 [P6]:   https://github.com/KhronosGroup/glslang
+
 [P7]:   https://github.com/borglab/gtsam
+
 [P8]:   https://github.com/ocornut/imgui
+
 [P9]:   https://github.com/ILLIXR/monado_integration
+
 [P10]:   https://github.com/ILLIXR/monado_vulkan_integration
+
 [P11]:   https://github.com/ILLIXR/opencv
+
 [P12]:   https://github.com/ILLIXR/Monado_OpenXR_Simple_Example
+
 [P13]:   https://github.com/PortAudio/portaudio
+
 [P14]:   https://github.com/martinus/robin-hood-hashing
+
 [P15]:   https://github.com/ILLIXR/libspatialaudio
+
 [P16]:   https://github.com/KhronosGroup/SPIRV-Headers
+
 [P17]:   https://github.com/KhronosGroup/SPIRV-Tools
+
 [P18]:   https://github.com/iwongu/sqlite3pp
+
 [P19]:   https://github.com/nothings/stb
+
 [P20]:   https://github.com/tinyobjloader/tinyobjloader
+
 [P21]:   https://github.com/KhronosGroup/Vulkan-Headers
+
 [P22]:   https://github.com/KhronosGroup/Vulkan-Loader
+
 [P23]:   https://github.com/KhronosGroup/Vulkan-Utility-Libraries
+
 [P24]:   https://github.com/KhronosGroup/Vulkan-ValidationLayers
+
 [P25]:   https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator/blob/master/include/vk_mem_alloc.h
+
 [P26]:   https://github.com/jbeder/yaml-cpp
+
 [P28]:   https://github.com/videolabs/libspatialaudio
+
 [P29]:   https://gitlab.freedesktop.org/monado/monado
+
 [P30]:   https://github.com/cameron314/concurrentqueue
+
 [P31]:   https://github.com/mp3guy/ElasticFusion
+
 [P32]:   https://github.com/ILLIXR/KinectFusionApp/tree/illixr-integration
+
 [P33]:   https://github.com/MartinPersson/HOTlab
+
 [P34]:   https://github.com/AayushKrChaudhary/RITnet
+
 [P35]:   https://github.com/rpng/open_vins
+
 [P36]:   https://github.com/google-ai-edge/mediapipe
+
 [P37]:   https://github.com/ILLIXR/XNNPACK
+
 [P38]:   https://github.com/ILLIXR/tensorflow-lite
+
 [P39]:   https://github.com/ILLIXR/ruy
+
 [P40]:   https://github.com/Maratyszcza/pthreadpool
+
 [P41]:   https://github.com/protocolbuffers/protobuf
+
 [P42]:   https://github.com/intel/ARM_NEON_2_x86_SSE
+
 [P43]:   https://github.com/google/gemmlowp
+
 [P44]:   https://github.com/google/flatbuffers
+
 [P45]:   https://github.com/petewarden/OouraFFT
+
 [P46]:   https://github.com/google/farmhash
+
 [P47]:   https://github.com/KhronosGroup/EGL-Registry
+
 [P48]:   https://github.com/abseil/abseil-cpp
 
+[P49]:   https://github.com/ILLIXR/ORB_SLAM3
+
 [//]: # (- Licenses -)
+
 [L1]:   https://github.com/cameron314/concurrentqueue/blob/master/LICENSE.md
+
 [L2]:   https://github.com/jarro2783/cxxopts/blob/master/LICENSE
+
 [L3]:   https://github.com/luxonis/depthai-core/blob/main/LICENSE
+
 [L4]:   https://github.com/ILLIXR/FFmpeg/blob/master/LICENSE.md
+
 [L5]:   https://github.com/ILLIXR/ILLIXR/blob/master/plugins/gtsam_integrator/third_party/filter.h
+
 [L6]:   https://github.com/KhronosGroup/glslang/blob/main/LICENSE.txt
+
 [L7]:   https://github.com/borglab/gtsam/blob/develop/LICENSE
+
 [L8]:   https://github.com/ocornut/imgui/blob/master/LICENSE.txt
+
 [L9]:   https://github.com/ILLIXR/monado_integration/blob/master/LICENSE
+
 [L10]:   https://github.com/ILLIXR/monado_vulkan_integration/blob/main/LICENSE
+
 [L11]:   https://github.com/ILLIXR/opencv/blob/master/LICENSE
+
 [L12]:   https://github.com/ILLIXR/Monado_OpenXR_Simple_Example/blob/master/LICENSE
+
 [L13]:   https://github.com/PortAudio/portaudio/blob/master/LICENSE.txt
+
 [L14]:   https://github.com/martinus/robin-hood-hashing/blob/master/LICENSE
+
 [L15]:   https://github.com/ILLIXR/libspatialaudio/blob/master/LICENSE
+
 [L16]:   https://github.com/KhronosGroup/SPIRV-Headers/blob/main/LICENSE
+
 [L17]:   https://github.com/KhronosGroup/SPIRV-Tools/blob/main/LICENSE
+
 [L18]:   https://github.com/iwongu/sqlite3pp/blob/master/LICENSE
+
 [L19]:   https://github.com/nothings/stb/blob/master/LICENSE
+
 [L20]:   https://github.com/tinyobjloader/tinyobjloader/blob/release/LICENSE
+
 [L21]:   https://github.com/KhronosGroup/Vulkan-Headers/blob/main/LICENSE.md
+
 [L22]:   https://github.com/KhronosGroup/Vulkan-Loader/blob/main/LICENSE.txt
+
 [L23]:   https://github.com/KhronosGroup/Vulkan-Utility-Libraries/blob/main/LICENSE.md
+
 [L24]:   https://github.com/KhronosGroup/Vulkan-ValidationLayers/blob/main/LICENSE.txt
+
 [L25]:   https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator/blob/master/LICENSE.txt
+
 [L26]:   https://github.com/jbeder/yaml-cpp/blob/master/LICENSE
+
 [L27]:   https://github.com/ILLIXR/ILLIXR/blob/master/plugins/zed/include/LICENSE
+
 [L28]:   https://github.com/videolabs/libspatialaudio/blob/master/LICENSE
+
 [L29]:   https://gitlab.freedesktop.org/monado/monado/-/blob/main/LICENSES/LicenseRef-Khronos-Free-Use-License-for-Software-and-Documentation.txt
+
 [L30]:   https://github.com/cameron314/concurrentqueue/blob/master/LICENSE.md
+
 [L31]:   https://github.com/mp3guy/ElasticFusion/blob/master/LICENSE.txt
+
 [L32]:   https://github.com/chrdiller/KinectFusionApp/blob/master/LICENSE.txt
+
 [L33]:   https://github.com/MartinPersson/HOTlab/blob/master/docs%20and%20license/COPYING.LESSER.txt
+
 [L34]:   https://github.com/AayushKrChaudhary/RITnet/blob/master/License.md
+
 [L35]:   https://www.gnu.org/licenses/gpl-3.0.html
+
 [L36]:   https://github.com/google-ai-edge/mediapipe/blob/master/LICENSE
+
 [L37]:   https://github.com/ILLIXR/XNNPACK/blob/master/LICENSE
+
 [L38]:   https://github.com/ILLIXR/tensorflow-lite/blob/main/LICENSE
+
 [L39]:   https://github.com/ILLIXR/ruy/blob/master/LICENSE
+
 [L40]:   https://github.com/Maratyszcza/pthreadpool/blob/master/LICENSE
+
 [L41]:   https://github.com/protocolbuffers/protobuf/blob/main/LICENSE
+
 [L42]:   https://github.com/intel/ARM_NEON_2_x86_SSE/blob/master/LICENSE
+
 [L43]:   https://github.com/google/gemmlowp/blob/master/LICENSE
+
 [L44]:   https://github.com/google/flatbuffers/blob/master/LICENSE
+
 [L45]:   https://github.com/petewarden/OouraFFT?tab=readme-ov-file
+
 [L46]:   https://github.com/google/farmhash?tab=MIT-1-ov-file#readme
+
 [L48]:   https://github.com/abseil/abseil-cpp/blob/master/LICENSE
+
+[L49]:  https://github.com/ILLIXR/ORB_SLAM3/blob/master/LICENSE

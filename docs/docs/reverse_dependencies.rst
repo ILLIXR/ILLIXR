@@ -3,7 +3,7 @@ Reverse Dependencies
 
 | Dependency | Plugins |
 | ---------- | ------- |
-| Vulkan | main<br> native_renderer<br> offload_rendering_client<br> offload_rendering_client_jetson<br> offload_rendering_server<br> openwarp_vk<br> timewarp_gl<br> timewarp_vk<br> vkdemo |
+| Vulkan | main<br> native_renderer<br> offload_rendering_client<br> offload_rendering_client_jetson<br> offload_rendering_server<br> openwarp_vk<br> timewarp_gl<br> timewarp_vk |
 | ILLIXR_FFmpeg | offload_rendering_client<br> offload_rendering_server |
 | CUDAToolkit | offload_rendering_client |
 | realsense2 | realsense |
@@ -13,14 +13,11 @@ Reverse Dependencies
 | LibSurvive | lighthouse |
 | GTSAM | gtsam_integrator |
 | libopenni2 | openni |
-| glfw3 | debugview<br> main |
-| OpenGL | debugview |
 | glm | openwarp_vk<br> timewarp_vk |
 | Monado_vk | global<br> openwarp_vk<br> timewarp_vk |
 | Threads | global<br> offload_rendering_client_jetson<br> zed |
 | ZED | zed |
 | CUDA | zed |
-| ECM | global |
 | PkgConfig | global<br> offload_rendering_client_jetson |
 | OpenCV | global |
 | GLEW | global |
@@ -36,4 +33,5 @@ Reverse Dependencies
 | libdrm | offload_rendering_client_jetson |
 | EGL | offload_rendering_client_jetson |
 | glesv2 | offload_rendering_client_jetson |
+| glfw3 | main |
 | Yamlcpp | main |
