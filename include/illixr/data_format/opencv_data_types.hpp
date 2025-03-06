@@ -27,6 +27,7 @@ namespace image {
                                                                     {RGB_PROCESSED, "RGB_PROCESSED"},
                                                                     {CONFIDENCE, "CONFIDENCE"}};
 } // namespace image
+
 /**
  * Enumeration of camera types
  */
@@ -38,9 +39,9 @@ namespace camera {
  * Base struct for all camera classes
  */
 struct cam_base_type : switchboard::event {
-    time_point                           time;      //!< Time associated with the image(s)
-    camera::cam_type                     type;      //!< What type of camera is this
-    std::map<image::image_type, cv::Mat> images{};  //!< Mapping of the images with their types
+    time_point                           time;     //!< Time associated with the image(s)
+    camera::cam_type                     type;     //!< What type of camera is this
+    std::map<image::image_type, cv::Mat> images{}; //!< Mapping of the images with their types
 
     cam_base_type(time_point _time, std::map<image::image_type, cv::Mat> imgs, camera::cam_type _type)
         : time(_time)

@@ -30,7 +30,7 @@ const std::map<measurement_unit, const std::string> unit_str{{MILLIMETER, "mm"},
                                                              {INCH, "in"},       {FOOT, "ft"},       {PERCENT, "%"},
                                                              {PIXEL, "px"},      {UNSET, "unitless"}};
 
-constexpr int                                       last_convertable_unit = FOOT;
+constexpr int last_convertable_unit = FOOT;
 /**
  * Array of unit conversions, using `measurement_unit` as indices. The first index is the "from" unit and the second
  * index is the "to" unit. For example `conversion_factor[MILLIMETER][INCH]` would yield 0.039, the conversion
