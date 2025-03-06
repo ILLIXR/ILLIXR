@@ -52,6 +52,8 @@ private:
     const std::shared_ptr<switchboard>                  switchboard_;
     const std::shared_ptr<data_format::pose_prediction> pose_prediction_;
 
+    const bool display_backend_manages_glfw_;
+
     switchboard::reader<data_format::pose_type>                   slow_pose_reader_;
     switchboard::reader<data_format::imu_raw_type>                fast_pose_reader_;
     switchboard::reader<data_format::rgb_depth_type>              rgb_depth_reader_;
