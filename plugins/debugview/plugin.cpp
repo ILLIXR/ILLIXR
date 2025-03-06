@@ -51,8 +51,6 @@ static void glfw_error_callback(int error, const char* description) {
     , cam_reader_{switchboard_->get_buffered_reader<data_format::binocular_cam_type>("cam")}
     , display_backend_manages_glfw_{strcmp(switchboard_->get_env_char("ILLIXR_DISPLAY_MODE"), "glfw") == 0} {
     spdlogger(switchboard_->get_env_char("DEBUGVIEW_LOG_LEVEL"));
-    std::cout << "ILLIXR DISPLAY MODE" << switchboard_->get_env_char("ILLIXR_DISPLAY_MODE") << std::endl;
-    std::cout << "DISPLAY MANAGES GLFW" << display_backend_manages_glfw_ << std::endl;
 }
 
 void debugview::draw_GUI() {
