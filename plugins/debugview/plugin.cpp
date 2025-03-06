@@ -48,7 +48,7 @@ static void glfw_error_callback(int error, const char* description) {
     , slow_pose_reader_{switchboard_->get_reader<pose_type>("slow_pose")}
     , fast_pose_reader_{switchboard_->get_reader<imu_raw_type>("imu_raw")}
     , rgb_depth_reader_(switchboard_->get_reader<rgb_depth_type>("rgb_depth"))
-    , cam_reader_{switchboard_->get_buffered_reader<data_format::binocular_cam_type>("cam")} 
+    , cam_reader_{switchboard_->get_buffered_reader<data_format::binocular_cam_type>("cam")}
     , display_backend_manages_glfw_{strcmp(switchboard_->get_env_char("ILLIXR_DISPLAY_MODE"), "glfw") == 0} {
     spdlogger(switchboard_->get_env_char("DEBUGVIEW_LOG_LEVEL"));
     std::cout << "ILLIXR DISPLAY MODE" << switchboard_->get_env_char("ILLIXR_DISPLAY_MODE") << std::endl;
@@ -406,8 +406,7 @@ void debugview::start() {
 
     // If the display backend already initialized GLFW, then we shouldn't try to do it again.
     // Otherwise, GLFW should be initialized here.
-    if (!display_backend_manages_glfw_)
-    {
+    if (!display_backend_manages_glfw_) {
         if (!glfwInit()) {
             ILLIXR::abort("[debugview] Failed to initialize glfw");
         }
@@ -536,8 +535,7 @@ debugview::~debugview() {
 
     // If the display backend is GLFW, it will terminate the GLFW context.
     // Otherwise, GLFW should be terminated here.
-    if (!display_backend_manages_glfw_)
-    {
+    if (!display_backend_manages_glfw_) {
         glfwTerminate();
     }
 }

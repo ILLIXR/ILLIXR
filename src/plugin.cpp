@@ -242,8 +242,7 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
         GET_BOOL(enable_pre_sleep, ILLIXR_ENABLE_PRE_SLEEP)
         GET_STRING(realsense_cam, REALSENSE_CAM)
 
-        if (switchboard_->get_env_char("ILLIXR_DISPLAY_MODE") == nullptr)
-        {
+        if (switchboard_->get_env_char("ILLIXR_DISPLAY_MODE") == nullptr) {
             spdlog::get("illixr")->info("[main] Display mode not selected, defaulting to GLFW.");
             switchboard_->set_env("ILLIXR_DISPLAY_MODE", "glfw");
         }
