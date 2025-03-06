@@ -35,18 +35,16 @@ public:
         auto manual_device_selection = switchboard_->get_env_char("ILLIXR_VULKAN_SELECT_GPU");
         selected_gpu_                = manual_device_selection ? std::stoi(manual_device_selection) : -1;
 
+        // ILLIXR_DISPLAY_MODE defaults to GLFW if not specified.
         const char* env_var = switchboard_->get_env_char("ILLIXR_DISPLAY_MODE");
-        if (env_var == nullptr) {
-            std::cout << "Defaulting to GLFW for display backend" << std::endl;
-            backend_type_ = display::display_backend::GLFW;
-        } else if (!strcmp(env_var, "glfw")) {
-            std::cout << "Using GLFW" << std::endl;
+        if (!strcmp(env_var, "glfw")) {
+            spdlog::get("illixr")->info("[vulkan_display] Selected GLFW for display backend");
             backend_type_ = display::display_backend::GLFW;
         } else if (!strcmp(env_var, "headless")) {
-            std::cout << "Using headless" << std::endl;
+            spdlog::get("illixr")->info("[vulkan_display] Selected headless for display backend");
             backend_type_ = display::display_backend::HEADLESS;
         } else if (!strcmp(env_var, "x11_direct")) {
-            std::cout << "Using X11 direct mode" << std::endl;
+            spdlog::get("illixr")->info("[vulkan_display] Selected X11 direct mode for display backend");
             backend_type_ = display::display_backend::X11_DIRECT;
             direct_mode_  = true;
         } else {
@@ -127,6 +125,8 @@ private:
     void create_vk_instance(const std::set<const char*>& instance_extensions) {
         // Enable validation layers if ILLIXR_VULKAN_VALIDATION_LAYERS is set to true.
         bool enable_validation_layers = switchboard_->get_env_bool("ILLIXR_VULKAN_VALIDATION_LAYERS");
+        if (enable_validation_layers)
+            spdlog::get("illixr")->info("[vulkan_display] Vulkan validation layers enabled");
 
         VkApplicationInfo app_info{};
         app_info.sType              = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -154,9 +154,9 @@ private:
         create_info.ppEnabledExtensionNames = backend_required_instance_extensions_vec.data();
 
         // print enabled instance extensions
-        std::cout << "Enabled instance extensions:" << std::endl;
+        spdlog::get("illixr")->info("[vulkan_display] Enabled instance extensions:");
         for (const auto& extension : backend_required_instance_extensions_vec) {
-            std::cout << "\t" << extension << std::endl;
+            spdlog::get("illixr")->info("\t {}", extension);
         }
 
         // enable validation layers
@@ -267,20 +267,20 @@ private:
             }
         }
 
-        std::cout << "Found " << device_count << " Vulkan devices" << std::endl;
+        spdlog::get("illixr")->info("[vulkan_display] Found {} Vulkan devices", device_count);
         int index = 0;
         for (const auto& device : suitable_devices) {
             VkPhysicalDeviceProperties device_properties;
             vkGetPhysicalDeviceProperties(device, &device_properties);
-            std::cout << "\t" << "[" << index << "] " << device_properties.deviceName << std::endl;
+            spdlog::get("illixr")->info("\t[{}] {}", index, device_properties.deviceName);
             index++;
         }
         if (!unsuitable_devices.empty()) {
-            std::cout << "Found " << unsuitable_devices.size() << " unsuitable Vulkan devices" << std::endl;
+            spdlog::get("illixr")->info("[vulkan_display] Found {} unsuitable Vulkan devices", unsuitable_devices.size());
             for (const auto& device : unsuitable_devices) {
                 VkPhysicalDeviceProperties device_properties;
                 vkGetPhysicalDeviceProperties(device, &device_properties);
-                std::cout << "\t" << device_properties.deviceName << std::endl;
+                spdlog::get("illixr")->info("\t{}", device_properties.deviceName);
             }
         }
 
@@ -294,7 +294,7 @@ private:
 
         VkPhysicalDeviceProperties device_properties;
         vkGetPhysicalDeviceProperties(vk_physical_device_, &device_properties);
-        std::cout << "Selected device: " << device_properties.deviceName << std::endl;
+        spdlog::get("illixr")->info("[vulkan_display] Selected device: {}", device_properties.deviceName);
     }
 
     void create_logical_device(const std::set<const char*>& device_extensions) {
@@ -360,9 +360,9 @@ private:
         create_info.pNext                   = &features_;
 
         // print enabled device extensions
-        std::cout << "Enabled device extensions:" << std::endl;
+        spdlog::get("illixr")->info("[vulkan_display] Enabled instance extensions:");
         for (const auto& extension : required_device_extensions_) {
-            std::cout << "\t" << extension << std::endl;
+            spdlog::get("illixr")->info("\t {}", extension);
         }
 
         VK_ASSERT_SUCCESS(vkCreateDevice(vk_physical_device_, &create_info, nullptr, &vk_device_));
@@ -436,12 +436,12 @@ private:
         for (const auto& available_format : swapchain_details.formats) {
             if (available_format.format == VK_FORMAT_B8G8R8A8_SRGB &&
                 available_format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
-                std::cout << "Using VK_FORMAT_B8G8R8A8_SRGB" << std::endl;
+                spdlog::get("illixr")->info("[vulkan_display] Using VK_FORMAT_B8G8R8A8_SRGB");
                 swapchain_image_format_ = available_format;
                 break;
             } else if (available_format.format == VK_FORMAT_B8G8R8A8_UNORM &&
                        available_format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
-                std::cout << "Using VK_FORMAT_B8G8R8A8_UNORM (direct mode)" << std::endl;
+                spdlog::get("illixr")->info("[vulkan_display] Using VK_FORMAT_B8G8R8A8_UNORM (direct mode)");
                 swapchain_image_format_ = available_format;
                 break;
             }

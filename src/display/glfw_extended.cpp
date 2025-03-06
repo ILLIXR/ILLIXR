@@ -8,11 +8,6 @@
 
 using namespace ILLIXR::display;
 
-static bool initialized_glfw() {
-    (void) glfwGetKeyScancode(0);
-    return glfwGetError(NULL) != GLFW_NOT_INITIALIZED;
-}
-
 void glfw_extended::setup_display(const std::shared_ptr<switchboard> sb, VkInstance vk_instance,
                                   VkPhysicalDevice vk_physical_device) {
     (void) sb;
@@ -48,11 +43,9 @@ std::pair<uint32_t, uint32_t> glfw_extended::get_framebuffer_size() {
 }
 
 void glfw_extended::cleanup() {
-    // If another plugin (e.g., debugview) already te
-    if (initialized_glfw()) {
-        glfwDestroyWindow((GLFWwindow*) window_);
-        glfwTerminate();
-    }
+    // The display backend is always responsible for terminating GLFW.
+    glfwDestroyWindow((GLFWwindow*) window_);
+    glfwTerminate();
 }
 
 std::set<const char*> glfw_extended::get_required_instance_extensions() {
@@ -64,10 +57,8 @@ std::set<const char*> glfw_extended::get_required_instance_extensions() {
 }
 
 glfw_extended::glfw_extended() {
-    if (!initialized_glfw()) {
-        if (!glfwInit()) {
-            ILLIXR::abort("Failed to initialize glfw");
-        }
+    if (!glfwInit()) {
+        ILLIXR::abort("Failed to initialize glfw");
     }
 
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
