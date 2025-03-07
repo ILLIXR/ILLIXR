@@ -1,23 +1,17 @@
 {
   "systems": [
     {
-      "name": "CentOS",
-      "versions": [
-        "9"
-      ]
-    },
-    {
       "name": "Fedora",
       "versions": [
-        "37",
-        "38"
+        "38+"
       ]
     },
     {
       "name": "Ubuntu",
       "versions": [
         "20",
-        "22"
+        "22",
+        "24"
       ]
     }
 
@@ -27,7 +21,6 @@
       "name": "audio_pipeline",
       "cmake_flag": "USE_AUDIO_PIPELINE=ON",
       "dependencies": [
-        "git"
       ]
     },
     {
@@ -82,7 +75,6 @@
       "name": "gtsam_integrator",
       "cmake_flag": "USE_GTSAM_INTEGRATOR=ON",
       "dependencies": [
-        "git"
       ]
     },
     {
@@ -148,14 +140,12 @@
       "name": "offload_data",
       "cmake_flag": "USE_OFFLOAD_DATA=ON",
       "dependencies": [
-        "boost"
       ]
     },
     {
       "name": "offload_vio.device_rx",
       "cmake_flag": "USE_OFFLOAD_VIO.DEVICE_RX=ON",
       "dependencies": [
-        "git",
         "ecal",
         "protobuf",
         "OpenCV"
@@ -165,7 +155,6 @@
       "name": "offload_vio.device_tx",
       "cmake_flag": "USE_OFFLOAD_VIO.DEVICE_TX=ON",
       "dependencies": [
-        "git",
         "glib",
         "gstreamer",
         "ecal",
@@ -177,7 +166,6 @@
       "name": "offload_vio.server_tx",
       "cmake_flag": "USE_OFFLOAD_VIO.SERVER_TX=ON",
       "dependencies": [
-        "git",
         "ecal",
         "protobuf",
         "OpenCV"
@@ -187,7 +175,6 @@
       "name": "offload_vio.server_rx",
       "cmake_flag": "USE_OFFLOAD_VIO.SERVER_RX=ON",
       "dependencies": [
-        "git",
         "glib",
         "gstreamer",
         "ecal",
@@ -207,15 +194,12 @@
       "name": "openvins",
       "cmake_flag": "USE_OPENVINS=ON",
       "dependencies": [
-        "boost"
       ]
     },
     {
       "name": "orb_slam3",
       "cmake_flag": "USE_ORB_SLAM3=ON",
       "dependencies": [
-        "git",
-        "boost",
         "fmt",
         "patch"
       ]
@@ -247,7 +231,6 @@
       "name": "record_imu_cam",
       "cmake_flag": "USE_RECORD_IMU_CAM=ON",
       "dependencies": [
-        "boost",
         "OpenCV"
       ]
     },
@@ -255,7 +238,6 @@
       "name": "record_rgb_depth",
       "cmake_flag": "USE_RECORD_RGB_DEPTH=ON",
       "dependencies": [
-        "boost",
         "OpenCV"
       ]
     },
@@ -268,7 +250,6 @@
       "name": "timewarp_gl",
       "cmake_flag": "USE_TIMEWARP_GL=ON",
       "dependencies": [
-        "git",
         "glslang",
         "gflags",
         "JPEG",
@@ -344,43 +325,6 @@
   ],
   "dependencies": [
     {
-      "boost": {
-        "pkg": {
-          "Ubuntu": {
-            "20": {
-              "pkg": "libboost-all-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "22": {
-              "pkg": "libboost-all-dev",
-              "postnotes": "",
-              "notes": ""
-            }
-          },
-          "Fedora": {
-            "37": {
-              "pkg": "boost-devel",
-              "postnotes": "",
-              "notes": ""
-            },
-            "38": {
-              "pkg": "boost-devel",
-              "postnotes": "",
-              "notes": ""
-            }
-          },
-          "CentOS": {
-            "9": {
-              "pkg": "boost-devel",
-              "postnotes": "",
-              "notes": ""
-            }
-          }
-        }
-      }
-    },
-    {
       "ecal": {
         "pkg": {
           "Ubuntu": {
@@ -393,22 +337,15 @@
               "pkg": "ecal",
               "postnotes": "",
               "notes": "Ubuntu 22 does not have a system supplied package for eCAL, but it can be installed from the vendor by adding the following repo to your system:<div class=\"code-box-copy\">\n<button class=\"code-box-copy__btn\" data-clipboard-target=\"#ecal22\" title=\"Copy\"></button><pre class=\"language-shell\" id=\"ecal22\">sudo add-apt-repository ppa:ecal/ecal-latest -y -u\nsudo apt-get update</pre></div>"
+            },
+            "24": {
+              "pkg": "ecal",
+              "postnotes": "",
+              "notes": "Ubuntu 24 does not have a system supplied package for eCAL, but it can be installed from the vendor by adding the following repo to your system:<div class=\"code-box-copy\">\n<button class=\"code-box-copy__btn\" data-clipboard-target=\"#ecal24\" title=\"Copy\"></button><pre class=\"language-shell\" id=\"ecal24\">sudo add-apt-repository ppa:ecal/ecal-latest -y -u\nsudo apt-get update</pre></div>"
             }
           },
           "Fedora": {
-            "37": {
-              "pkg": "graphviz hdf5-devel libcurl-devel qwt-qt5-devel qt5-qtbase-devel libyaml-devel zlib-devel openssl-devel",
-              "postnotes": "",
-              "notes": ""
-            },
-            "38": {
-              "pkg": "graphviz hdf5-devel libcurl-devel qwt-qt5-devel qt5-qtbase-devel libyaml-devel zlib-devel openssl-devel",
-              "postnotes": "",
-              "notes": ""
-            }
-          },
-          "CentOS": {
-            "9": {
+            "38+": {
               "pkg": "graphviz hdf5-devel libcurl-devel qwt-qt5-devel qt5-qtbase-devel libyaml-devel zlib-devel openssl-devel",
               "postnotes": "",
               "notes": ""
@@ -430,22 +367,15 @@
               "pkg": "libfmt-dev",
               "postnotes": "",
               "notes": ""
+            },
+            "24": {
+              "pkg": "libfmt-dev",
+              "postnotes": "",
+              "notes": ""
             }
           },
           "Fedora": {
-            "37": {
-              "pkg": "fmt-devel",
-              "postnotes": "",
-              "notes": ""
-            },
-            "38": {
-              "pkg": "fmt-devel",
-              "postnotes": "",
-              "notes": ""
-            }
-          },
-          "CentOS": {
-            "9": {
+            "38+": {
               "pkg": "fmt-devel",
               "postnotes": "",
               "notes": ""
@@ -467,60 +397,16 @@
               "pkg": "libgflags-dev",
               "postnotes": "",
               "notes": ""
-            }
-          },
-          "Fedora": {
-            "37": {
-              "pkg": "gflags-devel",
-              "postnotes": "",
-              "notes": ""
             },
-            "38": {
-              "pkg": "gflags-devel",
-              "postnotes": "",
-              "notes": ""
-            }
-          },
-          "CentOS": {
-            "9": {
-              "pkg": "gflags-devel",
-              "postnotes": "",
-              "notes": ""
-            }
-          }
-        }
-      }
-    },
-    {
-      "git": {
-        "pkg": {
-          "Ubuntu": {
-            "20": {
-              "pkg": "git",
-              "postnotes": "",
-              "notes": ""
-            },
-            "22": {
-              "pkg": "git",
+            "24": {
+              "pkg": "libgflags-dev",
               "postnotes": "",
               "notes": ""
             }
           },
           "Fedora": {
-            "37": {
-              "pkg": "git",
-              "postnotes": "",
-              "notes": ""
-            },
-            "38": {
-              "pkg": "git",
-              "postnotes": "",
-              "notes": ""
-            }
-          },
-          "CentOS": {
-            "9": {
-              "pkg": "git",
+            "38+": {
+              "pkg": "gflags-devel",
               "postnotes": "",
               "notes": ""
             }
@@ -541,22 +427,15 @@
               "pkg": "libglfw3-dev",
               "postnotes": "",
               "notes": ""
+            },
+            "24": {
+              "pkg": "libglfw3-dev",
+              "postnotes": "",
+              "notes": ""
             }
           },
           "Fedora": {
-            "37": {
-              "pkg": "glfw-devel",
-              "postnotes": "",
-              "notes": ""
-            },
-            "38": {
-              "pkg": "glfw-devel",
-              "postnotes": "",
-              "notes": ""
-            }
-          },
-          "CentOS": {
-            "9": {
+            "38+": {
               "pkg": "glfw-devel",
               "postnotes": "",
               "notes": ""
@@ -578,22 +457,15 @@
               "pkg": "libglib2.0-dev",
               "postnotes": "",
               "notes": ""
+            },
+            "24": {
+              "pkg": "libglib2.0-dev",
+              "postnotes": "",
+              "notes": ""
             }
           },
           "Fedora": {
-            "37": {
-              "pkg": "glib-devel",
-              "postnotes": "",
-              "notes": ""
-            },
-            "38": {
-              "pkg": "glib-devel",
-              "postnotes": "",
-              "notes": ""
-            }
-          },
-          "CentOS": {
-            "9": {
+            "38+": {
               "pkg": "glib-devel",
               "postnotes": "",
               "notes": ""
@@ -615,22 +487,15 @@
               "pkg": "libglm-dev",
               "postnotes": "",
               "notes": ""
+            },
+            "24": {
+              "pkg": "libglm-dev",
+              "postnotes": "",
+              "notes": ""
             }
           },
           "Fedora": {
-            "37": {
-              "pkg": "glm-devel",
-              "postnotes": "",
-              "notes": ""
-            },
-            "38": {
-              "pkg": "glm-devel",
-              "postnotes": "",
-              "notes": ""
-            }
-          },
-          "CentOS": {
-            "9": {
+            "38+": {
               "pkg": "glm-devel",
               "postnotes": "",
               "notes": ""
@@ -652,22 +517,15 @@
               "pkg": "libgoogle-glog-dev",
               "postnotes": "",
               "notes": ""
+            },
+            "24": {
+              "pkg": "libgoogle-glog-dev",
+              "postnotes": "",
+              "notes": ""
             }
           },
           "Fedora": {
-            "37": {
-              "pkg": "glog-devel",
-              "postnotes": "",
-              "notes": ""
-            },
-            "38": {
-              "pkg": "glog-devel",
-              "postnotes": "",
-              "notes": ""
-            }
-          },
-          "CentOS": {
-            "9": {
+            "38+": {
               "pkg": "glog-devel",
               "postnotes": "",
               "notes": ""
@@ -689,22 +547,15 @@
               "pkg": "glslang-dev glslang-tools",
               "postnotes": "",
               "notes": ""
+            },
+            "24": {
+              "pkg": "glslang-dev glslang-tools",
+              "postnotes": "",
+              "notes": ""
             }
           },
           "Fedora": {
-            "37": {
-              "pkg": "glslang-devel",
-              "postnotes": "",
-              "notes": ""
-            },
-            "38": {
-              "pkg": "glslang-devel",
-              "postnotes": "",
-              "notes": ""
-            }
-          },
-          "CentOS": {
-            "9": {
+            "38+": {
               "pkg": "glslang-devel",
               "postnotes": "",
               "notes": ""
@@ -726,22 +577,15 @@
               "pkg": "libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev",
               "postnotes": "",
               "notes": ""
+            },
+            "24": {
+              "pkg": "libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev",
+              "postnotes": "",
+              "notes": ""
             }
           },
           "Fedora": {
-            "37": {
-              "pkg": "gstreamer-devel gstreamer1-plugins-base-devel",
-              "postnotes": "",
-              "notes": ""
-            },
-            "38": {
-              "pkg": "gstreamer-devel gstreamer1-plugins-base-devel",
-              "postnotes": "",
-              "notes": ""
-            }
-          },
-          "CentOS": {
-            "9": {
+            "38+": {
               "pkg": "gstreamer-devel gstreamer1-plugins-base-devel",
               "postnotes": "",
               "notes": ""
@@ -763,22 +607,15 @@
               "pkg": "libjpeg-dev",
               "postnotes": "",
               "notes": ""
+            },
+            "24": {
+              "pkg": "libjpeg-dev",
+              "postnotes": "",
+              "notes": ""
             }
           },
           "Fedora": {
-            "37": {
-              "pkg": "libjpeg-turbo-devel",
-              "postnotes": "",
-              "notes": ""
-            },
-            "38": {
-              "pkg": "libjpeg-turbo-devel",
-              "postnotes": "",
-              "notes": ""
-            }
-          },
-          "CentOS": {
-            "9": {
+            "38+": {
               "pkg": "libjpeg-turbo-devel",
               "postnotes": "",
               "notes": ""
@@ -875,25 +712,18 @@
               "pkg": "libopenni2-dev",
               "postnotes": "",
               "notes": ""
+            },
+            "24": {
+              "pkg": "libopenni2-dev",
+              "postnotes": "",
+              "notes": ""
             }
           },
           "Fedora": {
-            "37": {
+            "38+": {
               "pkg": "openni-devel",
               "postnotes": "",
               "notes": ""
-            },
-            "38": {
-              "pkg": "openni-devel",
-              "postnotes": "",
-              "notes": ""
-            }
-          },
-          "CentOS": {
-            "9": {
-              "pkg": "",
-              "postnotes": "",
-              "notes": "No OpenNI package is natively available for CentOS"
             }
           }
         }
@@ -912,25 +742,49 @@
               "pkg": "libusb-1.0.0-dev",
               "postnotes": "",
               "notes": ""
+            },
+            "24": {
+              "pkg": "libusb-1.0.0-dev",
+              "postnotes": "",
+              "notes": ""
             }
           },
           "Fedora": {
-            "37": {
-              "pkg": "libusb1-devel",
-              "postnotes": "",
-              "notes": ""
-            },
-            "38": {
+            "38+": {
               "pkg": "libusb1-devel",
               "postnotes": "",
               "notes": ""
             }
-          },
-          "CentOS": {
-            "9": {
-              "pkg": "libusb1-devel",
+          }
+        }
+      }
+    },
+    {
+      "libuvc": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "libuvc-dev",
               "postnotes": "",
               "notes": ""
+            },
+            "22": {
+              "pkg": "libuvc-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "24": {
+              "pkg": "libuvc-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+
+          },
+          "Fedora": {
+            "38+": {
+              "pkg": "",
+              "postnotes": "",
+              "notes": "Fedora does not supply libuvc from its repositories. You will need to install it from <a href=\"https://github.com/libuvc/libuvc\">https://github.com/libuvc/libuvc</a>."
             }
           }
         }
@@ -962,13 +816,6 @@
               "postnotes": "",
               "notes": "Fedora does not supply libuvc from its repositories. You will need to install it from <a href=\"https://github.com/libuvc/libuvc\">https://github.com/libuvc/libuvc</a>."
             }
-          },
-          "CentOS": {
-            "9": {
-              "pkg": "",
-              "postnotes": "",
-              "notes": "CentOS does not supply libuvc from its repositories. You will need to install it from <a href=\"https://github.com/libuvc/libuvc\">https://github.com/libuvc/libuvc</a>."
-            }
           }
         }
       }
@@ -986,25 +833,18 @@
               "pkg": "libopencv-dev",
               "postnotes": "",
               "notes": ""
+            },
+            "24": {
+              "pkg": "libopencv-dev",
+              "postnotes": "",
+              "notes": ""
             }
           },
           "Fedora": {
-            "37": {
+            "38+": {
               "pkg": "opencv-devel",
               "postnotes": "",
               "notes": ""
-            },
-            "38": {
-              "pkg": "opencv-devel",
-              "postnotes": "",
-              "notes": ""
-            }
-          },
-          "CentOS": {
-            "9": {
-              "pkg": "vtk-devel",
-              "postnotes": ",",
-              "notes": "Centos does not provide a complete version of OpenCV in their repos, in particular the 'viz' component is missing. You will need to install the VTK-devel package and the ILLIXR build system will compile OpenCV from source.<P>You may also need to run the following:<div class=\"code-box-copy\">\n<button class=\"code-box-copy__btn\" data-clipboard-target=\"#opencvC\" title=\"Copy\"></button><pre class=\"language-shell\" id=\"opencvC\">sudo dnf -y install dnf-plugins-core epel-release\nsudo dnf config-manager --set-enabled crb</pre></div>"
             }
           }
         }
@@ -1015,30 +855,23 @@
         "pkg": {
           "Ubuntu": {
             "20": {
-              "pkg": "libopenxr-dev libopenxr1-monado",
+              "pkg": "libopenxr-dev",
               "postnotes": "",
-              "notes": "Ubuntu 20 does not have a system supplied package for OpenXR, but it can be installed from the vendor by adding the following repo to your system:<div class=\"code-box-copy\">\n<button class=\"code-box-copy__btn\" data-clipboard-target=\"#openU20\" title=\"Copy\"></button><pre class=\"language-shell\" id=\"openU20\">sudo apt-get -y install wget software-properties-common\nsudo apt-get update\nsudo add-apt-repository ppa:monado-xr/monado -y -u\nsudo wget -nv https://monado.freedesktop.org/keys/monado-ci.asc -O /etc/apt/trusted.gpg.d/monado-ci.asc\nsudo echo 'deb https://monado.pages.freedesktop.org/monado/apt focal main' | tee /etc/apt/sources.list.d/monado-ci.list\nsudo apt update</pre></div>"
+              "notes": "Ubuntu 20 does not have a system supplied package for the OpenXR libraries. You can download and install them from <a href=\"https://github.com/KhronosGroup/OpenXR-SDK\">github.com/KhronosGroup/OpenXR-SDK</a>. Specifically, you will need to build and install the OpenXR loader library."
             },
             "22": {
-              "pkg": "libopenxr-dev libopenxr1-monado",
+              "pkg": "libopenxr-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "24": {
+              "pkg": "libopenxr-dev",
               "postnotes": "",
               "notes": ""
             }
           },
           "Fedora": {
-            "37": {
-              "pkg": "openxr-devel",
-              "postnotes": "",
-              "notes": ""
-            },
-            "38": {
-              "pkg": "openxr-devel",
-              "postnotes": "",
-              "notes": ""
-            }
-          },
-          "CentOS": {
-            "9": {
+            "38+": {
               "pkg": "openxr-devel",
               "postnotes": "",
               "notes": ""
@@ -1060,22 +893,15 @@
               "pkg": "patch",
               "postnotes": "",
               "notes": ""
+            },
+            "24": {
+              "pkg": "patch",
+              "postnotes": "",
+              "notes": ""
             }
           },
           "Fedora": {
-            "37": {
-              "pkg": "patch",
-              "postnotes": "",
-              "notes": ""
-            },
-            "38": {
-              "pkg": "patch",
-              "postnotes": "",
-              "notes": ""
-            }
-          },
-          "CentOS": {
-            "9": {
+            "38+": {
               "pkg": "patch",
               "postnotes": "",
               "notes": ""
@@ -1097,22 +923,15 @@
               "pkg": "libpng-dev",
               "postnotes": "",
               "notes": ""
+            },
+            "24": {
+              "pkg": "libpng-dev",
+              "postnotes": "",
+              "notes": ""
             }
           },
           "Fedora": {
-            "37": {
-              "pkg": "libpng-devel",
-              "postnotes": "",
-              "notes": ""
-            },
-            "38": {
-              "pkg": "libpng-devel",
-              "postnotes": "",
-              "notes": ""
-            }
-          },
-          "CentOS": {
-            "9": {
+            "38+": {
               "pkg": "libpng-devel",
               "postnotes": "",
               "notes": ""
@@ -1134,22 +953,15 @@
               "pkg": "libprotobuf-dev libprotoc-dev protobuf-compiler",
               "postnotes": "",
               "notes": ""
+            },
+            "24": {
+              "pkg": "libprotobuf-dev libprotoc-dev protobuf-compiler",
+              "postnotes": "",
+              "notes": ""
             }
           },
           "Fedora": {
-            "37": {
-              "pkg": "protobuf-devel protobuf-compiler",
-              "postnotes": "",
-              "notes": ""
-            },
-            "38": {
-              "pkg": "protobuf-devel protobuf-compiler",
-              "postnotes": "",
-              "notes": ""
-            }
-          },
-          "CentOS": {
-            "9": {
+            "38+": {
               "pkg": "protobuf-devel protobuf-compiler",
               "postnotes": "",
               "notes": ""
@@ -1171,22 +983,15 @@
               "pkg": "qemu qemu-system qemu-system-data qeum-utils qemu-user libqcow-dev libqcow-utils",
               "postnotes": "",
               "notes": ""
+            },
+            "24": {
+              "pkg": "qemu qemu-system qemu-system-data qeum-utils qemu-user libqcow-dev libqcow-utils",
+              "postnotes": "",
+              "notes": ""
             }
           },
           "Fedora": {
-            "37": {
-              "pkg": "??",
-              "postnotes": "",
-              "notes": ""
-            },
-            "38": {
-              "pkg": "??",
-              "postnotes": "",
-              "notes": ""
-            }
-          },
-          "CentOS": {
-            "9": {
+            "38+": {
               "pkg": "??",
               "postnotes": "",
               "notes": ""
@@ -1202,30 +1007,23 @@
             "20": {
               "pkg": "librealsense2-dev librealsense2-gl-dev",
               "postnotes": "",
-              "notes": "Ubuntu does not have a system supplied package for librealsense, but it can be installed from the vendor (Intel) by adding the following repo to your system:<div class=\"code-box-copy\">\n<button class=\"code-box-copy__btn\" data-clipboard-target=\"#realU20\" title=\"Copy\"></button><pre class=\"language-shell\" id=\"realU20\">sudo apt-get -y install curl apt-transport-https lsb-core\nsudo mkdir -p /etc/apt/keyrings\nsudo curl -sSf https://librealsense.intel.com/Debian/librealsense.pgp | tee /etc/apt/keyrings/librealsense.pgp > /dev/null\nsudo echo \"deb [signed-by=/etc/apt/keyrings/librealsense.pgp] https://librealsense.intel.com/Debian/apt-repo `lsb_release -cs` main\" | tee /etc/apt/sources.list.d/librealsense.list > /dev/null\nsudo apt-get update</pre></div>"
+              "notes": "Ubuntu does not have a system supplied package for librealsense, but it can be installed from the vendor (Intel) by adding the following repo to your system:<div class=\"code-box-copy\">\n<button class=\"code-box-copy__btn\" data-clipboard-target=\"#realU20\" title=\"Copy\"></button><pre class=\"language-shell\" id=\"realU20\">sudo apt-get -y install curl apt-transport-https lsb-core\nsudo mkdir -p /etc/apt/keyrings\ncurl -sSf https://librealsense.intel.com/Debian/librealsense.pgp | sudo tee /etc/apt/keyrings/librealsense.pgp > /dev/null\necho \"deb [signed-by=/etc/apt/keyrings/librealsense.pgp] https://librealsense.intel.com/Debian/apt-repo `lsb_release -cs` main\" | sudo tee /etc/apt/sources.list.d/librealsense.list > /dev/null\nsudo apt-get update</pre></div>"
             },
             "22": {
               "pkg": "librealsense2-dev librealsense2-gl-dev",
               "postnotes": "",
-              "notes": "Ubuntu does not have a system supplied package for librealsense, but it can be installed from the vendor (Intel) by adding the following repo to your system:<div class=\"code-box-copy\">\n<button class=\"code-box-copy__btn\" data-clipboard-target=\"#realU22\" title=\"Copy\"></button><pre class=\"language-shell\" id=\"realU22\">sudo apt-get -y install curl apt-transport-https lsb-core\nsudo mkdir -p /etc/apt/keyrings\nsudo curl -sSf https://librealsense.intel.com/Debian/librealsense.pgp | tee /etc/apt/keyrings/librealsense.pgp > /dev/null\nsudo echo \"deb [signed-by=/etc/apt/keyrings/librealsense.pgp] https://librealsense.intel.com/Debian/apt-repo `lsb_release -cs` main\" | tee /etc/apt/sources.list.d/librealsense.list > /dev/null\nsudo apt-get update</pre></div>"
+              "notes": "Ubuntu does not have a system supplied package for librealsense, but it can be installed from the vendor (Intel) by adding the following repo to your system:<div class=\"code-box-copy\">\n<button class=\"code-box-copy__btn\" data-clipboard-target=\"#realU22\" title=\"Copy\"></button><pre class=\"language-shell\" id=\"realU22\">sudo apt-get -y install curl apt-transport-https lsb-core\nsudo mkdir -p /etc/apt/keyrings\ncurl -sSf https://librealsense.intel.com/Debian/librealsense.pgp | sudo tee /etc/apt/keyrings/librealsense.pgp > /dev/null\necho \"deb [signed-by=/etc/apt/keyrings/librealsense.pgp] https://librealsense.intel.com/Debian/apt-repo `lsb_release -cs` main\" | sudo tee /etc/apt/sources.list.d/librealsense.list > /dev/null\nsudo apt-get update</pre></div>"
+            },
+            "24": {
+              "pkg": "librealsense2-dev librealsense2-gl-dev",
+              "postnotes": "",
+              "notes": "Ubuntu does not have a system supplied package for librealsense, but it can be installed from the vendor (Intel) by adding the following repo to your system:<div class=\"code-box-copy\">\n<button class=\"code-box-copy__btn\" data-clipboard-target=\"#realU24\" title=\"Copy\"></button><pre class=\"language-shell\" id=\"realU24\">sudo apt-get -y install curl apt-transport-https lsb-core\nsudo mkdir -p /etc/apt/keyrings\ncurl -sSf https://librealsense.intel.com/Debian/librealsense.pgp | sudo tee /etc/apt/keyrings/librealsense.pgp > /dev/null\necho \"deb [signed-by=/etc/apt/keyrings/librealsense.pgp] https://librealsense.intel.com/Debian/apt-repo `lsb_release -cs` main\" | sudo tee /etc/apt/sources.list.d/librealsense.list > /dev/null\nsudo apt-get update</pre></div>"
             }
           },
           "Fedora": {
-            "37": {
+            "38+": {
               "pkg": "librealsense-devel",
               "postnotes": "",
-              "notes": ""
-            },
-            "38": {
-              "pkg": "librealsense-devel",
-              "postnotes": "",
-              "notes": ""
-            }
-          },
-          "CentOS": {
-            "9": {
-              "pkg": "git zip unzip libtool",
-              "postnotes": "Centos does not provide a vendor version of librealsense, but it can be automatically compiled and installed with the following, possibly as sudo (run after installing the above packages):<div class=\"code-box-copy\">\n<button class=\"code-box-copy__btn\" data-clipboard-target=\"#realC9\" title=\"Copy\"></button><pre class=\"language-shell\" id=\"realC9\">git clone https://github.com/Microsoft/vcpkg.git\ncd vcpkg\n./bootstrap-vcpkg.sh\n./vcpkg integrate install\n./vcpkg install realsense2</pre></div>",
               "notes": ""
             }
           }
@@ -1245,22 +1043,15 @@
               "pkg": "libsdl2-dev",
               "postnotes": "",
               "notes": ""
+            },
+            "24": {
+              "pkg": "libsdl2-dev",
+              "postnotes": "",
+              "notes": ""
             }
           },
           "Fedora": {
-            "37": {
-              "pkg": "SDL2-devel",
-              "postnotes": "",
-              "notes": ""
-            },
-            "38": {
-              "pkg": "SDL2-devel",
-              "postnotes": "",
-              "notes": ""
-            }
-          },
-          "CentOS": {
-            "9": {
+            "38+": {
               "pkg": "SDL2-devel",
               "postnotes": "",
               "notes": ""
@@ -1282,22 +1073,15 @@
               "pkg": "libtiff-dev",
               "postnotes": "",
               "notes": ""
+            },
+            "24": {
+              "pkg": "libtiff-dev",
+              "postnotes": "",
+              "notes": ""
             }
           },
           "Fedora": {
-            "37": {
-              "pkg": "libtiff-devel",
-              "postnotes": "",
-              "notes": ""
-            },
-            "38": {
-              "pkg": "libtiff-devel",
-              "postnotes": "",
-              "notes": ""
-            }
-          },
-          "CentOS": {
-            "9": {
+            "38+": {
               "pkg": "libtiff-devel",
               "postnotes": "",
               "notes": ""
@@ -1319,23 +1103,16 @@
               "pkg": "udev libudev-dev",
               "postnotes": "",
               "notes": ""
+            },
+            "24": {
+              "pkg": "udev libudev-dev",
+              "postnotes": "",
+              "notes": ""
             }
           },
           "Fedora": {
-            "37": {
+            "38+": {
               "pkg": "systemd-udev systemd-devel",
-              "postnotes": "",
-              "notes": ""
-            },
-            "38": {
-              "pkg": "systemd-udev systemd-devel",
-              "postnotes": "",
-              "notes": ""
-            }
-          },
-          "CentOS": {
-            "9": {
-              "pkg": "systemd systemd-devel",
               "postnotes": "",
               "notes": ""
             }
@@ -1356,22 +1133,15 @@
               "pkg": "libvulkan-dev vulkan-validationlayers",
               "postnotes": "",
               "notes": ""
+            },
+            "24": {
+              "pkg": "libvulkan-dev vulkan-validationlayers",
+              "postnotes": "",
+              "notes": ""
             }
           },
           "Fedora": {
-            "37": {
-              "pkg": "vulkan-loader-devel vulkan-validation-layers",
-              "postnotes": "",
-              "notes": ""
-            },
-            "38": {
-              "pkg": "vulkan-loader-devel vulkan-validation-layers",
-              "postnotes": "",
-              "notes": ""
-            }
-          },
-          "CentOS": {
-            "9": {
+            "38+": {
               "pkg": "vulkan-loader-devel vulkan-validation-layers",
               "postnotes": "",
               "notes": ""
@@ -1393,22 +1163,15 @@
               "pkg": "libwayland-dev wayland-protocols",
               "postnotes": "",
               "notes": ""
+            },
+            "24": {
+              "pkg": "libwayland-dev wayland-protocols",
+              "postnotes": "",
+              "notes": ""
             }
           },
           "Fedora": {
-            "37": {
-              "pkg": "wayland-devel wayland-protocols-devel",
-              "postnotes": "",
-              "notes": ""
-            },
-            "38": {
-              "pkg": "wayland-devel wayland-protocols-devel",
-              "postnotes": "",
-              "notes": ""
-            }
-          },
-          "CentOS": {
-            "9": {
+            "38+": {
               "pkg": "wayland-devel wayland-protocols-devel",
               "postnotes": "",
               "notes": ""
@@ -1430,22 +1193,15 @@
               "pkg": "libx11-xcb-dev",
               "postnotes": "",
               "notes": ""
+            },
+            "24": {
+              "pkg": "libx11-xcb-dev",
+              "postnotes": "",
+              "notes": ""
             }
           },
           "Fedora": {
-            "37": {
-              "pkg": "libX11-xcb libxcb-devel",
-              "postnotes": "",
-              "notes": ""
-            },
-            "38": {
-              "pkg": "libX11-xcb libxcb-devel",
-              "postnotes": "",
-              "notes": ""
-            }
-          },
-          "CentOS": {
-            "9": {
+            "38+": {
               "pkg": "libX11-xcb libxcb-devel",
               "postnotes": "",
               "notes": ""
@@ -1467,22 +1223,15 @@
               "pkg": "libxcb-glx0-dev",
               "postnotes": "",
               "notes": ""
+            },
+            "24": {
+              "pkg": "libxcb-glx0-dev",
+              "postnotes": "",
+              "notes": ""
             }
           },
           "Fedora": {
-            "37": {
-              "pkg": "",
-              "postnotes": "",
-              "notes": ""
-            },
-            "38": {
-              "pkg": "",
-              "postnotes": "",
-              "notes": ""
-            }
-          },
-          "CentOS": {
-            "9": {
+            "38+": {
               "pkg": "",
               "postnotes": "",
               "notes": ""
@@ -1504,22 +1253,15 @@
               "pkg": "libxcb-randr0-dev",
               "postnotes": "",
               "notes": ""
+            },
+            "24": {
+              "pkg": "libxcb-randr0-dev",
+              "postnotes": "",
+              "notes": ""
             }
           },
           "Fedora": {
-            "37": {
-              "pkg": "",
-              "postnotes": "",
-              "notes": ""
-            },
-            "38": {
-              "pkg": "",
-              "postnotes": "",
-              "notes": ""
-            }
-          },
-          "CentOS": {
-            "9": {
+            "38+": {
               "pkg": "",
               "postnotes": "",
               "notes": ""
@@ -1541,22 +1283,15 @@
               "pkg": "libxkbcommon-dev",
               "postnotes": "",
               "notes": ""
+            },
+            "24": {
+              "pkg": "libxkbcommon-dev",
+              "postnotes": "",
+              "notes": ""
             }
           },
           "Fedora": {
-            "37": {
-              "pkg": "libxkbcommon-devel",
-              "postnotes": "",
-              "notes": ""
-            },
-            "38": {
-              "pkg": "libxkbcommon-devel",
-              "postnotes": "",
-              "notes": ""
-            }
-          },
-          "CentOS": {
-            "9": {
+            "38+": {
               "pkg": "libxkbcommon-devel",
               "postnotes": "",
               "notes": ""
@@ -1578,22 +1313,15 @@
               "pkg": "zstd",
               "postnotes": "",
               "notes": "ZED SDK (version 3) is required for the zed plugin. It must be installed manually. See <a href=\"https://www.stereolabs.com/docs/installation/linux/\">here</a> for details. It also requires some CUDA packages which should be available <a href=\"https://developer.nvidia.com/cuda-toolkit-archive\">here</a> or through your Ubuntu repo."
+            },
+            "24": {
+              "pkg": "zstd",
+              "postnotes": "",
+              "notes": "ZED SDK (version 3) is required for the zed plugin. As of this release there is no ZED SDK available for Ubuntu 24, and the versions for Ubuntu 22 will not work. Once it is available, you can install it manually. See <a href=\"https://www.stereolabs.com/docs/installation/linux/\">here</a> for details. It also requires some CUDA packages which should be available <a href=\"https://developer.nvidia.com/cuda-toolkit-archive\">here</a> or through your Ubuntu repo."
             }
           },
           "Fedora": {
-            "37": {
-              "pkg": "",
-              "postnotes": "",
-              "notes": ""
-            },
-            "38": {
-              "pkg": "",
-              "postnotes": "",
-              "notes": ""
-            }
-          },
-          "CentOS": {
-            "9": {
+            "38+": {
               "pkg": "",
               "postnotes": "",
               "notes": ""
