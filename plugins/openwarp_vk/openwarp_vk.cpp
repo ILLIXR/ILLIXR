@@ -158,8 +158,6 @@ void openwarp_vk::record_command_buffer(VkCommandBuffer commandBuffer, VkFramebu
     VkDeviceSize offsets = 0;
     VkClearValue clear_colors[2];
     clear_colors[0].color = {0.0f, 0.0f, 0.0f, 1.0f};
-
-    // Fortunately for us, Godot swapped to reverse Z as of Godot 4.3...
     clear_colors[1].depthStencil.depth = rendering_params::reverse_z ? 0.0 : 1.0;
 
     // First render OpenWarp offscreen for a distortion correction pass later
@@ -496,7 +494,7 @@ void openwarp_vk::create_index_buffers() {
                                          .pNext       = nullptr,
                                          .flags       = {},
                                          .size        = sizeof(uint32_t) * num_openwarp_indices_,
-                                         .usage       = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+                                         .usage       = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
                                          .sharingMode = {},
                                          .queueFamilyIndexCount = 0,
                                          .pQueueFamilyIndices   = nullptr};
@@ -620,7 +618,7 @@ void openwarp_vk::generate_distortion_data() {
                                             index_params::fov_up[eye], index_params::fov_down[eye]);
             }
 
-            inverse_projection_[eye] = basic_projection_[eye];
+            inverse_projection_[eye] = basic_projection_[eye].inverse();
         } else {
             float scale = 1.0f;
             if (switchboard_->get_env_char("ILLIXR_OVERSCAN") != nullptr) {
