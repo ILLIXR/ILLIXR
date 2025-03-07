@@ -6,15 +6,14 @@ builds each requested plugin, builds the main ILLIXR binary, and (optionally) in
 ILLIXR currently only builds on Linux systems, and has been tested on the following configurations:
 
 - Ubuntu
-    - 20.04
+    - 20.04[^1]
     - 22.04
-- Fedora[^1]
-    - 37
-    - 38
-- CentOS[^1]
-    - stream9
+    - 24.04
+- Fedora[^2]
+    - 38+
 
-[^1]: Primary development is aimed at Ubuntu systems, full support for Fedora and CentOS may lag behind.
+[^1]: As of this release, Ubuntu 20.04 is still fully supported by Ubuntu, but some of the code in ILLIXR or its dependencies may require features/packages that are not directly available in 20.04, and may require manual installation.
+[^2]: Primary development is aimed at Ubuntu systems, full support for Fedora may require extra work on the users part.
 
 Other versions of these operating systems may work, but will likely require some manual installation of dependencies.
 For other Linux distributions (e.g. RHEL) it will require significant manual installation of dependencies as many
@@ -41,7 +40,8 @@ required only for specific plugins.
 
 <table id="operating_system" style="border-spacing: 20px; border: 1px solid black;"></table>
 
-ILLIXR may compile with other versions of the above operating systems, but some of the necessary prerequesite packages are not supplied by the OS repos and will need to be compiled by hand. You should be able to use the package and cmake commands for other versions of the same OS (other than the missing packages) to compile ILLIXR. RHEL is not supported at this time as many of the prerequisite packages are not natively available.
+ILLIXR may compile with other versions of the above operating systems, but some of the necessary prerequisite packages are not supplied by the OS repos and will need to be compiled by hand. You should be able to use the package and cmake commands for other versions of the same OS (other than the missing packages) to compile ILLIXR. RHEL is not supported at this time as many of the prerequisite packages are not natively available. You will also need to have a C++ compiler
+installed (gcc, clang, etc.) as well as a generator (make, ninja, etc.) and CMake 3.22 or newer (installation is os dependent).
 
 #### Pick the ILLIXR plugins you want to use
 
@@ -78,6 +78,14 @@ Use the following to build and install ILLIXR. You can specify the install locat
 If you want the default install path then do not add the option to the command line.
 Note that if your install prefix requires sudo privileges then you will need to run both the build and install under sudo (this is due to the way cmake builds and installs some of the pre-packaged dependencies during the build phase).
 
+Some ILLIXR plugins rely on code that falls under the <a href="https://opensource.org/license/gpl-3-0">GNU General Public License (GPL) v3.0</a>
+or <a href="https://opensource.org/license/lgpl-2-1">GNU Lesser General Public License (LGPL) v2.1</a>. If you do not wish to build
+these codes you can select to exclude them below (or add `-DNO_GPL=ON` or `-DNO_LGPL=ON` to your cmake command line, NO_LGPL=ON implies
+the same for NO_GPL).
+
+<input type="checkbox" onclick="updateGPL();" id="no_gpl">No GPL code<br>
+<input type="checkbox" onclick="updateLGPL();" id="no_lgpl">No LGPL code
+
 <div id="cmake" class="code-box-copy">
     <button class="code-box-copy__btn" data-clipboard-target="#cmakeoutput" title="Copy"></button>
     <pre class="language-shell" id="cmakeoutput"></pre>
@@ -104,7 +112,7 @@ The CMake process will also create a [_YAML_][2] file call `illixr.yaml` which c
 
 ## Running ILLIXR
 
-To run the ILLIXR binary just call `main.<>.exe` with any of the following command line arguments. (the `&lt;&gt;` indicate
+To run the ILLIXR binary just call `main.<>.exe` with any of the following command line arguments. (the `<>` indicate
 an infix specifying the build type, for `Debug` use `dbg`, for `Release` use `opt`, for `RelWithDebInfo` use `optdbg`)
 
 - -p,--plugins=&lt;&gt;, comma separated list of plugins to use (case sensitive, all lowercase, no spaces)
@@ -311,14 +319,11 @@ If you want to add your own plugin, see [Writing Your Plugin][11].
         notes.innerHTML = "";
 
         if(selectedOS == "Ubuntu") {
-            sudoLine = "sudo apt-get install libglew-dev libglu1-mesa-dev libsqlite3-dev libx11-dev libgl-dev pkg-config libopencv-dev libeigen3-dev libc6-dev libspdlog-dev";
+            sudoLine = "sudo apt-get install libglew-dev libglu1-mesa-dev libsqlite3-dev libx11-dev libgl-dev pkg-config libopencv-dev libeigen3-dev libc6-dev libspdlog-dev libboost-all-dev git cmake cmake-data";
             postnotes.innerHTML = "";
         } else if(selectedOS == "Fedora") {
-            sudoLine = "sudo dnf install glew-devel mesa-libGLU-devel sqlite-devel libX11-devel mesa-libGL-devel pkgconf-pkg-config opencv-devel eigen3-devel glibc-devel spdlog-devel";
+            sudoLine = "sudo dnf install glew-devel mesa-libGLU-devel sqlite-devel libX11-devel mesa-libGL-devel pkgconf-pkg-config opencv-devel eigen3-devel glibc-devel spdlog-devel boost-devel git cmake cmake-data";
             postnotes.innerHTML = "Potential issues:<ul><li>If cmake is having trouble with some of the package-config (.pc) files used to locate packages you may need to run the following:" + makeCopyable("sudo sed -i 's/\^\[ \\t\]\*//g' /usr/lib64/pkgconfig/*", "postF") + "</li><li>If the build step is having issues finding some of the include files you may need the following:" + makeCopyable("sudo ln -s /usr/include /include", "post2F") + "</li></ul>";
-        } else {
-            sudoLine = "sudo yum install glew-devel mesa-libGLU-devel sqlite-devel libX11-devel mesa-libGL-devel pkgconf-pkg-config vtk-devel eigen3-devel glibc-devel spdlog-devel";
-            postnotes.innerHTML = "Potential issues:<ul><li>If cmake is having trouble with some of the package-config (.pc) files used to locate packages you may need to run the following:" + makeCopyable("sudo sed -i 's/\^\[ \\t\]\*//g' /usr/lib64/pkgconfig/*", "postC") + "</li><li>If the build step is having issues finding some of the include files you may need the following:" + makeCopyable("sudo ln -s /usr/include /include", "post2C") + "</li></ul>";
         }
 
         for(let m in dependencies) {
@@ -377,9 +382,29 @@ If you want to add your own plugin, see [Writing Your Plugin][11].
                 }
             }
         }
+        if(document.getElementById("no_gpl").checked) {
+            cmakeLine += " -DNO_GPL=ON";
+            if(document.getElementById("no_lgpl").checked) {
+                cmakeLine += " -DNO_LGPL=ON";
+            }
+        }
         cmakeLine += "\ncmake --build . -j4\ncmake --build . -t docs   # if you want to build the documentation\ncmake --install .";
         document.getElementById("cmake").innerHTML = makeCopyable(cmakeLine, "cmakeC");
         $('.code-box-copy').codeBoxCopy();
+    }
+
+    function updateGPL() {
+        if(!document.getElementById("no_gpl").checked) {
+            document.getElementById("no_lgpl").checked = false;
+        }
+        updateSudo();
+    }
+
+    function updateLGPL() {
+        if(document.getElementById("no_lgpl").checked) {
+            document.getElementById("no_gpl").checked = true;
+        }
+        updateSudo();
     }
 
     function updateOS(os_str) {
