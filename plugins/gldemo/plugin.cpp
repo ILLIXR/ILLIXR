@@ -232,7 +232,7 @@ void gldemo::start() {
     color_uniform_   = glGetUniformLocation(demo_shader_program_, "u_color");
 
     // Load/initialize the demo scene
-    char* obj_dir = std::getenv("ILLIXR_DEMO_DATA");
+    const char* obj_dir = switchboard_->get_env_char("ILLIXR_DEMO_DATA");
     if (obj_dir == nullptr) {
         ILLIXR::abort("Please define ILLIXR_DEMO_DATA.");
     }

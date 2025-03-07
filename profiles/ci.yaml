@@ -1,10 +1,8 @@
 # This file was auto generated, take caution if manually editing.
-plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,ground_truth_slam,gldemo,timewarp_gl,audio_pipeline
-build_type: Debug
-visualizers: openvins,orb_slam3
+plugins: offline_imu,offline_cam,gtsam_integrator,openvins,pose_prediction,ground_truth_slam,vkdemo,timewarp_vk,native_renderer,debugview
 env_vars:
   enable_offload: False
   enable_alignment: False
   enable_verbose_errors: False
   enable_pre_sleep: False
-  duration: 10
+  duration: 15

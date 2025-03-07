@@ -426,7 +426,7 @@ sections below.
 
 ### Header
 ```cmake
-cmake_minimum_required(VERSION 3.17)
+cmake_minimum_required(VERSION 3.22)
 project(ILLIXR_hand_tracking)
 set(CMAKE_VERBOSE_MAKEFILE True)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)

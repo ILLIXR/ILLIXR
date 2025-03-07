@@ -1,1 +1,1 @@
-../../../plugins/vkdemo/README.md
+../../../services/vkdemo/README.md

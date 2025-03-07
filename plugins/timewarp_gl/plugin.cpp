@@ -1,3 +1,4 @@
+#define GL_GLEXT_PROTOTYPES
 // clang-format off
 #include <GL/glew.h> // GLEW has to be loaded before other GL libraries
 #include <GL/glx.h>
@@ -22,7 +23,7 @@
 using namespace ILLIXR;
 using namespace ILLIXR::data_format;
 
-typedef void (*glx_swap_interval_ext_proc)(Display* display_, GLXDrawable drawable, int interval);
+typedef void (*glXSwapIntervalEXTProc)(Display* display_, GLXDrawable drawable, int interval);
 
 const record_header timewarp_gpu_record{"timewarp_gpu",
                                         {
@@ -41,35 +42,30 @@ const record_header mtp_record{"mtp_record",
                                    {"render_to_display", typeid(std::chrono::nanoseconds)},
                                }};
 
-#ifdef ILLIXR_MONADO
-typedef plugin timewarp_type;
-#else
-#endif
-
 timewarp_gl::timewarp_gl(const std::string& name, phonebook* pb)
     : timewarp_type{name, pb}
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
     , pose_prediction_{phonebook_->lookup_impl<pose_prediction>()}
     , clock_{phonebook_->lookup_impl<relative_clock>()}
-#ifndef ILLIXR_MONADO
+#ifndef ENABLE_MONADO
     , eyebuffer_{switchboard_->get_reader<rendered_frame>("eyebuffer")}
     , vsync_estimate_{switchboard_->get_writer<switchboard::event_wrapper<time_point>>("vsync_estimate")}
     , offload_data_{switchboard_->get_writer<texture_pose>("texture_pose")}
     , mtp_logger_{record_logger_}
-    // TODO: Use #198 to configure this. Delete getenv_or.
+    // TODO: Use #198 to configure this.
     // This is useful for experiments which seek to evaluate the end-effect of timewarp vs no-timewarp.
     // Timewarp poses a "second channel" by which pose data can correct the video stream,
     // which results in a "multipath" between the pose and the video stream.
     // In production systems, this is certainly a good thing, but it makes the system harder to analyze.
-    , timewarp_gpu_logger_{record_logger_}
+    , disable_warp_{switchboard_->get_env_bool("ILLIXR_TIMEWARP_DISABLE", "False")}
+    , enable_offload_{switchboard_->get_env_bool("ILLIXR_OFFLOAD_ENABLE", "False")}
 #else
     , signal_quad_{switchboard_->get_writer<signal_to_quad>("signal_quad")}
 #endif
-    , hologram_{switchboard_->get_writer<hologram_input>("hologram_in")}
-    , disable_warp_{switchboard_->get_env_bool(ILLIXR::getenv_or("ILLIXR_TIMEWARP_DISABLE", "False"))}
-    , enable_offload_{switchboard_->get_env_bool(ILLIXR::getenv_or("ILLIXR_OFFLOAD_ENABLE", "False"))} {
+    , timewarp_gpu_logger_{record_logger_}
+    , hologram_{switchboard_->get_writer<hologram_input>("hologram_in")} {
     spdlogger(switchboard_->get_env_char("TIMEWARP_GL_LOG_LEVEL"));
-#ifndef ILLIXR_MONADO
+#ifndef ENABLE_MONADO
     const std::shared_ptr<xlib_gl_extended_window> x_win = phonebook_->lookup_impl<xlib_gl_extended_window>();
     display_                                             = x_win->display_;
     root_window_                                         = x_win->window_;
@@ -104,60 +100,58 @@ timewarp_gl::timewarp_gl(const std::string& name, phonebook* pb)
     rendering_ready_     = false;
     image_handles_ready_ = false;
 
-    switchboard_->schedule<image_handle>(id_, "image_handle",
-                                         [this](const switchboard::ptr<const image_handle>& handle, std::size_t) {
+    switchboard_->schedule<image_handle>(id_, "image_handle", [this](switchboard::ptr<const image_handle> handle, std::size_t) {
     // only 2 swapchains (for the left and right eye) are supported for now.
-#ifdef ILLIXR_MONADO
-                                             static bool left_output_ready = false, right_output_ready = false;
+#ifdef ENABLE_MONADO
+        static bool left_output_ready = false, right_output_ready = false;
 #else
         static bool left_output_ready = true, right_output_ready = true;
 #endif
 
-                                             switch (handle->usage) {
-                                             case swapchain_usage::LEFT_SWAPCHAIN: {
-                                                 this->eye_image_handles_[0].push_back(*handle);
-                                                 this->eye_swapchains_size_[0] = handle->num_images;
-                                                 break;
-                                             }
-                                             case swapchain_usage::RIGHT_SWAPCHAIN: {
-                                                 this->eye_image_handles_[1].push_back(*handle);
-                                                 this->eye_swapchains_size_[1] = handle->num_images;
-                                                 break;
-                                             }
-#ifdef ILLIXR_MONADO
-                                             case swapchain_usage::LEFT_RENDER: {
-                                                 this->eye_output_handles_[0] = *handle;
-                                                 left_output_ready            = true;
-                                                 break;
-                                             }
-                                             case swapchain_usage::RIGHT_RENDER: {
-                                                 this->eye_output_handles_[1] = *handle;
-                                                 right_output_ready           = true;
-                                                 break;
-                                             }
+        switch (handle->usage) {
+        case swapchain_usage::LEFT_SWAPCHAIN: {
+            this->eye_image_handles_[0].push_back(*handle);
+            this->eye_swapchains_size_[0] = handle->num_images;
+            break;
+        }
+        case swapchain_usage::RIGHT_SWAPCHAIN: {
+            this->eye_image_handles_[1].push_back(*handle);
+            this->eye_swapchains_size_[1] = handle->num_images;
+            break;
+        }
+#ifdef ENABLE_MONADO
+        case swapchain_usage::LEFT_RENDER: {
+            this->eye_output_handles_[0] = *handle;
+            left_output_ready            = true;
+            break;
+        }
+        case swapchain_usage::RIGHT_RENDER: {
+            this->eye_output_handles_[1] = *handle;
+            right_output_ready           = true;
+            break;
+        }
 #endif
-                                             default: {
-                                                 spdlog::get(name_)->warn("Invalid swapchain usage provided");
-                                                 break;
-                                             }
-                                             }
+        default: {
+            spdlog::get(name_)->warn("Invalid swapchain usage provided");
+            break;
+        }
+        }
 
-                                             if (client_backend_ == graphics_api::TBD) {
-                                                 client_backend_ = handle->type;
-                                             } else {
-                                                 assert(client_backend_ == handle->type);
-                                             }
+        if (client_backend_ == graphics_api::TBD) {
+            client_backend_ = handle->type;
+        } else {
+            assert(client_backend_ == handle->type);
+        }
 
-                                             if (this->eye_image_handles_[0].size() == this->eye_swapchains_size_[0] &&
-                                                 this->eye_image_handles_[1].size() == this->eye_swapchains_size_[1] &&
-                                                 left_output_ready && right_output_ready) {
-                                                 image_handles_ready_ = true;
-                                             }
-                                         });
+        if (this->eye_image_handles_[0].size() == this->eye_swapchains_size_[0] &&
+            this->eye_image_handles_[1].size() == this->eye_swapchains_size_[1] && left_output_ready && right_output_ready) {
+            image_handles_ready_ = true;
+        }
+    });
 
     this->_setup();
 
-#ifdef ILLIXR_MONADO
+#ifdef ENABLE_MONADO
     switchboard_->schedule<rendered_frame>(id_, "eyebuffer", [this](switchboard::ptr<const rendered_frame> datum, std::size_t) {
         this->warp(datum);
     });
@@ -356,7 +350,7 @@ void timewarp_gl::calculate_time_warp_transform(Eigen::Matrix4f& transform, cons
     transform = tex_coord_projection * delta_view_matrix;
 }
 
-#ifndef ILLIXR_MONADO
+#ifndef ENABLE_MONADO
 // Get the estimated time of the next swap/next Vsync.
 // This is an estimate, used to wait until *just* before vsync.
 [[nodiscard]] time_point timewarp_gl::get_next_swap_time_estimate() const {
@@ -385,7 +379,7 @@ void timewarp_gl::_setup() {
 
     // set swap interval for 1
     // TODO do we still need this if timewarp is not doing the presenting?
-    auto glx_swap_interval_ext = (glx_swap_interval_ext_proc) glXGetProcAddressARB((const GLubyte*) "glx_swap_interval_ext");
+    auto glx_swap_interval_ext = (glXSwapIntervalEXTProc) glXGetProcAddressARB((const GLubyte*) "glx_swap_interval_ext");
     glx_swap_interval_ext(display_, root_window_, 1);
 
     // Init and verify GLEW
@@ -518,7 +512,7 @@ void timewarp_gl::_prepare_rendering() {
         // If we're using Monado, we need to import the eye output textures to render to.
         // Otherwise, with native, we can directly create the textures.
         for (int eye = 0; eye < 2; eye++) {
-#ifdef ILLIXR_MONADO
+#ifdef ENABLE_MONADO
             image_handle image = eye_output_handles_[eye];
             import_vulkan_image(image.vk_handle, image.usage);
 #else
@@ -660,9 +654,9 @@ void timewarp_gl::warp(const switchboard::ptr<const rendered_frame>& most_recent
     glFinish();
     glEndQuery(GL_TIME_ELAPSED);
 
-#ifdef ILLIXR_MONADO
+#ifdef ENABLE_MONADO
     // signal quad layer in Monado
-    signal_quad_.put(signal_quad_.allocate<signal_to_quad>(++signal_quad_seq_));
+    signal_quad_.put(signal_quad_.allocate(++signal_quad_seq_));
 #else
     // If we're not using Monado, we want to composite the left and right buffers into one
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -758,7 +752,7 @@ void timewarp_gl::warp(const switchboard::ptr<const rendered_frame>& most_recent
                                         {std::chrono::nanoseconds(elapsed_time)},
                                     }});
 
-#ifdef ILLIXR_MONADO
+#ifdef ENABLE_MONADO
     // Manually increment the iteration number if timewarp is running as a plugin
     ++iteration_no;
 #endif
@@ -775,7 +769,7 @@ void timewarp_gl::warp(const switchboard::ptr<const rendered_frame>& most_recent
 #endif
 }
 
-#ifndef ILLIXR_MONADO
+#ifndef ENABLE_MONADO
 threadloop::skip_option timewarp_gl::_p_should_skip() {
     using namespace std::chrono_literals;
     // Sleep for approximately 90% of the time until the next vsync.

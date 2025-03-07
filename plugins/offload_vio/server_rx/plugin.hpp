@@ -23,8 +23,7 @@ public:
     [[maybe_unused]] server_reader(const std::string& name, phonebook* pb);
     skip_option _p_should_skip() override;
     void        _p_one_iteration() override;
-    ~server_reader() override;
-    void start() override;
+    void        start() override;
 
 private:
     void receive_vio_input(const vio_input_proto::IMUCamVec& vio_input);
@@ -38,15 +37,14 @@ private:
     cv::Mat                               img1_dst_;
     bool                                  img_ready_ = false;
 
-    const std::shared_ptr<switchboard>                   switchboard_;
-    switchboard::writer<data_format::imu_type>           imu_;
-    switchboard::writer<data_format::binocular_cam_type> cam_;
-    switchboard::writer<data_format::connection_signal>  conn_signal_;
+    const std::shared_ptr<switchboard>                                    switchboard_;
+    const std::shared_ptr<relative_clock>                                 clock_;
+    switchboard::writer<data_format::imu_type>                            imu_;
+    switchboard::writer<data_format::binocular_cam_type>                  cam_;
+    switchboard::buffered_reader<switchboard::event_wrapper<std::string>> imu_cam_reader_;
+    std::string                                                           buffer_str_;
+    std::shared_ptr<spdlog::logger>                                       log_;
 
-    TCPSocket            socket_;
-    TCPSocket*           read_socket_ = nullptr;
-    std::string          server_ip_;
-    [[maybe_unused]] int server_port_;
-    std::string          buffer_str_;
+    const std::string delimiter_ = "EEND!";
 };
 } // namespace ILLIXR

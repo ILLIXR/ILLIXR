@@ -21,17 +21,17 @@ public:
     void        _p_one_iteration() override;
 
 private:
-    void receive_vio_output(const vio_output_proto::VIOOutput& vio_output, const std::string& str_data);
+    void receive_vio_output(const vio_output_proto::VIOOutput& vio_output);
 
-    const std::shared_ptr<switchboard>                     switchboard_;
-    const std::shared_ptr<relative_clock>                  clock_;
-    switchboard::writer<data_format::pose_type>            pose_;
-    switchboard::writer<data_format::imu_integrator_input> imu_integrator_input_;
+    const std::shared_ptr<switchboard>                                    switchboard_;
+    const std::shared_ptr<relative_clock>                                 clock_;
+    switchboard::buffered_reader<switchboard::event_wrapper<std::string>> vio_pose_reader_;
+    switchboard::writer<data_format::pose_type>                           pose_;
+    switchboard::writer<data_format::imu_integrator_input>                imu_integrator_input_;
 
-    TCPSocket   socket_;
-    bool        is_socket_connected_;
-    std::string server_ip_;
-    int         server_port_;
-    std::string buffer_str_;
+    network::TCPSocket socket_;
+    std::string        server_ip_;
+
+    std::string delimiter = "END!";
 };
 } // namespace ILLIXR

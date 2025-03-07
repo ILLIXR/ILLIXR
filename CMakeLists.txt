@@ -8,7 +8,7 @@
 #
 ########################################################################################
 
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.22)
 
 set(CMAKE_VERBOSE_MAKEFILE True)
 
@@ -44,6 +44,12 @@ elif(NOT UNIX)
     message(FATAL_ERROR "Unknown operating system")
 endif()
 
+if (CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64" AND EXISTS "/etc/nv_tegra_release")
+    set(ON_JETSON_PLATFORM YES)
+else()
+    set(ON_JETSON_PLATFORM NO)
+endif()
+
 if(PACKAGE_VERSION_LABEL)
     set(PACKAGE_VERSION "${PACKAGE_VERSION_MAJOR}.${PACKAGE_VERSION_MINOR}.${PACKAGE_VERSION_PATCH}-${PACKAGE_VERSION_LABEL}")
 else()
@@ -58,6 +64,9 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_definitions(-DGLSL_VERSION="330")
 
+# Vulkan flags
+add_compile_definitions(VK_ENABLE_BETA_EXTENSIONS)
+
 set(CMAKE_CXX_FLAGS_DEBUG "-ggdb -Wall -Wextra -rdynamic -Wno-attributes -Wno-unknown-pragmas -fPIC")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG -Wall -Wextra -Wno-attributes -Wno-unknown-pragmas -fPIC")
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-ggdb -O3 -Wall -Wextra -Wno-attributes -Wno-unknown-pragmas -fPIC")
@@ -69,11 +78,10 @@ set(OPENXR_RUNTIME "")
 set(OPENXR_PLUGINS "")
 
 # set the CMake search path to include the local files
-set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH}")
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH})
 option(COLOR_OUTPUT "Produce color output to the screen" ON)
 option(DATA_FILE "The data file to get" ON)
 option(BUILD_OXR_INTERFACE "Build the OpenXR interface (hand tracking only)" OFF)
-cmake_dependent_option(BUILD_OXR_TEST "Build the  test for the OpenXr interface (hand tracking only)" OFF BUILD_OXR_INTERFACE OFF)
 option(BUILD_ZED_CAPTURE "Build the ZED capture program" OFF)
 set(DATA_FILE "http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip")
 
@@ -81,7 +89,6 @@ option(BUILD_DOCS "Build documentation" OFF)
 option(USE_MONADO "Build for monado use" OFF)
 option(NO_GPL "Do not build any code licensed under GPL. This will affect any generated profile files as well." OFF)
 option(NO_LGPL "Do not build any code licensed under LGPL or GPL. This will affect any generated profile files as well." OFF)
-option(NO_ZED "Do not build and ZED related code" OFF)
 
 set(LAST_NO_GPL "$CACHE{NO_GPL_CACHE}")
 set(LAST_NO_LGPL "$CACHE{NO_LGPL_CACHE}")
@@ -102,14 +109,21 @@ if(HT_ENABLE_GPU)
     message(WARNING "Currently gpu processing for hand tracking is not available, turning it off")
     set(HT_ENABLE_GPU OFF)
 endif()
-include(cmake/HelperFunctions.cmake)
-
-set(VISUALIZER "" CACHE STRING "")
-set(VISUALIZER_TO_USE "ALL" CACHE INTERNAL "")
-if(VISUALIZER)
-    string(TOUPPER ${VISUALIZER} VISUALIZER)
-    set(VISUALIZER_TO_USE ${VISUALIZER} CACHE INTERNAL "")
+option(BUILD_PARALLEL_LEVEL "Number of parallel build jobs")
+option(ENABLE_MONADO "Build monado package" OFF)
+if(NOT BUILD_PARALLEL_LEVEL)
+    include(ProcessorCount)
+    ProcessorCount(N)
+    if(N GREATER 8)
+        set(BUILD_PARALLEL_LEVEL 4)
+    elseif(N GREATER 6)
+        set(BUILD_PARALLEL_LEVEL 2)
+    else()
+        set(BUILD_PARALLEL_LEVEL 1)
+    endif()
 endif()
+
+include(cmake/HelperFunctions.cmake)
 
 generate_yaml()
 check_plugins()
@@ -119,8 +133,16 @@ set(RT_SLAM_PLUGINS OFF)
 
 if(YAML_FILE)
     read_yaml(${YAML_FILE})
+    string(REGEX MATCH "/all.yaml" MATCH_FOUND ${YAML_FILE})
+    if (${YAML_FILE} STREQUAL "all.yaml" OR MATCH_FOUND)
+        set(BUILD_DEP_MAP ON)
+    endif()
     if(LOCAL_BUILD_FLAGS)
-        add_definitions("${LOCAL_BUILD_FLAGS}")
+        add_compile_definitions("${LOCAL_BUILD_FLAGS}")
+        string(REPLACE " " ";" TEMP_BUILD_FLAGS "${LOCAL_BUILD_FLAGS}")
+        foreach(B_FLAG IN LISTS TEMP_BUILD_FLAGS)
+            set(${B_FLAG} ON)
+        endforeach()
     endif()
 endif()
 
@@ -142,8 +164,6 @@ elseif(lower_type MATCHES "relwithdebinfo")
     set(ILLIXR_BUILD_SUFFIX ".optdbg")
 endif()
 
-set(CMAKE_PREFIX_PATH "${CMAKE_INSTALL_PREFIX}/lib/cmake ${CMAKE_INSTALL_PREFIX}/lib64/cmake")
-
 set(ENV{PKG_CONFIG_PATH} "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig:${CMAKE_INSTALL_PREFIX}/lib64/pkgconfig")
 
 link_directories(BEFORE ${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_INSTALL_PREFIX}/lib64)
@@ -155,7 +175,7 @@ if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
     message(FATAL_ERROR "In-source build prohibited.")
 endif("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
 
-set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH};${PROJECT_SOURCE_DIR}/cmake;${CMAKE_INSTALL_PREFIX}/lib/cmake;${CMAKE_INSTALL_PREFIX}/share/cmake)
 
 add_definitions(-DILLIXR_BUILD_SUFFIX=${ILLIXR_BUILD_SUFFIX})
 ##############
@@ -183,9 +203,9 @@ find_package(Eigen3 REQUIRED)
 
 find_package(Git REQUIRED)
 if (CMAKE_VERSION VERSION_LESS "3.30.0")
-    find_package(Boost REQUIRED COMPONENTS filesystem serialization)
+    find_package(Boost REQUIRED COMPONENTS filesystem serialization iostreams)
 else()
-    find_package(Boost REQUIRED COMPONENTS filesystem serialization CONFIG)
+    find_package(Boost REQUIRED COMPONENTS filesystem serialization iostreams CONFIG)
 endif()
 
 find_package(spdlog REQUIRED)
@@ -193,8 +213,6 @@ add_definitions(-DFMT_HEADER_ONLY)
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads)
-
-include(src/CMakeLists.txt)
 
 # get any env flags for the build
 if($ENV{ILLIXR_BUILD_FLAGS})
@@ -227,19 +245,46 @@ if(NO_ZED)
 endif()
 # set any plugins that are being built
 set(FULL_PLUGIN_LIST "")
-foreach(ITEM IN LISTS PLUGIN_LIST VISUALIZER_LIST)
+
+add_subdirectory(utils)
+if(BUILD_DOCS)
+    set(DOCS_LIST "${CMAKE_SOURCE_DIR}/include/illixr;${CMAKE_SOURCE_DIR}/include/illixr/data_format;${CMAKE_SOURCE_DIR}/include/illixr/network;${CMAKE_SOURCE_DIR}/include/illixr/vk;${CMAKE_SOURCE_DIR}/plugins/hand_tracking/viewer;${CMAKE_SOURCE_DIR}/plugins/zed/data_injection;${CMAKE_SOURCE_DIR}/plugins/zed/capture;${CMAKE_SOURCE_DIR}/src;${CMAKE_SOURCE_DIR}/src/display;${CMAKE_SOURCE_DIR}/utils")
+    set(DOCS_EXCLUDE_LIST "${CMAKE_SOURCE_DIR}/include/illixr/vk/vk_extension_request.hpp")
+endif()
+foreach(ITEM IN LISTS PLUGIN_LIST)
     string(TOUPPER "USE_${ITEM}" ITEM_UPPER)
     string(TOLOWER ${ITEM} ITEM_LOWER)
     list(APPEND FULL_PLUGIN_LIST ${ITEM})
+    string(REPLACE "." "/" ITEM_LOWER_SUB "${ITEM_LOWER}")
+    if(EXISTS "${CMAKE_SOURCE_DIR}/plugins/${ITEM_LOWER_SUB}")
+        set(CURRENT_PLUGIN_SRC "plugins/${ITEM_LOWER_SUB}")
+    else()
+        set(CURRENT_PLUGIN_SRC "services/${ITEM_LOWER_SUB}")
+    endif()
+    if(BUILD_DOCS)
+        list(APPEND DOCS_LIST "${CMAKE_SOURCE_DIR}/${CURRENT_PLUGIN_SRC}")
+    endif()
     if(${ITEM_UPPER})
-        list(APPEND OPENXR_PLUGINS ${ITEM_LOWER})
-        string(REPLACE "." "/" ITEM_LOWER "${ITEM_LOWER}")
-        message("Adding plugins/${ITEM_LOWER}")
-        add_subdirectory(plugins/${ITEM_LOWER})
+        add_subdirectory(${CURRENT_PLUGIN_SRC})
+        if (${ITEM_UPPER})  # this can change when adding the target
+            list(APPEND OPENXR_PLUGINS ${ITEM_LOWER})
+            message("Adding ${ITEM_LOWER}")
+        endif()
     endif()
     unset(ITEM_LOWER)
     unset(ITEM_UPPER)
 endforeach()
+
+if (ENABLE_MONADO)
+    if (NOT USE_TIMEWARP_GL)
+        get_external(Monado_vk)
+    elseif (USE_TIMEWARP_GL AND NOT USE_TIMEWARP_VK)
+
+    else()
+        get_external(Monado_vk)
+    endif()
+endif()
+include(src/CMakeLists.txt)
 
 list(SORT FULL_PLUGIN_LIST COMPARE STRING CASE INSENSITIVE ORDER ASCENDING)
 set(FULL_PLUGIN_LIST_STRING "")
@@ -286,31 +331,30 @@ if(ILLIXR_PROFILE_NAMES)
     endforeach()
 endif()
 
-# reset this, so it is clean for subsequent runs of cmake
-set(VISUALIZER "" CACHE STRING "")
-
-find_package(Python3 COMPONENTS Interpreter)
-if(Python3_FOUND)
-    add_custom_target(depmaker ALL
-                      BYPRODUCTS "${CMAKE_SOURCE_DIR}/plugins/plugin_deps.yaml"
-                      COMMAND ${CMAKE_SOURCE_DIR}/dep_mapper.py ${CMAKE_BINARY_DIR}
-                      WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    )
-    if(USE_AUDIO_PIPELINE)
-        add_dependencies(depmaker "Audio_Pipeline")
-    endif()
-    if(USE_OPENVINS)
-        add_dependencies(depmaker "OpenVINS")
-    endif()
-    if(USE_HAND_TRACKING)
-        #set(dependencies "${dependencies} ${HT_TARGET_NAME}")
+if(BUILD_DEP_MAP)
+    find_package(Python3 COMPONENTS Interpreter)
+    if(Python3_FOUND)
+        message(STATUS "Rebuilding dep_map")
+        add_custom_target(depmaker ALL
+                          BYPRODUCTS "${CMAKE_SOURCE_DIR}/plugins/plugin_deps.yaml"
+                          COMMAND ${CMAKE_SOURCE_DIR}/dep_mapper.py ${CMAKE_BINARY_DIR}
+                          WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        )
+        if(USE_AUDIO_PIPELINE)
+            add_dependencies(depmaker "Audio_Pipeline")
+        endif()
+        if(USE_OPENVINS)
+            add_dependencies(depmaker "OpenVINS")
+        endif()
+        if(USE_HAND_TRACKING)
+            #set(dependencies "${dependencies} ${HT_TARGET_NAME}")
+        endif()
     endif()
 endif()
 install(FILES "${CMAKE_SOURCE_DIR}/plugins/plugin_deps.yaml"
         DESTINATION $ENV{HOME}/.illixr/profiles)
 install(FILES "${CMAKE_SOURCE_DIR}/plugins/plugin_deps.yaml"
         DESTINATION ${CMAKE_INSTALL_PREFIX}/share/illixr/profiles)
-
 #get_cmake_property(_variableNames VARIABLES)
 #foreach (_variableName ${_variableNames})
 #    message(STATUS "${_variableName}=${${_variableName}}")

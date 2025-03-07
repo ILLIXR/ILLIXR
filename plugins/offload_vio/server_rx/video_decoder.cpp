@@ -10,7 +10,7 @@
 #include <utility>
 
 namespace ILLIXR {
-// #define ZED
+#define ZED
 
 #ifdef ZED
     #define IMG_WIDTH  672
