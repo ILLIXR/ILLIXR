@@ -1,6 +1,5 @@
 # This file was auto generated, take caution if manually editing.
 plugins: offload_vio.server_rx,offload_vio.server_tx
-visualizers: 
 env_vars:
   enable_offload: False
   enable_alignment: False

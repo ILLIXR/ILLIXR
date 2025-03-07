@@ -9,9 +9,9 @@ ILLIXR currently only builds on Linux systems, and has been tested on the follow
     - 22.04
     - 24.04
 - Fedora[^1]
-    - 37+
+    - 38+
 
-[^1]: Primary development is aimed at Ubuntu systems, full support for Fedora may lag behind.
+[^1]: Primary development is aimed at Ubuntu systems, full support for Fedora may require extra work on the users part.
 
 Other versions of these operating systems may work, but will likely require some manual installation of dependencies.
 For other Linux distributions (e.g. RHEL) it will require significant manual installation of dependencies as many
@@ -74,6 +74,14 @@ Use the following to install the dependencies for the selected plugins:
 Use the following to build and install ILLIXR. You can specify the install location by giving the path to `CMAKE_INSTALL_PREFIX`.
 If you want the default install path then do not add the option to the command line.
 Note that if your install prefix requires sudo privileges then you will need to run both the build and install under sudo (this is due to the way cmake builds and installs some of the pre-packaged dependencies during the build phase).
+
+Some ILLIXR plugins rely on code that falls under the <a href="https://opensource.org/license/gpl-3-0">GNU General Public License (GPL) v3.0</a>
+or <a href="https://opensource.org/license/lgpl-2-1">GNU Lesser General Public License (LGPL) v2.1</a>. If you do not wish to build
+these codes you can select to exclude them below (or add `-DNO_GPL=ON` or `-DNO_LGPL=ON` to your cmake command line, NO_LGPL=ON implies
+the same for NO_GPL).
+
+<input type="checkbox" onclick="updateGPL();" id="no_gpl">No GPL code<br>
+<input type="checkbox" onclick="updateLGPL();" id="no_lgpl">No LGPL code
 
 <div id="cmake" class="code-box-copy">
     <button class="code-box-copy__btn" data-clipboard-target="#cmakeoutput" title="Copy"></button>
@@ -307,10 +315,10 @@ If you want to add your own plugin, see [Writing Your Plugin][11].
         notes.innerHTML = "";
 
         if(selectedOS == "Ubuntu") {
-            sudoLine = "sudo apt-get install libglew-dev libglu1-mesa-dev libsqlite3-dev libx11-dev libgl-dev pkg-config libopencv-dev libeigen3-dev libc6-dev libspdlog-dev";
+            sudoLine = "sudo apt-get install libglew-dev libglu1-mesa-dev libsqlite3-dev libx11-dev libgl-dev pkg-config libopencv-dev libeigen3-dev libc6-dev libspdlog-dev libboost-all-dev git cmake cmake-data";
             postnotes.innerHTML = "";
         } else {
-            sudoLine = "sudo dnf install glew-devel mesa-libGLU-devel sqlite-devel libX11-devel mesa-libGL-devel pkgconf-pkg-config opencv-devel eigen3-devel glibc-devel spdlog-devel";
+            sudoLine = "sudo dnf install glew-devel mesa-libGLU-devel sqlite-devel libX11-devel mesa-libGL-devel pkgconf-pkg-config opencv-devel eigen3-devel glibc-devel spdlog-devel boost-devel git cmake cmake-data";
             postnotes.innerHTML = "Potential issues:<ul><li>If cmake is having trouble with some of the package-config (.pc) files used to locate packages you may need to run the following:" + makeCopyable("sudo sed -i 's/\^\[ \\t\]\*//g' /usr/lib64/pkgconfig/*", "postF") + "</li><li>If the build step is having issues finding some of the include files you may need the following:" + makeCopyable("sudo ln -s /usr/include /include", "post2F") + "</li></ul>";
         }
 
@@ -370,9 +378,29 @@ If you want to add your own plugin, see [Writing Your Plugin][11].
                 }
             }
         }
+        if(document.getElementById("no_gpl").checked) {
+            cmakeLine += " -DNO_GPL=ON";
+            if(document.getElementById("no_lgpl").checked) {
+                cmakeLine += " -DNO_LGPL=ON";
+            }
+        }
         cmakeLine += "\ncmake --build . -j4\ncmake --build . -t docs   # if you want to build the documentation\ncmake --install .";
         document.getElementById("cmake").innerHTML = makeCopyable(cmakeLine, "cmakeC");
         $('.code-box-copy').codeBoxCopy();
+    }
+
+    function updateGPL() {
+        if(!document.getElementById("no_gpl").checked) {
+            document.getElementById("no_lgpl").checked = false;
+        }
+        updateSudo();
+    }
+
+    function updateLGPL() {
+        if(document.getElementById("no_lgpl").checked) {
+            document.getElementById("no_gpl").checked = true;
+        }
+        updateSudo();
     }
 
     function updateOS(os_str) {

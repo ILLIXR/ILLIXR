@@ -2,7 +2,6 @@
 plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,timewarp_gl,audio_pipeline,openvins
 build_flags: -DILLIXR_MONADO
 use_monado: true
-visualizers: 
 env_vars:
   enable_offload: false
   enable_alignment: false

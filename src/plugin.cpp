@@ -2,6 +2,9 @@
 #include "illixr/error_util.hpp"
 #include "illixr/switchboard.hpp"
 
+#ifndef ILLIXR_INSTALL_PATH
+    #error "ILLIXR_INSTALL_PATH must be defined"
+#endif
 #ifndef BOOST_DATE_TIME_NO_LIB
     #define BOOST_DATE_TIME_NO_LIB
 #endif
@@ -74,12 +77,12 @@ ILLIXR::runtime* runtime_ = nullptr;
 
 using namespace ILLIXR;
 
-std::string get_exec_path() {
+/*std::string get_exec_path() {
     char        result[PATH_MAX];
     ssize_t     count = readlink("/proc/self/exe", result, PATH_MAX);
     std::string exe_dir(result, (count > 0) ? count : 0);
     return exe_dir.substr(0, exe_dir.find_last_of("/\\"));
-}
+}*/
 
 std::string get_home_dir() {
     struct passwd* pw = getpwuid(getuid());
@@ -158,9 +161,11 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
         std::shared_ptr<switchboard> switchboard_ = runtime_->get_switchboard();
 
         // read in yaml config file
-        YAML::Node  config;
-        std::string exec_path = get_exec_path();
-        std::string home_dir  = get_home_dir();
+        YAML::Node config;
+        // std::string exec_path = get_exec_path();
+        // setenv("ILLIXR_BINARY_PATH", exec_path.c_str(), 1);
+        setenv("ILLIXR_BINARY_PATH", ILLIXR_INSTALL_PATH, 1);
+        std::string home_dir = get_home_dir();
         if (options.count("yaml")) {
             std::cout << "Reading " << options["yaml"].as<std::string>() << std::endl;
             auto                     config_file_full = options["yaml"].as<std::string>();
@@ -171,8 +176,9 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
                                                          home_dir + "/.illixr/profiles/" + config_file,
                                                          home_dir + "/" + config_file_full,
                                                          home_dir + "/" + config_file,
-                                                         exec_path + "/../share/illixr/profiles/" + config_file_full,
-                                                         exec_path + "/../share/illixr/profiles/" + config_file};
+                                                         std::string(ILLIXR_INSTALL_PATH) + "/share/illixr/profiles/" +
+                                                             config_file_full,
+                                                         std::string(ILLIXR_INSTALL_PATH) + "/share/illixr/profiles/" + config_file};
             for (auto& filepath : config_list) {
                 try {
                     config = YAML::LoadFile(filepath);
@@ -240,7 +246,7 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
 
         std::vector<ILLIXR::Dependency> dep_map;
         std::vector<std::string>        dep_list = {"plugin_deps.yaml", home_dir + "/.illixr/profiles/plugin_deps.yaml",
-                                                    exec_path + "/../share/illixr/profiles/plugin_deps.yaml"
+                                                    std::string(ILLIXR_INSTALL_PATH) + "/share/illixr/profiles/plugin_deps.yaml"
 
         };
         for (auto& dep_file : dep_list) {

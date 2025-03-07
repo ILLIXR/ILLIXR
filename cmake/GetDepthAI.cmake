@@ -5,15 +5,6 @@ find_package(depthai QUIET)
 
 set(DEPTHAI_CMAKE_ARGS "")
 
-# if building on CentOS make sure we use the correct OpenCV
-if(HAVE_CENTOS)
-    set(DEPTHAI_CMAKE_ARGS "-DOpenCV_DIR=${OpenCV_DIR}")
-endif()
-
-add_custom_target(cleanup_depthai_spdlog
-                  COMMAND rm -rf ${CMAKE_INSTALL_PREFIX}/lib/cmake/depthai/dependencies/include/spdlog
-)
-
 if(depthai_FOUND)
     set(DepthAI_VERSION "${depthai_VERSION}" PARENT_SCOPE)   # set current version
 else()
@@ -30,5 +21,10 @@ else()
     set(DepthAI_EXTERNAL Yes)      # Mark that this module is being built
     set(DepthAI_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include ${CMAKE_INSTALL_PREFIX}/include/depthai-shared ${CMAKE_INSTALL_PREFIX}/include/depthai-shared/3rdparty ${CMAKE_INSTALL_PREFIX}/include/depthai ${CMAKE_INSTALL_PREFIX}/lib/cmake/depthai/dependencies/include)
     set(DepthAI_LIBRARIES depthai-core;depthai-opencv)
+
+    add_custom_target(cleanup_depthai_spdlog
+                      COMMAND rm -rf ${CMAKE_INSTALL_PREFIX}/lib/cmake/depthai/dependencies/include/spdlog
+    )
+
     add_dependencies(cleanup_depthai_spdlog DepthAI_ext)
 endif()

@@ -1,6 +1,5 @@
 # This file was auto generated, take caution if manually editing.
 plugins: pose_lookup,gldemo,debugview,offload_data,openvins
-visualizers: 
 env_vars:
   enable_offload: false
   enable_alignment: false

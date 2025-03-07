@@ -1,7 +1,6 @@
 # This file was auto generated, take caution if manually editing.
 plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,ground_truth_slam,gldemo,timewarp_gl,audio_pipeline
 build_type: Debug
-visualizers: 
 env_vars:
   enable_offload: False
   enable_alignment: False

@@ -3,7 +3,7 @@
     {
       "name": "Fedora",
       "versions": [
-        "37+"
+        "38+"
       ]
     },
     {
@@ -19,7 +19,6 @@
       "name": "audio_pipeline",
       "cmake_flag": "USE_AUDIO_PIPELINE=ON",
       "dependencies": [
-        "git",
         "portaudio",
         "spatialaudio"
       ]
@@ -28,22 +27,19 @@
       "name": "debugview",
       "cmake_flag": "USE_DEBUGVIEW=ON",
       "dependencies": [
-        "glfw3",
-        "OpenCV"
+        "glfw3"
       ]
     },
     {
       "name": "depthai",
       "cmake_flag": "USE_DEPTHAI=ON",
       "dependencies": [
-        "OpenCV"
       ]
     },
     {
       "name": "display_vk",
       "cmake_flag": "USE_DISPLAY_VK=ON",
       "dependencies": [
-        "OpenCV",
         "Vulkan",
         "glfw3",
         "glm",
@@ -76,7 +72,6 @@
       "name": "gtsam_integrator",
       "cmake_flag": "USE_GTSAM_INTEGRATOR=ON",
       "dependencies": [
-        "git"
       ]
     },
     {
@@ -92,7 +87,6 @@
       "name": "hand_tracking.viewer",
       "cmake_flag": "USE_HAND_TRACKING.VIEWER=ON",
       "dependencies": [
-        "OpenCV",
         "glfw3"
       ]
     },
@@ -100,14 +94,12 @@
       "name": "hand_tracking.webcam",
       "cmake_flag": "USE_HAND_TRACKING.WEBCAM=ON",
       "dependencies": [
-        "OpenCV"
       ]
     },
     {
       "name": "native_renderer",
       "cmake_flag": "USE_NATIVE_RENDERER=ON",
       "dependencies": [
-        "OpenCV",
         "Vulkan",
         "glfw3",
         "glm",
@@ -130,7 +122,6 @@
       "name": "offline_cam",
       "cmake_flag": "USE_OFFLINE_CAM=ON",
       "dependencies": [
-        "OpenCV"
       ]
     },
     {
@@ -142,74 +133,61 @@
       "name": "offload_data",
       "cmake_flag": "USE_OFFLOAD_DATA=ON",
       "dependencies": [
-        "boost"
       ]
     },
     {
       "name": "offload_vio.device_rx",
       "cmake_flag": "USE_OFFLOAD_VIO.DEVICE_RX=ON",
       "dependencies": [
-        "git",
         "ecal",
-        "protobuf",
-        "OpenCV"
+        "protobuf"
       ]
     },
     {
       "name": "offload_vio.device_tx",
       "cmake_flag": "USE_OFFLOAD_VIO.DEVICE_TX=ON",
       "dependencies": [
-        "git",
         "glib",
         "gstreamer",
         "ecal",
-        "protobuf",
-        "OpenCV"
+        "protobuf"
       ]
     },
     {
       "name": "offload_vio.server_tx",
       "cmake_flag": "USE_OFFLOAD_VIO.SERVER_TX=ON",
       "dependencies": [
-        "git",
         "ecal",
-        "protobuf",
-        "OpenCV"
+        "protobuf"
       ]
     },
     {
       "name": "offload_vio.server_rx",
       "cmake_flag": "USE_OFFLOAD_VIO.SERVER_RX=ON",
       "dependencies": [
-        "git",
         "glib",
         "gstreamer",
         "ecal",
-        "protobuf",
-        "OpenCV"
+        "protobuf"
       ]
     },
     {
       "name": "openni",
       "cmake_flag": "USE_OPENNI=ON",
       "dependencies": [
-        "libopenni2",
-        "OpenCV"
+        "libopenni2"
       ]
     },
     {
       "name": "openvins",
       "cmake_flag": "USE_OPENVINS=ON",
       "dependencies": [
-        "boost"
       ]
     },
     {
-      "name": "orb_slam",
-      "cmake_flag": "USE_ORB_SLAM=ON",
+      "name": "orb_slam3",
+      "cmake_flag": "USE_ORB_SLAM3=ON",
       "dependencies": [
-        "git",
-        "boost",
         "fmt",
         "patch"
       ]
@@ -233,7 +211,6 @@
       "name": "realsense",
       "cmake_flag": "USE_REALSENSE=ON",
       "dependencies": [
-        "OpenCV",
         "realsense"
       ]
     },
@@ -241,16 +218,12 @@
       "name": "record_imu_cam",
       "cmake_flag": "USE_RECORD_IMU_CAM=ON",
       "dependencies": [
-        "boost",
-        "OpenCV"
       ]
     },
     {
       "name": "record_rgb_depth",
       "cmake_flag": "USE_RECORD_RGB_DEPTH=ON",
       "dependencies": [
-        "boost",
-        "OpenCV"
       ]
     },
     {
@@ -262,7 +235,6 @@
       "name": "timewarp_gl",
       "cmake_flag": "USE_TIMEWARP_GL=ON",
       "dependencies": [
-        "git",
         "glslang",
         "gflags",
         "JPEG",
@@ -285,7 +257,6 @@
       "name": "timewarp_vk",
       "cmake_flag": "USE_TIMEWARP_VK=ON",
       "dependencies": [
-        "OpenCV",
         "Vulkan",
         "glfw3",
         "glm",
@@ -308,7 +279,6 @@
       "name": "vkdemo",
       "cmake_flag": "USE_VKDEMO=ON",
       "dependencies": [
-        "OpenCV",
         "Vulkan",
         "glfw3",
         "glm",
@@ -331,28 +301,12 @@
       "name": "zed",
       "cmake_flag": "USE_ZED=ON",
       "dependencies": [
-        "OpenCV",
+        "zstd",
         "zed_SDK"
       ]
     }
   ],
   "dependencies": [
-    {
-      "boost": {
-        "pkg": {
-          "Ubuntu": {
-              "pkg": "libboost-all-dev",
-              "postnotes": "",
-              "notes": ""
-          },
-          "Fedora": {
-              "pkg": "boost-devel",
-              "postnotes": "",
-              "notes": ""
-            }
-        }
-      }
-    },
     {
       "ecal": {
         "pkg": {
@@ -395,22 +349,6 @@
           },
           "Fedora": {
             "pkg": "gflags-devel",
-            "postnotes": "",
-            "notes": ""
-          }
-        }
-      }
-    },
-    {
-      "git": {
-        "pkg": {
-          "Ubuntu": {
-            "pkg": "git",
-            "postnotes": "",
-            "notes": ""
-          },
-          "Fedora": {
-            "pkg": "git",
             "postnotes": "",
             "notes": ""
           }
@@ -648,22 +586,6 @@
             "pkg": "",
             "postnotes": "",
             "notes": "Fedora does not supply libuvc from its repositories. You will need to install it from <a href=\"https://github.com/libuvc/libuvc\">https://github.com/libuvc/libuvc</a>."
-          }
-        }
-      }
-    },
-    {
-      "OpenCV": {
-        "pkg": {
-          "Ubuntu": {
-            "pkg": "libopencv-dev",
-            "postnotes": "",
-            "notes": ""
-          },
-          "Fedora": {
-            "pkg": "opencv-devel",
-            "postnotes": "",
-            "notes": ""
           }
         }
       }
