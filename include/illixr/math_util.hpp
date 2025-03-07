@@ -1,5 +1,11 @@
 #pragma once
+#ifndef _USE_MATH_DEFINES
+    #define _USE_MATH_DEFINES
+#endif
+#include "data_format/point.hpp"
+#include "data_format/pose.hpp"
 
+#include <cmath>
 #include <eigen3/Eigen/Core>
 
 namespace ILLIXR::math_util {
@@ -188,10 +194,11 @@ inline Eigen::Matrix3f rotation(const float alpha, const float beta, const float
     double          ra = alpha * M_PI / 180.;
     double          rb = beta * M_PI / 180.;
     double          rg = gamma * M_PI / 180;
-    rot << (cos(rg) * cos(rb)), (cos(rg) * sin(rb) * sin(ra) - sin(rg) * cos(ra)),
-        (cos(rg) * sin(rb) * cos(ra) + sin(rg) * sin(ra)), (sin(rg) * cos(rb)),
-        (sin(rg) * sin(rb) * sin(ra) + cos(rg) * cos(ra)), (sin(rg) * sin(rb) * cos(ra) - cos(rg) * sin(ra)), -sin(rb),
-        (cos(rb) * sin(ra)), (cos(rb) * cos(ra));
+    rot << static_cast<float>(cos(rg) * cos(rb)), static_cast<float>(cos(rg) * sin(rb) * sin(ra) - sin(rg) * cos(ra)),
+        static_cast<float>(cos(rg) * sin(rb) * cos(ra) + sin(rg) * sin(ra)), static_cast<float>(sin(rg) * cos(rb)),
+        static_cast<float>(sin(rg) * sin(rb) * sin(ra) + cos(rg) * cos(ra)),
+        static_cast<float>(sin(rg) * sin(rb) * cos(ra) - cos(rg) * sin(ra)), static_cast<float>(-sin(rb)),
+        static_cast<float>(cos(rb) * sin(ra)), static_cast<float>(cos(rb) * cos(ra));
     return rot;
 }
 

@@ -240,6 +240,7 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
         GET_BOOL(alignment_enable, ILLIXR_ALIGNMENT_ENABLE)
         GET_BOOL(enable_verbose_errors, ILLIXR_ENABLE_VERBOSE_ERRORS)
         GET_BOOL(enable_pre_sleep, ILLIXR_ENABLE_PRE_SLEEP)
+        GET_BOOL(openxr, ILLIXR_OPENXR)
         GET_STRING(realsense_cam, REALSENSE_CAM)
 
         if (switchboard_->get_env_char("ILLIXR_DISPLAY_MODE") == nullptr) {
