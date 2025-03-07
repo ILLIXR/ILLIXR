@@ -7,7 +7,7 @@ on:
 
 jobs:
   illixr-native-vulkan-ci:
-    runs-on: [self-hosted]
+    runs-on: [self-hosted, grandteton]
 
     env:
       DISPLAY: :1
