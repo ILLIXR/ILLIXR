@@ -1,4 +1,4 @@
-## Pull Requests
+# Pull Requests
 
 Please follow these steps when making pull requests (PRs):
 
@@ -22,6 +22,8 @@ Please follow these steps when making pull requests (PRs):
 
 1.  Open a PR, and link it to the issue that the PR aims to resolve.
     Please give the PR a descriptive name.
+
+1.  Once you have your PR number, create a PR documentation file. See [here][13] for instructions.
 
 1.  As you make progress on your PR, keep your branch up-to-date with the `master` branch which
     may have been updated *after* starting your PR.
@@ -170,6 +172,43 @@ Please follow these steps when making pull requests (PRs):
         the latest version of the feature branch pulled from `<illixr-remote>`.
 
 
+## PR Documentation
+
+Each PR should create one or more documentation files. These files are used to automatically generate the bulk of the 
+release notes for each release. The documentation files should go in the directories below `changes`.
+
+- **infrastructure**: this directory is for PRs which deal with changes to base classes (plugin, switchboard, etc.), 
+  changes to the locations of header files, or other similar system-level changes
+- **plugins**: this directory is for major updates to, or creation of, plugins
+- **misc**: this directory is for any PR that does not fit into the above two
+- The **issues** and **notes** directories are reserved for work at release time and should not be generally used.
+
+The files should be named `pr.XYZ.md` where `XYZ` is replaced by your PR number. For example, `pr.400.md` would refer to
+PR #400. The style of the files is [markdown][5]. The top of the file has a special format
+
+<!--- language: lang-none -->
+
+    ---
+    - author.<your_github_name>
+    ---
+
+Where `<your_github_name>` should be your GitHub username. This will ensure proper attribution of your work in the release notes.
+If there are multiple authors, just add them one, after another, on separate lines.
+
+<!--- language: lang-none -->
+
+    ---
+    - author.author1
+    - author.author2
+    ---
+
+Giving each GitHub username. The rest of the file should be a short description of the PR, generally one or two sentences at most.
+If the changes are breaking changes (e.g. restructuring of headers) please start the text with
+
+<!--- language: lang-none -->
+
+    **Breaking**
+
 # Philosophy
 
 Why are the above steps necessary?
@@ -193,5 +232,7 @@ the Gitter forum linked below.
 [2]:    https://github.com/ILLIXR/ILLIXR/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22
 [3]:    https://redfin.engineering/git-rebasing-public-branches-works-much-better-than-youd-think-ecc9a115aea9
 [4]:    https://git-scm.com/book/en/v2/Git-Basics-Git-Aliases
+[5]:    https://www.markdownguide.org/
 
 [12]:   pull_request.md#philosophy
+[13]:   pull_request.md#pr-documentation

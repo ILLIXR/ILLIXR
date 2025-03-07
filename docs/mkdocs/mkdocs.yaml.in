@@ -58,6 +58,7 @@ nav:
         - 'Logging and Metrics': logging_and_metrics.md
         - 'ILLIXR Glossary': glossary.md
         - 'ILLIXR API': api/html/annotated.html
+        - 'Release Changelog': CHANGELOG.md
         - 'ILLIXR License': LICENSE.md
         - 'Updating Tags and Documentation': updating_tags_and_docs.md
         - 'Using Switchboard and Phonebook Externally': external_switchboard_and_phonebook.md
