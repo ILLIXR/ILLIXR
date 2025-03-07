@@ -20,8 +20,7 @@
     {
       "name": "audio_pipeline",
       "cmake_flag": "USE_AUDIO_PIPELINE=ON",
-      "dependencies": [
-      ]
+      "dependencies": []
     },
     {
       "name": "debugview",
@@ -74,14 +73,12 @@
     {
       "name": "gtsam_integrator",
       "cmake_flag": "USE_GTSAM_INTEGRATOR=ON",
-      "dependencies": [
-      ]
+      "dependencies": []
     },
     {
       "name": "hand_tracking",
       "cmake_flag": "USE_HAND_TRACKING=ON",
       "dependencies": [
-        "git",
         "libcpuinfo",
         "libgles",
         "fp16"
@@ -140,8 +137,7 @@
     {
       "name": "offload_data",
       "cmake_flag": "USE_OFFLOAD_DATA=ON",
-      "dependencies": [
-      ]
+      "dependencies": []
     },
     {
       "name": "offload_vio.device_rx",
@@ -194,8 +190,7 @@
     {
       "name": "openvins",
       "cmake_flag": "USE_OPENVINS=ON",
-      "dependencies": [
-      ]
+      "dependencies": []
     },
     {
       "name": "orb_slam3",
@@ -799,37 +794,6 @@
               "pkg": "libusb1-devel",
               "postnotes": "",
               "notes": ""
-            }
-          }
-        }
-      }
-    },
-    {
-      "libuvc": {
-        "pkg": {
-          "Ubuntu": {
-            "20": {
-              "pkg": "libuvc-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "22": {
-              "pkg": "libuvc-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "24": {
-              "pkg": "libuvc-dev",
-              "postnotes": "",
-              "notes": ""
-            }
-
-          },
-          "Fedora": {
-            "38+": {
-              "pkg": "",
-              "postnotes": "",
-              "notes": "Fedora does not supply libuvc from its repositories. You will need to install it from <a href=\"https://github.com/libuvc/libuvc\">https://github.com/libuvc/libuvc</a>."
             }
           }
         }
