@@ -20,7 +20,6 @@ else()
     set(DepthAI_EXTERNAL Yes)      # Mark that this module is being built
     set(DepthAI_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include ${CMAKE_INSTALL_PREFIX}/include/depthai-shared ${CMAKE_INSTALL_PREFIX}/include/depthai-shared/3rdparty ${CMAKE_INSTALL_PREFIX}/include/depthai ${CMAKE_INSTALL_PREFIX}/lib/cmake/depthai/dependencies/include)
     set(DepthAI_LIBRARIES depthai-core;depthai-opencv)
-    add_dependencies(cleanup_depthai_spdlog DepthAI_ext)
 
     add_custom_target(cleanup_depthai_spdlog
                       COMMAND rm -rf ${CMAKE_INSTALL_PREFIX}/lib/cmake/depthai/dependencies/include/spdlog
