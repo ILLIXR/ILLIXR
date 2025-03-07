@@ -5,11 +5,6 @@ find_package(depthai QUIET)
 
 set(DEPTHAI_CMAKE_ARGS "")
 
-# if building on CentOS make sure we use the correct OpenCV
-if(HAVE_CENTOS)
-    set(DEPTHAI_CMAKE_ARGS "-DOpenCV_DIR=${OpenCV_DIR}")
-endif()
-
 if(depthai_FOUND)
     set(DepthAI_VERSION "${depthai_VERSION}" PARENT_SCOPE)   # set current version
 else()
@@ -17,7 +12,6 @@ else()
             GIT_REPOSITORY https://github.com/luxonis/depthai-core.git   # Git repo for source code
             GIT_TAG 4ff860838726a5e8ac0cbe59128c58a8f6143c6c             # sha5 hash for specific commit to pull (if there is no specific tag to use)
             PREFIX ${CMAKE_BINARY_DIR}/_deps/depthai                     # the build directory
-            DEPENDS ${OpenCV_DEP_STR}                                    # dependencies of this module
             # the code needs to be patched to build on some systems
             PATCH_COMMAND ${PROJECT_SOURCE_DIR}/cmake/do_patch.sh -p ${PROJECT_SOURCE_DIR}/cmake/Depthai.patch
             #arguments to pass to CMake

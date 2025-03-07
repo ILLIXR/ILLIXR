@@ -33,24 +33,11 @@ set(PACKAGE_VERSION_MINOR "2")
 set(PACKAGE_VERSION_PATCH "0")
 set(PACKAGE_VERSION_LABEL "")
 
-# determine the Linux vendor, if it is CentOS then we must rebuild OpenCV to include all the needed components
-if(UNIX)
-    execute_process(COMMAND bash -c "awk -F= '/^ID=/{print $2}' /etc/os-release | tr -d '\n' | tr -d '\"'" OUTPUT_VARIABLE OS_FLAVOR)
-    message("Found OS: ${OS_FLAVOR}")
-    string(TOLOWER "${OS_FLAVOR}" OS_LOWER)
-    if(OS_LOWER STREQUAL "centos")
-        set(HAVE_CENTOS Yes)
-    else()
-        set(HAVE_CENTOS No)
-    endif()
-
-    find_package(ECM REQUIRED NO_MODULE)
-    set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
-elseif(WIN32)
+if(WIN32)
     message(FATAL_ERROR "Windows is currently not supported")
 elseif(APPLE)
     message(FATAL_ERROR "MacOS is currently not supported")
-else()
+elif(NOT UNIX)
     message(FATAL_ERROR "Unknown operating system")
 endif()
 
@@ -95,6 +82,23 @@ set(DATA_FILE "http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vico
 
 option(BUILD_DOCS "Build documentation" OFF)
 option(USE_MONADO "Build for monado use" OFF)
+option(NO_GPL "Do not build any code licensed under GPL. This will affect any generated profile files as well." OFF)
+option(NO_LGPL "Do not build any code licensed under LGPL or GPL. This will affect any generated profile files as well." OFF)
+
+set(LAST_NO_GPL "$CACHE{NO_GPL_CACHE}")
+set(LAST_NO_LGPL "$CACHE{NO_LGPL_CACHE}")
+
+if(NO_LGPL)
+    set(NO_GPL ON)
+endif()
+string(LENGTH "${LAST_NO_GPL}" GPL_LEN)
+string(LENGTH "${LAST_NO_LGPL}" LGPL_LEN)
+if((GPL_LEN EQUAL 0) OR (LGPL_LEN EQUAL 0) OR (NOT NO_GPL STREQUAL LAST_NO_GPL) OR (NOT NO_LGPL STREQUAL LAST_NO_LGPL))
+    set(FORCE_REGEN ON)
+endif()
+
+set(NO_GPL_CACHE ${NO_GPL} CACHE INTERNAL "")
+set(NO_LGPL_CACHE ${NO_LGPL} CACHE INTERNAL "")
 option(HT_ENABLE_GPU "Build for GPU use" OFF)
 if(HT_ENABLE_GPU)
     message(WARNING "Currently gpu processing for hand tracking is not available, turning it off")
@@ -181,28 +185,7 @@ add_definitions(-DILLIXR_BUILD_SUFFIX=${ILLIXR_BUILD_SUFFIX})
 ##############
 set(EXTERNAL_LIBRARIES "")
 
-##############
-# opencv
-#
-# If building on centos system, opencv must be built from scratch to get the viz module
-# which is not supplied by the centos repos
-##############
-set(BUILDING_OPENCV No)
-set(OpenCV_DEP_STR "")
-if(HAVE_CENTOS)
-    set(INTERNAL_OPENCV ${CMAKE_INSTALL_PREFIX}/lib/cmake/opencv4)
-    # see if it has been built yet
-    find_package(OpenCV QUIET PATHS ${INTERNAL_OPENCV} NO_DEFAULT_PATH NO_CMAKE_ENVIRONMENT_PATH NO_SYSTEM_ENVIRONMENT_PATH NO_CMAKE_PACKAGE_REGISTRY NO_CMAKE_SYSTEM_PATH NO_CMAKE_SYSTEM_PACKAGE_REGISTRY)
-    if(NOT OpenCV_FOUND OR NOT OPENCV_VIZ_FOUND)
-        message("Building OpenCV")
-        include(cmake/GetOpenCV_Viz.cmake)
-        set(OpenCV_DEP_STR OpenCV_Viz)
-        set(INTERNAL_OPENCV ${OpenCV_DIR})
-        set(BUILD_OPENCV Yes)
-    endif()
-else()
-    find_package(OpenCV 4 REQUIRED)
-endif()
+find_package(OpenCV 4 REQUIRED)
 
 find_package(GLEW REQUIRED)
 

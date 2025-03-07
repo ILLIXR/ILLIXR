@@ -22,11 +22,6 @@ set(DEBUGVIEW_SOURCES plugin.cpp
 
 add_library(${PLUGIN_NAME} SHARED ${DEBUGVIEW_SOURCES})
 
-# if building on CentOS make sure we use the correct OpenCV
-if(BUILD_OPENCV)
-    add_dependencies(${PLUGIN_NAME} OpenCV_Viz)
-endif()
-
 target_include_directories(${PLUGIN_NAME} PRIVATE ${OpenCV_INCLUDE_DIRS} ${CMAKE_SOURCE_DIR}/include ${Eigen3_INCLUDE_DIRS})
 target_link_libraries(${PLUGIN_NAME} ${OpenCV_LIBRARIES} ${Eigen3_LIBRARIES} dl ${GLEW_LIBRARIES} Threads::Threads spdlog::spdlog)
 target_compile_features(${PLUGIN_NAME} PRIVATE cxx_std_17)
