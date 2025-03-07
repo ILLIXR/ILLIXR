@@ -36,7 +36,7 @@ function(generate_yaml)
 
     file(TIMESTAMP "${PROJECT_SOURCE_DIR}/plugins/plugins.yaml" PROFILE_FILE_TIMESTAMP "%s" UTC)
 
-    if(DEFINED CACHE{LAST_YAML_BUILD} AND DEFINED CACHE{PLUGIN_LIST})
+    if(NOT FORCE_REGEN AND DEFINED CACHE{LAST_YAML_BUILD} AND DEFINED CACHE{PLUGIN_LIST})
         message("Using cached profile yaml files")
     else()
         set(LAST_YAML_BUILD "0" CACHE INTERNAL "")
