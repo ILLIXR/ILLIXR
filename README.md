@@ -203,7 +203,6 @@ The external libraries and software included in ILLIXR each have their own licen
 | [Monado integration][P9]           | [Boost v1][L9]                         |
 | [Monado Vulkan Integration][P10]   | [Boost v1][L10]                        |
 | [moodycamel::ConcurrentQueue][P30] | [BSD-2 clause][L30]<SUP>2</SUP>        |
-| [OpenCV][P11]                      | [BSD-3 clause][L11]                    |
 | [Open-VINS][P35]                   | [GNU General Public License v3.0][L35] |
 | [OpenXR][P12]                      | [Boost v1][L12]                        |
 | [PortAudio][P13]                   | [MIT][L13]                             |
@@ -265,6 +264,15 @@ You can join
 [9]:    http://rsim.cs.illinois.edu
 [10]:   https://monado.dev
 [11]:   https://research.fb.com/programs/openeds-challenge
+[12]:   https://github.com/rpng/open_vins
+[13]:   https://www.gnu.org/licenses/gpl-3.0.html
+[15]:   https://github.com/luxonis/depthai-core
+[16]:   https://github.com/luxonis/depthai-core/blob/main/LICENSE
+[18]:   https://github.com/videolabs/libspatialaudio
+[19]:   https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+[21]:   https://www.gnu.org/licenses/lgpl-3.0.html
+[22]:   https://gitlab.freedesktop.org/monado/monado
+[23]:   https://choosealicense.com/licenses/bsl-1.0
 [24]:   https://gitter.im/ILLIXR/community
 [25]:   https://github.com/ILLIXR/ILLIXR/releases
 [26]:   https://www.khronos.org/openxr
@@ -275,7 +283,6 @@ You can join
 [37]:   http://illixr.org
 [38]:   https://github.com/ILLIXR/ILLIXR
 [39]:   https://github.com/ILLIXR/ILLIXR/releases/tag/v3.1.0
-[40]:   https://github.com/ILLIXR/KinectFusionApp/tree/illixr-integration
 [41]:   https://github.com/ILLIXR/ILLIXR/tree/master/realsense
 [42]:   https://www.stereolabs.com/zed-mini/
 [43]:   https://youtu.be/ZY98lWksnpM
@@ -285,6 +292,19 @@ You can join
 [48]:   mailto:lists@lists.cs.illinois.edu?subject=sub%20illixr-community
 [49]:   mailto:illixr@cs.illinois.edu
 [50]:   https://illixr.org/open_meetings
+[51]:   https://ffmpeg.org/
+[52]:   https://github.com/ILLIXR/opencv
+[53]:   https://github.com/opencv/opencv/blob/4.x/LICENSE
+[54]:   https://github.com/ILLIXR/Monado_OpenXR_Simple_Example
+[56]:   https://github.com/PortAudio/portaudio
+[57]:   https://github.com/PortAudio/portaudio/blob/master/LICENSE.txt
+[58]:   https://github.com/jbeder/yaml-cpp
+[59]:   https://github.com/jbeder/yaml-cpp/blob/master/LICENSE
+[60]:   https://github.com/KhronosGroup
+[61]:   https://choosealicense.com/licenses/apache-2.0/
+[62]:   https://choosealicense.com/licenses/mit/
+[71]:   https://github.com/google-ai-edge/mediapipe
+[72]:   https://github.com/google-ai-edge/mediapipe/blob/master/LICENSE
 
 
 [//]: # (- Third Party Packages -)

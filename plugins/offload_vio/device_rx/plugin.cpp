@@ -11,62 +11,36 @@ using namespace ILLIXR::data_format;
     : threadloop{name, pb}
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
     , clock_{phonebook_->lookup_impl<relative_clock>()}
+    , vio_pose_reader_{switchboard_->get_buffered_reader<switchboard::event_wrapper<std::string>>("vio_pose")}
     , pose_{switchboard_->get_writer<pose_type>("slow_pose")}
-    , imu_integrator_input_{switchboard_->get_writer<imu_integrator_input>("imu_integrator_input")}
-    , server_ip_(SERVER_IP)
-    , server_port_(SERVER_PORT_2) {
+    , imu_integrator_input_{switchboard_->get_writer<imu_integrator_input>("imu_integrator_input")} {
     spdlogger(switchboard_->get_env_char("OFFLOAD_VIO_LOG_LEVEL"));
     pose_type                   datum_pose_tmp{time_point{}, Eigen::Vector3f{0, 0, 0}, Eigen::Quaternionf{1, 0, 0, 0}};
     switchboard::ptr<pose_type> datum_pose = pose_.allocate<pose_type>(std::move(datum_pose_tmp));
     pose_.put(std::move(datum_pose));
-
-    socket_.socket_set_reuseaddr();
-    socket_.socket_bind(CLIENT_IP, CLIENT_PORT_2);
-    socket_.enable_no_delay();
-    is_socket_connected_ = false;
 }
 
 ILLIXR::threadloop::skip_option offload_reader::_p_should_skip() {
-    if (!is_socket_connected_) {
-#ifndef NDEBUG
-        spdlog::get(name_)->debug("[offload_vio.device_rx]: Connecting to {}:{}", server_ip_, server_port_);
-#endif
-        socket_.socket_connect(server_ip_, server_port_);
-#ifndef NDEBUG
-        spdlog::get(name_)->debug("[offload_vio.device_rx]: Connected to {}:{}", server_ip_, server_port_);
-#endif
-        is_socket_connected_ = true;
-    }
     return skip_option::run;
 }
 
 void offload_reader::_p_one_iteration() {
-    if (is_socket_connected_) {
-        // auto        now        = timestamp();
-        std::string delimiter = "END!";
-        std::string recv_data = socket_.read_data(); /* Blocking operation, wait for the data to come */
-        if (!recv_data.empty()) {
-            buffer_str_                         = buffer_str_ + recv_data;
-            std::string::size_type end_position = buffer_str_.find(delimiter);
-            while (end_position != std::string::npos) {
-                std::string before = buffer_str_.substr(0, end_position);
-                buffer_str_        = buffer_str_.substr(end_position + delimiter.size());
-                // process the data
-                vio_output_proto::VIOOutput vio_output;
-                bool                        success = vio_output.ParseFromString(before);
-                if (success) {
-                    receive_vio_output(vio_output, before);
-                } else {
-                    spdlog::get(name_)->error("[offload_vio.device_rx: Cannot parse VIO output!!");
-                }
-                end_position = buffer_str_.find(delimiter);
-            }
+    if (vio_pose_reader_.size() > 0) {
+        auto                   buffer_ptr   = vio_pose_reader_.dequeue();
+        std::string            buffer_str   = **buffer_ptr;
+        std::string::size_type end_position = buffer_str.find(delimiter);
+        // process the data
+        vio_output_proto::VIOOutput vio_output;
+        bool                        success = vio_output.ParseFromString(buffer_str.substr(0, end_position));
+        if (success) {
+            receive_vio_output(vio_output);
+        } else {
+            spdlog::get(name_)->error("[offload_vio.device_rx: Cannot parse VIO output!!");
         }
     }
 }
 
-void offload_reader::receive_vio_output(const vio_output_proto::VIOOutput& vio_output, const std::string& str_data) {
-    (void) str_data;
+void offload_reader::receive_vio_output(const vio_output_proto::VIOOutput& vio_output) {
     const vio_output_proto::SlowPose& slow_pose = vio_output.slow_pose();
 
     pose_type datum_pose_tmp{

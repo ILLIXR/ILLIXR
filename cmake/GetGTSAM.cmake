@@ -1,9 +1,10 @@
 # CMake module to look for GTSAM
 # if it is not found then it is downloaded and marked for compilation and install
 
-find_package(GTSAM 4.3.0 EXACT QUIET)
+find_package(GTSAM 4.3.0 QUIET EXACT)
 
 if(NOT GTSAM_FOUND)
+    message("GTSAM NOT FOUND - building from source")
     EXTERNALPROJECT_ADD(GTSAM_EXT
             GIT_REPOSITORY https://github.com/ILLIXR/gtsam.git   # Git repo for source code
             GIT_TAG 135f09fe08f749596a03d4d018387f4590f826c1     # sha5 hash for specific commit to pull (if there is no specific tag to use)
