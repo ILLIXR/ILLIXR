@@ -9,9 +9,7 @@
     {
       "name": "Ubuntu",
       "versions": [
-        "20",
-        "22",
-        "24"
+        "22, 24"
       ]
     }
 
@@ -21,28 +19,27 @@
       "name": "audio_pipeline",
       "cmake_flag": "USE_AUDIO_PIPELINE=ON",
       "dependencies": [
+        "portaudio",
+        "spatialaudio"
       ]
     },
     {
       "name": "debugview",
       "cmake_flag": "USE_DEBUGVIEW=ON",
       "dependencies": [
-        "glfw3",
-        "OpenCV"
+        "glfw3"
       ]
     },
     {
       "name": "depthai",
       "cmake_flag": "USE_DEPTHAI=ON",
       "dependencies": [
-        "OpenCV"
       ]
     },
     {
       "name": "display_vk",
       "cmake_flag": "USE_DISPLAY_VK=ON",
       "dependencies": [
-        "OpenCV",
         "Vulkan",
         "glfw3",
         "glm",
@@ -91,7 +88,6 @@
       "name": "hand_tracking.viewer",
       "cmake_flag": "USE_HAND_TRACKING.VIEWER=ON",
       "dependencies": [
-        "OpenCV",
         "glfw3"
       ]
     },
@@ -99,14 +95,12 @@
       "name": "webcam",
       "cmake_flag": "USE_WEBCAM=ON",
       "dependencies": [
-        "OpenCV"
       ]
     },
     {
       "name": "native_renderer",
       "cmake_flag": "USE_NATIVE_RENDERER=ON",
       "dependencies": [
-        "OpenCV",
         "Vulkan",
         "glfw3",
         "glm",
@@ -129,7 +123,6 @@
       "name": "offline_cam",
       "cmake_flag": "USE_OFFLINE_CAM=ON",
       "dependencies": [
-        "OpenCV"
       ]
     },
     {
@@ -148,8 +141,7 @@
       "cmake_flag": "USE_OFFLOAD_VIO.DEVICE_RX=ON",
       "dependencies": [
         "ecal",
-        "protobuf",
-        "OpenCV"
+        "protobuf"
       ]
     },
     {
@@ -159,8 +151,7 @@
         "glib",
         "gstreamer",
         "ecal",
-        "protobuf",
-        "OpenCV"
+        "protobuf"
       ]
     },
     {
@@ -168,8 +159,7 @@
       "cmake_flag": "USE_OFFLOAD_VIO.SERVER_TX=ON",
       "dependencies": [
         "ecal",
-        "protobuf",
-        "OpenCV"
+        "protobuf"
       ]
     },
     {
@@ -179,16 +169,14 @@
         "glib",
         "gstreamer",
         "ecal",
-        "protobuf",
-        "OpenCV"
+        "protobuf"
       ]
     },
     {
       "name": "openni",
       "cmake_flag": "USE_OPENNI=ON",
       "dependencies": [
-        "libopenni2",
-        "OpenCV"
+        "libopenni2"
       ]
     },
     {
@@ -224,7 +212,6 @@
       "name": "realsense",
       "cmake_flag": "USE_REALSENSE=ON",
       "dependencies": [
-        "OpenCV",
         "realsense"
       ]
     },
@@ -232,14 +219,12 @@
       "name": "record_imu_cam",
       "cmake_flag": "USE_RECORD_IMU_CAM=ON",
       "dependencies": [
-        "OpenCV"
       ]
     },
     {
       "name": "record_rgb_depth",
       "cmake_flag": "USE_RECORD_RGB_DEPTH=ON",
       "dependencies": [
-        "OpenCV"
       ]
     },
     {
@@ -273,7 +258,6 @@
       "name": "timewarp_vk",
       "cmake_flag": "USE_TIMEWARP_VK=ON",
       "dependencies": [
-        "OpenCV",
         "Vulkan",
         "glfw3",
         "glm",
@@ -296,7 +280,6 @@
       "name": "vkdemo",
       "cmake_flag": "USE_VKDEMO=ON",
       "dependencies": [
-        "OpenCV",
         "Vulkan",
         "glfw3",
         "glm",
@@ -319,7 +302,7 @@
       "name": "zed",
       "cmake_flag": "USE_ZED=ON",
       "dependencies": [
-        "OpenCV",
+        "zstd",
         "zed_SDK"
       ]
     },
@@ -337,28 +320,14 @@
       "ecal": {
         "pkg": {
           "Ubuntu": {
-            "20": {
-              "pkg": "ecal",
-              "postnotes": "",
-              "notes": "Ubuntu 20 does not have a system supplied package for eCAL, but it can be installed from the vendor by adding the following repo to your system:<div class=\"code-box-copy\">\n<button class=\"code-box-copy__btn\" data-clipboard-target=\"#ecal20\" title=\"Copy\"></button><pre class=\"language-shell\" id=\"ecal20\">sudo add-apt-repository ppa:ecal/ecal-latest -y -u\nsudo apt-get update</pre></div>"
-            },
-            "22": {
-              "pkg": "ecal",
-              "postnotes": "",
-              "notes": "Ubuntu 22 does not have a system supplied package for eCAL, but it can be installed from the vendor by adding the following repo to your system:<div class=\"code-box-copy\">\n<button class=\"code-box-copy__btn\" data-clipboard-target=\"#ecal22\" title=\"Copy\"></button><pre class=\"language-shell\" id=\"ecal22\">sudo add-apt-repository ppa:ecal/ecal-latest -y -u\nsudo apt-get update</pre></div>"
-            },
-            "24": {
-              "pkg": "ecal",
-              "postnotes": "",
-              "notes": "Ubuntu 24 does not have a system supplied package for eCAL, but it can be installed from the vendor by adding the following repo to your system:<div class=\"code-box-copy\">\n<button class=\"code-box-copy__btn\" data-clipboard-target=\"#ecal24\" title=\"Copy\"></button><pre class=\"language-shell\" id=\"ecal24\">sudo add-apt-repository ppa:ecal/ecal-latest -y -u\nsudo apt-get update</pre></div>"
-            }
+            "pkg": "ecal",
+            "postnotes": "",
+            "notes": "Ubuntu does not have a system supplied package for eCAL, but it can be installed from the vendor by adding the following repo to your system:<div class=\"code-box-copy\">\n<button class=\"code-box-copy__btn\" data-clipboard-target=\"#ecal22\" title=\"Copy\"></button><pre class=\"language-shell\" id=\"ecal22\">sudo add-apt-repository ppa:ecal/ecal-latest -y -u\nsudo apt-get update</pre></div>"
           },
           "Fedora": {
-            "38+": {
-              "pkg": "graphviz hdf5-devel libcurl-devel qwt-qt5-devel qt5-qtbase-devel libyaml-devel zlib-devel openssl-devel",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "graphviz hdf5-devel libcurl-devel qwt-qt5-devel qt5-qtbase-devel libyaml-devel zlib-devel openssl-devel",
+            "postnotes": "",
+            "notes": ""
           }
         }
       }
@@ -367,28 +336,14 @@
       "fmt": {
         "pkg": {
           "Ubuntu": {
-            "20": {
-              "pkg": "libfmt-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "22": {
-              "pkg": "libfmt-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "24": {
-              "pkg": "libfmt-dev",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "libfmt-dev",
+            "postnotes": "",
+            "notes": ""
           },
           "Fedora": {
-            "38+": {
-              "pkg": "fmt-devel",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "fmt-devel",
+            "postnotes": "",
+            "notes": ""
           }
         }
       }
@@ -434,28 +389,14 @@
       "gflags": {
         "pkg": {
           "Ubuntu": {
-            "20": {
-              "pkg": "libgflags-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "22": {
-              "pkg": "libgflags-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "24": {
-              "pkg": "libgflags-dev",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "libgflags-dev",
+            "postnotes": "",
+            "notes": ""
           },
           "Fedora": {
-            "38+": {
-              "pkg": "gflags-devel",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "gflags-devel",
+            "postnotes": "",
+            "notes": ""
           }
         }
       }
@@ -464,28 +405,14 @@
       "glfw3": {
         "pkg": {
           "Ubuntu": {
-            "20": {
-              "pkg": "libglfw3-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "22": {
-              "pkg": "libglfw3-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "24": {
-              "pkg": "libglfw3-dev",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "libglfw3-dev",
+            "postnotes": "",
+            "notes": ""
           },
           "Fedora": {
-            "38+": {
-              "pkg": "glfw-devel",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "glfw-devel",
+            "postnotes": "",
+            "notes": ""
           }
         }
       }
@@ -494,28 +421,14 @@
       "glib": {
         "pkg": {
           "Ubuntu": {
-            "20": {
-              "pkg": "libglib2.0-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "22": {
-              "pkg": "libglib2.0-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "24": {
-              "pkg": "libglib2.0-dev",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "libglib2.0-dev",
+            "postnotes": "",
+            "notes": ""
           },
           "Fedora": {
-            "38+": {
-              "pkg": "glib-devel",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "glib-devel",
+            "postnotes": "",
+            "notes": ""
           }
         }
       }
@@ -524,28 +437,14 @@
       "glm": {
         "pkg": {
           "Ubuntu": {
-            "20": {
-              "pkg": "libglm-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "22": {
-              "pkg": "libglm-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "24": {
-              "pkg": "libglm-dev",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "libglm-dev",
+            "postnotes": "",
+            "notes": ""
           },
           "Fedora": {
-            "38+": {
-              "pkg": "glm-devel",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "glm-devel",
+            "postnotes": "",
+            "notes": ""
           }
         }
       }
@@ -554,28 +453,14 @@
       "glog": {
         "pkg": {
           "Ubuntu": {
-            "20": {
-              "pkg": "libgoogle-glog-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "22": {
-              "pkg": "libgoogle-glog-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "24": {
-              "pkg": "libgoogle-glog-dev",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "libgoogle-glog-dev",
+            "postnotes": "",
+            "notes": ""
           },
           "Fedora": {
-            "38+": {
-              "pkg": "glog-devel",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "glog-devel",
+            "postnotes": "",
+            "notes": ""
           }
         }
       }
@@ -584,28 +469,14 @@
       "glslang": {
         "pkg": {
           "Ubuntu": {
-            "20": {
-              "pkg": "glslang-dev glslang-tools",
-              "postnotes": "",
-              "notes": ""
-            },
-            "22": {
-              "pkg": "glslang-dev glslang-tools",
-              "postnotes": "",
-              "notes": ""
-            },
-            "24": {
-              "pkg": "glslang-dev glslang-tools",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "glslang-dev glslang-tools",
+            "postnotes": "",
+            "notes": ""
           },
           "Fedora": {
-            "38+": {
-              "pkg": "glslang-devel",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "glslang-devel",
+            "postnotes": "",
+            "notes": ""
           }
         }
       }
@@ -614,28 +485,14 @@
       "gstreamer": {
         "pkg": {
           "Ubuntu": {
-            "20": {
-              "pkg": "libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "22": {
-              "pkg": "libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "24": {
-              "pkg": "libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev",
+            "postnotes": "",
+            "notes": ""
           },
           "Fedora": {
-            "38+": {
-              "pkg": "gstreamer-devel gstreamer1-plugins-base-devel",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "gstreamer-devel gstreamer1-plugins-base-devel",
+            "postnotes": "",
+            "notes": ""
           }
         }
       }
@@ -644,28 +501,14 @@
       "JPEG": {
         "pkg": {
           "Ubuntu": {
-            "20": {
-              "pkg": "libjpeg-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "22": {
-              "pkg": "libjpeg-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "24": {
-              "pkg": "libjpeg-dev",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "libjpeg-dev",
+            "postnotes": "",
+            "notes": ""
           },
           "Fedora": {
-            "38+": {
-              "pkg": "libjpeg-turbo-devel",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "libjpeg-turbo-devel",
+            "postnotes": "",
+            "notes": ""
           }
         }
       }
@@ -748,28 +591,14 @@
       "libopenni2": {
         "pkg": {
           "Ubuntu": {
-            "20": {
-              "pkg": "libopenni2-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "22": {
-              "pkg": "libopenni2-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "24": {
-              "pkg": "libopenni2-dev",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "libopenni2-dev",
+            "postnotes": "",
+            "notes": ""
           },
           "Fedora": {
-            "38+": {
-              "pkg": "openni-devel",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "openni-devel",
+            "postnotes": "",
+            "notes": ""
           }
         }
       }
@@ -778,28 +607,14 @@
       "libusb": {
         "pkg": {
           "Ubuntu": {
-            "20": {
-              "pkg": "libusb-1.0.0-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "22": {
-              "pkg": "libusb-1.0.0-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "24": {
-              "pkg": "libusb-1.0.0-dev",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "libusb-1.0.0-dev",
+            "postnotes": "",
+            "notes": ""
           },
           "Fedora": {
-            "38+": {
-              "pkg": "libusb1-devel",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "libusb1-devel",
+            "postnotes": "",
+            "notes": ""
           }
         }
       }
@@ -808,89 +623,14 @@
       "libuvc": {
         "pkg": {
           "Ubuntu": {
-            "20": {
-              "pkg": "libuvc-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "22": {
-              "pkg": "libuvc-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "24": {
-              "pkg": "libuvc-dev",
-              "postnotes": "",
-              "notes": ""
-            }
-
+            "pkg": "libuvc-dev",
+            "postnotes": "",
+            "notes": ""
           },
           "Fedora": {
-            "38+": {
-              "pkg": "",
-              "postnotes": "",
-              "notes": "Fedora does not supply libuvc from its repositories. You will need to install it from <a href=\"https://github.com/libuvc/libuvc\">https://github.com/libuvc/libuvc</a>."
-            }
-          }
-        }
-      }
-    },
-    {
-      "libuvc": {
-        "pkg": {
-          "Ubuntu": {
-            "20": {
-              "pkg": "libuvc-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "22": {
-              "pkg": "libuvc-dev",
-              "postnotes": "",
-              "notes": ""
-            }
-          },
-          "Fedora": {
-            "37": {
-              "pkg": "",
-              "postnotes": "",
-              "notes": "Fedora does not supply libuvc from its repositories. You will need to install it from <a href=\"https://github.com/libuvc/libuvc\">https://github.com/libuvc/libuvc</a>."
-            },
-            "38": {
-              "pkg": "",
-              "postnotes": "",
-              "notes": "Fedora does not supply libuvc from its repositories. You will need to install it from <a href=\"https://github.com/libuvc/libuvc\">https://github.com/libuvc/libuvc</a>."
-            }
-          }
-        }
-      }
-    },
-    {
-      "OpenCV": {
-        "pkg": {
-          "Ubuntu": {
-            "20": {
-              "pkg": "libopencv-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "22": {
-              "pkg": "libopencv-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "24": {
-              "pkg": "libopencv-dev",
-              "postnotes": "",
-              "notes": ""
-            }
-          },
-          "Fedora": {
-            "38+": {
-              "pkg": "opencv-devel",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "",
+            "postnotes": "",
+            "notes": "Fedora does not supply libuvc from its repositories. You will need to install it from <a href=\"https://github.com/libuvc/libuvc\">https://github.com/libuvc/libuvc</a>."
           }
         }
       }
@@ -899,28 +639,14 @@
       "OpenXR": {
         "pkg": {
           "Ubuntu": {
-            "20": {
-              "pkg": "libopenxr-dev",
-              "postnotes": "",
-              "notes": "Ubuntu 20 does not have a system supplied package for the OpenXR libraries. You can download and install them from <a href=\"https://github.com/KhronosGroup/OpenXR-SDK\">github.com/KhronosGroup/OpenXR-SDK</a>. Specifically, you will need to build and install the OpenXR loader library."
-            },
-            "22": {
-              "pkg": "libopenxr-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "24": {
-              "pkg": "libopenxr-dev",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "libopenxr-dev libopenxr1-monado",
+            "postnotes": "",
+            "notes": ""
           },
           "Fedora": {
-            "38+": {
-              "pkg": "openxr-devel",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "openxr-devel",
+            "postnotes": "",
+            "notes": ""
           }
         }
       }
@@ -929,28 +655,14 @@
       "patch": {
         "pkg": {
           "Ubuntu": {
-            "20": {
-              "pkg": "patch",
-              "postnotes": "",
-              "notes": ""
-            },
-            "22": {
-              "pkg": "patch",
-              "postnotes": "",
-              "notes": ""
-            },
-            "24": {
-              "pkg": "patch",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "patch",
+            "postnotes": "",
+            "notes": ""
           },
           "Fedora": {
-            "38+": {
-              "pkg": "patch",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "patch",
+            "postnotes": "",
+            "notes": ""
           }
         }
       }
@@ -959,28 +671,30 @@
       "PNG": {
         "pkg": {
           "Ubuntu": {
-            "20": {
-              "pkg": "libpng-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "22": {
-              "pkg": "libpng-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "24": {
-              "pkg": "libpng-dev",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "libpng-dev",
+            "postnotes": "",
+            "notes": ""
           },
           "Fedora": {
-            "38+": {
-              "pkg": "libpng-devel",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "libpng-devel",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "portaudio": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "portaudio19-dev",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "portaudio-devel",
+            "postnotes": "",
+            "notes": ""
           }
         }
       }
@@ -989,28 +703,14 @@
       "protobuf": {
         "pkg": {
           "Ubuntu": {
-            "20": {
-              "pkg": "libprotobuf-dev libprotoc-dev protobuf-compiler",
-              "postnotes": "",
-              "notes": ""
-            },
-            "22": {
-              "pkg": "libprotobuf-dev libprotoc-dev protobuf-compiler",
-              "postnotes": "",
-              "notes": ""
-            },
-            "24": {
-              "pkg": "libprotobuf-dev libprotoc-dev protobuf-compiler",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "libprotobuf-dev libprotoc-dev protobuf-compiler",
+            "postnotes": "",
+            "notes": ""
           },
           "Fedora": {
-            "38+": {
-              "pkg": "protobuf-devel protobuf-compiler",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "protobuf-devel protobuf-compiler",
+            "postnotes": "",
+            "notes": ""
           }
         }
       }
@@ -1019,28 +719,14 @@
       "qemu": {
         "pkg": {
           "Ubuntu": {
-            "20": {
-              "pkg": "qemu qemu-system qemu-system-data qeum-utils qemu-user libqcow-dev libqcow-utils",
-              "postnotes": "",
-              "notes": ""
-            },
-            "22": {
-              "pkg": "qemu qemu-system qemu-system-data qeum-utils qemu-user libqcow-dev libqcow-utils",
-              "postnotes": "",
-              "notes": ""
-            },
-            "24": {
-              "pkg": "qemu qemu-system qemu-system-data qeum-utils qemu-user libqcow-dev libqcow-utils",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "qemu qemu-system qemu-system-data qeum-utils qemu-user libqcow-dev libqcow-utils",
+            "postnotes": "",
+            "notes": ""
           },
           "Fedora": {
-            "38+": {
-              "pkg": "??",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "??",
+            "postnotes": "",
+            "notes": ""
           }
         }
       }
@@ -1049,28 +735,14 @@
       "realsense": {
         "pkg": {
           "Ubuntu": {
-            "20": {
-              "pkg": "librealsense2-dev librealsense2-gl-dev",
-              "postnotes": "",
-              "notes": "Ubuntu does not have a system supplied package for librealsense, but it can be installed from the vendor (Intel) by adding the following repo to your system:<div class=\"code-box-copy\">\n<button class=\"code-box-copy__btn\" data-clipboard-target=\"#realU20\" title=\"Copy\"></button><pre class=\"language-shell\" id=\"realU20\">sudo apt-get -y install curl apt-transport-https lsb-core\nsudo mkdir -p /etc/apt/keyrings\ncurl -sSf https://librealsense.intel.com/Debian/librealsense.pgp | sudo tee /etc/apt/keyrings/librealsense.pgp > /dev/null\necho \"deb [signed-by=/etc/apt/keyrings/librealsense.pgp] https://librealsense.intel.com/Debian/apt-repo `lsb_release -cs` main\" | sudo tee /etc/apt/sources.list.d/librealsense.list > /dev/null\nsudo apt-get update</pre></div>"
-            },
-            "22": {
-              "pkg": "librealsense2-dev librealsense2-gl-dev",
-              "postnotes": "",
-              "notes": "Ubuntu does not have a system supplied package for librealsense, but it can be installed from the vendor (Intel) by adding the following repo to your system:<div class=\"code-box-copy\">\n<button class=\"code-box-copy__btn\" data-clipboard-target=\"#realU22\" title=\"Copy\"></button><pre class=\"language-shell\" id=\"realU22\">sudo apt-get -y install curl apt-transport-https lsb-core\nsudo mkdir -p /etc/apt/keyrings\ncurl -sSf https://librealsense.intel.com/Debian/librealsense.pgp | sudo tee /etc/apt/keyrings/librealsense.pgp > /dev/null\necho \"deb [signed-by=/etc/apt/keyrings/librealsense.pgp] https://librealsense.intel.com/Debian/apt-repo `lsb_release -cs` main\" | sudo tee /etc/apt/sources.list.d/librealsense.list > /dev/null\nsudo apt-get update</pre></div>"
-            },
-            "24": {
-              "pkg": "librealsense2-dev librealsense2-gl-dev",
-              "postnotes": "",
-              "notes": "Ubuntu does not have a system supplied package for librealsense, but it can be installed from the vendor (Intel) by adding the following repo to your system:<div class=\"code-box-copy\">\n<button class=\"code-box-copy__btn\" data-clipboard-target=\"#realU24\" title=\"Copy\"></button><pre class=\"language-shell\" id=\"realU24\">sudo apt-get -y install curl apt-transport-https lsb-core\nsudo mkdir -p /etc/apt/keyrings\ncurl -sSf https://librealsense.intel.com/Debian/librealsense.pgp | sudo tee /etc/apt/keyrings/librealsense.pgp > /dev/null\necho \"deb [signed-by=/etc/apt/keyrings/librealsense.pgp] https://librealsense.intel.com/Debian/apt-repo `lsb_release -cs` main\" | sudo tee /etc/apt/sources.list.d/librealsense.list > /dev/null\nsudo apt-get update</pre></div>"
-            }
+            "pkg": "librealsense2-dev librealsense2-gl-dev",
+            "postnotes": "",
+            "notes": "Ubuntu does not have a system supplied package for librealsense, but it can be installed from the vendor (Intel) by adding the following repo to your system:<div class=\"code-box-copy\">\n<button class=\"code-box-copy__btn\" data-clipboard-target=\"#realU22\" title=\"Copy\"></button><pre class=\"language-shell\" id=\"realU22\">sudo apt-get -y install curl apt-transport-https lsb-core\nsudo mkdir -p /etc/apt/keyrings\nsudo curl -sSf https://librealsense.intel.com/Debian/librealsense.pgp | tee /etc/apt/keyrings/librealsense.pgp > /dev/null\nsudo echo \"deb [signed-by=/etc/apt/keyrings/librealsense.pgp] https://librealsense.intel.com/Debian/apt-repo `lsb_release -cs` main\" | tee /etc/apt/sources.list.d/librealsense.list > /dev/null\nsudo apt-get update</pre></div>"
           },
           "Fedora": {
-            "38+": {
-              "pkg": "librealsense-devel",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "librealsense-devel",
+            "postnotes": "",
+            "notes": ""
           }
         }
       }
@@ -1079,28 +751,30 @@
       "SDL2": {
         "pkg": {
           "Ubuntu": {
-            "20": {
-              "pkg": "libsdl2-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "22": {
-              "pkg": "libsdl2-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "24": {
-              "pkg": "libsdl2-dev",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "libsdl2-dev",
+            "postnotes": "",
+            "notes": ""
           },
           "Fedora": {
-            "38+": {
-              "pkg": "SDL2-devel",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "SDL2-devel",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "spatialaudio": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "libspatialaudio-dev",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "libspatialaudio-devel",
+            "postnotes": "",
+            "notes": ""
           }
         }
       }
@@ -1109,28 +783,14 @@
       "TIFF": {
         "pkg": {
           "Ubuntu": {
-            "20": {
-              "pkg": "libtiff-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "22": {
-              "pkg": "libtiff-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "24": {
-              "pkg": "libtiff-dev",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "libtiff-dev",
+            "postnotes": "",
+            "notes": ""
           },
           "Fedora": {
-            "38+": {
-              "pkg": "libtiff-devel",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "libtiff-devel",
+            "postnotes": "",
+            "notes": ""
           }
         }
       }
@@ -1139,28 +799,14 @@
       "udev": {
         "pkg": {
           "Ubuntu": {
-            "20": {
-              "pkg": "udev libudev-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "22": {
-              "pkg": "udev libudev-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "24": {
-              "pkg": "udev libudev-dev",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "udev libudev-dev",
+            "postnotes": "",
+            "notes": ""
           },
           "Fedora": {
-            "38+": {
-              "pkg": "systemd-udev systemd-devel",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "systemd-udev systemd-devel",
+            "postnotes": "",
+            "notes": ""
           }
         }
       }
@@ -1169,28 +815,14 @@
       "Vulkan": {
         "pkg": {
           "Ubuntu": {
-            "20": {
-              "pkg": "libvulkan-dev vulkan-validationlayers",
-              "postnotes": "",
-              "notes": ""
-            },
-            "22": {
-              "pkg": "libvulkan-dev vulkan-validationlayers",
-              "postnotes": "",
-              "notes": ""
-            },
-            "24": {
-              "pkg": "libvulkan-dev vulkan-validationlayers",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "libvulkan-dev vulkan-validationlayers",
+            "postnotes": "",
+            "notes": ""
           },
           "Fedora": {
-            "38+": {
-              "pkg": "vulkan-loader-devel vulkan-validation-layers",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "vulkan-loader-devel vulkan-validation-layers",
+            "postnotes": "",
+            "notes": ""
           }
         }
       }
@@ -1199,28 +831,14 @@
       "wayland-server": {
         "pkg": {
           "Ubuntu": {
-            "20": {
-              "pkg": "libwayland-dev wayland-protocols",
-              "postnotes": "",
-              "notes": ""
-            },
-            "22": {
-              "pkg": "libwayland-dev wayland-protocols",
-              "postnotes": "",
-              "notes": ""
-            },
-            "24": {
-              "pkg": "libwayland-dev wayland-protocols",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "libwayland-dev wayland-protocols",
+            "postnotes": "",
+            "notes": ""
           },
           "Fedora": {
-            "38+": {
-              "pkg": "wayland-devel wayland-protocols-devel",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "wayland-devel wayland-protocols-devel",
+            "postnotes": "",
+            "notes": ""
           }
         }
       }
@@ -1229,28 +847,14 @@
       "x11-xcb": {
         "pkg": {
           "Ubuntu": {
-            "20": {
-              "pkg": "libx11-xcb-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "22": {
-              "pkg": "libx11-xcb-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "24": {
-              "pkg": "libx11-xcb-dev",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "libx11-xcb-dev",
+            "postnotes": "",
+            "notes": ""
           },
           "Fedora": {
-            "38+": {
-              "pkg": "libX11-xcb libxcb-devel",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "libX11-xcb libxcb-devel",
+            "postnotes": "",
+            "notes": ""
           }
         }
       }
@@ -1259,28 +863,14 @@
       "xcb-glx": {
         "pkg": {
           "Ubuntu": {
-            "20": {
-              "pkg": "libxcb-glx0-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "22": {
-              "pkg": "libxcb-glx0-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "24": {
-              "pkg": "libxcb-glx0-dev",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "libxcb-glx0-dev",
+            "postnotes": "",
+            "notes": ""
           },
           "Fedora": {
-            "38+": {
-              "pkg": "",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "",
+            "postnotes": "",
+            "notes": ""
           }
         }
       }
@@ -1289,28 +879,14 @@
       "xcb-randr": {
         "pkg": {
           "Ubuntu": {
-            "20": {
-              "pkg": "libxcb-randr0-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "22": {
-              "pkg": "libxcb-randr0-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "24": {
-              "pkg": "libxcb-randr0-dev",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "libxcb-randr0-dev",
+            "postnotes": "",
+            "notes": ""
           },
           "Fedora": {
-            "38+": {
-              "pkg": "",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "",
+            "postnotes": "",
+            "notes": ""
           }
         }
       }
@@ -1319,28 +895,14 @@
       "xkbcommon": {
         "pkg": {
           "Ubuntu": {
-            "20": {
-              "pkg": "libxkbcommon-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "22": {
-              "pkg": "libxkbcommon-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "24": {
-              "pkg": "libxkbcommon-dev",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "libxkbcommon-dev",
+            "postnotes": "",
+            "notes": ""
           },
           "Fedora": {
-            "38+": {
-              "pkg": "libxkbcommon-devel",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "libxkbcommon-devel",
+            "postnotes": "",
+            "notes": ""
           }
         }
       }
@@ -1349,32 +911,17 @@
       "zed_SDK": {
         "pkg": {
           "Ubuntu": {
-            "20": {
-              "pkg": "zstd",
-              "postnotes": "",
-              "notes": "ZED SDK is required for the zed plugin. It must be installed manually. See <a href=\"https://www.stereolabs.com/docs/installation/linux/\">here</a> for details. It also requires some CUDA packages which should be available <a href=\"https://developer.nvidia.com/cuda-toolkit-archive\">here</a> or through your Ubuntu repo."
-            },
-            "22": {
-              "pkg": "zstd",
-              "postnotes": "",
-              "notes": "ZED SDK (version 3) is required for the zed plugin. It must be installed manually. See <a href=\"https://www.stereolabs.com/docs/installation/linux/\">here</a> for details. It also requires some CUDA packages which should be available <a href=\"https://developer.nvidia.com/cuda-toolkit-archive\">here</a> or through your Ubuntu repo."
-            },
-            "24": {
-              "pkg": "zstd",
-              "postnotes": "",
-              "notes": "ZED SDK (version 3) is required for the zed plugin. As of this release there is no ZED SDK available for Ubuntu 24, and the versions for Ubuntu 22 will not work. Once it is available, you can install it manually. See <a href=\"https://www.stereolabs.com/docs/installation/linux/\">here</a> for details. It also requires some CUDA packages which should be available <a href=\"https://developer.nvidia.com/cuda-toolkit-archive\">here</a> or through your Ubuntu repo."
-            }
+            "pkg": "zstd",
+            "postnotes": "",
+            "notes": "ZED SDK is required for the zed plugin. It must be installed manually. See <a href=\"https://www.stereolabs.com/docs/installation/linux/\">here</a> for details. It also requires some CUDA packages which should be available <a href=\"https://developer.nvidia.com/cuda-toolkit-archive\">here</a> or through your Ubuntu repo."
           },
           "Fedora": {
-            "38+": {
-              "pkg": "",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "",
+            "postnotes": "",
+            "notes": ""
           }
         }
       }
-
     }
   ],
   "profiles": [@PROFILES@]
