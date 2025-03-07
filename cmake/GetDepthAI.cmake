@@ -5,11 +5,6 @@ find_package(depthai QUIET)
 
 set(DEPTHAI_CMAKE_ARGS "")
 
-# if building on CentOS make sure we use the correct OpenCV
-if(HAVE_CENTOS)
-    set(DEPTHAI_CMAKE_ARGS "-DOpenCV_DIR=${OpenCV_DIR}")
-endif()
-
 if(depthai_FOUND)
     set(DepthAI_VERSION "${depthai_VERSION}" PARENT_SCOPE)   # set current version
 else()
