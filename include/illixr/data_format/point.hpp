@@ -571,10 +571,9 @@ template<>
 
 #ifdef ENABLE_OXR
 /*
- * The struct below is utilized when working with OpenXR. The internal variables are in a basic form since OpenXR uses
+ * This struct is utilized when working with OpenXR. The internal variables are in a basic form since OpenXR uses
  * C, rather than C++ (e.g. points do not inherit from Eigen::Vector)
  */
-
 struct raw_point {
     float x;
     float y;

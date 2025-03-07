@@ -7,8 +7,7 @@
 
 ### Prerequisites
 
-- Ubuntu 20.04 or 22.04
+- Ubuntu 22.04 or 24.04
 - [CUDA](https://developer.nvidia.com/cuda-toolkit-archive)
 - [ZED SDK](https://www.stereolabs.com/docs/installation/linux/)
 - OpenCV 4
-
