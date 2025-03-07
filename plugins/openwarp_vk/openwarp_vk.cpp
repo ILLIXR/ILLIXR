@@ -12,17 +12,19 @@ openwarp_vk::openwarp_vk(const phonebook* pb)
     , disable_warp_{switchboard_->get_env_bool("ILLIXR_TIMEWARP_DISABLE", "False")} {
     if (switchboard_->get_env_char("ILLIXR_OPENWARP_WIDTH") == nullptr ||
         switchboard_->get_env_char("ILLIXR_OPENWARP_HEIGHT") == nullptr) {
-        throw std::runtime_error("Please define ILLIXR_OPENWARP_WIDTH and ILLIXR_OPENWARP_HEIGHT");
+        spdlog::get("illixr")->info("[openwarp] Grid dimensions not set, defaulting to 512x512");
+        openwarp_width_  = 512;
+        openwarp_height_ = 512;
+    } else {
+        openwarp_width_  = std::stoi(switchboard_->get_env_char("ILLIXR_OPENWARP_WIDTH"));
+        openwarp_height_ = std::stoi(switchboard_->get_env_char("ILLIXR_OPENWARP_HEIGHT"));
     }
-
-    openwarp_width_  = std::stoi(switchboard_->get_env_char("ILLIXR_OPENWARP_WIDTH"));
-    openwarp_height_ = std::stoi(switchboard_->get_env_char("ILLIXR_OPENWARP_HEIGHT"));
 
     using_godot_ = switchboard_->get_env_bool("ILLIXR_USING_GODOT");
     if (using_godot_)
-        spdlog::get("illixr")->info("[OPENWARP] Using Godot projection matrices");
+        spdlog::get("illixr")->info("[openwarp] Using Godot projection matrices");
     else
-        spdlog::get("illixr")->info("[OPENWARP] Using Unreal projection matrices");
+        spdlog::get("illixr")->info("[openwarp] Using Unreal projection matrices");
 }
 
 // For objects that only need to be created a single time and do not need to change.
@@ -93,14 +95,22 @@ void openwarp_vk::setup(VkRenderPass render_pass, uint32_t subpass,
 }
 
 void openwarp_vk::partial_destroy() {
+    vmaDestroyBuffer(vma_allocator_, ow_vertex_buffer_, ow_vertex_alloc_);
+    vmaDestroyBuffer(vma_allocator_, dc_vertex_buffer_, dc_vertex_alloc_);
+    vmaDestroyBuffer(vma_allocator_, ow_index_buffer_, ow_index_alloc_);
+    vmaDestroyBuffer(vma_allocator_, dc_index_buffer_, dc_index_alloc_);
+
     for (size_t i = 0; i < offscreen_images_.size(); i++) {
         vkDestroyFramebuffer(display_provider_->vk_device_, offscreen_framebuffers_[i], nullptr);
+
         vkDestroyImageView(display_provider_->vk_device_, offscreen_image_views_[i], nullptr);
         vmaDestroyImage(vma_allocator_, offscreen_images_[i], offscreen_image_allocs_[i]);
 
         vkDestroyImageView(display_provider_->vk_device_, offscreen_depth_views_[i], nullptr);
         vmaDestroyImage(vma_allocator_, offscreen_depths_[i], offscreen_depth_allocs_[i]);
     }
+
+    vkDestroyRenderPass(display_provider_->vk_device_, openwarp_render_pass_, nullptr);
 
     vkDestroyPipeline(display_provider_->vk_device_, openwarp_pipeline_, nullptr);
     openwarp_pipeline_ = VK_NULL_HANDLE;
@@ -145,9 +155,7 @@ void openwarp_vk::record_command_buffer(VkCommandBuffer commandBuffer, VkFramebu
 
     VkDeviceSize offsets = 0;
     VkClearValue clear_colors[2];
-    clear_colors[0].color = {0.0f, 0.0f, 0.0f, 1.0f};
-
-    // Fortunately for us, Godot swapped to reverse Z as of Godot 4.3...
+    clear_colors[0].color              = {0.0f, 0.0f, 0.0f, 1.0f};
     clear_colors[1].depthStencil.depth = rendering_params::reverse_z ? 0.0 : 1.0;
 
     // First render OpenWarp offscreen for a distortion correction pass later
@@ -392,9 +400,8 @@ void openwarp_vk::create_vertex_buffers() {
     VmaAllocationCreateInfo ow_alloc_info = {};
     ow_alloc_info.usage                   = VMA_MEMORY_USAGE_GPU_ONLY;
 
-    VmaAllocation ow_vertex_alloc;
     VK_ASSERT_SUCCESS(
-        vmaCreateBuffer(vma_allocator_, &ow_buffer_info, &ow_alloc_info, &ow_vertex_buffer_, &ow_vertex_alloc, nullptr))
+        vmaCreateBuffer(vma_allocator_, &ow_buffer_info, &ow_alloc_info, &ow_vertex_buffer_, &ow_vertex_alloc_, nullptr))
 
     void* ow_mapped_data;
     VK_ASSERT_SUCCESS(vmaMapMemory(vma_allocator_, ow_staging_alloc, &ow_mapped_data))
@@ -410,12 +417,15 @@ void openwarp_vk::create_vertex_buffers() {
 
     vmaDestroyBuffer(vma_allocator_, ow_staging_buffer, ow_staging_alloc);
 
-    deletion_queue_.emplace([=]() {
-        vmaDestroyBuffer(vma_allocator_, ow_vertex_buffer_, ow_vertex_alloc);
-    });
-
     // Distortion Correction Vertices
-    VkBufferCreateInfo dc_staging_buffer_info = {};
+    VkBufferCreateInfo dc_staging_buffer_info = {.sType                 = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+                                                 .pNext                 = nullptr,
+                                                 .flags                 = {},
+                                                 .size                  = sizeof(OpenWarpVertex) * num_openwarp_vertices_,
+                                                 .usage                 = VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+                                                 .sharingMode           = {},
+                                                 .queueFamilyIndexCount = 0,
+                                                 .pQueueFamilyIndices   = nullptr};
 
     VmaAllocationCreateInfo dc_staging_alloc_info = {};
     dc_staging_alloc_info.usage                   = VMA_MEMORY_USAGE_AUTO;
@@ -439,9 +449,8 @@ void openwarp_vk::create_vertex_buffers() {
     VmaAllocationCreateInfo dc_alloc_info = {};
     dc_alloc_info.usage                   = VMA_MEMORY_USAGE_GPU_ONLY;
 
-    VmaAllocation dc_vertex_alloc;
     VK_ASSERT_SUCCESS(
-        vmaCreateBuffer(vma_allocator_, &dc_buffer_info, &dc_alloc_info, &dc_vertex_buffer_, &dc_vertex_alloc, nullptr))
+        vmaCreateBuffer(vma_allocator_, &dc_buffer_info, &dc_alloc_info, &dc_vertex_buffer_, &dc_vertex_alloc_, nullptr))
 
     void* dc_mapped_data;
     VK_ASSERT_SUCCESS(vmaMapMemory(vma_allocator_, dc_staging_alloc, &dc_mapped_data))
@@ -457,10 +466,6 @@ void openwarp_vk::create_vertex_buffers() {
                                  display_provider_->queues_[vulkan::queue::queue_type::GRAPHICS], dc_command_buffer_local);
 
     vmaDestroyBuffer(vma_allocator_, dc_staging_buffer, dc_staging_alloc);
-
-    deletion_queue_.emplace([=]() {
-        vmaDestroyBuffer(vma_allocator_, dc_vertex_buffer_, dc_vertex_alloc);
-    });
 }
 
 void openwarp_vk::create_index_buffers() {
@@ -487,7 +492,7 @@ void openwarp_vk::create_index_buffers() {
                                          .pNext       = nullptr,
                                          .flags       = {},
                                          .size        = sizeof(uint32_t) * num_openwarp_indices_,
-                                         .usage       = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+                                         .usage       = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
                                          .sharingMode = {},
                                          .queueFamilyIndexCount = 0,
                                          .pQueueFamilyIndices   = nullptr};
@@ -495,9 +500,8 @@ void openwarp_vk::create_index_buffers() {
     VmaAllocationCreateInfo ow_alloc_info = {};
     ow_alloc_info.usage                   = VMA_MEMORY_USAGE_GPU_ONLY;
 
-    VmaAllocation ow_index_alloc;
     VK_ASSERT_SUCCESS(
-        vmaCreateBuffer(vma_allocator_, &ow_buffer_info, &ow_alloc_info, &ow_index_buffer_, &ow_index_alloc, nullptr))
+        vmaCreateBuffer(vma_allocator_, &ow_buffer_info, &ow_alloc_info, &ow_index_buffer_, &ow_index_alloc_, nullptr))
 
     void* ow_mapped_data;
     VK_ASSERT_SUCCESS(vmaMapMemory(vma_allocator_, ow_staging_alloc, &ow_mapped_data))
@@ -512,10 +516,6 @@ void openwarp_vk::create_index_buffers() {
                                  display_provider_->queues_[vulkan::queue::queue_type::GRAPHICS], ow_command_buffer_local);
 
     vmaDestroyBuffer(vma_allocator_, ow_staging_buffer, ow_staging_alloc);
-
-    deletion_queue_.emplace([=]() {
-        vmaDestroyBuffer(vma_allocator_, dc_index_buffer_, ow_index_alloc);
-    });
 
     // Distortion correction index buffer
     VkBufferCreateInfo dc_staging_buffer_info = {.sType                 = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
@@ -548,9 +548,8 @@ void openwarp_vk::create_index_buffers() {
     VmaAllocationCreateInfo dc_alloc_info = {};
     dc_alloc_info.usage                   = VMA_MEMORY_USAGE_GPU_ONLY;
 
-    VmaAllocation dc_index_alloc;
     VK_ASSERT_SUCCESS(
-        vmaCreateBuffer(vma_allocator_, &dc_buffer_info, &dc_alloc_info, &dc_index_buffer_, &dc_index_alloc, nullptr))
+        vmaCreateBuffer(vma_allocator_, &dc_buffer_info, &dc_alloc_info, &dc_index_buffer_, &dc_index_alloc_, nullptr))
 
     void* dc_mapped_data;
     VK_ASSERT_SUCCESS(vmaMapMemory(vma_allocator_, dc_staging_alloc, &dc_mapped_data))
@@ -565,16 +564,12 @@ void openwarp_vk::create_index_buffers() {
                                  display_provider_->queues_[vulkan::queue::queue_type::GRAPHICS], dc_command_buffer_local);
 
     vmaDestroyBuffer(vma_allocator_, dc_staging_buffer, dc_staging_alloc);
-
-    deletion_queue_.emplace([=]() {
-        vmaDestroyBuffer(vma_allocator_, dc_index_buffer_, dc_index_alloc);
-    });
 }
 
 void openwarp_vk::generate_distortion_data() {
     // Calculate the number of vertices+ineye_tiles_high distortion mesh.
     num_distortion_vertices_ = (hmd_info_.eye_tiles_high + 1) * (hmd_info_.eye_tiles_wide + 1);
-    num_distortion_indices_  = hmd_info_.eye_tiles_high * hmd_info_.eye_tiles_high * 6;
+    num_distortion_indices_  = hmd_info_.eye_tiles_high * hmd_info_.eye_tiles_wide * 6;
 
     // Allocate memory for the elements/indices array.
     distortion_indices_.resize(num_distortion_indices_);
@@ -582,16 +577,16 @@ void openwarp_vk::generate_distortion_data() {
     // This is just a simple grid/plane index array, nothing fancy.
     // Same for both eye distortions, too!
     for (int y = 0; y < hmd_info_.eye_tiles_high; y++) {
-        for (int x = 0; x < hmd_info_.eye_tiles_high; x++) {
-            const int offset = (y * hmd_info_.eye_tiles_high + x) * 6;
+        for (int x = 0; x < hmd_info_.eye_tiles_wide; x++) {
+            const int offset = (y * hmd_info_.eye_tiles_wide + x) * 6;
 
-            distortion_indices_[offset + 0] = ((y + 0) * (hmd_info_.eye_tiles_high + 1) + (x + 0));
-            distortion_indices_[offset + 1] = ((y + 1) * (hmd_info_.eye_tiles_high + 1) + (x + 0));
-            distortion_indices_[offset + 2] = ((y + 0) * (hmd_info_.eye_tiles_high + 1) + (x + 1));
+            distortion_indices_[offset + 0] = ((y + 0) * (hmd_info_.eye_tiles_wide + 1) + (x + 0));
+            distortion_indices_[offset + 1] = ((y + 1) * (hmd_info_.eye_tiles_wide + 1) + (x + 0));
+            distortion_indices_[offset + 2] = ((y + 0) * (hmd_info_.eye_tiles_wide + 1) + (x + 1));
 
-            distortion_indices_[offset + 3] = ((y + 0) * (hmd_info_.eye_tiles_high + 1) + (x + 1));
-            distortion_indices_[offset + 4] = ((y + 1) * (hmd_info_.eye_tiles_high + 1) + (x + 0));
-            distortion_indices_[offset + 5] = ((y + 1) * (hmd_info_.eye_tiles_high + 1) + (x + 1));
+            distortion_indices_[offset + 3] = ((y + 0) * (hmd_info_.eye_tiles_wide + 1) + (x + 1));
+            distortion_indices_[offset + 4] = ((y + 1) * (hmd_info_.eye_tiles_wide + 1) + (x + 0));
+            distortion_indices_[offset + 5] = ((y + 1) * (hmd_info_.eye_tiles_wide + 1) + (x + 1));
         }
     }
 
@@ -621,7 +616,7 @@ void openwarp_vk::generate_distortion_data() {
                                             index_params::fov_up[eye], index_params::fov_down[eye]);
             }
 
-            inverse_projection_[eye] = basic_projection_[eye];
+            inverse_projection_[eye] = basic_projection_[eye].inverse();
         } else {
             float scale = 1.0f;
             if (switchboard_->get_env_char("ILLIXR_OVERSCAN") != nullptr) {
@@ -648,13 +643,13 @@ void openwarp_vk::generate_distortion_data() {
     for (int eye = 0; eye < HMD::NUM_EYES; eye++) {
         Eigen::Matrix4f distortion_matrix = calculate_distortion_transform(basic_projection_[eye]);
         for (int y = 0; y <= hmd_info_.eye_tiles_high; y++) {
-            for (int x = 0; x <= hmd_info_.eye_tiles_high; x++) {
-                const int index = y * (hmd_info_.eye_tiles_high + 1) + x;
+            for (int x = 0; x <= hmd_info_.eye_tiles_wide; x++) {
+                const int index = y * (hmd_info_.eye_tiles_wide + 1) + x;
 
                 // Set the physical distortion mesh coordinates. These are rectangular/gridlike, not distorted.
                 // The distortion is handled by the UVs, not the actual mesh coordinates!
                 distortion_vertices_[eye * num_distortion_vertices_ + index].pos.x =
-                    (-1.0f + 2 * (static_cast<float>(x) / static_cast<float>(hmd_info_.eye_tiles_high)));
+                    (-1.0f + 2 * (static_cast<float>(x) / static_cast<float>(hmd_info_.eye_tiles_wide)));
 
                 // flip the y coordinates for Vulkan texture
                 distortion_vertices_[eye * num_distortion_vertices_ + index].pos.y =
@@ -690,7 +685,7 @@ void openwarp_vk::generate_distortion_data() {
 }
 
 void openwarp_vk::generate_openwarp_mesh(size_t width, size_t height) {
-    spdlog::get("illixr")->info("[OPENWARP] Generating reprojection mesh with resolution ({}, {})", width, height);
+    spdlog::get("illixr")->info("[openwarp] Generating reprojection mesh with resolution ({}, {})", width, height);
 
     // width and height are not in # of verts, but in # of faces.
     num_openwarp_indices_  = 2 * 3 * width * height;
@@ -763,13 +758,6 @@ void openwarp_vk::create_texture_sampler() {
                                         .unnormalizedCoordinates = VK_FALSE};
 
     VK_ASSERT_SUCCESS(vkCreateSampler(display_provider_->vk_device_, &sampler_info, nullptr, &fb_sampler_))
-
-    deletion_queue_.emplace([=]() {
-        vkDestroySampler(display_provider_->vk_device_, fb_sampler_, nullptr);
-    });
-
-    VK_ASSERT_SUCCESS(vkCreateSampler(display_provider_->vk_device_, &sampler_info, nullptr, &fb_sampler_))
-
     deletion_queue_.emplace([=]() {
         vkDestroySampler(display_provider_->vk_device_, fb_sampler_, nullptr);
     });

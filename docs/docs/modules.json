@@ -532,22 +532,6 @@
       }
     },
     {
-      "fp16": {
-        "pkg": {
-          "Ubuntu": {
-            "pkg": "libfp16-dev",
-            "postnotes": "",
-            "notes": ""
-          },
-          "Fedora": {
-            "pkg": "FP16-devel",
-            "postnotes": "",
-            "notes": ""
-          }
-        }
-      }
-    },
-    {
       "fontconfig": {
         "pkg": {
           "Ubuntu": {

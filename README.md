@@ -235,6 +235,7 @@ must be used according to those licenses:
 | [glslang][P6]                      | [BSD-3 clause][L6]<SUP>4</SUP>                     |
 | [Gtsam][P7]                        | [BSD-2 clause][L7]<SUP>2</SUP>                     |
 | [imgui][P8]                        | [MIT][L8]                                          |
+| [libspatialaudio][P28]             | [LGPL v2.1][L28]                                   |
 | [mediapipe][P36]                   | [Apache v2][L36]                                   |
 | [Monado][P29]                      | [MIT][L29]                                         |
 | [Monado integration][P9]           | [Boost v1][L9]                                     |
@@ -243,6 +244,7 @@ must be used according to those licenses:
 | [OouraFFT][P45]                    | [MIT-like][L45]                                    |
 | [Open-VINS][P35]                   | [GNU General Public License v3.0][L35]             |
 | [OpenXR][P12]                      | [Boost v1][L12]                                    |
+| [PortAudio][P13]                   | [MIT][L13]                                         |
 | [ORB_SLAM3][P49]                   | [GNU General Public License v3.0][L49]             |
 | [protobuf][L41]                    | [BSD-3 clause][L41]                                |
 | [pthreadpool][P40]                 | [BSD-2 clause][L40]<SUP>2</SUP>                    |
@@ -272,7 +274,8 @@ licensed under GPL v3.0
 
 <SUP>4</SUP> This software is covered by multiple open source licenses, see the link for details.
 
-Any LGPL or GPL licensed code are contained in optional components. ILLIXR's extensibility allows the source to be configured and compiled using only
+Any LGPL or GPL licensed code are contained in optional components. ILLIXR's extensibility allows the source to be
+configured and compiled using only
 permissively licensed software, if desired. See out [Getting Started][33] page for instructions.
 
 ## Get in Touch
@@ -341,6 +344,32 @@ us a pull request!
 [49]:   mailto:illixr@cs.illinois.edu
 
 [50]:   https://illixr.org/open_meetings
+
+[51]:   https://ffmpeg.org/
+
+[52]:   https://github.com/ILLIXR/opencv
+
+[53]:   https://github.com/opencv/opencv/blob/4.x/LICENSE
+
+[54]:   https://github.com/ILLIXR/Monado_OpenXR_Simple_Example
+
+[56]:   https://github.com/PortAudio/portaudio
+
+[57]:   https://github.com/PortAudio/portaudio/blob/master/LICENSE.txt
+
+[58]:   https://github.com/jbeder/yaml-cpp
+
+[59]:   https://github.com/jbeder/yaml-cpp/blob/master/LICENSE
+
+[60]:   https://github.com/KhronosGroup
+
+[61]:   https://choosealicense.com/licenses/apache-2.0/
+
+[62]:   https://choosealicense.com/licenses/mit/
+
+[71]:   https://github.com/google-ai-edge/mediapipe
+
+[72]:   https://github.com/google-ai-edge/mediapipe/blob/master/LICENSE
 
 [51]:   https://github.com/ILLIXR/ILLIXR/releases/tag/v3.3.0
 
