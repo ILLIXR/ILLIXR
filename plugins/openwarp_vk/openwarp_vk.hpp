@@ -204,9 +204,9 @@ private:
     size_t                      openwarp_width_  = 0;
     size_t                      openwarp_height_ = 0;
 
-    VkBuffer ow_vertex_buffer_{};
+    VkBuffer      ow_vertex_buffer_{};
     VmaAllocation ow_vertex_alloc_{};
-    VkBuffer ow_index_buffer_{};
+    VkBuffer      ow_index_buffer_{};
     VmaAllocation ow_index_alloc_{};
 
     VkRenderPass openwarp_render_pass_{};
@@ -230,10 +230,10 @@ private:
     std::vector<DistortionCorrectionVertex> distortion_vertices_;
     std::vector<uint32_t>                   distortion_indices_;
 
-    VkRenderPass distortion_correction_render_pass_{};
-    VkBuffer     dc_vertex_buffer_{};
+    VkRenderPass  distortion_correction_render_pass_{};
+    VkBuffer      dc_vertex_buffer_{};
     VmaAllocation dc_vertex_alloc_{};
-    VkBuffer     dc_index_buffer_{};
+    VkBuffer      dc_index_buffer_{};
     VmaAllocation dc_index_alloc_{};
 
     // metrics

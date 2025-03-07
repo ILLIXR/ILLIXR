@@ -13,11 +13,9 @@ openwarp_vk::openwarp_vk(const phonebook* pb)
     if (switchboard_->get_env_char("ILLIXR_OPENWARP_WIDTH") == nullptr ||
         switchboard_->get_env_char("ILLIXR_OPENWARP_HEIGHT") == nullptr) {
         spdlog::get("illixr")->info("[openwarp] Grid dimensions not set, defaulting to 512x512");
-        openwarp_width_ = 512;
+        openwarp_width_  = 512;
         openwarp_height_ = 512;
-    }
-    else
-    {
+    } else {
         openwarp_width_  = std::stoi(switchboard_->get_env_char("ILLIXR_OPENWARP_WIDTH"));
         openwarp_height_ = std::stoi(switchboard_->get_env_char("ILLIXR_OPENWARP_HEIGHT"));
     }
@@ -101,7 +99,7 @@ void openwarp_vk::partial_destroy() {
     vmaDestroyBuffer(vma_allocator_, dc_vertex_buffer_, dc_vertex_alloc_);
     vmaDestroyBuffer(vma_allocator_, ow_index_buffer_, ow_index_alloc_);
     vmaDestroyBuffer(vma_allocator_, dc_index_buffer_, dc_index_alloc_);
-    
+
     for (size_t i = 0; i < offscreen_images_.size(); i++) {
         vkDestroyFramebuffer(display_provider_->vk_device_, offscreen_framebuffers_[i], nullptr);
 
@@ -157,7 +155,7 @@ void openwarp_vk::record_command_buffer(VkCommandBuffer commandBuffer, VkFramebu
 
     VkDeviceSize offsets = 0;
     VkClearValue clear_colors[2];
-    clear_colors[0].color = {0.0f, 0.0f, 0.0f, 1.0f};
+    clear_colors[0].color              = {0.0f, 0.0f, 0.0f, 1.0f};
     clear_colors[1].depthStencil.depth = rendering_params::reverse_z ? 0.0 : 1.0;
 
     // First render OpenWarp offscreen for a distortion correction pass later
@@ -1181,7 +1179,7 @@ void openwarp_vk::create_openwarp_pipeline() {
                                                   .basePipelineHandle  = {},
                                                   .basePipelineIndex   = 0};
     VK_ASSERT_SUCCESS(vkCreateGraphicsPipelines(display_provider_->vk_device_, VK_NULL_HANDLE, 1, &pipeline_info, nullptr,
-                                                &openwarp_pipeline_))      
+                                                &openwarp_pipeline_))
 
     vkDestroyShaderModule(device, vert, nullptr);
     vkDestroyShaderModule(device, frag, nullptr);
