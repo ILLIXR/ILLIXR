@@ -200,7 +200,7 @@ Here, the keywords `plugins` and `enable_offload` are ignored, as they are expec
 : The duration to run ILLIXR for in seconds.
 
 - data
-: Path to the data file to dowload (build step) or use at runtime. If a URL is given (must start with http or https) the file will be downloaded and extracted; the path to the extracted data will be put in the illixr.yaml file.
+: Path to the data file to download (build step) or use at runtime. If a URL is given (must start with http or https) the file will be downloaded and extracted; the path to the extracted data will be put in the illixr.yaml file.
 
 - demo_data
 : The path to the demonstration data to use at runtime (ignored by build steps)
