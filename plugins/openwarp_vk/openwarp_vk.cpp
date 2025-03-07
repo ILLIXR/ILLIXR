@@ -573,7 +573,7 @@ void openwarp_vk::create_index_buffers() {
 void openwarp_vk::generate_distortion_data() {
     // Calculate the number of vertices+ineye_tiles_high distortion mesh.
     num_distortion_vertices_ = (hmd_info_.eye_tiles_high + 1) * (hmd_info_.eye_tiles_wide + 1);
-    num_distortion_indices_  = hmd_info_.eye_tiles_high * hmd_info_.eye_tiles_high * 6;
+    num_distortion_indices_  = hmd_info_.eye_tiles_high * hmd_info_.eye_tiles_wide * 6;
 
     // Allocate memory for the elements/indices array.
     distortion_indices_.resize(num_distortion_indices_);
@@ -581,16 +581,16 @@ void openwarp_vk::generate_distortion_data() {
     // This is just a simple grid/plane index array, nothing fancy.
     // Same for both eye distortions, too!
     for (int y = 0; y < hmd_info_.eye_tiles_high; y++) {
-        for (int x = 0; x < hmd_info_.eye_tiles_high; x++) {
-            const int offset = (y * hmd_info_.eye_tiles_high + x) * 6;
+        for (int x = 0; x < hmd_info_.eye_tiles_wide; x++) {
+            const int offset = (y * hmd_info_.eye_tiles_wide + x) * 6;
 
-            distortion_indices_[offset + 0] = ((y + 0) * (hmd_info_.eye_tiles_high + 1) + (x + 0));
-            distortion_indices_[offset + 1] = ((y + 1) * (hmd_info_.eye_tiles_high + 1) + (x + 0));
-            distortion_indices_[offset + 2] = ((y + 0) * (hmd_info_.eye_tiles_high + 1) + (x + 1));
+            distortion_indices_[offset + 0] = ((y + 0) * (hmd_info_.eye_tiles_wide + 1) + (x + 0));
+            distortion_indices_[offset + 1] = ((y + 1) * (hmd_info_.eye_tiles_wide + 1) + (x + 0));
+            distortion_indices_[offset + 2] = ((y + 0) * (hmd_info_.eye_tiles_wide + 1) + (x + 1));
 
-            distortion_indices_[offset + 3] = ((y + 0) * (hmd_info_.eye_tiles_high + 1) + (x + 1));
-            distortion_indices_[offset + 4] = ((y + 1) * (hmd_info_.eye_tiles_high + 1) + (x + 0));
-            distortion_indices_[offset + 5] = ((y + 1) * (hmd_info_.eye_tiles_high + 1) + (x + 1));
+            distortion_indices_[offset + 3] = ((y + 0) * (hmd_info_.eye_tiles_wide + 1) + (x + 1));
+            distortion_indices_[offset + 4] = ((y + 1) * (hmd_info_.eye_tiles_wide + 1) + (x + 0));
+            distortion_indices_[offset + 5] = ((y + 1) * (hmd_info_.eye_tiles_wide + 1) + (x + 1));
         }
     }
 
@@ -653,7 +653,7 @@ void openwarp_vk::generate_distortion_data() {
                 // Set the physical distortion mesh coordinates. These are rectangular/gridlike, not distorted.
                 // The distortion is handled by the UVs, not the actual mesh coordinates!
                 distortion_vertices_[eye * num_distortion_vertices_ + index].pos.x =
-                    (-1.0f + 2 * (static_cast<float>(x) / static_cast<float>(hmd_info_.eye_tiles_high)));
+                    (-1.0f + 2 * (static_cast<float>(x) / static_cast<float>(hmd_info_.eye_tiles_wide)));
 
                 // flip the y coordinates for Vulkan texture
                 distortion_vertices_[eye * num_distortion_vertices_ + index].pos.y =
