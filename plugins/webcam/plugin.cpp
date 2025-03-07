@@ -11,7 +11,7 @@ using namespace ILLIXR::data_format;
     : threadloop{name_, pb_}
     , switchboard_{pb_->lookup_impl<switchboard>()}
     , frame_pub_{switchboard_->get_writer<monocular_cam_type>("webcam")} {
-    const char* video_stream = std::getenv("INPUT_VIDEO");
+    const char* video_stream = switchboard_->get_env_char("INPUT_VIDEO");
     load_video_              = video_stream != nullptr;
     if (load_video_) {
         capture_.open(video_stream);

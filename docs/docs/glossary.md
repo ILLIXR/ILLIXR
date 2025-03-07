@@ -16,7 +16,7 @@ Asynchronous reprojection is implemented in the [`timewarpgl` ILLIXR plugin][68]
 
 See the [Wikipedia article][13].
 
-#### Chromatic Abberation Correction
+#### Chromatic Aberration Correction
 
 The processing of visual anomalies in images where colors are diffracted due to imperfect optics
 or other perturbing factors.
@@ -38,13 +38,13 @@ For more information, see the [Wikipedia artice][28].
 
 #### Eye Tracking
 
-The process of measuring the eye movement of a user (who is possibly also wearing a [_HMD_][71]).
+The process of measuring the eye movement of a user (who is possibly also wearing an [_HMD_][71]).
 
 For more information, see the [Wikipedia article][20].
 
-#### event Stream
+#### Event Stream
 
-A communication interface supporting writes, sychronous reads, and asynchronous reads.
+A communication interface supporting writes, synchronous reads, and asynchronous reads.
 For synchronous reads, every value written to the stream is visible to consumers.
 For asynchronous reads, only the latest values written are guaranteed to be visible to consumers.
 
@@ -58,7 +58,7 @@ A region of memory used to hold graphical information to be output to a display 
     Depth information is useful for applications such as graphics and [_SLAM_][76].
 
 -   **Eye Buffer**:
-    A framebuffer dedicated for display through a [_HMD_][71] lens to be perceived by a user's eye.
+    A framebuffer dedicated for display through an [_HMD_][71] lens to be perceived by a user's eye.
 
 -   **Frame**:
     A single frame (image) to be output to a display at a certain instant of time based on the
@@ -89,7 +89,7 @@ See the [ILLIXR Plugins][68] page for information about sensors implemented in I
 #### Head-mounted Display
 
 A display device worn on the head and face for use with VR and XR applications.
-Also known as a _HMD_.
+Also known as an _HMD_.
 
 For more information, see the [Wikipedia article][16].
 
@@ -142,7 +142,7 @@ Internally, ILLIXR has multiple classifications of poses which are used for vari
 
 -   ***True Pose***:
     A _true pose_ is a ... ***TODO***
-    _Depracated_ starting ILLIXR release `v2.X.X`.
+    _Deprecated_ starting ILLIXR release `v2.X.X`.
 
 -   ***Pose Prediction***:
     To improve the user's perception latency experience the time between, _pose prediction_
@@ -163,7 +163,7 @@ and
 client applications.
 
 The runtime implementation is located in `<ILLIXR_INSTALL_DIR>/bin`.
-See the [Getting Started][74] and [Monado Overiew][64] pages for details about the ILLIXR runtime.
+See the [Getting Started][74] and [Monado Overview][64] pages for details about the ILLIXR runtime.
 
 #### Swap Chain
 
@@ -181,7 +181,7 @@ Also known as _SLAM_.
 
 For more information, see the [Wikipedia article][15].
 
-#### Visual Interial Odometry
+#### Visual Inertial Odometry
 
 The process of computing a [_pose estimate_][57] from incoming visual information and measurements
     from the [_IMU_][77].
@@ -256,7 +256,7 @@ Also known as _GL_.
 
 -   **GLFW**:
     An open source implementation of OpenGL.
-    Supports Windows, MacOS and, Linux ([_X11_][22] and Wayland).
+    Supports Windows, macOS and, Linux ([_X11_][22] and Wayland).
     See the [GLFW development site][26].
 
 For more information, see the [official OpenGL page from the Khronos Group][24].
@@ -271,7 +271,7 @@ For more information, visit the [official site from the Khronos Group][1].
 
 #### QEMU-KVM
 
-An open source virtulization tool and machine emulator.
+An open source virtualization tool and machine emulator.
 See the instructions for running [ILLIXR under Virtualization][63].
 
 For more information, see the [official QEMU page][11].
@@ -279,7 +279,7 @@ For more information, see the [official QEMU page][11].
 #### SQLite
 
 A SQL database engine implementation in C designed to be lightweight and easy to use.
-The ILLIXR project allows user to records application statistics to a local database
+The ILLIXR project allows user to record application statistics to a local database
 for efficient processing.
 See the [Logging and Metrics page][73] for usage details.
 
@@ -302,7 +302,7 @@ For more information, see the [official Vulkan page from the Khronos Group][23].
 
 #### Xvfb
 
-A virtual framebuffer for the [X11 Window Sytem][22].
+A virtual framebuffer for the [X11 Window System][22].
 ILLIXR uses Xvfb to enable running the graphical ILLIXR application without requiring the user
     to have a graphical environment configured at application launch.
 
@@ -311,8 +311,7 @@ For more information, see the [Xfvb man page][5].
 #### YAML
 
 A markup language and data serialization standard designed to be user-friendly.
-We make use of the [yaml-cpp][9] libraries to read
-    our [_profile_][50] files.
+We make use of the [yaml-cpp][9] libraries to read our [_profile_][50] files.
 
 For more information, visit the [official YAML page][7].
 

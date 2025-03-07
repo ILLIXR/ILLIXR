@@ -2,8 +2,14 @@
 
 #include "concurrentqueue/blockingconcurrentqueue.hpp"
 #include "managed_thread.hpp"
+#include "network/network_backend.hpp"
+#include "network/topic_config.hpp"
 #include "phonebook.hpp"
 #include "record_logger.hpp"
+
+#ifdef Success
+    #undef Success // For 'Success' conflict
+#endif
 
 #include <eigen3/Eigen/Core>
 #include <eigen3/Eigen/Geometry>
@@ -24,6 +30,12 @@ static std::chrono::nanoseconds thread_cpu_time() {
     return {};
 }
 #endif
+
+#include <boost/archive/binary_iarchive.hpp>
+#include <boost/archive/binary_oarchive.hpp>
+#include <boost/iostreams/device/back_inserter.hpp>
+#include <boost/iostreams/stream.hpp>
+#include <boost/serialization/shared_ptr.hpp>
 
 namespace ILLIXR {
 
@@ -127,6 +139,12 @@ public:
      */
     class event {
     public:
+        template<typename Archive>
+        [[maybe_unused]] void serialize(Archive& ar, const unsigned int version) {
+            (void) ar;
+            (void) version;
+        }
+
         virtual ~event() = default;
     };
 
@@ -146,7 +164,7 @@ public:
         event_wrapper() = default;
 
         explicit event_wrapper(Underlying_type underlying_data)
-            : underlying_data_{underlying_data} { }
+            : underlying_data_{std::move(underlying_data)} { }
 
         explicit operator Underlying_type() const {
             return underlying_data_;
@@ -414,6 +432,20 @@ private:
             // this_event->use_count() << " (= 1 + len(sub)) \n";
         }
 
+        [[maybe_unused]] void deserialize_and_put(std::vector<char>& buffer, network::topic_config& config) {
+            if (config.serialization_method == network::topic_config::SerializationMethod::BOOST) {
+                // TODO: Need to differentiate and support protobuf deserialization
+                boost::iostreams::stream<boost::iostreams::array_source> stream{buffer.data(), buffer.size()};
+                boost::archive::binary_iarchive                          ia{stream};
+                ptr<event>                                               this_event;
+                ia >> this_event;
+                put(std::move(this_event));
+            } else {
+                ptr<event> message = std::make_shared<event_wrapper<std::string>>((std::string(buffer.begin(), buffer.end())));
+                put(std::move(message));
+            }
+        }
+
         /**
          * @brief Schedules @p callback on the topic (@p plugin_id is for accounting)
          *
@@ -537,7 +569,7 @@ public:
             return topic_buffer_.size();
         }
 
-        ptr<const Specific_event> dequeue() {
+        virtual ptr<const Specific_event> dequeue() {
             // CPU_TIMER_TIME_EVENT_INFO(true, false, "callback", cpu_timer::make_type_eraser<FrameInfo>("", topic_.name(),
             // serial_no_));
             serial_no_++;
@@ -580,7 +612,7 @@ public:
         /**
          * @brief Publish @p ev to this topic.
          */
-        void put(ptr<Specific_event>&& this_specific_event) {
+        virtual void put(ptr<Specific_event>&& this_specific_event) {
             assert(typeid(Specific_event) == topic_.ty());
             assert(this_specific_event != nullptr);
             assert(this_specific_event.unique());
@@ -591,16 +623,57 @@ public:
             topic_.put(std::move(this_event));
         }
 
-    private:
+    protected:
         // Reference to the underlying topic
         topic& topic_;
     };
 
+    template<typename Serializable_event>
+    class network_writer : public writer<Serializable_event> {
+    public:
+        explicit network_writer(topic& topic, ptr<network::network_backend> backend = nullptr,
+                                const network::topic_config& config = {})
+            : writer<Serializable_event>{topic}
+            , backend_{std::move(backend)}
+            , config_{config} { }
+
+        void put(ptr<Serializable_event>&& this_specific_event) override {
+            if (backend_->is_topic_networked(this->topic_.name())) {
+                if (config_.serialization_method == network::topic_config::SerializationMethod::BOOST) {
+                    auto base_event = std::dynamic_pointer_cast<event>(std::move(this_specific_event));
+                    assert(base_event && "Event is not derived from switchboard::event");
+                    // Default serialization method - Boost
+                    std::vector<char>                                                                        buffer;
+                    boost::iostreams::back_insert_device<std::vector<char>>                                  inserter{buffer};
+                    boost::iostreams::stream_buffer<boost::iostreams::back_insert_device<std::vector<char>>> stream{inserter};
+                    boost::archive::binary_oarchive                                                          oa{stream};
+                    oa << base_event;
+                    // flush
+                    stream.pubsync();
+                    backend_->topic_send(this->topic_.name(), std::move(std::string(buffer.begin(), buffer.end())));
+                } else {
+                    // PROTOBUF - this_specific_event will be a string
+                    auto        message_ptr = std::dynamic_pointer_cast<event_wrapper<std::string>>(this_specific_event);
+                    std::string message     = **message_ptr;
+                    backend_->topic_send(this->topic_.name(), std::move(message));
+                }
+            } else {
+                writer<Serializable_event>::put(std::move(this_specific_event));
+            }
+        }
+
+    private:
+        ptr<network::network_backend> backend_;
+        network::topic_config         config_;
+    };
+
+public:
     /**
      * If @p pb is null, then logging is disabled.
      */
     explicit switchboard(const phonebook* pb)
-        : record_logger_{pb ? pb->lookup_impl<record_logger>() : nullptr} {
+        : phonebook_{pb}
+        , record_logger_{pb ? pb->lookup_impl<record_logger>() : nullptr} {
         for (const auto& item : ENV_VARS) {
             char* value = getenv(item.c_str());
             if (value) {
@@ -608,6 +681,22 @@ public:
             } else {
                 env_vars_[item] = "";
             }
+        }
+    }
+
+    [[maybe_unused]] bool topic_exists(const std::string& topic_name) {
+        const std::shared_lock lock{registry_lock_};
+        auto                   found = registry_.find(topic_name);
+        return found != registry_.end();
+    }
+
+    [[maybe_unused]] topic& get_topic(const std::string& topic_name) {
+        const std::shared_lock lock{registry_lock_};
+        auto                   found = registry_.find(topic_name);
+        if (found != registry_.end()) {
+            return found->second;
+        } else {
+            throw std::runtime_error("Topic not found");
         }
     }
 
@@ -720,6 +809,15 @@ public:
         return writer<Specific_event>{try_register_topic<Specific_event>(topic_name)};
     }
 
+    template<typename Specific_event>
+    network_writer<Specific_event> get_network_writer(const std::string& topic_name, network::topic_config config = {}) {
+        auto backend = phonebook_->lookup_impl<network::network_backend>();
+        if (registry_.find(topic_name) == registry_.end()) {
+            backend->topic_create(topic_name, config);
+        }
+        return network_writer<Specific_event>{try_register_topic<Specific_event>(topic_name), backend, config};
+    }
+
     /**
      * @brief Gets a handle to read to the latest value from the topic @p topic_name.
      *
@@ -752,6 +850,7 @@ public:
     }
 
 private:
+    const phonebook*                             phonebook_;
     std::unordered_map<std::string, topic>       registry_;
     std::shared_mutex                            registry_lock_;
     std::shared_ptr<record_logger>               record_logger_;
@@ -806,7 +905,7 @@ private:
             : position_{0., 0., 0.}
             , orientation_{1., 0., 0., 0.} {
             const char* ini_pose = getenv("WCS_ORIGIN");
-            // std::string ini_pose =
+            // =
             // if (!ini_pose.empty()) {
             if (ini_pose) {
                 std::string        ini_pose_str(ini_pose);

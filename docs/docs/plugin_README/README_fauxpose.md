@@ -1,1 +1,1 @@
-../../../plugins/fauxpose/README_fauxpose.md
+../../../services/fauxpose/README_fauxpose.md
