@@ -5,7 +5,7 @@ profiles:
   - ci:
     plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,ground_truth_slam,gldemo,timewarp_gl,audio_pipeline
     build_type: Debug
-    visualizers: openvins
+    visualizers: ""
     env_vars:
       duration: 10
       enable_offload:   False
