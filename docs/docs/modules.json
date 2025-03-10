@@ -20,8 +20,7 @@
     {
       "name": "audio_pipeline",
       "cmake_flag": "USE_AUDIO_PIPELINE=ON",
-      "dependencies": [
-      ]
+      "dependencies": []
     },
     {
       "name": "debugview",
@@ -57,8 +56,7 @@
     {
       "name": "gtsam_integrator",
       "cmake_flag": "USE_GTSAM_INTEGRATOR=ON",
-      "dependencies": [
-      ]
+      "dependencies": []
     },
     {
       "name": "hand_tracking",
@@ -90,7 +88,6 @@
       "cmake_flag": "USE_NATIVE_RENDERER=ON",
       "dependencies": [
         "OpenCV",
-        "ccache",
         "Vulkan",
         "glfw3",
         "glm",
@@ -124,8 +121,7 @@
     {
       "name": "offload_data",
       "cmake_flag": "USE_OFFLOAD_DATA=ON",
-      "dependencies": [
-      ]
+      "dependencies": []
     },
     {
       "name": "offload_rendering_client_jetson",
@@ -288,12 +284,11 @@
     {
       "name": "openvins",
       "cmake_flag": "USE_OPENVINS=ON",
-      "dependencies": [
-      ]
+      "dependencies": []
     },
     {
-      "name": "openwarp",
-      "cmake_flag": "OSE_OPENWARP=ON",
+      "name": "openwarp_vk",
+      "cmake_flag": "OSE_OPENWARP_VK=ON",
       "dependencies": [
         "vulkan",
         "glm",
