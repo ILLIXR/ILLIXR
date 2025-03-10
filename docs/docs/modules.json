@@ -53,8 +53,7 @@
     {
       "name": "gtsam_integrator",
       "cmake_flag": "USE_GTSAM_INTEGRATOR=ON",
-      "dependencies": [
-      ]
+      "dependencies": []
     },
     {
       "name": "hand_tracking",
@@ -116,8 +115,7 @@
     {
       "name": "offload_data",
       "cmake_flag": "USE_OFFLOAD_DATA=ON",
-      "dependencies": [
-      ]
+      "dependencies": []
     },
     {
       "name": "offload_rendering_client_jetson",
@@ -279,8 +277,8 @@
       ]
     },
     {
-      "name": "openwarp",
-      "cmake_flag": "OSE_OPENWARP=ON",
+      "name": "openwarp_vk",
+      "cmake_flag": "OSE_OPENWARP_VK=ON",
       "dependencies": [
         "vulkan",
         "glm",
