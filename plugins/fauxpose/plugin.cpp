@@ -141,7 +141,7 @@ fast_pose_type faux_pose_impl::get_fast_pose(time_point time) const {
 #ifndef NDEBUG
     spdlog::get("illixr")->debug("[fauxpose] Returning pose");
 #endif
-    return fast_pose_type{.pose = simulated_pose, .predict_computed_time = clock_->now(), .predict_target_time = time};
+    return fast_pose_type{simulated_pose, clock_->now(), time};
 }
 
 [[maybe_unused]] faux_pose::faux_pose(const std::string& name, phonebook* pb)

@@ -1,0 +1,8 @@
+# This file was auto generated, take caution if manually editing.
+plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,tcp_network_backend,offload_rendering_client,timewarp_vk,native_renderer,offload_vio.device_rx,offload_vio.device_tx
+visualizers: openvins
+env_vars:
+  enable_offload: false
+  enable_alignment: false
+  enable_verbose_errors: false
+  enable_pre_sleep: false
