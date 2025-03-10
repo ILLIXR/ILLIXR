@@ -109,17 +109,16 @@ The CMake process will also create a [_YAML_][2] file call `illixr.yaml` which c
 
 ## Running ILLIXR
 
-To run the ILLIXR binary just call `main.<>.exe` with any of the following command line arguments. (the `&lt;&gt;` indicate
+To run the ILLIXR binary just call `main.<>.exe` with any of the following command line arguments. (the `<>` indicate
 an infix specifying the build type, for `Debug` use `dbg`, for `Release` use `opt`, for `RelWithDebInfo` use `optdbg`)
 
-- -p,--plugins=&lt;&gt;, comma separated list of plugins to use (case sensitive, all lowercase, no spaces)
-- -r,--run=&lt;&gt;, comma separated list of plugins to use (case sensitive, all lowercase, no spaces), supersedes plugins entry.  This is only necessary if a plugin builds more than one library (e.g. offload_vio builds 4 libraries) as each must be loaded individually.
-- -y,--yaml&lt;&gt;, the [profile][23] file to use which specifies some or all of the above arguments (e.g. the generated `illixr.yaml`)
-- --vis, the visualizer to use (openvins currently)
+- -p,--plugins=<>, comma separated list of plugins to use (case sensitive, all lowercase, no spaces)
+- -r,--run=<>, comma separated list of plugins to use (case sensitive, all lowercase, no spaces), supersedes plugins entry.  This is only necessary if a plugin builds more than one library (e.g. offload_vio builds 4 libraries) as each must be loaded individually.
+- -y,--yaml=<>, the [profile][23] file to use which specifies some or all of the above arguments (e.g. the generated `illixr.yaml`)
 - --<ANY ENVIRONMENT VARIABLE NAME>, you can specify any variable the ILLIXR uses on the command line. Common ones are:
-  - --duration=&lt;&gt;, the duration to run for in seconds (default is 60)
-  - --data=&lt;&gt;, the data file to use
-  - --demo_data=&lt;&gt;, the demo data to use
+  - --duration=<>, the duration to run for in seconds (default is 60)
+  - --data=<>, the data file to use
+  - --demo_data=<>, the demo data to use
   - --enable_offload
   - --enable_alignment
   - --enable_verbose_errors, give more information about errors
