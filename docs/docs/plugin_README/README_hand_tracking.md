@@ -92,7 +92,6 @@ The `hand_tracking.viewer` plugin subscribes to the output of the `hand_tracking
 
 The `webcam` plugin can feed single frame images to the hand tracking plugin.
 
-
 ## OpenXR
 
 The hand tracking plugin can be built with an OpenXR interface. To build the interface add `-DBUILD_OXR_INTERFACE=ON` to your cmake command line.
@@ -101,6 +100,11 @@ automatically detected by libopenxr_loader.so To use the layer you will need bot
 compatible with the Monado runtime, and should be compatible with others. Currently, the hand tracking must receive that data from ILLIXR,
 but as an API Layer the resulting calculations can be retrieved via OpenXR API calls.
 
+## API
+
+The hand tracking API can be found [here][3].
+
 [//]: # (- References -)
 [1]: https://ai.google.dev/edge/mediapipe/solutions/vision/hand_landmarker
 [2]: https://registry.khronos.org/OpenXR/specs/1.0/loader.html#openxr-api-layers
+[3]: https://illixr.github.io/hand_tracking/

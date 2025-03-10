@@ -6,14 +6,12 @@ builds each requested plugin, builds the main ILLIXR binary, and (optionally) in
 ILLIXR currently only builds on Linux systems, and has been tested on the following configurations:
 
 - Ubuntu
-    - 20.04[^1]
     - 22.04
     - 24.04
-- Fedora[^2]
+- Fedora[^1]
     - 38+
 
-[^1]: As of this release, Ubuntu 20.04 is still fully supported by Ubuntu, but some of the code in ILLIXR or its dependencies may require features/packages that are not directly available in 20.04, and may require manual installation.
-[^2]: Primary development is aimed at Ubuntu systems, full support for Fedora may require extra work on the users part.
+[^1]: Primary development is aimed at Ubuntu systems, full support for Fedora may require extra work on the users part.
 
 Other versions of these operating systems may work, but will likely require some manual installation of dependencies.
 For other Linux distributions (e.g. RHEL) it will require significant manual installation of dependencies as many
@@ -40,15 +38,14 @@ required only for specific plugins.
 
 <table id="operating_system" style="border-spacing: 20px; border: 1px solid black;"></table>
 
-ILLIXR may compile with other versions of the above operating systems, but some of the necessary prerequisite packages are not supplied by the OS repos and will need to be compiled by hand. You should be able to use the package and cmake commands for other versions of the same OS (other than the missing packages) to compile ILLIXR. RHEL is not supported at this time as many of the prerequisite packages are not natively available. You will also need to have a C++ compiler
-installed (gcc, clang, etc.) as well as a generator (make, ninja, etc.) and CMake 3.22 or newer (installation is os dependent).
+ILLIXR may compile with other versions of the above operating systems, but some of the necessary prerequisite packages are not supplied by the OS repos and will need to be compiled by hand. You should be able to use the package and cmake commands for other versions of the same OS (other than the missing packages) to compile ILLIXR. RHEL is not supported at this time as many of the prerequisite packages are not natively available.
 
 #### Pick the ILLIXR plugins you want to use
 
 <table id="profile_table" style="border-spacing: 8px; border: 1px solid black;"></table>
 <table id="listing_table" style="border-spacing: 8px; border: 1px solid black;"></table>
 
-<table style="border-spaceing: 20px; border: 1px solid black;">
+<table style="border-spacing: 20px; border: 1px solid black;">
     <tr><td>Include virtualization support: <input type="checkbox" id="withVirt" onclick="updateChecked();"><br>See <a class="reference internal" href="../virtualization/">ILLIXR Under Virtualization</a> for details.</td></tr>
 </table>
 
@@ -101,6 +98,8 @@ Common CMake command line arguments (always prepend with a `-D`):
    The [_profile_][23] file of [plugins][22] to build and install. The default is None, meaning plugins should be specified individually on the command line.
 -  ***USE_&lt;PLUGIN_NAME&gt;=ON***
    Build the specifically named [plugin][22] (e.g `-DUSE_TIMEWARP_GL=ON` to build the timewarp_gl [plugin][22]). Any number of [plugins][22] can be specified on the command line in this fashion.
+-  ***BUILD_DOCS***
+   Set to `ON` to enable building the documentation. Note, building the documentation requires [Doxygen][24] and [mkdocs][25] to be installed, both of which are typically available from OS packages.
 
 An alternate to specifying the plugins as command line arguments is to create a [_YAML_][2] file which specifies the
 plugins to build. Using `-DYAML_FILE=&lt;FILE_NAME&gt;` as the command line argument specifying the [_YAML_][2] file to use. Note: You may need to specify the full path to the YAML_FILE.
@@ -112,7 +111,7 @@ The CMake process will also create a [_YAML_][2] file call `illixr.yaml` which c
 
 ## Running ILLIXR
 
-To run the ILLIXR binary just call `main.<>.exe` with any of the following command line arguments. (the `<>` indicate
+To run the ILLIXR binary just call `main.<>.exe` with any of the following command line arguments. (the `&lt;&gt;` indicate
 an infix specifying the build type, for `Debug` use `dbg`, for `Release` use `opt`, for `RelWithDebInfo` use `optdbg`)
 
 - -p,--plugins=&lt;&gt;, comma separated list of plugins to use (case-sensitive, all lowercase, no spaces)
@@ -225,7 +224,7 @@ ILLIXR currently supports both OpenGL and Vulkan backends (indicated as `gl` and
 
 ## Rationale
 
--  The current system can use profile files to control everything from the build to running ILLIXR, inkeeping with the [DRY principle][1].
+-  The current system can use profile files to control everything from the build to running ILLIXR, in keeping with the [DRY principle][1].
    However, for maximum flexibility control can also be done at the command line level as well.
 
 
@@ -271,7 +270,6 @@ If you want to add your own plugin, see [Writing Your Plugin][11].
     const operatingSystems = {};
     const profiles = [];
     var selectedOS = "";
-    var selectedOSv = "";
     const plugins = new Set();
     const module_json = @MODULE_JSON@;
 
@@ -321,7 +319,7 @@ If you want to add your own plugin, see [Writing Your Plugin][11].
         if(selectedOS == "Ubuntu") {
             sudoLine = "sudo apt-get install libglew-dev libglu1-mesa-dev libsqlite3-dev libx11-dev libgl-dev pkg-config libopencv-dev libeigen3-dev libc6-dev libspdlog-dev libboost-all-dev git cmake cmake-data";
             postnotes.innerHTML = "";
-        } else if(selectedOS == "Fedora") {
+        } else {
             sudoLine = "sudo dnf install glew-devel mesa-libGLU-devel sqlite-devel libX11-devel mesa-libGL-devel pkgconf-pkg-config opencv-devel eigen3-devel glibc-devel spdlog-devel boost-devel git cmake cmake-data";
             postnotes.innerHTML = "Potential issues:<ul><li>If cmake is having trouble with some of the package-config (.pc) files used to locate packages you may need to run the following:" + makeCopyable("sudo sed -i 's/\^\[ \\t\]\*//g' /usr/lib64/pkgconfig/*", "postF") + "</li><li>If the build step is having issues finding some of the include files you may need the following:" + makeCopyable("sudo ln -s /usr/include /include", "post2F") + "</li></ul>";
         }
@@ -332,21 +330,21 @@ If you want to add your own plugin, see [Writing Your Plugin][11].
                 checked ||= document.getElementById(p).checked;
             }
             if(checked) {
-                sudoLine += " " + dependencies[m].pkg[selectedOS][selectedOSv].pkg;
-                if(dependencies[m].pkg[selectedOS][selectedOSv].postnotes !== "") {
-                    pkgnotes += "<P>" + dependencies[m].pkg[selectedOS][selectedOSv].postnotes;
+                sudoLine += " " + dependencies[m].pkg[selectedOS].pkg;
+                if(dependencies[m].pkg[selectedOS].postnotes !== "") {
+                    pkgnotes += "<P>" + dependencies[m].pkg[selectedOS].postnotes;
                 }
-                if(dependencies[m].pkg[selectedOS][selectedOSv].notes !== "") {
+                if(dependencies[m].pkg[selectedOS].notes !== "") {
                     if(pkginfo !== "") {
                         pkginfo += "<P>";
                     }
-                    pkginfo +=  dependencies[m].pkg[selectedOS][selectedOSv].notes;
+                    pkginfo +=  dependencies[m].pkg[selectedOS].notes;
                 }
             }
         }
 
         if(document.getElementById("withVirt").checked) {
-            sudoLine += " " + dependencies["qemu"].pkg[selectedOS][selectedOSv].pkg;
+            sudoLine += " " + dependencies["qemu"].pkg[selectedOS].pkg;
         }
 
         if(pkginfo !== "") {
@@ -410,7 +408,6 @@ If you want to add your own plugin, see [Writing Your Plugin][11].
     function updateOS(os_str) {
         const items = os_str.split(".");
         selectedOS = items[0];
-        selectedOSv = items[1];
         updateSudo();
     }
     function checkAll() {
@@ -444,15 +441,14 @@ If you want to add your own plugin, see [Writing Your Plugin][11].
         for(let x in operatingSystems) {
             let txt = x + ":";
             for(let ver of operatingSystems[x]) {
-                txt += "<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type='radio' id='" + x + "." + ver + "' name='os_choice' value='" + x + "." + ver + "' onclick='updateOS(this.value);'>" + ver;
+                txt += "<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type='radio' id='" + x + "' name='os_choice' value='" + x + "' onclick='updateOS(this.value);'>" + ver;
             }
             let cell = osrow.insertCell(-1);
             cell.style.verticalAlign = "top";
             cell.innerHTML = txt;
         }
         selectedOS = "Ubuntu";
-        selectedOSv = "22";
-        document.getElementById(selectedOS + "." + selectedOSv).checked = true;
+        document.getElementById(selectedOS).checked = true;
         let tabRef = document.getElementById("profile_table");
 
         let count = 0;
@@ -524,6 +520,8 @@ If you want to add your own plugin, see [Writing Your Plugin][11].
 
 [//]: # (- References -)
 [1]:    https://en.wikipedia.org/wiki/Don%27t_repeat_yourself
+[24]:   https://www.doxygen.nl/
+[25]:   https://www.mkdocs.org/
 
 [//]: # (- Internal -)
 [2]:    glossary.md#yaml

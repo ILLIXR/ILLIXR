@@ -87,6 +87,10 @@ struct [[maybe_unused]] rect {
         valid    = true;
     }
 
+    /**
+     * Flip the y-coordinate about the center axis
+     * @param im_height
+     */
     void flip_y(const uint im_height = 0) {
         if (unit == units::PERCENT) {
             y_center = 1.0 - y_center;

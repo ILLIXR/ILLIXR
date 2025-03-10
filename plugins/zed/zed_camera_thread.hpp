@@ -1,5 +1,5 @@
 #pragma once
-
+#define DOUBLE_INCLUDE
 #ifndef HAVE_ZED
     #define HAVE_ZED
 #endif
@@ -8,6 +8,8 @@
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
 #include "zed_camera.hpp"
+
+#undef DOUBLE_INCLUDE
 
 namespace ILLIXR {
 class zed_camera_thread : public threadloop {
