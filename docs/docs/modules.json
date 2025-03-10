@@ -212,14 +212,12 @@
     {
       "name": "record_imu_cam",
       "cmake_flag": "USE_RECORD_IMU_CAM=ON",
-      "dependencies": [
-      ]
+      "dependencies": []
     },
     {
       "name": "record_rgb_depth",
       "cmake_flag": "USE_RECORD_RGB_DEPTH=ON",
-      "dependencies": [
-      ]
+      "dependencies": []
     },
     {
       "name": "rk4_integrator",
@@ -344,35 +342,14 @@
       "fp16": {
         "pkg": {
           "Ubuntu": {
-            "20": {
-              "pkg": "libfp16-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "22": {
-              "pkg": "libfp16-dev",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "libfp16-dev",
+            "postnotes": "",
+            "notes": ""
           },
           "Fedora": {
-            "37": {
-              "pkg": "FP16-devel",
-              "postnotes": "",
-              "notes": ""
-            },
-            "38": {
-              "pkg": "FP16-devel",
-              "postnotes": "",
-              "notes": ""
-            }
-          },
-          "CentOS": {
-            "9": {
-              "pkg": "FP16-devel",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "FP16-devel",
+            "postnotes": "",
+            "notes": ""
           }
         }
       }
@@ -434,11 +411,9 @@
             "notes": ""
           },
           "Fedora": {
-            "38+": {
-              "pkg": "glm-devel",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "glm-devel",
+            "postnotes": "",
+            "notes": ""
           }
         }
       }
@@ -511,36 +486,15 @@
       "libcpuinfo": {
         "pkg": {
           "Ubuntu": {
-            "20": {
-              "pkg": "libcpuinfo-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "22": {
-              "pkg": "libcpuinfo-dev",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "libcpuinfo-dev",
+            "postnotes": "",
+            "notes": ""
           }
         },
         "Fedora": {
-          "37": {
-            "pkg": "",
-            "postnotes": "",
-            "notes": ""
-          },
-          "38": {
-            "pkg": "",
-            "postnotes": "",
-            "notes": ""
-          }
-        },
-        "CentOS": {
-          "9": {
-            "pkg": "",
-            "postnotes": "",
-            "notes": ""
-          }
+          "pkg": "cpuinfo-devel",
+          "postnotes": "",
+          "notes": ""
         }
       }
     },
@@ -548,36 +502,15 @@
       "libgles": {
         "pkg": {
           "Ubuntu": {
-            "20": {
-              "pkg": "libgles-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "22": {
-              "pkg": "libgles-dev",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "libgles-dev",
+            "postnotes": "",
+            "notes": ""
           }
         },
         "Fedora": {
-          "37": {
-            "pkg": "",
-            "postnotes": "",
-            "notes": ""
-          },
-          "38": {
-            "pkg": "",
-            "postnotes": "",
-            "notes": ""
-          }
-        },
-        "CentOS": {
-          "9": {
-            "pkg": "",
-            "postnotes": "",
-            "notes": ""
-          }
+          "pkg": "libglvnd-devel",
+          "postnotes": "",
+          "notes": ""
         }
       }
     },
@@ -622,9 +555,9 @@
             "notes": ""
           },
           "Fedora": {
-            "pkg": "",
+            "pkg": "libuvc-devel",
             "postnotes": "",
-            "notes": "Fedora does not supply libuvc from its repositories. You will need to install it from <a href=\"https://github.com/libuvc/libuvc\">https://github.com/libuvc/libuvc</a>."
+            "notes": ""
           }
         }
       }
@@ -718,7 +651,7 @@
             "notes": ""
           },
           "Fedora": {
-            "pkg": "??",
+            "pkg": "qemu",
             "postnotes": "",
             "notes": ""
           }
@@ -862,7 +795,7 @@
             "notes": ""
           },
           "Fedora": {
-            "pkg": "",
+            "pkg": "libxcb-devel",
             "postnotes": "",
             "notes": ""
           }
@@ -878,7 +811,7 @@
             "notes": ""
           },
           "Fedora": {
-            "pkg": "",
+            "pkg": "libxcb-devel",
             "postnotes": "",
             "notes": ""
           }
