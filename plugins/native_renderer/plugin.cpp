@@ -188,11 +188,11 @@ void native_renderer::_p_one_iteration() {
     }
 
     // TODO: for DRM, get vsync estimate
-    auto next_swap = nullptr; // vsync_.get_ro_nullable();
+    auto next_swap = vsync_.get_ro_nullable();
     if (next_swap == nullptr) {
-        // std::this_thread::sleep_for(display_params::period / 5.0);
-        // printf("WARNING!!! no vsync estimate\n");
-    } /*else {
+        std::this_thread::sleep_for(display_params::period / 6.0 * 5);
+        printf("WARNING!!! no vsync estimate\n");
+    } else {
         // convert next_swap_time to std::chrono::time_point
         auto next_swap_time_point = std::chrono::time_point<std::chrono::system_clock>(
             std::chrono::duration_cast<std::chrono::system_clock::duration>((**next_swap).time_since_epoch()));
@@ -202,7 +202,7 @@ void native_renderer::_p_one_iteration() {
         next_swap_time_point -= std::chrono::duration_cast<std::chrono::system_clock::duration>(
             display_params::period / 6.0 * 5); // sleep till 1/6 of the period before vsync to begin timewarp
         std::this_thread::sleep_until(next_swap_time_point);
-    }*/
+    }
 
     if (!timewarp_->is_external()) {
         // Update the timewarp uniforms and submit the timewarp command buffer to the graphics queue
@@ -729,7 +729,7 @@ void native_renderer::create_app_pass() {
              0,                                                                                                 // srcSubpass
              VK_SUBPASS_EXTERNAL,                                                                               // dstSubpass
              VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,                                                     // srcStageMask
-             timewarp_->is_external() ? VK_PIPELINE_STAGE_TRANSFER_BIT : VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, // dstStageMask
+             timewarp_->is_external() ? VK_PIPELINE_STAGE_TRANSFER_BIT : VK_PIPELINE_STAGE_VERTEX_SHADER_BIT | VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, // dstStageMask
              VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,                                                              // srcAccessMask
              timewarp_->is_external() ? VK_ACCESS_TRANSFER_READ_BIT : VK_ACCESS_SHADER_READ_BIT,                // dstAccessMask
              VK_DEPENDENCY_BY_REGION_BIT // dependencyFlags
