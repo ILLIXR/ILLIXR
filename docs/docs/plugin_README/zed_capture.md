@@ -1,0 +1,1 @@
+../../../plugins/zed/capture/README.md

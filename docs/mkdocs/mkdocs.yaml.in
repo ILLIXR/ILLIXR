@@ -41,7 +41,7 @@ nav:
             - 'How to Write a Plugin': writing_your_plugin.md
             - 'Modules': modules.md
         - 'Mediapipe based plugins': adding_mediapipe.md
-        - 'Plugin Details':
+        - 'Plugin/Service Details':
             - 'Debugview': plugin_README/README_debugview.md
             - 'Fauxpose': plugin_README/README_fauxpose.md
             - 'Gldemo': plugin_README/README_gldemo.md
@@ -63,6 +63,8 @@ nav:
             - 'Vkdemo': plugin_README/README_vkdemo.md
             - 'Webcam': plugin_README/README_webcam.md
             - 'Zed': plugin_README/README_zed.md
+            - 'Zed Data Injection': plugin_README/README_zed_data_injection.md'
+            - 'Zed Data Capture': plugin_README/zed_capture.md
         - 'Logging and Metrics': logging_and_metrics.md
         - 'ILLIXR Glossary': glossary.md
         - 'ILLIXR API': api/html/annotated.html

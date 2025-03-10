@@ -38,14 +38,14 @@ required only for specific plugins.
 
 <table id="operating_system" style="border-spacing: 20px; border: 1px solid black;"></table>
 
-ILLIXR may compile with other versions of the above operating systems, but some of the necessary prerequesite packages are not supplied by the OS repos and will need to be compiled by hand. You should be able to use the package and cmake commands for other versions of the same OS (other than the missing packages) to compile ILLIXR. RHEL is not supported at this time as many of the prerequisite packages are not natively available.
+ILLIXR may compile with other versions of the above operating systems, but some of the necessary prerequisite packages are not supplied by the OS repos and will need to be compiled by hand. You should be able to use the package and cmake commands for other versions of the same OS (other than the missing packages) to compile ILLIXR. RHEL is not supported at this time as many of the prerequisite packages are not natively available.
 
 #### Pick the ILLIXR plugins you want to use
 
 <table id="profile_table" style="border-spacing: 8px; border: 1px solid black;"></table>
 <table id="listing_table" style="border-spacing: 8px; border: 1px solid black;"></table>
 
-<table style="border-spaceing: 20px; border: 1px solid black;">
+<table style="border-spacing: 20px; border: 1px solid black;">
     <tr><td>Include virtualization support: <input type="checkbox" id="withVirt" onclick="updateChecked();"><br>See <a class="reference internal" href="../virtualization/">ILLIXR Under Virtualization</a> for details.</td></tr>
 </table>
 
@@ -98,6 +98,8 @@ Common CMake command line arguments (always prepend with a `-D`):
    The [_profile_][23] file of [plugins][22] to build and install. The default is None, meaning plugins should be specified individually on the command line.
 -  ***USE_&lt;PLUGIN_NAME&gt;=ON***
    Build the specifically named [plugin][22] (e.g `-DUSE_TIMEWARP_GL=ON` to build the timewarp_gl [plugin][22]). Any number of [plugins][22] can be specified on the command line in this fashion.
+-  ***BUILD_DOCS***
+   Set to `ON` to enable building the documentation. Note, building the documentation requires [Doxygen][24] and [mkdocs][25] to be installed, both of which are typically available from OS packages.
 
 An alternate to specifying the plugins as command line arguments is to create a [_YAML_][2] file which specifies the
 plugins to build. Using `-DYAML_FILE=&lt;FILE_NAME&gt;` as the command line argument specifying the [_YAML_][2] file to use. Note: You may need to specify the full path to the YAML_FILE.
@@ -197,7 +199,7 @@ Here, the keywords `plugins` and `enable_offload` are ignored, as they are expec
 : The duration to run ILLIXR for in seconds.
 
 - data
-: Path to the data file to dowload (build step) or use at runtime. If a URL is given (must start with http or https) the file will be downloaded and extracted; the path to the extracted data will be put in the illixr.yaml file.
+: Path to the data file to download (build step) or use at runtime. If a URL is given (must start with http or https) the file will be downloaded and extracted; the path to the extracted data will be put in the illixr.yaml file.
 
 - demo_data
 : The path to the demonstration data to use at runtime (ignored by build steps)
@@ -222,7 +224,7 @@ ILLIXR currently supports both OpenGL and Vulkan backends (indicated as `gl` and
 
 ## Rationale
 
--  The current system can use profile files to control everything from the build to running ILLIXR, inkeeping with the [DRY principle][1].
+-  The current system can use profile files to control everything from the build to running ILLIXR, in keeping with the [DRY principle][1].
    However, for maximum flexibility control can also be done at the command line level as well.
 
 
@@ -518,6 +520,8 @@ If you want to add your own plugin, see [Writing Your Plugin][11].
 
 [//]: # (- References -)
 [1]:    https://en.wikipedia.org/wiki/Don%27t_repeat_yourself
+[24]:   https://www.doxygen.nl/
+[25]:   https://www.mkdocs.org/
 
 [//]: # (- Internal -)
 [2]:   glossary.md#yaml
