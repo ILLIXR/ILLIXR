@@ -19,7 +19,7 @@ using namespace ILLIXR::data_format;
     , cam_{switchboard_->get_buffered_reader<binocular_cam_type>("cam")}
     , server_ip_(SERVER_IP)
     , server_port_(SERVER_PORT_1) {
-    spdlogger(std::getenv("OFFLOAD_VIO_LOG_LEVEL"));
+    spdlogger(switchboard_->get_env_char("OFFLOAD_VIO_LOG_LEVEL"));
     socket_.socket_set_reuseaddr();
     socket_.socket_bind(CLIENT_IP, CLIENT_PORT_1);
     socket_.enable_no_delay();

@@ -25,13 +25,13 @@ inline std::map<ullong, pose_type> read_data(std::ifstream& gt_file, const std::
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
     , true_pose_{switchboard_->get_writer<pose_type>("true_pose")}
     , ground_truth_offset_{switchboard_->get_writer<switchboard::event_wrapper<Eigen::Vector3f>>("ground_truth_offset")}
-    , sensor_data_{load_data<pose_type>("state_groundtruth_estimate0", "ground_truth_slam", &read_data)}
+    , sensor_data_{load_data<pose_type>("state_groundtruth_estimate0", "ground_truth_slam", &read_data, switchboard_)}
     // The relative-clock timestamp of each IMU is the difference between its dataset time and the IMU dataset_first_time.
     // Therefore we need the IMU dataset_first_time to reproduce the real dataset time.
     // TODO: Change the hardcoded number to be read from some configuration variables in the yaml file.
     , dataset_first_time_{ViconRoom1Medium}
     , first_time_{true} {
-    spdlogger(std::getenv("GROUND_TRUTH_SLAM_LOG_LEVEL"));
+    spdlogger(switchboard_->get_env_char("GROUND_TRUTH_SLAM_LOG_LEVEL"));
 }
 
 void ground_truth_slam::start() {

@@ -27,4 +27,6 @@ Device open failed: 	Could not open "1d27/0601@3/2": Failed to open the USB devi
 ```
 **Solution**: Fix by running with sudo 
 
+## Environment Variables
 
+**OPENNI_LOG_LEVEL**: logging level for this plugin, values can be "trace", "debug", "info", "warning", "error", "critical", or "off"

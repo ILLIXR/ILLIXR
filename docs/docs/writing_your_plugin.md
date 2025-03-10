@@ -7,7 +7,7 @@ To add a new plugin
 1. create a new subdirectory in the `plugins` directory named for your plugin (no spaces)
 2. put your code in this new subdirectory (additional subdirectories containing parts of your code are allowed)
 3. create a CMakeLists.txt file in this new subdirectory. See the template below
-4. add the plugin to the `profiles/plugins.yaml` file, the name must match the subdirectory you created; it should go in the `internal_plugins` entry
+4. add the plugin to the `profiles/plugins.yaml` file, the name must match the subdirectory you created; it should go in the `all_plugins` entry
 
 For the examples below is for a plugin called tracker, so just replace any instance of tracker with
 the name of your plugin.
@@ -51,15 +51,11 @@ In this example the plugin has external dependencies provided by OS repos, speci
 8
 9   add_library(${PLUGIN_NAME} SHARED ${TRACKER_SOURCES})
 10
-11  if(BUILD_OPENCV)
-12      add_dependencies(${PLUGIN_NAME} OpenCV_Viz)
-13  endif()
+11  target_include_directories(${PLUGIN_NAME} PRIVATE ${X11_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} ${GLU_INCLUDE_DIR} ${OpenCV_INCLUDE_DIRS} ${glfw3_INCLUDE_DIRS} ${gl_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR}/include ${Eigen3_INCLUDE_DIRS})
+12  target_link_libraries(${PLUGIN_NAME} ${X11_LIBRARIES} ${GLEW_LIBRARIES} ${glu_LDFLAGS} ${OpenCV_LIBRARIES} ${glfw3_LIBRARIES} ${gl_LIBRARIES} ${Eigen3_LIBRARIES} dl pthread)
+13  target_compile_features(${PLUGIN_NAME} PRIVATE cxx_std_17)
 14
-15  target_include_directories(${PLUGIN_NAME} PRIVATE ${X11_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} ${GLU_INCLUDE_DIR} ${OpenCV_INCLUDE_DIRS} ${glfw3_INCLUDE_DIRS} ${gl_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR}/include ${Eigen3_INCLUDE_DIRS})
-16  target_link_libraries(${PLUGIN_NAME} ${X11_LIBRARIES} ${GLEW_LIBRARIES} ${glu_LDFLAGS} ${OpenCV_LIBRARIES} ${glfw3_LIBRARIES} ${gl_LIBRARIES} ${Eigen3_LIBRARIES} dl pthread)
-17  target_compile_features(${PLUGIN_NAME} PRIVATE cxx_std_17)
-18
-19  install(TARGETS ${PLUGIN_NAME} DESTINATION lib)
+15  install(TARGETS ${PLUGIN_NAME} DESTINATION lib)
 ```
 
 | Line# | Notes                                                                                                                                                                                                                                                                                                                                                                                                                                       |
@@ -68,11 +64,10 @@ In this example the plugin has external dependencies provided by OS repos, speci
 | 5     | Put the plugin name into a variable (will also be the name of the library).                                                                                                                                                                                                                                                                                                                                                                 |
 | 7     | Use the `find_package` directive to locate any required dependencies. This will automatically populate variables containing header path and library names associated with the dependency. `find_package` assumes that there is an appropriate .cmake config file for the dependency on your system. If not the `pkg_check_module` function will perform the same task, but for dependencies which have associated .pc files on your system. |
 | 9     | Tell the system we are building a shared library with the name   ` PLUGIN_NAME `  from the specified source files.                                                                                                                                                                                                                                                                                                                          |
-| 11-13 | OpenCV is a special case for a dependency. If your plugin requires OpenCV add these lines to your CMakeLists.txt file and do not use `find_package(OpenCV)`.                                                                                                                                                                                                                                                                                |
-| 15    | Tell the system about any non-standard include paths the compiler needs to be aware of. Always include `ILLIXR _SOURCE_DIR` in this, as this is where plugin.hpp and other ILLIXR common headers are.                                                                                                                                                                                                                                       |
-| 16    | Tell the system about any libraries this plugin needs to link against (usually those associated with dependencies).                                                                                                                                                                                                                                                                                                                         |
-| 17    | Any compile options specific to this plugin. Usually this will be left as is.                                                                                                                                                                                                                                                                                                                                                               |
-| 19    | Add the install directive. This should not need to change.                                                                                                                                                                                                                                                                                                                                                                                  |
+| 11    | Tell the system about any non-standard include paths the compiler needs to be aware of. Always include `ILLIXR _SOURCE_DIR` in this, as this is where plugin.hpp and other ILLIXR common headers are.                                                                                                                                                                                                                                       |
+| 12    | Tell the system about any libraries this plugin needs to link against (usually those associated with dependencies).                                                                                                                                                                                                                                                                                                                         |
+| 13    | Any compile options specific to this plugin. Usually this will be left as is.                                                                                                                                                                                                                                                                                                                                                               |
+| 15    | Add the install directive. This should not need to change.                                                                                                                                                                                                                                                                                                                                                                                  |
 
 **Note:** Not all the dependencies were searched for by `find_package` in this example. This is because there is a set
 of dependencies which are very common to many plugins and their `find_package` calls are in the main ILLIXR CMakeLists.txt
@@ -101,15 +96,11 @@ In this example the plugin has dependencies provided by OS repos, and a third pa
 12
 13  add_dependencies(${PLUGIN_NAME} Plotter)
 14
-15  if(BUILD_OPENCV)
-16      add_dependencies(${PLUGIN_NAME} OpenCV_Viz)
-17  endif()
+15  target_include_directories(${PLUGIN_NAME} PRIVATE ${X11_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} ${GLU_INCLUDE_DIR} ${OpenCV_INCLUDE_DIRS} ${glfw3_INCLUDE_DIRS} ${gl_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR}/include ${Eigen3_INCLUDE_DIRS} ${Plotter_INCLUDE_DIRS})
+16  target_link_libraries(${PLUGIN_NAME} ${X11_LIBRARIES} ${GLEW_LIBRARIES} ${glu_LDFLAGS} ${OpenCV_LIBRARIES} ${glfw3_LIBRARIES} ${gl_LIBRARIES} ${Eigen3_LIBRARIES} ${Plotter_LIBRARIES} dl pthread)
+17  target_compile_features(${PLUGIN_NAME} PRIVATE cxx_std_17)
 18
-19  target_include_directories(${PLUGIN_NAME} PRIVATE ${X11_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} ${GLU_INCLUDE_DIR} ${OpenCV_INCLUDE_DIRS} ${glfw3_INCLUDE_DIRS} ${gl_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR}/include ${Eigen3_INCLUDE_DIRS} ${Plotter_INCLUDE_DIRS})
-20  target_link_libraries(${PLUGIN_NAME} ${X11_LIBRARIES} ${GLEW_LIBRARIES} ${glu_LDFLAGS} ${OpenCV_LIBRARIES} ${glfw3_LIBRARIES} ${gl_LIBRARIES} ${Eigen3_LIBRARIES} ${Plotter_LIBRARIES} dl pthread)
-21  target_compile_features(${PLUGIN_NAME} PRIVATE cxx_std_17)
-22
-23  install(TARGETS ${PLUGIN_NAME} DESTINATION lib)
+19  install(TARGETS ${PLUGIN_NAME} DESTINATION lib)
 ```
 
 | Line# | Notes                                                                                                                                                                                                                                                                                                                                                                                                                                       |
@@ -120,11 +111,10 @@ In this example the plugin has dependencies provided by OS repos, and a third pa
 | 9     | Tell the system we are building a shared library with the name   ` PLUGIN_NAME `  from the specified source files.                                                                                                                                                                                                                                                                                                                          |
 | 11    | Get the external project called Plotter.                                                                                                                                                                                                                                                                                                                                                                                                    |
 | 13    | Add the external package as a build dependency, this ensures that this plugin won't be built until after the dependency is.                                                                                                                                                                                                                                                                                                                 |
-| 15-17 | OpenCV is a special case for a dependency. If your plugin requires OpenCV add these lines to your CMakeLists.txt file and do not use   `find_package(OpenCV)` .                                                                                                                                                                                                                                                                             |
-| 19    | Tell the system about any non-standard include paths the compiler needs to be aware of. Always include `ILLIXR _SOURCE_DIR` in this, as this is where plugin.hpp and other ILLIXR common headers are.                                                                                                                                                                                                                                       |
-| 20    | Tell the system about any libraries this plugin needs to link against (usually those associated with dependencies).                                                                                                                                                                                                                                                                                                                         |
-| 21    | Any compile options specific to this plugin. Usually this will be left as is.                                                                                                                                                                                                                                                                                                                                                               |
-| 23    | Add the install directive. This should not need to change.                                                                                                                                                                                                                                                                                                                                                                                  |
+| 15    | Tell the system about any non-standard include paths the compiler needs to be aware of. Always include `ILLIXR _SOURCE_DIR` in this, as this is where plugin.hpp and other ILLIXR common headers are.                                                                                                                                                                                                                                       |
+| 16    | Tell the system about any libraries this plugin needs to link against (usually those associated with dependencies).                                                                                                                                                                                                                                                                                                                         |
+| 17    | Any compile options specific to this plugin. Usually this will be left as is.                                                                                                                                                                                                                                                                                                                                                               |
+| 19    | Add the install directive. This should not need to change.                                                                                                                                                                                                                                                                                                                                                                                  |
 
 Additionally, to build and install the Plotter dependency you will need to create a cmake file in the `cmake` directory
 named `GetPlotter.cmake` (case matters, it must match the call to `get_external`) with the following content.
@@ -160,7 +150,7 @@ named `GetPlotter.cmake` (case matters, it must match the call to `get_external`
 
 ### External Plugins
 For plugins that are external packages (e.g. Audio_Pipeline) you need only create a `GetX.cmake` file as above and add the
-plugin name to the `external_plugins` list in `profiles/plugins.yaml`.
+plugin name to the `all_plugins` list in `profiles/plugins.yaml`.
 
 External plugins with external dependencies are a bit more work, but are straight forward. See how Audio Pipeline is handled.
 
@@ -255,7 +245,6 @@ To add your own functionality via the plugin interface:
         the ILLIXR runtime.
     Reading and writing from Phonebook and Switchboard is optional,
         but nearly every plugin does it.
-    See `default_plugins.md` for more details.
 
     First, we can query the [`phonebook`][11] to get various services
         including [`switchboard`][14].

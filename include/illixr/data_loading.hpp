@@ -3,6 +3,7 @@
 #include "illixr/csv_iterator.hpp"
 #include "illixr/data_format/misc.hpp"
 #include "illixr/error_util.hpp"
+#include "illixr/switchboard.hpp"
 
 #include <eigen3/Eigen/Dense>
 #include <fstream>
@@ -15,8 +16,9 @@ using namespace ILLIXR;
 
 template<typename T>
 static std::map<ullong, T> load_data(const std::string& spath, const std::string& plugin_name,
-                                     std::map<ullong, T> (*func)(std::ifstream&, const std::string&)) {
-    const char* illixr_data_c_str = std::getenv("ILLIXR_DATA");
+                                     std::map<ullong, T> (*func)(std::ifstream&, const std::string&),
+                                     const std::shared_ptr<switchboard>& sb) {
+    const char* illixr_data_c_str = sb->get_env_char("ILLIXR_DATA");
     if (!illixr_data_c_str) {
         ILLIXR::abort("Please define ILLIXR_DATA");
     }

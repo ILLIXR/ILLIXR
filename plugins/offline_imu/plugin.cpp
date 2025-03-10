@@ -22,9 +22,9 @@ inline std::map<ullong, sensor_types> read_data(std::ifstream& gt_file, const st
 
 [[maybe_unused]] offline_imu::offline_imu(const std::string& name, phonebook* pb)
     : threadloop{name, pb}
-    , sensor_data_{load_data<sensor_types>("imu0", "offline_imu", &read_data)}
-    , sensor_data_it_{sensor_data_.cbegin()}
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
+    , sensor_data_{load_data<sensor_types>("imu0", "offline_imu", &read_data, switchboard_)}
+    , sensor_data_it_{sensor_data_.cbegin()}
     , imu_{switchboard_->get_writer<imu_type>("imu")}
     , dataset_first_time_{sensor_data_it_->first}
     , dataset_now_{0}

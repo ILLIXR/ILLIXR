@@ -33,23 +33,13 @@ set(PACKAGE_VERSION_MINOR "2")
 set(PACKAGE_VERSION_PATCH "0")
 set(PACKAGE_VERSION_LABEL "")
 
-set(GPL_LICENSED_CODE "openvins;orb_slam3;offload_rendering_server;offload_rendering_client")
+set(GPL_LICENSED_CODE "openvins;orb_slam3")
 set(LGPL_LICENSED_CODE "audio_pipeline")
-# determine the Linux vendor, if it is CentOS then we must rebuild OpenCV to include all the needed components
-if(UNIX)
-    execute_process(COMMAND bash -c "awk -F= '/^ID=/{print $2}' /etc/os-release | tr -d '\n' | tr -d '\"'" OUTPUT_VARIABLE OS_FLAVOR)
-    message("Found OS: ${OS_FLAVOR}")
-    string(TOLOWER "${OS_FLAVOR}" OS_LOWER)
-    if(OS_LOWER STREQUAL "centos")
-        set(HAVE_CENTOS Yes)
-    else()
-        set(HAVE_CENTOS No)
-    endif()
-elseif(WIN32)
+if(WIN32)
     message(FATAL_ERROR "Windows is currently not supported")
 elseif(APPLE)
     message(FATAL_ERROR "MacOS is currently not supported")
-else()
+elif(NOT UNIX)
     message(FATAL_ERROR "Unknown operating system")
 endif()
 
@@ -60,6 +50,7 @@ else()
 endif()
 
 include(ExternalProject)
+include(CMakeDependentOption)
 
 project(ILLIXR VERSION 3.2.0)
 set(CMAKE_CXX_STANDARD 17)
@@ -81,19 +72,29 @@ set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH}")
 option(COLOR_OUTPUT "Produce color output to the screen" ON)
 option(DATA_FILE "The data file to get" ON)
 option(BUILD_OXR_INTERFACE "Build the OpenXR interface (hand tracking only)" OFF)
+cmake_dependent_option(BUILD_OXR_TEST "Build the  test for the OpenXr interface (hand tracking only)" OFF BUILD_OXR_INTERFACE OFF)
 option(BUILD_ZED_CAPTURE "Build the ZED capture program" OFF)
 set(DATA_FILE "http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip")
 
 option(BUILD_DOCS "Build documentation" OFF)
 option(USE_MONADO "Build for monado use" OFF)
-option(NO_GPL "Do not build GPL licensed code" OFF)
-option(NO_LGPL "Do not build LGPL or GPL licensed code, implies NO_GPL" OFF)
-option(NO_ZED "Do not build and ZED related code" OFF)
+option(NO_GPL "Do not build any code licensed under GPL. This will affect any generated profile files as well." OFF)
+option(NO_LGPL "Do not build any code licensed under LGPL or GPL. This will affect any generated profile files as well." OFF)
+
+set(LAST_NO_GPL "$CACHE{NO_GPL_CACHE}")
+set(LAST_NO_LGPL "$CACHE{NO_LGPL_CACHE}")
 
 if(NO_LGPL)
     set(NO_GPL ON CACHE BOOL "" FORCE)
 endif()
+string(LENGTH "${LAST_NO_GPL}" GPL_LEN)
+string(LENGTH "${LAST_NO_LGPL}" LGPL_LEN)
+if((GPL_LEN EQUAL 0) OR (LGPL_LEN EQUAL 0) OR (NOT NO_GPL STREQUAL LAST_NO_GPL) OR (NOT NO_LGPL STREQUAL LAST_NO_LGPL))
+    set(FORCE_REGEN ON)
+endif()
 
+set(NO_GPL_CACHE ${NO_GPL} CACHE INTERNAL "")
+set(NO_LGPL_CACHE ${NO_LGPL} CACHE INTERNAL "")
 option(HT_ENABLE_GPU "Build for GPU use" OFF)
 if(HT_ENABLE_GPU)
     message(WARNING "Currently gpu processing for hand tracking is not available, turning it off")
@@ -160,28 +161,7 @@ add_definitions(-DILLIXR_BUILD_SUFFIX=${ILLIXR_BUILD_SUFFIX})
 ##############
 set(EXTERNAL_LIBRARIES "")
 
-##############
-# opencv
-#
-# If building on centos system, opencv must be built from scratch to get the viz module
-# which is not supplied by the centos repos
-##############
-set(BUILDING_OPENCV No)
-set(OpenCV_DEP_STR "")
-if(HAVE_CENTOS)
-    set(INTERNAL_OPENCV ${CMAKE_INSTALL_PREFIX}/lib/cmake/opencv4)
-    # see if it has been built yet
-    find_package(OpenCV QUIET PATHS ${INTERNAL_OPENCV} NO_DEFAULT_PATH NO_CMAKE_ENVIRONMENT_PATH NO_SYSTEM_ENVIRONMENT_PATH NO_CMAKE_PACKAGE_REGISTRY NO_CMAKE_SYSTEM_PATH NO_CMAKE_SYSTEM_PACKAGE_REGISTRY)
-    if(NOT OpenCV_FOUND OR NOT OPENCV_VIZ_FOUND)
-        message("Building OpenCV")
-        include(cmake/GetOpenCV_Viz.cmake)
-        set(OpenCV_DEP_STR OpenCV_Viz)
-        set(INTERNAL_OPENCV ${OpenCV_DIR})
-        set(BUILD_OPENCV Yes)
-    endif()
-else()
-    find_package(OpenCV 4 REQUIRED)
-endif()
+find_package(OpenCV 4 REQUIRED)
 
 find_package(GLEW REQUIRED)
 
@@ -260,10 +240,11 @@ foreach(ITEM IN LISTS PLUGIN_LIST VISUALIZER_LIST)
 endforeach()
 
 list(SORT FULL_PLUGIN_LIST COMPARE STRING CASE INSENSITIVE ORDER ASCENDING)
-set(FULL_PLUGIN_LIST_STRING "")
+set(FULL_PLUGIN_LIST_STRING "\n")
 foreach(PLUGIN_NAME IN LISTS FULL_PLUGIN_LIST)
-    set(FULL_PLUGIN_LIST_STRING "${FULL_PLUGIN_LIST_STRING}\n- ${PLUGIN_NAME}")
+    set(FULL_PLUGIN_LIST_STRING "${FULL_PLUGIN_LIST_STRING}\n  - ${PLUGIN_NAME}")
 endforeach()
+set(FULL_PLUGIN_LIST_STRING "${FULL_PLUGIN_LIST_STRING}\n")
 set(CURRENT_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}" CACHE INTERNAL "")
 
 # set up documentaiton build

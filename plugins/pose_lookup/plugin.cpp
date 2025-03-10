@@ -24,19 +24,19 @@ inline std::map<ullong, pose_type> read_data(std::ifstream& gt_file, const std::
 pose_lookup_impl::pose_lookup_impl(const phonebook* const pb)
     : switchboard_{pb->lookup_impl<switchboard>()}
     , clock_{pb->lookup_impl<relative_clock>()}
-    , sensor_data_{load_data<pose_type>("state_groundtruth_estimate0", "pose_lookup", &read_data)}
+    , sensor_data_{load_data<pose_type>("state_groundtruth_estimate0", "pose_lookup", &read_data, switchboard_)}
     , sensor_data_it_{sensor_data_.cbegin()}
     , dataset_first_time_{sensor_data_it_->first}
     , vsync_estimate_{switchboard_->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")}
     /// TODO: Set with #198
-    , enable_alignment_{ILLIXR::str_to_bool(getenv_or("ILLIXR_ALIGNMENT_ENABLE", "False"))}
+    , enable_alignment_{switchboard_->get_env_bool("ILLIXR_ALIGNMENT_ENABLE", "False")}
     , init_pos_offset_{Eigen::Vector3f::Zero()}
     , align_rot_{Eigen::Matrix3f::Zero()}
     , align_trans_{Eigen::Vector3f::Zero()}
     , align_quat_{Eigen::Vector4f::Zero()}
     , align_scale_{0.0} {
     if (enable_alignment_) {
-        std::string path_to_alignment(ILLIXR::getenv_or("ILLIXR_ALIGNMENT_FILE", "./metrics/alignMatrix.txt"));
+        std::string path_to_alignment(switchboard_->get_env("ILLIXR_ALIGNMENT_FILE", "./metrics/alignMatrix.txt"));
         load_align_parameters(path_to_alignment, align_rot_, align_trans_, align_quat_, align_scale_);
     }
     // Read position data of the first frame

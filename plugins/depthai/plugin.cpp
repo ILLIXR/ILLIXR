@@ -19,7 +19,7 @@ using namespace ILLIXR::data_format;
     , cam_writer_{switchboard_->get_writer<binocular_cam_type>("cam")}
     , rgb_depth_{switchboard_->get_writer<rgb_depth_type>("rgb_depth")} // Initialize DepthAI pipeline and device
     , device_{create_camera_pipeline()} {
-    spdlogger(std::getenv("DEPTHAI_LOG_LEVEL"));
+    spdlogger(switchboard_->get_env_char("DEPTHAI_LOG_LEVEL"));
 #ifndef NDEBUG
     spdlog::get(name)->debug("pipeline started");
 #endif

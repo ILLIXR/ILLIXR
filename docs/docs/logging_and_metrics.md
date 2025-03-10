@@ -24,7 +24,7 @@ export ILLIXR_LOG_LEVEL=warn
 main.dbg.exe -yaml=profiles/native_gl.yaml
 ``` 
 
-When writing a new plugin, the `plugin.spdlogger(std::string log_level)` method should be called, e.g., using `std::getenv("<PLUGIN_NAME>_LOG_LEVEL")` This creates a logger with two sinks (console and file). This logger is then registered in the global spdlog registry. 
+When writing a new plugin, the `plugin.spdlogger(std::string log_level)` method should be called, e.g., using `switchboard->get_env("<PLUGIN_NAME>_LOG_LEVEL")` This creates a logger with two sinks (console and file). This logger is then registered in the global spdlog registry. 
 
 To log inside of a plugin method, use the plugin's name attribute to get the particular logger from the registry and call the desired log level method, e.g.
 ```

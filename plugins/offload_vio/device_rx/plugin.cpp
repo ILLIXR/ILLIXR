@@ -15,7 +15,7 @@ using namespace ILLIXR::data_format;
     , imu_integrator_input_{switchboard_->get_writer<imu_integrator_input>("imu_integrator_input")}
     , server_ip_(SERVER_IP)
     , server_port_(SERVER_PORT_2) {
-    spdlogger(std::getenv("OFFLOAD_VIO_LOG_LEVEL"));
+    spdlogger(switchboard_->get_env_char("OFFLOAD_VIO_LOG_LEVEL"));
     pose_type                   datum_pose_tmp{time_point{}, Eigen::Vector3f{0, 0, 0}, Eigen::Quaternionf{1, 0, 0, 0}};
     switchboard::ptr<pose_type> datum_pose = pose_.allocate<pose_type>(std::move(datum_pose_tmp));
     pose_.put(std::move(datum_pose));

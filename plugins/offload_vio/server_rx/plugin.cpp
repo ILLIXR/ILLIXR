@@ -17,7 +17,7 @@ using namespace ILLIXR::data_format;
     , server_ip_(SERVER_IP)
     , server_port_(SERVER_PORT_1)
     , buffer_str_("") {
-    spdlogger(std::getenv("OFFLOAD_VIO_LOG_LEVEL"));
+    spdlogger(switchboard_->get_env_char("OFFLOAD_VIO_LOG_LEVEL"));
     socket_.socket_set_reuseaddr();
     socket_.socket_bind(server_ip_, server_port_);
     socket_.enable_no_delay();

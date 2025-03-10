@@ -67,6 +67,8 @@ struct rendering_params {
 inline bool str_to_bool(const std::string& var) {
     std::string temp = var;
     std::transform(temp.begin(), temp.end(), temp.begin(), ::toupper);
+    if (temp.empty())
+        temp = "FALSE";
     return (temp == "TRUE") ? true
         : (temp == "FALSE") ? false
                             : throw std::runtime_error("Invalid conversion from std::string to bool");

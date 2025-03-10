@@ -520,8 +520,9 @@ void vkdemo::load_model() {
     std::vector<tinyobj::material_t> materials;
     std::string                      warn, err;
 
-    auto path = std::string(std::getenv("ILLIXR_DEMO_DATA")) + "/" + "scene.obj";
-    if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, path.c_str(), std::getenv("ILLIXR_DEMO_DATA"))) {
+    auto path = switchboard_->get_env("ILLIXR_DEMO_DATA") + "/scene.obj";
+    if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, path.c_str(),
+                          switchboard_->get_env_char("ILLIXR_DEMO_DATA"))) {
         throw std::runtime_error(warn + err);
     }
 
@@ -530,7 +531,7 @@ void vkdemo::load_model() {
     for (auto i = 0; i < static_cast<int>(materials.size()); i++) {
         auto material = materials[i];
         if (!material.diffuse_texname.empty()) {
-            path = std::string(std::getenv("ILLIXR_DEMO_DATA")) + "/" + material.diffuse_texname;
+            path = switchboard_->get_env("ILLIXR_DEMO_DATA") + "/" + material.diffuse_texname;
             load_texture(path, i);
         }
     }

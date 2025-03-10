@@ -40,8 +40,6 @@ private:
     Eigen::Vector2i processed_size = Eigen::Vector2i::Zero();
     Eigen::Vector2i combined_size  = Eigen::Vector2i::Zero();
 
-    bool                             wc_  = false; // webcam images need to be flipped
-    bool                             zed_ = false;
     Eigen::Matrix4f                  basicProjection_;
     const data_format::ht::ht_frame* current_frame_;
     ImVec4                           clear_color_ = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
