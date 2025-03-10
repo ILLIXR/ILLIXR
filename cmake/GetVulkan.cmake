@@ -15,13 +15,19 @@ function(clearVars)
 endfunction()
 
 
-message(STATUS "Checking for module 'vulkan' > 1.3.268")
+message(STATUS "Checking for module 'vulkan'  (ver 1.3.268-1.3.301)")
 find_package(Vulkan 1.3.268 QUIET)
 if(NOT Vulkan_FOUND)
     clearVars()
     pkg_check_modules(Vulkan QUIET vulkan>=1.3.268)
-    if(Vulkan_FOUND AND Vulkan_LIBRARY_DIRS)
-        set(Vulkan_LIBRARIES "${Vulkan_LIBRARY_DIRS}/lib${Vulkan_LIBRARIES}.so" CACHE INTERNAL "" FORCE)
+endif()
+
+# enforce upper version
+if(Vulkan_FOUND)
+    if(Vulkan_VERSION VERSION_GREATER_EQUAL 1.3.302)
+        set(Vulkan_FOUND FALSE CACHE "" FORCE)
+        set(Vulkan_FOUND FALSE)
+        clearVars()
     endif()
 endif()
 
