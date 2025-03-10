@@ -33,8 +33,7 @@
     {
       "name": "depthai",
       "cmake_flag": "USE_DEPTHAI=ON",
-      "dependencies": [
-      ]
+      "dependencies": []
     },
     {
       "name": "display_vk",
@@ -71,14 +70,12 @@
     {
       "name": "gtsam_integrator",
       "cmake_flag": "USE_GTSAM_INTEGRATOR=ON",
-      "dependencies": [
-      ]
+      "dependencies": []
     },
     {
       "name": "hand_tracking",
       "cmake_flag": "USE_HAND_TRACKING=ON",
       "dependencies": [
-        "git",
         "libcpuinfo",
         "libgles",
         "fp16"
@@ -94,8 +91,7 @@
     {
       "name": "webcam",
       "cmake_flag": "USE_WEBCAM=ON",
-      "dependencies": [
-      ]
+      "dependencies": []
     },
     {
       "name": "native_renderer",
@@ -133,8 +129,7 @@
     {
       "name": "offload_data",
       "cmake_flag": "USE_OFFLOAD_DATA=ON",
-      "dependencies": [
-      ]
+      "dependencies": []
     },
     {
       "name": "offload_vio.device_rx",
@@ -182,8 +177,7 @@
     {
       "name": "openvins",
       "cmake_flag": "USE_OPENVINS=ON",
-      "dependencies": [
-      ]
+      "dependencies": []
     },
     {
       "name": "orb_slam3",
@@ -302,7 +296,6 @@
       "name": "zed",
       "cmake_flag": "USE_ZED=ON",
       "dependencies": [
-        "zstd",
         "zed_SDK"
       ]
     },
@@ -310,7 +303,6 @@
       "name": "zed.data_injection",
       "cmake_flag": "USE_ZED.DATA_INJECTION=ON",
       "dependencies": [
-        "OpenCV",
         "zed_SDK"
       ]
     }
@@ -442,9 +434,11 @@
             "notes": ""
           },
           "Fedora": {
-            "pkg": "glm-devel",
-            "postnotes": "",
-            "notes": ""
+            "38+": {
+              "pkg": "glm-devel",
+              "postnotes": "",
+              "notes": ""
+            }
           }
         }
       }
