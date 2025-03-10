@@ -197,7 +197,7 @@ void native_renderer::_p_one_iteration() {
         auto next_swap_time_point = std::chrono::time_point<std::chrono::system_clock>(
             std::chrono::duration_cast<std::chrono::system_clock::duration>((**next_swap).time_since_epoch()));
         auto current_time = clock_->now().time_since_epoch();
-        auto diff = next_swap_time_point - current_time;
+        auto diff         = next_swap_time_point - current_time;
         printf("swap diff: %ld\n", diff.time_since_epoch());
         next_swap_time_point -= std::chrono::duration_cast<std::chrono::system_clock::duration>(
             display_params::period / 6.0 * 5); // sleep till 1/6 of the period before vsync to begin timewarp
@@ -726,13 +726,15 @@ void native_renderer::create_app_pass() {
          },
          {
              // After the app is done rendering to the offscreen image, it needs to be transitioned to a shader read
-             0,                                                                                                 // srcSubpass
-             VK_SUBPASS_EXTERNAL,                                                                               // dstSubpass
-             VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,                                                     // srcStageMask
-             timewarp_->is_external() ? VK_PIPELINE_STAGE_TRANSFER_BIT : VK_PIPELINE_STAGE_VERTEX_SHADER_BIT | VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, // dstStageMask
-             VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,                                                              // srcAccessMask
-             timewarp_->is_external() ? VK_ACCESS_TRANSFER_READ_BIT : VK_ACCESS_SHADER_READ_BIT,                // dstAccessMask
-             VK_DEPENDENCY_BY_REGION_BIT // dependencyFlags
+             0,                                             // srcSubpass
+             VK_SUBPASS_EXTERNAL,                           // dstSubpass
+             VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, // srcStageMask
+             timewarp_->is_external()
+                 ? VK_PIPELINE_STAGE_TRANSFER_BIT
+                 : VK_PIPELINE_STAGE_VERTEX_SHADER_BIT | VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,  // dstStageMask
+             VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,                                               // srcAccessMask
+             timewarp_->is_external() ? VK_ACCESS_TRANSFER_READ_BIT : VK_ACCESS_SHADER_READ_BIT, // dstAccessMask
+             VK_DEPENDENCY_BY_REGION_BIT                                                         // dependencyFlags
          },
          {// depth buffer write-after-write hazard
           VK_SUBPASS_EXTERNAL, 0, VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT, VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
