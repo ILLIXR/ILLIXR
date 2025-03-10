@@ -5,6 +5,8 @@ site_url: https://illixr.github.io/ILLIXR/docs
 markdown_extensions:
     - codehilite
     - fenced_code
+    - footnotes
+    - admonition
 extra_css:
     - css/code-box-copy.css
     - css/prism.min.css
@@ -20,6 +22,7 @@ nav:
         - 'Getting Started': getting_started.md
         - 'Using ILLIXR with Cameras': using_cameras.md
         - 'ILLIXR Debugging Tips': debugging_illixr.md
+        - 'ILLIXR Docker': docker.md
         - 'ILLIXR Under Virtualization': virtualization.md
         - 'ILLIXR Plugin Overview': illixr_plugins.md
         - 'Contributing to ILLIXR':
