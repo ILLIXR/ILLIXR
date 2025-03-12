@@ -11,4 +11,3 @@
 - [CUDA](https://developer.nvidia.com/cuda-toolkit-archive)
 - [ZED SDK](https://www.stereolabs.com/docs/installation/linux/)
 - OpenCV 4
-

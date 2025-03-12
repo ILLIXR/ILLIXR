@@ -1,6 +1,5 @@
 # This file was auto generated, take caution if manually editing.
 plugins: zed,hand_tracking,hand_tracking.viewer
-visualizers: openvins
 env_vars:
   enable_offload: false
   enable_alignment: false

@@ -6,14 +6,12 @@ builds each requested plugin, builds the main ILLIXR binary, and (optionally) in
 ILLIXR currently only builds on Linux systems, and has been tested on the following configurations:
 
 - Ubuntu
-    - 20.04[^1]
     - 22.04
     - 24.04
-- Fedora[^2]
+- Fedora[^1]
     - 38+
 
-[^1]: As of this release, Ubuntu 20.04 is still fully supported by Ubuntu, but some of the code in ILLIXR or its dependencies may require features/packages that are not directly available in 20.04, and may require manual installation.
-[^2]: Primary development is aimed at Ubuntu systems, full support for Fedora may require extra work on the users part.
+[^1]: Primary development is aimed at Ubuntu systems, full support for Fedora may require extra work on the users part.
 
 Other versions of these operating systems may work, but will likely require some manual installation of dependencies.
 For other Linux distributions (e.g. RHEL) it will require significant manual installation of dependencies as many
@@ -115,14 +113,13 @@ The CMake process will also create a [_YAML_][2] file call `illixr.yaml` which c
 To run the ILLIXR binary just call `main.<>.exe` with any of the following command line arguments. (the `<>` indicate
 an infix specifying the build type, for `Debug` use `dbg`, for `Release` use `opt`, for `RelWithDebInfo` use `optdbg`)
 
-- -p,--plugins=&lt;&gt;, comma separated list of plugins to use (case-sensitive, all lowercase, no spaces)
-- -r,--run=&lt;&gt;, comma separated list of plugins to use (case-sensitive, all lowercase, no spaces), supersedes plugins entry.  This is only necessary if a plugin builds more than one library (e.g. offload_vio builds 4 libraries) as each must be loaded individually.
-- -y,--yaml&lt;&gt;, the [profile][23] file to use which specifies some or all of the above arguments (e.g. the generated `illixr.yaml`)
-- --vis, the visualizer to use (openvins currently)
+- -p,--plugins=<>, comma separated list of plugins to use (case sensitive, all lowercase, no spaces)
+- -r,--run=<>, comma separated list of plugins to use (case sensitive, all lowercase, no spaces), supersedes plugins entry.  This is only necessary if a plugin builds more than one library (e.g. offload_vio builds 4 libraries) as each must be loaded individually.
+- -y,--yaml=<>, the [profile][23] file to use which specifies some or all of the above arguments (e.g. the generated `illixr.yaml`)
 - --<ANY ENVIRONMENT VARIABLE NAME>, you can specify any variable the ILLIXR uses on the command line. Common ones are:
-  - --duration=&lt;&gt;, the duration to run for in seconds (default is 60)
-  - --data=&lt;&gt;, the data file to use
-  - --demo_data=&lt;&gt;, the demo data to use
+  - --duration=<>, the duration to run for in seconds (default is 60)
+  - --data=<>, the data file to use
+  - --demo_data=<>, the demo data to use
   - --enable_offload
   - --enable_alignment
   - --enable_verbose_errors, give more information about errors
@@ -271,7 +268,6 @@ If you want to add your own plugin, see [Writing Your Plugin][11].
     const operatingSystems = {};
     const profiles = [];
     var selectedOS = "";
-    var selectedOSv = "";
     const plugins = new Set();
     const module_json = @MODULE_JSON@;
 
@@ -321,7 +317,7 @@ If you want to add your own plugin, see [Writing Your Plugin][11].
         if(selectedOS == "Ubuntu") {
             sudoLine = "sudo apt-get install libglew-dev libglu1-mesa-dev libsqlite3-dev libx11-dev libgl-dev pkg-config libopencv-dev libeigen3-dev libc6-dev libspdlog-dev libboost-all-dev git cmake cmake-data";
             postnotes.innerHTML = "";
-        } else if(selectedOS == "Fedora") {
+        } else {
             sudoLine = "sudo dnf install glew-devel mesa-libGLU-devel sqlite-devel libX11-devel mesa-libGL-devel pkgconf-pkg-config opencv-devel eigen3-devel glibc-devel spdlog-devel boost-devel git cmake cmake-data";
             postnotes.innerHTML = "Potential issues:<ul><li>If cmake is having trouble with some of the package-config (.pc) files used to locate packages you may need to run the following:" + makeCopyable("sudo sed -i 's/\^\[ \\t\]\*//g' /usr/lib64/pkgconfig/*", "postF") + "</li><li>If the build step is having issues finding some of the include files you may need the following:" + makeCopyable("sudo ln -s /usr/include /include", "post2F") + "</li></ul>";
         }
@@ -332,21 +328,21 @@ If you want to add your own plugin, see [Writing Your Plugin][11].
                 checked ||= document.getElementById(p).checked;
             }
             if(checked) {
-                sudoLine += " " + dependencies[m].pkg[selectedOS][selectedOSv].pkg;
-                if(dependencies[m].pkg[selectedOS][selectedOSv].postnotes !== "") {
-                    pkgnotes += "<P>" + dependencies[m].pkg[selectedOS][selectedOSv].postnotes;
+                sudoLine += " " + dependencies[m].pkg[selectedOS].pkg;
+                if(dependencies[m].pkg[selectedOS].postnotes !== "") {
+                    pkgnotes += "<P>" + dependencies[m].pkg[selectedOS].postnotes;
                 }
-                if(dependencies[m].pkg[selectedOS][selectedOSv].notes !== "") {
+                if(dependencies[m].pkg[selectedOS].notes !== "") {
                     if(pkginfo !== "") {
                         pkginfo += "<P>";
                     }
-                    pkginfo +=  dependencies[m].pkg[selectedOS][selectedOSv].notes;
+                    pkginfo +=  dependencies[m].pkg[selectedOS].notes;
                 }
             }
         }
 
         if(document.getElementById("withVirt").checked) {
-            sudoLine += " " + dependencies["qemu"].pkg[selectedOS][selectedOSv].pkg;
+            sudoLine += " " + dependencies["qemu"].pkg[selectedOS].pkg;
         }
 
         if(pkginfo !== "") {
@@ -410,7 +406,6 @@ If you want to add your own plugin, see [Writing Your Plugin][11].
     function updateOS(os_str) {
         const items = os_str.split(".");
         selectedOS = items[0];
-        selectedOSv = items[1];
         updateSudo();
     }
     function checkAll() {
@@ -444,15 +439,14 @@ If you want to add your own plugin, see [Writing Your Plugin][11].
         for(let x in operatingSystems) {
             let txt = x + ":";
             for(let ver of operatingSystems[x]) {
-                txt += "<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type='radio' id='" + x + "." + ver + "' name='os_choice' value='" + x + "." + ver + "' onclick='updateOS(this.value);'>" + ver;
+                txt += "<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type='radio' id='" + x + "' name='os_choice' value='" + x + "' onclick='updateOS(this.value);'>" + ver;
             }
             let cell = osrow.insertCell(-1);
             cell.style.verticalAlign = "top";
             cell.innerHTML = txt;
         }
         selectedOS = "Ubuntu";
-        selectedOSv = "22";
-        document.getElementById(selectedOS + "." + selectedOSv).checked = true;
+        document.getElementById(selectedOS).checked = true;
         let tabRef = document.getElementById("profile_table");
 
         let count = 0;
