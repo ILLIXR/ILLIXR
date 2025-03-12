@@ -1,0 +1,1 @@
+../../../plugins/lighthouse/README.md

@@ -70,10 +70,8 @@ data_injection::data_injection(const std::string& name_, phonebook* pb_)
     , frame_pose_writer_{switchboard_->get_writer<pose_type>("pose")}
     , camera_data_writer_{switchboard_->get_writer<camera_data>("cam_data")}
     , counter_{0} {
-    // std::string test_data_root = switchboard_->get_env("ILLIXR_TEST_DATA");
-    const char* test_data_root = getenv("ILLIXR_TEST_DATA");
-    // if (test_data_root.empty())
-    if (!test_data_root)
+    std::string test_data_root = switchboard_->get_env("ILLIXR_TEST_DATA");
+    if (test_data_root.empty())
         throw std::runtime_error("No test data root specified");
     std::string test_data_root_str(test_data_root);
     data_root_path_ = test_data_root_str + "/";
