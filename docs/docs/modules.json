@@ -32,8 +32,7 @@
     {
       "name": "depthai",
       "cmake_flag": "USE_DEPTHAI=ON",
-      "dependencies": [
-      ]
+      "dependencies": []
     },
     {
       "name": "fauxpose",
@@ -314,14 +313,12 @@
     {
       "name": "record_imu_cam",
       "cmake_flag": "USE_RECORD_IMU_CAM=ON",
-      "dependencies": [
-      ]
+      "dependencies": []
     },
     {
       "name": "record_rgb_depth",
       "cmake_flag": "USE_RECORD_RGB_DEPTH=ON",
-      "dependencies": [
-      ]
+      "dependencies": []
     },
     {
       "name": "rk4_integrator",
@@ -999,7 +996,7 @@
           }
         },
         "Fedora": {
-          "pkg": "",
+          "pkg": "cpuinfo-devel",
           "postnotes": "",
           "notes": ""
         }
@@ -1022,22 +1019,6 @@
       }
     },
     {
-      "libcpuinfo": {
-        "pkg": {
-          "Ubuntu": {
-            "pkg": "libcpuinfo-dev",
-            "postnotes": "",
-            "notes": ""
-          }
-        },
-        "Fedora": {
-          "pkg": "",
-          "postnotes": "",
-          "notes": ""
-        }
-      }
-    },
-    {
       "libgles": {
         "pkg": {
           "Ubuntu": {
@@ -1047,7 +1028,7 @@
           }
         },
         "Fedora": {
-          "pkg": "",
+          "pkg": "libglvnd-devel",
           "postnotes": "",
           "notes": ""
         }
@@ -1237,7 +1218,7 @@
             "notes": ""
           },
           "Fedora": {
-            "pkg": "",
+            "pkg": "libuvc-devel",
             "postnotes": "",
             "notes": "Fedora does not supply libuvc from its repositories. You will need to install it from <a href=\"https://github.com/libuvc/libuvc\">https://github.com/libuvc/libuvc</a>."
           }
@@ -1525,7 +1506,7 @@
             "notes": ""
           },
           "Fedora": {
-            "pkg": "??",
+            "pkg": "qemu",
             "postnotes": "",
             "notes": ""
           }
@@ -1669,7 +1650,7 @@
             "notes": ""
           },
           "Fedora": {
-            "pkg": "",
+            "pkg": "libxcb-devel",
             "postnotes": "",
             "notes": ""
           }
@@ -1685,7 +1666,7 @@
             "notes": ""
           },
           "Fedora": {
-            "pkg": "",
+            "pkg": "libxcb-devel",
             "postnotes": "",
             "notes": ""
           }
@@ -1746,7 +1727,7 @@
           "Ubuntu": {
             "pkg": "zstd",
             "postnotes": "",
-            "notes": "ZED SDK (version 3) is required for the zed plugin. As of this release there is no ZED SDK available for Ubuntu 24, and the versions for Ubuntu 22 will not work. Once it is available, you can install it manually. See <a href=\"https://www.stereolabs.com/docs/installation/linux/\">here</a> for details. It also requires some CUDA packages which should be available <a href=\"https://developer.nvidia.com/cuda-toolkit-archive\">here</a> or through your Ubuntu repo."
+            "notes": "ZED SDK is required for the zed plugin. It must be installed manually. See <a href=\"https://www.stereolabs.com/docs/installation/linux/\">here</a> for details. It also requires some CUDA packages which should be available <a href=\"https://developer.nvidia.com/cuda-toolkit-archive\">here</a> or through your Ubuntu repo."
           },
           "Fedora": {
             "pkg": "",
