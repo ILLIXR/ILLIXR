@@ -31,7 +31,7 @@ Topic details:
 
 ## depthai
 
-INFO NEEDED
+Enables access to the DepthAI library.
 
 Topic details:
 
@@ -132,7 +132,7 @@ Topic details:
 
 ## lighthouse
 
-INFO NEEDED
+Enables lighthouse tracking using the [libsurvive library](https://github.com/collabora/libsurvive)
 
 Topic details:
 
@@ -143,7 +143,7 @@ Topic details:
 
 ## native_renderer
 
-INFO NEEDED
+Constructs a full rendering pipeline utilizing several ILLIXR components.
 
 Topic details:
 
@@ -189,7 +189,7 @@ Topic details:
 
 ## offload_rendering_client
 
-INFO NEEDED
+Receives encoded frames from the network, sent by [offload_rendering_server](#offload_rendering_server)
 
 Topic details:
 
@@ -202,7 +202,7 @@ Topic details:
 
 ## offload_rendering_client_jetson
 
-INFO NEEDED
+Receives encoded frames from the network, sent by [offload_rendering_server](#offload_rendering_server), but specialized to run on a Jetson.
 
 Topic details:
 
@@ -215,7 +215,7 @@ Topic details:
 
 ## offload_rendering_server
 
-INFO NEEDED
+Encodes and transmits frames to one of the offload_rendering_clients. 
 
 Topic details:
 
@@ -227,7 +227,7 @@ Topic details:
 
 ## offload_vio
 
-INFO NEEDED
+Four plugins which work in unison to allow head tracking (VIO) to be rendered remotely. 
 
 Topic details:
 
@@ -250,7 +250,7 @@ Topic details:
 
 ## openni
 
-INFO NEEDED
+Enables an interface to the Openni algorithms.
 
 Topic details:
 
@@ -273,7 +273,7 @@ Topic details:
 
 ## openwarp_vk
 
-INFO NEEDED
+Provides a Vulkan-based reprojection service.
 
 Topic details:
 
@@ -284,7 +284,7 @@ Topic details:
 
 ## orb_slam3
 
-INFO NEEDED
+Utilizes the ORB_SLAM3 library to enable real-time head tracking (VIO).
 
 Topic details:
 
@@ -296,7 +296,7 @@ Topic details:
 
 ## passthrough_integrator
 
-INFO NEEDED
+Provides IMU integration.
 
 Topic details:
 
@@ -354,7 +354,7 @@ Topic details:
 
 ## tcp_network_backend
 
-INFO NEEDED
+Provides network communications over TCP.
 
 **Details**&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C27]
 
@@ -403,7 +403,10 @@ Topic details:
 
 Reads images and [_IMU_][36] measurements from the [ZED Mini][24].
 Unlike `offline_imu`, `zed` additionally has RGB and [_depth_][34] data.
-Note that this plugin implements two threads: one for the camera, and one for the IMU.
+
+!!! note
+    
+    This plugin implements two threads: one for the camera, and one for the IMU.
 
 Topic details:
 
@@ -626,7 +629,7 @@ See [Getting Started][31] for more information on adding plugins to a [_profile_
 
 [41]:   glossary.md#plugin
 
-[57]:   illixr_services.md#service-pose-prediction
+[57]:   illixr_services.md#pose_prediction
 
 [60]:   api/html/structILLIXR_1_1data__format_1_1fast__pose__type.html
 

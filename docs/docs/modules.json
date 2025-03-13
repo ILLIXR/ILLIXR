@@ -120,7 +120,7 @@
       "dependencies": [
         "libdrm",
         "EGL",
-        "GLESv2",
+        "libgles",
         "Vulkan"
       ]
     },
@@ -274,9 +274,9 @@
     },
     {
       "name": "openwarp_vk",
-      "cmake_flag": "OSE_OPENWARP_VK=ON",
+      "cmake_flag": "USE_OPENWARP_VK=ON",
       "dependencies": [
-        "vulkan",
+        "Vulkan",
         "glm",
         "glslang"
       ]
@@ -447,11 +447,9 @@
             "notes": ""
           },
           "Fedora": {
-            "38+": {
-              "pkg": "cuda-nvcc",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "cuda-nvcc",
+            "postnotes": "",
+            "notes": ""
           }
         }
       }
@@ -465,11 +463,9 @@
             "notes": "The cuda-rt package is version named, you will need to determine which is available for your system."
           },
           "Fedora": {
-            "38+": {
-              "pkg": "cuda-cudart-devel",
-              "postnotes": "",
-              "notes": "The cuda-rt package is version named, you will need to determine which is available for your system."
-            }
+            "pkg": "cuda-cudart-devel",
+            "postnotes": "",
+            "notes": "The cuda-rt package is version named, you will need to determine which is available for your system."
           }
         }
       }
@@ -926,12 +922,12 @@
       "libmodplug": {
         "pkg": {
           "Ubuntu": {
-            "pkg": "ibmodplug-dev",
+            "pkg": "libmodplug-dev",
             "postnotes": "",
             "notes": ""
           },
           "Fedora": {
-            "pkg": "ibmodplug-dev",
+            "pkg": "libmodplug-dev",
             "postnotes": "",
             "notes": ""
           }
@@ -997,22 +993,6 @@
         },
         "Fedora": {
           "pkg": "cpuinfo-devel",
-          "postnotes": "",
-          "notes": ""
-        }
-      }
-    },
-    {
-      "libgles": {
-        "pkg": {
-          "Ubuntu": {
-            "pkg": "libgles-dev",
-            "postnotes": "",
-            "notes": ""
-          }
-        },
-        "Fedora": {
-          "pkg": "",
           "postnotes": "",
           "notes": ""
         }
@@ -1131,46 +1111,15 @@
       }
     },
     {
-      "libsrt": {
-        "pkg": {
-          "Ubuntu": {
-            "pkg": "libsrt-openssl-dev",
-            "postnotes": "",
-            "notes": ""
-          },
-          "Fedora": {
-            "pkg": "libsrt-openssl-dev",
-            "postnotes": "",
-            "notes": ""
-          }
-        }
-      }
-    },
-    {
       "libssh": {
         "pkg": {
           "Ubuntu": {
-            "postnotes": "",
-            "notes": ""
-          },
-          "Fedora": {
             "pkg": "libssh-dev",
             "postnotes": "",
             "notes": ""
-          }
-        }
-      }
-    },
-    {
-      "libsvtav1": {
-        "pkg": {
-          "Ubuntu": {
-            "pkg": "libsvtav1enc-dev",
-            "postnotes": "",
-            "notes": ""
           },
           "Fedora": {
-            "pkg": "libsvtav1enc-dev",
+            "pkg": "libssh-devel",
             "postnotes": "",
             "notes": ""
           }
@@ -1205,22 +1154,6 @@
             "pkg": "libusb1-devel",
             "postnotes": "",
             "notes": ""
-          }
-        }
-      }
-    },
-    {
-      "libuvc": {
-        "pkg": {
-          "Ubuntu": {
-            "pkg": "libuvc-dev",
-            "postnotes": "",
-            "notes": ""
-          },
-          "Fedora": {
-            "pkg": "libuvc-devel",
-            "postnotes": "",
-            "notes": "Fedora does not supply libuvc from its repositories. You will need to install it from <a href=\"https://github.com/libuvc/libuvc\">https://github.com/libuvc/libuvc</a>."
           }
         }
       }
@@ -1427,22 +1360,6 @@
           },
           "Fedora": {
             "pkg": "openxr-devel",
-            "postnotes": "",
-            "notes": ""
-          }
-        }
-      }
-    },
-    {
-      "patch": {
-        "pkg": {
-          "Ubuntu": {
-            "pkg": "patch",
-            "postnotes": "",
-            "notes": ""
-          },
-          "Fedora": {
-            "pkg": "patch",
             "postnotes": "",
             "notes": ""
           }
