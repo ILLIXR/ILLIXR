@@ -13,6 +13,8 @@
     >
 </a>
 
+# Overview
+
 Illinois Extended Reality testbed or ILLIXR (pronounced like elixir) is a fully open-source Extended Reality (XR)
 system and testbed. The modular, extensible, and OpenXR-compatible ILLIXR runtime integrates state-of-the-art XR
 components into a complete XR system.
@@ -27,12 +29,15 @@ component in isolation. The standalone components are packaged together as of th
 ILLIXR's modular and extensible runtime allows adding new components and swapping different implementations of a given
 component. ILLIXR currently contains the following plugins and services:
 
-- *Perception*
+## Current Plugins and Services
+
+### Perception
+
     - Filter-based visual-inertial estimator
-        - [OpenVINS][PL54]<SUP>1</SUP>
+        - [OpenVINS][PL54][^1]
     - Tracking
-        - Head tracking: [ORB_SLAM3][PL6]<SUP>1</SUP> and [lighthouse][PL55]
-        - [Hand tracking][PL5]<SUP>1</SUP>
+        - Head tracking: [ORB_SLAM3][PL6][^1] and [lighthouse][PL55]
+        - [Hand tracking][PL5][^1]
         - [openni][PL54]
         - [depthai][PL56]
     - IMU integrators
@@ -48,44 +53,47 @@ component. ILLIXR currently contains the following plugins and services:
         - [realsense][PL36] supporting [Intel RealSense][41]
         - [webcam][PL37]
 
-- *Visual*
+### Visual
+
     - Asynchronous reprojection:
-      - [timewarp_gl][PL38], [OpenGL][2] based
-      - [timewarp_vk][PL65], [Vulkan][3] based
+        - [timewarp_gl][PL38], [OpenGL][2] based
+        - [timewarp_vk][PL65], [Vulkan][3] based
     - Asynchronous 6-degree reprojection [openwarp][PL58]
     - [vkdemo][PL57] - toy application, with native ILLIXR rendering interface gldemo
     - [native_renderer][PL59] - render management
     - [gldemo][PL47] - stand-in application when ILLIXR is run as a standalone application without an actual OpenXR
       application
 
-- *Aural*
-    - [spatial audio encodeing/playback][PL1]<SUP>1</SUP>
+### Aural
 
-- *Data Recording*
+    - [spatial audio encoding/playback][PL1][^1]
+
+### Data Recording
+
     - [offload_data][PL46]
     - [record_imu_cam][PL39]
     - [record_rgb_depth][PL40]
     - [zed_capture][55] (standalone executable)
 
-- *Data Reading/Injection*
+### Data Reading/Injection
+
     - [offline_cam][PL41]
     - [offline_imu][PL42]
     - [zed.data_injection][PL43]
     - [ground_truth_slam][PL48]
 
-- *Visualization*
+### Visualization
     - [debugview][PL44]
     - [hand_tracking.viewer][PL45]
 
-- *Offloading/Remote Work*
+### Offloading/Remote Work
     - [offload_vio][PL60]
     - [offload_rendering_client][PL61]
     - [offload_rendering_client_jetson][PL62]
     - [offload_rendering_server][PL63]
     - [tcp_network_backend][PL64]
 
-<SUP>1</SUP> Source is hosted in an external repository under the [ILLIXR project][7].
-<BR><SUP>2</SUP> Source is in the main ILLIXR [repository][38] under plugins.
+[^1]: Source is hosted in an external repository under the [ILLIXR project][7].
 
 Some components, such as eye tracking and reconstruction are available as standalone components and are in the process
 of being integrated.
@@ -228,58 +236,57 @@ However, ILLIXR does contain software developed solely by us.
 The external libraries and software included in ILLIXR each have their own licenses and
 must be used according to those licenses:
 
-| Package                            | License<SUP>1</SUP>                                |
-|:-----------------------------------|:---------------------------------------------------|
-| [abseil-cpp][P48]                  | [Apache v2][L48]                                   |
-| [ARM NEON 2 x86 SSE][P42]          | [BSD-2 clause][L42]<SUP>2</SUP>                    |
-| [concurrentqueue][P1]              | [BSD-2 clause][L1]                                 |
-| [cxxopts][P2]                      | [MIT][L2]                                          |
-| [Depthai Core][P3]                 | [MIT][L3]                                          |
-| [EGL-Registry][P47]                | None given                                         |
-| [farmhash][P46]                    | [MIT][L46]                                         |
-| [FFmpeg][P4]                       | [GNU General Public License v3.0][L35]<SUP>3</SUP> |
-| [filter][P5]                       | [MIT][L5]                                          |
-| [flatbuffers][P44]                 | [Apache v2][L44]                                   |
-| [gemmlowp][P43]                    | [Apache v2][L43]                                   |
-| [glslang][P6]                      | [BSD-3 clause][L6]<SUP>4</SUP>                     |
-| [Gtsam][P7]                        | [BSD-2 clause][L7]<SUP>2</SUP>                     |
-| [imgui][P8]                        | [MIT][L8]                                          |
-| [mediapipe][P36]                   | [Apache v2][L36]                                   |
-| [Monado][P29]                      | [MIT][L29]                                         |
-| [Monado integration][P9]           | [Boost v1][L9]                                     |
-| [Monado Vulkan Integration][P10]   | [Boost v1][L10]                                    |
-| [moodycamel::ConcurrentQueue][P30] | [BSD-2 clause][L30]<SUP>2</SUP>                    |
-| [OouraFFT][P45]                    | [MIT-like][L45]                                    |
-| [Open-VINS][P35]                   | [GNU General Public License v3.0][L35]             |
-| [OpenXR][P12]                      | [Boost v1][L12]                                    |
-| [ORB_SLAM3][P49]                   | [GNU General Public License v3.0][L49]             |
-| [protobuf][L41]                    | [BSD-3 clause][L41]                                |
-| [pthreadpool][P40]                 | [BSD-2 clause][L40]<SUP>2</SUP>                    |
-| [robin-hood-hashing][P14]          | [MIT][L14]                                         |
-| [ruy][P39]                         | [Apache v2][P39]                                   |
-| [SPIRV Headers][P16]               | [MIT][L16]                                         |
-| [SPIRV Tools][P17]                 | [Apache v2][L17]                                   |
-| [SqliteCPP][P18]                   | [MIT][L18]                                         |
-| [stb][P19]                         | [MIT][L19]                                         |
-| [tensorflow-lite][P38]             | [Apache v2][L38]                                   |
-| [tinyobjloader][P20]               | [MIT][L20]                                         |
-| [Vulkan Headers][P21]              | [Apache v2][L21]                                   |
-| [Vulkan Loader][P22]               | [Apache v2][L22]                                   |
-| [Vulkan Utility Libraries][P23]    | [Apache v2][L23]                                   |
-| [Vulkan Validation Layers][P24]    | [Apache v2][L24]                                   |
-| [VulkanMemoryAllocator][P25]       | [MIT][L25]                                         |
-| [XNNPACK][P37]                     | [BSD-3 clause][L37]                                |
-| [yaml-cpp][P26]                    | [MIT][L26]                                         |
-| zed_opencv (Sterolabs)             | [MIT][L27]                                         |
+| Package                            | License[^2]                                 |
+|:-----------------------------------|:--------------------------------------------|
+| [abseil-cpp][P48]                  | [Apache v2][L48]                            |
+| [ARM NEON 2 x86 SSE][P42]          | [BSD-2 clause][L42][^3]]                    |
+| [concurrentqueue][P1]              | [BSD-2 clause][L1]                          |
+| [cxxopts][P2]                      | [MIT][L2]                                   |
+| [Depthai Core][P3]                 | [MIT][L3]                                   |
+| [EGL-Registry][P47]                | None given                                  |
+| [farmhash][P46]                    | [MIT][L46]                                  |
+| [FFmpeg][P4]                       | [GNU General Public License v3.0][L35][^4]] |
+| [filter][P5]                       | [MIT][L5]                                   |
+| [flatbuffers][P44]                 | [Apache v2][L44]                            |
+| [gemmlowp][P43]                    | [Apache v2][L43]                            |
+| [glslang][P6]                      | [BSD-3 clause][L6][^5]                      |
+| [Gtsam][P7]                        | [BSD-2 clause][L7][^3]                      |
+| [imgui][P8]                        | [MIT][L8]                                   |
+| [mediapipe][P36]                   | [Apache v2][L36]                            |
+| [Monado][P29]                      | [MIT][L29]                                  |
+| [Monado integration][P9]           | [Boost v1][L9]                              |
+| [Monado Vulkan Integration][P10]   | [Boost v1][L10]                             |
+| [moodycamel::ConcurrentQueue][P30] | [BSD-2 clause][L30][^3]                     |
+| [OouraFFT][P45]                    | [MIT-like][L45]                             |
+| [Open-VINS][P35]                   | [GNU General Public License v3.0][L35]      |
+| [OpenXR][P12]                      | [Boost v1][L12]                             |
+| [ORB_SLAM3][P49]                   | [GNU General Public License v3.0][L49]      |
+| [protobuf][L41]                    | [BSD-3 clause][L41]                         |
+| [pthreadpool][P40]                 | [BSD-2 clause][L40][^3]                     |
+| [robin-hood-hashing][P14]          | [MIT][L14]                                  |
+| [ruy][P39]                         | [Apache v2][P39]                            |
+| [SPIRV Headers][P16]               | [MIT][L16]                                  |
+| [SPIRV Tools][P17]                 | [Apache v2][L17]                            |
+| [SqliteCPP][P18]                   | [MIT][L18]                                  |
+| [stb][P19]                         | [MIT][L19]                                  |
+| [tensorflow-lite][P38]             | [Apache v2][L38]                            |
+| [tinyobjloader][P20]               | [MIT][L20]                                  |
+| [Vulkan Headers][P21]              | [Apache v2][L21]                            |
+| [Vulkan Loader][P22]               | [Apache v2][L22]                            |
+| [Vulkan Utility Libraries][P23]    | [Apache v2][L23]                            |
+| [Vulkan Validation Layers][P24]    | [Apache v2][L24]                            |
+| [VulkanMemoryAllocator][P25]       | [MIT][L25]                                  |
+| [XNNPACK][P37]                     | [BSD-3 clause][L37]                         |
+| [yaml-cpp][P26]                    | [MIT][L26]                                  |
+| zed_opencv (Sterolabs)             | [MIT][L27]                                  |
 
-<SUP>1</SUP> Current as of March 5, 2025.
+[^2]: Current as of March 5, 2025.
 
-<SUP>2</SUP> Also known as the Simplified BSD License.
+[^3]: Also known as the Simplified BSD License.
 
-<SUP>3</SUP> ILLIXR uses a customized version of FFmpeg, compiled with x264 and x265 encoding support, thus it is
-licensed under GPL v3.0
+[^4]: ILLIXR uses a customized version of FFmpeg, compiled with x264 and x265 encoding support, thus it is licensed under GPL v3.0
 
-<SUP>4</SUP> This software is covered by multiple open source licenses, see the link for details.
+[^5]: This software is covered by multiple open source licenses, see the link for details.
 
 Any LGPL or GPL licensed code are contained in optional components. ILLIXR's extensibility allows the source to be
 configured and compiled using only
@@ -349,7 +356,7 @@ You can join our [Discord][47], [mailing list][48], [email][49] us, or just send
 
 [52]:   https://illixr.github.io/ILLIXR/docker/
 
-[53]:   https://illixr.github.io/ILLIXR/contributing/contributing/
+[53]:   https://illixr.github.io/ILLIXR/contributing/contributing/index.html
 
 [54]:   https://www.youtube.com/@sadve-group
 
@@ -381,11 +388,11 @@ You can join our [Discord][47], [mailing list][48], [email][49] us, or just send
 
 [PL42]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#offline_imu
 
-[PL43]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#zed_data_injection
+[PL43]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#zeddata_injection
 
 [PL44]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#debugview
 
-[PL45]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#hand_tracking_viewer
+[PL45]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#hand_trackingviewer
 
 [PL46]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#offload_data
 
