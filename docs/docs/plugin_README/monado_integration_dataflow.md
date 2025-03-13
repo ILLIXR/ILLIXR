@@ -67,6 +67,6 @@ The integration:
 [27]:   ../glossary.md#opengl
 [28]:   ../glossary.md#framebuffer
 [29]:   ../glossary.md#distortion-correction
-[30]:   ../glossary.md#chromatic-abberation-correction
+[30]:   ../glossary.md#chromatic-aberration-correction
 [31]:   ../glossary.md#swap-chain
 [32]:   ../glossary.md#simultaneous-localization-and-mapping

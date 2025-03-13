@@ -2,7 +2,7 @@
 
 In order to run the offloading plugins you need the following extra dependecies
 
-```
+``` { .bash .copy }
 sudo add-apt-repository ppa:ecal/ecal-latest
 sudo apt-get update
 sudo apt-get install ecal
@@ -15,11 +15,11 @@ repositories** (clone ILLIXR twice to different locations; running both the serv
 ILLIR repository will cause lock issues). 
 
 Start ILLIXR using
-``` bash
+```  { .bash .copy }
 main.opt.exe --yaml=profiles/offload-server.yaml --data=<> --demo_data=<>
 ```
 for one terminal and 
-``` bash
+```  { .bash .copy }
 main.opt.exe --yaml=profiles/offload-device.yaml --data=<> --demo_data=<>
 
 ```

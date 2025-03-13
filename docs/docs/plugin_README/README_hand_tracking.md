@@ -23,8 +23,9 @@ The `hand_tracking` plugin subscribes to the webcam to get the input images to p
     - **normalized**: boolean indicating the units; `true` indicates normalized units [0..1] of the input image, `false` indicates pixel units
     - **valid**: boolean indicating whther the object is valid
 
-NOTE:
-All coordinates in these data are normalized to the input image size
+!!! note
+    
+    All coordinates in these data are normalized to the input image size
     
 The plugin published an `ht_frame` which contains the following data
 
@@ -44,8 +45,9 @@ The plugin published an `ht_frame` which contains the following data
   - **reference**: the coordinate reference space (e.g. left hand y up)
   - **unit**: the units of the coordinate system
 
-NOTE:
-The **detections** may be removed or re-worked in future releases 
+!!! info
+    
+    The **detections** may be removed or re-worked in future releases 
 
 Each vector of hand points contains 21 items which refencence the following (from https://ai.google.dev/edge/mediapipe/solutions/vision/hand_landmarker)
 
