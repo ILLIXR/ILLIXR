@@ -57,7 +57,9 @@ export ILLIXR_VULKAN_SELECT_GPU=1 # Select the second GPU
 
 Required when using X11 direct mode (`ILLIXR_DISPLAY_MODE=x11_direct`). Specifies which display to use. No need to set this if you only have one display output connected to the GPU.
 
-Note: As of now, this backend is only tested with NVIDIA GPUs.
+!!! note
+    
+    Currently, this backend is only tested with NVIDIA GPUs.
 
 - Value: Integer index of the display to use (0-based)
 - Must be set when using X11 direct mode

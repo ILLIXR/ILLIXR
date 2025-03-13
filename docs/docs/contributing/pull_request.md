@@ -82,9 +82,10 @@ Please follow these steps when making pull requests (PRs):
             git push <illixr-remote> issue-123.{0,1}-fixing-bug                 ## Push new checkpointed branches to remote
             git push <illixr-remote> issue-123-fixing-bug --force-with-lease    ## Force update issue-123-fixing-bug
 
-        > Note:
-        The term _alias_ here is used to refer to branches which point to the same commit.
-        This usage is different from standard [Git Aliases][4] used for git command shortcuts.
+        !!! note
+
+            The term _alias_ here is used to refer to branches which point to the same commit.
+            This usage is different from standard [Git Aliases][4] used for git command shortcuts.
 
         After checkpointing, your local repository should look as follows:
 
@@ -116,12 +117,13 @@ Please follow these steps when making pull requests (PRs):
         following the process from `Line A` to `Line D` (or equivalent; git's CLI allows many
         ways to achieve the same results).
 
-        > Note:
-        `Line B` rebases the `master` branch assuming that we have checked out `master`.
-        Forgetting to specify `master` in `Line B` may result in a _lossy_ forced update in the
-        example below.
-        Forgetting to checkout `master` will immediately apply your checked out feature branch's
-        changes, possibly also resulting in a _lossy_ forced update.
+        !!! note
+
+           `Line B` rebases the `master` branch assuming that we have checked out `master`.
+            Forgetting to specify `master` in `Line B` may result in a _lossy_ forced update in the
+            example below.
+            Forgetting to checkout `master` will immediately apply your checked out feature branch's
+            changes, possibly also resulting in a _lossy_ forced update.
 
         The output of `Line B` for a collaborator after the checkpointing process may contain
         something like this:
@@ -154,11 +156,12 @@ Please follow these steps when making pull requests (PRs):
         `Line D` should be safe to perform for the main feature branch now that we have
         replayed our commits on top of the updated feature branch.
 
-        > Note:
-        In the above example, the `git-rebase` is performed using the remote copy of
-        the checkpointed branch.
-        We do this because `Line B` will not fast-forward or force update our local branches
-        (with the same subversion number as a conflicting remote branch, if any).
+        !!! note
+    
+            In the above example, the `git-rebase` is performed using the remote copy of
+            the checkpointed branch.
+            We do this because `Line B` will not fast-forward or force update our local branches
+            (with the same subversion number as a conflicting remote branch, if any).
 
         In the case of a conflict with updates to `master`, `Line A` should show updates to
         both the `master` branch _and_ the feature branch to be pushed in `Line D`.

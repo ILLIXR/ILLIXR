@@ -151,7 +151,9 @@ cc_binary(
   - **data**: data files which are used by the executable; these files can be downloaded from the web, and in CMake we treat them like a source file
   - **deps**: dependencies that this binary has
 
-Note that the cc_binary descriptor does not give any source files, all source files come from the dependency listings.
+!!!! note
+
+     The cc_binary descriptor does not give any source files, all source files come from the dependency listings.
 
 #### Library component
 ```python
@@ -318,12 +320,19 @@ Now that we have a handle on the basic structure of the files we will be going t
 of the files we actually need to build our tool. Starting with the dependencies in the `cc_binary` descriptor we will 
 need to locate each dependency, then find all of their dependencies, and so on until the only descriptors left have 
 no internal dependencies (external ones are ok, as these libraries will be built beforehand and do not contribute source
-files). Note that some objects will be the dependency of many other objects.
+files). 
+
+!!! note
+
+    Some objects will be the dependency of many other objects.
 
 ### C++
 
-Create a list of every **src** and **hdr** file found in each descriptor. Note that the descriptors only give the file
-name, you will need to add the path to each of these items, so we can keep track of them. 
+Create a list of every **src** and **hdr** file found in each descriptor. 
+
+!!! note
+    
+    The descriptors only give the file name, you will need to add the path to each of these items, so we can keep track of them. 
 
 ### Protobuf
 
@@ -762,8 +771,13 @@ node {
 The `node` defines a single calculator/subgraph. The name of the calculator/subgraph is defined in the `calculator` 
 entry. This will match a class which has already bee compiled in the code (case-sensitive).
 
-As above, the `input_stream` and `output_stream` define the inputs and outputs to/from the calculator. Note that the 
-names of the streams are different from above. They have a format of `NAME:stream_name`. The first, all caps, name acts 
+As above, the `input_stream` and `output_stream` define the inputs and outputs to/from the calculator. 
+
+!!! note
+
+    The names of the streams are different from above. They have a format of `NAME:stream_name`. 
+
+The first, all caps, name acts 
 as a reference to the second name. When the streams are referenced in the C++ code, the name used will be the first (or 
 as above, only name). Thus using the two name scheme allows you to change the actual stream (second name) in the graph
 files, without having to change the C++ code, which uses the first name reference.
@@ -788,9 +802,13 @@ if (!img_status.ok())
 The first line creates a unique pointer which wraps the data we want to send to the tool. The second line stages the
 packet to the graph with a call to `AddPacketToInputStream`. The first argument is the name of the stream to add the 
 packet to (will be one of the names from the graph file), the second argument is the data being sent (it is fully
-adopted by the stream) along with the current timestamp. Note that the timestamp values do not have to match any 
-specific timing convention, but must increase with each call to add a packet to a specific stream. The last two lines
-check that there was no error in adding the packet, and throw an exception if there was.
+adopted by the stream) along with the current timestamp. 
+The last two lines check that there was no error in adding the packet, and throw an exception if there was.
+
+!!! note
+
+    The timestamp values do not have to match any specific timing convention, but must increase with each call to add a packet to a specific stream. 
+
 
 ### Getting Data From the Tool
 

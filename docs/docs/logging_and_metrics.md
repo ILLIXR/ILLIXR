@@ -12,7 +12,7 @@ If `NDEBUG` is not defined, then the default logging level is `warn`, otherwise 
 
 Logging is activated by exporting environment variables to a particular level before running ILLIXR. These take the form of `<PLUGIN_NAME>_LOG_LEVEL`, e.g.,
 
-```
+```  { .bash .copy }
 # Activate logging for both the ground_truth_slam plugin and the ILLIXR app
 # Each will log to the console, with color (actual colors dependent on the terminal settings)
 # Each log will write to $ILLIXR_ROOT/logs/<plugin_name>.log

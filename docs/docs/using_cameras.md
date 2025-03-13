@@ -6,8 +6,9 @@ ILLIXR supports a wide range of cameras, most of which are for the purpose of fe
 *If you are interested in what topics these cameras feed into, checkout [ILLIXR plugins][10].*
 
 
-**Important Note**: <br>
-Before running any of these plugins below, it is important to comment out `offline_cam` and `offline_imu` in `configs\native.yaml`. <br>
+!!! info
+   
+    Before running any of these plugins below, it is important to comment out `offline_cam` and `offline_imu` in `configs\native.yaml`.
 
 ## Add Calibration Parameters
 In order to add your camera's calibration extrinsics, you need to modify your choice of SLAM/VIO plugin. Follow these instructions to [modify a plugin][21].
@@ -67,7 +68,9 @@ ILLIXR has been tested with Intel RealSense D455, but it should work with any D 
 
     Add `realsense` to the plugins list in any yaml profile file and run ILLIXR normally.
     
-    *Note:* We will release the corresponding `#define realsense` soon for OpenVINS + Realsense
+    !!! note 
+ 
+        We will release the corresponding `#define realsense` soon for OpenVINS + Realsense
 
 
 

@@ -10,7 +10,7 @@ If you are asked to review code for a pull request please:
   - If any questions are asked, be specific, feel free to ask several questions
   - If critiques/questions deal with a specific section of code, start a conversation in that part of the code by clicking on the `+` for the line of code in question
 
-![start-conversation](images/start_conv.png)
+![start-conversation](../images/start_conv.png)
 
 
 If your code is being reviewed:
