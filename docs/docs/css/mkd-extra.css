@@ -1,0 +1,17 @@
+:root {
+    --md-primary-fg-color:               #4C83D6;
+    --md-primary-fg-color--light:        #4C83D6;
+    --md-primary-fg-color--dark:         #4C83D6;
+    --md-primary-bg-color:               hsla(0, 0%, 100%, 1);
+    --md-primary-bg-color--light:        hsla(0, 0%, 100%, 0.7);
+    --md-accent-fg-color:                #e94b27;
+    --md-accent-fg-color--transparent:   #e94b27;
+    --md-accent-bg-color:                hsla(0, 0%, 100%, 1);
+    --md-accent-bg-color--light:         hsla(0, 0%, 100%, 0.7);
+
+    --md-nav-hdr-color:                 #4C83D6;
+    --md-nav-hdr-fg-color:              #F3F6FC;
+    --md-nav-list-color:                #F7C1B5;
+    --md-nav-list-lt-color:             #FDF0EC;
+    --md-nav-item-active:               #A22C10;
+}
