@@ -4,11 +4,11 @@
 [![ILLIXR CI](https://github.com/ILLIXR/ILLIXR/actions/workflows/ci.yaml/badge.svg)](https://github.com/ILLIXR/ILLIXR/actions/workflows/ci.yaml)
 [![Discord](https://img.shields.io/discord/830812443189444698?logo=discord&logoColor=white&label=Discord)][47]
 
-<a href="https://youtu.be/GVcCW8WgEDY">
+<a href="https://youtu.be/675L1etdTMg">
     <img
         alt="ILLIXR Simple Demo"
-        src="https://img.youtube.com/vi/GVcCW8WgEDY/0.jpg"
-        style="width: 320px"
+        src="docs/docs/images/offload_vio.png"
+        style="width: 600px"
         class="center"
     >
 </a>
@@ -112,7 +112,21 @@ A [demo][45] of an OpenXR application running with ILLIXR.
 The [ILLIXR consortium][37] is an industry-supported community effort to democratize
 XR systems research, development, and benchmarking.
 Visit our [website][37] for more information.
-For news and papers go to [illixr.org][37], for talks see our [YouTube][54] channel, and join our [Discord][47] for announcements
+For news and papers go to [illixr.org][37], for talks see our [YouTube][54] channel, and join our [Discord][47] for
+announcements.
+
+## Demo Videos
+
+All of our demo videos can be seen on our [YouTube][54] channel. Here are some highlights:
+
+| Running Locally                                                                                                                                                                                                                                                                                                                                                                         | Head Tracking (VIO) Offloaded                                                                                                                                                                                                                                                                                                                                                                              |
+|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| <iframe width="400" height="225" src="https://www.youtube.com/embed/XEiqujGuRyE" title="Demo of ILLIXR running locally" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe><br><a href="https://youtu.be/XEiqujGuRyE">Video Link</a> | <iframe width="400" height="225" src="https://www.youtube.com/embed/675L1etdTMg" title="Demo of ILLIXR with head tracking (VIO) offloaded" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe><br><a href="https://youtu.be/675L1etdTMg">Video Link</a> |
+| <iframe width="400" height="225" src="https://www.youtube.com/embed/VyOShOfHt48" title="Demo of ILLIXR running locally" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe><br><a href="https://youtu.be/VyOShOfHt48">Video Link</a> | <iframe width="400" height="225" src="https://www.youtube.com/embed/2z6eufVJrJE" title="Demo of ILLIXR with head tracking (VIO) offloaded" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe><br><a href="https://youtu.be/2z6eufVJrJE">Video Link</a> |
+
+| Rendering Offloaded                                                                                                                                                                                                                                                                                                                                                                               |
+|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| <iframe width="1280" height="696" src="https://www.youtube.com/embed/oGBYZIPj6Zc" title="Demo of ILLIXR with rendering offloaded" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe><br><a href="https://youtu.be/oGBYZIPj6Zc">Video Link</a> |
 
 # Citation
 
