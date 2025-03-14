@@ -12,7 +12,7 @@ There are three primary entries in the file:
 
 The systems section lists each supported operating system and the supported versions in the following format:
 
-```json
+``` json
 {
   "name": "<OS NAME>",          # the name of the operating system (e.g. Ubuntu, Fedora, etc.)
   "versions": ["<V1>", "<V2>"]  # json array containing the supported version(s) (e.g. 22, 9, 37)
@@ -23,7 +23,7 @@ The systems section lists each supported operating system and the supported vers
 
 The plugins section lists each plugin and any 3rd party dependencies (packages) in the following format:
 
-```json
+``` json
 {
   "name": "<plugin_name">,               # name of the plugin (same as the name of the plugin subdirectory
   "cmake_flag": "USE_<PLUGIN_NAME>=ON",  # name of the plugin in all caps
@@ -33,42 +33,21 @@ The plugins section lists each plugin and any 3rd party dependencies (packages) 
 
 ### Dependencies
 
-The dependencies section lists every possible ILLIXR dependency along with how to install each on the different supported operating systems. The entries are in the following format and assumes the supported operating systems as of April 2024):
+The dependencies section lists every possible ILLIXR dependency along with how to install each on the different supported operating systems. The entries are in the following format and assumes the supported operating systems as of March 2025:
 
-```json
+``` json
 {
   "<dependency>": {      # the name of the dependency, must match any uses in the plugins section
     "pkg": {
       "Ubuntu": {
-        "20": {
-          "pkg": "<package name>",  # the name of the apt package(s) to install to get this dependency, can be a space seperated list, leave as an empty string if this OS does not supply it
-          "postnotes": "",          # for any post-installation instructions to properly configure things
-          "notes": ""               # for any installation notes or instructions, specifically if the package needs to be manually installed
-        },
-        "20": {
-          "pkg": "<package name>",  # the name of the apt package(s) to install to get this dependency, can be a space seperated list, leave as an empty string if this OS does not supply it
-          "postnotes": "",          # for any post-installation instructions to properly configure things
-          "notes": ""               # for any installation notes or instructions, specifically if the package needs to be manually installed
-        }
+        "pkg": "<package name>",  # the name of the apt package(s) to install to get this dependency, can be a space seperated list, leave as an empty string if this OS does not supply it
+        "postnotes": "",          # for any post-installation instructions to properly configure things
+        "notes": ""               # for any installation notes or instructions, specifically if the package needs to be manually installed
       },
       "Fedora": {
-        "37": {
-          "pkg": "<package name>",  # the name of the dnf package(s) to install to get this dependency, can be a space seperated list, leave as an empty string if this OS does not supply it
-          "postnotes": "",          # for any post-installation instructions to properly configure things
-          "notes": ""               # for any installation notes or instructions, specifically if the package needs to be manually installed
-        },
-        "38": {
-          "pkg": "<package name>",  # the name of the dnf package(s) to install to get this dependency, can be a space seperated list, leave as an empty string if this OS does not supply it
-          "postnotes": "",          # for any post-installation instructions to properly configure things
-          "notes": ""               # for any installation notes or instructions, specifically if the package needs to be manually installed
-        }
-      },
-      "CentOS": {
-        "9": {
-          "pkg": "<package name>",  # the name of the yum package(s) to install to get this dependency, can be a space seperated list, leave as an empty string if this OS does not supply it
-          "postnotes": "",          # for any post-installation instructions to properly configure things
-          "notes": ""               # for any installation notes or instructions, specifically if the package needs to be manually installed
-        }
+        "pkg": "<package name>",  # the name of the dnf package(s) to install to get this dependency, can be a space seperated list, leave as an empty string if this OS does not supply it
+        "postnotes": "",          # for any post-installation instructions to properly configure things
+        "notes": ""               # for any installation notes or instructions, specifically if the package needs to be manually installed
       }
     }
   }

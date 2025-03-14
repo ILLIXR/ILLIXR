@@ -3,7 +3,7 @@
 
 ## Install QEMU
 
-See the [Install dependencies][13] section for details on installing QEMU.
+Use you package manager (`apt` for Ubuntu) to install `qemu`
 
 
 ## Setup Ubuntu in the VM

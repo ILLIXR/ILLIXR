@@ -6,7 +6,7 @@ Phonebook][phonebook_api].
 
 One simply needs to copy these files, maintaining directory structure.
 
-```
+```  { .C++ .copy }
 illixr/switchboard.hpp
 illixr/phonebook.hpp
 illixr/record_logger.hpp
@@ -18,7 +18,7 @@ illixr/concurrentqueue/lightweightsemaphore.hpp
 
 This will serve as our `main.cpp`:
 
-```
+```  { .C++ .copy }
 #include <iostream>
 #include "illixr/switchboard.hpp"
 
@@ -54,7 +54,7 @@ Switchboard and Phonebook will only work with compilers that support C++17 or be
 
 For example:
 
-```
+```  { .bash .copy }
 # Must copy with directory structure
 mkdir -p illixr/concurrentqueue
 cp path/to/ILLIXR/illixr/switchboard.hpp illixr

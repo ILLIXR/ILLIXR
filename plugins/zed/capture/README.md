@@ -12,9 +12,14 @@ does not interact with the rest of ILLIXR. It takes the following command line a
 
 `zed_capture` will write out the left and right camera images and the current pose at each frame. Note that it may not
 work at the requested fps due to overheads of writing files. This will be addressed in future updates. Note that the
-depth information is also not captured currently as OpenCV does not properly write out cv::Mat objects with float formats.
+depth information is also not captured currently as [_OpenCV_][G10] does not properly write out cv::Mat objects with float formats.
 This will also be addressed in future updates.
 
 Data are written to <path>/'fps' + <fps_value> + 'dur' + <duration_value> (e.g. <path>/fps30_dur10 will contain data 
 taken at 30 frames per second with a total run time of 10 seconds, or 300 frames, it will always contain 300 frames
 regardless of any slow down due to overheads). This format is compatible with the zed.data_injection plugin.
+
+
+[//]: # (- glossary -)
+
+[G10]:  ../glossary.md#opencv
