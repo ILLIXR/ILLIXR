@@ -52,11 +52,11 @@ nav:
       - 'ILLIXR': index.md
       - 'Getting Started': getting_started.md
       - 'Using ILLIXR with Cameras': using_cameras.md
-      - 'ILLIXR Debugging Tips': debugging_illixr.md
-      - 'ILLIXR Docker': docker.md
+      - 'Debugging Tips': debugging_illixr.md
+      - 'Docker Images': docker.md
       - 'ILLIXR Under Virtualization': virtualization.md
-      - 'ILLIXR Plugin Overview': illixr_plugins.md
-      - 'ILLIXR Services Overview': illixr_services.md
+      - 'Plugin Overview': illixr_plugins.md
+      - 'Services Overview': illixr_services.md
       - 'Contributing to ILLIXR':
           - 'Code of Conduct': contributing/code_of_conduct.md
           - 'Asking Questions': contributing/asking_questions.md
@@ -99,8 +99,8 @@ nav:
           - 'Zed Data Injection': plugin_README/README_zed_data_injection.md
           - 'Zed Data Capture': plugin_README/zed_capture.md
       - 'Logging and Metrics': logging_and_metrics.md
-      - 'ILLIXR Glossary': glossary.md
-      - 'ILLIXR API': api/html/annotated.html
-      - 'ILLIXR License': LICENSE.md
+      - 'Glossary': glossary.md
+      - 'API': api/html/annotated.html
+      - 'License': LICENSE.md
       - 'Updating Tags and Documentation': updating_tags_and_docs.md
       - 'Using Switchboard and Phonebook Externally': external_switchboard_and_phonebook.md

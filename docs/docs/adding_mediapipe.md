@@ -63,22 +63,17 @@ These tools are provided by Mediapipe in a single git repo (https://github.com/g
 the repo to your workspace. Since these tools share a number of dependencies and components in some cases it is best for
 all the wrapped tool to come from the same version of the Mediapipe codebase (currently v0.10.14).
 
-<div class="code-box-copy">
-
-    <button class="code-box-copy__btn" data-clipboard-target="#clone" title="Copy"></button>
-    <pre class="language-shell" id="clone">git clone https://github.com/google-ai-edge/mediapipe.git
-git checkout v0.10.14</pre>
-
-</div>
+``` { .bash .copy }
+git clone https://github.com/google-ai-edge/mediapipe.git
+git checkout v0.10.14
+```
 
 or
 
-<div class="code-box-copy">
-
-    <button class="code-box-copy__btn" data-clipboard-target="#clone" title="Copy"></button>
-    <pre class="language-shell" id="wget">wget https://github.com/google-ai-edge/mediapipe/archive/refs/tags/v0.10.14.tar.gz
+``` { .bash .copy }
+wget https://github.com/google-ai-edge/mediapipe/archive/refs/tags/v0.10.14.tar.gz
 tar xf v0.10.14.tar.gz
-</div>
+```
 
 For purposes of this tutorial the term `file root` will refer to the root directory of the clone or unpacked tarball.
 
@@ -117,7 +112,7 @@ source files or dependencies. The syntax is similar to a python dictionary where
 the value is a list of descriptors to include in whatever list the select statement is attached to. The 
 `//conditions:default` is used to indicate what to use if none of the other options are true. For example
 
-```python
+``` python
 deps = [
    "inference_calculator_cpu"
 ] + select({
@@ -134,7 +129,7 @@ syntax (e.g. include certain files if OpenCV is detected).
 ### Example Descriptors
 
 #### Binary (executable)
-```python
+``` python
 cc_binary(
     name = "hand_tracking_cpu",
     data = [
@@ -156,7 +151,7 @@ cc_binary(
      The cc_binary descriptor does not give any source files, all source files come from the dependency listings.
 
 #### Library component
-```python
+``` python
 cc_library(
    name = "landmarks_to_render_data_calculator",
    srcs = ["landmarks_to_render_data_calculator.cc"],
@@ -186,7 +181,7 @@ Both the **src** and **hdrs** are optional, and often only one is present in a d
 `visibility` items can be safely ignored.
 
 #### Protobuf library component
-```python
+``` python
 mediapipe_proto_library(
     name = "annotation_overlay_calculator_proto",
     srcs = ["annotation_overlay_calculator.proto"],
@@ -204,7 +199,7 @@ mediapipe_proto_library(
 
 #### Pbtxt Files
 There are two signatures for this type of file.
-```python
+``` python
 mediapipe_simple_subgraph(
     name = "hand_landmark_model_loader",
     graph = "hand_landmark_model_loader.pbtxt",
@@ -223,7 +218,7 @@ mediapipe_simple_subgraph(
   - **register_as**: alias for the component name
   - **deps**: list of dependencies for this component
 
-```python
+``` python
 mediapipe_binary_graph(
     name = "hand_tracking_desktop_live_binary_graph",
     graph = "hand_tracking_desktop_live.pbtxt",
@@ -239,7 +234,7 @@ mediapipe_binary_graph(
 
 #### External library
 
-```python
+``` python
 # Load Zlib before initializing TensorFlow and the iOS build rules to guarantee
 # that the target @zlib//:mini_zlib is available
 http_archive(
@@ -265,7 +260,7 @@ http_archive(
   - **patch_args**: any additional command line arguments to send to the patch command
 
 #### Individual file
-```python
+``` python
 http_file(
     name = "com_google_mediapipe_hand_landmark_full_tflite",
     sha256 = "11c272b891e1a99ab034208e23937a8008388cf11ed2a9d776ed3d01d0ba00e3",
@@ -310,7 +305,7 @@ are also built along with this code. The entries start with `@` followed by the 
 by the library path and name. So, `@com_google_absl//absl/memory` refers to the absl memory library described by an 
 `http_archive` object with the name `com_google_absl`. As we refactor the code, and the build structure these types of
 references will be converted to something like
-```cmake
+``` cmake
 target_link_library(landmarks_to_render_data_calculator PUBLIC absl::memory)
 ```
 
@@ -352,7 +347,7 @@ Create a list of all data files that are listed in any descriptors. These are ma
 Now that you have a list of the necessary file to build the tool you should create a separate GitHub repository for your
 plugin. Once that is done, create files and directories in the repo as follows:
 
-```bash
+``` bash
 <root directory>
 ├── CMakeLists.txt      # Main cmake file
 ├── cmake               # empty directory for cmake helper files
@@ -368,7 +363,7 @@ copy [encoder.cmake][10], [make_pb_binary.cmake][11], and [protoc_generate_obj.c
 repository. These files contain helper functions for processing the protobuf files and should go in a directory called 
 `cmake`. Now you should have a directory structure something like this:
 
-```bash
+``` bash
 <root directory>
 ├── CMakeLists.txt      # Main cmake file
 ├── cmake
@@ -404,7 +399,7 @@ cannot be installed this way. In these cases will add some code to the CMakeList
 is met. The CMakeLists.txt should first do a version check (in case the needed version already exists on the system), 
 and then download and install the needed version if required. Below is an example for the Protobuf package
 
-```cmake
+``` cmake
 find_package(protobuf 3.19 QUIET CONFIG)
 if(protobuf_FOUND)
    report_found(protobuf "${protobuf_VERSION}")
@@ -434,7 +429,7 @@ In this section we will use the adaption of the Hand Tracking tool as an example
 sections below.
 
 ### Header
-```cmake
+``` cmake
 cmake_minimum_required(VERSION 3.22)
 project(ILLIXR_hand_tracking)
 set(CMAKE_VERBOSE_MAKEFILE True)
@@ -445,7 +440,7 @@ set(ENV{PKG_CONFIG_PATH} "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig")
 Here the name of the plugin/project is declared along with some global variables.
 
 ### Command Line Options
-```cmake
+``` cmake
 include(CMakeDependentOption)
 
 option(HT_ENABLE_GPU "Whether to enable GPU based codes vs CPU based" OFF)
@@ -468,7 +463,7 @@ endif()
 Here any command line options/flags are declared, and if needed, compile definitions are set.
 
 ### CMAKE_MODULE_PATH
-```cmake
+``` cmake
 set(CMAKE_MODULE_PATH
     ${CMAKE_SOURCE_DIR}/cmake
     ${CMAKE_MODULE_PATH}
@@ -478,7 +473,7 @@ set(CMAKE_MODULE_PATH
 This section tells CMake where to look first for cmake files for external packages.
 
 ### Dependencies
-```cmake
+``` cmake
 find_package(PkgConfig)
 
 if(ILLIXR_ROOT)
@@ -512,14 +507,14 @@ endif()
 Here we search for any dependencies.
 
 ### Protobuf Helpers
-```cmake
+``` cmake
 include(mediapipe/protobuf.cmake)
 include(cmake/encoder.cmake)
 ```
 The protobuf files from Mediapipe need some special processing. These files define functions which properly handle this.
 
 ### Special Operations
-```cmake
+``` cmake
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/mediapipe/calculators/tensor)
 foreach(ITEM ${PROTOBUF_DESCRIPTORS})
     get_filename_component(_FILE ${ITEM} NAME_WE)
@@ -555,7 +550,7 @@ One of the steps required files to be concatenated together. This code replicate
 [protobuf.cmake](#protobufcmake-files) section for more details.
 
 ### The Plugin Itself
-```cmake
+``` cmake
 set(PLUGIN_NAME plugin.hand_tracking${ILLIXR_BUILD_SUFFIX})
 add_library(${PLUGIN_NAME} SHARED plugin.cpp)
 
@@ -596,14 +591,14 @@ the second are those whose subdirectories contain protobuf files, and the third 
 types. For the second type, all the lines in the file will be including `protobuf.cmake` files from subdirectories. For
 example
 
-```cmake
+``` cmake
 include(${CMAKE_CURRENT_LIST_DIR}/core/protobuf.cmake)
 ```
 
 For the first type, they will have an include file at the top, and then a function call for each protobuf file in the
 directory.
 
-```cmake
+``` cmake
 include(${CMAKE_SOURCE_DIR}/cmake/protoc_generate_obj.cmake)
 
 protobuf_generate_obj(PROTO_PATH calculators/util OBJ_NAME annotation_overlay_calculator)
@@ -629,13 +624,13 @@ source/header files, one that contains only other directories, and one that is a
 the second type, each of the lines of the file will be including other `build.cmake` files from subdirectories. For 
 example
 
-```cmake
+``` cmake
 include(${CMAKE_CURRENT_LIST_DIR}/core/build.cmake)
 ```
 
 For the first type the file will add all the source files in the directory to the main target. 
 
-```cmake
+``` cmake
 set(UTIL_SOURCES
     ${CMAKE_CURRENT_LIST_DIR}/annotation_overlay_calculator.cc
     ${CMAKE_CURRENT_LIST_DIR}/association_norm_rect_calculator.cc
@@ -685,7 +680,7 @@ specially compiled. There is a function `make_proto_binary` in `cmake/make_pb_bi
 files you should have a list of dependencies. The only ones we need now are the protobuf ones, as they need to be
 handled like libraries. Here is a sample code snippet from a `build.cmake` file.
 
-```cmake
+``` cmake
 include(${CMAKE_SOURCE_DIR}/cmake/make_pb_binary.cmake)
 
 # make a list of all protobuf dependencies for this pbtxt file 
@@ -789,7 +784,7 @@ with this useful online [tool][16]
 
 Sending data to the tool is straight forward. Take the following code snippet as an example
 
-```C++
+``` Cpp
 auto img_ptr = absl::make_unique<mediapipe::ImageData>(image_data);
 auto img_status = _graph.AddPacketToInputStream(kImageDataTag,
                                                 mediapipe::Adopt(img_ptr.release()).At(
@@ -814,7 +809,7 @@ The last two lines check that there was no error in adding the packet, and throw
 
 Getting the data from the tool is also straight forward. Take the following code snippet as an example
 
-```C++
+``` Cpp
 if (_poller->Next(&_packet))
     auto &output_frame = _packet.Get<mediapipe::ILLIXR::illixr_ht_frame>();
     ...
@@ -848,7 +843,7 @@ encapsulates all that you want. This data structure will be the packet you get f
 need to be the same data that your plugin publishes to ILLIXR. The file for this should be put in
 `mediapipe/calculators/util`. The following file is for the hand tracking tool, in `illixr_data.h`.
 
-```C++ 
+``` Cpp
 #pragma once
 #include <vector>
 
@@ -894,7 +889,7 @@ is nearly identical), will alleviate this issue.
 You will also need to add a protobuf file for defining the options used by your calculator. This guide won't go into the
 details of this, as it is likely that you will just need a basic one.
 
-```protobuf
+``` protobuf
 syntax = "proto2";
 
 package mediapipe;
@@ -917,7 +912,7 @@ Mediapipe calculators are class based objects that inherit from `CalculatorBase`
 something useful and put the header and code files in `mediapipe/calculators/util`. The code below is a minimum outline 
 of what you will need.
 
-```C++
+``` Cpp
 #include "mediapipe/framework/calculator_base.h"
 
 class MyCalulator : public CalculatorBase {
@@ -945,7 +940,7 @@ outputs, getting input streams, publishing to output streams, and setting data t
 snippets below `cc` refers to either a `CalculatorContract` or `CalculatorContext`, which for these functions we can 
 treat as identical.
 
-```C++
+``` Cpp
 constexpr char kInputTag[] = "INPUT_TAG";
 
 cc->Inputs().HasTag(kInputTag);
@@ -958,7 +953,7 @@ a calculator to be fed different input streams. The function `HasTag` returns a 
 statements. There is also a similar call for checking output streams.
 
 * * *
-```C++
+``` Cpp
 cc->Inputs().Tag(kInputTag).Set<std::vector<Points> >();
 
 
@@ -968,14 +963,14 @@ This code sets the expected data type for the given tag. This call should be aft
 input stream is available first.
 
 * * *
-```C++
+``` Cpp
 img_data_ = cc->Inputs().Tag(kInputTag).Get<std::vector<Points> >();
 ```
 This code will retrieve the current data from the specified stream. This code also specifies the data type, and should
 only be made after a call to `Set`.
 
 * * *
-```C++
+``` Cpp
 cc->Outputs().Tag(kInputTag).Add(frame_data.release(), cc->InputTimestamp());
 ```
 This code adds the given data to the specified stream, along with the timestamp. This should only be called after a call
@@ -985,7 +980,7 @@ to `Set`.
 Many mediapipe functions return an object of type `absl::Status`. This type of object encapsulates the status of the 
 function call, along with any error information.
 
-```C++
+``` Cpp
 absl::Status stat = myfunc();
 
 if(!stat.ok())   // returns a boolean: true = success
@@ -998,7 +993,7 @@ if(!stat.ok())   // returns a boolean: true = success
 > match the information in this specification. [source][18]
 
 Function calls like the following are common here.
-```C++
+``` Cpp
 // See which input stream is being supplied by the graph
 if (cc->Inputs().HasTag(kImageFrameTag)) {
     cc->Inputs().Tag(kImageFrameTag).Set<ImageFrame>();
@@ -1055,7 +1050,7 @@ style as well, which you can use for reference (zed, and hand_tracking).
 In the two plugin case **Input** can inherit from [plugin][7] or [threadloop][6], depending on your needs. However, 
 **Publish** should inherit from [threadloop][6]. Below is some stub code for the headers.
 
-```C++
+``` Cpp
 class MyPublisher : public threadloop {
 public:
     MyPublisher(const std::string& name_, phonebook* pb_);
@@ -1094,7 +1089,7 @@ Here we will go through the basic code needed to interface with the graph, based
 top you should define the streams that the plugin will send and receive from. These names must match those in the graph 
 file.
 
-```C++
+``` Cpp
 constexpr char kInputStream[] = "input_video";     // stream the Input will write to
 constexpr char kImageDataTag[] = "image_data";     // stream the Input will write to
 constexpr char kOutputStream[] = "illixr_data";    // stream the Publish will read from
@@ -1104,7 +1099,7 @@ constexpr char kOutputStream[] = "illixr_data";    // stream the Publish will re
 #### Input
 The constructor should initialize the normal plugin stuff as well as the graph and **Publish** class.
 
-```C++
+``` Cpp
 MyInput::MyInput(const std::string& name_, phonebook* pb_) 
         : plugin{name_, pb_}
         , _switchbaord{pb_->lookup_impl<switchboard>()}
@@ -1116,7 +1111,7 @@ MyInput::MyInput(const std::string& name_, phonebook* pb_)
 
 The `start` function should configure the graph, and start the **PUBLISH** plugin.
 
-```C++
+``` Cpp
 void MyInput::start() {
     // start the plugin
     plugin::start();
@@ -1201,7 +1196,7 @@ Note the way `calculator_graph_config_contents` is constructed. This takes the n
 
 The `stop` function should also stop the publisher thread.
 
-```C++
+``` Cpp
 void MyInput::stop() {
     // Close any open mediapipe::CalculatorGraph instances
     // with CloseAllPacketSources();
@@ -1215,7 +1210,7 @@ void MyInput::stop() {
 The `process` function will be called by the `switchboard` any time data of the expected type `data type` from  topic 
 `input_name` is available.
 
-```C++
+``` Cpp
 void MyInput::process(const switchboard::ptr<const data_type>& frame) {
     // read from the input and do whatever is needed to convert it to the input type for the graph
     // in this example we are assuming that it can be simply converted
@@ -1238,7 +1233,7 @@ void MyInput::process(const switchboard::ptr<const data_type>& frame) {
 #### Publisher
 
 The **Publish** constructor should initialize the writer which is used to put data into ILLIXR.
-```C++
+``` Cpp
 MyPublisher::MyPublisher(const std::string& name_ phonebook* pb_)
         : threadloop{name_, pb_}
         , _switchboard{pb_->lookup_impl<switchboard>()}
@@ -1248,7 +1243,7 @@ Here `my_data` is the data type being written out and `data` is the name of the 
 * * * 
 
 The stop function should clean up any poller instances
-``` C++
+``` Cpp
 void MyPublisher::stop() {
     delete _poller;
     _poller = nullptr;
@@ -1257,7 +1252,7 @@ void MyPublisher::stop() {
 * * *
 
 The destructor should at least get rid of the poller.
-```C++
+``` Cpp
 MyPublisher::~MyPublisher() {
     delete _poller;  // ok to delete even if nullptr
 }
@@ -1265,7 +1260,7 @@ MyPublisher::~MyPublisher() {
 * * *
 
 We use the `_p_should_skip` to see if there is an output packet from the graph.
-```C++
+``` Cpp
 skip_option MyPublisher::_p_should_skip() {
     // check to see if there is a new packet, and if so put it in the class variable and signal that _p_one_iteration should be run
     if (_poller->Next(&_packet))
@@ -1277,7 +1272,7 @@ skip_option MyPublisher::_p_should_skip() {
 
 The `_p_one_iteration` function will be called every time `_p_should_skip` returns `run`. This function will get the
 output packet from the graph, manipulate the data if necessary, and write the results to ILLIXR.
-```C++
+``` Cpp
 void MyPublisher::_p_one_iterarion() {
     // get the graph output
     auto &new_data = _packet.Get<mediapipe_output>();
@@ -1299,7 +1294,7 @@ list of all source files and protobuf targets needed to compile the mediapipe pa
 `add_subdirectory` from the main `CMakeLists.txt` file. The first section of this file will list all the protobuf 
 targets we need (those we generated via `protobuf_generate_obj` in `protobuf.cmake` files).
 
-```cmake
+``` cmake
 target_sources(${PLUGIN_NAME} PUBLIC
                # list every protobuf target, one on each line
                $<TARGET_OBJECTS:calculators.util.annotation_overlay_calculator_proto>
@@ -1309,7 +1304,7 @@ target_sources(${PLUGIN_NAME} PUBLIC
 )
 ```
 Next we add targets that were generated by turning graph files into binary.
-```cmake
+``` cmake
 target_sources(${PLUGIN_NAME} PUBLIC
                $<TARGET_OBJECTS:hand_renderer_cpu_linked>
                .
@@ -1319,7 +1314,7 @@ target_sources(${PLUGIN_NAME} PUBLIC
 ```
 
 Next `include` each of the subdirectories.
-```cmake
+``` cmake
 include(${CMAKE_CURRENT_LIST_DIR}/calculators/build.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/framework/build.cmake)
 .
@@ -1329,7 +1324,7 @@ include(${CMAKE_CURRENT_LIST_DIR}/framework/build.cmake)
 Next add any include directories. In case there are multiple versions of protobuf on the system, we want to make sure 
 that the correct one is picked up by the compiler, so we prepend it to the includes.
 
-```cmake
+``` cmake
 target_include_directories(${PLUGIN_NAME} BEFORE PUBLIC ${Protobuf_INCLUDE_DIRS})
 target_include_directories(${PLUGIN_NAME} PUBLIC
                            ${CMAKE_BINARY_DIR}  # picks up protobuf generated headers
@@ -1342,7 +1337,7 @@ target_include_directories(${PLUGIN_NAME} PUBLIC
 ```
 
 Lastly, add the libraries to link against.
-```cmake
+``` cmake
 target_link_libraries(${PLUGIN_NAME} PUBLIC
                       protobuf::libprotobuf
                       absl::base            # there will likely be a lot of absl libraries

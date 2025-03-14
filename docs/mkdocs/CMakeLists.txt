@@ -10,7 +10,7 @@ if(Python3_FOUND AND MKDOCS_EXEC)
     set(MKDOCS_INSTALL_DIR "${DOXYGEN_INSTALL_DIR}" CACHE INTERNAL "")
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/mkdocs/mkdocs.yaml.in ${CURRENT_BUILD_DIR}/_docs/mkdocs.yaml)
     add_custom_target(doc_mkdocs
-            COMMAND ${MKDOCS_EXEC} build -c -f ${CURRENT_BUILD_DIR}/_docs/mkdocs.yaml
+            COMMAND ${MKDOCS_EXEC} --color --verbose build -c -f ${CURRENT_BUILD_DIR}/_docs/mkdocs.yaml
             DEPENDS doc_doxygen)
 else()
     message(WARNING "mkdocs could not be found. ILLIXR documentation cannot be built.")

@@ -1,13 +1,11 @@
 # Record IMU Cam
 
-The purpose of this plugin is to record a dataset, similar to the [EuRoC MAV dataset][1] that includes the IMU data and Cam images.
-    
+The purpose of this plugin is to record a dataset, similar to the [EuRoC MAV dataset][E10] that includes the [_IMU_][G10] data and
+Cam images.
 
 ## How to record a dataset
 
-In `configs/rt_slam_plugins.yaml`, uncomment this line:
-
-    - path: record_imu_cam/
+Add `record_imu_cam` to either your input yaml file or to your `--plugins` argument when invoking the ILLIXR executable.
 
 After recording, the dataset will be stored in the ILLIXR project directory, with the following structure:
 
@@ -27,36 +25,43 @@ After recording, the dataset will be stored in the ILLIXR project directory, wit
 
 ### Format
 
-1. `cam0/data.csv` and `cam1/data.csv` are both formatted as 
-   
+1. `cam0/data.csv` and `cam1/data.csv` are both formatted as
+
         timestamp [ns], timestamp.png
-2. `imu0/data.csv` is formatted as 
-    
+2. `imu0/data.csv` is formatted as
+
         timestamp [ns],w_x [rad s^-1],w_y [rad s^-1],w_z [rad s^-1],a_x [m s^-2],a_y [m s^-2],a_z [m s^-2]
 
 ## How to rerun recorded dataset
 
-1. **(IMPORTANT)** In `configs/rt_slam_plugins.yaml`, comment this line: 
+1. **(IMPORTANT)** Do not specify `record_imu_cam` in either your input yaml file or to your `--plugins` argument when
+   invoking the ILLIXR executable.
 
-       # - path: record_imu_cam/  
+2. When running the ILLIXR executable do one of the following:
 
-2. In `configs/native.yaml` (or whatever mode you're running ILLIXR with), add the path of the recorded dataset like so:
+    - In the input yaml file add a line to the `env_vars` section: `  data: <PATH_TO_ILLIXR>/data_record`
+    - Add `--data=<PATH_TO_ILLIXR>/data_record` to the command line arguments
+    - Set the environment variable `ILLIXR_DATA` to `<PATH_TO_ILLIXR>/data_record`
 
-        data: data_record
-          # subpath: mav0
-          # relative_to:
-          #  archive_path:
-          #    download_url: 'http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip'
+3. Make sure other plugins that feed images and IMU are not being used, such as [`offline_cam`][P10], 
+   [`offline_imu`][P11], [`zed`][P12], and [`realsense`][P13].
 
-    Make sure to comment the default EuRoC dataset
 
-3. In `runner/runner/main.py`, head toward the function corresponding to the mode with which you want to run ILLIXR, and change the `data_path` line like so (if run natively, it is [this line][2]):
+[//]: # (- glossary -)
 
-        data_path = pathify(config["data"], root_dir, root_dir / "data_record", True, True)
+[G10]:  ../glossary.md#inertial-measurement-unit
 
-4. Make sure other plugins that feed images and IMU are commented, such as `offline_cam`, `offline_imu`, `zed`, and `realsense`.
+[//]: # (- plugins -)
+
+[P10]:  ../illixr_plugins.md#offline_cam
+
+[P11]:  ../illixr_plugins.md#offline_imu
+
+[P12]:  ../illixr_plugins.md#zed
+
+[P13]:  ../illixr_plugins.md#realsense
+
 
 [//]: # (- External -)
 
-[1]:    https://projects.asl.ethz.ch/datasets/doku.php?id=kmavvisualinertialdatasets
-[2]:    https://github.com/ILLIXR/ILLIXR/blob/21832a1dbf132fa61718ba86bd87ca6130301517/runner/runner/main.py#L95
+[E10]:    https://projects.asl.ethz.ch/datasets/doku.php?id=kmavvisualinertialdatasets
