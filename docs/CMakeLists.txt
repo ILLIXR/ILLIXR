@@ -18,6 +18,6 @@ if(BUILD_DOCS)
         include(mkdocs/CMakeLists.txt)
     endif()
     add_custom_target(docs
-            DEPENDS doc_doxygen doc_mkdocs
-            )
+                      DEPENDS doc_doxygen doc_mkdocs
+    )
 endif()

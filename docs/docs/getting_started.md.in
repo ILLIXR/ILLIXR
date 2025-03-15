@@ -94,26 +94,26 @@ Common CMake command line arguments (always prepend with a `-D`):
 -  ***CMAKE_BUILD_TYPE***
    The build type to do: Debug, Release, RelWithDebInfo
 -  ***YAML_FILE***
-   The [_profile_][23] file of [plugins][22] to build and install. The default is None, meaning plugins should be specified individually on the command line.
+   The [_profile_][G23] file of [plugins][G22] to build and install. The default is None, meaning plugins should be specified individually on the command line.
 -  ***USE_&lt;PLUGIN_NAME&gt;=ON***
-   Build the specifically named [plugin][22] (e.g `-DUSE_TIMEWARP_GL=ON` to build the timewarp_gl [plugin][22]). Any number of [plugins][22] can be specified on the command line in this fashion.
+   Build the specifically named [plugin][G22] (e.g `-DUSE_TIMEWARP_GL=ON` to build the timewarp_gl [plugin][G22]). Any number of [plugins][G22] can be specified on the command line in this fashion.
 -  ***BUILD_DOCS***
    Set to `ON` to enable building the documentation.
 
 !!! note "Documentation Prerequisites"
 
-    Building the documentation requires [Doxygen][24] and [mkdocs][25] to be installed, both of which are typically available from OS packages. Additionally, we utilize the [material][26], [PyMdown][27], and [Pygments][28] extensions.
+    Building the documentation requires [Doxygen][E14] and [mkdocs][E15] to be installed, both of which are typically available from OS packages. Additionally, we utilize the [material][E16], [PyMdown][E17], and [Pygments][E18] extensions.
 
-An alternate to specifying the plugins as command line arguments is to create a [_YAML_][2] file which specifies the
-plugins to build. Using `-DYAML_FILE=&lt;FILE_NAME&gt;` as the command line argument specifying the [_YAML_][2] file to use.
+An alternate to specifying the plugins as command line arguments is to create a [_YAML_][G12] file which specifies the
+plugins to build. Using `-DYAML_FILE=&lt;FILE_NAME&gt;` as the command line argument specifying the [_YAML_][G12] file to use.
 
 !!! note "You may need to specify the full path to the YAML_FILE"
 
-    See [profile][23] for the format.
+    See [profile][G23] for the format.
 
 The current list of plugins is: @FULL_PLUGIN_LIST_STRING@
 
-The CMake process will also create a [_YAML_][2] file call `illixr.yaml` which can be used as input to the binary.
+The CMake process will also create a [_YAML_][G12] file call `illixr.yaml` which can be used as input to the binary.
 
 ## Running ILLIXR
 
@@ -122,7 +122,7 @@ an infix specifying the build type, for `Debug` use `dbg`, for `Release` use `op
 
 - -p,--plugins=<>, comma separated list of plugins to use (case sensitive, all lowercase, no spaces)
 - -r,--run=<>, comma separated list of plugins to use (case sensitive, all lowercase, no spaces), supersedes plugins entry.  This is only necessary if a plugin builds more than one library (e.g. offload_vio builds 4 libraries) as each must be loaded individually.
-- -y,--yaml=<>, the [profile][23] file to use which specifies some or all of the above arguments (e.g. the generated `illixr.yaml`)
+- -y,--yaml=<>, the [profile][G23] file to use which specifies some or all of the above arguments (e.g. the generated `illixr.yaml`)
 - --<ANY ENVIRONMENT VARIABLE NAME>, you can specify any variable the ILLIXR uses on the command line. Common ones are:
   - --duration=<>, the duration to run for in seconds (default is 60)
   - --data=<>, the data file to use
@@ -138,7 +138,7 @@ Regarding parameters for the binary, the following priority will be used:
 3. If the parameter has a value as an environment variable this value will only be used if it is not specified on the command line nor yaml file
 
 ### Profile file format
-An example of a [_YAML_][2] [profile][23] file is
+An example of a [_YAML_][G12] [profile][G23] file is
 ```yaml
 plugins: timewarp_gl,gldemo,ground_truth_slam,offload_vio
 build_type: Debug
@@ -175,7 +175,7 @@ Where the entries are defined as (* indicates required field):
 : environment variables to use, any environment variable ILLIXR uses can be set here and will be valid during program execution.
 
 
-In general, you should not edit a [profile][23] file directly. The exception to this is when you are testing things on your own machine. [Profile][23] files are generated automatically from the master `profiles/plugins.yaml` during the cmake configuration stage. This is done so that any changes to a [profile][23] or the addition or removal of a [plugin][22] can be managed from a single file. The build system will generate an *illixr.yaml* file which contains entries from the command line and any input profile file and can be freely edited (it is generated every time `cmake` is called).
+In general, you should not edit a [profile][G23] file directly. The exception to this is when you are testing things on your own machine. [Profile][G23] files are generated automatically from the master `profiles/plugins.yaml` during the cmake configuration stage. This is done so that any changes to a [profile][G23] or the addition or removal of a [plugin][G22] can be managed from a single file. The build system will generate an *illixr.yaml* file which contains entries from the command line and any input profile file and can be freely edited (it is generated every time `cmake` is called).
 
 ## Environment Variables
 
@@ -236,7 +236,7 @@ ILLIXR currently supports both OpenGL and Vulkan backends (indicated as `gl` and
 
 ## Rationale
 
--  The current system can use profile files to control everything from the build to running ILLIXR, in keeping with the [DRY principle][1].
+-  The current system can use profile files to control everything from the build to running ILLIXR, in keeping with the [DRY principle][E10].
    However, for maximum flexibility control can also be done at the command line level as well.
 
 
@@ -261,20 +261,20 @@ The source code is divided into components in the following directories:
 
 -   `ILLIXR/src/`:
     A directory holding the implementation for loading and interfacing plugins.
-    This directory contains [_Spindle_][13].
+    This directory contains [_Spindle_][G13].
 
 -   `ILLIXR/include/illixr/`:
     A directory holding resources and utilities available globally to all plugins.
-    This directory contains the interfaces for [_Switchboard_][14] and [_Phonebook_][15].
+    This directory contains the interfaces for [_Switchboard_][G14] and [_Phonebook_][G15].
 
 -   `ILLIXR/plugins/<plugin_dir>/`:
     A unique directory for each plugin.
     Most of the core XR functionality is implemented via plugins.
-    See [Default Components][10] for more details.
+    See [Default Components][I10] for more details.
 
 If you edit any of the source files, the CMake system will detect and rebuild the respective binary
 the next time it runs.
-If you want to add your own plugin, see [Writing Your Plugin][11].
+If you want to add your own plugin, see [Writing Your Plugin][I11].
 
 <script>
     const dependencies = {};
@@ -530,25 +530,46 @@ If you want to add your own plugin, see [Writing Your Plugin][11].
 </script>
 
 
-[//]: # (- References -)
-[1]:    https://en.wikipedia.org/wiki/Don%27t_repeat_yourself
-[24]:   https://www.doxygen.nl/
-[25]:   https://www.mkdocs.org/
-[26]:   https://squidfunk.github.io/mkdocs-material/getting-started/
-[27]:   https://facelessuser.github.io/pymdown-extensions/installation/
-[28]:   https://pygments.org/
+[//]: # (- glossary -)
+
+[G12]:    glossary.md#yaml
+
+[G13]:   glossary.md#spindle
+
+[G14]:   glossary.md#switchboard
+
+[G15]:   glossary.md#phonebook
+
+[G17]:   glossary.md#xvfb
+
+[G18]:   glossary.md#monado
+
+[G19]:   glossary.md#openxr
+
+[G20]:   glossary.md#qemu-kvm
+
+[G22]:   glossary.md#plugin
+
+[G23]:   glossary.md#profile
+
+
+[//]: # (- external -)
+
+[E10]:    https://en.wikipedia.org/wiki/Don%27t_repeat_yourself
+
+[E14]:   https://www.doxygen.nl/
+
+[E15]:   https://www.mkdocs.org/
+
+[E16]:   https://squidfunk.github.io/mkdocs-material/getting-started/
+
+[E17]:   https://facelessuser.github.io/pymdown-extensions/installation/
+
+[E18]:   https://pygments.org/
+
 
 [//]: # (- Internal -)
-[2]:    glossary.md#yaml
-[10]:   illixr_plugins.md
-[11]:   writing_your_plugin.md
-[13]:   glossary.md#spindle
-[14]:   glossary.md#switchboard
-[15]:   glossary.md#phonebook
-[16]:   virtualization.md
-[17]:   glossary.md#xvfb
-[18]:   glossary.md#monado
-[19]:   glossary.md#openxr
-[20]:   glossary.md#qemu-kvm
-[22]:   glossary.md#plugin
-[23]:   glossary.md#profile
+
+[I10]:   illixr_plugins.md
+
+[I11]:   writing_your_plugin.md

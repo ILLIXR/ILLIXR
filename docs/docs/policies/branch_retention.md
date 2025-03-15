@@ -1,9 +1,9 @@
 <div style="horiz-align: center; text-align: center">
-<img src="../images/illixr-transparent.png" alt="Branch Retention Policy"/>
+<img src="../../images/LogoWithHeader.png" alt="Branch Retention Policy"/>
 
 <h2> GitHub Branch Retention Policy </h2>
 
-Version 0.1
+Version 1.0<P>
 
 March 1, 2024
 </div>

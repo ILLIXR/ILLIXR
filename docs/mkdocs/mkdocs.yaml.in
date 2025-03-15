@@ -20,8 +20,12 @@ theme:
       primary: custom
       accent: custom
   features:
+    - search.suggest
     - content.code.annotate
     - content.footnote.tooltips
+    - navigation.indexes
+    - toc.integrate
+  language: en
 site_dir: @MKDOCS_BUILD_DIR@
 site_url: https://illixr.github.io/ILLIXR/docs
 markdown_extensions:
@@ -46,6 +50,16 @@ extra:
   version:
     default: latest
     provider: mike
+plugins:
+  - search
+  - mike:
+      alias_type: symlink
+      redirect_template: null
+      deploy_prefix: ''
+      canonical_version: latest
+      version_selector: true
+      css_dir: css
+      javascript_dir: js
 docs_dir: @MKDOCS_DOCS_DIR@
 nav:
   - 'Latest Documentation':
@@ -58,6 +72,7 @@ nav:
       - 'Plugin Overview': illixr_plugins.md
       - 'Services Overview': illixr_services.md
       - 'Contributing to ILLIXR':
+          - contributing/index.md
           - 'Code of Conduct': contributing/code_of_conduct.md
           - 'Asking Questions': contributing/asking_questions.md
           - 'Reporting a Bug': contributing/opening_an_issue.md

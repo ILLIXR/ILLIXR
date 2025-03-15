@@ -15,13 +15,13 @@ if(Doxygen_FOUND)
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doxygen/Doxyfile.in ${CURRENT_BUILD_DIR}/_docs/Doxyfile)
     execute_process(COMMAND cp -rL ${CMAKE_SOURCE_DIR}/docs/docs/ ${DOC_BUILD_DIR}/)
     add_custom_target(doc_doxygen
-            COMMAND ${DOXYGEN_EXECUTABLE} ${CURRENT_BUILD_DIR}/_docs/Doxyfile
-            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-            VERBATIM)
+                      COMMAND ${DOXYGEN_EXECUTABLE} ${CURRENT_BUILD_DIR}/_docs/Doxyfile
+                      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+                      VERBATIM)
     install(DIRECTORY ${DOC_ROOT_BUILD_DIR}
             DESTINATION ${DOXYGEN_INSTALL_DIR}
             OPTIONAL
-            )
+    )
 else()
     message(WARNING "Cannot find doxygen, documentation cannot be built")
     set(BUILD_DOCS NO CACHE BOOL "")
