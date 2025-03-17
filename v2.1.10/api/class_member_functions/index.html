@@ -1,0 +1,673 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://illixr.github.io/testing/latest/api/class_member_functions/">
+      
+      
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.7">
+    
+    
+      
+        <title>Class Member Functions - ILLIXR Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.8608ea7d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#class-member-functions" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="ILLIXR Documentation" class="md-header__button md-logo" aria-label="ILLIXR Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ILLIXR Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Class Member Functions
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="ILLIXR Documentation" class="md-nav__button md-logo" aria-label="ILLIXR Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    ILLIXR Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ILLIXR
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting_started/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Getting Started
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../illixr_plugins/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ILLIXR Plugins
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../writing_your_plugin/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Writing Your Plugin
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modifying_a_plugin/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Modifying A Plugin
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../building_illixr/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Building ILLIXR
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../debugging_illixr/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ILLIXR Debugging Tips
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../monado_illixr_runtime_overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Monado Integration Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../monado_integration_dataflow/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Monado Integration Dataflow
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../visualizer_logger/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Visualizer & Logger
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="/testing/api/annotated/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API documentation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="class-member-functions">Class Member Functions</h1>
+<h2 id="a">a</h2>
+<ul>
+<li><strong>allocate</strong> (<a href="../classILLIXR_1_1writer/"><strong>ILLIXR::writer</strong></a>)</li>
+</ul>
+<h2 id="c">c</h2>
+<ul>
+<li><strong>create</strong> (<a href="../classILLIXR_1_1dynamic__lib/"><strong>ILLIXR::dynamic_lib</strong></a>)</li>
+<li><strong>correct_pose</strong> (<a href="../classpose__prediction/"><strong>pose_prediction</strong></a>)</li>
+</ul>
+<h2 id="d">d</h2>
+<ul>
+<li><strong>data_use_indicator</strong> (<a href="../classILLIXR_1_1data__use__indicator/"><strong>ILLIXR::data_use_indicator</strong></a>)</li>
+<li><strong>dynamic_lib</strong> (<a href="../classILLIXR_1_1dynamic__lib/"><strong>ILLIXR::dynamic_lib</strong></a>)</li>
+</ul>
+<h2 id="f">f</h2>
+<ul>
+<li><strong>flush</strong> (<a href="../classILLIXR_1_1record__coalescer/"><strong>ILLIXR::record_coalescer</strong></a>)</li>
+<li><strong>fast_pose_reliable</strong> (<a href="../classpose__prediction/"><strong>pose_prediction</strong></a>)</li>
+</ul>
+<h2 id="g">g</h2>
+<ul>
+<li><strong>get</strong> (<a href="../classILLIXR_1_1dynamic__lib/"><strong>ILLIXR::dynamic_lib</strong></a>, <a href="../classILLIXR_1_1gen__guid/"><strong>ILLIXR::gen_guid</strong></a>)</li>
+<li><strong>get_name</strong> (<a href="../classILLIXR_1_1plugin/"><strong>ILLIXR::plugin</strong></a>, <a href="../classILLIXR_1_1record__header/"><strong>ILLIXR::record_header</strong></a>)</li>
+<li><strong>get_latest</strong> (<a href="../classILLIXR_1_1reader__latest/"><strong>ILLIXR::reader_latest</strong></a>)</li>
+<li><strong>get_latest_ro</strong> (<a href="../classILLIXR_1_1reader__latest/"><strong>ILLIXR::reader_latest</strong></a>)</li>
+<li><strong>get_record_header</strong> (<a href="../classILLIXR_1_1record/"><strong>ILLIXR::record</strong></a>)</li>
+<li><strong>get_value</strong> (<a href="../classILLIXR_1_1record/"><strong>ILLIXR::record</strong></a>)</li>
+<li><strong>get_column_name</strong> (<a href="../classILLIXR_1_1record__header/"><strong>ILLIXR::record_header</strong></a>)</li>
+<li><strong>get_column_type</strong> (<a href="../classILLIXR_1_1record__header/"><strong>ILLIXR::record_header</strong></a>)</li>
+<li><strong>get_columns</strong> (<a href="../classILLIXR_1_1record__header/"><strong>ILLIXR::record_header</strong></a>)</li>
+<li><strong>get_id</strong> (<a href="../classILLIXR_1_1record__header/"><strong>ILLIXR::record_header</strong></a>)</li>
+<li><strong>get_fast_pose</strong> (<a href="../classpose__prediction/"><strong>pose_prediction</strong></a>)</li>
+<li><strong>get_offset</strong> (<a href="../classpose__prediction/"><strong>pose_prediction</strong></a>)</li>
+<li><strong>get_true_pose</strong> (<a href="../classpose__prediction/"><strong>pose_prediction</strong></a>)</li>
+</ul>
+<h2 id="i">i</h2>
+<ul>
+<li><strong>is_used</strong> (<a href="../classILLIXR_1_1data__use__indicator/"><strong>ILLIXR::data_use_indicator</strong></a>)</li>
+<li><strong>impl</strong> (<a href="../structlinalg_1_1detail_1_1apply_3_01F_00_01scalars__t_3_01_4_00_01mat_3_01A_00_01M_00_01N_01_4_01_4/"><strong>linalg::detail::apply&lt; F, scalars_t&lt; &gt;, mat&lt; A, M, N &gt; &gt;</strong></a>, <a href="../structlinalg_1_1detail_1_1apply_3_01F_00_01scalars__t_3_01_4_00_01mat_3_01A_00_01M_00_01N_01_4_04aeeb67cdd8f651c27a7fc8b3e5f43ca/"><strong>linalg::detail::apply&lt; F, scalars_t&lt; &gt;, mat&lt; A, M, N &gt;, mat&lt; B, M, N &gt; &gt;</strong></a>, <a href="../structlinalg_1_1detail_1_1apply_3_01F_00_01scalars__t_3_01_4_00_01vec_3_01A_00_01M_01_4_01_4/"><strong>linalg::detail::apply&lt; F, scalars_t&lt; &gt;, vec&lt; A, M &gt; &gt;</strong></a>, <a href="../structlinalg_1_1detail_1_1apply_3_01F_00_01scalars__t_3_01_4_00_01vec_3_01A_00_01M_01_4_00_01vec_3_01B_00_01M_01_4_01_4/"><strong>linalg::detail::apply&lt; F, scalars_t&lt; &gt;, vec&lt; A, M &gt;, vec&lt; B, M &gt; &gt;</strong></a>, <a href="../structlinalg_1_1detail_1_1apply_3_01F_00_01scalars__t_3_01_4_00_01vec_3_01A_00_01M_01_4_00_01vec8c04718abcb6bd428e3e5069d21cdb08/"><strong>linalg::detail::apply&lt; F, scalars_t&lt; &gt;, vec&lt; A, M &gt;, vec&lt; B, M &gt;, vec&lt; C, M &gt; &gt;</strong></a>, <a href="../structlinalg_1_1detail_1_1apply_3_01F_00_01scalars__t_3_01A_01_4_00_01A_00_01mat_3_01B_00_01M_00_01N_01_4_01_4/"><strong>linalg::detail::apply&lt; F, scalars_t&lt; A &gt;, A, mat&lt; B, M, N &gt; &gt;</strong></a>, <a href="../structlinalg_1_1detail_1_1apply_3_01F_00_01scalars__t_3_01A_01_4_00_01A_00_01vec_3_01B_00_01M_01_4_01_4/"><strong>linalg::detail::apply&lt; F, scalars_t&lt; A &gt;, A, vec&lt; B, M &gt; &gt;</strong></a>, <a href="../structlinalg_1_1detail_1_1apply_3_01F_00_01scalars__t_3_01A_01_4_00_01A_00_01vec_3_01B_00_01M_01c023422bf2470de8975928af5a32a9fb/"><strong>linalg::detail::apply&lt; F, scalars_t&lt; A &gt;, A, vec&lt; B, M &gt;, vec&lt; C, M &gt; &gt;</strong></a>, <a href="../structlinalg_1_1detail_1_1apply_3_01F_00_01scalars__t_3_01A_00_01B_01_4_00_01A_00_01B_00_01vec_3_01C_00_01M_01_4_01_4/"><strong>linalg::detail::apply&lt; F, scalars_t&lt; A, B &gt;, A, B, vec&lt; C, M &gt; &gt;</strong></a>, <a href="../structlinalg_1_1detail_1_1apply_3_01F_00_01scalars__t_3_01A_00_01C_01_4_00_01A_00_01vec_3_01B_00_01M_01_4_00_01C_01_4/"><strong>linalg::detail::apply&lt; F, scalars_t&lt; A, C &gt;, A, vec&lt; B, M &gt;, C &gt;</strong></a>, <a href="../structlinalg_1_1detail_1_1apply_3_01F_00_01scalars__t_3_01A_8_8_8_01_4_00_01A_8_8_8_01_4/"><strong>linalg::detail::apply&lt; F, scalars_t&lt; A... &gt;, A... &gt;</strong></a>, <a href="../structlinalg_1_1detail_1_1apply_3_01F_00_01scalars__t_3_01B_01_4_00_01mat_3_01A_00_01M_00_01N_01_4_00_01B_01_4/"><strong>linalg::detail::apply&lt; F, scalars_t&lt; B &gt;, mat&lt; A, M, N &gt;, B &gt;</strong></a>, <a href="../structlinalg_1_1detail_1_1apply_3_01F_00_01scalars__t_3_01B_01_4_00_01vec_3_01A_00_01M_01_4_00_01B_01_4/"><strong>linalg::detail::apply&lt; F, scalars_t&lt; B &gt;, vec&lt; A, M &gt;, B &gt;</strong></a>, <a href="../structlinalg_1_1detail_1_1apply_3_01F_00_01scalars__t_3_01B_01_4_00_01vec_3_01A_00_01M_01_4_00_07b0a794b12063cc93872746bb0aa39b1/"><strong>linalg::detail::apply&lt; F, scalars_t&lt; B &gt;, vec&lt; A, M &gt;, B, vec&lt; C, M &gt; &gt;</strong></a>, <a href="../structlinalg_1_1detail_1_1apply_3_01F_00_01scalars__t_3_01B_00_01C_01_4_00_01vec_3_01A_00_01M_01_4_00_01B_00_01C_01_4/"><strong>linalg::detail::apply&lt; F, scalars_t&lt; B, C &gt;, vec&lt; A, M &gt;, B, C &gt;</strong></a>, <a href="../structlinalg_1_1detail_1_1apply_3_01F_00_01scalars__t_3_01C_01_4_00_01vec_3_01A_00_01M_01_4_00_0ac44fec9d6688f597db0a07139ff2167/"><strong>linalg::detail::apply&lt; F, scalars_t&lt; C &gt;, vec&lt; A, M &gt;, vec&lt; B, M &gt;, C &gt;</strong></a>)</li>
+<li><strong>identity_t</strong> (<a href="../structlinalg_1_1identity__t/"><strong>linalg::identity_t</strong></a>)</li>
+</ul>
+<h2 id="l">l</h2>
+<ul>
+<li><strong>lookup_impl</strong> (<a href="../classILLIXR_1_1phonebook/"><strong>ILLIXR::phonebook</strong></a>)</li>
+<li><strong>log</strong> (<a href="../classILLIXR_1_1record__coalescer/"><strong>ILLIXR::record_coalescer</strong></a>, <a href="../classILLIXR_1_1record__logger/"><strong>ILLIXR::record_logger</strong></a>)</li>
+<li><strong>load_plugin_factory</strong> (<a href="../classILLIXR_1_1runtime/"><strong>ILLIXR::runtime</strong></a>)</li>
+<li><strong>load_so</strong> (<a href="../classILLIXR_1_1runtime/"><strong>ILLIXR::runtime</strong></a>)</li>
+<li><strong>log_end</strong> (<a href="../classILLIXR_1_1start__end__logger/"><strong>ILLIXR::start_end_logger</strong></a>)</li>
+<li><strong>log_start</strong> (<a href="../classILLIXR_1_1start__end__logger/"><strong>ILLIXR::start_end_logger</strong></a>)</li>
+</ul>
+<h2 id="m">m</h2>
+<ul>
+<li><strong>mark_unused</strong> (<a href="../classILLIXR_1_1data__use__indicator/"><strong>ILLIXR::data_use_indicator</strong></a>)</li>
+<li><strong>mark_used</strong> (<a href="../classILLIXR_1_1data__use__indicator/"><strong>ILLIXR::data_use_indicator</strong></a>, <a href="../classILLIXR_1_1record/"><strong>ILLIXR::record</strong></a>)</li>
+<li><strong>maybe_flush</strong> (<a href="../classILLIXR_1_1record__coalescer/"><strong>ILLIXR::record_coalescer</strong></a>)</li>
+<li><strong>mat</strong> (<a href="../structlinalg_1_1mat_3_01T_00_01M_00_011_01_4/"><strong>linalg::mat&lt; T, M, 1 &gt;</strong></a>, <a href="../structlinalg_1_1mat_3_01T_00_01M_00_012_01_4/"><strong>linalg::mat&lt; T, M, 2 &gt;</strong></a>, <a href="../structlinalg_1_1mat_3_01T_00_01M_00_013_01_4/"><strong>linalg::mat&lt; T, M, 3 &gt;</strong></a>, <a href="../structlinalg_1_1mat_3_01T_00_01M_00_014_01_4/"><strong>linalg::mat&lt; T, M, 4 &gt;</strong></a>)</li>
+</ul>
+<h2 id="o">o</h2>
+<ul>
+<li><strong>operator=</strong> (<a href="../classILLIXR_1_1data__use__indicator/"><strong>ILLIXR::data_use_indicator</strong></a>, <a href="../classILLIXR_1_1dynamic__lib/"><strong>ILLIXR::dynamic_lib</strong></a>)</li>
+<li><strong>operator[]</strong> (<a href="../classILLIXR_1_1dynamic__lib/"><strong>ILLIXR::dynamic_lib</strong></a>, <a href="../structlinalg_1_1mat_3_01T_00_01M_00_011_01_4/"><strong>linalg::mat&lt; T, M, 1 &gt;</strong></a>, <a href="../structlinalg_1_1mat_3_01T_00_01M_00_012_01_4/"><strong>linalg::mat&lt; T, M, 2 &gt;</strong></a>, <a href="../structlinalg_1_1mat_3_01T_00_01M_00_013_01_4/"><strong>linalg::mat&lt; T, M, 3 &gt;</strong></a>, <a href="../structlinalg_1_1mat_3_01T_00_01M_00_014_01_4/"><strong>linalg::mat&lt; T, M, 4 &gt;</strong></a>, <a href="../structlinalg_1_1vec_3_01T_00_011_01_4/"><strong>linalg::vec&lt; T, 1 &gt;</strong></a>, <a href="../structlinalg_1_1vec_3_01T_00_012_01_4/"><strong>linalg::vec&lt; T, 2 &gt;</strong></a>, <a href="../structlinalg_1_1vec_3_01T_00_013_01_4/"><strong>linalg::vec&lt; T, 3 &gt;</strong></a>, <a href="../structlinalg_1_1vec_3_01T_00_014_01_4/"><strong>linalg::vec&lt; T, 4 &gt;</strong></a>)</li>
+<li><strong>operator!=</strong> (<a href="../classILLIXR_1_1record__header/"><strong>ILLIXR::record_header</strong></a>)</li>
+<li><strong>operator==</strong> (<a href="../classILLIXR_1_1record__header/"><strong>ILLIXR::record_header</strong></a>)</li>
+<li><strong>operator()</strong> (<a href="../structlinalg_1_1converter_3_01mat_3_01T_00_011_00_011_01_4_00_01identity__t_01_4/"><strong>linalg::converter&lt; mat&lt; T, 1, 1 &gt;, identity_t &gt;</strong></a>, <a href="../structlinalg_1_1converter_3_01mat_3_01T_00_012_00_012_01_4_00_01identity__t_01_4/"><strong>linalg::converter&lt; mat&lt; T, 2, 2 &gt;, identity_t &gt;</strong></a>, <a href="../structlinalg_1_1converter_3_01mat_3_01T_00_013_00_013_01_4_00_01identity__t_01_4/"><strong>linalg::converter&lt; mat&lt; T, 3, 3 &gt;, identity_t &gt;</strong></a>, <a href="../structlinalg_1_1converter_3_01mat_3_01T_00_014_00_014_01_4_00_01identity__t_01_4/"><strong>linalg::converter&lt; mat&lt; T, 4, 4 &gt;, identity_t &gt;</strong></a>, <a href="../structlinalg_1_1converter_3_01std_1_1array_3_01T_00_011_01_4_00_01vec_3_01T_00_011_01_4_01_4/"><strong>linalg::converter&lt; std::array&lt; T, 1 &gt;, vec&lt; T, 1 &gt; &gt;</strong></a>, <a href="../structlinalg_1_1converter_3_01std_1_1array_3_01T_00_012_01_4_00_01vec_3_01T_00_012_01_4_01_4/"><strong>linalg::converter&lt; std::array&lt; T, 2 &gt;, vec&lt; T, 2 &gt; &gt;</strong></a>, <a href="../structlinalg_1_1converter_3_01std_1_1array_3_01T_00_013_01_4_00_01vec_3_01T_00_013_01_4_01_4/"><strong>linalg::converter&lt; std::array&lt; T, 3 &gt;, vec&lt; T, 3 &gt; &gt;</strong></a>, <a href="../structlinalg_1_1converter_3_01std_1_1array_3_01T_00_014_01_4_00_01vec_3_01T_00_014_01_4_01_4/"><strong>linalg::converter&lt; std::array&lt; T, 4 &gt;, vec&lt; T, 4 &gt; &gt;</strong></a>, <a href="../structlinalg_1_1converter_3_01vec_3_01T_00_011_01_4_00_01std_1_1array_3_01T_00_011_01_4_01_4/"><strong>linalg::converter&lt; vec&lt; T, 1 &gt;, std::array&lt; T, 1 &gt; &gt;</strong></a>, <a href="../structlinalg_1_1converter_3_01vec_3_01T_00_012_01_4_00_01std_1_1array_3_01T_00_012_01_4_01_4/"><strong>linalg::converter&lt; vec&lt; T, 2 &gt;, std::array&lt; T, 2 &gt; &gt;</strong></a>, <a href="../structlinalg_1_1converter_3_01vec_3_01T_00_013_01_4_00_01std_1_1array_3_01T_00_013_01_4_01_4/"><strong>linalg::converter&lt; vec&lt; T, 3 &gt;, std::array&lt; T, 3 &gt; &gt;</strong></a>, <a href="../structlinalg_1_1converter_3_01vec_3_01T_00_014_01_4_00_01std_1_1array_3_01T_00_014_01_4_01_4/"><strong>linalg::converter&lt; vec&lt; T, 4 &gt;, std::array&lt; T, 4 &gt; &gt;</strong></a>, <a href="../structlinalg_1_1detail_1_1any__compare_3_01mat_3_01T_00_01M_00_011_01_4_00_01mat_3_01T_00_01M_00_011_01_4_01_4/"><strong>linalg::detail::any_compare&lt; mat&lt; T, M, 1 &gt;, mat&lt; T, M, 1 &gt; &gt;</strong></a>, <a href="../structlinalg_1_1detail_1_1any__compare_3_01mat_3_01T_00_01M_00_012_01_4_00_01mat_3_01T_00_01M_00_012_01_4_01_4/"><strong>linalg::detail::any_compare&lt; mat&lt; T, M, 2 &gt;, mat&lt; T, M, 2 &gt; &gt;</strong></a>, <a href="../structlinalg_1_1detail_1_1any__compare_3_01mat_3_01T_00_01M_00_013_01_4_00_01mat_3_01T_00_01M_00_013_01_4_01_4/"><strong>linalg::detail::any_compare&lt; mat&lt; T, M, 3 &gt;, mat&lt; T, M, 3 &gt; &gt;</strong></a>, <a href="../structlinalg_1_1detail_1_1any__compare_3_01mat_3_01T_00_01M_00_014_01_4_00_01mat_3_01T_00_01M_00_014_01_4_01_4/"><strong>linalg::detail::any_compare&lt; mat&lt; T, M, 4 &gt;, mat&lt; T, M, 4 &gt; &gt;</strong></a>, <a href="../structlinalg_1_1detail_1_1any__compare_3_01vec_3_01T_00_011_01_4_00_01vec_3_01T_00_011_01_4_01_4/"><strong>linalg::detail::any_compare&lt; vec&lt; T, 1 &gt;, vec&lt; T, 1 &gt; &gt;</strong></a>, <a href="../structlinalg_1_1detail_1_1any__compare_3_01vec_3_01T_00_012_01_4_00_01vec_3_01T_00_012_01_4_01_4/"><strong>linalg::detail::any_compare&lt; vec&lt; T, 2 &gt;, vec&lt; T, 2 &gt; &gt;</strong></a>, <a href="../structlinalg_1_1detail_1_1any__compare_3_01vec_3_01T_00_013_01_4_00_01vec_3_01T_00_013_01_4_01_4/"><strong>linalg::detail::any_compare&lt; vec&lt; T, 3 &gt;, vec&lt; T, 3 &gt; &gt;</strong></a>, <a href="../structlinalg_1_1detail_1_1any__compare_3_01vec_3_01T_00_014_01_4_00_01vec_3_01T_00_014_01_4_01_4/"><strong>linalg::detail::any_compare&lt; vec&lt; T, 4 &gt;, vec&lt; T, 4 &gt; &gt;</strong></a>, <a href="../structlinalg_1_1detail_1_1clamp/"><strong>linalg::detail::clamp</strong></a>, <a href="../structlinalg_1_1detail_1_1getter_3_010_01_4/"><strong>linalg::detail::getter&lt; 0 &gt;</strong></a>, <a href="../structlinalg_1_1detail_1_1getter_3_011_01_4/"><strong>linalg::detail::getter&lt; 1 &gt;</strong></a>, <a href="../structlinalg_1_1detail_1_1getter_3_012_01_4/"><strong>linalg::detail::getter&lt; 2 &gt;</strong></a>, <a href="../structlinalg_1_1detail_1_1getter_3_013_01_4/"><strong>linalg::detail::getter&lt; 3 &gt;</strong></a>, <a href="../structlinalg_1_1detail_1_1lerp/"><strong>linalg::detail::lerp</strong></a>, <a href="../structlinalg_1_1detail_1_1max/"><strong>linalg::detail::max</strong></a>, <a href="../structlinalg_1_1detail_1_1min/"><strong>linalg::detail::min</strong></a>, <a href="../structlinalg_1_1detail_1_1op__add/"><strong>linalg::detail::op_add</strong></a>, <a href="../structlinalg_1_1detail_1_1op__and/"><strong>linalg::detail::op_and</strong></a>, <a href="../structlinalg_1_1detail_1_1op__cmp/"><strong>linalg::detail::op_cmp</strong></a>, <a href="../structlinalg_1_1detail_1_1op__div/"><strong>linalg::detail::op_div</strong></a>, <a href="../structlinalg_1_1detail_1_1op__eq/"><strong>linalg::detail::op_eq</strong></a>, <a href="../structlinalg_1_1detail_1_1op__ge/"><strong>linalg::detail::op_ge</strong></a>, <a href="../structlinalg_1_1detail_1_1op__gt/"><strong>linalg::detail::op_gt</strong></a>, <a href="../structlinalg_1_1detail_1_1op__int/"><strong>linalg::detail::op_int</strong></a>, <a href="../structlinalg_1_1detail_1_1op__le/"><strong>linalg::detail::op_le</strong></a>, <a href="../structlinalg_1_1detail_1_1op__lsh/"><strong>linalg::detail::op_lsh</strong></a>, <a href="../structlinalg_1_1detail_1_1op__lt/"><strong>linalg::detail::op_lt</strong></a>, <a href="../structlinalg_1_1detail_1_1op__mod/"><strong>linalg::detail::op_mod</strong></a>, <a href="../structlinalg_1_1detail_1_1op__mul/"><strong>linalg::detail::op_mul</strong></a>, <a href="../structlinalg_1_1detail_1_1op__ne/"><strong>linalg::detail::op_ne</strong></a>, <a href="../structlinalg_1_1detail_1_1op__neg/"><strong>linalg::detail::op_neg</strong></a>, <a href="../structlinalg_1_1detail_1_1op__not/"><strong>linalg::detail::op_not</strong></a>, <a href="../structlinalg_1_1detail_1_1op__or/"><strong>linalg::detail::op_or</strong></a>, <a href="../structlinalg_1_1detail_1_1op__pos/"><strong>linalg::detail::op_pos</strong></a>, <a href="../structlinalg_1_1detail_1_1op__rsh/"><strong>linalg::detail::op_rsh</strong></a>, <a href="../structlinalg_1_1detail_1_1op__sub/"><strong>linalg::detail::op_sub</strong></a>, <a href="../structlinalg_1_1detail_1_1op__un/"><strong>linalg::detail::op_un</strong></a>, <a href="../structlinalg_1_1detail_1_1op__xor/"><strong>linalg::detail::op_xor</strong></a>, <a href="../structlinalg_1_1detail_1_1select/"><strong>linalg::detail::select</strong></a>, <a href="../structlinalg_1_1detail_1_1std__abs/"><strong>linalg::detail::std_abs</strong></a>, <a href="../structlinalg_1_1detail_1_1std__acos/"><strong>linalg::detail::std_acos</strong></a>, <a href="../structlinalg_1_1detail_1_1std__asin/"><strong>linalg::detail::std_asin</strong></a>, <a href="../structlinalg_1_1detail_1_1std__atan/"><strong>linalg::detail::std_atan</strong></a>, <a href="../structlinalg_1_1detail_1_1std__atan2/"><strong>linalg::detail::std_atan2</strong></a>, <a href="../structlinalg_1_1detail_1_1std__ceil/"><strong>linalg::detail::std_ceil</strong></a>, <a href="../structlinalg_1_1detail_1_1std__copysign/"><strong>linalg::detail::std_copysign</strong></a>, <a href="../structlinalg_1_1detail_1_1std__cos/"><strong>linalg::detail::std_cos</strong></a>, <a href="../structlinalg_1_1detail_1_1std__cosh/"><strong>linalg::detail::std_cosh</strong></a>, <a href="../structlinalg_1_1detail_1_1std__exp/"><strong>linalg::detail::std_exp</strong></a>, <a href="../structlinalg_1_1detail_1_1std__floor/"><strong>linalg::detail::std_floor</strong></a>, <a href="../structlinalg_1_1detail_1_1std__fmod/"><strong>linalg::detail::std_fmod</strong></a>, <a href="../structlinalg_1_1detail_1_1std__log/"><strong>linalg::detail::std_log</strong></a>, <a href="../structlinalg_1_1detail_1_1std__log10/"><strong>linalg::detail::std_log10</strong></a>, <a href="../structlinalg_1_1detail_1_1std__pow/"><strong>linalg::detail::std_pow</strong></a>, <a href="../structlinalg_1_1detail_1_1std__round/"><strong>linalg::detail::std_round</strong></a>, <a href="../structlinalg_1_1detail_1_1std__sin/"><strong>linalg::detail::std_sin</strong></a>, <a href="../structlinalg_1_1detail_1_1std__sinh/"><strong>linalg::detail::std_sinh</strong></a>, <a href="../structlinalg_1_1detail_1_1std__sqrt/"><strong>linalg::detail::std_sqrt</strong></a>, <a href="../structlinalg_1_1detail_1_1std__tan/"><strong>linalg::detail::std_tan</strong></a>, <a href="../structlinalg_1_1detail_1_1std__tanh/"><strong>linalg::detail::std_tanh</strong></a>, <a href="../classshould__profile__class/"><strong>should_profile_class</strong></a>, <a href="../structstd_1_1hash_3_01linalg_1_1mat_3_01T_00_01M_00_011_01_4_01_4/"><strong>std::hash&lt; linalg::mat&lt; T, M, 1 &gt; &gt;</strong></a>, <a href="../structstd_1_1hash_3_01linalg_1_1mat_3_01T_00_01M_00_012_01_4_01_4/"><strong>std::hash&lt; linalg::mat&lt; T, M, 2 &gt; &gt;</strong></a>, <a href="../structstd_1_1hash_3_01linalg_1_1mat_3_01T_00_01M_00_013_01_4_01_4/"><strong>std::hash&lt; linalg::mat&lt; T, M, 3 &gt; &gt;</strong></a>, <a href="../structstd_1_1hash_3_01linalg_1_1mat_3_01T_00_01M_00_014_01_4_01_4/"><strong>std::hash&lt; linalg::mat&lt; T, M, 4 &gt; &gt;</strong></a>, <a href="../structstd_1_1hash_3_01linalg_1_1vec_3_01T_00_011_01_4_01_4/"><strong>std::hash&lt; linalg::vec&lt; T, 1 &gt; &gt;</strong></a>, <a href="../structstd_1_1hash_3_01linalg_1_1vec_3_01T_00_012_01_4_01_4/"><strong>std::hash&lt; linalg::vec&lt; T, 2 &gt; &gt;</strong></a>, <a href="../structstd_1_1hash_3_01linalg_1_1vec_3_01T_00_013_01_4_01_4/"><strong>std::hash&lt; linalg::vec&lt; T, 3 &gt; &gt;</strong></a>, <a href="../structstd_1_1hash_3_01linalg_1_1vec_3_01T_00_014_01_4_01_4/"><strong>std::hash&lt; linalg::vec&lt; T, 4 &gt; &gt;</strong></a>)</li>
+<li><strong>operator U</strong> (<a href="../structlinalg_1_1mat_3_01T_00_01M_00_011_01_4/"><strong>linalg::mat&lt; T, M, 1 &gt;</strong></a>, <a href="../structlinalg_1_1mat_3_01T_00_01M_00_012_01_4/"><strong>linalg::mat&lt; T, M, 2 &gt;</strong></a>, <a href="../structlinalg_1_1mat_3_01T_00_01M_00_013_01_4/"><strong>linalg::mat&lt; T, M, 3 &gt;</strong></a>, <a href="../structlinalg_1_1mat_3_01T_00_01M_00_014_01_4/"><strong>linalg::mat&lt; T, M, 4 &gt;</strong></a>, <a href="../structlinalg_1_1vec_3_01T_00_011_01_4/"><strong>linalg::vec&lt; T, 1 &gt;</strong></a>, <a href="../structlinalg_1_1vec_3_01T_00_012_01_4/"><strong>linalg::vec&lt; T, 2 &gt;</strong></a>, <a href="../structlinalg_1_1vec_3_01T_00_013_01_4/"><strong>linalg::vec&lt; T, 3 &gt;</strong></a>, <a href="../structlinalg_1_1vec_3_01T_00_014_01_4/"><strong>linalg::vec&lt; T, 4 &gt;</strong></a>)</li>
+</ul>
+<h2 id="p">p</h2>
+<ul>
+<li><strong>plugin</strong> (<a href="../classILLIXR_1_1plugin/"><strong>ILLIXR::plugin</strong></a>)</li>
+<li><strong>publish</strong> (<a href="../classILLIXR_1_1switchboard/"><strong>ILLIXR::switchboard</strong></a>)</li>
+<li><strong>put</strong> (<a href="../classILLIXR_1_1writer/"><strong>ILLIXR::writer</strong></a>)</li>
+<li><strong>print_timer</strong> (<a href="../classprint__timer/"><strong>print_timer</strong></a>)</li>
+<li><strong>print_timer2</strong> (<a href="../classprint__timer2/"><strong>print_timer2</strong></a>)</li>
+<li><strong>print_in_destructor</strong> (<a href="../classprint__timer_1_1print__in__destructor/"><strong>print_timer::print_in_destructor</strong></a>)</li>
+</ul>
+<h2 id="r">r</h2>
+<ul>
+<li><strong>register_impl</strong> (<a href="../classILLIXR_1_1phonebook/"><strong>ILLIXR::phonebook</strong></a>)</li>
+<li><strong>record</strong> (<a href="../classILLIXR_1_1record/"><strong>ILLIXR::record</strong></a>)</li>
+<li><strong>record_coalescer</strong> (<a href="../classILLIXR_1_1record__coalescer/"><strong>ILLIXR::record_coalescer</strong></a>)</li>
+<li><strong>record_header</strong> (<a href="../classILLIXR_1_1record__header/"><strong>ILLIXR::record_header</strong></a>)</li>
+<li><strong>row</strong> (<a href="../structlinalg_1_1mat_3_01T_00_01M_00_011_01_4/"><strong>linalg::mat&lt; T, M, 1 &gt;</strong></a>, <a href="../structlinalg_1_1mat_3_01T_00_01M_00_012_01_4/"><strong>linalg::mat&lt; T, M, 2 &gt;</strong></a>, <a href="../structlinalg_1_1mat_3_01T_00_01M_00_013_01_4/"><strong>linalg::mat&lt; T, M, 3 &gt;</strong></a>, <a href="../structlinalg_1_1mat_3_01T_00_01M_00_014_01_4/"><strong>linalg::mat&lt; T, M, 4 &gt;</strong></a>)</li>
+</ul>
+<h2 id="s">s</h2>
+<ul>
+<li><strong>start</strong> (<a href="../classILLIXR_1_1plugin/"><strong>ILLIXR::plugin</strong></a>, <a href="../classILLIXR_1_1threadloop/"><strong>ILLIXR::threadloop</strong></a>)</li>
+<li><strong>stop</strong> (<a href="../classILLIXR_1_1plugin/"><strong>ILLIXR::plugin</strong></a>, <a href="../classILLIXR_1_1runtime/"><strong>ILLIXR::runtime</strong></a>, <a href="../classILLIXR_1_1switchboard/"><strong>ILLIXR::switchboard</strong></a>, <a href="../classILLIXR_1_1threadloop/"><strong>ILLIXR::threadloop</strong></a>)</li>
+<li><strong>start_end_logger</strong> (<a href="../classILLIXR_1_1start__end__logger/"><strong>ILLIXR::start_end_logger</strong></a>)</li>
+<li><strong>schedule</strong> (<a href="../classILLIXR_1_1switchboard/"><strong>ILLIXR::switchboard</strong></a>)</li>
+<li><strong>subscribe_latest</strong> (<a href="../classILLIXR_1_1switchboard/"><strong>ILLIXR::switchboard</strong></a>)</li>
+<li><strong>should_terminate</strong> (<a href="../classILLIXR_1_1threadloop/"><strong>ILLIXR::threadloop</strong></a>)</li>
+<li><strong>set_offset</strong> (<a href="../classpose__prediction/"><strong>pose_prediction</strong></a>)</li>
+<li><strong>should_profile_class</strong> (<a href="../classshould__profile__class/"><strong>should_profile_class</strong></a>)</li>
+</ul>
+<h2 id="t">t</h2>
+<ul>
+<li><strong>to_string</strong> (<a href="../classILLIXR_1_1record__header/"><strong>ILLIXR::record_header</strong></a>)</li>
+<li><strong>thread_main</strong> (<a href="../classILLIXR_1_1threadloop/"><strong>ILLIXR::threadloop</strong></a>)</li>
+<li><strong>threadloop</strong> (<a href="../classILLIXR_1_1threadloop/"><strong>ILLIXR::threadloop</strong></a>)</li>
+<li><strong>true_pose_reliable</strong> (<a href="../classpose__prediction/"><strong>pose_prediction</strong></a>)</li>
+<li><strong>timer</strong> (<a href="../classtimer/"><strong>timer</strong></a>)</li>
+</ul>
+<h2 id="v">v</h2>
+<ul>
+<li><strong>vec</strong> (<a href="../structlinalg_1_1vec_3_01T_00_011_01_4/"><strong>linalg::vec&lt; T, 1 &gt;</strong></a>, <a href="../structlinalg_1_1vec_3_01T_00_012_01_4/"><strong>linalg::vec&lt; T, 2 &gt;</strong></a>, <a href="../structlinalg_1_1vec_3_01T_00_013_01_4/"><strong>linalg::vec&lt; T, 3 &gt;</strong></a>, <a href="../structlinalg_1_1vec_3_01T_00_014_01_4/"><strong>linalg::vec&lt; T, 4 &gt;</strong></a>)</li>
+</ul>
+<h2 id="w">w</h2>
+<ul>
+<li><strong>wait</strong> (<a href="../classILLIXR_1_1runtime/"><strong>ILLIXR::runtime</strong></a>)</li>
+</ul>
+<h2 id="x">x</h2>
+<ul>
+<li><strong>xlib_gl_extended_window</strong> (<a href="../classILLIXR_1_1xlib__gl__extended__window/"><strong>ILLIXR::xlib_gl_extended_window</strong></a>)</li>
+<li><strong>xy</strong> (<a href="../structlinalg_1_1vec_3_01T_00_013_01_4/"><strong>linalg::vec&lt; T, 3 &gt;</strong></a>, <a href="../structlinalg_1_1vec_3_01T_00_014_01_4/"><strong>linalg::vec&lt; T, 4 &gt;</strong></a>)</li>
+<li><strong>xyz</strong> (<a href="../structlinalg_1_1vec_3_01T_00_014_01_4/"><strong>linalg::vec&lt; T, 4 &gt;</strong></a>)</li>
+</ul>
+<h2 id="_1">~</h2>
+<ul>
+<li><strong>~service</strong> (<a href="../classILLIXR_1_1phonebook_1_1service/"><strong>ILLIXR::phonebook::service</strong></a>)</li>
+<li><strong>~plugin</strong> (<a href="../classILLIXR_1_1plugin/"><strong>ILLIXR::plugin</strong></a>)</li>
+<li><strong>~reader_latest</strong> (<a href="../classILLIXR_1_1reader__latest/"><strong>ILLIXR::reader_latest</strong></a>)</li>
+<li><strong>~record</strong> (<a href="../classILLIXR_1_1record/"><strong>ILLIXR::record</strong></a>)</li>
+<li><strong>~record_coalescer</strong> (<a href="../classILLIXR_1_1record__coalescer/"><strong>ILLIXR::record_coalescer</strong></a>)</li>
+<li><strong>~record_logger</strong> (<a href="../classILLIXR_1_1record__logger/"><strong>ILLIXR::record_logger</strong></a>)</li>
+<li><strong>~runtime</strong> (<a href="../classILLIXR_1_1runtime/"><strong>ILLIXR::runtime</strong></a>)</li>
+<li><strong>~start_end_logger</strong> (<a href="../classILLIXR_1_1start__end__logger/"><strong>ILLIXR::start_end_logger</strong></a>)</li>
+<li><strong>~switchboard</strong> (<a href="../classILLIXR_1_1switchboard/"><strong>ILLIXR::switchboard</strong></a>)</li>
+<li><strong>~threadloop</strong> (<a href="../classILLIXR_1_1threadloop/"><strong>ILLIXR::threadloop</strong></a>)</li>
+<li><strong>~writer</strong> (<a href="../classILLIXR_1_1writer/"><strong>ILLIXR::writer</strong></a>)</li>
+<li><strong>~pose_prediction</strong> (<a href="../classpose__prediction/"><strong>pose_prediction</strong></a>)</li>
+<li><strong>~print_timer2</strong> (<a href="../classprint__timer2/"><strong>print_timer2</strong></a>)</li>
+<li><strong>~print_in_destructor</strong> (<a href="../classprint__timer_1_1print__in__destructor/"><strong>print_timer::print_in_destructor</strong></a>)</li>
+<li><strong>~timer</strong> (<a href="../classtimer/"><strong>timer</strong></a>)</li>
+</ul>
+<h2 id="_">_</h2>
+<ul>
+<li><strong>_p_publish</strong> (<a href="../classILLIXR_1_1switchboard/"><strong>ILLIXR::switchboard</strong></a>)</li>
+<li><strong>_p_schedule</strong> (<a href="../classILLIXR_1_1switchboard/"><strong>ILLIXR::switchboard</strong></a>)</li>
+<li><strong>_p_subscribe_latest</strong> (<a href="../classILLIXR_1_1switchboard/"><strong>ILLIXR::switchboard</strong></a>)</li>
+<li><strong>_p_one_iteration</strong> (<a href="../classILLIXR_1_1threadloop/"><strong>ILLIXR::threadloop</strong></a>)</li>
+<li><strong>_p_should_skip</strong> (<a href="../classILLIXR_1_1threadloop/"><strong>ILLIXR::threadloop</strong></a>)</li>
+<li><strong>_p_thread_setup</strong> (<a href="../classILLIXR_1_1threadloop/"><strong>ILLIXR::threadloop</strong></a>)</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["search.suggest", "content.code.annotate", "content.footnote.tooltips", "navigation.indexes", "toc.integrate"], "search": "../../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": "latest", "provider": "mike"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.c8b220af.min.js"></script>
+      
+    
+  </body>
+</html>
