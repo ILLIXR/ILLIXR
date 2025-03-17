@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="plugins_2offload__rendering__client__jetson_2README_8md" kind="file" language="Markdown">
+    <compoundname>README.md</compoundname>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline><highlight class="normal">#<sp/>offload_rendering_client_jetson</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Summary</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">`offload_rendering_client_jetson`<sp/>receives<sp/>encoded<sp/>frames<sp/>from<sp/>the<sp/>network,<sp/>and<sp/>uses<sp/>the<sp/>Jetson&apos;s<sp/>Multimedia<sp/>API<sp/>to</highlight></codeline>
+<codeline><highlight class="normal">decode<sp/>frames<sp/>before<sp/>updating<sp/>the<sp/>buffer<sp/>pool.<sp/>Setting<sp/>the<sp/>environment<sp/>variable<sp/>``ILLIXR_USE_DEPTH_IMAGES``<sp/>to<sp/>a</highlight></codeline>
+<codeline><highlight class="normal">non-zero<sp/>value<sp/>indicates<sp/>that<sp/>depth<sp/>images<sp/>are<sp/>being<sp/>received,<sp/>and<sp/>should<sp/>thus<sp/>also<sp/>be<sp/>decoded.</highlight></codeline>
+    </programlisting>
+    <location file="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/README.md"/>
+  </compounddef>
+</doxygen>

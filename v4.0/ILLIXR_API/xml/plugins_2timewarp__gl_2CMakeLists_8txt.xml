@@ -1,0 +1,103 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="plugins_2timewarp__gl_2CMakeLists_8txt" kind="file" language="C++">
+    <compoundname>CMakeLists.txt</compoundname>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="plugins_2timewarp__gl_2CMakeLists_8txt_1a6659005c03a8c85433c834bde5608b80" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>if</definition>
+        <argsstring>(NOT DEFINED BUILDING_ILLIXR) message(ERROR &quot;The timewarp_gl plugin cannot be built outside of the main ILLIXR build&quot;) endif() get_external_for_plugin(Vulkan) set(PLUGIN_NAMES &quot;plugin.timewarp_gl$</argsstring>
+        <name>if</name>
+        <param>
+          <type>NOT DEFINED</type>
+          <declname>BUILDING_ILLIXR</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR-clean/plugins/timewarp_gl/CMakeLists.txt" line="2" column="1" bodyfile="/home/friedel/devel/ILLIXR-clean/plugins/timewarp_gl/CMakeLists.txt" bodystart="2" bodyend="7"/>
+      </memberdef>
+      <memberdef kind="function" id="plugins_2timewarp__gl_2CMakeLists_8txt_1a98b6374ad5161ee518a7c244d779591e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>set</definition>
+        <argsstring>(PLUGIN_DEFINITIONS &quot;x&quot;) set(PLUGIN_SOURCES &quot;plugin.cpp&quot;) if(ENABLE_MONADO) get_external_for_plugin(Monado_gl) file(COPY_FILE $</argsstring>
+        <name>set</name>
+        <param>
+          <type>PLUGIN_DEFINITIONS &quot;x&quot;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR-clean/plugins/timewarp_gl/CMakeLists.txt" line="8" column="1" bodyfile="/home/friedel/devel/ILLIXR-clean/plugins/timewarp_gl/CMakeLists.txt" bodystart="8" bodyend="13"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#<sp/>module<sp/>to<sp/>build<sp/>and<sp/>install<sp/>the<sp/>timewarp_gl<sp/>ILLIXR<sp/>plugin</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(NOT<sp/>DEFINED<sp/>BUILDING_ILLIXR)</highlight></codeline>
+<codeline lineno="3"><highlight class="normal"><sp/><sp/><sp/><sp/>message(ERROR<sp/></highlight><highlight class="stringliteral">&quot;The<sp/>timewarp_gl<sp/>plugin<sp/>cannot<sp/>be<sp/>built<sp/>outside<sp/>of<sp/>the<sp/>main<sp/>ILLIXR<sp/>build&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="4"><highlight class="normal">endif()</highlight></codeline>
+<codeline lineno="5"><highlight class="normal">get_external_for_plugin(Vulkan)</highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal">set(PLUGIN_NAMES<sp/>&quot;plugin.timewarp_gl${ILLIXR_BUILD_SUFFIX}</highlight><highlight class="stringliteral">&quot;)</highlight></codeline>
+<codeline lineno="8"><highlight class="stringliteral">set(PLUGIN_DEFINITIONS<sp/>&quot;</highlight><highlight class="normal">x</highlight><highlight class="stringliteral">&quot;)</highlight></codeline>
+<codeline lineno="9"><highlight class="stringliteral">set(PLUGIN_SOURCES<sp/>&quot;</highlight><highlight class="normal">plugin.cpp</highlight><highlight class="stringliteral">&quot;)</highlight></codeline>
+<codeline lineno="10"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="11"><highlight class="stringliteral">if(ENABLE_MONADO)</highlight></codeline>
+<codeline lineno="12"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>get_external_for_plugin(Monado_gl)</highlight></codeline>
+<codeline lineno="13"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>file(COPY_FILE<sp/>${CMAKE_SOURCE_DIR}/plugins/timewarp_gl/plugin.cpp<sp/>${CMAKE_BINARY_DIR}/plugins/timewarp_gl/plugin_m.cpp)</highlight></codeline>
+<codeline lineno="14"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>list(APPEND<sp/>PLUGIN_NAMES<sp/>&quot;</highlight><highlight class="normal">plugin.timewarp_gl.monado${ILLIXR_BUILD_SUFFIX}</highlight><highlight class="stringliteral">&quot;)</highlight></codeline>
+<codeline lineno="15"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>list(APPEND<sp/>PLUGIN_DEFINITIONS<sp/>&quot;</highlight><highlight class="normal">ENABLE_MONADO</highlight><highlight class="stringliteral">&quot;)</highlight></codeline>
+<codeline lineno="16"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>list(APPEND<sp/>PLUGIN_SOURCES<sp/>&quot;</highlight><highlight class="normal">${CMAKE_BINARY_DIR}/plugins/timewarp_gl/plugin_m.cpp</highlight><highlight class="stringliteral">&quot;)</highlight></codeline>
+<codeline lineno="17"><highlight class="stringliteral">endif()</highlight></codeline>
+<codeline lineno="18"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="19"><highlight class="stringliteral">foreach(item<sp/>IN<sp/>ZIP_LISTS<sp/>PLUGIN_NAMES<sp/>PLUGIN_DEFINITIONS<sp/>PLUGIN_SOURCES)</highlight></codeline>
+<codeline lineno="20"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>set(PLUGIN_NAME<sp/>&quot;</highlight><highlight class="normal">${item_0}</highlight><highlight class="stringliteral">&quot;)</highlight></codeline>
+<codeline lineno="21"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="22"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>#<sp/>source<sp/>files,<sp/>listed<sp/>individually<sp/>so<sp/>that<sp/>any<sp/>changes<sp/>will<sp/>trigger<sp/>a<sp/>rebuild</highlight></codeline>
+<codeline lineno="23"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>add_library(${PLUGIN_NAME}<sp/>SHARED</highlight></codeline>
+<codeline lineno="24"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${item_2}</highlight></codeline>
+<codeline lineno="25"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>plugin.hpp</highlight></codeline>
+<codeline lineno="26"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>shaders/timewarp_shader.hpp</highlight></codeline>
+<codeline lineno="27"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>$&lt;TARGET_OBJECTS:illixr_hmd&gt;</highlight></codeline>
+<codeline lineno="28"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/data_format/frame.hpp</highlight></codeline>
+<codeline lineno="29"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/data_format/misc.hpp</highlight></codeline>
+<codeline lineno="30"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/data_format/pose.hpp</highlight></codeline>
+<codeline lineno="31"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/error_util.hpp</highlight></codeline>
+<codeline lineno="32"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/extended_window.hpp</highlight></codeline>
+<codeline lineno="33"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/global_module_defs.hpp</highlight></codeline>
+<codeline lineno="34"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/math_util.hpp</highlight></codeline>
+<codeline lineno="35"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/data_format/pose_prediction.hpp</highlight></codeline>
+<codeline lineno="36"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/shader_util.hpp</highlight></codeline>
+<codeline lineno="37"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp</highlight></codeline>
+<codeline lineno="38"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/threadloop.hpp</highlight></codeline>
+<codeline lineno="39"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>)</highlight></codeline>
+<codeline lineno="40"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="41"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>if(NOT<sp/>${item_1}<sp/>STREQUAL<sp/>&quot;</highlight><highlight class="normal">x</highlight><highlight class="stringliteral">&quot;)</highlight></codeline>
+<codeline lineno="42"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>target_compile_definitions(${PLUGIN_NAME}<sp/>PUBLIC<sp/>${item_1})</highlight></codeline>
+<codeline lineno="43"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>target_compile_definitions(${PLUGIN_NAME}<sp/>PRIVATE<sp/>MONADO_REQUIRED)</highlight></codeline>
+<codeline lineno="44"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>target_include_directories(${PLUGIN_NAME}<sp/>PRIVATE<sp/>${CMAKE_CURRENT_SOURCE_DIR})</highlight></codeline>
+<codeline lineno="45"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>endif()</highlight></codeline>
+<codeline lineno="46"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="47"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>target_include_directories(${PLUGIN_NAME}<sp/>PRIVATE<sp/>${X11_INCLUDE_DIR}<sp/>${GLEW_INCLUDE_DIR}<sp/>${GLU_INCLUDE_DIR}<sp/>${gl_INCLUDE_DIRS}<sp/>${ILLIXR_SOURCE_DIR}/include<sp/>${Eigen3_INCLUDE_DIRS}<sp/>${Vulkan_INCLUDE_DIRS})</highlight></codeline>
+<codeline lineno="48"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>target_link_libraries(${PLUGIN_NAME}<sp/>${X11_LIBRARIES}<sp/>${GLEW_LIBRARIES}<sp/>${glu_LDFLAGS}<sp/>${gl_LIBRARIES}<sp/>${Eigen3_LIBRARIES}<sp/>spdlog::spdlog<sp/>${Vulkan_LIBRARY})</highlight></codeline>
+<codeline lineno="49"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>if(Vulkan_EXTERNAL)</highlight></codeline>
+<codeline lineno="50"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>add_dependencies(${PLUGIN_NAME}<sp/>${Vulkan_DEP_STR})</highlight></codeline>
+<codeline lineno="51"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>endif()</highlight></codeline>
+<codeline lineno="52"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>target_compile_features(${PLUGIN_NAME}<sp/>PRIVATE<sp/>cxx_std_17)</highlight></codeline>
+<codeline lineno="53"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>target_compile_definitions(${PLUGIN_NAME}<sp/>PRIVATE<sp/>-DUSE_GL)</highlight></codeline>
+<codeline lineno="54"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>install(TARGETS<sp/>${PLUGIN_NAME}<sp/>DESTINATION<sp/>lib)</highlight></codeline>
+<codeline lineno="55"><highlight class="stringliteral">endforeach()</highlight></codeline>
+    </programlisting>
+    <location file="/home/friedel/devel/ILLIXR-clean/plugins/timewarp_gl/CMakeLists.txt"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,995 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classILLIXR_1_1offload__rendering__client__jetson" kind="class" language="C++" prot="public">
+    <compoundname>ILLIXR::offload_rendering_client_jetson</compoundname>
+    <basecompoundref refid="classILLIXR_1_1threadloop" prot="public" virt="non-virtual">ILLIXR::threadloop</basecompoundref>
+    <basecompoundref prot="public" virt="non-virtual">ILLIXR::vulkan::app</basecompoundref>
+    <basecompoundref prot="public" virt="non-virtual">std::enable_shared_from_this&lt; offload_rendering_client_jetson &gt;</basecompoundref>
+    <includes refid="offload__rendering__client__jetson_8hpp" local="no">offload_rendering_client_jetson.hpp</includes>
+    <innerclass refid="structILLIXR_1_1offload__rendering__client__jetson_1_1MemoryTypeResult" prot="private">ILLIXR::offload_rendering_client_jetson::MemoryTypeResult</innerclass>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client__jetson_1a58eb472c8153e2aa296a4111d7ec2d91" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; std::thread &gt;</type>
+        <definition>std::shared_ptr&lt;std::thread&gt; ILLIXR::offload_rendering_client_jetson::decode_q_thread</definition>
+        <argsstring></argsstring>
+        <name>decode_q_thread</name>
+        <qualifiedname>ILLIXR::offload_rendering_client_jetson::decode_q_thread</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" line="125" column="21" bodyfile="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" bodystart="125" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client__jetson_1a0d7702f0cff3fd8e719c60f68fce5c98" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classILLIXR_1_1switchboard" kindref="compound">switchboard</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;switchboard&gt; ILLIXR::offload_rendering_client_jetson::switchboard_</definition>
+        <argsstring></argsstring>
+        <name>switchboard_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client_jetson::switchboard_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" line="129" column="52" bodyfile="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" bodystart="129" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client__jetson_1aa11142070d8aec0436540ccc371b00e9" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; spdlog::logger &gt;</type>
+        <definition>std::shared_ptr&lt;spdlog::logger&gt; ILLIXR::offload_rendering_client_jetson::log_</definition>
+        <argsstring></argsstring>
+        <name>log_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client_jetson::log_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" line="130" column="49" bodyfile="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" bodystart="130" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client__jetson_1abc62be54b0575d6c375e0f426e6d4e55" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classILLIXR_1_1vulkan_1_1display__provider" kindref="compound">vulkan::display_provider</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;vulkan::display_provider&gt; ILLIXR::offload_rendering_client_jetson::display_provider_</definition>
+        <argsstring></argsstring>
+        <name>display_provider_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client_jetson::display_provider_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" line="131" column="39" bodyfile="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" bodystart="131" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client__jetson_1a1f8aa2b8fc54dff1a769ab7abf736ad9" prot="private" static="no" mutable="no">
+        <type>switchboard::buffered_reader&lt; data_format::compressed_frame &gt;</type>
+        <definition>switchboard::buffered_reader&lt;data_format::compressed_frame&gt; ILLIXR::offload_rendering_client_jetson::frames_reader_</definition>
+        <argsstring></argsstring>
+        <name>frames_reader_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client_jetson::frames_reader_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" line="132" column="34" bodyfile="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" bodystart="132" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client__jetson_1a8ce5055131e3a626b4217a934eb87baa" prot="private" static="no" mutable="no">
+        <type>switchboard::network_writer&lt; <ref refid="structILLIXR_1_1data__format_1_1fast__pose__type" kindref="compound">data_format::fast_pose_type</ref> &gt;</type>
+        <definition>switchboard::network_writer&lt;data_format::fast_pose_type&gt; ILLIXR::offload_rendering_client_jetson::pose_writer_</definition>
+        <argsstring></argsstring>
+        <name>pose_writer_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client_jetson::pose_writer_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" line="133" column="36" bodyfile="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" bodystart="133" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client__jetson_1ab90ca9c48def37b455b4c082e3118f63" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; data_format::pose_prediction &gt;</type>
+        <definition>std::shared_ptr&lt;data_format::pose_prediction&gt; ILLIXR::offload_rendering_client_jetson::pose_prediction_</definition>
+        <argsstring></argsstring>
+        <name>pose_prediction_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client_jetson::pose_prediction_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" line="134" column="35" bodyfile="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" bodystart="134" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client__jetson_1a47dc6eb4525910fe97c8970ff9f6cd09" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classILLIXR_1_1relative__clock" kindref="compound">relative_clock</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;relative_clock&gt; ILLIXR::offload_rendering_client_jetson::clock_</definition>
+        <argsstring></argsstring>
+        <name>clock_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client_jetson::clock_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" line="135" column="49" bodyfile="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" bodystart="135" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client__jetson_1a7db295ca9f31b92f31ac0063d96f032d" prot="private" static="no" mutable="no">
+        <type>std::atomic&lt; bool &gt;</type>
+        <definition>std::atomic&lt;bool&gt; ILLIXR::offload_rendering_client_jetson::ready_</definition>
+        <argsstring></argsstring>
+        <name>ready_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client_jetson::ready_</qualifiedname>
+        <initializer>{false}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" line="138" column="17" bodyfile="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" bodystart="138" bodyend="138"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client__jetson_1a6e4f827972148d594c8407f5fbf9d33a" prot="private" static="no" mutable="no">
+        <type>std::atomic&lt; bool &gt;</type>
+        <definition>std::atomic&lt;bool&gt; ILLIXR::offload_rendering_client_jetson::running_</definition>
+        <argsstring></argsstring>
+        <name>running_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client_jetson::running_</qualifiedname>
+        <initializer>{true}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" line="139" column="17" bodyfile="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" bodystart="139" bodyend="139"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client__jetson_1a51e192b900891e6397dd271bfbfcffe8" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool ILLIXR::offload_rendering_client_jetson::use_depth_</definition>
+        <argsstring></argsstring>
+        <name>use_depth_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client_jetson::use_depth_</qualifiedname>
+        <initializer>{false}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" line="140" column="23" bodyfile="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" bodystart="140" bodyend="140"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client__jetson_1a25e844b69277304f827677d33d7a06d9" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; vulkan::buffer_pool&lt; <ref refid="structILLIXR_1_1data__format_1_1fast__pose__type" kindref="compound">data_format::fast_pose_type</ref> &gt; &gt;</type>
+        <definition>std::shared_ptr&lt;vulkan::buffer_pool&lt;data_format::fast_pose_type&gt; &gt; ILLIXR::offload_rendering_client_jetson::buffer_pool_</definition>
+        <argsstring></argsstring>
+        <name>buffer_pool_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client_jetson::buffer_pool_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" line="144" column="21" bodyfile="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" bodystart="144" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client__jetson_1adb8047a4507a58f8f6b29417b17c18bf" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; std::array&lt; VkCommandBuffer, 2 &gt; &gt;</type>
+        <definition>std::vector&lt;std::array&lt;VkCommandBuffer, 2&gt; &gt; ILLIXR::offload_rendering_client_jetson::blit_color_cb_</definition>
+        <argsstring></argsstring>
+        <name>blit_color_cb_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client_jetson::blit_color_cb_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" line="146" column="17" bodyfile="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" bodystart="146" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client__jetson_1a2b6d2390160871582cffde0e2270c898" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; std::array&lt; VkCommandBuffer, 2 &gt; &gt;</type>
+        <definition>std::vector&lt;std::array&lt;VkCommandBuffer, 2&gt; &gt; ILLIXR::offload_rendering_client_jetson::blit_depth_cb_</definition>
+        <argsstring></argsstring>
+        <name>blit_depth_cb_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client_jetson::blit_depth_cb_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" line="147" column="17" bodyfile="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" bodystart="147" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client__jetson_1a135869e51ecb601a7d3206c94b07827e" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; std::array&lt; VkCommandBuffer, 2 &gt; &gt;</type>
+        <definition>std::vector&lt;std::array&lt;VkCommandBuffer, 2&gt; &gt; ILLIXR::offload_rendering_client_jetson::layout_transition_start_cmd_bufs_</definition>
+        <argsstring></argsstring>
+        <name>layout_transition_start_cmd_bufs_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client_jetson::layout_transition_start_cmd_bufs_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" line="148" column="17" bodyfile="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" bodystart="148" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client__jetson_1abcafb6f0c907daa9deb7671134a13524" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; std::array&lt; VkCommandBuffer, 2 &gt; &gt;</type>
+        <definition>std::vector&lt;std::array&lt;VkCommandBuffer, 2&gt; &gt; ILLIXR::offload_rendering_client_jetson::layout_transition_end_cmd_bufs_</definition>
+        <argsstring></argsstring>
+        <name>layout_transition_end_cmd_bufs_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client_jetson::layout_transition_end_cmd_bufs_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" line="149" column="17" bodyfile="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" bodystart="149" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client__jetson_1a21641c6673b97c93494b59aa874b89c5" prot="private" static="no" mutable="no">
+        <type>mmapi_decoder</type>
+        <definition>mmapi_decoder ILLIXR::offload_rendering_client_jetson::color_decoder_</definition>
+        <argsstring></argsstring>
+        <name>color_decoder_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client_jetson::color_decoder_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" line="152" column="19" bodyfile="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" bodystart="152" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client__jetson_1a94b5d0e31e6db665e65d79886139f2af" prot="private" static="no" mutable="no">
+        <type>mmapi_decoder</type>
+        <definition>mmapi_decoder ILLIXR::offload_rendering_client_jetson::depth_decoder_</definition>
+        <argsstring></argsstring>
+        <name>depth_decoder_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client_jetson::depth_decoder_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" line="153" column="19" bodyfile="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" bodystart="153" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client__jetson_1ade2b5aceffd837b356d5a047683d2719" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; const data_format::compressed_frame &gt;</type>
+        <definition>std::shared_ptr&lt;const data_format::compressed_frame&gt; ILLIXR::offload_rendering_client_jetson::received_frame_</definition>
+        <argsstring></argsstring>
+        <name>received_frame_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client_jetson::received_frame_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" line="156" column="21" bodyfile="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" bodystart="156" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client__jetson_1ab6a49e22e6579307723c6f1afc07ced7" prot="private" static="no" mutable="no">
+        <type>std::queue&lt; <ref refid="structILLIXR_1_1data__format_1_1fast__pose__type" kindref="compound">data_format::fast_pose_type</ref> &gt;</type>
+        <definition>std::queue&lt;data_format::fast_pose_type&gt; ILLIXR::offload_rendering_client_jetson::pose_queue_</definition>
+        <argsstring></argsstring>
+        <name>pose_queue_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client_jetson::pose_queue_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" line="158" column="16" bodyfile="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" bodystart="158" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client__jetson_1aeed79b7ce4cc65009a45046b230b03cd" prot="private" static="no" mutable="no">
+        <type>std::mutex</type>
+        <definition>std::mutex ILLIXR::offload_rendering_client_jetson::pose_queue_mutex_</definition>
+        <argsstring></argsstring>
+        <name>pose_queue_mutex_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client_jetson::pose_queue_mutex_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" line="159" column="45" bodyfile="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" bodystart="159" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client__jetson_1af85f7562e58339a58dfe6717b94dc943" prot="private" static="no" mutable="no">
+        <type>VkCommandPool</type>
+        <definition>VkCommandPool ILLIXR::offload_rendering_client_jetson::command_pool_</definition>
+        <argsstring></argsstring>
+        <name>command_pool_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client_jetson::command_pool_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" line="163" column="19" bodyfile="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" bodystart="163" bodyend="163"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client__jetson_1a2cbd99c2efa8d1592bed48ce871a04f6" prot="private" static="no" mutable="no">
+        <type>VkFence</type>
+        <definition>VkFence ILLIXR::offload_rendering_client_jetson::blit_fence_</definition>
+        <argsstring></argsstring>
+        <name>blit_fence_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client_jetson::blit_fence_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" line="164" column="19" bodyfile="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" bodystart="164" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client__jetson_1a7bdb06f2ade5b57ed488fa369c88bcd7" prot="private" static="no" mutable="no">
+        <type>uint16_t</type>
+        <definition>uint16_t ILLIXR::offload_rendering_client_jetson::fps_counter_</definition>
+        <argsstring></argsstring>
+        <name>fps_counter_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client_jetson::fps_counter_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" line="167" column="52" bodyfile="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" bodystart="167" bodyend="167"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client__jetson_1ae13fe67e8b09b88c5f65105fb7f4925d" prot="private" static="no" mutable="no">
+        <type>std::chrono::high_resolution_clock::time_point</type>
+        <definition>std::chrono::high_resolution_clock::time_point ILLIXR::offload_rendering_client_jetson::fps_start_time_</definition>
+        <argsstring></argsstring>
+        <name>fps_start_time_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client_jetson::fps_start_time_</qualifiedname>
+        <initializer>{std::chrono::high_resolution_clock::now()}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" line="168" column="52" bodyfile="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" bodystart="168" bodyend="168"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client__jetson_1a0118feb4b897a9fb81a6c9a0fdc122ce" prot="private" static="no" mutable="no">
+        <type>std::map&lt; std::string, uint32_t &gt;</type>
+        <definition>std::map&lt;std::string, uint32_t&gt; ILLIXR::offload_rendering_client_jetson::metrics_</definition>
+        <argsstring></argsstring>
+        <name>metrics_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client_jetson::metrics_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" line="169" column="29" bodyfile="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" bodystart="169" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classILLIXR_1_1offload__rendering__client__jetson_1aede46579056cf98e352017eeaa618aca" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>offload_rendering_client_jetson::offload_rendering_client_jetson</definition>
+        <argsstring>(const std::string &amp;name, phonebook *pb)</argsstring>
+        <name>offload_rendering_client_jetson</name>
+        <qualifiedname>ILLIXR::offload_rendering_client_jetson::offload_rendering_client_jetson</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type><ref refid="classILLIXR_1_1phonebook" kindref="compound">phonebook</ref> *</type>
+          <declname>pb</declname>
+        </param>
+        <briefdescription>
+<para>Constructor initializing the client components. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Plugin name </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>pb</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Phonebook for component lookup </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" line="33" column="5" bodyfile="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.cpp" bodystart="6" bodyend="23"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1offload__rendering__client__jetson_1a77a43af63143c0dc5ceae47d79016bd0" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void offload_rendering_client_jetson::mmapi_init_decoders</definition>
+        <argsstring>() const</argsstring>
+        <name>mmapi_init_decoders</name>
+        <qualifiedname>ILLIXR::offload_rendering_client_jetson::mmapi_init_decoders</qualifiedname>
+        <briefdescription>
+<para>Initializes the video decoders Sets up hardware-accelerated decoders for color and depth (if enabled) streams. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" line="42" column="10" bodyfile="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.cpp" bodystart="25" bodyend="32"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1offload__rendering__client__jetson_1adeccc0ee8b97f2a1ab7e2d211f4563b9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void offload_rendering_client_jetson::vk_resources_init</definition>
+        <argsstring>()</argsstring>
+        <name>vk_resources_init</name>
+        <qualifiedname>ILLIXR::offload_rendering_client_jetson::vk_resources_init</qualifiedname>
+        <briefdescription>
+<para>Initializes Vulkan resources for frame handling Sets up command pools, buffers and other Vulkan resources needed for frame processing. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" line="48" column="11" bodyfile="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.cpp" bodystart="34" bodyend="56"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1offload__rendering__client__jetson_1a4d9036190ab24e98947881b9598d486e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void offload_rendering_client_jetson::setup</definition>
+        <argsstring>(VkRenderPass render_pass, uint32_t subpass, std::shared_ptr&lt; vulkan::buffer_pool&lt; data_format::fast_pose_type &gt; &gt; buffer_pool) override</argsstring>
+        <name>setup</name>
+        <qualifiedname>ILLIXR::offload_rendering_client_jetson::setup</qualifiedname>
+        <param>
+          <type>VkRenderPass</type>
+          <declname>render_pass</declname>
+        </param>
+        <param>
+          <type>uint32_t</type>
+          <declname>subpass</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; vulkan::buffer_pool&lt; <ref refid="structILLIXR_1_1data__format_1_1fast__pose__type" kindref="compound">data_format::fast_pose_type</ref> &gt; &gt;</type>
+          <declname>buffer_pool</declname>
+        </param>
+        <briefdescription>
+<para>Setup function called by the display system Initializes resources and prepares for frame processing. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" line="59" column="10" bodyfile="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.cpp" bodystart="83" bodyend="165"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1offload__rendering__client__jetson_1addd5083f4e828fa781c6db2904fccc59" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void ILLIXR::offload_rendering_client_jetson::record_command_buffer</definition>
+        <argsstring>(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left) override</argsstring>
+        <name>record_command_buffer</name>
+        <qualifiedname>ILLIXR::offload_rendering_client_jetson::record_command_buffer</qualifiedname>
+        <param>
+          <type>VkCommandBuffer</type>
+          <declname>commandBuffer</declname>
+        </param>
+        <param>
+          <type>VkFramebuffer</type>
+          <declname>framebuffer</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>buffer_ind</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>left</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" line="62" column="10" bodyfile="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" bodystart="62" bodyend="67"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1offload__rendering__client__jetson_1a395953f5347af1cb1c9377c8a7723b2f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void ILLIXR::offload_rendering_client_jetson::update_uniforms</definition>
+        <argsstring>(const data_format::pose_type &amp;render_pose) override</argsstring>
+        <name>update_uniforms</name>
+        <qualifiedname>ILLIXR::offload_rendering_client_jetson::update_uniforms</qualifiedname>
+        <param>
+          <type>const <ref refid="structILLIXR_1_1data__format_1_1pose__type" kindref="compound">data_format::pose_type</ref> &amp;</type>
+          <declname>render_pose</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" line="69" column="10" bodyfile="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" bodystart="69" bodyend="71"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1offload__rendering__client__jetson_1a1eb48f56e7d824fb7adfddd71b039faa" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool ILLIXR::offload_rendering_client_jetson::is_external</definition>
+        <argsstring>() override</argsstring>
+        <name>is_external</name>
+        <qualifiedname>ILLIXR::offload_rendering_client_jetson::is_external</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" line="73" column="10" bodyfile="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" bodystart="73" bodyend="75"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1offload__rendering__client__jetson_1a06fcf4c24f53d148cef8816b7d707862" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void offload_rendering_client_jetson::destroy</definition>
+        <argsstring>() override</argsstring>
+        <name>destroy</name>
+        <qualifiedname>ILLIXR::offload_rendering_client_jetson::destroy</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" line="77" column="10" bodyfile="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.cpp" bodystart="167" bodyend="172"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1offload__rendering__client__jetson_1abb3709984e65b0d2ddd8633c0a423c30" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void offload_rendering_client_jetson::_p_thread_setup</definition>
+        <argsstring>() override</argsstring>
+        <name>_p_thread_setup</name>
+        <qualifiedname>ILLIXR::offload_rendering_client_jetson::_p_thread_setup</qualifiedname>
+        <reimplements refid="classILLIXR_1_1threadloop_1a00a89b3f3e9caa870f4c70bbc2f8fe97">_p_thread_setup</reimplements>
+        <briefdescription>
+<para>Gets called at setup time, from the new thread. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" line="78" column="10" bodyfile="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.cpp" bodystart="174" bodyend="185"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1offload__rendering__client__jetson_1a74e907821fdbed05dc67f0ddfa5e33f7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void offload_rendering_client_jetson::blitTo</definition>
+        <argsstring>(uint8_t ind, uint8_t eye, int fd, bool depth)</argsstring>
+        <name>blitTo</name>
+        <qualifiedname>ILLIXR::offload_rendering_client_jetson::blitTo</qualifiedname>
+        <param>
+          <type>uint8_t</type>
+          <declname>ind</declname>
+        </param>
+        <param>
+          <type>uint8_t</type>
+          <declname>eye</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>fd</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>depth</declname>
+        </param>
+        <briefdescription>
+<para>Copies decoded frame data to the display buffer. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ind</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Buffer index </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>eye</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Eye index (0 for left, 1 for right) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>fd</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>File descriptor of the source buffer </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>depth</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Whether this is a depth buffer </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" line="99" column="11" bodyfile="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.cpp" bodystart="254" bodyend="342"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1offload__rendering__client__jetson_1a26a8d02079d82dab4b9dc60ababecb1c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void offload_rendering_client_jetson::queue_bytestream</definition>
+        <argsstring>()</argsstring>
+        <name>queue_bytestream</name>
+        <qualifiedname>ILLIXR::offload_rendering_client_jetson::queue_bytestream</qualifiedname>
+        <briefdescription>
+<para>Queues a bytestream for decoding Handles the decoding of received video frames and synchronization with poses. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" line="105" column="10" bodyfile="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.cpp" bodystart="344" bodyend="359"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1offload__rendering__client__jetson_1a6836eef834dad62075b5ca2031d8c753" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void offload_rendering_client_jetson::_p_one_iteration</definition>
+        <argsstring>() override</argsstring>
+        <name>_p_one_iteration</name>
+        <qualifiedname>ILLIXR::offload_rendering_client_jetson::_p_one_iteration</qualifiedname>
+        <reimplements refid="classILLIXR_1_1threadloop_1a609dc44adc6c56cf304408c7ac5f15be">_p_one_iteration</reimplements>
+        <briefdescription>
+<para>Main processing loop iteration Handles frame decoding, transfer and synchronization. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" line="111" column="10" bodyfile="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.cpp" bodystart="361" bodyend="425"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1offload__rendering__client__jetson_1a5e4625b84f6fdbd190d66e64add8cfbd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void offload_rendering_client_jetson::push_pose</definition>
+        <argsstring>()</argsstring>
+        <name>push_pose</name>
+        <qualifiedname>ILLIXR::offload_rendering_client_jetson::push_pose</qualifiedname>
+        <briefdescription>
+<para>Pushes the current pose to the server Handles pose synchronization with the rendering server. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" line="117" column="10" bodyfile="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.cpp" bodystart="427" bodyend="434"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1offload__rendering__client__jetson_1a9657aa35228d43dd1f4866694a64a448" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool offload_rendering_client_jetson::network_receive</definition>
+        <argsstring>()</argsstring>
+        <name>network_receive</name>
+        <qualifiedname>ILLIXR::offload_rendering_client_jetson::network_receive</qualifiedname>
+        <briefdescription>
+<para>Receives and processes network data. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>true if frame was received successfully, false otherwise </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" line="122" column="10" bodyfile="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.cpp" bodystart="436" bodyend="454"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1offload__rendering__client__jetson_1a08e3e9165dda3314e77f16b7a26e6f10" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void offload_rendering_client_jetson::stop</definition>
+        <argsstring>() override</argsstring>
+        <name>stop</name>
+        <qualifiedname>ILLIXR::offload_rendering_client_jetson::stop</qualifiedname>
+        <reimplements refid="classILLIXR_1_1plugin_1a2cefabfb6dd9800b1ebc8b07031661c4">stop</reimplements>
+        <briefdescription>
+<para>A method which Spindle calls when it stops the component. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This is necessary because the parent class might define some actions that need to be taken prior to destructing the derived class. For example, threadloop must halt and join the thread before the derived class can be safely destructed. However, the derived class&apos;s destructor is called before its parent (threadloop), so threadloop doesn&apos;t get a chance to join the thread before the derived class is destroyed, and the thread accesses freed memory. Instead, we call plugin-&gt;stop manually before destroying anything.</para>
+<para>Concrete plugins are responsible for initializing their specific logger and sinks. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" line="123" column="10" bodyfile="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.cpp" bodystart="456" bodyend="461"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classILLIXR_1_1offload__rendering__client__jetson_1a575434c99bb36b15f12d8ae4efeca1a0" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void offload_rendering_client_jetson::mmapi_import_dmabuf</definition>
+        <argsstring>(vulkan::vk_image &amp;eye)</argsstring>
+        <name>mmapi_import_dmabuf</name>
+        <qualifiedname>ILLIXR::offload_rendering_client_jetson::mmapi_import_dmabuf</qualifiedname>
+        <param>
+          <type>vulkan::vk_image &amp;</type>
+          <declname>eye</declname>
+        </param>
+        <briefdescription>
+<para>Imports a DMA buffer into the NVIDIA buffer system. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>eye</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The Vulkan image representing the eye buffer to import </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" line="54" column="17" bodyfile="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.cpp" bodystart="58" bodyend="81"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1offload__rendering__client__jetson_1a60c0b6905882da2cfb482c7bffc20ce9" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void offload_rendering_client_jetson::transition_layout</definition>
+        <argsstring>(VkCommandBuffer cmd_buf, VkImage image, VkImageLayout old_layout, VkImageLayout new_layout)</argsstring>
+        <name>transition_layout</name>
+        <qualifiedname>ILLIXR::offload_rendering_client_jetson::transition_layout</qualifiedname>
+        <param>
+          <type>VkCommandBuffer</type>
+          <declname>cmd_buf</declname>
+        </param>
+        <param>
+          <type>VkImage</type>
+          <declname>image</declname>
+        </param>
+        <param>
+          <type>VkImageLayout</type>
+          <declname>old_layout</declname>
+        </param>
+        <param>
+          <type>VkImageLayout</type>
+          <declname>new_layout</declname>
+        </param>
+        <briefdescription>
+<para>Handles image layout transitions in Vulkan. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>cmd_buf</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Command buffer to record the transition commands </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>image</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The image to transition </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>old_layout</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Original layout </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>new_layout</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Target layout </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" line="91" column="17" bodyfile="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.cpp" bodystart="187" bodyend="252"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-static-func">
+      <memberdef kind="function" id="classILLIXR_1_1offload__rendering__client__jetson_1aabd59a4b1355a282fb459f6172c359dd" prot="private" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>MemoryTypeResult</type>
+        <definition>offload_rendering_client_jetson::MemoryTypeResult offload_rendering_client_jetson::findMemoryType</definition>
+        <argsstring>(VkPhysicalDevice physicalDevice, uint32_t typeFilter, VkMemoryPropertyFlags properties)</argsstring>
+        <name>findMemoryType</name>
+        <qualifiedname>ILLIXR::offload_rendering_client_jetson::findMemoryType</qualifiedname>
+        <param>
+          <type>VkPhysicalDevice</type>
+          <declname>physicalDevice</declname>
+        </param>
+        <param>
+          <type>uint32_t</type>
+          <declname>typeFilter</declname>
+        </param>
+        <param>
+          <type>VkMemoryPropertyFlags</type>
+          <declname>properties</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" line="177" column="29" bodyfile="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.cpp" bodystart="464" bodyend="480"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classILLIXR_1_1offload__rendering__client__jetson_1ab1e5fa922774412d496c77956017c937" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void offload_rendering_client_jetson::submit_command_buffer</definition>
+        <argsstring>(VkCommandBuffer vk_command_buffer)</argsstring>
+        <name>submit_command_buffer</name>
+        <qualifiedname>ILLIXR::offload_rendering_client_jetson::submit_command_buffer</qualifiedname>
+        <param>
+          <type>VkCommandBuffer</type>
+          <declname>vk_command_buffer</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" line="179" column="13" bodyfile="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.cpp" bodystart="482" bodyend="495"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Main class implementing the offload rendering client functionality. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>This class handles:<itemizedlist>
+<listitem><para>Video decoding of received frames using hardware acceleration</para>
+</listitem><listitem><para>Pose synchronization with the server</para>
+</listitem><listitem><para>Integration with Vulkan display system</para>
+</listitem><listitem><para>DMA-buf based zero-copy frame transfer </para>
+</listitem></itemizedlist>
+</para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>ILLIXR::offload_rendering_client_jetson</label>
+        <link refid="classILLIXR_1_1offload__rendering__client__jetson"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>ILLIXR::plugin</label>
+        <link refid="classILLIXR_1_1plugin"/>
+      </node>
+      <node id="2">
+        <label>ILLIXR::threadloop</label>
+        <link refid="classILLIXR_1_1threadloop"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>ILLIXR::offload_rendering_client_jetson</label>
+        <link refid="classILLIXR_1_1offload__rendering__client__jetson"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>ILLIXR::phonebook</label>
+        <link refid="classILLIXR_1_1phonebook"/>
+      </node>
+      <node id="3">
+        <label>ILLIXR::plugin</label>
+        <link refid="classILLIXR_1_1plugin"/>
+        <childnode refid="4" relation="usage">
+          <edgelabel>phonebook_</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ILLIXR::threadloop</label>
+        <link refid="classILLIXR_1_1threadloop"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" line="23" column="1" bodyfile="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" bodystart="26" bodyend="180"/>
+    <listofallmembers>
+      <member refid="classILLIXR_1_1offload__rendering__client__jetson_1a6836eef834dad62075b5ca2031d8c753" prot="public" virt="virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>_p_one_iteration</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a9ff83bb9e47beff3efccbd26bc3e874a" prot="protected" virt="virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>_p_should_skip</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client__jetson_1abb3709984e65b0d2ddd8633c0a423c30" prot="public" virt="virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>_p_thread_setup</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client__jetson_1adb8047a4507a58f8f6b29417b17c18bf" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>blit_color_cb_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client__jetson_1a2b6d2390160871582cffde0e2270c898" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>blit_depth_cb_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client__jetson_1a2cbd99c2efa8d1592bed48ce871a04f6" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>blit_fence_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client__jetson_1a74e907821fdbed05dc67f0ddfa5e33f7" prot="public" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>blitTo</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client__jetson_1a25e844b69277304f827677d33d7a06d9" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>buffer_pool_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client__jetson_1a47dc6eb4525910fe97c8970ff9f6cd09" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>clock_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client__jetson_1a21641c6673b97c93494b59aa874b89c5" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>color_decoder_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client__jetson_1af85f7562e58339a58dfe6717b94dc943" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>command_pool_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client__jetson_1a58eb472c8153e2aa296a4111d7ec2d91" prot="public" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>decode_q_thread</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client__jetson_1a94b5d0e31e6db665e65d79886139f2af" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>depth_decoder_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client__jetson_1a06fcf4c24f53d148cef8816b7d707862" prot="public" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>destroy</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client__jetson_1abc62be54b0575d6c375e0f426e6d4e55" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>display_provider_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client__jetson_1aabd59a4b1355a282fb459f6172c359dd" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>findMemoryType</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client__jetson_1a7bdb06f2ade5b57ed488fa369c88bcd7" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>fps_counter_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client__jetson_1ae13fe67e8b09b88c5f65105fb7f4925d" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>fps_start_time_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client__jetson_1a1f8aa2b8fc54dff1a769ab7abf736ad9" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>frames_reader_</name></member>
+      <member refid="classILLIXR_1_1plugin_1afe52734e7edc87bd0bf974caf112961b" prot="protected" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>gen_guid_</name></member>
+      <member refid="classILLIXR_1_1plugin_1aebda022998bd35983e83f391dc0e5193" prot="public" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>get_name</name></member>
+      <member refid="classILLIXR_1_1plugin_1aaedb3f9178bdd11e53815e158454aaf3" prot="protected" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>id_</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a3e12891e504c782da98e21328dbcf0af" prot="public" virt="virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>internal_stop</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client__jetson_1a1eb48f56e7d824fb7adfddd71b039faa" prot="public" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>is_external</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a54e0814711e7a582630d38d45ddbe3f3" prot="protected" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>iteration_no</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client__jetson_1abcafb6f0c907daa9deb7671134a13524" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>layout_transition_end_cmd_bufs_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client__jetson_1a135869e51ecb601a7d3206c94b07827e" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>layout_transition_start_cmd_bufs_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client__jetson_1aa11142070d8aec0436540ccc371b00e9" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>log_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client__jetson_1a0118feb4b897a9fb81a6c9a0fdc122ce" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>metrics_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client__jetson_1a575434c99bb36b15f12d8ae4efeca1a0" prot="public" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>mmapi_import_dmabuf</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client__jetson_1a77a43af63143c0dc5ceae47d79016bd0" prot="public" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>mmapi_init_decoders</name></member>
+      <member refid="classILLIXR_1_1plugin_1aa963c518af83966173840a8558490888" prot="protected" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>name_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client__jetson_1a9657aa35228d43dd1f4866694a64a448" prot="public" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>network_receive</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client__jetson_1aede46579056cf98e352017eeaa618aca" prot="public" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>offload_rendering_client_jetson</name></member>
+      <member refid="classILLIXR_1_1plugin_1a6f7a2a9012350591c00d67a5bc0fd5a6" prot="protected" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>phonebook_</name></member>
+      <member refid="classILLIXR_1_1vulkan_1_1render__pass_1a59471ec4496602094f87dcdd740c3fa8" prot="public" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>pipeline_</name></member>
+      <member refid="classILLIXR_1_1plugin_1abc91c0e5be180a8e0bbeaf114a127f17" prot="public" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>plugin</name></member>
+      <member refid="classILLIXR_1_1plugin_1a8d40c2421cde09079372d12bfe7d45fe" prot="protected" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>plugin_logger_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client__jetson_1ab90ca9c48def37b455b4c082e3118f63" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>pose_prediction_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client__jetson_1ab6a49e22e6579307723c6f1afc07ced7" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>pose_queue_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client__jetson_1aeed79b7ce4cc65009a45046b230b03cd" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>pose_queue_mutex_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client__jetson_1a8ce5055131e3a626b4217a934eb87baa" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>pose_writer_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client__jetson_1a5e4625b84f6fdbd190d66e64add8cfbd" prot="public" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>push_pose</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client__jetson_1a26a8d02079d82dab4b9dc60ababecb1c" prot="public" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>queue_bytestream</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client__jetson_1a7db295ca9f31b92f31ac0063d96f032d" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>ready_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client__jetson_1ade2b5aceffd837b356d5a047683d2719" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>received_frame_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client__jetson_1addd5083f4e828fa781c6db2904fccc59" prot="public" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>record_command_buffer</name></member>
+      <member refid="classILLIXR_1_1plugin_1aef671d0cd9b6de45d3ade16dedbf4974" prot="protected" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>record_logger_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client__jetson_1a6e4f827972148d594c8407f5fbf9d33a" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>running_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client__jetson_1a4d9036190ab24e98947881b9598d486e" prot="public" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>setup</name></member>
+      <member refid="classILLIXR_1_1vulkan_1_1app_1a343363b55ec070db70030ae3381e10d8" prot="public" virt="pure-virtual" ambiguityscope="ILLIXR::vulkan::app::"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>setup</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a75009fa785455bdb4b285424f0494bf7" prot="protected" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>should_terminate</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a8f6ce8b95d3d9aadf83e4e1414477cd0" prot="protected" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>skip_no</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a26c08942158dc019cbc78c9880417652" prot="protected" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>skip_option</name></member>
+      <member refid="classILLIXR_1_1plugin_1a7c1c7c1a0ec2e43bfa1118586a28932f" prot="public" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>spd_add_file_sink</name></member>
+      <member refid="classILLIXR_1_1plugin_1a569297189ef365cf93f6a95202c76d76" prot="public" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>spdlogger</name></member>
+      <member refid="classILLIXR_1_1threadloop_1af001e97f74595e18f589f66ac0595bfb" prot="public" virt="virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>start</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client__jetson_1a08e3e9165dda3314e77f16b7a26e6f10" prot="public" virt="virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>stop</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client__jetson_1ab1e5fa922774412d496c77956017c937" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>submit_command_buffer</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client__jetson_1a0d7702f0cff3fd8e719c60f68fce5c98" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>switchboard_</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a8e69bfe104a92c0b98caa5583439c34a" prot="public" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>threadloop</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client__jetson_1a60c0b6905882da2cfb482c7bffc20ce9" prot="public" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>transition_layout</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client__jetson_1a395953f5347af1cb1c9377c8a7723b2f" prot="public" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>update_uniforms</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client__jetson_1a51e192b900891e6397dd271bfbfcffe8" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>use_depth_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client__jetson_1adeccc0ee8b97f2a1ab7e2d211f4563b9" prot="public" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>vk_resources_init</name></member>
+      <member refid="classILLIXR_1_1plugin_1a44d7b00c86e227bbc1a0b221da43d454" prot="public" virt="virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>~plugin</name></member>
+      <member refid="classILLIXR_1_1vulkan_1_1render__pass_1ae57133967b6196133e8832759f3fc881" prot="public" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>~render_pass</name></member>
+      <member refid="classILLIXR_1_1phonebook_1_1service_1a6bc6e64a0d9b70223989fc3fb98c2d0d" prot="public" virt="virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>~service</name></member>
+      <member refid="classILLIXR_1_1threadloop_1afbf7b56801b484b60e9cf43448332195" prot="public" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson</scope><name>~threadloop</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
