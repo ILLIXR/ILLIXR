@@ -13,7 +13,6 @@
 #include <glm/gtx/hash.hpp>
 #include <mutex>
 
-
 using namespace ILLIXR;
 using namespace ILLIXR::data_format;
 
