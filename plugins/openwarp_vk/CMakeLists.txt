@@ -9,8 +9,8 @@ get_external_for_plugin(Vulkan)
 find_package(glm REQUIRED)
 
 file(GLOB_RECURSE GLSL_SOURCE_FILES
-     "shaders/*.frag"
-     "shaders/*.vert"
+     "${OW_PREFIX}shaders/*.frag"
+     "${OW_PREFIX}shaders/*.vert"
 )
 
 foreach(GLSL ${GLSL_SOURCE_FILES})

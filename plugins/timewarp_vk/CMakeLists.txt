@@ -10,8 +10,8 @@ get_external_for_plugin(Vulkan)
 find_package(glm REQUIRED)
 
 file(GLOB_RECURSE GLSL_SOURCE_FILES
-     "shaders/*.frag"
-     "shaders/*.vert"
+     "${TW_PREFIX}shaders/*.frag"
+     "${TW_PREFIX}shaders/*.vert"
 )
 set(TIMEWARP_VK_DEP_STR "")
 if(Vulkan_EXTERNAL)
