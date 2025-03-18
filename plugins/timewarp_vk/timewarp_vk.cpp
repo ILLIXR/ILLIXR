@@ -1,9 +1,5 @@
 #include "timewarp_vk.hpp"
 
-#if defined(ENABLE_MONADO)
-    #define VMA_IMPLEMENTATION
-#endif
-
 #include "illixr/global_module_defs.hpp"
 #include "illixr/math_util.hpp"
 #include "illixr/vk/vulkan_utils.hpp"
@@ -16,6 +12,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/hash.hpp>
 #include <mutex>
+
 
 using namespace ILLIXR;
 using namespace ILLIXR::data_format;

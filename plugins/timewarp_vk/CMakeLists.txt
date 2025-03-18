@@ -60,8 +60,7 @@ add_library(${PLUGIN_NAME} SHARED
             $<TARGET_OBJECTS:illixr_vulkan_utils>
 )
 if(TW_PLUGIN_DEFINITIONS)
-    target_compile_definitions(${PLUGIN_NAME} PUBLIC ${TW_PLUGIN_DEFINITIONS})
-    target_compile_definitions(${PLUGIN_NAME} PRIVATE MONADO_REQUIRED)
+    target_compile_definitions(${PLUGIN_NAME} PRIVATE ${TW_PLUGIN_DEFINITIONS})
     target_include_directories(${PLUGIN_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/..)
 endif()
 

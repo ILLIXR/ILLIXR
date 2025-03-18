@@ -1,9 +1,4 @@
 #pragma once
-#ifdef ENABLE_MONADO
-    #ifndef SKIP_VMA
-        #define VMA_IMPLEMENTATION
-    #endif
-#endif
 
 #include "illixr/data_format/pose_prediction.hpp"
 #include "illixr/hmd.hpp"

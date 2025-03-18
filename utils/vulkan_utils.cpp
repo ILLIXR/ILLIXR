@@ -1,3 +1,4 @@
+#define VMA_IMPLEMENTATION
 #include "illixr/vk/vulkan_utils.hpp"
 
 #include <cstdint>

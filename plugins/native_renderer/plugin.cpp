@@ -1,5 +1,3 @@
-#define VMA_IMPLEMENTATION
-
 #include "plugin.hpp"
 
 #include "illixr/global_module_defs.hpp"

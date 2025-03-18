@@ -3,9 +3,6 @@
 
 #include "illixr/phonebook.hpp"
 #include "illixr/threadloop.hpp"
-#ifdef ENABLE_MONADO
-    #define SKIP_VMA
-#endif
 #include "openwarp_vk.hpp"
 
 namespace ILLIXR {

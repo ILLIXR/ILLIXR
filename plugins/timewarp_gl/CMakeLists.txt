@@ -30,9 +30,8 @@ add_library(${PLUGIN_NAME} SHARED
 )
 
 if(TW_PLUGIN_DEFINITIONS)
-    target_compile_definitions(${PLUGIN_NAME} PUBLIC ${TW_PLUGIN_DEFINITIONS})
-    target_compile_definitions(${PLUGIN_NAME} PRIVATE MONADO_REQUIRED)
-    target_include_directories(${PLUGIN_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/..)
+    target_compile_definitions(${PLUGIN_NAME} PRIVATE ${TW_PLUGIN_DEFINITIONS})
+    target_include_directories(${PLUGIN_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/..)
 endif()
 
 target_include_directories(${PLUGIN_NAME} PRIVATE ${X11_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} ${GLU_INCLUDE_DIR} ${gl_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR}/include ${Eigen3_INCLUDE_DIRS} ${Vulkan_INCLUDE_DIRS})
