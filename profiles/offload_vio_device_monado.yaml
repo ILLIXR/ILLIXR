@@ -1,6 +1,5 @@
 # This file was auto generated, take caution if manually editing.
 plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,timewarp_vk.monado,offload_vio.device_rx,offload_vio.device_tx
-build_flags: ENABLE_MONADO
 env_vars:
   enable_offload: false
   enable_alignment: false
