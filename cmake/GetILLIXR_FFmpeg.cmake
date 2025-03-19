@@ -47,7 +47,7 @@ if(NOT (libavcodec_illixr_FOUND AND libavdevice_illixr_FOUND AND
     message("FFMPEG NOT FOUND, will build from source")
     EXTERNALPROJECT_ADD(ILLIXR_FFmpeg_ext
                         GIT_REPOSITORY https://github.com/ILLIXR/FFmpeg.git
-                        GIT_TAG d89705da07bf5859924eeb2d756462e3f7471de4
+                        GIT_TAG 10c2519b7fcd5bddd4bc7275331cda10ef0ad120
                         PREFIX ${CMAKE_BINARY_DIR}/_deps/ffmpeg
                         DEPENDS ${Vulkan_DEP_STR}
                         CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=Release
