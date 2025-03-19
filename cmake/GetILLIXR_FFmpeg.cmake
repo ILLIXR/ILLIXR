@@ -4,7 +4,7 @@ find_package(PkgConfig REQUIRED)
 set(CMAKE_MODULE_PATH ${CMAKE_INSTALL_PREFIX}/lib/cmake;${CMAKE_INSTALL_PREFIX}/share/cmake;${CMAKE_MODULE_PATH})
 set(CMAKE_PREFIX_PATH ${CMAKE_INSTALL_PREFIX}/lib/cmake;${CMAKE_INSTALL_PREFIX}/lib64/cmake;${CMAKE_PREFIX_PATH})
 
-set(ENV{PKG_CONFIG_PATH} "/home/friedel/ilxr4/lib/pkgconfig:${CMAKE_INSTALL_PREFIX}/lib/pkgconfig:${CMAKE_INSTALL_PREFIX}/share/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig")
+set(ENV{PKG_CONFIG_PATH} "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig:${CMAKE_INSTALL_PREFIX}/share/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig")
 
 get_external(Vulkan)
 
