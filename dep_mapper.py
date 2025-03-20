@@ -62,7 +62,7 @@ def wrap_line(items: List[str], indent: int = 0, length: int = 50) -> str:
                 line += ', '.join(items[start: idx]) + ',\n'
                 out_line += line
                 start = idx
-                line = ' '*indent + "  "
+                line = ' ' * indent + "  "
         line += ', '.join(items[start:])
         out_line += line
     return out_line
@@ -119,6 +119,7 @@ def get_src(path: str, recursive: bool = False) -> List[str]:
     """
     return search_for_files(path, ['cpp'], recursive)
 
+
 def get_plugin_name(file_name: str) -> str:
     """
     Determines the plugin name from the input file name
@@ -128,6 +129,8 @@ def get_plugin_name(file_name: str) -> str:
     """
     if 'plugins' in file_name:
         p_match = plugin_re.match(file_name)
+    elif 'services' in file_name:
+        p_match = service_re.match(file_name)
     elif 'build' in file_name and '_deps' in file_name:
         p_match = build_re.match(file_name)
     else:
