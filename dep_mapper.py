@@ -730,8 +730,8 @@ def report_plugin_invoke(deps: Dict, system_classes: List, plugins: Dict[str, Pl
             providers[i_name] = []
         providers[i_name] += list(lu.writers)
     yaml_mapper = {"dep_map": []}
-    for plugin in plugins:
-        uses = list(invoke[plugin])
+    dot_mapper = []
+
     for plugin_name in plugin_names:
         plugin = plugins[plugin_name]
         uses = []
@@ -797,7 +797,79 @@ def report_plugin_invoke(deps: Dict, system_classes: List, plugins: Dict[str, Pl
             # if i > 0:
             # print(f"{' ':25s}  {pl_uses[i]['needs']:20s} {', '.join(pl_uses[i]['provided_by'])}")
             yaml_mapper["dep_map"].append({'plugin': plugin_name, 'dependencies': deepcopy(pl_deps)})
+            dot_mapper.append({'plugin': plugin_name, 'dependencies': deepcopy(pld_deps),
+                               "async_dependencies": deepcopy(pl_async_deps)})
     yaml.dump(yaml_mapper, open(os.path.join('plugins', 'plugin_deps.yaml'), 'w'), Dumper=NoAliasDumper)
+    # generate dataflow
+    with open(os.path.join("docs", "dataflow.dot"), 'w') as fh:
+        fh.write("#!/usr/bin/env -S dot -O -Tpng\n")
+        fh.write("strict digraph {\n")
+        fh.write("// Plugins\n")
+        for pl in plugins.values():
+            if pl.is_service:
+                fh.write(
+                    f"  \"pl_{pl.name}\" [label=\"{pl.name}\", shape=\"component\", color=\"blue3\", fillcolor=\"cyan3\", style=\"filled\"];\n")
+            else:
+                fh.write(
+                    f"  \"pl_{pl.name}\" [label=\"{pl.name}\", shape=\"rect\", color=\"blue3\", fillcolor=\"blue3\", style=\"filled\", fontcolor=\"white\"];\n")
+        fh.write("\n")
+
+        fh.write("// Lookups\n")
+        for lu in lookups:
+            if lu.type in system_classes:
+                continue
+            fh.write(f"  \"t_{lu.type}\" [label=\"<{lu.type}>\", shape=\"doubleoctagon\", color=\"darkgreen\"];\n")
+        fh.write("\n")
+
+        odd_writers = []
+        odd_readers = []
+        odd_async_readers = []
+        fh.write("// Topics\n")
+        for t in topics_:
+            if t.type in lookups_:
+                continue
+            fh.write(
+                f"  \"t_{t.name}_<{t.type}>\" [label=\"{t.name} <{t.type}>\", shape=\"cylinder\", color=\"darkgoldenrod4\"];\n")
+            for p in t.writers:
+                odd_writers.append([f"{t.name}_<{t.type}>", p])
+            for p in t.readers:
+                odd_readers.append([f"{t.name}_<{t.type}>", p])
+            for p in t.readers:
+                odd_async_readers.append([f"{t.name}_<{t.type}>", p])
+        fh.write("\n")
+
+        connections = {}
+        fh.write("// Readers\n")
+        for wr in odd_writers:
+            if wr[0] not in connections:
+                connections[wr[0]] = set()
+            connections[wr[0]].add(wr[1])
+        for deps in dot_mapper:
+            pn = deps['plugin']
+            for d in deps['dependencies']:
+                n_name = d['needs'].replace(" ", "_")
+                if n_name.startswith('<'):
+                    n_name = n_name.replace('<', '').replace('>', '')
+                fh.write(f"  \"t_{n_name}\" -> \"pl_{pn}\" [style=\"dashed\"];\n")
+                if n_name not in connections:
+                    connections[n_name] = set()
+                connections[n_name].update(d['provided_by'])
+            for d in deps['async_dependencies']:
+                n_name = d['needs'].replace(" ", "_")
+                fh.write(f"  \"t_{n_name}\" -> \"pl_{pn}\" [style=\"dotted\"];\n")
+                if n_name not in connections:
+                    connections[n_name] = set()
+                connections[n_name].update(d['provided_by'])
+        fh.write("\n")
+        fh.write("// Writers\n")
+        for need, providers in connections.items():
+            for pr in providers:
+                if pr == "faux_pose":
+                    pr = "fauxpose"
+                fh.write(f"  \"pl_{pr}\" -> \"t_{need}\" [style=\"solid\"];\n")
+        fh.write("}\n")
+
+        fh.close()
 
 
 def scan_for_find_package(file_name: str) -> Dict[str, str]:
