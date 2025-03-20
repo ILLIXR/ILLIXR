@@ -15,23 +15,24 @@ except Exception as _:
     print("INFO: PyYAML does not appear to be installed in your python. An updated dependency map will not be generated.")
     sys.exit(0)
 
-lookup_re = re.compile(r".*lookup_impl<(\S+)>\(\)")  # regex for lookup_impl calls
-reader_re = re.compile(r".*->get(?:_buffered)?_reader<(?:ILLIXR::)?(?:data_format::)?(\S+)>.*")
-writer_re = re.compile(r".*->get(?:_network)?_writer<(?:ILLIXR::)?(?:data_format::)?(\S+)>.*")
-plugin_re = re.compile(r"\S*plugins/(\S+)/\S+\.[ch]pp")
+alias_re = re.compile(r"namespace (\S+)\s?=\s?(\S+);")
 build_re = re.compile(r"\S*build/_deps/([a-zA-Z0-9_]*)/\S+\.[ch]pp")
-comment_re = re.compile(r"(//.*)")                   # regex for inline comments
+class_end_re = re.compile(r"^\s*};")  # regex for class/struct ending
 class_re = re.compile(r"^\s*class ([a-zA-Z0-9_]+)")  # regex for the start of a class
-inh_class_re = re.compile(r"^\s*class ([a-zA-Z0-9_]+).*:.*public.*") # regex for child class
+comment_re = re.compile(r"(//.*)")  # regex for inline comments
+inh_class_re = re.compile(r"^\s*class ([a-zA-Z0-9_]+).*:.*public.*")  # regex for child class
 inh_class_sub_re = re.compile(r"public\s+([a-zA-Z0-9_:]+)")
 # inh_class_ml_re = re.compile(r"^\s*[:,].*public\s+([a-zA-Z0-9_:]+)\s*{?")  # regex for child class with multiline definition
-class_end_re = re.compile(r"^\s*};")                 # regex for class/struct ending
-struct_re = re.compile(r"^\s*struct\s+")             # regex for struct
-struct2_re = re.compile(r"^\s*struct\s+.*};$")       # regex for one line struct
 line_end_re = re.compile(r".*\s*;\s*(?:[^/]|//.*)$")  # regex for the end of a code line
-version_re = re.compile(r"[><=]+")                   # regex for version numbers
-schedule_re = re.compile(r"\s*\S+->schedule<(\S+)>\s?\(")
-alias_re = re.compile(r"namespace (\S+)\s?=\s?(\S+);")
+lookup_re = re.compile(r".*lookup_impl<(\S+)>\(\)")  # regex for lookup_impl calls
+plugin_re = re.compile(r"\S*plugins/(\S+)/\S+\.[ch]pp")
+reader_re = re.compile(r".*->get(?:_buffered)?_reader<(?:ILLIXR::)?(?:data_format::)?(\S+)>\(\"(\S+)\"\).*")
+schedule_re = re.compile(r"\s*\S+->schedule<(\S+)>\s?\(\s*\S+\s*,\s*\"(\S+)\".*")
+service_re = re.compile(r"\S*services/(\S+)/\S+\.[ch]pp")
+struct_re = re.compile(r"^\s*struct\s+")  # regex for struct
+struct2_re = re.compile(r"^\s*struct\s+.*};$")  # regex for one line struct
+writer_re = re.compile(r".*->get(?:_network)?_writer<(?:ILLIXR::)?(?:data_format::)?(\S+)>\(\"(\S+)\"\).*")
+version_re = re.compile(r"[><=]+")  # regex for version numbers
 
 skip_list = ['src/cxxopts.hpp',
              "plugins/zed/capture/cxxopts.hpp",
