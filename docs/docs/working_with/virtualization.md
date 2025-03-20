@@ -17,16 +17,16 @@ Ubuntu will be downloaded and saved at `ILLIXR/qemu/ubuntu-22.04.2-desktop-amd64
 You will be prompted to install Ubuntu;
     follow the instructions and install Ubuntu to the virtual hard drive.
 
-![ubuntu-main-screen](images/1-install-en.png)
+![ubuntu-main-screen](../images/1-install-en.png)
 
 Choose the "erase all" option and confirm:
 
-![ubuntu-erase-all](images/2-erase-all.png)
-![ubuntu-continue](images/3-continue.png)
+![ubuntu-erase-all](../images/2-erase-all.png)
+![ubuntu-continue](../images/3-continue.png)
 
 Pick any account name and password you like.
 
-![ubuntu-reboot](images/4-done.png)
+![ubuntu-reboot](../images/4-done.png)
 
 Once Ubuntu is installed you will be asked to reboot.
 Close `qemu` and then run `ILLIXR/qemu/qeum.sh` again to boot into your brand-new Ubuntu install!
@@ -56,7 +56,7 @@ If you've deleted `illixr.qcow2`, you can run `ILLIXR/qemu/qemu.sh` to recreate 
 
 [//]: # (- Internal -)
 
-[10]:   getting_started.md
-[11]:   glossary.md#qemu-kvm
-[12]:   glossary.md#ubuntu
-[13]:   getting_started.md#pick-the-illixr-plugins-you-want-to-use
+[10]:   ../getting_started.md
+[11]:   ../glossary.md#qemu-kvm
+[12]:   ../glossary.md#ubuntu
+[13]:   ../getting_started.md#pick-the-illixr-plugins-you-want-to-use

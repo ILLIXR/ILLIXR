@@ -39,7 +39,7 @@
 using namespace ILLIXR;
 using namespace ILLIXR::data_format;
 
-faux_pose_impl::faux_pose_impl(const phonebook* pb)
+fauxpose_impl::fauxpose_impl(const phonebook* pb)
     : switchboard_{pb->lookup_impl<switchboard>()}
     , clock_{pb->lookup_impl<relative_clock>()}
     , vsync_estimate_{switchboard_->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")} {
@@ -85,30 +85,30 @@ faux_pose_impl::faux_pose_impl(const phonebook* pb)
 #endif
 }
 
-faux_pose_impl::~faux_pose_impl() {
+fauxpose_impl::~fauxpose_impl() {
 #ifndef NDEBUG
     spdlog::get("illixr")->debug("[fauxpose] Ending Service");
 #endif
 }
 
-pose_type faux_pose_impl::correct_pose([[maybe_unused]] const pose_type& pose) const {
+pose_type fauxpose_impl::correct_pose([[maybe_unused]] const pose_type& pose) const {
 #ifndef NDEBUG
     spdlog::get("illixr")->debug("[fauxpose] Returning (passthru) pose");
 #endif
     return pose;
 }
 
-Eigen::Quaternionf faux_pose_impl::get_offset() {
+Eigen::Quaternionf fauxpose_impl::get_offset() {
     return offset_;
 }
 
-void faux_pose_impl::set_offset(const Eigen::Quaternionf& raw_o_times_offset) {
+void fauxpose_impl::set_offset(const Eigen::Quaternionf& raw_o_times_offset) {
     std::unique_lock   lock{offset_mutex_};
     Eigen::Quaternionf raw_o = raw_o_times_offset * offset_.inverse();
     offset_                  = raw_o.inverse();
 }
 
-fast_pose_type faux_pose_impl::get_fast_pose() const {
+fast_pose_type fauxpose_impl::get_fast_pose() const {
     // In actual pose prediction, the semantics are that we return
     //   the pose for next vsync, not now.
     switchboard::ptr<const switchboard::event_wrapper<time_point>> vsync_estimate = vsync_estimate_.get_ro_nullable();
@@ -119,7 +119,7 @@ fast_pose_type faux_pose_impl::get_fast_pose() const {
     }
 }
 
-fast_pose_type faux_pose_impl::get_fast_pose(time_point time) const {
+fast_pose_type fauxpose_impl::get_fast_pose(time_point time) const {
     pose_type simulated_pose; /* The algorithmically calculated 6-DOF pose */
     double    sim_time;       /* sim_time is used to regulate a consistent movement */
 
@@ -144,21 +144,21 @@ fast_pose_type faux_pose_impl::get_fast_pose(time_point time) const {
     return fast_pose_type{simulated_pose, clock_->now(), time};
 }
 
-[[maybe_unused]] faux_pose::faux_pose(const std::string& name, phonebook* pb)
+[[maybe_unused]] fauxpose::fauxpose(const std::string& name, phonebook* pb)
     : plugin{name, pb} {
     // "pose_prediction" is a class inheriting from "phonebook::service"
     //   It is described in "pose_prediction.hpp"
-    pb->register_impl<pose_prediction>(std::static_pointer_cast<pose_prediction>(std::make_shared<faux_pose_impl>(pb)));
+    pb->register_impl<pose_prediction>(std::static_pointer_cast<pose_prediction>(std::make_shared<fauxpose_impl>(pb)));
 #ifndef NDEBUG
     spdlog::get("illixr")->debug("[fauxpose] Starting Plugin");
 #endif
 }
 
-faux_pose::~faux_pose() {
+fauxpose::~fauxpose() {
 #ifndef NDEBUG
     spdlog::get("illixr")->debug("[fauxpose] Ending Plugin");
 #endif
 }
 
 // This line makes the plugin importable by Spindle
-PLUGIN_MAIN(faux_pose)
+PLUGIN_MAIN(fauxpose)

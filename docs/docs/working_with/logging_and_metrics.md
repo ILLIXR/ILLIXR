@@ -60,4 +60,4 @@ ILLIXR allows users to generate higher order statistics from logged results call
 
 [//]: # (- Internal -)
 
-[20]:    glossary.md#sqlite
+[20]:    ../glossary.md#sqlite

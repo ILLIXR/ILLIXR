@@ -384,6 +384,7 @@
         "Vulkan",
         "glfw3",
         "glm",
+        "glslang",
         "OpenXR",
         "libusb",
         "libuvc",

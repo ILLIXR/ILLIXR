@@ -376,16 +376,16 @@ To add your own functionality via the plugin interface:
 
 [//]: # (- Internal -)
 
-[10]:   getting_started.md
+[10]:   ../getting_started.md
 
-[11]:   api/html/classILLIXR_1_1phonebook.html
+[11]:   ../api/classILLIXR_1_1phonebook.md
 
-[12]:   api/html/classILLIXR_1_1threadloop.html
+[12]:   ../api/classILLIXR_1_1threadloop.md
 
-[13]:   api/html/classILLIXR_1_1plugin.html
+[13]:   ../api/classILLIXR_1_1plugin.md
 
-[14]:   api/html/classILLIXR_1_1switchboard.html
+[14]:   ../api/classILLIXR_1_1switchboard.md
 
-[15]:   glossary.md#plugin
+[15]:   ../glossary.md#plugin
 
 [16]:   adding_mediapipe.md

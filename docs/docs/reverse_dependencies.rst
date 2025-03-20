@@ -3,7 +3,7 @@ Reverse Dependencies
 
 | Dependency | Plugins |
 | ---------- | ------- |
-| Vulkan | main<br> native_renderer<br> offload_rendering_client<br> offload_rendering_client_jetson<br> offload_rendering_server<br> openwarp_vk<br> timewarp_gl<br> timewarp_vk |
+| Vulkan | main<br> native_renderer<br> offload_rendering_client<br> offload_rendering_client_jetson<br> offload_rendering_server<br> openwarp_vk<br> timewarp_gl<br> timewarp_vk<br> vkdemo |
 | ILLIXR_FFmpeg | offload_rendering_client<br> offload_rendering_server |
 | CUDAToolkit | offload_rendering_client |
 | realsense2 | realsense |

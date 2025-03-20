@@ -10,13 +10,13 @@ For releases, perform these steps from `master` once the desired features have b
     git pull --tags -f
     ```
 
-1. Tag your branch. Please use semantic versioning to name the tag; i.e., `v<major>.<minor>.<patch>`:
+2. Tag your branch. Please use semantic versioning to name the tag; i.e., `v<major>.<minor>.<patch>`:
 
     ``` { .bash .copy }
     git tag -f <tag-name> ## `-f` is required if updating an existing tag
     ```
 
-1. Push your tag upstream:
+3. Push your tag upstream:
 
     ```  { .bash .copy }```
     git push origin --tags

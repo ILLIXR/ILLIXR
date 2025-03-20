@@ -87,5 +87,5 @@ Creating: topic for 4data
 The answer to life... is 42
 ```
 
-[switchboard_api]: https://illixr.github.io/ILLIXR/api/html/classILLIXR_1_1switchboard.html
-[phonebook_api]: https://illixr.github.io/ILLIXR/api/html/classILLIXR_1_1phonebook.html
+[switchboard_api]: ../api/classILLIXR_1_1switchboard.md
+[phonebook_api]: ../api/classILLIXR_1_1phonebook.md

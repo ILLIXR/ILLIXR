@@ -52,4 +52,4 @@ This is how you can modify an existing ILLIXR plugin. This example uses the Audi
 
 [//]: # (- Internal -)
 
-[10]:   getting_started.md
+[10]:   ../getting_started.md

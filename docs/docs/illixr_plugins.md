@@ -433,25 +433,7 @@ Topic details:
 Below this point, we will use Switchboard terminology.
 Read the [API documentation on _Switchboard_][32] for more information.
 
-<img
-src="../images/dataflow.dot.png"
-alt ="ILLIXR dataflow graph, showing switchboard communication"
-style="width: 400px;"
-/>
-
-- In the above figure, ovals are plugins.
-
-- Solid arrows from plugins to topics represent publishing.
-
-- Solid arrows from topics to plugins represent synchronous reading.
-  Some action is taken for _every_ event which gets published on the topic.
-
-- Dashed arrows from topics to plugins represent asynchronous reading.
-  Plugin readers only need the _latest_ event on their topic.
-
-- Imagine the topic as a trough filling with events from its publisher.
-  Synchronous readers (AKA subscribers) drain the trough,
-  while asynchronous readers just skim fresh events off the top of the trough.
+{! include-markdown "dataflow.md" !}
 
 See [Writing Your Plugin][30] to extend ILLIXR.
 
@@ -462,15 +444,15 @@ interdependencies.
 
 | Plugin          | Requires        | Provided by plugin                      |
 |:----------------|:----------------|:----------------------------------------|
-| debugview       | pose_prediction | faux_pose, pose_lookup, pose_prediction |
-| gldemo          | pose_prediction | faux_pose, pose_lookup, pose_prediction |
+| debugview       | pose_prediction | fauxpose, pose_lookup, pose_prediction |
+| gldemo          | pose_prediction | fauxpose, pose_lookup, pose_prediction |
 | native_renderer | app             | vkdemo                                  |
 |                 | display_sink    | display_vk                              |
-|                 | pose_prediction | faux_pose, pose_lookup, pose_prediction |
+|                 | pose_prediction | fauxpose, pose_lookup, pose_prediction |
 |                 | timewarp        | timewarp_vk                             |
-| timewarp_gl     | pose_prediction | faux_pose, pose_lookup, pose_prediction |
+| timewarp_gl     | pose_prediction | fauxpose, pose_lookup, pose_prediction |
 | timewarp_vk     | display_sink    | display_vk                              |
-|                 | pose_prediction | faux_pose, pose_lookup, pose_prediction |
+|                 | pose_prediction | fauxpose, pose_lookup, pose_prediction |
 | vkdemo          | display_sink    | display_vk                              |
 
 See [Getting Started][31] for more information on adding plugins to a [_profile_][40] file.
@@ -497,15 +479,15 @@ See [Getting Started][31] for more information on adding plugins to a [_profile_
 
 [D16]:  plugin_README/README_offload_rendering_server.md
 
-[D17]:  plugin_README/offload_vio.md
+[D17]:  plugin_README/README_offload_vio.md
 
 [D18]:  plugin_README/README_openni.md
 
 [D19]:  https://github.com/ILLIXR/open_vins/blob/master/ReadMe.md
 
-[D20]:  plugin_README/README_openwarp.md
+[D20]:  plugin_README/README_openwarp_vk.md
 
-[D20]:  plugin_README/README_ORB_SLAM3.md
+[D20]:  plugin_README/README_orb_slam3.md
 
 [D24]:  plugin_README/README_record_imu_cam.md
 
@@ -605,11 +587,11 @@ See [Getting Started][31] for more information on adding plugins to a [_profile_
 
 [//]: # (- Internal -)
 
-[30]:   writing_your_plugin.md
+[30]:   working_with/writing_your_plugin.md
 
 [31]:   getting_started.md
 
-[32]:   api/html/classILLIXR_1_1switchboard.html
+[32]:   api/classILLIXR_1_1switchboard.md
 
 [33]:   glossary.md#ground-truth
 
@@ -631,26 +613,26 @@ See [Getting Started][31] for more information on adding plugins to a [_profile_
 
 [57]:   illixr_services.md#pose_prediction
 
-[60]:   api/html/structILLIXR_1_1data__format_1_1fast__pose__type.html
+[60]:   api/structILLIXR_1_1data__format_1_1fast__pose__type.md
 
-[61]:   api/html/structILLIXR_1_1data__format_1_1pose__type.html
+[61]:   api/structILLIXR_1_1data__format_1_1pose__type.md
 
-[62]:   api/html/structILLIXR_1_1data__format_1_1rgb__depth__type.html
+[62]:   api/structILLIXR_1_1data__format_1_1rgb__depth__type.md
 
-[63]:   api/html/structILLIXR_1_1data__format_1_1binocular__cam__type.html
+[63]:   api/structILLIXR_1_1data__format_1_1binocular__cam__type.md
 
-[64]:   api/html/structILLIXR_1_1data__format_1_1imu__type.html
+[64]:   api/structILLIXR_1_1data__format_1_1imu__type.md
 
-[65]:   api/html/structILLIXR_1_1data__format_1_1imu__raw__type.html
+[65]:   api/structILLIXR_1_1data__format_1_1imu__raw__type.md
 
-[66]:   api/html/structILLIXR_1_1data__format_1_1imu__integrator__input.html
+[66]:   api/structILLIXR_1_1data__format_1_1imu__integrator__input.md
 
-[67]:   api/html/structILLIXR_1_1data__format_1_1monocular__cam__type.html
+[67]:   api/structILLIXR_1_1data__format_1_1monocular__cam__type.md
 
-[68]:   api/html/structILLIXR_1_1data__format_1_1camera__data.html
+[68]:   api/structILLIXR_1_1data__format_1_1camera__data.md
 
-[69]:   api/html/structILLIXR_1_1data__format_1_1depth__type.html
+[69]:   api/structILLIXR_1_1data__format_1_1depth__type.md
 
-[70]:   api/html/structILLIXR_1_1data__format_1_1cam__type__zed.html
+[70]:   api/structILLIXR_1_1data__format_1_1cam__type__zed.md
 
-[71]:   api/html/structILLIXR_1_1data__format_1_1ht_1_1ht__frame.html
+[71]:   api/structILLIXR_1_1data__format_1_1ht_1_1ht__frame.md

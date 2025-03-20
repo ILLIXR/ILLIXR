@@ -102,7 +102,7 @@ Common CMake command line arguments (always prepend with a `-D`):
 
 !!! note "Documentation Prerequisites"
 
-    Building the documentation requires [Doxygen][E14] and [mkdocs][E15] to be installed, both of which are typically available from OS packages. Additionally, we utilize the [material][E16], [PyMdown][E17], and [Pygments][E18] extensions.
+    Building the documentation requires [Doxygen][E14] and [mkdocs][E15](>= v1.5) to be installed, both of which are typically available from OS packages. Additionally, we utilize the [material][E16], [mkdocs-material-extensions][E19], [mkdocs-get-deps][E20], [mkdocs-include-markdown-plugin][E21], [PyMdown][E17], [Pygments][E18], [mkdoxy][E22], and [mkdocs-glightbox][E23] python packages, which can be installed via [pip][E24] using `docs/requirements.txt`.
 
 An alternate to specifying the plugins as command line arguments is to create a [_YAML_][G12] file which specifies the
 plugins to build. Using `-DYAML_FILE=&lt;FILE_NAME&gt;` as the command line argument specifying the [_YAML_][G12] file to use.
@@ -567,9 +567,20 @@ If you want to add your own plugin, see [Writing Your Plugin][I11].
 
 [E18]:   https://pygments.org/
 
+[E19]:   https://pypi.org/project/mkdocs-material-extensions/
+
+[E20]:   https://pypi.org/project/mkdocs-get-deps/
+
+[E21]:   https://pypi.org/project/mkdocs-include-markdown-plugin/
+
+[E22]:   https://pypi.org/project/mkdoxy/
+
+[E23]:   https://pypi.org/project/mkdocs-glightbox/
+
+[E24]:   https://pypi.org/project/pip/
 
 [//]: # (- Internal -)
 
 [I10]:   illixr_plugins.md
 
-[I11]:   writing_your_plugin.md
+[I11]:   working_with/writing_your_plugin.md

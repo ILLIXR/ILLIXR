@@ -10,4 +10,4 @@ before ILLIXR fully starts. This gives you time to attach a debugger.
 
 [//]: # (- Internal -)
 
-[10]:   getting_started.md
+[10]:   ../getting_started.md

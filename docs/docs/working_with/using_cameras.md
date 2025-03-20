@@ -75,7 +75,7 @@ ILLIXR has been tested with Intel RealSense D455, but it should work with any D 
 
 [//]: # (- plugins -)
 
-[P10]: illixr_plugins.md
+[P10]: ../illixr_plugins.md
 
 [//]: # (- external -)
 
@@ -90,5 +90,5 @@ ILLIXR has been tested with Intel RealSense D455, but it should work with any D 
 [//]: # (- Internal -)
 
 [11]:   writing_your_plugin.md
-[12]:   getting_started.md
+[12]:   ../getting_started.md
 [21]:   modifying_a_plugin.md

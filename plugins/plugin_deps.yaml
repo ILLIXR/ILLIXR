@@ -1,15 +1,18 @@
 dep_map:
 - dependencies:
-  - needs: pose_type
+  - needs: slow_pose <pose_type>
     provided_by:
-    - ground_truth_slam
     - lighthouse
     - offload_vio.device_rx
     - openvins
-    - zed.data_injection
   plugin: audio_pipeline
 - dependencies:
-  - needs: binocular_cam_type
+  - needs: <pose_prediction>
+    provided_by:
+    - fauxpose
+    - pose_lookup
+    - pose_prediction
+  - needs: cam <binocular_cam_type>
     provided_by:
     - depthai
     - offline_cam
@@ -17,27 +20,32 @@ dep_map:
     - realsense
     - zed
     - zed.data_injection
-  - needs: imu_raw_type
+  - needs: imu_raw <imu_raw_type>
     provided_by:
     - gtsam_integrator
     - passthrough_integrator
     - rk4_integrator
-  - needs: pose_type
-    provided_by:
-    - ground_truth_slam
-    - lighthouse
-    - offload_vio.device_rx
-    - openvins
-    - zed.data_injection
-  - needs: rgb_depth_type
+  - needs: rgb_depth <rgb_depth_type>
     provided_by:
     - depthai
     - openni
     - realsense
     - zed
+  - needs: slow_pose <pose_type>
+    provided_by:
+    - lighthouse
+    - offload_vio.device_rx
+    - openvins
   plugin: debugview
 - dependencies:
-  - needs: imu_type
+  - needs: <pose_prediction>
+    provided_by:
+    - fauxpose
+    - pose_lookup
+    - pose_prediction
+  plugin: gldemo
+- dependencies:
+  - needs: imu <imu_type>
     provided_by:
     - depthai
     - offline_imu
@@ -46,11 +54,11 @@ dep_map:
     - zed
   plugin: ground_truth_slam
 - dependencies:
-  - needs: imu_integrator_input
+  - needs: imu_integrator_input <imu_integrator_input>
     provided_by:
     - offload_vio.device_rx
     - openvins
-  - needs: imu_type
+  - needs: imu <imu_type>
     provided_by:
     - depthai
     - offline_imu
@@ -59,35 +67,73 @@ dep_map:
     - zed
   plugin: gtsam_integrator
 - dependencies:
-  - needs: vulkan::timewarp
+  - needs: cam_data <camera_data>
+    provided_by:
+    - zed
+    - zed.data_injection
+  - needs: depth <depth_type>
+    provided_by: []
+  - needs: pose <pose_type>
+    provided_by:
+    - zed.data_injection
+  - needs: rgb_depth <rgb_depth_type>
+    provided_by:
+    - depthai
+    - openni
+    - realsense
+    - zed
+  - needs: cam_zed <cam_type_zed>
+    provided_by:
+    - zed
+  plugin: hand_tracking
+- dependencies:
+  - needs: ht <ht::ht_frame>
+    provided_by:
+    - hand_tracking
+  plugin: hand_tracking.viewer
+- dependencies:
+  - needs: <pose_prediction>
+    provided_by:
+    - fauxpose
+    - pose_lookup
+    - pose_prediction
+  - needs: <vulkan::app>
+    provided_by:
+    - vkdemo
+  - needs: <vulkan::timewarp>
     provided_by:
     - openwarp_vk
     - timewarp_vk
   plugin: native_renderer
 - dependencies:
-  - needs: texture_pose
+  - needs: texture_pose <texture_pose>
     provided_by:
     - timewarp_gl
   plugin: offload_data
 - dependencies:
-  - needs: compressed_frame
+  - needs: <pose_prediction>
     provided_by:
-    - offload_rendering_server
+    - fauxpose
+    - pose_lookup
+    - pose_prediction
+  - needs: compressed_frames <compressed_frame>
+    provided_by: []
   plugin: offload_rendering_client
 - dependencies:
-  - needs: compressed_frame
+  - needs: <pose_prediction>
     provided_by:
-    - offload_rendering_server
+    - fauxpose
+    - pose_lookup
+    - pose_prediction
+  - needs: compressed_frames <compressed_frame>
+    provided_by: []
   plugin: offload_rendering_client_jetson
 - dependencies:
-  - needs: fast_pose_type
-    provided_by:
-    - lighthouse
-    - offload_rendering_client
-    - offload_rendering_client_jetson
+  - needs: render_pose_ <fast_pose_type>
+    provided_by: []
   plugin: offload_rendering_server
 - dependencies:
-  - needs: binocular_cam_type
+  - needs: cam <binocular_cam_type>
     provided_by:
     - depthai
     - offline_cam
@@ -95,7 +141,7 @@ dep_map:
     - realsense
     - zed
     - zed.data_injection
-  - needs: imu_type
+  - needs: imu <imu_type>
     provided_by:
     - depthai
     - offline_imu
@@ -104,20 +150,18 @@ dep_map:
     - zed
   plugin: offload_vio.device_tx
 - dependencies:
-  - needs: imu_integrator_input
+  - needs: imu_integrator_input <imu_integrator_input>
     provided_by:
     - offload_vio.device_rx
     - openvins
-  - needs: pose_type
+  - needs: slow_pose <pose_type>
     provided_by:
-    - ground_truth_slam
     - lighthouse
     - offload_vio.device_rx
     - openvins
-    - zed.data_injection
   plugin: offload_vio.server_tx
 - dependencies:
-  - needs: binocular_cam_type
+  - needs: cam <binocular_cam_type>
     provided_by:
     - depthai
     - offline_cam
@@ -125,7 +169,7 @@ dep_map:
     - realsense
     - zed
     - zed.data_injection
-  - needs: imu_type
+  - needs: imu <imu_type>
     provided_by:
     - depthai
     - offline_imu
@@ -134,11 +178,18 @@ dep_map:
     - zed
   plugin: openvins
 - dependencies:
-  - needs: imu_integrator_input
+  - needs: <pose_prediction>
+    provided_by:
+    - fauxpose
+    - pose_lookup
+    - pose_prediction
+  plugin: openwarp_vk
+- dependencies:
+  - needs: imu_integrator_input <imu_integrator_input>
     provided_by:
     - offload_vio.device_rx
     - openvins
-  - needs: imu_type
+  - needs: imu <imu_type>
     provided_by:
     - depthai
     - offline_imu
@@ -147,7 +198,22 @@ dep_map:
     - zed
   plugin: passthrough_integrator
 - dependencies:
-  - needs: binocular_cam_type
+  - needs: imu_raw <imu_raw_type>
+    provided_by:
+    - gtsam_integrator
+    - passthrough_integrator
+    - rk4_integrator
+  - needs: slow_pose <pose_type>
+    provided_by:
+    - lighthouse
+    - offload_vio.device_rx
+    - openvins
+  - needs: true_pose <pose_type>
+    provided_by:
+    - ground_truth_slam
+  plugin: pose_prediction
+- dependencies:
+  - needs: cam <binocular_cam_type>
     provided_by:
     - depthai
     - offline_cam
@@ -155,7 +221,7 @@ dep_map:
     - realsense
     - zed
     - zed.data_injection
-  - needs: imu_type
+  - needs: imu <imu_type>
     provided_by:
     - depthai
     - offline_imu
@@ -164,7 +230,7 @@ dep_map:
     - zed
   plugin: record_imu_cam
 - dependencies:
-  - needs: rgb_depth_type
+  - needs: rgb_depth <rgb_depth_type>
     provided_by:
     - depthai
     - openni
@@ -172,11 +238,11 @@ dep_map:
     - zed
   plugin: record_rgb_depth
 - dependencies:
-  - needs: imu_integrator_input
+  - needs: imu_integrator_input <imu_integrator_input>
     provided_by:
     - offload_vio.device_rx
     - openvins
-  - needs: imu_type
+  - needs: imu <imu_type>
     provided_by:
     - depthai
     - offline_imu
@@ -185,12 +251,25 @@ dep_map:
     - zed
   plugin: rk4_integrator
 - dependencies:
-  - needs: image_handle
+  - needs: <pose_prediction>
+    provided_by:
+    - fauxpose
+    - pose_lookup
+    - pose_prediction
+  - needs: eyebuffer <rendered_frame>
     provided_by:
     - gldemo
-  - needs: rendered_frame
-    provided_by: &id001
+  - needs: eyebuffer <rendered_frame>
+    provided_by:
     - gldemo
-  - needs: rendered_frame
-    provided_by: *id001
+  - needs: image_handle <image_handle>
+    provided_by:
+    - gldemo
   plugin: timewarp_gl
+- dependencies:
+  - needs: <pose_prediction>
+    provided_by:
+    - fauxpose
+    - pose_lookup
+    - pose_prediction
+  plugin: timewarp_vk

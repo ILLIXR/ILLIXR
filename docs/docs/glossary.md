@@ -366,13 +366,13 @@ For more information, visit the [official YAML page][E17].
 
 [//]: # (- internal -)
 
-[I10]:   modifying_a_plugin.md
+[I10]:   working_with/modifying_a_plugin.md
 
-[I11]:   writing_your_plugin.md
+[I11]:   working_with/writing_your_plugin.md
 
-[I12]:   logging_and_metrics.md
+[I12]:   working_with/logging_and_metrics.md
 
-[I13]:   virtualization.md
+[I13]:   working_with/virtualization.md
 
 [I14]:   getting_started.md
 
@@ -383,13 +383,13 @@ For more information, visit the [official YAML page][E17].
 
 [//]: # (- api -)
 
-[A11]:   api/html/classILLIXR_1_1phonebook.html
+[A11]:   api/classILLIXR_1_1phonebook.md
 
-[A12]:   api/html/classILLIXR_1_1threadloop.html
+[A12]:   api/classILLIXR_1_1threadloop.md
 
-[A13]:   api/html/classILLIXR_1_1plugin.html
+[A13]:   api/classILLIXR_1_1plugin.md
 
-[A14]:   api/html/classILLIXR_1_1switchboard.html
+[A14]:   api/classILLIXR_1_1switchboard.md
 
 
 [//]: # (- external -)

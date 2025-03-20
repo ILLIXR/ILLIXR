@@ -16,7 +16,7 @@ namespace ILLIXR {
 class native_renderer : public threadloop {
 public:
     [[maybe_unused]] native_renderer(const std::string& name, phonebook* pb);
-    virtual ~native_renderer() override;
+    ~native_renderer() override;
 
     /**
      * @brief Sets up the thread for the plugin.

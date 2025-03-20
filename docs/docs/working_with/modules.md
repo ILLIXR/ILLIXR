@@ -54,4 +54,4 @@ The dependencies section lists every possible ILLIXR dependency along with how t
 }
 ```
 
-[1]:  getting_started.md
+[1]:  ../getting_started.md

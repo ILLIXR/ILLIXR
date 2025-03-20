@@ -85,7 +85,7 @@ file. See any of the existing `CMakeLists.txt` files in `plugins/*` for examples
 
 [I10]: licenses.md
 
-[I11]: ../modules.md
+[I11]: ../working_with/modules.md
 
 
 [//]: # (- external -)

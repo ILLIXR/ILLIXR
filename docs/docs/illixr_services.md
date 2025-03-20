@@ -53,7 +53,7 @@ Topic details:
 
 &nbsp;&nbsp;[**Details**][D45]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C45]
 
-
+{! include-markdown "dataflow.md" !}
 
 [D42]:	plugin_README/README_fauxpose.md
 [D45]:	plugin_README/README_vkdemo.md
@@ -71,6 +71,6 @@ Topic details:
 [37]:   glossary.md#pose
 [57]:   illixr_services.md#pose_prediction
 [58]:   glossary.md#service
-[61]:   api/html/structILLIXR_1_1data__format_1_1pose__type.html
-[60]:   api/html/structILLIXR_1_1data__format_1_1fast__pose__type.html
+[61]:   api/structILLIXR_1_1data__format_1_1pose__type.md
+[60]:   api/structILLIXR_1_1data__format_1_1fast__pose__type.md
 [30]:   https://github.com/ILLIXR/ILLIXR/tree/master/include/illixr/vk

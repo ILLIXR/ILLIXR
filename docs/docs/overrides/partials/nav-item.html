@@ -83,8 +83,16 @@ This file has been customized for ILLIXR
 
 {% if nav_item.active and level == 2 %}
 <li class="{{ class }} md-nav__item--nested" style=background-color:var(--md-nav-list-lt-color);">
+{% set current_bg_color = "--md-nav-list-lt-color" %}
+{% elif nav_item.active and level == 3 %}
+<li class="{{ class }} md-nav__item--nested" style=background-color:var(--md-nav-list-ltlt-color);">
+{% set current_bg_color = "--md-nav-list-ltlt-color" %}
+{% elif nav_item.active and level == 4 %}
+<li class="{{ class }} md-nav__item--nested" style=background-color:var(--md-nav-list-ltltlt-color);">
+{% set current_bg_color = "--md-nav-list-ltltlt-color" %}
 {% else %}
 <li class="{{ class }} md-nav__item--nested">
+{% set current_bg_color = "--md-nav-list-color" %}
 {% endif %}
     {% if not is_pruned %}
     {% set checked = "checked" if nav_item.active %}
@@ -101,7 +109,7 @@ This file has been customized for ILLIXR
     {% else %}
     {% set index = indexes | first %}
     {% set class = "md-nav__link--active" if index == page %}
-    <div class="md-nav__link md-nav__container">
+    <div class="md-nav__link md-nav__container" style="color:black;">
         <a href="{{ index.url | url }}" class="md-nav__link {{ class }}">
             {{ render_content(index, nav_item) }}
         </a>
@@ -148,7 +156,7 @@ This file has been customized for ILLIXR
         <span class="md-nav__icon md-icon"></span>
     </label>
     {% endif %}
-    <a href="{{ nav_item.url | url }}" class="md-nav__link md-nav__link--active" style="color:var(--md-nav-item-active);">
+    <a href="{{ nav_item.url | url }}" class="md-nav__link md-nav__link--active" style="color:var(--md-nav-item-active);background-color:var({{ current_bg_color }};">
         {{ render_content(nav_item) }}
     </a>
     {% if toc %}

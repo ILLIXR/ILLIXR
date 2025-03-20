@@ -1423,12 +1423,11 @@ target_link_libraries(${PLUGIN_NAME} PUBLIC
 
 [4]: writing_your_plugin.md
 
-[5]: glossary.md#plugin
+[5]: ../glossary.md#plugin
 
-[6]: api/html/classILLIXR_1_1threadloop.html
+[6]: ../api/classILLIXR_1_1threadloop.md
 
-[7]: api/html/classILLIXR_1_1plugin.html
-
+[7]: ../api/classILLIXR_1_1plugin.md
 
 [10]: https://github.com/ILLIXR/hand_tracking/blob/main/cmake/encoder.cmake
 
