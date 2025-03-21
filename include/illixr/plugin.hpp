@@ -110,9 +110,13 @@ public:
         auto                          console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
         sinks.push_back(file_sink);
         sinks.push_back(console_sink);
-        plugin_logger_ = std::make_shared<spdlog::logger>(name_, begin(sinks), end(sinks));
-        plugin_logger_->set_level(spdlog::level::from_str(log_level));
-        spdlog::register_logger(plugin_logger_);
+        if (spdlog::get(name_) == nullptr) {
+            plugin_logger_ = std::make_shared<spdlog::logger>(name_, begin(sinks), end(sinks));
+            plugin_logger_->set_level(spdlog::level::from_str(log_level));
+            spdlog::register_logger(plugin_logger_);
+        } else {
+            plugin_logger_ = spdlog::get(name_);
+        }
         return plugin_logger_;
     }
 

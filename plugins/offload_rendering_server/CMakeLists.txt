@@ -2,7 +2,10 @@ cmake_minimum_required(VERSION 3.16)
 
 project(offload_rendering_server)
 
-set(PLUGIN_NAME plugin.offload_rendering_server${ILLIXR_BUILD_SUFFIX})
+# Note that the offload rendering server only supports Monado (not native)
+get_external_for_plugin(Monado_vk)
+set(PLUGIN_NAME "plugin.offload_rendering_server${ILLIXR_BUILD_SUFFIX}")
+set(PLUGIN_SOURCE "${CMAKE_BINARY_DIR}/plugins/offload_rendering_server/plugin.cpp")
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -30,6 +33,9 @@ add_library(${PLUGIN_NAME} SHARED plugin.cpp
             ${CMAKE_SOURCE_DIR}/include/illixr/vk/vk_extension_request.hpp
             $<TARGET_OBJECTS:illixr_serializable_data>
 )
+
+target_compile_definitions(${PLUGIN_NAME} PRIVATE MONADO_REQUIRED)
+target_include_directories(${PLUGIN_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 set_target_properties(${PLUGIN_NAME} PROPERTIES OUTPUT_NAME ${PLUGIN_NAME})
 if(Vulkan_EXTERNAL)
