@@ -16,22 +16,26 @@ file(GLOB_RECURSE GLSL_SOURCE_FILES
 foreach(GLSL ${GLSL_SOURCE_FILES})
     get_filename_component(FILE_NAME ${GLSL} NAME)
     set(SPIRV "${PROJECT_BINARY_DIR}/shaders/${FILE_NAME}.spv")
-    add_custom_target(PROCESS_OW_${FILE_NAME} ALL
-                      COMMAND ${CMAKE_COMMAND} -E make_directory "${PROJECT_BINARY_DIR}/shaders/"
-                      COMMAND ${Vulkan_GLSLANG_VALIDATOR_EXECUTABLE} ${GLSL} -V -o ${SPIRV}
-                      BYPRODUCTS ${SPIRV}
-                      DEPENDS ${GLSL}
-    )
-    if(Vulkan_EXTERNAL)
-        add_dependencies(PROCESS_OW_${FILE_NAME} ${Vulkan_DEP_STR})
+    if(NOT TARGET PROCESS_OW_${FILE_NAME})
+        add_custom_target(PROCESS_OW_${FILE_NAME} ALL
+                          COMMAND ${CMAKE_COMMAND} -E make_directory "${PROJECT_BINARY_DIR}/shaders/"
+                          COMMAND ${Vulkan_GLSLANG_VALIDATOR_EXECUTABLE} ${GLSL} -V -o ${SPIRV}
+                          BYPRODUCTS ${SPIRV}
+                          DEPENDS ${GLSL}
+        )
+        if(Vulkan_EXTERNAL)
+            add_dependencies(PROCESS_OW_${FILE_NAME} ${Vulkan_DEP_STR})
+        endif()
     endif()
     list(APPEND SPIRV_BINARY_FILES ${SPIRV})
 endforeach(GLSL)
 
-add_custom_target(
-        OpenWarp_VK_Shaders
-        DEPENDS ${SPIRV_BINARY_FILES}
-)
+if(NOT TARGET OpenWarp_VK_Shaders)
+    add_custom_target(
+            OpenWarp_VK_Shaders
+            DEPENDS ${SPIRV_BINARY_FILES}
+    )
+endif()
 
 if(NOT PLUGIN_NAME)
     set(PLUGIN_NAME "plugin.openwarp_vk${ILLIXR_BUILD_SUFFIX}")
@@ -57,6 +61,7 @@ add_library(${PLUGIN_NAME} SHARED
 )
 if(OW_PLUGIN_DEFINITIONS)
     target_compile_definitions(${PLUGIN_NAME} PUBLIC ${OW_PLUGIN_DEFINITIONS})
+    target_compile_definitions(${PLUGIN_NAME} PRIVATE MONADO_REQUIRED)
     target_include_directories(${PLUGIN_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/..)
 endif()
 

@@ -21,21 +21,25 @@ endif()
 foreach(GLSL ${GLSL_SOURCE_FILES})
     get_filename_component(FILE_NAME ${GLSL} NAME)
     set(SPIRV "${PROJECT_BINARY_DIR}/shaders/${FILE_NAME}.spv")
-    add_custom_target(PROCESS_TWV_${FILE_NAME} ALL
-                      COMMAND ${CMAKE_COMMAND} -E make_directory "${PROJECT_BINARY_DIR}/shaders/"
-                      COMMAND ${Vulkan_GLSLANG_VALIDATOR_EXECUTABLE} ${GLSL} -V -o ${SPIRV}
-                      BYPRODUCTS ${SPIRV}
-                      DEPENDS ${GLSL} ${TIMEWARP_VK_DEP_STR}
-    )
-    if(Vulkan_EXTERNAL)
-        add_dependencies(PROCESS_TWV_${FILE_NAME} ${Vulkan_DEP_STR})
+    if(NOT TARGET PROCESS_TWV_${FILE_NAME})
+        add_custom_target(PROCESS_TWV_${FILE_NAME} ALL
+                          COMMAND ${CMAKE_COMMAND} -E make_directory "${PROJECT_BINARY_DIR}/shaders/"
+                          COMMAND ${Vulkan_GLSLANG_VALIDATOR_EXECUTABLE} ${GLSL} -V -o ${SPIRV}
+                          BYPRODUCTS ${SPIRV}
+                          DEPENDS ${GLSL} ${TIMEWARP_VK_DEP_STR}
+        )
+        if(Vulkan_EXTERNAL)
+            add_dependencies(PROCESS_TWV_${FILE_NAME} ${Vulkan_DEP_STR})
+        endif()
     endif()
     list(APPEND SPIRV_BINARY_FILES ${SPIRV})
 endforeach(GLSL)
-add_custom_target(
-        Timewarp_VK_Shaders
-        DEPENDS ${SPIRV_BINARY_FILES}
-)
+if(NOT TARGET Timewarp_VK_Shaders)
+    add_custom_target(
+            Timewarp_VK_Shaders
+            DEPENDS ${SPIRV_BINARY_FILES}
+    )
+endif()
 if(NOT PLUGIN_NAME)
     set(PLUGIN_NAME "plugin.timewarp_vk${ILLIXR_BUILD_SUFFIX}")
     set(PLUGIN_SOURCE "plugin.cpp")
