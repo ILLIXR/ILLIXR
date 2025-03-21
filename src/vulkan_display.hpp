@@ -1,7 +1,5 @@
 #pragma once
 
-#define VMA_IMPLEMENTATION
-
 #include "display/glfw_extended.hpp"
 #include "display/headless.hpp"
 #include "display/x11_direct.hpp"

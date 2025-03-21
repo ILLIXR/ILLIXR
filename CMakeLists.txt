@@ -87,7 +87,6 @@ option(BUILD_ZED_CAPTURE "Build the ZED capture program" OFF)
 set(DATA_FILE "http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip")
 
 option(BUILD_DOCS "Build documentation" OFF)
-option(USE_MONADO "Build for monado use" OFF)
 option(NO_GPL "Do not build any code licensed under GPL. This will affect any generated profile files as well." OFF)
 option(NO_LGPL "Do not build any code licensed under LGPL or GPL. This will affect any generated profile files as well." OFF)
 
@@ -131,7 +130,6 @@ check_plugins()
 
 set(CORE_PLUGINS OFF)
 set(RT_SLAM_PLUGINS OFF)
-
 if(YAML_FILE)
     read_yaml(${YAML_FILE})
     string(REGEX MATCH "/all.yaml" MATCH_FOUND ${YAML_FILE})
@@ -276,15 +274,6 @@ foreach(ITEM IN LISTS PLUGIN_LIST)
     unset(ITEM_UPPER)
 endforeach()
 
-if (ENABLE_MONADO)
-    if (NOT USE_TIMEWARP_GL)
-        get_external(Monado_vk)
-    elseif (USE_TIMEWARP_GL AND NOT USE_TIMEWARP_VK)
-
-    else()
-        get_external(Monado_vk)
-    endif()
-endif()
 include(src/CMakeLists.txt)
 
 list(SORT FULL_PLUGIN_LIST COMPARE STRING CASE INSENSITIVE ORDER ASCENDING)

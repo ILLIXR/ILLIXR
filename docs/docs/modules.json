@@ -270,8 +270,7 @@
     {
       "name": "openvins",
       "cmake_flag": "USE_OPENVINS=ON",
-      "dependencies": [
-      ]
+      "dependencies": []
     },
     {
       "name": "openwarp_vk",
@@ -413,13 +412,6 @@
       "dependencies": [
         "zed_SDK"
       ]
-    },
-    {
-      "name": "zed.data_injection",
-      "cmake_flag": "USE_ZED.DATA_INJECTION=ON",
-      "dependencies": [
-        "zed_SDK"
-      ]
     }
   ],
   "dependencies": [
@@ -448,11 +440,9 @@
             "notes": ""
           },
           "Fedora": {
-            "38+": {
-              "pkg": "cuda-nvcc",
-              "postnotes": "",
-              "notes": ""
-            }
+            "pkg": "cuda-nvcc",
+            "postnotes": "",
+            "notes": ""
           }
         }
       }
@@ -466,11 +456,9 @@
             "notes": "The cuda-rt package is version named, you will need to determine which is available for your system."
           },
           "Fedora": {
-            "38+": {
-              "pkg": "cuda-cudart-devel",
-              "postnotes": "",
-              "notes": "The cuda-rt package is version named, you will need to determine which is available for your system."
-            }
+            "pkg": "cuda-cudart-devel",
+            "postnotes": "",
+            "notes": "The cuda-rt package is version named, you will need to determine which is available for your system."
           }
         }
       }
@@ -994,12 +982,12 @@
             "pkg": "libcpuinfo-dev",
             "postnotes": "",
             "notes": ""
+          },
+          "Fedora": {
+            "pkg": "cpuinfo-devel",
+            "postnotes": "",
+            "notes": ""
           }
-        },
-        "Fedora": {
-          "pkg": "",
-          "postnotes": "",
-          "notes": ""
         }
       }
     },
@@ -1010,44 +998,12 @@
             "pkg": "libgles-dev",
             "postnotes": "",
             "notes": ""
-          }
-        },
-        "Fedora": {
-          "pkg": "",
-          "postnotes": "",
-          "notes": ""
-        }
-      }
-    },
-    {
-      "libcpuinfo": {
-        "pkg": {
-          "Ubuntu": {
-            "pkg": "libcpuinfo-dev",
+          },
+          "Fedora": {
+            "pkg": "libglvnd-devel",
             "postnotes": "",
             "notes": ""
           }
-        },
-        "Fedora": {
-          "pkg": "",
-          "postnotes": "",
-          "notes": ""
-        }
-      }
-    },
-    {
-      "libgles": {
-        "pkg": {
-          "Ubuntu": {
-            "pkg": "libgles-dev",
-            "postnotes": "",
-            "notes": ""
-          }
-        },
-        "Fedora": {
-          "pkg": "",
-          "postnotes": "",
-          "notes": ""
         }
       }
     },
@@ -1167,6 +1123,7 @@
       "libssh": {
         "pkg": {
           "Ubuntu": {
+            "pkg": "libssh-dev",
             "postnotes": "",
             "notes": ""
           },
@@ -1235,9 +1192,9 @@
             "notes": ""
           },
           "Fedora": {
-            "pkg": "",
+            "pkg": "libuvc-devel",
             "postnotes": "",
-            "notes": "Fedora does not supply libuvc from its repositories. You will need to install it from <a href=\"https://github.com/libuvc/libuvc\">https://github.com/libuvc/libuvc</a>."
+            "notes": ""
           }
         }
       }
