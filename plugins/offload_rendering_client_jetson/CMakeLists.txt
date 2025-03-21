@@ -39,7 +39,7 @@ if (ON_JETSON_PLATFORM)
                 ${CMAKE_SOURCE_DIR}/include/illixr/vk/render_pass.hpp
                 ${CMAKE_SOURCE_DIR}/include/illixr/vk/vk_extension_request.hpp
                 ${CMAKE_SOURCE_DIR}/include/illixr/vk/vulkan_utils.hpp
-                $<TARGET_OBJECTS:illixr_serializable_data>
+                ${CMAKE_SOURCE_DIR}/utils/serializable_data.cpp
                 ${JETSON_MULTIMEDIA_API_CLASSES}
                 decoding/video_decode.h
                 decoding/video_decode.cpp

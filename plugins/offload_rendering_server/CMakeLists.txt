@@ -31,7 +31,7 @@ add_library(${PLUGIN_NAME} SHARED plugin.cpp
             ${CMAKE_SOURCE_DIR}/include/illixr/vk/render_pass.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/vk/vulkan_utils.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/vk/vk_extension_request.hpp
-            $<TARGET_OBJECTS:illixr_serializable_data>
+            ${CMAKE_SOURCE_DIR}/utils/serializable_data.cpp
 )
 
 target_compile_definitions(${PLUGIN_NAME} PRIVATE MONADO_REQUIRED)
