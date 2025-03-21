@@ -8,18 +8,22 @@ tcp_network_backend::tcp_network_backend(const std::string& name_, phonebook* pb
     // read environment variables
     if (switchboard_->get_env_char("ILLIXR_TCP_HOST_IP")) {
         self_ip_ = switchboard_->get_env_char("ILLIXR_TCP_HOST_IP");
+        spdlog::get("illixr")->info("[tcp_network_backend] Using TCP host IP {}", self_ip_);
     }
 
     if (switchboard_->get_env_char("ILLIXR_TCP_HOST_PORT")) {
         self_port_ = std::stoi(switchboard_->get_env_char("ILLIXR_TCP_HOST_PORT"));
+        spdlog::get("illixr")->info("[tcp_network_backend] Using TCP host port {}", self_port_);
     }
 
     if (switchboard_->get_env_char("ILLIXR_TCP_PEER_IP")) {
         peer_ip_ = switchboard_->get_env_char("ILLIXR_TCP_PEER_IP");
+        spdlog::get("illixr")->info("[tcp_network_backend] Using TCP peer IP {}", peer_ip_);
     }
 
     if (switchboard_->get_env_char("ILLIXR_TCP_PEER_PORT")) {
         peer_port_ = std::stoi(switchboard_->get_env_char("ILLIXR_TCP_PEER_PORT"));
+        spdlog::get("illixr")->info("[tcp_network_backend] Using TCP peer port {}", peer_port_);
     }
 
     if (peer_port_ != 0) {
