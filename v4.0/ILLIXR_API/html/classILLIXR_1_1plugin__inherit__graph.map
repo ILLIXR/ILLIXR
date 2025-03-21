@@ -1,0 +1,11 @@
+<map id="ILLIXR::plugin" name="ILLIXR::plugin">
+<area shape="rect" id="Node000001" title="A dynamically&#45;loadable plugin for Spindle." alt="" coords="136,5,247,31"/>
+<area shape="rect" id="Node000002" href="$classILLIXR_1_1offload__rendering__server__loader.html" title="Plugin loader for the offload rendering server." alt="" coords="5,79,191,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="169,42,122,81,119,76,165,38"/>
+<area shape="rect" id="Node000003" href="$classILLIXR_1_1threadloop.html" title="A reusable threadloop for plugins." alt="" coords="215,86,355,111"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="217,38,273,84,269,88,214,42"/>
+<area shape="rect" id="Node000004" href="$classILLIXR_1_1offload__rendering__client__jetson.html" title="Main class implementing the offload rendering client functionality." alt="" coords="87,167,272,207"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="262,122,204,169,201,164,258,118"/>
+<area shape="rect" id="Node000005" href="$classILLIXR_1_1offload__rendering__server.html" title="Main server implementation for offload rendering." alt="" coords="296,167,481,207"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="311,118,367,164,364,169,307,122"/>
+</map>

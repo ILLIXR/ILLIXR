@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="md__2home_2friedel_2devel_2ILLIXR-clean_2plugins_2offload__rendering__client__jetson_2README" kind="page">
+    <compoundname>md__2home_2friedel_2devel_2ILLIXR-clean_2plugins_2offload__rendering__client__jetson_2README</compoundname>
+    <title>offload_rendering_client_jetson</title>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para><anchor id="md__2home_2friedel_2devel_2ILLIXR-clean_2plugins_2offload__rendering__client__jetson_2README_1autotoc_md26"/> </para>
+<sect1 id="md__2home_2friedel_2devel_2ILLIXR-clean_2plugins_2offload__rendering__client__jetson_2README_1autotoc_md27">
+<title>Summary</title>
+<para><computeroutput>offload_rendering_client_jetson</computeroutput> receives encoded frames from the network, and uses the Jetson&apos;s Multimedia API to decode frames before updating the buffer pool. Setting the environment variable <computeroutput>ILLIXR_USE_DEPTH_IMAGES</computeroutput> to a non-zero value indicates that depth images are being received, and should thus also be decoded. </para>
+</sect1>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/README.md"/>
+  </compounddef>
+</doxygen>
