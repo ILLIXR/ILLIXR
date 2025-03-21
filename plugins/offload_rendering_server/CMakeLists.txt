@@ -23,6 +23,7 @@ add_library(${PLUGIN_NAME} SHARED plugin.cpp
             offload_rendering_server.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/data_format/pose_prediction.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/data_format/serializable_data.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/frame.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/phonebook.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/threadloop.hpp

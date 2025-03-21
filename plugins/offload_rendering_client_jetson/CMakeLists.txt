@@ -33,6 +33,7 @@ if (ON_JETSON_PLATFORM)
                 ${CMAKE_SOURCE_DIR}/include/illixr/pose_prediction.hpp
                 ${CMAKE_SOURCE_DIR}/include/illixr/phonebook.hpp
                 ${CMAKE_SOURCE_DIR}/include/illixr/serializable_data.hpp
+                ${CMAKE_SOURCE_DIR}/include/illixr/data_format/frame.hpp
                 ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
                 ${CMAKE_SOURCE_DIR}/include/illixr/threadloop.hpp
                 ${CMAKE_SOURCE_DIR}/include/illixr/vk/display_provider.hpp
