@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structILLIXR_1_1offload__rendering__client__jetson_1_1MemoryTypeResult" kind="struct" language="C++" prot="private">
+    <compoundname>ILLIXR::offload_rendering_client_jetson::MemoryTypeResult</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structILLIXR_1_1offload__rendering__client__jetson_1_1MemoryTypeResult_1aa1a04c375529374502b0cf7996189393" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool ILLIXR::offload_rendering_client_jetson::MemoryTypeResult::found</definition>
+        <argsstring></argsstring>
+        <name>found</name>
+        <qualifiedname>ILLIXR::offload_rendering_client_jetson::MemoryTypeResult::found</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" line="173" column="18" bodyfile="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" bodystart="173" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1offload__rendering__client__jetson_1_1MemoryTypeResult_1a4231127511fabbcda4e3d7fe0fd3ef0a" prot="public" static="no" mutable="no">
+        <type>uint32_t</type>
+        <definition>uint32_t ILLIXR::offload_rendering_client_jetson::MemoryTypeResult::typeIndex</definition>
+        <argsstring></argsstring>
+        <name>typeIndex</name>
+        <qualifiedname>ILLIXR::offload_rendering_client_jetson::MemoryTypeResult::typeIndex</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" line="174" column="18" bodyfile="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" bodystart="174" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" line="172" column="5" bodyfile="/home/friedel/devel/ILLIXR-clean/plugins/offload_rendering_client_jetson/offload_rendering_client_jetson.hpp" bodystart="172" bodyend="175"/>
+    <listofallmembers>
+      <member refid="structILLIXR_1_1offload__rendering__client__jetson_1_1MemoryTypeResult_1aa1a04c375529374502b0cf7996189393" prot="public" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson::MemoryTypeResult</scope><name>found</name></member>
+      <member refid="structILLIXR_1_1offload__rendering__client__jetson_1_1MemoryTypeResult_1a4231127511fabbcda4e3d7fe0fd3ef0a" prot="public" virt="non-virtual"><scope>ILLIXR::offload_rendering_client_jetson::MemoryTypeResult</scope><name>typeIndex</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

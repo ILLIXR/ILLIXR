@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="plugins_2lighthouse_2README_8md" kind="file" language="Markdown">
+    <compoundname>README.md</compoundname>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline><highlight class="normal">#<sp/>Lighthouse</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Summary</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">The<sp/>``lighthouse``<sp/>plugin<sp/>supports<sp/>lighthouse<sp/>tracking<sp/>using</highlight></codeline>
+<codeline><highlight class="normal">the<sp/>[libsurvive<sp/>library](https://github.com/collabora/libsurvive).<sp/>To<sp/>use<sp/>this<sp/>plugin,<sp/>libsurvive<sp/>should<sp/>first<sp/>be<sp/>built,</highlight></codeline>
+<codeline><highlight class="normal">installed,<sp/>and<sp/>calibrated<sp/>according</highlight></codeline>
+<codeline><highlight class="normal">to<sp/>[their<sp/>documentation](https://github.com/collabora/libsurvive/blob/master/README.md).</highlight></codeline>
+    </programlisting>
+    <location file="/home/friedel/devel/ILLIXR-clean/plugins/lighthouse/README.md"/>
+  </compounddef>
+</doxygen>
