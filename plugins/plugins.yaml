@@ -147,7 +147,7 @@ profiles:
 # Defaults to ZED for the Jetson, otherwise the offline dataset.
 
   - offload_rendering_client:
-    plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,tcp_network_backend,offload_rendering_client,timewarp_vk,openwarp_vk,native_renderer
+    plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,tcp_network_backend,offload_rendering_client,timewarp_vk,openwarp_vk,native_renderer,openvins
     env_vars:
       enable_offload: false
       enable_alignment: false

@@ -9,7 +9,7 @@ offload_rendering_server::offload_rendering_server(const std::string& name, phon
     , log_{spdlogger("debug")}
     , switchboard_{pb->lookup_impl<switchboard>()}
     , frames_topic_{switchboard_->get_network_writer<compressed_frame>("compressed_frames", {})}
-    , render_pose_{switchboard_->get_reader<fast_pose_type>("render_pose_")} {
+    , render_pose_{switchboard_->get_reader<fast_pose_type>("render_pose")} {
     // Only encode and pass depth if requested - otherwise skip it.
     use_pass_depth_ = switchboard_->get_env_char("ILLIXR_USE_DEPTH_IMAGES") != nullptr &&
         std::stoi(switchboard_->get_env_char("ILLIXR_USE_DEPTH_IMAGES"));

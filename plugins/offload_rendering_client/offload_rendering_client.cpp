@@ -492,6 +492,7 @@ void offload_rendering_client::push_pose() {
     auto now = time_point{std::chrono::duration<long, std::nano>{std::chrono::high_resolution_clock::now().time_since_epoch()}};
     current_pose.predict_target_time   = now;
     current_pose.predict_computed_time = now;
+    std::cout << "Pushing new pose" << std::endl;
     pose_writer_.put(std::make_shared<fast_pose_type>(current_pose));
 }
 
