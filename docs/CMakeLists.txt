@@ -171,6 +171,11 @@ if(BUILD_DOCS)
       css_dir: css
       javascript_dir: js"
         )
+        set(MIKE_VERSIONING "
+extra:
+  version:
+    provider: mike"
+)
     endif()
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/mkdocs.yaml.in ${CURRENT_BUILD_DIR}/_docs/mkdocs.yaml)
 

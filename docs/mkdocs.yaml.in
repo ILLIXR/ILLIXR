@@ -46,11 +46,7 @@ extra_css:
 extra_javascript:
   - js/jquery.min.js
   - js/clipboard.min.js
-  - js/code-box-copy.js
-extra:
-  version:
-    default: latest
-    provider: mike
+  - js/code-box-copy.js@MIKE_VERSIONING@
 plugins:
   - search@MKDOCS_MIKE@
   - mkdoxy:
