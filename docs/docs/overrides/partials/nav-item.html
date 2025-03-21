@@ -156,7 +156,7 @@ This file has been customized for ILLIXR
         <span class="md-nav__icon md-icon"></span>
     </label>
     {% endif %}
-    <a href="{{ nav_item.url | url }}" class="md-nav__link md-nav__link--active" style="color:var(--md-nav-item-active);background-color:var({{ current_bg_color }};">
+    <a href="{{ nav_item.url | url }}" class="md-nav__link md-nav__link--active" style="color:var(--md-nav-item-active);background-color:var({{ current_bg_color }});">
         {{ render_content(nav_item) }}
     </a>
     {% if toc %}
