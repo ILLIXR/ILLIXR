@@ -155,7 +155,7 @@ profiles:
       enable_pre_sleep: false
 
   - offload_rendering_server:
-    plugins: pose_lookup,offload_rendering_server,offload_rendering_client,timewarp_vk.monado,openwarp_vk.monado,vkdemo,native_renderer,tcp_network_backend
+    plugins: tcp_network_backend,offload_rendering_server
     env_vars:
       enable_offload: false
       enable_alignment: false

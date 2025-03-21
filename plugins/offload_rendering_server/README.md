@@ -8,3 +8,7 @@ Relevant environment variables include:
     - ``ILLIXR_OFFLOAD_RENDERING_BITRATE`` sets the encoding bitrate.
     - ``ILLIXR_OFFLOAD_RENDERING_FRAMERATE`` sets the encoding framerate.
     - ``ILLIXR_OFFLOAD_RENDERING_NALU_ONLY`` set to non-zero indicates a Jetson client.
+
+## Note
+
+Note that at the moment, the ``offload_rendering_server`` only supports Monado + OpenXR apps, and does not offload the native demos.
