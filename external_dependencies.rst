@@ -1,1 +1,0 @@
-latest/external_dependencies.rst
