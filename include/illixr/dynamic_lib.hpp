@@ -58,6 +58,7 @@ public:
         RAC_ERRNO_MSG("dynamic_lib after dlopen");
 
         if ((error = dlerror()) || !handle) {
+            spdlog::get("illixr")->error(error);
             throw std::runtime_error{"dlopen(\"" + std::string{path} +
                                      "\"): " + (error == nullptr ? "NULL" : std::string{error})};
         }

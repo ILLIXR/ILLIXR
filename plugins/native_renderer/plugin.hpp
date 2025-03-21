@@ -1,16 +1,22 @@
 #pragma once
 
+#include <functional>
+#include <stack>
+
+#define VULKAN_REQUIRED
+#include "illixr/data_format/pose_prediction.hpp"
 #include "illixr/phonebook.hpp"
-#include "illixr/pose_prediction.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
-#include "illixr/vk_util/display_sink.hpp"
-#include "illixr/vk_util/render_pass.hpp"
+#include "illixr/vk/display_provider.hpp"
+#include "illixr/vk/render_pass.hpp"
+#include "illixr/vk/vulkan_utils.hpp"
 
 namespace ILLIXR {
 class native_renderer : public threadloop {
 public:
     [[maybe_unused]] native_renderer(const std::string& name, phonebook* pb);
+    virtual ~native_renderer() override;
 
     /**
      * @brief Sets up the thread for the plugin.
@@ -54,8 +60,9 @@ private:
      * @brief Records the command buffer for a single frame.
      * @param swapchain_image_index The index of the swapchain image to render to.
      */
-    void record_command_buffer(uint32_t swapchain_image_index);
+    void record_src_command_buffer(vulkan::image_index_t buffer_index);
 
+    void record_post_processing_command_buffer(vulkan::image_index_t buffer_index, uint32_t swapchain_image_index_);
     /**
      * @brief Creates synchronization objects for the application.
      *
@@ -70,20 +77,16 @@ private:
     /**
      * @brief Creates a depth image for the application.
      * @param depth_image Pointer to the depth image handle.
-     * @param depth_image_allocation Pointer to the depth image memory allocation handle.
-     * @param depth_image_view Pointer to the depth image view handle.
      */
-    void create_depth_image(VkImage* depth_image, VmaAllocation* depth_image_allocation, VkImageView* depth_image_view);
+    void create_depth_image(vulkan::vk_image& depth_image);
 
     /**
      * @brief Creates an offscreen target for the application to render to.
-     * @param offscreen_image Pointer to the offscreen image handle.
-     * @param offscreen_image_allocation Pointer to the offscreen image memory allocation handle.
-     * @param offscreen_image_view Pointer to the offscreen image view handle.
-     * @param offscreen_framebuffer Pointer to the offscreen framebuffer handle.
+     * @param image Pointer to the offscreen image handle.
      */
-    void create_offscreen_target(VkImage* offscreen_image, VmaAllocation* offscreen_image_allocation,
-                                 VkImageView* offscreen_image_view, [[maybe_unused]] VkFramebuffer* offscreen_framebuffer);
+    void create_offscreen_target(vulkan::vk_image& image);
+
+    void create_offscreen_pool();
 
     /**
      * @brief Creates the offscreen framebuffers for the application.
@@ -105,39 +108,52 @@ private:
      */
     void create_timewarp_pass();
 
-    const std::shared_ptr<switchboard>          switchboard_;
-    const std::shared_ptr<pose_prediction>      pose_prediction_;
-    const std::shared_ptr<display_sink>         display_sink_;
-    const std::shared_ptr<timewarp>             timewarp_;
-    const std::shared_ptr<app>                  app_;
-    const std::shared_ptr<const relative_clock> clock_;
+    const std::shared_ptr<switchboard>                  switchboard_;
+    const std::shared_ptr<spdlog::logger>               log_;
+    const std::shared_ptr<data_format::pose_prediction> pose_prediction_;
+    const std::shared_ptr<vulkan::display_provider>     display_sink_;
+    const std::shared_ptr<vulkan::timewarp>             timewarp_;
+    const std::shared_ptr<vulkan::app>                  app_;
+    const std::shared_ptr<const relative_clock>         clock_;
+
+    uint32_t width_      = 0;
+    uint32_t height_     = 0;
+    bool     export_dma_ = false;
+
+    std::stack<std::function<void()>> deletion_queue_;
 
     VkCommandPool   command_pool_{};
     VkCommandBuffer app_command_buffer_{};
     VkCommandBuffer timewarp_command_buffer_{};
 
-    std::array<VkImage, 2>       depth_images_{};
-    std::array<VmaAllocation, 2> depth_image_allocations_{};
-    std::array<VkImageView, 2>   depth_image_views_{};
+    std::vector<std::array<vulkan::vk_image, 2>> depth_images_{};
+    std::vector<std::array<vulkan::vk_image, 2>> depth_attachment_images_{};
 
-    std::array<VkImage, 2>       offscreen_images_{};
-    std::array<VmaAllocation, 2> offscreen_image_allocations_{};
-    std::array<VkImageView, 2>   offscreen_image_views_{};
-    std::array<VkFramebuffer, 2> offscreen_framebuffers_{};
+    VkExportMemoryAllocateInfo                offscreen_export_mem_alloc_info_{};
+    VmaPoolCreateInfo                         offscreen_pool_create_info_{};
+    VmaPool                                   offscreen_pool_{};
+    std::vector<std::array<VkFramebuffer, 2>> offscreen_framebuffers_{};
 
-    std::vector<VkFramebuffer> swapchain_framebuffers_;
+    std::vector<std::array<vulkan::vk_image, 2>> offscreen_images_{};
+
+    std::vector<VkFramebuffer> swapchain_framebuffers_{};
 
     VkRenderPass app_pass_{};
+
     VkRenderPass timewarp_pass_{};
+    VkSemaphore  image_available_semaphore_{};
+    VkSemaphore  app_render_finished_semaphore_{};
+    VkSemaphore  timewarp_render_finished_semaphore_{};
 
-    VkSemaphore image_available_semaphore_{};
-    VkSemaphore app_render_finished_semaphore_{};
-    VkSemaphore timewarp_render_finished_semaphore_{};
-    VkFence     frame_fence_{};
+    VkFence frame_fence_{};
 
+    uint32_t swapchain_image_index_    = UINT32_MAX; // set to UINT32_MAX after present
     uint64_t timeline_semaphore_value_ = 1;
 
-    int        fps_{};
-    time_point last_fps_update_;
+    int                                                         fps_{};
+    switchboard::reader<switchboard::event_wrapper<time_point>> vsync_;
+    time_point                                                  last_fps_update_;
+
+    std::shared_ptr<vulkan::buffer_pool<data_format::fast_pose_type>> buffer_pool_;
 };
 } // namespace ILLIXR

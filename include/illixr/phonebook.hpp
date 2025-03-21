@@ -11,6 +11,7 @@
 #ifndef NDEBUG
     #include <iostream>
     #include <spdlog/spdlog.h>
+// #include "spdlog/sinks/stdout_color_sinks.h"
 #endif
 
 namespace ILLIXR {
@@ -85,9 +86,41 @@ public:
      */
     class service {
     public:
-        /**
-         */
+        // auto spdlogger(const char* log_level) {
+        //     if (!log_level) {
+        // #ifdef NDEBUG
+        //         log_level = "warn";
+        // #else
+        //         log_level = "debug";
+        // #endif
+        //     }
+        //     std::vector<spdlog::sink_ptr> sinks;
+        //     // auto                          file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>("logs/" +
+        //     type_index.name() + ".log"); auto                          console_sink =
+        //     std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+        //     // sinks.push_back(file_sink);
+        //     sinks.push_back(console_sink);
+        //     plugin_logger = std::make_shared<spdlog::logger>(type_index.name(), begin(sinks), end(sinks));
+        //     plugin_logger->set_level(spdlog::level::from_str(log_level));
+        //     spdlog::register_logger(plugin_logger);
+        //     return plugin_logger;
+        // }
+
+        // void spd_add_file_sink(const std::string& file_name, const std::string& extension, const std::string& log_level) {
+        //     if (!plugin_logger) {
+        //         throw std::runtime_error("Logger not found");
+        //     }
+
+        // auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>("logs/" + file_name + "." + extension, true);
+        // file_sink->set_level(spdlog::level::from_str(log_level));
+        // plugin_logger->sinks().push_back(file_sink);
+        // size_t sink_count = plugin_logger->sinks().size();
+        // plugin_logger->sinks()[sink_count-1]->set_pattern("%v");
+        // }
+
         virtual ~service() = default;
+
+        // std::shared_ptr<spdlog::logger>      plugin_logger;
     };
 
     /**
@@ -125,7 +158,7 @@ public:
         const std::type_index type_index = std::type_index(typeid(Specific_service));
 
 #ifndef NDEBUG
-        // if this assert fails, and there are no duplicate base classes, ensure the hash_code's are unique.
+        // if this fails, and there are no duplicate base classes, ensure the hash_code's are unique.
         if (registry_.count(type_index) != 1) {
             throw std::runtime_error{"Attempted to lookup an unregistered implementation " + std::string{type_index.name()}};
         }
@@ -140,6 +173,15 @@ public:
             throw std::runtime_error{"Could not find specific " + std::string{type_index.name()}};
 
         return this_specific_service;
+    }
+
+    template<typename specific_service>
+    [[maybe_unused]] bool has_impl() const {
+        const std::shared_lock<std::shared_mutex> lock{mutex_};
+
+        const std::type_index type_index = std::type_index(typeid(specific_service));
+
+        return registry_.count(type_index) == 1;
     }
 
 private:
