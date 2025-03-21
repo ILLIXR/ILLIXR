@@ -57,7 +57,6 @@ add_library(${PLUGIN_NAME} SHARED
 )
 if(OW_PLUGIN_DEFINITIONS)
     target_compile_definitions(${PLUGIN_NAME} PUBLIC ${OW_PLUGIN_DEFINITIONS})
-    target_compile_definitions(${PLUGIN_NAME} PRIVATE MONADO_REQUIRED)
     target_include_directories(${PLUGIN_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/..)
 endif()
 
