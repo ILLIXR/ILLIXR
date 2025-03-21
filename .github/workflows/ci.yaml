@@ -32,10 +32,14 @@ jobs:
         HOST_UID=$(id -u)
         HOST_GID=$(id -g)
         
+        # Use repository variable with fallback to default
+        YAML_PROFILE="${{ vars.YAML_PROFILE || 'profiles/ci.yaml' }}"
+        
         docker run --rm \
           -e DISPLAY=$DISPLAY \
           -e NVIDIA_VISIBLE_DEVICES=all \
           -e NVIDIA_DRIVER_CAPABILITIES=all \
+          -e YAML_PROFILE="$YAML_PROFILE" \
           -v $GITHUB_WORKSPACE:/opt/ILLIXR \
           -v /tmp/.X11-unix:/tmp/.X11-unix \
           --user $HOST_UID:$HOST_GID \

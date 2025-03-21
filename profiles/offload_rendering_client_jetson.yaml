@@ -1,0 +1,7 @@
+# This file was auto generated, take caution if manually editing.
+plugins: offload_rendering_client_jetson,native_renderer,tcp_network_backend,timewarp_vk,openwarp_vk,offline_imu,offline_cam,gtsam_integrator,openvins,pose_prediction,pose_lookup,vkdemo,zed
+env_vars:
+  enable_offload: False
+  enable_alignment: False
+  enable_verbose_errors: False
+  enable_pre_sleep: False
