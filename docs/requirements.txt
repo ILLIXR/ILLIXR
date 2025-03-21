@@ -6,4 +6,4 @@ mkdocs-material>=9.4
 mkdocs-material-extensions
 mkdoxy>=1.2
 mkdocs-glightbox
-pymdown-extension
+pymdown-extensions

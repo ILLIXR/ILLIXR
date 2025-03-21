@@ -85,9 +85,10 @@ set(DATA_FILE "http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vico
 
 # docs variables
 option(BUILD_DOCS "Build documentation" OFF)
+option(BUILD_DOCS_FOR_RELEASE "Build the documentation in preparation for an official release" OFF)
 option(MKDOCS_LOCATION "The path of the mkdocs executable" "")
 option(PIP_LOCATION "The path of the pip script" "")
-mark_as_advanced(FORCE MKDOCS_LOCATION PIP_LOCATION)
+mark_as_advanced(FORCE MKDOCS_LOCATION PIP_LOCATION BUILD_DOCS_FOR_RELEASE)
 
 option(USE_MONADO "Build for monado use" OFF)
 option(NO_GPL "Do not build any code licensed under GPL. This will affect any generated profile files as well." OFF)
@@ -134,7 +135,6 @@ check_plugins()
 
 set(CORE_PLUGINS OFF)
 set(RT_SLAM_PLUGINS OFF)
-
 if(YAML_FILE)
     read_yaml(${YAML_FILE})
     string(REGEX MATCH "/all.yaml" MATCH_FOUND ${YAML_FILE})
@@ -279,15 +279,6 @@ foreach(ITEM IN LISTS PLUGIN_LIST)
     unset(ITEM_UPPER)
 endforeach()
 
-if (ENABLE_MONADO)
-    if (NOT USE_TIMEWARP_GL)
-        get_external(Monado_vk)
-    elseif (USE_TIMEWARP_GL AND NOT USE_TIMEWARP_VK)
-
-    else()
-        get_external(Monado_vk)
-    endif()
-endif()
 include(src/CMakeLists.txt)
 
 list(SORT FULL_PLUGIN_LIST COMPARE STRING CASE INSENSITIVE ORDER ASCENDING)
@@ -367,6 +358,7 @@ install(FILES "${CMAKE_SOURCE_DIR}/plugins/plugin_deps.yaml"
         DESTINATION $ENV{HOME}/.illixr/profiles)
 install(FILES "${CMAKE_SOURCE_DIR}/plugins/plugin_deps.yaml"
         DESTINATION ${CMAKE_INSTALL_PREFIX}/share/illixr/profiles)
+
 #get_cmake_property(_variableNames VARIABLES)
 #foreach (_variableName ${_variableNames})
 #    message(STATUS "${_variableName}=${${_variableName}}")

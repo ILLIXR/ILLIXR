@@ -8,35 +8,69 @@ if(BUILD_DOCS)
 endif()
 
 if(BUILD_DOCS)
-    find_package(Python3 QUIET COMPONENTS Interpreter)
-    if(NOT Python3_FOUND)
-        message(WARNING "Cannot find Python3, documentation cannot be built")
+    if((DEFINED ENV{VIRTUAL_ENV}) OR (DEFINED ENV{CONDA_PREFIX}))
+       set(IN_VENV YES)
+        if(DEFINED ENV{VIRTUAL_ENV})
+            set(VENV_ROOT $ENV{VIRTUAL_ENV})
+        else()
+            set(VENV_ROOT $ENV{CONDA_PREFIX})
+        endif()
+        find_program(Python3_EXECUTABLE python3
+                     HINTS "${VENV_ROOT}/bin"
+                     NO_DEFAULT_PATH
+        )
+        if(NOT Python3_EXECUTABLE AND (DEFINED $ENV{VIRTUAL_ENV}))
+            message(WARNING "You are running in a Python venv, but python3 could not be found. documentation cannot be built.")
+            set(BUILD_DOCS NO CACHE BOOL "")
+        endif()
+    endif()
+    if(BUILD_DOCS AND (NOT Python3_EXECUTABLE))
+        find_package(Python3 QUIET COMPONENTS Interpreter)
+        if(NOT Python3_FOUND)
+            message(WARNING "Cannot find Python3, documentation cannot be built")
+            set(BUILD_DOCS NO CACHE BOOL "")
+        endif()
     endif()
 endif()
 
 if(BUILD_DOCS)
+    if(IN_VENV)
+        set(VENV_BIN_PATH "${VENV_ROOT}/bin")
+    else()
+        set(VENV_BIN_PATH "")
+    endif()
     find_program(MKDOCS_EXEC mkdocs
-                 HINTS "$ENV{HOME}/.local/bin" "/usr/bin/mkdocs" "/usr/local/bin/mkdocs" "${MKDOCS_LOCATION}"
+                 HINTS "${VENV_BIN_PATH}" "$ENV{HOME}/.local/bin" "/usr/bin" "/usr/local/bin" "${MKDOCS_LOCATION}"
     )
+    if(BUILD_DOCS_FOR_RELEASE)
+        find_program(MIKE_EXEC mike
+                     HINTS "${VENV_BIN_PATH}" "$ENV{HOME}/.local/bin" "/usr/bin" "/usr/local/bin"
+        )
+        if(NOT MIKE_EXEC)
+            message(WARNING "BUILD_DOCS_FOR_RELEASE was set to ON, but the 'mike' executable was not found. Please be sure to install it from PyPi before deploying the documentation.")
+        endif()
+    endif()
     if(NOT PY_PACKAGES_FOUND)
         execute_process(COMMAND ${Python3_EXECUTABLE} -c "from material.plugins.info import plugin
 from materialx import emoji
 from pygments import plugin
 from mkdocs_include_markdown_plugin import plugin
 from mkdoxy import plugin
-from mkdocs_glightbox import plugin"
+from mkdocs_glightbox import plugin
+"
                         RESULT_VARIABLE PY_RESULT
                         OUTPUT_QUIET)
-
-        if((${PY_RESULT} NOT EQUAL 0) OR (MKDOCS_EXEC))
-            message(WARNING "Some required Python packages are not installed. Attempting to install them.")
+        if((${PY_RESULT} NOT EQUAL 0) OR (NOT MKDOCS_EXEC))
+            message(WARNING "Some required Python packages are not installed. Will try to install them.")
 
             find_program(PIP_FOUND pip3
                          HINTS "$ENV{HOME}/.local/bin" "/usr/bin/" "/usr/local/bin" "${PIP_LOCATION}"
             )
-            find_program(UV_FOUND uv
-                         HINTS "$ENV{HOME}/.local/bin" "/usr/bin/" "/usr/local/bin" "$ENV{HOME}/.cargo/bin"
-            )
+            if(IN_VENV)
+                find_program(UV_FOUND uv
+                             HINTS "$ENV{HOME}/.local/bin" "/usr/bin/" "/usr/local/bin" "$ENV{HOME}/.cargo/bin"
+                )
+            endif()
 
             set(PIP_RUN NO)
             if(UV_FOUND)
@@ -45,8 +79,9 @@ from mkdocs_glightbox import plugin"
                                 ERROR_VARIABLE PIP_MESSAGE
                 )
                 set(PIP_RUN YES)
+                message("UV")
             elseif(PIP_FOUND)
-                if((DEFINED $ENV{VIRTUAL_ENV}) OR (DEFINED $ENV{CONDA_PREFIX}))
+                if(IN_VENV)
                     set(_pip_args)
                 else()
                     set(_pip_args "--user")
@@ -56,6 +91,7 @@ from mkdocs_glightbox import plugin"
                                 ERROR_VARIABLE PIP_MESSAGE
                 )
                 set(PIP_RUN YES)
+                message("PIP")
             else()
                 message(WARNING "Cannot locate pip. If it is installed try setting -DPIP_LOCATION to its path")
                 set(BUILD_DOCS NO CACHE BOOL "")
@@ -77,7 +113,6 @@ if(BUILD_DOCS)
 
     set(DOC_BUILD_DIR "${CURRENT_BUILD_DIR}/_docs/docs" CACHE INTERNAL "")
     set(DOC_ROOT_BUILD_DIR "${CURRENT_BUILD_DIR}/docs/docs")
-    message(WARNING "copy ${CMAKE_SOURCE_DIR}/docs/docs/* ${DOC_BUILD_DIR}/.")
     # copy over the raw doc files
     file(COPY ${CMAKE_SOURCE_DIR}/docs/docs
          DESTINATION ${CURRENT_BUILD_DIR}/_docs
@@ -125,6 +160,18 @@ if(BUILD_DOCS)
     set(MKDOCS_BUILD_DIR "${CURRENT_BUILD_DIR}/docs/docs" CACHE INTERNAL "")
     set(MKDOCS_INSTALL_DIR "${DOXYGEN_INSTALL_DIR}" CACHE INTERNAL "")
     set(MKDOCS_DOXY_CFG "${CURRENT_BUILD_DIR}/_docs/Doxyfile")
+    if(BUILD_DOCS_FOR_RELEASE AND MIKE_EXEC)
+        set(MKDOCS_MIKE "
+  - mike:
+      alias_type: symlink
+      redirect_template: null
+      deploy_prefix: ''
+      canonical_version: latest
+      version_selector: true
+      css_dir: css
+      javascript_dir: js"
+        )
+    endif()
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/mkdocs.yaml.in ${CURRENT_BUILD_DIR}/_docs/mkdocs.yaml)
 
 

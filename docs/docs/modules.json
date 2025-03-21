@@ -413,13 +413,6 @@
       "dependencies": [
         "zed_SDK"
       ]
-    },
-    {
-      "name": "zed.data_injection",
-      "cmake_flag": "USE_ZED.DATA_INJECTION=ON",
-      "dependencies": [
-        "zed_SDK"
-      ]
     }
   ],
   "dependencies": [
@@ -520,22 +513,6 @@
       }
     },
     {
-      "fp16": {
-        "pkg": {
-          "Ubuntu": {
-            "pkg": "libfp16-dev",
-            "postnotes": "",
-            "notes": ""
-          },
-          "Fedora": {
-            "pkg": "FP16-devel",
-            "postnotes": "",
-            "notes": ""
-          }
-        }
-      }
-    },
-    {
       "fontconfig": {
         "pkg": {
           "Ubuntu": {
@@ -545,6 +522,22 @@
           },
           "Fedora": {
             "pkg": "fontconfig",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "fp16": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "libfp16-dev",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "FP16-devel",
             "postnotes": "",
             "notes": ""
           }
@@ -990,12 +983,12 @@
             "pkg": "libcpuinfo-dev",
             "postnotes": "",
             "notes": ""
+          },
+          "Fedora": {
+            "pkg": "cpuinfo-devel",
+            "postnotes": "",
+            "notes": ""
           }
-        },
-        "Fedora": {
-          "pkg": "cpuinfo-devel",
-          "postnotes": "",
-          "notes": ""
         }
       }
     },
@@ -1006,12 +999,12 @@
             "pkg": "libgles-dev",
             "postnotes": "",
             "notes": ""
+          },
+          "Fedora": {
+            "pkg": "libglvnd-devel",
+            "postnotes": "",
+            "notes": ""
           }
-        },
-        "Fedora": {
-          "pkg": "libglvnd-devel",
-          "postnotes": "",
-          "notes": ""
         }
       }
     },
@@ -1153,6 +1146,22 @@
           },
           "Fedora": {
             "pkg": "libusb1-devel",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "libuvc": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "libuvc-dev",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "libuvc-devel",
             "postnotes": "",
             "notes": ""
           }

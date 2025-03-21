@@ -78,7 +78,7 @@ public:
             phonebook_.register_impl<xlib_gl_extended_window>(std::make_shared<xlib_gl_extended_window>(
                 display_params::width_pixels, display_params::height_pixels, nullptr));
         }
-        if (enable_vulkan_) {
+        if (enable_vulkan_ && !enable_monado_) {
             // get env var ILLIXR_DISPLAY_MODE
             std::string display_mode =
                 switchboard_->get_env_char("ILLIXR_DISPLAY_MODE") ? switchboard_->get_env_char("ILLIXR_DISPLAY_MODE") : "glfw";
@@ -96,7 +96,7 @@ public:
 
         phonebook_.lookup_impl<relative_clock>()->start();
 
-        if (enable_vulkan_) {
+        if (enable_vulkan_ && !enable_monado_) {
             const std::string display_mode =
                 switchboard_->get_env_char("ILLIXR_DISPLAY_MODE") ? switchboard_->get_env_char("ILLIXR_DISPLAY_MODE") : "glfw";
             if (display_mode != "none") {

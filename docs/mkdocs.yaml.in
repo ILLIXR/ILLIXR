@@ -52,15 +52,7 @@ extra:
     default: latest
     provider: mike
 plugins:
-  - search
-  - mike:
-      alias_type: symlink
-      redirect_template: null
-      deploy_prefix: ''
-      canonical_version: latest
-      version_selector: true
-      css_dir: css
-      javascript_dir: js
+  - search@MKDOCS_MIKE@
   - mkdoxy:
       save-api: @MKDOCS_DOCS_DIR@
       projects:
