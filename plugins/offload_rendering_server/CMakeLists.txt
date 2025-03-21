@@ -34,7 +34,7 @@ add_library(${PLUGIN_NAME} SHARED plugin.cpp
             $<TARGET_OBJECTS:illixr_serializable_data>
 )
 
-target_compile_definitions(${PLUGIN_NAME} PRIVATE "ENABLE_MONADO")
+target_compile_definitions(${PLUGIN_NAME} PRIVATE MONADO_REQUIRED)
 target_include_directories(${PLUGIN_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 set_target_properties(${PLUGIN_NAME} PROPERTIES OUTPUT_NAME ${PLUGIN_NAME})
