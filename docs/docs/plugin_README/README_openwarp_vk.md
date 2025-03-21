@@ -16,3 +16,7 @@ functions are exposed:
   `record_command_buffer` is called
 * `record_command_buffer(VkCommandBuffer commandBuffer, int left)` records the commands into a given command buffer that
   would perform the reprojection for one eye, for which 1 is left and 0 is right
+
+!!! note
+
+    Note that at the moment, OpenWarp assumes that a reverse depth buffer is being used (as in Unreal Engine, Godot, and our native demo). If you're using an application that uses forward depth, the projection matrices and Vulkan pipeline configuration should be updated accordingly.

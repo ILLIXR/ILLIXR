@@ -33,6 +33,9 @@ set(PACKAGE_VERSION_MINOR "0")
 set(PACKAGE_VERSION_PATCH "0")
 set(PACKAGE_VERSION_LABEL "")
 
+set(GPL_LICENSED_CODE "openvins;orb_slam3;offload_rendering_server;offload_rendering_client")
+set(LGPL_LICENSED_CODE "audio_pipeline")
+
 if(WIN32)
     message(FATAL_ERROR "Windows is currently not supported")
 elseif(APPLE)
