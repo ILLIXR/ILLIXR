@@ -15,7 +15,7 @@ add_library(${PLUGIN_NAME} SHARED
             ${PLUGIN_SOURCE}
             ${TW_PREFIX}plugin.hpp
             ${TW_PREFIX}shaders/timewarp_shader.hpp
-            $<TARGET_OBJECTS:illixr_hmd>
+            $<TARGET_OBJECTS:illixr_hmd_gl>
             ${CMAKE_SOURCE_DIR}/include/illixr/data_format/frame.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/data_format/misc.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/data_format/pose.hpp
@@ -40,5 +40,4 @@ if(Vulkan_EXTERNAL)
     add_dependencies(${PLUGIN_NAME} ${Vulkan_DEP_STR})
 endif()
 target_compile_features(${PLUGIN_NAME} PRIVATE cxx_std_17)
-target_compile_definitions(${PLUGIN_NAME} PRIVATE -DUSE_GL)
 install(TARGETS ${PLUGIN_NAME} DESTINATION lib)
