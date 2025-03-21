@@ -1,47 +1,99 @@
-all_plugins: audio_pipeline,debugview,depthai,gldemo,ground_truth_slam,gtsam_integrator,offline_cam,offline_imu,offload_data,offload_vio.device_rx,offload_vio.device_tx,offload_vio.server_rx,offload_vio.server_tx,passthrough_integrator,pose_lookup,pose_prediction,realsense,record_imu_cam,rk4_integrator,timewarp_gl,zed,fauxpose,display_vk,native_renderer,timewarp_vk,vkdemo,openni,record_rgb_depth,webcam,hand_tracking,hand_tracking.viewer,hand_tracking_gpu,zed.data_injection,openvins,orb_slam3
+all_plugins: audio_pipeline,debugview,depthai,gldemo,ground_truth_slam,gtsam_integrator,offline_cam,offline_imu,offload_data,offload_vio.device_rx,offload_vio.device_tx,offload_vio.server_rx,offload_vio.server_tx,passthrough_integrator,pose_lookup,pose_prediction,realsense,record_imu_cam,rk4_integrator,timewarp_gl,timewarp_gl.monado,openwarp_vk,openwarp_vk.monado,zed,fauxpose,native_renderer,timewarp_vk,timewarp_vk.monado,vkdemo,openni,record_rgb_depth,offload_rendering_client,offload_rendering_client_jetson,offload_rendering_server,tcp_network_backend,lighthouse,webcam,hand_tracking,hand_tracking.viewer,hand_tracking_gpu,zed.data_injection,openvins,orb_slam3
 
 profiles:
   - ci:
-    plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,ground_truth_slam,gldemo,timewarp_gl,audio_pipeline
-    build_type: Debug
+    plugins: offline_imu,offline_cam,gtsam_integrator,openvins,pose_prediction,ground_truth_slam,vkdemo,timewarp_vk,native_renderer,debugview
     env_vars:
-      duration: 10
+      duration: 15
       enable_offload:   False
       enable_alignment: False
       enable_verbose_errors: False
       enable_pre_sleep: False
 
   - headless:
-    plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,ground_truth_slam,gldemo,audio_pipeline
+    plugins: offline_imu,offline_cam,gtsam_integrator,openvins,pose_prediction,ground_truth_slam,gldemo,audio_pipeline
     env_vars:
       enable_offload: False
       enable_alignment: False
       enable_verbose_errors: False
       enable_pre_sleep: False
 
-  - monado_gl:
-    plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,timewarp_gl,audio_pipeline,openvins
-    build_flags: -DILLIXR_MONADO
-    use_monado: true
+# Looked-up poses with native GL/VK or Monado.
+
+  - native_gl_lookup:
+    plugins: pose_lookup,gldemo,debugview,offload_data,audio_pipeline
     env_vars:
       enable_offload: false
       enable_alignment: false
       enable_verbose_errors: false
       enable_pre_sleep: false
 
-  - monado_vk:
-    plugins: gtsam_integrator,offline_cam,offline_imu,pose_prediction,timewarp_vk,audio_pipeline,openvins
-    use_monado: true
-    build_flags: -DILLIXR_VULKAN
-    build_type: Release
+  - native_vk_lookup:
+    plugins: pose_lookup,timewarp_vk,vkdemo,native_renderer
     env_vars:
-      enable_offload: False
-      enable_alignment: False
-      enable_verbose_errors: False
-      enable_pre_sleep: False
+      enable_offload: false
+      enable_alignment: false
+      enable_verbose_errors: false
+      enable_pre_sleep: false
 
-  - native_gl:
-    plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,ground_truth_slam,gldemo,timewarp_gl,debugview,offload_data,openvins
+  - monado_vk_lookup:
+    plugins: pose_lookup,timewarp_vk.monado
+    env_vars:
+      enable_offload: false
+      enable_alignment: false
+      enable_verbose_errors: false
+      enable_pre_sleep: false
+
+# Procedurally generated movement with native GL.
+
+  - fauxpose:
+    plugins: fauxpose,gldemo,debugview,audio_pipeline
+    env_vars:
+      enable_offload: false
+      enable_alignment: false
+      enable_verbose_errors: false
+      enable_pre_sleep: false
+
+# Monado with TimeWarp/OpenWarp GL/VK.
+# Defaults to offline datasets and OpenVINS for VIO.
+
+  - monado_timewarp_gl:
+    plugins: offline_imu,offline_cam,gtsam_integrator,openvins,pose_prediction,timewarp_gl.monado
+    env_vars:
+      enable_offload: false
+      enable_alignment: false
+      enable_verbose_errors: false
+      enable_pre_sleep: false
+
+  - monado_timewarp_vk:
+    plugins: offline_imu,offline_cam,gtsam_integrator,openvins,pose_prediction,timewarp_vk.monado
+    env_vars:
+      enable_offload: false
+      enable_alignment: false
+      enable_verbose_errors: false
+      enable_pre_sleep: false
+
+  - monado_openwarp_vk:
+    plugins: offline_imu,offline_cam,gtsam_integrator,openvins,pose_prediction,openwarp_vk.monado
+    env_vars:
+      enable_offload: false
+      enable_alignment: false
+      enable_verbose_errors: false
+      enable_pre_sleep: false
+
+# Native TimeWarp/OpenWarp GL/VK.
+# Defaults to offline datasets and OpenVINS.
+
+  - native_timewarp_gl:
+    plugins: offline_imu,offline_cam,gtsam_integrator,openvins,pose_prediction,ground_truth_slam,gldemo,timewarp_gl,debugview,offload_data,audio_pipeline
+    env_vars:
+      enable_offload: false
+      enable_alignment: false
+      enable_verbose_errors: false
+      enable_pre_sleep: false
+
+  - native_timewarp_vk:
+    plugins: offline_imu,offline_cam,gtsam_integrator,openvins,pose_prediction,timewarp_vk,vkdemo,native_renderer,debugview
     env_vars:
       enable_offload: false
       enable_alignment: false
@@ -56,59 +108,87 @@ profiles:
       enable_verbose_errors: false
       enable_pre_sleep: false
 
-  - native_vk:
-    plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,display_vk,timewarp_vk,vkdemo,native_renderer,debugview,openvins
-    build_flags: -DILLIXR_VULKAN
-    build_type: Release
+  - native_openwarp_vk:
+    plugins: offline_imu,offline_cam,gtsam_integrator,openvins,pose_prediction,openwarp_vk,vkdemo,native_renderer,debugview
     env_vars:
       enable_offload: false
       enable_alignment: false
       enable_verbose_errors: false
       enable_pre_sleep: false
 
-  - native_lookup:
-    plugins: pose_lookup,gldemo,debugview,offload_data,openvins
-    env_vars:
-      enable_offload: false
-      enable_alignment: false
-      enable_verbose_errors: false
-      enable_pre_sleep: false
+# Offload VIO Device/Server.
+# Defaults to offline datasets, native GL, and OpenVINS, besides the Monado version.
 
-  - offload_device:
-    plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,ground_truth_slam,gldemo,debugview,timewarp_gl,offload_vio.device_rx,offload_vio.device_tx,audio_pipeline,openvins
+  - offload_vio_device:
+    plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,ground_truth_slam,gldemo,debugview,timewarp_gl,offload_vio.device_rx,offload_vio.device_tx,audio_pipeline
     env_vars:
-      duration: 85
       enable_offload: False
       enable_alignment: False
       enable_verbose_errors: False
       enable_pre_sleep: False
 
-  - offload_monado_vk:
-    plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,timewarp_vk,offload_vio.device_rx,offload_vio.device_tx,audio_pipeline,openvins
-    use_monado: true
-    build_flags: -DILLIXR_VULKAN
-    env_vars:
-      enable_offload: false
-      enable_alignment: false
-      enable_verbose_errors: false
-      enable_pre_sleep: false
-
-  - offload_server:
+  - offload_vio_server:
     plugins: offload_vio.server_rx,offload_vio.server_tx
     env_vars:
-      duration: 90
       enable_offload: False
       enable_alignment: False
       enable_verbose_errors: False
       enable_pre_sleep: False
 
-  - fauxpose:
-    plugins: fauxpose,gldemo,debugview,audio_pipeline,openvins
+  - offload_vio_device_monado:
+    plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,timewarp_vk.monado,offload_vio.device_rx,offload_vio.device_tx
     env_vars:
       enable_offload: false
       enable_alignment: false
       enable_verbose_errors: false
       enable_pre_sleep: false
+
+# Offload rendering Client/Server.
+# Defaults to ZED for the Jetson, otherwise the offline dataset.
+
+  - offload_rendering_client:
+    plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,tcp_network_backend,offload_rendering_client,timewarp_vk,openwarp_vk,native_renderer
+    env_vars:
+      enable_offload: false
+      enable_alignment: false
+      enable_verbose_errors: false
+      enable_pre_sleep: false
+
+  - offload_rendering_server:
+    plugins: tcp_network_backend,offload_rendering_server
+    env_vars:
+      enable_offload: false
+      enable_alignment: false
+      enable_verbose_errors: false
+      enable_pre_sleep: false
+
+  - offload_rendering_client_jetson:
+    plugins: offload_rendering_client_jetson,native_renderer,tcp_network_backend,timewarp_vk,openwarp_vk,offline_imu,offline_cam,gtsam_integrator,openvins,pose_prediction,pose_lookup,vkdemo,zed
+    env_vars:
+      enable_offload: False
+      enable_alignment: False
+      enable_verbose_errors: False
+      enable_pre_sleep: False
+
+# Offload rendering + VIO Client/Server.
+
+  - offload_rendering_vio_client:
+    plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,tcp_network_backend,offload_rendering_client,timewarp_vk,native_renderer,offload_vio.device_rx,offload_vio.device_tx
+    env_vars:
+      enable_offload: false
+      enable_alignment: false
+      enable_verbose_errors: false
+      enable_pre_sleep: false
+
+  - offload_rendering_vio_server:
+    plugins: tcp_network_backend,offload_rendering_server,openvins,offload_vio.server_rx,offload_vio.server_tx
+    env_vars:
+      enable_offload: false
+      enable_alignment: false
+      enable_verbose_errors: false
+      enable_pre_sleep: false
+
+# Hand Tracking.
 
   - hand_tracking:
     plugins: zed,hand_tracking,hand_tracking.viewer

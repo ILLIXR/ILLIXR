@@ -74,6 +74,7 @@ public:
         // only join if it has been started
         if (thread_.joinable())
             thread_.join();
+        plugin::stop();
     }
 
     /**

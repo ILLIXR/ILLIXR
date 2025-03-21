@@ -42,13 +42,14 @@ pose_lookup_impl::pose_lookup_impl(const phonebook* const pb)
     // Read position data of the first frame
     init_pos_offset_ = sensor_data_.cbegin()->second.position;
 
-    _set_offset(_correct_pose(sensor_data_.begin()->second).orientation);
+    auto newoffset = correct_pose(sensor_data_.begin()->second).orientation;
+    set_offset(newoffset);
 }
 
 fast_pose_type pose_lookup_impl::get_fast_pose() const {
     const switchboard::ptr<const switchboard::event_wrapper<time_point>> estimated_vsync = vsync_estimate_.get_ro_nullable();
     if (estimated_vsync == nullptr) {
-        spdlog::get("illixr")->warn("[pose_lookup] Vsync estimation not valid yet, returning fast_pose for now()");
+        spdlog::get("illixr")->trace("[pose_lookup] Vsync estimation not valid yet, returning fast_pose for now()");
         return get_fast_pose(clock_->now());
     } else {
         return get_fast_pose(**estimated_vsync);
@@ -156,8 +157,7 @@ fast_pose_type pose_lookup_impl::get_fast_pose(time_point time) const {
 
     auto looked_up_pose        = nearest_row->second;
     looked_up_pose.sensor_time = time_point{std::chrono::nanoseconds{nearest_row->first - dataset_first_time_}};
-    return fast_pose_type{
-        .pose = correct_pose(looked_up_pose), .predict_computed_time = clock_->now(), .predict_target_time = time};
+    return fast_pose_type{correct_pose(looked_up_pose), clock_->now(), time};
 }
 
 class pose_lookup_plugin : public plugin {

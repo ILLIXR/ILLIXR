@@ -1,5 +1,5 @@
 # This file was auto generated, take caution if manually editing.
-plugins: fauxpose,gldemo,debugview,audio_pipeline,openvins
+plugins: fauxpose,gldemo,debugview,audio_pipeline
 env_vars:
   enable_offload: false
   enable_alignment: false
