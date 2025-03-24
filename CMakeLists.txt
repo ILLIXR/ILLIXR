@@ -71,7 +71,6 @@ set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-ggdb -O3 -Wall -Wextra -Wno-attributes -Wno
 set(MONADO_RUNTIME_VK "")
 set(MONADO_RUNTIME_GL "")
 set(OPENXR_RUNTIME "")
-set(OPENXR_PLUGINS "")
 
 # set the CMake search path to include the local files
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH})
@@ -222,7 +221,10 @@ foreach(ITEM IN LISTS PLUGIN_LIST)
         string(REPLACE "." "/" ITEM_LOWER_SUB "${ITEM_LOWER}")
         add_subdirectory(plugins/${ITEM_LOWER_SUB})
         if (${ITEM_UPPER})  # this can change when adding the target
-            list(APPEND OPENXR_PLUGINS ${ITEM_LOWER})
+            list(FIND PLUGIN_UNORDERED ${ITEM_LOWER} ITEM_FOUND)
+            if(${ITEM_FOUND} GREATER_EQUAL 0)
+                list(APPEND PLUGIN_UNORDERED ${ITEM_LOWER})
+            endif()
             message("Adding plugins/${ITEM_LOWER}")
         endif()
     endif()
