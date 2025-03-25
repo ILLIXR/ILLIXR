@@ -44,6 +44,16 @@ profiles:
       enable_verbose_errors: false
       enable_pre_sleep: false
 
+# Lighthouse pose tracking with native VK.
+
+  - native_vk_lighthouse:
+    plugins: lighthouse,timewarp_vk,vkdemo,native_renderer
+    env_vars:
+      enable_offload: false
+      enable_alignment: false
+      enable_verbose_errors: false
+      enable_pre_sleep: false
+
 # Procedurally generated movement with native GL.
 
   - fauxpose:

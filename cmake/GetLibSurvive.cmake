@@ -3,6 +3,9 @@ if (NOT survive_FOUND)
     pkg_check_modules(survive QUIET survive)
 endif()
 
+message("INCLUDE ${survive_INCLUDE_DIRS}")
+message("SURVIVE ${survive_LIBRARIES}")
+
 if(NOT survive_FOUND)
     EXTERNALPROJECT_ADD(LibSurvive_ext
                         GIT_REPOSITORY https://github.com/collabora/libsurvive.git
@@ -18,5 +21,5 @@ if(NOT survive_FOUND)
     set(cnmatrix_LIBRARIES cnmatrix)
     set(cnmatrix_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include/cnmatrix ${CMAKE_INSTALL_PREFIX}/include/cnmatrix/redist)
     set(survive_LIBRARIES survive ${cnmatrix_LIBRARIES} ${cnkalman_LIBRARIES})
-    set(survive_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include/libsurvive ${CMAKE_INSTALL_PREFIX}/include/cnmatrix/libsurvive ${cnkalman_INCLUDE_DIRS} ${cnmatrix_INCLUDE_DIRS})
+    set(survive_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include/libsurvive ${CMAKE_INSTALL_PREFIX}/include/libsurvive/redist ${CMAKE_INSTALL_PREFIX}/include/cnmatrix/libsurvive ${cnkalman_INCLUDE_DIRS} ${cnmatrix_INCLUDE_DIRS})
 endif()
