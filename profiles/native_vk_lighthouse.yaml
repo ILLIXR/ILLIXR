@@ -1,7 +1,8 @@
 # This file was auto generated, take caution if manually editing.
-plugins: lighthouse,timewarp_vk,vkdemo,native_renderer
+plugins: pose_prediction,lighthouse,timewarp_vk,vkdemo,native_renderer
 env_vars:
   enable_offload: false
   enable_alignment: false
   enable_verbose_errors: false
   enable_pre_sleep: false
+  illixr_lighthouse: true

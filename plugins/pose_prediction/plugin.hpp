@@ -31,6 +31,7 @@ private:
     switchboard::reader<switchboard::event_wrapper<time_point>>      vsync_estimate_;
     mutable Eigen::Quaternionf                                       offset_{Eigen::Quaternionf::Identity()};
     mutable std::shared_mutex                                        offset_mutex_;
+    const bool                                                       using_lighthouse_;
 };
 
 } // namespace ILLIXR

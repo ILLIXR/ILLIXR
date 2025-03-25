@@ -47,12 +47,13 @@ profiles:
 # Lighthouse pose tracking with native VK.
 
   - native_vk_lighthouse:
-    plugins: lighthouse,timewarp_vk,vkdemo,native_renderer
+    plugins: pose_prediction,lighthouse,timewarp_vk,vkdemo,native_renderer
     env_vars:
       enable_offload: false
       enable_alignment: false
       enable_verbose_errors: false
       enable_pre_sleep: false
+      ILLIXR_LIGHTHOUSE: true
 
 # Procedurally generated movement with native GL.
 
