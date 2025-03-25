@@ -174,7 +174,7 @@ profiles:
       enable_pre_sleep: false
 
   - offload_rendering_client_jetson:
-    plugins: offload_rendering_client_jetson,native_renderer,tcp_network_backend,timewarp_vk,openwarp_vk,lighthouse
+    plugins: offload_rendering_client_jetson,native_renderer,tcp_network_backend,timewarp_vk,openwarp_vk,lighthouse,pose_prediction
     env_vars:
       enable_offload: False
       enable_alignment: False
