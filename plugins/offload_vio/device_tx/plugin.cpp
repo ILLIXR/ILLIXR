@@ -9,7 +9,7 @@
 using namespace ILLIXR;
 using namespace ILLIXR::data_format;
 
-#define USE_COMPRESSION
+// #define USE_COMPRESSION
 
 [[maybe_unused]] offload_writer::offload_writer(const std::string& name, phonebook* pb)
     : threadloop{name, pb}
@@ -111,6 +111,7 @@ void offload_writer::prepare_imu_cam_data(switchboard::ptr<const imu_type> datum
 
         cv::Mat cam_img0 = (cam->at(image::LEFT_EYE)).clone();
         cv::Mat cam_img1 = (cam->at(image::RIGHT_EYE)).clone();
+        int cam_img0_size = cam_img0.rows*cam_img0.cols;
 
         auto* cam_data = new vio_input_proto::CamData();
         cam_data->set_timestamp(cam->time.time_since_epoch().count());

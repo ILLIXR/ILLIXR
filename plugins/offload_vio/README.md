@@ -1,4 +1,4 @@
-# Running ILLIXR With VIO Offloaded
+# offload_vio
 ## Summary
 `offload_vio` implements the functionality of moving VIO (Visual Inertial Odometry) to some server.
 There are four plugins that handle transmission (`_tx`) and reception (`_rx`) of data on the client (`device`) and server (`server`) respectively.
@@ -13,7 +13,7 @@ sudo apt-get install ecal
 sudo apt-get install libprotobuf-dev protobuf-compiler
 ```
 
-Please refer to the README in `tcp_network_backend` for setting the server and client IP address and port number.
+Please refer to the README in `tcp_network_backend` for setting the server and client IP and port number.
 
 The most simple example is running the offloaded setup on one machine with the server running in one terminal
 and the device running in a different terminal. **Each terminal must be running from separate ILLIXR 
