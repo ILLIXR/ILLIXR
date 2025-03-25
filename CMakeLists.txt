@@ -41,11 +41,6 @@ elif(NOT UNIX)
     message(FATAL_ERROR "Unknown operating system")
 endif()
 
-if (CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64" AND EXISTS "/etc/nv_tegra_release")
-    set(ON_JETSON_PLATFORM YES)
-else()
-    set(ON_JETSON_PLATFORM NO)
-endif()
 if(PACKAGE_VERSION_LABEL)
     set(PACKAGE_VERSION "${PACKAGE_VERSION_MAJOR}.${PACKAGE_VERSION_MINOR}.${PACKAGE_VERSION_PATCH}-${PACKAGE_VERSION_LABEL}")
 else()
@@ -66,6 +61,13 @@ add_compile_definitions(VK_ENABLE_BETA_EXTENSIONS)
 set(CMAKE_CXX_FLAGS_DEBUG "-ggdb -Wall -Wextra -rdynamic -Wno-attributes -Wno-unknown-pragmas -fPIC")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG -Wall -Wextra -Wno-attributes -Wno-unknown-pragmas -fPIC")
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-ggdb -O3 -Wall -Wextra -Wno-attributes -Wno-unknown-pragmas -fPIC")
+
+# check for the Jetson platform
+if (CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64" AND EXISTS "/etc/nv_tegra_release")
+    set(ON_JETSON_PLATFORM YES)
+else()
+    set(ON_JETSON_PLATFORM NO)
+endif()
 
 # needed to generate runtime scripts
 set(MONADO_RUNTIME_VK "")
