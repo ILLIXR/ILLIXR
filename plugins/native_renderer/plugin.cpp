@@ -101,7 +101,7 @@ void native_renderer::_p_thread_setup() {
     }
     create_swapchain_framebuffers();
     app_->setup(app_pass_, 0, buffer_pool_);
-    timewarp_->setup(timewarp_pass_, 0, buffer_pool_, true);
+    timewarp_->setup(timewarp_pass_, 0, buffer_pool_, app_->is_external());
 }
 
 void native_renderer::_p_one_iteration() {
