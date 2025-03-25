@@ -99,8 +99,7 @@ void timewarp_vk::initialize() {
 }
 
 void timewarp_vk::setup(VkRenderPass render_pass, uint32_t subpass,
-                        std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> buffer_pool,
-                        bool                                                 input_texture_external_in) {
+                        std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> buffer_pool, bool input_texture_external_in) {
     std::lock_guard<std::mutex> lock{setup_mutex_};
 
     display_provider_ = phonebook_->lookup_impl<vulkan::display_provider>();
@@ -748,8 +747,7 @@ void timewarp_vk::build_timewarp(HMD::hmd_info_t& hmd_info) {
                 distortion_positions_[eye * num_distortion_vertices_ + index].x =
                     (-1.0f + 2 * (static_cast<float>(x) / static_cast<float>(hmd_info.eye_tiles_wide)));
 
-                distortion_positions_[eye * num_distortion_vertices_ + index].y =
-                    (input_texture_external_ ? -1.0f : 1.0f) *
+                distortion_positions_[eye * num_distortion_vertices_ + index].y = (input_texture_external_ ? -1.0f : 1.0f) *
                     (-1.0f +
                      2.0f * (static_cast<float>(hmd_info.eye_tiles_high - y) / static_cast<float>(hmd_info.eye_tiles_high)) *
                          (static_cast<float>(hmd_info.eye_tiles_high * hmd_info.tile_pixels_high) /

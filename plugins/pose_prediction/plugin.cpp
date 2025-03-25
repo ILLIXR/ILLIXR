@@ -17,7 +17,7 @@ pose_prediction_impl::pose_prediction_impl(const phonebook* const pb)
     , true_pose_{switchboard_->get_reader<pose_type>("true_pose")}
     , ground_truth_offset_{switchboard_->get_reader<switchboard::event_wrapper<Eigen::Vector3f>>("ground_truth_offset")}
     , vsync_estimate_{switchboard_->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")}
-    , using_lighthouse_{switchboard_->get_env_bool("ILLIXR_LIGHTHOUSE")} {}
+    , using_lighthouse_{switchboard_->get_env_bool("ILLIXR_LIGHTHOUSE")} { }
 
 // No parameter get_fast_pose() should just predict to the next vsync
 // However, we don't have vsync estimation yet.
@@ -130,7 +130,7 @@ Eigen::Quaternionf pose_prediction_impl::apply_offset(const Eigen::Quaternionf& 
 bool pose_prediction_impl::fast_pose_reliable() const {
     if (using_lighthouse_)
         return true;
-    
+
     return slow_pose_.get_ro_nullable() && imu_raw_.get_ro_nullable();
     /*
       SLAM takes some time to initialize, so initially fast_pose

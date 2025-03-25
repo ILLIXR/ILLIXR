@@ -35,11 +35,12 @@ void lighthouse::process_slow_pose(SurviveObject* so, survive_long_timecode time
 
     // The libsurvive coordinate system must be adjusted.
     auto adjustment = Eigen::Quaternionf{-sqrt(2.0) / 2.0, sqrt(2.0) / 2.0, 0.0, 0.0};
-    auto new_quat = adjustment * quat;
+    auto new_quat   = adjustment * quat;
     new_quat.normalize();
 
     lighthouse_instance->slow_pose_.put(lighthouse_instance->slow_pose_.allocate(
-        lighthouse_instance->clock_->now(), Eigen::Vector3d{pose->Pos[0], pose->Pos[2], -pose->Pos[1]}.cast<float>(), new_quat));
+        lighthouse_instance->clock_->now(), Eigen::Vector3d{pose->Pos[0], pose->Pos[2], -pose->Pos[1]}.cast<float>(),
+        new_quat));
 
     lighthouse_instance->slow_pose_count_++;
 }

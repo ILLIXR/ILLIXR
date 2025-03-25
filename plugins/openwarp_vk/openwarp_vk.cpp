@@ -52,8 +52,7 @@ void openwarp_vk::initialize() {
 }
 
 void openwarp_vk::setup(VkRenderPass render_pass, uint32_t subpass,
-                        std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> buffer_pool,
-                        bool                                                 input_texture_external) {
+                        std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> buffer_pool, bool input_texture_external) {
     std::lock_guard<std::mutex> lock{setup_mutex_};
 
     display_provider_ = phonebook_->lookup_impl<vulkan::display_provider>();
@@ -651,13 +650,12 @@ void openwarp_vk::generate_distortion_data() {
                 distortion_vertices_[eye * num_distortion_vertices_ + index].pos.x =
                     (-1.0f + 2 * (static_cast<float>(x) / static_cast<float>(hmd_info_.eye_tiles_wide)));
 
-                distortion_vertices_[eye * num_distortion_vertices_ + index].pos.y =
-                    (input_texture_external_ ? 1.0f : -1.0f) *
+                distortion_vertices_[eye * num_distortion_vertices_ + index].pos.y = (input_texture_external_ ? 1.0f : -1.0f) *
                     (-1.0f +
                      2.0f * (static_cast<float>(hmd_info_.eye_tiles_high - y) / static_cast<float>(hmd_info_.eye_tiles_high)) *
                          (static_cast<float>(hmd_info_.eye_tiles_high * hmd_info_.tile_pixels_high) /
                           static_cast<float>(hmd_info_.display_pixels_high)));
-                          
+
                 distortion_vertices_[eye * num_distortion_vertices_ + index].pos.z = 0.0f;
 
                 // Use the previously-calculated distort_coords to set the UVs on the distortion mesh

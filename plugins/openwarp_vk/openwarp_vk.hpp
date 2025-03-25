@@ -146,8 +146,8 @@ private:
     std::shared_ptr<vulkan::display_provider> display_provider_ = nullptr;
     std::mutex                                setup_mutex_;
 
-    bool initialized_                      = false;
-    bool input_texture_external_           = false;
+    bool initialized_            = false;
+    bool input_texture_external_ = false;
 
     bool using_godot_         = false;
     bool offloaded_rendering_ = false;
