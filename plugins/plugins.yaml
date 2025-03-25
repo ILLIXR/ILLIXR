@@ -163,7 +163,7 @@ profiles:
       enable_pre_sleep: false
 
   - offload_rendering_client_jetson:
-    plugins: offload_rendering_client_jetson,native_renderer,tcp_network_backend,timewarp_vk,openwarp_vk,offline_imu,offline_cam,gtsam_integrator,openvins,pose_prediction,pose_lookup,vkdemo,zed
+    plugins: offload_rendering_client_jetson,native_renderer,tcp_network_backend,timewarp_vk,openwarp_vk,lighthouse
     env_vars:
       enable_offload: False
       enable_alignment: False
