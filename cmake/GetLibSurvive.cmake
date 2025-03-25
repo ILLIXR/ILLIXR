@@ -3,9 +3,6 @@ if (NOT survive_FOUND)
     pkg_check_modules(survive QUIET survive)
 endif()
 
-message("INCLUDE ${survive_INCLUDE_DIRS}")
-message("SURVIVE ${survive_LIBRARIES}")
-
 if(NOT survive_FOUND)
     EXTERNALPROJECT_ADD(LibSurvive_ext
                         GIT_REPOSITORY https://github.com/collabora/libsurvive.git
