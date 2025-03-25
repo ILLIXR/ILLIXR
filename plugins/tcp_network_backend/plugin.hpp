@@ -35,7 +35,7 @@ private:
     int         server_port_;
     std::string client_ip_;
     int         client_port_;
-    int is_client_;
+    int         is_client_;
 
     std::vector<std::string>                               networked_topics_;
     std::unordered_map<std::string, network::topic_config> networked_topics_configs_;
