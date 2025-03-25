@@ -114,16 +114,6 @@
       "dependencies": []
     },
     {
-      "name": "offload_rendering_client_jetson",
-      "cmake_flag": "USE_OFFLOAD_RENDERING_CLIENT=ON",
-      "dependencies": [
-        "libdrm",
-        "EGL",
-        "GLESv2",
-        "Vulkan"
-      ]
-    },
-    {
       "name": "offload_rendering_client",
       "cmake_flag": "USE_OFFLOAD_RENDERING_CLIENT=ON",
       "dependencies": [

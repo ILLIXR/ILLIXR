@@ -138,21 +138,10 @@ dep_map:
     - pose_prediction
   plugin: offload_rendering_client
 - dependencies:
-  - needs: compressed_frame
-    provided_by:
-    - offload_rendering_server
-  - needs: pose_prediction
-    provided_by:
-    - faux_pose
-    - pose_lookup
-    - pose_prediction
-  plugin: offload_rendering_client_jetson
-- dependencies:
   - needs: fast_pose_type
     provided_by:
     - lighthouse
     - offload_rendering_client
-    - offload_rendering_client_jetson
   plugin: offload_rendering_server
 - dependencies:
   - needs: binocular_cam_type

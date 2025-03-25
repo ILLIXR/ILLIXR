@@ -1,7 +1,0 @@
-# This file was auto generated, take caution if manually editing.
-plugins: offload_rendering_client_jetson,native_renderer,tcp_network_backend,timewarp_vk,openwarp_vk,lighthouse,pose_prediction
-env_vars:
-  ENABLE_OFFLOAD: False
-  ENABLE_ALIGNMENT: False
-  ENABLE_VERBOSE_ERRORS: False
-  ENABLE_PRE_SLEEP: False
