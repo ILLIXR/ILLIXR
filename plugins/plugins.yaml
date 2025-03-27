@@ -18,7 +18,7 @@ profiles:
       enable_verbose_errors: False
       enable_pre_sleep: False
 
-# Looked-up poses with native GL/VK or Monado.
+# Looked-up poses with native VK or Monado.
 
   - native_vk_lookup:
     plugins: pose_lookup,timewarp_vk,vkdemo,native_renderer
@@ -76,8 +76,9 @@ profiles:
       enable_verbose_errors: false
       enable_pre_sleep: false
 
-# Native TimeWarp/OpenWarp GL/VK.
+# Native TimeWarp/OpenWarp VK.
 # Defaults to offline datasets and OpenVINS.
+
 
   - native_timewarp_vk:
     plugins: offline_imu,offline_cam,gtsam_integrator,openvins,pose_prediction,timewarp_vk,vkdemo,native_renderer,debugview
@@ -86,6 +87,14 @@ profiles:
       enable_alignment: false
       enable_verbose_errors: false
       enable_pre_sleep: false
+
+  - native_vk_slam:
+      plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,ground_truth_slam,timewarp_vk,vkdemo,native_renderer,debugview,offload_data,orb_slam3
+      env_vars:
+        enable_offload: false
+        enable_alignment: false
+        enable_verbose_errors: false
+        enable_pre_sleep: false
 
   - native_openwarp_vk:
     plugins: offline_imu,offline_cam,gtsam_integrator,openvins,pose_prediction,openwarp_vk,vkdemo,native_renderer,debugview
