@@ -131,7 +131,7 @@ profiles:
 # Defaults to offline datasets, native GL, and OpenVINS, besides the Monado version.
 
   - offload_vio_device:
-    plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,ground_truth_slam,gldemo,debugview,timewarp_gl,offload_vio.device_rx,offload_vio.device_tx,audio_pipeline
+    plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,ground_truth_slam,timewarp_vk,vkdemo,native_renderer,debugview,tcp_network_backend,offload_vio.device_rx,offload_vio.device_tx,audio_pipeline
     env_vars:
       enable_offload: False
       enable_alignment: False
@@ -139,7 +139,7 @@ profiles:
       enable_pre_sleep: False
 
   - offload_vio_server:
-    plugins: offload_vio.server_rx,offload_vio.server_tx
+    plugins: tcp_network_backend,offload_vio.server_rx,offload_vio.server_tx,openvins
     env_vars:
       enable_offload: False
       enable_alignment: False
@@ -147,7 +147,7 @@ profiles:
       enable_pre_sleep: False
 
   - offload_vio_device_monado:
-    plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,timewarp_vk.monado,offload_vio.device_rx,offload_vio.device_tx
+    plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,timewarp_vk.monado,tcp_network_backend,offload_vio.device_rx,offload_vio.device_tx
     env_vars:
       enable_offload: false
       enable_alignment: false
@@ -157,7 +157,7 @@ profiles:
 # Offload rendering Client/Server.
 
   - offload_rendering_client:
-    plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,tcp_network_backend,offload_rendering_client,timewarp_vk,openwarp_vk,native_renderer,openvins
+    plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,tcp_network_backend,offload_rendering_client,timewarp_vk,native_renderer,openvins
     env_vars:
       enable_offload: false
       enable_alignment: false
