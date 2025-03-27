@@ -29,6 +29,9 @@ inline void normalize(T& obj, const float width, const float height) {
     normalize<T>(obj, width, height, 1.);
 }
 
+/*
+ * Denormalize the coordinates, using the input size as reference
+ */
 template<typename T>
 inline void denormalize(T& obj, const float width, const float height, const float depth,
                         units::measurement_unit unit_ = units::PIXEL) {

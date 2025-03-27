@@ -1,6 +1,9 @@
 #pragma once
 
 namespace ILLIXR::data_format::coordinates {
+/**
+ * Enumeration of the possible reference frames
+ */
 enum frame {
     IMAGE,
     LEFT_HANDED_Y_UP,

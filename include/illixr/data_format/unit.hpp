@@ -4,8 +4,14 @@
 #include <string>
 
 namespace ILLIXR::data_format::units {
+/**
+ * Enumeration for eyes
+ */
 enum eyes : int { LEFT_EYE = 0, RIGHT_EYE = 1 };
 
+/**
+ * Enumeration for units of distance
+ */
 enum measurement_unit : int {
     MILLIMETER = 0,
     CENTIMETER = 1,
@@ -17,10 +23,19 @@ enum measurement_unit : int {
     UNSET      = 7
 };
 
+/**
+ * Mapping of `measurement_unit` to a string representation.
+ */
 const std::map<measurement_unit, const std::string> unit_str{{MILLIMETER, "mm"}, {CENTIMETER, "cm"}, {METER, "m"},
                                                              {INCH, "in"},       {FOOT, "ft"},       {PERCENT, "%"},
                                                              {PIXEL, "px"},      {UNSET, "unitless"}};
-constexpr int                                       last_convertable_unit = FOOT;
+
+constexpr int last_convertable_unit = FOOT;
+/**
+ * Array of unit conversions, using `measurement_unit` as indices. The first index is the "from" unit and the second
+ * index is the "to" unit. For example `conversion_factor[MILLIMETER][INCH]` would yield 0.039, the conversion
+ * factor for millimeters to inches.
+ */
 // mm          cm          m            ft                 in
 constexpr float conversion_factor[5][5] = {
     {1., 0.1, .001, 1. / (25.4 * 12.), 1. / 25.4},       // mm
@@ -30,6 +45,13 @@ constexpr float conversion_factor[5][5] = {
     {25.4, 2.54, .0254, 1. / 12., 1.}                    // in
 };
 
+/**
+ * Convenience function for converting measurements.
+ * @param from The `measurement_unit` to convert from
+ * @param to The `measurement_unit` to convert to
+ * @param val The value to convert
+ * @return The converted value
+ */
 inline float convert(const int from, const int to, float val) {
     return conversion_factor[from][to] * val;
 }

@@ -1,4 +1,4 @@
-## Reporting a Bug/Issue
+# Reporting a Bug/Issue
 
 If you have come across a bug, or have an issue building or running ILLIXR, please try the following:
 

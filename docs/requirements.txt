@@ -1,0 +1,9 @@
+pygments>=2.15
+mkdocs>=1.5
+mkdocs-get-deps
+mkdocs-include-markdown-plugin
+mkdocs-material>=9.4
+mkdocs-material-extensions
+mkdoxy>=1.2
+mkdocs-glightbox
+pymdown-extensions
