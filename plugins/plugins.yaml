@@ -11,7 +11,7 @@ profiles:
       enable_pre_sleep: False
 
   - headless:
-    plugins: offline_imu,offline_cam,gtsam_integrator,openvins,pose_prediction,ground_truth_slam,gldemo,audio_pipeline
+    plugins: offline_imu,offline_cam,gtsam_integrator,openvins,pose_prediction,ground_truth_slam,timewarp_vk,vkdemo,native_renderer,audio_pipeline
     env_vars:
       enable_offload: False
       enable_alignment: False
@@ -50,7 +50,7 @@ profiles:
 # Procedurally generated movement with native GL.
 
   - fauxpose:
-    plugins: fauxpose,gldemo,debugview,audio_pipeline
+    plugins: fauxpose,timewarp_vk,vkdemo,native_renderer,debugview,audio_pipeline
     env_vars:
       enable_offload: false
       enable_alignment: false
