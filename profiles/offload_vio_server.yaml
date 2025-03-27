@@ -1,5 +1,5 @@
 # This file was auto generated, take caution if manually editing.
-plugins: offload_vio.server_rx,offload_vio.server_tx
+plugins: tcp_network_backend,offload_vio.server_rx,offload_vio.server_tx,openvins
 env_vars:
   ENABLE_OFFLOAD: False
   ENABLE_ALIGNMENT: False

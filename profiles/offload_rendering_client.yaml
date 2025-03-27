@@ -1,5 +1,5 @@
 # This file was auto generated, take caution if manually editing.
-plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,tcp_network_backend,offload_rendering_client,timewarp_vk,openwarp_vk,native_renderer,openvins
+plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,tcp_network_backend,offload_rendering_client,timewarp_vk,native_renderer,openvins
 env_vars:
   ENABLE_OFFLOAD: false
   ENABLE_ALIGNMENT: false
