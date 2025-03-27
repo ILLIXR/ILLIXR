@@ -39,4 +39,4 @@ H.264 codec is supported for compressing the camera images to save bandwidth. To
 
 
 [//]: # (- References -)
-[1]: https://docs.nvidia.com/metropolis/deepstream/dev-guide/text/DS_Quickstart.html#dgpu-setup-for-ubuntu
+[1]: https://docs.nvidia.com/metropolis/deepstream/dev-guide/text/DS_Installation.html#dgpu-setup-for-ubuntu

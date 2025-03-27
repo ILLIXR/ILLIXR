@@ -24,7 +24,6 @@ else()
     message(STATUS "Looking for monado_gl - not found\n      will be built from source")
 
     # get dependencies
-    get_external_for_plugin(Vulkan)
 
     find_package(gflags REQUIRED)
     find_package(JPEG REQUIRED)

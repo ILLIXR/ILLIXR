@@ -22,7 +22,6 @@ if (MONADO_VK_FOUND AND MONADO_VK_OXR_LIB_FOUND AND MONADO_LIBRARY_FOUND)
 else ()
     message(STATUS "Looking for monado_vk - not found\n      will be built from source")
 
-    get_external_for_plugin(Vulkan)
 
     set(MONADO_CMAKE_ARGS "")
 

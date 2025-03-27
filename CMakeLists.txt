@@ -193,6 +193,8 @@ pkg_check_modules(gl REQUIRED gl)
 
 find_package(Eigen3 REQUIRED)
 
+get_external(Vulkan)
+
 #############
 # plugin specific dependencies that are used by several plugins
 #############

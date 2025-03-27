@@ -25,7 +25,7 @@ This page details the structure of ILLIXR's [_plugins_][41] and how they interac
     -   Synchronously *reads* `imu` on `imu` topic.
     -   Asynchronously *reads* buffered `binocular_cam_type` on `cam` topic.
 
--   [`gldemo`][5]:
+-   [`gldemo`][5][^1]:
     Renders a static scene (into left and right [_eye buffers_][34]) given the [_pose_][37]
     from `pose_prediction`.
 
@@ -85,7 +85,7 @@ This page details the structure of ILLIXR's [_plugins_][41] and how they interac
     -   Asynchronously *reads* `time_type` on `vsync_estimate` topic.
         This tells `pose_predict` what time to estimate for.
 
--   [`timewarp_gl`][6]:
+-   [`timewarp_gl`][6][^1]:
     [Asynchronous reprojection][35] of the [_eye buffers_][34].
     The timewarp ends just after [_vsync_][34], so it can deduce when the next vsync will be.
 
@@ -246,6 +246,9 @@ Some plugins require other plugins to be loaded in order to work. The table belo
 See [Getting Started][31] for more information on adding plugins to a [_profile_][40] file.
 
 [//]: # (- References -)
+
+[^1]: ILLIXR has switched to a Vulkan back end, thus OpenGL based plugins may not work on every system.
+
 
 [1]:    https://github.com/ILLIXR/ILLIXR/tree/master/offline_imu
 [2]:    https://github.com/ILLIXR/ILLIXR/tree/master/offline_cam

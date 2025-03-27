@@ -5,7 +5,6 @@ project(openwarp_vk)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-get_external_for_plugin(Vulkan)
 find_package(glm REQUIRED)
 
 if(NOT PLUGIN_NAME)

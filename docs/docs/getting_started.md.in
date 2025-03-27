@@ -98,7 +98,7 @@ Common CMake command line arguments (always prepend with a `-D`):
 -  ***YAML_FILE***
    The [_profile_][23] file of [plugins][22] to build and install. The default is None, meaning plugins should be specified individually on the command line.
 -  ***USE_&lt;PLUGIN_NAME&gt;=ON***
-   Build the specifically named [plugin][22] (e.g `-DUSE_TIMEWARP_GL=ON` to build the timewarp_gl [plugin][22]). Any number of [plugins][22] can be specified on the command line in this fashion.
+   Build the specifically named [plugin][22] (e.g `-DUSE_TIMEWARP_VK=ON` to build the timewarp_vk [plugin][22]). Any number of [plugins][22] can be specified on the command line in this fashion.
 
 An alternate to specifying the plugins as command line arguments is to create a [_YAML_][2] file which specifies the
 plugins to build. Using `-DYAML_FILE=&lt;FILE_NAME&gt;` as the command line argument specifying the [_YAML_][2] file to use. Note: You may need to specify the full path to the YAML_FILE.
@@ -133,8 +133,8 @@ Regarding parameters for the binary, the following priority will be used:
 ### Profile file format
 An example of a [_YAML_][2] [profile][23] file is
 ```yaml
-plugins: timewarp_gl,gldemo,ground_truth_slam,offload_vio
-run: timewarp_gl,gldemo,ground_truth_slam,offload_vio.device_rx
+plugins: timewarp_vk,vkdemo,ground_truth_slam,offload_vio
+run: timewarp_vk,vkdemo,ground_truth_slam,offload_vio.device_rx
 visualizers: openvins
 build_type: Debug
 install_prefix: /home/user/illixr
@@ -182,7 +182,7 @@ main.dbg.exe --yaml=my.yaml --DATA_SOURCE=/home/my/data --PROCESS_DATA
 This will set env environment variables `DATA_SOURCE` to `/home/my/data` and `PROCESS_DATA` to `True`. For yaml files, any items not in the expected set will be considered to be environment variables. For example:
 
 ```yaml
-plugins: fauxpose,gldemo,debugview,audio_pipeline
+plugins: fauxpose,timewarp_vk,vkdemo,debugview,audio_pipeline
 enable_offload: false
 env_vars:
   DATA_SOURCE: /home/my/data

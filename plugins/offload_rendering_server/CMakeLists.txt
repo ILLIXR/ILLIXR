@@ -10,8 +10,6 @@ set(PLUGIN_SOURCE "${CMAKE_BINARY_DIR}/plugins/offload_rendering_server/plugin.c
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-get_external_for_plugin(Vulkan)
-
 # ffmpeg
 get_external_for_plugin(ILLIXR_FFmpeg)
 

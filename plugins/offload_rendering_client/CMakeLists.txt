@@ -7,8 +7,6 @@ set(PLUGIN_NAME plugin.offload_rendering_client${ILLIXR_BUILD_SUFFIX})
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-get_external_for_plugin(Vulkan)
-
 # ffmpeg
 get_external_for_plugin(ILLIXR_FFmpeg)
 

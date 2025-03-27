@@ -9,7 +9,7 @@ In order to support OpenXR, we modified [Monado][20], an existing, open-source i
     of the standard.
 
 -   When running ILLIXR without Monado, the ILLIXR runtime is the entry-point.
-    Phonebook and switchboard are initialized and plugins are loaded, among which is the gldemo app.
+    Phonebook and switchboard are initialized and plugins are loaded, among which is the vkdemo app.
 
 -   When running from Monado, however, as mandated by OpenXR specifications,
         the application is the entry point.
@@ -52,7 +52,7 @@ The library exports its two major functionalities:
 The driver starts to load the runtime by loading the shared library into the current
     (application's) address space and calls the Switchboard and Phonebook initialization.
 Then, it calls the plugin loading for each ILLIXR plugin
-    (except [`gldemo`][28], which is replaced by the OpenXR app).
+    (except [`vkdemo`][28], which is replaced by the OpenXR app).
 Finally, it calls a special plugin loading which takes a function address instead of a file path
     to load a Translation Plugin into ILLIXR as the application.
 If the plugin implements a long-running computation, it may block the main ILLIXR thread
@@ -77,7 +77,7 @@ From the view of Monado, the translation plugin is the destination of all reques
     from the application,
     to Monado's state trackers,
     to the xdev interface who is responsible for servicing the request.
-From the view of ILLIXR, the translation plugin behaves the same as the [`gldemo` application][28]:
+From the view of ILLIXR, the translation plugin behaves the same as the [`vkdemo` application][28]:
     reading pose and submitting frames.
 
 For implementation details regarding the representation of poses and frames in Monado

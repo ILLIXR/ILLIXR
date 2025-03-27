@@ -6,8 +6,6 @@ set(CMAKE_PREFIX_PATH ${CMAKE_INSTALL_PREFIX}/lib/cmake;${CMAKE_INSTALL_PREFIX}/
 
 set(ENV{PKG_CONFIG_PATH} "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig:${CMAKE_INSTALL_PREFIX}/share/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig")
 
-get_external(Vulkan)
-
 pkg_check_modules(libavcodec_illixr libavcodec_illixr)
 pkg_check_modules(libavdevice_illixr libavdevice_illixr)
 pkg_check_modules(libavformat_illixr libavformat_illixr)
