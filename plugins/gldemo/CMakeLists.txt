@@ -13,7 +13,7 @@ add_library(${PLUGIN_NAME} SHARED plugin.cpp
             ${CMAKE_SOURCE_DIR}/include/illixr/gl_util/obj.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/global_module_defs.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/math_util.hpp
-            ${CMAKE_SOURCE_DIR}/include/illixr/pose_prediction.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/pose_prediction.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/shader_util.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/threadloop.hpp

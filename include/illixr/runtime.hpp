@@ -3,7 +3,6 @@
 #include "illixr/phonebook.hpp"
 #include "illixr/switchboard.hpp"
 
-#include <GL/glx.h>
 #include <string>
 #include <vector>
 
@@ -33,8 +32,15 @@ public:
         _stop();
     }
 
-    virtual std::shared_ptr<switchboard> get_switchboard() = 0;
-    virtual ~runtime()                                     = default;
+    std::shared_ptr<switchboard> get_switchboard() {
+        return switchboard_;
+    }
+
+    virtual ~runtime() = default;
+
+protected:
+    bool                         enable_monado_ = false;
+    std::shared_ptr<switchboard> switchboard_;
 };
 
 extern "C" runtime* runtime_factory();

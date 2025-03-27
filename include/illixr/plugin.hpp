@@ -12,12 +12,24 @@
 #include <typeinfo>
 #include <utility>
 
+#ifndef DOUBLE_INCLUDE
+extern "C" {
+bool needs_monado() {
+    #ifdef MONADO_REQUIRED
+    return true;
+    #else
+    return false;
+    #endif
+}
+}
+#endif
+
 namespace ILLIXR {
 
 using plugin_id_t = std::size_t;
 
 /*
- * This gets included, but it is functionally 'private'. Hence, the double-underscores.
+ * This gets included, but it is functionally 'private'.
  */
 const record_header _plugin_start_header{
     "plugin_name",
@@ -68,13 +80,16 @@ public:
      *
      * Concrete plugins are responsible for initializing their specific logger and sinks.
      */
-    virtual void stop() { }
+    virtual void stop() {
+        if (plugin_logger_)
+            plugin_logger_->flush();
+    }
 
     [[maybe_unused]] [[nodiscard]] std::string get_name() const noexcept {
         return name_;
     }
 
-    void spdlogger(const char* log_level) {
+    auto spdlogger(const char* log_level) {
         if (!log_level) {
 #ifdef NDEBUG
             log_level = "warn";
@@ -87,9 +102,27 @@ public:
         auto                          console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
         sinks.push_back(file_sink);
         sinks.push_back(console_sink);
-        auto plugin_logger = std::make_shared<spdlog::logger>(name_, begin(sinks), end(sinks));
-        plugin_logger->set_level(spdlog::level::from_str(log_level));
-        spdlog::register_logger(plugin_logger);
+        if (spdlog::get(name_) == nullptr) {
+            plugin_logger_ = std::make_shared<spdlog::logger>(name_, begin(sinks), end(sinks));
+            plugin_logger_->set_level(spdlog::level::from_str(log_level));
+            spdlog::register_logger(plugin_logger_);
+        } else {
+            plugin_logger_ = spdlog::get(name_);
+        }
+        return plugin_logger_;
+    }
+
+    [[maybe_unused]] void spd_add_file_sink(const std::string& file_name, const std::string& extension,
+                                            const std::string& log_level) {
+        if (!plugin_logger_) {
+            throw std::runtime_error("Logger not found");
+        }
+
+        auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>("logs/" + file_name + "." + extension, true);
+        file_sink->set_level(spdlog::level::from_str(log_level));
+        plugin_logger_->sinks().push_back(file_sink);
+        size_t sink_count = plugin_logger_->sinks().size();
+        plugin_logger_->sinks()[sink_count - 1]->set_pattern("%v");
     }
 
 protected:
@@ -98,6 +131,7 @@ protected:
     const std::shared_ptr<record_logger> record_logger_;
     const std::shared_ptr<gen_guid>      gen_guid_;
     const std::size_t                    id_;
+    std::shared_ptr<spdlog::logger>      plugin_logger_;
 };
 
 #define PLUGIN_MAIN(PLUGIN_CLASS)                           \
@@ -105,4 +139,5 @@ protected:
         auto* obj = new PLUGIN_CLASS{#PLUGIN_CLASS, pb};    \
         return obj;                                         \
     }
+
 } // namespace ILLIXR

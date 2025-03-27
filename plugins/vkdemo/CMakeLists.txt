@@ -7,14 +7,16 @@ set(PLUGIN_NAME plugin.vkdemo${ILLIXR_BUILD_SUFFIX})
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(FullVulkan REQUIRED)
-if(USE_MONADO)
-    get_external_for_plugin(Monado_vk)
-endif()
+
 file(GLOB_RECURSE GLSL_SOURCE_FILES
         "shaders/*.frag"
         "shaders/*.vert"
         )
+
+set(VKDEMO_DEP_STR "")
+if(Vulkan_EXTERNAL)
+    set(VKDEMO_DEP_STR ${Vulkan_DEP_STR})
+endif()
 
 foreach (GLSL ${GLSL_SOURCE_FILES})
     get_filename_component(FILE_NAME ${GLSL} NAME)
@@ -23,7 +25,7 @@ foreach (GLSL ${GLSL_SOURCE_FILES})
             OUTPUT ${SPIRV}
             COMMAND ${CMAKE_COMMAND} -E make_directory "${PROJECT_BINARY_DIR}/shaders/"
             COMMAND ${Vulkan_GLSLANG_VALIDATOR_EXECUTABLE} ${GLSL} -V -o ${SPIRV}
-            DEPENDS ${GLSL})
+            DEPENDS ${GLSL} ${VKDEMO_DEP_STR})
     list(APPEND SPIRV_BINARY_FILES ${SPIRV})
 endforeach (GLSL)
 
@@ -34,17 +36,21 @@ add_custom_target(
 
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
             plugin.hpp
-            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/misc.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/global_module_defs.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/math_util.hpp
-            ${CMAKE_SOURCE_DIR}/include/illixr/pose_prediction.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/pose_prediction.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/phonebook.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/threadloop.hpp
-            ${CMAKE_SOURCE_DIR}/include/illixr/vk_util/display_sink.hpp
-            ${CMAKE_SOURCE_DIR}/include/illixr/vk_util/render_pass.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/vk/display_provider.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/vk/render_pass.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/vk/vulkan_utils.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/gl_util/lib/tiny_obj_loader.h
             ${CMAKE_SOURCE_DIR}/include/illixr/gl_util/lib/stb_image.h
 )
+if(Vulkan_EXTERNAL)
+    add_dependencies(${PLUGIN_NAME} ${Vulkan_DEP_STR})
+endif()
 
 add_dependencies(${PLUGIN_NAME} Vkdemo_Shaders)
 set_target_properties(${PLUGIN_NAME} PROPERTIES OUTPUT_NAME ${PLUGIN_NAME})

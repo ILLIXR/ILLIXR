@@ -12,7 +12,6 @@
         "22, 24"
       ]
     }
-
   ],
   "plugins": [
     {
@@ -36,26 +35,9 @@
       "dependencies": []
     },
     {
-      "name": "display_vk",
-      "cmake_flag": "USE_DISPLAY_VK=ON",
-      "dependencies": [
-        "Vulkan",
-        "glfw3",
-        "glm",
-        "OpenXR",
-        "libusb",
-        "libuvc",
-        "udev",
-        "JPEG",
-        "PNG",
-        "TIFF",
-        "wayland-server",
-        "x11-xcb",
-        "xcb-glx",
-        "xcb-randr",
-        "xkbcommon",
-        "SDL2"
-      ]
+      "name": "fauxpose",
+      "cmake_flag": "USE_FAUXPOSE=ON",
+      "dependencies": []
     },
     {
       "name": "gldemo",
@@ -76,6 +58,7 @@
       "name": "hand_tracking",
       "cmake_flag": "USE_HAND_TRACKING=ON",
       "dependencies": [
+        "fmt",
         "libcpuinfo",
         "libgles",
         "fp16"
@@ -97,7 +80,6 @@
       "name": "native_renderer",
       "cmake_flag": "USE_NATIVE_RENDERER=ON",
       "dependencies": [
-        "Vulkan",
         "glfw3",
         "glm",
         "OpenXR",
@@ -118,8 +100,7 @@
     {
       "name": "offline_cam",
       "cmake_flag": "USE_OFFLINE_CAM=ON",
-      "dependencies": [
-      ]
+      "dependencies": []
     },
     {
       "name": "offline_imu",
@@ -130,6 +111,106 @@
       "name": "offload_data",
       "cmake_flag": "USE_OFFLOAD_DATA=ON",
       "dependencies": []
+    },
+    {
+      "name": "offload_rendering_client",
+      "cmake_flag": "USE_OFFLOAD_RENDERING_CLIENT=ON",
+      "dependencies": [
+        "libaom",
+        "cuda-llvm",
+        "ccache",
+        "libdav1d",
+        "fontconfig",
+        "libfreetype",
+        "libfribidi",
+        "gnutls",
+        "libjack",
+        "libass",
+        "libbluray",
+        "libbs2b",
+        "libdrm",
+        "libgsm",
+        "libiec61883",
+        "libmodplug",
+        "libmp3lame",
+        "libopenjpeg",
+        "libopenmpt",
+        "libopus",
+        "libpulse",
+        "librsvg",
+        "ladspa",
+        "libssh",
+        "libv4l2",
+        "libvorbis",
+        "libvpl",
+        "libvpx",
+        "libwebp",
+        "libxml2",
+        "opencl",
+        "opengl",
+        "libxcb",
+        "xcb-shm",
+        "libzimg",
+        "libsoxr",
+        "libspeex",
+        "libtheora",
+        "libx264",
+        "libx265",
+        "libgmp",
+        "libmp3lame",
+        "yasm",
+        "cuda-cudart"
+      ]
+    },
+    {
+      "name": "offload_rendering_server",
+      "cmake_flag": "USE_OFFLOAD_RENDERING_SERVER=ON",
+      "dependencies": [
+        "libaom",
+        "cuda-llvm",
+        "ccache",
+        "libdav1d",
+        "fontconfig",
+        "libfreetype",
+        "libfribidi",
+        "gnutls",
+        "libjack",
+        "libass",
+        "libbluray",
+        "libbs2b",
+        "libdrm",
+        "libgsm",
+        "libiec61883",
+        "libmodplug",
+        "libmp3lame",
+        "libopenjpeg",
+        "libopenmpt",
+        "libopus",
+        "libpulse",
+        "ladspa",
+        "librsvg",
+        "libssh",
+        "libv4l2",
+        "libvorbis",
+        "libvpl",
+        "libvpx",
+        "libwebp",
+        "libxcb",
+        "xcb-shm",
+        "libxml2",
+        "libzimg",
+        "opencl",
+        "opengl",
+        "libsoxr",
+        "libspeex",
+        "libtheora",
+        "libx264",
+        "libx265",
+        "libgmp",
+        "libmp3lame",
+        "yasm",
+        "cuda-cudart"
+      ]
     },
     {
       "name": "offload_vio.device_rx",
@@ -143,6 +224,7 @@
       "name": "offload_vio.device_tx",
       "cmake_flag": "USE_OFFLOAD_VIO.DEVICE_TX=ON",
       "dependencies": [
+        "deepstream",
         "glib",
         "gstreamer",
         "ecal",
@@ -161,6 +243,7 @@
       "name": "offload_vio.server_rx",
       "cmake_flag": "USE_OFFLOAD_VIO.SERVER_RX=ON",
       "dependencies": [
+        "deepstream",
         "glib",
         "gstreamer",
         "ecal",
@@ -180,11 +263,18 @@
       "dependencies": []
     },
     {
+      "name": "openwarp_vk",
+      "cmake_flag": "OSE_OPENWARP_VK=ON",
+      "dependencies": [
+        "glm",
+        "glslang"
+      ]
+    },
+    {
       "name": "orb_slam3",
       "cmake_flag": "USE_ORB_SLAM3=ON",
       "dependencies": [
-        "fmt",
-        "patch"
+        "fmt"
       ]
     },
     {
@@ -225,9 +315,15 @@
       "dependencies": []
     },
     {
+      "name": "tcp_network_backend",
+      "cmake_flag": "USE_TCP_NETWORK_BACKEND=ON",
+      "dependencies": []
+    },
+    {
       "name": "timewarp_gl",
       "cmake_flag": "USE_TIMEWARP_GL=ON",
       "dependencies": [
+        "ccache",
         "glslang",
         "gflags",
         "JPEG",
@@ -240,7 +336,6 @@
         "xcb-randr",
         "xkbcommon",
         "OpenXR",
-        "Vulkan",
         "libusb",
         "libuvc",
         "SDL2"
@@ -250,7 +345,8 @@
       "name": "timewarp_vk",
       "cmake_flag": "USE_TIMEWARP_VK=ON",
       "dependencies": [
-        "Vulkan",
+        "ccache",
+        "OpenCV",
         "glfw3",
         "glm",
         "OpenXR",
@@ -272,7 +368,8 @@
       "name": "vkdemo",
       "cmake_flag": "USE_VKDEMO=ON",
       "dependencies": [
-        "Vulkan",
+        "ccache",
+        "OpenCV",
         "glfw3",
         "glm",
         "OpenXR",
@@ -307,6 +404,70 @@
   ],
   "dependencies": [
     {
+      "ccache": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "ccache",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "ccache",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "cuda-llvm": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "cuda-nvcc",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "cuda-nvcc",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "cuda-cudart": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "cuda-cudart-dev",
+            "postnotes": "",
+            "notes": "The cuda-rt package is version named, you will need to determine which is available for your system."
+          },
+          "Fedora": {
+            "pkg": "cuda-cudart-devel",
+            "postnotes": "",
+            "notes": "The cuda-rt package is version named, you will need to determine which is available for your system."
+          }
+        }
+      }
+    },
+    {
+      "deepstream": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "",
+            "postnotes": "",
+            "notes": "DeepStream is not available from a repo. Pleas see <a href=\"https://docs.nvidia.com/metropolis/deepstream/dev-guide/text/DS_Installation.html#dgpu-setup-for-ubuntu\">here</a> for details."
+          },
+          "Fedora": {
+            "pkg": "",
+            "postnotes": "",
+            "notes": "DeepStream, needed by the offload_vio plugins is not available for Fedora."
+          }
+        }
+      }
+    },
+    {
       "ecal": {
         "pkg": {
           "Ubuntu": {
@@ -332,6 +493,22 @@
           },
           "Fedora": {
             "pkg": "fmt-devel",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "fontconfig": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "fontconfig",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "fontconfig",
             "postnotes": "",
             "notes": ""
           }
@@ -451,6 +628,22 @@
       }
     },
     {
+      "gnutls": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "libgnutls28-dev",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "libgnutls28-devel",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
       "gstreamer": {
         "pkg": {
           "Ubuntu": {
@@ -483,18 +676,306 @@
       }
     },
     {
+      "ladspa": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "ladspa-sdk",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "ladspa-sdk",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "libaom": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "libaom-dev",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "libaom-dev",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "libuvc": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "libuvc-dev",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "",
+            "postnotes": "",
+            "notes": "Fedora does not supply libuvc from its repositories. You will need to install it from <a href=\"https://github.com/libuvc/libuvc\">https://github.com/libuvc/libuvc</a>."
+          }
+        }
+      }
+    },
+    {
+      "libass": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "libass-dev",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "libass-devel",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "libbluray": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "libbluray-dev",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "libbluray-devel",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "libbs2b": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "libbs2b-dev",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "libbs2b-dev",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "libdav1d": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "libdav1d-dev",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "libdav1d-dev",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "libdrm": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "libdrm-dev",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "drm-devel",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "libfreetype": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "libfreetype-dev",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "libfreetype-dev",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "libfribidi": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "libfribidi-dev",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "libfribidi-dev",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "libgmp": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "libgmp-dev",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "libgmp-devel",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "libgsm": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "libgsm1-dev",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "libgsm1-dev",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "libiec61883": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "libiec61883-dev",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "libiec61883-dev",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "libjack": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "libjack-dev",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "libjack-dev",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "libmodplug": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "ibmodplug-dev",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "ibmodplug-dev",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "libmp3lame": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "libmp3lame-dev",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "libmp3lame-dev",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "libopenjpeg": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "libopenjp2-dev",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "libopenjp2-dev",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "libopenmpt": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "libopenmpt-dev",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "libopenmpt-dev",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
       "libcpuinfo": {
         "pkg": {
           "Ubuntu": {
             "pkg": "libcpuinfo-dev",
             "postnotes": "",
             "notes": ""
+          },
+          "Fedora": {
+            "pkg": "cpuinfo-devel",
+            "postnotes": "",
+            "notes": ""
           }
-        },
-        "Fedora": {
-          "pkg": "cpuinfo-devel",
-          "postnotes": "",
-          "notes": ""
         }
       }
     },
@@ -505,12 +986,12 @@
             "pkg": "libgles-dev",
             "postnotes": "",
             "notes": ""
+          },
+          "Fedora": {
+            "pkg": "libglvnd-devel",
+            "postnotes": "",
+            "notes": ""
           }
-        },
-        "Fedora": {
-          "pkg": "libglvnd-devel",
-          "postnotes": "",
-          "notes": ""
         }
       }
     },
@@ -524,6 +1005,150 @@
           },
           "Fedora": {
             "pkg": "openni-devel",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "libopus": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "libopus-dev",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "libopus-dev",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "libpulse": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "libpulse-dev",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "libpulse-dev",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "librsvg": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "librsvg2-dev",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "librsvg2-dev",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "libsoxr": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "libsoxr-dev",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "libsoxr-dev",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "libspeex": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "libspeex-dev",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "libspeex-dev",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "libsrt": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "libsrt-openssl-dev",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "libsrt-openssl-dev",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "libssh": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "libssh-dev",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "libssh-dev",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "libsvtav1": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "libsvtav1enc-dev",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "libsvtav1enc-dev",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "libtheora": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "libtheora-dev",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "libtheora-dev",
             "postnotes": "",
             "notes": ""
           }
@@ -556,6 +1181,198 @@
           },
           "Fedora": {
             "pkg": "libuvc-devel",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "libv4l2": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "libv4l-dev",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "libv4l-dev",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "libvorbis": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "libvorbis-dev",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "libvorbis-dev",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "libvpl": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "libvpl-dev",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "libvpl-dev",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "libvpx": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "libvpx-dev",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "libvpx-dev",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "libwebp": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "libwebp-dev",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "libwebp-dev",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "libxml2": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "libxml2-dev",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "libxml2-dev",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "libxcb": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "libxcb1-dev",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "libxcb1-dev",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "libx264": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "libx264-dev",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "",
+            "postnotes": "libx264-devel",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "libx265": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "libx265-dev",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "libx265-devel",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "libzimg": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "libzimg-dev",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "libzimg-dev",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "opencl": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "ocl-icd-opencl-dev",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "ocl-icd-opencl-devel",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "opengl": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "libopengl-dev",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "libopengl-dev",
             "postnotes": "",
             "notes": ""
           }
@@ -739,22 +1556,6 @@
       }
     },
     {
-      "Vulkan": {
-        "pkg": {
-          "Ubuntu": {
-            "pkg": "libvulkan-dev vulkan-validationlayers",
-            "postnotes": "",
-            "notes": ""
-          },
-          "Fedora": {
-            "pkg": "vulkan-loader-devel vulkan-validation-layers",
-            "postnotes": "",
-            "notes": ""
-          }
-        }
-      }
-    },
-    {
       "wayland-server": {
         "pkg": {
           "Ubuntu": {
@@ -819,6 +1620,22 @@
       }
     },
     {
+      "xcb-shm": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "libxcb-shm0-dev",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
       "xkbcommon": {
         "pkg": {
           "Ubuntu": {
@@ -828,6 +1645,22 @@
           },
           "Fedora": {
             "pkg": "libxkbcommon-devel",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "yasm": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "yasm",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "yasm",
             "postnotes": "",
             "notes": ""
           }
@@ -851,5 +1684,7 @@
       }
     }
   ],
-  "profiles": [@PROFILES@]
+  "profiles": [
+    @PROFILES@
+  ]
 }

@@ -2,14 +2,16 @@
 
 #include "illixr/dynamic_lib.hpp"
 #include "illixr/error_util.hpp"
-#include "illixr/extended_window.hpp"
 #include "illixr/global_module_defs.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/plugin.hpp"
 #include "illixr/record_logger.hpp"
 #include "illixr/stoplight.hpp"
 #include "illixr/switchboard.hpp"
+#include "illixr/vk/display_provider.hpp"
+#include "illixr/vk/vk_extension_request.hpp"
 #include "sqlite_record_logger.hpp"
+#include "vulkan_display.hpp"
 
 #include <algorithm>
 #include <memory>
@@ -20,6 +22,7 @@
 #include <vector>
 
 using namespace ILLIXR;
+typedef bool (*n_monado_t)();
 
 void spdlogger(const std::string& name, const char* log_level) {
     if (!log_level) {
@@ -41,15 +44,13 @@ class runtime_impl : public runtime {
 public:
     explicit runtime_impl() {
         spdlogger("illixr", std::getenv("ILLIXR_LOG_LEVEL")); // can't use switchboard interface here
+        phonebook_.register_impl<relative_clock>(std::make_shared<relative_clock>());
         phonebook_.register_impl<record_logger>(std::make_shared<sqlite_record_logger>());
         phonebook_.register_impl<gen_guid>(std::make_shared<gen_guid>());
         phonebook_.register_impl<switchboard>(std::make_shared<switchboard>(&phonebook_));
-#if !defined(ILLIXR_MONADO) && !defined(ILLIXR_VULKAN) // the extended window is only needed for our native OpenGL backend
-        phonebook_.register_impl<xlib_gl_extended_window>(
-            std::make_shared<xlib_gl_extended_window>(display_params::width_pixels, display_params::height_pixels, nullptr));
-#endif
+        switchboard_   = phonebook_.lookup_impl<switchboard>();
+        enable_monado_ = false;
         phonebook_.register_impl<stoplight>(std::make_shared<stoplight>());
-        phonebook_.register_impl<relative_clock>(std::make_shared<relative_clock>());
     }
 
     void load_so(const std::vector<std::string>& so_paths) override {
@@ -59,13 +60,23 @@ public:
             RAC_ERRNO_MSG("runtime_impl before creating the dynamic library");
             return dynamic_lib::create(so_path);
         });
-
+        for (auto& i : libraries_) {
+            enable_monado_ = enable_monado_ || i.get<n_monado_t>("needs_monado")();
+        }
         RAC_ERRNO_MSG("runtime_impl after creating the dynamic libraries");
 
         std::vector<plugin_factory> plugin_factories;
         std::transform(libraries_.cbegin(), libraries_.cend(), std::back_inserter(plugin_factories), [](const auto& lib) {
             return lib.template get<plugin* (*) (phonebook*)>("this_plugin_factory");
         });
+
+        if (!enable_monado_) {
+            // get env var ILLIXR_DISPLAY_MODE
+            std::string display_mode =
+                switchboard_->get_env_char("ILLIXR_DISPLAY_MODE") ? switchboard_->get_env_char("ILLIXR_DISPLAY_MODE") : "glfw";
+            if (display_mode != "none")
+                phonebook_.register_impl<vulkan::display_provider>(std::make_shared<display_vk>(&phonebook_));
+        }
 
         RAC_ERRNO_MSG("runtime_impl after generating plugin factories");
 
@@ -76,6 +87,29 @@ public:
                        });
 
         phonebook_.lookup_impl<relative_clock>()->start();
+
+        if (!enable_monado_) {
+            const std::string display_mode =
+                switchboard_->get_env_char("ILLIXR_DISPLAY_MODE") ? switchboard_->get_env_char("ILLIXR_DISPLAY_MODE") : "glfw";
+            if (display_mode != "none") {
+                std::set<const char*> instance_extensions;
+                std::set<const char*> device_extensions;
+
+                std::for_each(plugins_.cbegin(), plugins_.cend(), [&](const auto& plugin) {
+                    auto requester = std::dynamic_pointer_cast<ILLIXR::vulkan::vk_extension_request>(plugin);
+                    if (requester != nullptr) {
+                        auto requested_instance_extensions = requester->get_required_instance_extensions();
+                        instance_extensions.insert(requested_instance_extensions.begin(), requested_instance_extensions.end());
+
+                        auto requested_device_extensions = requester->get_required_devices_extensions();
+                        device_extensions.insert(requested_device_extensions.begin(), requested_device_extensions.end());
+                    }
+                });
+
+                auto display = std::static_pointer_cast<display_vk>(phonebook_.lookup_impl<vulkan::display_provider>());
+                display->start(instance_extensions, device_extensions);
+            }
+        }
 
         std::for_each(plugins_.cbegin(), plugins_.cend(), [](const auto& plugin) {
             // Well-behaved plugins_ (any derived from threadloop) start there threads here, and then wait on the Stoplight.
@@ -113,7 +147,7 @@ public:
         phonebook_.lookup_impl<switchboard>()->stop();
         // After this point, Switchboard's internal thread-workers which power synchronous callbacks are stopped and joined.
 
-        for (const std::unique_ptr<plugin>& plugin : plugins_) {
+        for (const std::shared_ptr<plugin>& plugin : plugins_) {
             plugin->stop();
             // Each plugin gets joined in its stop
         }
@@ -142,15 +176,11 @@ public:
          */
     }
 
-    std::shared_ptr<switchboard> get_switchboard() override {
-        return phonebook_.lookup_impl<switchboard>();
-    }
-
 private:
     // I have to keep the dynamic libraries in scope until the program is dead
     std::vector<dynamic_lib>             libraries_;
     phonebook                            phonebook_;
-    std::vector<std::unique_ptr<plugin>> plugins_;
+    std::vector<std::shared_ptr<plugin>> plugins_;
 };
 
 extern "C" [[maybe_unused]] runtime* runtime_factory() {

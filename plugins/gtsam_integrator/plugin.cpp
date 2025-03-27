@@ -14,6 +14,8 @@ using namespace ILLIXR::data_format;
 // IMU sample time to live in seconds
 constexpr duration IMU_TTL{std::chrono::seconds{5}};
 
+using ImuBias = gtsam::imuBias::ConstantBias;
+
 [[maybe_unused]] gtsam_integrator::gtsam_integrator(const std::string& name, phonebook* pb)
     : plugin{name, pb}
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
@@ -64,7 +66,6 @@ gtsam_integrator::pim_object::pim_object(const imu_int_t& imu_int_input)
 
 gtsam_integrator::pim_object::~pim_object() {
     assert(pim_ != nullptr && "pim_ should not be null");
-
     /// Note: Deliberately leak pim_ => Removes SEGV read during destruction
     /// delete pim_;
 }
@@ -75,7 +76,7 @@ void gtsam_integrator::pim_object::reset_integration_and_set_bias(const imu_int_
     imu_bias_ = bias_t{imu_int_input.bias_acc, imu_int_input.bias_gyro};
     pim_->resetIntegrationAndSetBias(imu_bias_);
 
-    navstate_lkf_ = nav_t{gtsam::Pose3{gtsam::Rot3{imu_int_input.quat}, imu_int_input.position}, imu_int_input.velocity};
+    nav_state_lkf_ = nav_t{gtsam::Pose3{gtsam::Rot3{imu_int_input.quat}, imu_int_input.position}, imu_int_input.velocity};
 }
 
 void gtsam_integrator::pim_object::integrate_measurement(const imu_t& imu_input, const imu_t& imu_input_next) noexcept {
@@ -96,7 +97,7 @@ void gtsam_integrator::pim_object::integrate_measurement(const imu_t& imu_input,
 
 [[nodiscard]] nav_t gtsam_integrator::pim_object::predict() const noexcept {
     assert(pim_ != nullptr && "pim_ should not be null");
-    return pim_->predict(navstate_lkf_, imu_bias_);
+    return pim_->predict(nav_state_lkf_, imu_bias_);
 }
 
 // Remove IMU values older than 'IMU_TTL' from the imu buffer
@@ -158,9 +159,7 @@ void gtsam_integrator::propagate_imu_values(time_point real_time) {
     ImuBias prev_bias = pim_obj_->bias_hat();
     ImuBias bias      = pim_obj_->bias_hat();
 
-#ifndef NDEBUG
     spdlog::get(name_)->debug("Integrating over {} IMU samples", prop_data.size());
-#endif
 
     for (std::size_t i = 0; i < prop_data.size() - 1; i++) {
         pim_obj_->integrate_measurement(prop_data[i], prop_data[i + 1]);
@@ -172,11 +171,9 @@ void gtsam_integrator::propagate_imu_values(time_point real_time) {
     gtsam::NavState navstate_k = pim_obj_->predict();
     gtsam::Pose3    out_pose   = navstate_k.pose();
 
-#ifndef NDEBUG
     spdlog::get(name_)->debug("Base Position (x, y, z) = {}, {}, {}", input_values->position(0), input_values->position(1),
                               input_values->position(2));
     spdlog::get(name_)->debug("New Position (x, y, z) = {}, {}, {}", out_pose.x(), out_pose.y(), out_pose.z());
-#endif
 
     auto                        seconds_since_epoch = std::chrono::duration<double>(real_time.time_since_epoch()).count();
     auto                        original_quaternion = out_pose.rotation().toQuaternion();
@@ -203,11 +200,12 @@ void gtsam_integrator::propagate_imu_values(time_point real_time) {
 
     prev_euler_angles_ = std::move(rotation_angles);
 
-    __attribute__((unused)) auto new_quaternion = Eigen::AngleAxisd(filtered_angles(0, 0), Eigen::Vector3d::UnitX()) *
+    [[maybe_unused]] auto new_quaternion = Eigen::AngleAxisd(filtered_angles(0, 0), Eigen::Vector3d::UnitX()) *
         Eigen::AngleAxisd(filtered_angles(1, 0), Eigen::Vector3d::UnitY()) *
         Eigen::AngleAxisd(filtered_angles(2, 0), Eigen::Vector3d::UnitZ());
 
-    auto filtered_pos = filters_[4](out_pose.translation().array(), seconds_since_epoch).matrix();
+    Eigen::MatrixWrapper<Eigen::Array<double, 3, 1, 0, 3, 1>> filtered_pos{
+        filters_[4](out_pose.translation().array(), seconds_since_epoch).matrix()};
 
     imu_raw_.put(imu_raw_.allocate<imu_raw_type>(
         imu_raw_type{prev_bias.gyroscope(), prev_bias.accelerometer(), bias.gyroscope(), bias.accelerometer(),
