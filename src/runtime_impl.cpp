@@ -22,7 +22,6 @@
 #include <vector>
 
 using namespace ILLIXR;
-typedef bool (*n_vulkan_t)();
 typedef bool (*n_monado_t)();
 
 void spdlogger(const std::string& name, const char* log_level) {

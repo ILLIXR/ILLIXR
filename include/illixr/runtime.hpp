@@ -39,7 +39,6 @@ public:
     virtual ~runtime() = default;
 
 protected:
-    bool                         enable_vulkan_ = false;
     bool                         enable_monado_ = false;
     std::shared_ptr<switchboard> switchboard_;
 };
