@@ -65,16 +65,8 @@ profiles:
       enable_verbose_errors: false
       enable_pre_sleep: false
 
-# Monado with TimeWarp/OpenWarp GL/VK.
+# Monado with TimeWarp/OpenWarp VK.
 # Defaults to offline datasets and OpenVINS for VIO.
-
-  - monado_timewarp_gl:
-    plugins: offline_imu,offline_cam,gtsam_integrator,openvins,pose_prediction,timewarp_gl.monado
-    env_vars:
-      enable_offload: false
-      enable_alignment: false
-      enable_verbose_errors: false
-      enable_pre_sleep: false
 
   - monado_timewarp_vk:
     plugins: offline_imu,offline_cam,gtsam_integrator,openvins,pose_prediction,timewarp_vk.monado

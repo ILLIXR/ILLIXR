@@ -70,8 +70,6 @@ else()
 endif()
 
 # needed to generate runtime scripts
-set(MONADO_RUNTIME_VK "")
-set(MONADO_RUNTIME_GL "")
 set(OPENXR_RUNTIME "")
 
 # set the CMake search path to include the local files
