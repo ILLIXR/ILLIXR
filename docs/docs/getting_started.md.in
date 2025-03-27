@@ -34,7 +34,8 @@ required only for specific plugins.
 
 <table id="operating_system" style="border-spacing: 20px; border: 1px solid black;"></table>
 
-ILLIXR may compile with other versions of the above operating systems, but some of the necessary prerequisite packages are not supplied by the OS repos and will need to be compiled by hand. You should be able to use the package and cmake commands for other versions of the same OS (other than the missing packages) to compile ILLIXR. RHEL is not supported at this time as many of the prerequisite packages are not natively available.
+ILLIXR may compile with other versions of the above operating systems, but some of the necessary prerequisite packages are not supplied by the OS repos and will need to be compiled by hand. You should be able to use the package and cmake commands for other versions of the same OS (other than the missing packages) to compile ILLIXR. RHEL is not supported at this time as many of the prerequisite packages are not natively available. You will also need to have a C++ compiler
+installed (gcc, clang, etc.) as well as a generator (make, ninja, etc.) and CMake 3.22 or newer (installation is os dependent).
 
 #### Pick the ILLIXR plugins you want to use
 
@@ -96,7 +97,7 @@ Common CMake command line arguments (always prepend with a `-D`):
 -  ***YAML_FILE***
    The [_profile_][G23] file of [plugins][G22] to build and install. The default is None, meaning plugins should be specified individually on the command line.
 -  ***USE_&lt;PLUGIN_NAME&gt;=ON***
-   Build the specifically named [plugin][G22] (e.g `-DUSE_TIMEWARP_GL=ON` to build the timewarp_gl [plugin][G22]). Any number of [plugins][G22] can be specified on the command line in this fashion.
+   Build the specifically named [plugin][G22] (e.g `-DUSE_TIMEWARP_VK=ON` to build the timewarp_vk [plugin][G22]). Any number of [plugins][G22] can be specified on the command line in this fashion.
 -  ***BUILD_DOCS***
    Set to `ON` to enable building the documentation.
 
@@ -137,10 +138,14 @@ Regarding parameters for the binary, the following priority will be used:
 2. If the parameter has a value in the yaml file this value will only be used if it is not specified on the command line (second priority)
 3. If the parameter has a value as an environment variable this value will only be used if it is not specified on the command line nor yaml file
 
+Please refer to the [display backend][I12] for instructions on setting display-related environment variables.
+
+For specific usage instructions, refer to the README files of the respective plugins.
+
 ### Profile file format
 An example of a [_YAML_][G12] [profile][G23] file is
 ```yaml
-plugins: timewarp_gl,gldemo,ground_truth_slam,offload_vio
+plugins: timewarp_vk,vkdemo,ground_truth_slam,offload_vio
 build_type: Debug
 install_prefix: /home/user/illixr
 env_vars:
@@ -188,7 +193,7 @@ main.dbg.exe --yaml=my.yaml --DATA_SOURCE=/home/my/data --PROCESS_DATA
 This will set env environment variables `DATA_SOURCE` to `/home/my/data` and `PROCESS_DATA` to `True`. For yaml files, any items not in the expected set will be considered to be environment variables. For example:
 
 ```yaml
-plugins: fauxpose,gldemo,debugview,audio_pipeline
+plugins: fauxpose,timewarp_vk,vkdemo,debugview,audio_pipeline
 enable_offload: false
 env_vars:
   DATA_SOURCE: /home/my/data
@@ -584,3 +589,5 @@ If you want to add your own plugin, see [Writing Your Plugin][I11].
 [I10]:   illixr_plugins.md
 
 [I11]:   working_with/writing_your_plugin.md
+
+[I12]:   working_with/display_backend.md

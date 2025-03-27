@@ -5,8 +5,8 @@ force developers to write _their whole application_ specifically for ILLIXR. As 
 interface XR runtimes, such as [_OpenXR_][G11], so one application can work on several runtimes (including ours). In
 order to support OpenXR, we modified [_Monado_][G10], an existing, open-source implementation of the standard.
 
-- When running ILLIXR without Monado, the ILLIXR runtime is the entry-point. Phonebook and switchboard are initialized
-  and plugins are loaded, among which is the gldemo app.
+-   When running ILLIXR without Monado, the ILLIXR runtime is the entry-point.
+    Phonebook and switchboard are initialized and plugins are loaded, among which is the vkdemo app.
 
 - When running from Monado, however, as mandated by OpenXR specifications, the application is the entry point. As a
   result, the ILLIXR runtime system is loaded at a later point as a shared library. This page documents the changes to
@@ -38,11 +38,23 @@ loading [_plugins_][G13].
 
 The driver starts to load the runtime by loading the shared library into the current (application's) address space and
 calls the Switchboard and Phonebook initialization. Then, it calls the plugin loading for each ILLIXR plugin (except 
-[`gldemo`][P10], which is replaced by the OpenXR app). Finally, it calls a special plugin loading which takes a function
+[`vkdeom`][P10], which is replaced by the OpenXR app). Finally, it calls a special plugin loading which takes a function
 address instead of a file path to load a Translation Plugin into ILLIXR as the application. If the plugin implements a
 long-running computation, it may block the main ILLIXR thread which drives the entire application. To remedy this, a
 plugin should implement long-running processing in its own thread. This way, the driver will be able to reacquire
 control and return to Monado and the application efficiently.
+The driver starts to load the runtime by loading the shared library into the current
+    (application's) address space and calls the Switchboard and Phonebook initialization.
+Then, it calls the plugin loading for each ILLIXR plugin
+    (except [`vkdemo`][28], which is replaced by the OpenXR app).
+Finally, it calls a special plugin loading which takes a function address instead of a file path
+    to load a Translation Plugin into ILLIXR as the application.
+If the plugin implements a long-running computation, it may block the main ILLIXR thread
+    which drives the entire application.
+To remedy this, a plugin should implement long-running processing in its own thread.
+This way, the driver will be able to reacquire control and return to Monado
+    and the application efficiently.
+
 
 ## Translation Plugin
 
@@ -51,10 +63,10 @@ between [_Monado_][G10] and ILLIXR. It might be confusing to see that this plugi
 part of Monado while at the same time also part of ILLIXR as a plugin. However, Monado and ILLIXR are running in
 different threads in the same address space. The translation plugin is the interface of these two parallel systems.
 
-The translation plugin handles two types of events at the moment: [_pose_][G19] requests and [_frame_][G19] submissions.
+The translation plugin handles two types of events at the moment: [_pose_][G20] requests and [_frame_][G19] submissions.
 From the view of Monado, the translation plugin is the destination of all requests: from the application, to Monado's
 state trackers, to the xdev interface who is responsible for servicing the request. From the view of ILLIXR, the
-translation plugin behaves the same as the [`gldemo` application][P10]: reading pose and submitting frames.
+translation plugin behaves the same as the [`vkdemo` application][P10]: reading pose and submitting frames.
 
 For implementation details regarding the representation of poses and frames in Monado and in ILLIXR, please see
 ILLIXR's [Monado Integration Dataflow][10].
@@ -78,10 +90,12 @@ ILLIXR's [Monado Integration Dataflow][10].
 
 [G19]:   ../glossary.md#framebuffer
 
+[G20]:   ../glossary.md#pose
+
 
 [//]: # (- plugins -)
 
-[P10]:   ../illixr_plugins.md#gldemo
+[P10]:   ../illixr_services.md#vkdemo
 
 
 [//]: # (- internal -)

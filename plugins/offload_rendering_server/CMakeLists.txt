@@ -10,8 +10,6 @@ set(PLUGIN_SOURCE "${CMAKE_BINARY_DIR}/plugins/offload_rendering_server/plugin.c
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-get_external_for_plugin(Vulkan)
-
 # ffmpeg
 get_external_for_plugin(ILLIXR_FFmpeg)
 
@@ -23,6 +21,7 @@ add_library(${PLUGIN_NAME} SHARED plugin.cpp
             offload_rendering_server.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/data_format/pose_prediction.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/data_format/serializable_data.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/frame.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/phonebook.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/threadloop.hpp
@@ -31,7 +30,7 @@ add_library(${PLUGIN_NAME} SHARED plugin.cpp
             ${CMAKE_SOURCE_DIR}/include/illixr/vk/render_pass.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/vk/vulkan_utils.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/vk/vk_extension_request.hpp
-            $<TARGET_OBJECTS:illixr_serializable_data>
+            ${CMAKE_SOURCE_DIR}/utils/serializable_data.cpp
 )
 
 target_compile_definitions(${PLUGIN_NAME} PRIVATE MONADO_REQUIRED)

@@ -1,7 +1,7 @@
 # This file was auto generated, take caution if manually editing.
-plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,ground_truth_slam,gldemo,debugview,timewarp_gl,offload_vio.device_rx,offload_vio.device_tx
+plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,ground_truth_slam,timewarp_vk,vkdemo,native_renderer,debugview,tcp_network_backend,offload_vio.device_rx,offload_vio.device_tx
 env_vars:
-  enable_offload: False
-  enable_alignment: False
-  enable_verbose_errors: False
-  enable_pre_sleep: False
+  ENABLE_OFFLOAD: False
+  ENABLE_ALIGNMENT: False
+  ENABLE_VERBOSE_ERRORS: False
+  ENABLE_PRE_SLEEP: False

@@ -4,14 +4,8 @@
 [![ILLIXR CI](https://github.com/ILLIXR/ILLIXR/actions/workflows/ci.yaml/badge.svg)](https://github.com/ILLIXR/ILLIXR/actions/workflows/ci.yaml)
 [![Discord](https://img.shields.io/discord/830812443189444698?logo=discord&logoColor=white&label=Discord)][E47]
 
-<a href="https://youtu.be/675L1etdTMg">
-    <img
-        alt="ILLIXR Simple Demo"
-        src="docs/docs/images/offload_vio.png"
-        style="width: 600px"
-        class="center"
-    >
-</a>
+<iframe width="400" height="225" src="https://www.youtube.com/embed/VyOShOfHt48" title="Demo of ILLIXR running locally" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
 
 # Overview
 

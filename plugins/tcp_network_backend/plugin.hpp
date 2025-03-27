@@ -31,10 +31,11 @@ private:
     std::atomic<bool>            ready_       = false;
     network::TCPSocket*          peer_socket_ = nullptr;
 
-    std::string self_ip_   = "0.0.0.0";
-    int         self_port_ = 22222;
-    std::string peer_ip_;
-    int         peer_port_ = 22222;
+    std::string server_ip_;
+    int         server_port_;
+    std::string client_ip_;
+    int         client_port_;
+    int         is_client_;
 
     std::vector<std::string>                               networked_topics_;
     std::unordered_map<std::string, network::topic_config> networked_topics_configs_;

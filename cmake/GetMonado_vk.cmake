@@ -22,7 +22,6 @@ if (MONADO_VK_FOUND AND MONADO_VK_OXR_LIB_FOUND AND MONADO_LIBRARY_FOUND)
 else ()
     message(STATUS "Looking for monado_vk - not found\n      will be built from source")
 
-    get_external_for_plugin(Vulkan)
 
     ExternalProject_Add(MonadoVK
                         GIT_REPOSITORY https://github.com/ILLIXR/monado_vulkan_integration.git   # Git repo for source code
@@ -39,4 +38,4 @@ else ()
     set(Monado_vk_EXTERNAL Yes)
     set(Monado_vk_DEP_STR Monado_VK)
 endif ()
-set(MONADO_RUNTIME_vk "${CMAKE_INSTALL_PREFIX}/share/openxr/1/openxr_monado_vk.json" PARENT_SCOPE)
+set(MONADO_RUNTIME "${CMAKE_INSTALL_PREFIX}/share/openxr/1/openxr_monado_vk.json" PARENT_SCOPE)

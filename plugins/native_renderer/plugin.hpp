@@ -1,9 +1,5 @@
 #pragma once
 
-#include <functional>
-#include <stack>
-
-#define VULKAN_REQUIRED
 #include "illixr/data_format/pose_prediction.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/switchboard.hpp"
@@ -11,6 +7,9 @@
 #include "illixr/vk/display_provider.hpp"
 #include "illixr/vk/render_pass.hpp"
 #include "illixr/vk/vulkan_utils.hpp"
+
+#include <functional>
+#include <stack>
 
 namespace ILLIXR {
 class native_renderer : public threadloop {

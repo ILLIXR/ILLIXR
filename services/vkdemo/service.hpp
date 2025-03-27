@@ -1,15 +1,14 @@
 #pragma once
 
-#include <functional>
-#include <stack>
-
-#define VULKAN_REQUIRED
 #include "illixr/data_format/pose_prediction.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
 #include "illixr/vk/display_provider.hpp"
 #include "illixr/vk/render_pass.hpp"
+
+#include <functional>
+#include <stack>
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE

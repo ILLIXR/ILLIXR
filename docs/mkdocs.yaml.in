@@ -115,7 +115,6 @@ nav:
           - 'ILLIXR Under Virtualization': working_with/virtualization.md
           - 'Using ILLIXR with Cameras': working_with/using_cameras.md
           - 'Debugging Tips': working_with/debugging_illixr.md
-          - 'Docker Images': working_with/docker.md
       - 'Contributing to ILLIXR':
           - contributing/index.md
           - 'Code of Conduct': contributing/code_of_conduct.md

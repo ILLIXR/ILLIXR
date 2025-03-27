@@ -7,7 +7,7 @@ set(PLUGIN_NAME plugin.vkdemo${ILLIXR_BUILD_SUFFIX})
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-get_external_for_plugin(Vulkan)
+
 file(GLOB_RECURSE GLSL_SOURCE_FILES
         "shaders/*.frag"
         "shaders/*.vert"

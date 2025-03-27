@@ -7,8 +7,6 @@ set(PLUGIN_NAME plugin.native_renderer${ILLIXR_BUILD_SUFFIX})
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-get_external_for_plugin(Vulkan)
-
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
             plugin.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/global_module_defs.hpp

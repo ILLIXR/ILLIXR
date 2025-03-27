@@ -41,7 +41,7 @@ Topic details:
 
 &nbsp;&nbsp;**Details**&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C3]
 
-## gldemo
+## gldemo[^1]
 
 Renders a static scene (into left and right [_eye buffers_][34]) given the [_pose_][37]
 from [`pose_prediction`][57].
@@ -358,7 +358,7 @@ Provides network communications over TCP.
 
 **Details**&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C27]
 
-## timewarp_gl
+## timewarp_gl [^1]
 
 [Asynchronous reprojection][35] of the [_eye buffers_][34].
 The timewarp ends just after [_vsync_][34], so it can deduce when the next vsync will be.
@@ -456,6 +456,10 @@ interdependencies.
 | vkdemo          | display_sink    | display_vk                              |
 
 See [Getting Started][31] for more information on adding plugins to a [_profile_][40] file.
+
+
+[^1]: ILLIXR has switched to a Vulkan back end, thus OpenGL based plugins may not work on every system.
+
 
 [//]: # (- References -)
 

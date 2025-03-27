@@ -1,8 +1,8 @@
 # This file was auto generated, take caution if manually editing.
 plugins: offline_imu,offline_cam,gtsam_integrator,openvins,pose_prediction,ground_truth_slam,vkdemo,timewarp_vk,native_renderer,debugview
 env_vars:
-  enable_offload: False
-  enable_alignment: False
-  enable_verbose_errors: False
-  enable_pre_sleep: False
-  duration: 15
+  ENABLE_OFFLOAD: False
+  ENABLE_ALIGNMENT: False
+  ENABLE_VERBOSE_ERRORS: False
+  ENABLE_PRE_SLEEP: False
+  DURATION: 15

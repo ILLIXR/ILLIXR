@@ -81,7 +81,6 @@
       "cmake_flag": "USE_NATIVE_RENDERER=ON",
       "dependencies": [
         "ccache",
-        "Vulkan",
         "glfw3",
         "glm",
         "OpenXR",
@@ -113,16 +112,6 @@
       "name": "offload_data",
       "cmake_flag": "USE_OFFLOAD_DATA=ON",
       "dependencies": []
-    },
-    {
-      "name": "offload_rendering_client_jetson",
-      "cmake_flag": "USE_OFFLOAD_RENDERING_CLIENT=ON",
-      "dependencies": [
-        "libdrm",
-        "EGL",
-        "libgles",
-        "Vulkan"
-      ]
     },
     {
       "name": "offload_rendering_client",
@@ -236,6 +225,7 @@
       "name": "offload_vio.device_tx",
       "cmake_flag": "USE_OFFLOAD_VIO.DEVICE_TX=ON",
       "dependencies": [
+        "deepstream",
         "glib",
         "gstreamer",
         "ecal",
@@ -254,6 +244,7 @@
       "name": "offload_vio.server_rx",
       "cmake_flag": "USE_OFFLOAD_VIO.SERVER_RX=ON",
       "dependencies": [
+        "deepstream",
         "glib",
         "gstreamer",
         "ecal",
@@ -276,7 +267,6 @@
       "name": "openwarp_vk",
       "cmake_flag": "USE_OPENWARP_VK=ON",
       "dependencies": [
-        "Vulkan",
         "glm",
         "glslang"
       ]
@@ -347,7 +337,6 @@
         "xcb-randr",
         "xkbcommon",
         "OpenXR",
-        "Vulkan",
         "libusb",
         "libuvc",
         "SDL2"
@@ -358,7 +347,6 @@
       "cmake_flag": "USE_TIMEWARP_VK=ON",
       "dependencies": [
         "ccache",
-        "Vulkan",
         "glfw3",
         "glm",
         "OpenXR",
@@ -381,7 +369,6 @@
       "cmake_flag": "USE_VKDEMO=ON",
       "dependencies": [
         "ccache",
-        "Vulkan",
         "glfw3",
         "glm",
         "glslang",
@@ -465,6 +452,22 @@
       }
     },
     {
+      "deepstream": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "",
+            "postnotes": "",
+            "notes": "DeepStream is not available from a repo. Pleas see <a href=\"https://docs.nvidia.com/metropolis/deepstream/dev-guide/text/DS_Installation.html#dgpu-setup-for-ubuntu\">here</a> for details."
+          },
+          "Fedora": {
+            "pkg": "",
+            "postnotes": "",
+            "notes": "DeepStream, needed by the offload_vio plugins is not available for Fedora."
+          }
+        }
+      }
+    },
+    {
       "ecal": {
         "pkg": {
           "Ubuntu": {
@@ -474,22 +477,6 @@
           },
           "Fedora": {
             "pkg": "graphviz hdf5-devel libcurl-devel qwt-qt5-devel qt5-qtbase-devel libyaml-devel zlib-devel openssl-devel",
-            "postnotes": "",
-            "notes": ""
-          }
-        }
-      }
-    },
-    {
-      "EGL": {
-        "pkg": {
-          "Ubuntu": {
-            "pkg": "libegl-dev",
-            "postnotes": "",
-            "notes": ""
-          },
-          "Fedora": {
-            "pkg": "egl-devel",
             "postnotes": "",
             "notes": ""
           }
@@ -1514,22 +1501,6 @@
           },
           "Fedora": {
             "pkg": "systemd-udev systemd-devel",
-            "postnotes": "",
-            "notes": ""
-          }
-        }
-      }
-    },
-    {
-      "Vulkan": {
-        "pkg": {
-          "Ubuntu": {
-            "pkg": "libvulkan-dev vulkan-validationlayers",
-            "postnotes": "",
-            "notes": ""
-          },
-          "Fedora": {
-            "pkg": "vulkan-loader-devel vulkan-validation-layers",
             "postnotes": "",
             "notes": ""
           }
