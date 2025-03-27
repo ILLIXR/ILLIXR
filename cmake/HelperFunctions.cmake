@@ -1,4 +1,4 @@
-set(GPL_PLUGINS "openvins")
+set(GPL_PLUGINS "orb_slam3;openvins;offload_rendering_server;offload_rendering_client")
 set(LGPL_PLUGINS "audio_pipeline")
 
 macro(check_gpl varname)
