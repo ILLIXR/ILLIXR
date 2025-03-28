@@ -24,7 +24,7 @@ dep_map:
     - rk4_integrator
   - needs: pose_prediction
     provided_by:
-    - faux_pose
+    - fauxpose
     - pose_lookup
     - pose_prediction
   - needs: pose_type
@@ -44,7 +44,7 @@ dep_map:
 - dependencies:
   - needs: pose_prediction
     provided_by:
-    - faux_pose
+    - fauxpose
     - pose_lookup
     - pose_prediction
   plugin: gldemo
@@ -111,7 +111,7 @@ dep_map:
 - dependencies:
   - needs: pose_prediction
     provided_by:
-    - faux_pose
+    - fauxpose
     - pose_lookup
     - pose_prediction
   - needs: vulkan::app
@@ -133,7 +133,7 @@ dep_map:
     - offload_rendering_server
   - needs: pose_prediction
     provided_by:
-    - faux_pose
+    - fauxpose
     - pose_lookup
     - pose_prediction
   plugin: offload_rendering_client
@@ -193,7 +193,7 @@ dep_map:
 - dependencies:
   - needs: pose_prediction
     provided_by:
-    - faux_pose
+    - fauxpose
     - pose_lookup
     - pose_prediction
   plugin: openwarp_vk
@@ -217,14 +217,12 @@ dep_map:
     - passthrough_integrator
     - rk4_integrator
   - needs: pose_type
-    provided_by: &id001
+    provided_by:
     - ground_truth_slam
     - lighthouse
     - offload_vio.device_rx
     - openvins
     - zed.data_injection
-  - needs: pose_type
-    provided_by: *id001
   plugin: pose_prediction
 - dependencies:
   - needs: binocular_cam_type
@@ -270,19 +268,20 @@ dep_map:
     - gldemo
   - needs: pose_prediction
     provided_by:
-    - faux_pose
+    - fauxpose
     - pose_lookup
     - pose_prediction
   - needs: rendered_frame
-    provided_by: &id002
+    provided_by:
     - gldemo
   - needs: rendered_frame
-    provided_by: *id002
+    provided_by:
+      - gldemo
   plugin: timewarp_gl
 - dependencies:
   - needs: pose_prediction
     provided_by:
-    - faux_pose
+    - fauxpose
     - pose_lookup
     - pose_prediction
   plugin: timewarp_vk

@@ -1,0 +1,191 @@
+site_name: ILLIXR Documentation
+theme:
+  name: material
+  custom_dir: @MKDOCS_DOCS_DIR@/overrides
+  palette:
+    # Light Mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/weather-night
+        name: Light mode
+      primary: custom
+      accent: custom
+    # Dark Mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/weather-sunny
+        name: Dark mode
+      primary: custom
+      accent: custom
+  features:
+    - search.suggest
+    - content.code.annotate
+    - content.footnote.tooltips
+    - navigation.indexes
+  language: en
+site_dir: @MKDOCS_BUILD_DIR@
+site_url: https://illixr.github.io/ILLIXR
+markdown_extensions:
+  - fenced_code
+  - footnotes
+  - admonition
+  - pymdownx.highlight:
+      use_pygments: true
+      pygments_lang_class: true
+      line_spans: __span
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - md_in_html
+  - attr_list
+extra_css:
+  - css/mkd-extra.css
+  - css/code-box-copy.css
+extra_javascript:
+  - js/jquery.min.js
+  - js/clipboard.min.js
+  - js/code-box-copy.js@MIKE_VERSIONING@
+plugins:
+  - search@MKDOCS_MIKE@
+  - mkdoxy:
+      save-api: @MKDOCS_DOCS_DIR@
+      projects:
+        ILLIXR_API:
+          src-dirs: @DOXYGEN_SOURCE_DIR@
+          api-path: ../api
+          full-doc: True
+          doxy-cfg-file: @MKDOCS_DOXY_CFG@
+  - include-markdown:
+      encoding: ascii
+      opening_tag: "{!"
+      closing_tag: "!}"
+  - glightbox:
+      touchNavigation: true
+      effect: zoom
+      slide_effect: zoom
+      zoomable: true
+      draggable: false
+      background: none
+      shadow: false
+      manual: true
+      caption_position: bottom
+docs_dir: @MKDOCS_DOCS_DIR@
+nav:
+  - 'Latest Documentation':
+      - 'ILLIXR': index.md
+      - 'Getting Started': getting_started.md
+      - 'Plugin Overview': illixr_plugins.md
+      - 'Services Overview': illixr_services.md
+      - 'Plugin/Service Details':
+          - 'Debugview': plugin_README/README_debugview.md
+          - 'Fauxpose': plugin_README/README_fauxpose.md
+          - 'Gldemo': plugin_README/README_gldemo.md
+          - 'Hand Tracking': plugin_README/README_hand_tracking.md
+          - 'Lighthouse': plugin_README/README_lighthouse.md
+          - 'Monado Overview': plugin_README/monado_illixr_runtime_overview.md
+          - 'Monado Dataflow': plugin_README/monado_integration_dataflow.md
+          - 'Native Renderer': plugin_README/README_native_renderer.md
+          - 'Offload Rendering Client': plugin_README/README_offload_rendering_client.md
+          - 'Offload Rendering Server': plugin_README/README_offload_rendering_server.md
+          - 'Offload VIO': plugin_README/README_offload_vio.md
+          - 'OpenNI': plugin_README/README_openni.md
+          - 'Openwarp': plugin_README/README_openwarp_vk.md
+          - 'ORM_SLAM3': plugin_README/README_orb_slam3.md
+          - 'Record_imu_cam': plugin_README/README_record_imu_cam.md
+          - 'Timewarp_gl': plugin_README/README_timewarp_gl.md
+          - 'Timewarp_VK': plugin_README/README_timewarp_vk.md
+          - 'Vkdemo': plugin_README/README_vkdemo.md
+          - 'Webcam': plugin_README/README_webcam.md
+          - 'Zed': plugin_README/README_zed.md
+          - 'Zed Data Injection': plugin_README/README_zed_data_injection.md
+          - 'Zed Data Capture': plugin_README/zed_capture.md
+      - 'Working with ILLIXR':
+          - 'Modifying a Plugin': working_with/modifying_a_plugin.md
+          - 'Writing a Plugin':
+              - working_with/writing_your_plugin.md
+              - 'Modules': working_with/modules.md
+          - 'Mediapipe Based Plugins': working_with/adding_mediapipe.md
+          - 'Display Backends': working_with/display_backend.md
+          - 'Logging and Metrics': working_with/logging_and_metrics.md
+          - 'Updating Tags and Documentation': working_with/updating_tags_and_docs.md
+          - 'Using Switchboard and Phonebook Externally': working_with/external_switchboard_and_phonebook.md
+          - 'ILLIXR Under Virtualization': working_with/virtualization.md
+          - 'Using ILLIXR with Cameras': working_with/using_cameras.md
+          - 'Debugging Tips': working_with/debugging_illixr.md
+      - 'Contributing to ILLIXR':
+          - contributing/index.md
+          - 'Code of Conduct': contributing/code_of_conduct.md
+          - 'Asking Questions': contributing/asking_questions.md
+          - 'Reporting a Bug': contributing/opening_an_issue.md
+          - 'Suggesting a Feature/Improvement': contributing/feature_request.md
+          - 'Programming Style Guide': contributing/style_guide.md
+          - 'Using 3rd Party Code/Libraries': contributing/third_party.md
+          - 'Licenses': contributing/licenses.md
+          - 'Creating a Pull Request': contributing/pull_request.md
+          - 'Code Review Guidelines': contributing/code_review.md
+      - 'Glossary': glossary.md
+      - 'API':
+          - 'Classes':
+              - api/classes.md
+              - 'System':
+                  - 'phonebook': api/classILLIXR_1_1phonebook.md
+                  - 'switchboard': api/classILLIXR_1_1switchboard.md
+                  - 'relative_clock': api/classILLIXR_1_1relative__clock.md
+                  - 'plugin': api/classILLIXR_1_1plugin.md
+                  - 'threadloop': api/classILLIXR_1_1threadloop.md
+                  - 'even': api/classILLIXR_1_1event.md
+                  - 'pose_prediction': api/classILLIXR_1_1data__format_1_1pose__prediction.md
+          - 'Data Structures':
+              - 'Points':
+                  - 'point': api/structILLIXR_1_1data__format_1_1point.md
+                  - 'point_with_validity': api/structILLIXR_1_1data__format_1_1point__with__validity.md
+                  - 'point_with_units': api/structILLIXR_1_1data__format_1_1point__with__units.md
+                  - 'points_with_units': api/structILLIXR_1_1data__format_1_1points__with__units.md
+                  - 'raw_point':   api/structILLIXR_1_1data__format_1_1raw__point.md
+              - 'Camera':
+                  - 'cam_base_type' : api/structILLIXR_1_1data__format_1_1cam__base__type.md
+                  - 'monocular_cam_type' : api/structILLIXR_1_1data__format_1_1monocular__cam__type.md
+                  - 'binocular_cam_type' : api/structILLIXR_1_1data__format_1_1binocular__cam__type.md
+                  - 'rdb_depth_type': api/structILLIXR_1_1data__format_1_1rgb__depth__type.md
+                  - 'cam_type_zed' : api/structILLIXR_1_1data__format_1_1cam__type__zed.md
+                  - 'ccd_data' : api/structILLIXR_1_1data__format_1_1ccd__data.md
+                  - 'camera_data' : api/structILLIXR_1_1data__format_1_1camera__data.md
+              - 'Pose':
+                  - 'pose_data': api/structILLIXR_1_1data__format_1_1pose__data.md
+                  - 'pose_type': api/structILLIXR_1_1data__format_1_1pose__type.md
+                  - 'fast_pose_type': api/structILLIXR_1_1data__format_1_1fast__pose__type.md
+                  - 'raw_pose': api/structILLIXR_1_1data__format_1_1raw__pose.md
+                  - 'texture_pose': api/structILLIXR_1_1data__format_1_1texture__pose.md
+              - 'IMU':
+                  - 'imu_params': api/structILLIXR_1_1data__format_1_1imu__params.md
+                  - 'imu_type': api/structILLIXR_1_1data__format_1_1imu__type.md
+                  - 'imu_integrator_input': api/structILLIXR_1_1data__format_1_1imu__integrator__input.md
+                  - 'imu_raw_type': api/structILLIXR_1_1data__format_1_1imu__raw__type.md
+              - 'Hands':
+                  - 'hand_points': api/structILLIXR_1_1data__format_1_1ht_1_1hand__points.md
+                  - 'ht_detection': api/structILLIXR_1_1data__format_1_1ht_1_1ht__detection.md
+                  - 'position': api/structILLIXR_1_1data__format_1_1ht_1_1position.md
+                  - 'velocity': api/structILLIXR_1_1data__format_1_1ht_1_1velocity.md
+                  - 'ht_frame': api/structILLIXR_1_1data__format_1_1ht_1_1ht__frame.md
+                  - 'raw_ht_data': api/structILLIXR_1_1data__format_1_1ht_1_1raw__ht__data.md
+              - 'compressed_frame': api/structILLIXR_1_1data__format_1_1compressed__frame.md
+              - 'connection_signal': api/structILLIXR_1_1data__format_1_1connection__signal.md
+              - 'depth_type': api/structILLIXR_1_1data__format_1_1depth__type.md
+              - 'hmd_physical_info': api/structILLIXR_1_1data__format_1_1hmd__physical__info.md
+              - 'hologram_input': api/structILLIXR_1_1data__format_1_1hologram__input.md
+              - 'image_handle': api/structILLIXR_1_1data__format_1_1image__handle.md
+              - 'proper_quaternion': api/classILLIXR_1_1data__format_1_1proper__quaternion.md
+              - 'rect': api/structILLIXR_1_1data__format_1_1rect.md
+              - 'rendered_frame': api/structILLIXR_1_1data__format_1_1rendered__frame.md
+              - 'signal_to_quad': api/structILLIXR_1_1data__format_1_1signal__to__quad.md
+              - 'vk_image_handle': api/structILLIXR_1_1data__format_1_1vk__image__handle.md
+          - 'Namespaces': api/namespaces.md
+      - 'License': LICENSE.md
+      - 'Policies':
+         - 'Branch Retention': policies/branch_retention.md
+not_in_nav: |
+  ILLIXR/*
+  api/*
+  dataflow.md

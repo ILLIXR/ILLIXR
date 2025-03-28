@@ -11,7 +11,7 @@ profiles:
       enable_pre_sleep: False
 
   - headless:
-    plugins: offline_imu,offline_cam,gtsam_integrator,openvins,pose_prediction,ground_truth_slam,timewarp_vk,vkdemo,native_renderer,audio_pipeline
+    plugins: offline_imu,offline_cam,gtsam_integrator,openvins,pose_prediction,ground_truth_slam,timewarp_vk,vkdemo,native_renderer
     env_vars:
       enable_offload: False
       enable_alignment: False
@@ -50,7 +50,7 @@ profiles:
 # Procedurally generated movement with native GL.
 
   - fauxpose:
-    plugins: fauxpose,timewarp_vk,vkdemo,native_renderer,debugview,audio_pipeline
+    plugins: fauxpose,timewarp_vk,vkdemo,native_renderer,debugview
     env_vars:
       enable_offload: false
       enable_alignment: false
@@ -79,7 +79,6 @@ profiles:
 # Native TimeWarp/OpenWarp VK.
 # Defaults to offline datasets and OpenVINS.
 
-
   - native_timewarp_vk:
     plugins: offline_imu,offline_cam,gtsam_integrator,openvins,pose_prediction,timewarp_vk,vkdemo,native_renderer,debugview
     env_vars:
@@ -89,12 +88,12 @@ profiles:
       enable_pre_sleep: false
 
   - native_vk_slam:
-      plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,ground_truth_slam,timewarp_vk,vkdemo,native_renderer,debugview,offload_data,orb_slam3
-      env_vars:
-        enable_offload: false
-        enable_alignment: false
-        enable_verbose_errors: false
-        enable_pre_sleep: false
+    plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,ground_truth_slam,timewarp_vk,vkdemo,native_renderer,debugview,offload_data,orb_slam3
+    env_vars:
+      enable_offload: false
+      enable_alignment: false
+      enable_verbose_errors: false
+      enable_pre_sleep: false
 
   - native_openwarp_vk:
     plugins: offline_imu,offline_cam,gtsam_integrator,openvins,pose_prediction,openwarp_vk,vkdemo,native_renderer,debugview
@@ -108,7 +107,7 @@ profiles:
 # Defaults to offline datasets, native GL, and OpenVINS, besides the Monado version.
 
   - offload_vio_device:
-    plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,ground_truth_slam,timewarp_vk,vkdemo,native_renderer,debugview,tcp_network_backend,offload_vio.device_rx,offload_vio.device_tx,audio_pipeline
+    plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,ground_truth_slam,timewarp_vk,vkdemo,native_renderer,debugview,tcp_network_backend,offload_vio.device_rx,offload_vio.device_tx
     env_vars:
       enable_offload: False
       enable_alignment: False
