@@ -1,0 +1,73 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classcxxopts_1_1exceptions_1_1parsing" kind="class" language="C++" prot="public">
+    <compoundname>cxxopts::exceptions::parsing</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">cxxopts::exceptions::exception</basecompoundref>
+    <basecompoundref prot="public" virt="non-virtual">cxxopts::exceptions::exception</basecompoundref>
+    <derivedcompoundref refid="classcxxopts_1_1exceptions_1_1gratuitous__argument__for__option" prot="public" virt="non-virtual">cxxopts::exceptions::gratuitous_argument_for_option</derivedcompoundref>
+    <derivedcompoundref refid="classcxxopts_1_1exceptions_1_1gratuitous__argument__for__option" prot="public" virt="non-virtual">cxxopts::exceptions::gratuitous_argument_for_option</derivedcompoundref>
+    <derivedcompoundref refid="classcxxopts_1_1exceptions_1_1incorrect__argument__type" prot="public" virt="non-virtual">cxxopts::exceptions::incorrect_argument_type</derivedcompoundref>
+    <derivedcompoundref refid="classcxxopts_1_1exceptions_1_1incorrect__argument__type" prot="public" virt="non-virtual">cxxopts::exceptions::incorrect_argument_type</derivedcompoundref>
+    <derivedcompoundref refid="classcxxopts_1_1exceptions_1_1invalid__option__syntax" prot="public" virt="non-virtual">cxxopts::exceptions::invalid_option_syntax</derivedcompoundref>
+    <derivedcompoundref refid="classcxxopts_1_1exceptions_1_1invalid__option__syntax" prot="public" virt="non-virtual">cxxopts::exceptions::invalid_option_syntax</derivedcompoundref>
+    <derivedcompoundref refid="classcxxopts_1_1exceptions_1_1missing__argument" prot="public" virt="non-virtual">cxxopts::exceptions::missing_argument</derivedcompoundref>
+    <derivedcompoundref refid="classcxxopts_1_1exceptions_1_1missing__argument" prot="public" virt="non-virtual">cxxopts::exceptions::missing_argument</derivedcompoundref>
+    <derivedcompoundref refid="classcxxopts_1_1exceptions_1_1no__such__option" prot="public" virt="non-virtual">cxxopts::exceptions::no_such_option</derivedcompoundref>
+    <derivedcompoundref refid="classcxxopts_1_1exceptions_1_1no__such__option" prot="public" virt="non-virtual">cxxopts::exceptions::no_such_option</derivedcompoundref>
+    <derivedcompoundref refid="classcxxopts_1_1exceptions_1_1option__requires__argument" prot="public" virt="non-virtual">cxxopts::exceptions::option_requires_argument</derivedcompoundref>
+    <derivedcompoundref refid="classcxxopts_1_1exceptions_1_1option__requires__argument" prot="public" virt="non-virtual">cxxopts::exceptions::option_requires_argument</derivedcompoundref>
+    <derivedcompoundref refid="classcxxopts_1_1exceptions_1_1requested__option__not__present" prot="public" virt="non-virtual">cxxopts::exceptions::requested_option_not_present</derivedcompoundref>
+    <derivedcompoundref refid="classcxxopts_1_1exceptions_1_1requested__option__not__present" prot="public" virt="non-virtual">cxxopts::exceptions::requested_option_not_present</derivedcompoundref>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classcxxopts_1_1exceptions_1_1parsing_1ad40b741e8c5aba5e4be33c37d84cb09e" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>cxxopts::exceptions::parsing::parsing</definition>
+        <argsstring>(const std::string &amp;message)</argsstring>
+        <name>parsing</name>
+        <qualifiedname>cxxopts::exceptions::parsing::parsing</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>message</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="347" column="18" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" bodystart="347" bodyend="348"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1exceptions_1_1parsing_1ad40b741e8c5aba5e4be33c37d84cb09e" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>cxxopts::exceptions::parsing::parsing</definition>
+        <argsstring>(const std::string &amp;message)</argsstring>
+        <name>parsing</name>
+        <qualifiedname>cxxopts::exceptions::parsing::parsing</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>message</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/cxxopts.hpp" line="347" column="18" bodyfile="/home/friedel/devel/ILLIXR/src/cxxopts.hpp" bodystart="347" bodyend="348"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="345" column="5" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" bodystart="345" bodyend="349"/>
+    <listofallmembers>
+      <member refid="classcxxopts_1_1exceptions_1_1exception_1a4f28a7e472811e1917d3c69c972ef832" prot="public" virt="non-virtual"><scope>cxxopts::exceptions::parsing</scope><name>exception</name></member>
+      <member refid="classcxxopts_1_1exceptions_1_1exception_1a4f28a7e472811e1917d3c69c972ef832" prot="public" virt="non-virtual"><scope>cxxopts::exceptions::parsing</scope><name>exception</name></member>
+      <member refid="classcxxopts_1_1exceptions_1_1parsing_1ad40b741e8c5aba5e4be33c37d84cb09e" prot="public" virt="non-virtual"><scope>cxxopts::exceptions::parsing</scope><name>parsing</name></member>
+      <member refid="classcxxopts_1_1exceptions_1_1parsing_1ad40b741e8c5aba5e4be33c37d84cb09e" prot="public" virt="non-virtual"><scope>cxxopts::exceptions::parsing</scope><name>parsing</name></member>
+      <member refid="classcxxopts_1_1exceptions_1_1exception_1ae4df35ffff13e83a5bc0e3b5c6a33668" prot="public" virt="non-virtual"><scope>cxxopts::exceptions::parsing</scope><name>what</name></member>
+      <member refid="classcxxopts_1_1exceptions_1_1exception_1ae4df35ffff13e83a5bc0e3b5c6a33668" prot="public" virt="non-virtual"><scope>cxxopts::exceptions::parsing</scope><name>what</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

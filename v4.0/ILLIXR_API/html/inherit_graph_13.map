@@ -1,0 +1,9 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" href="$classILLIXR_1_1plugin.html" title="A dynamically&#45;loadable plugin for Spindle." alt="" coords="5,42,116,67"/>
+<area shape="rect" id="Node000001" href="$classILLIXR_1_1offload__rendering__server__loader.html" title="Plugin loader for the offload rendering server." alt="" coords="164,5,349,45"/>
+<area shape="poly" id="edge8_Node000000_Node000001" title=" " alt="" coords="129,42,163,37,164,42,130,47"/>
+<area shape="rect" id="Node000002" href="$classILLIXR_1_1threadloop.html" title="A reusable threadloop for plugins." alt="" coords="187,70,327,95"/>
+<area shape="poly" id="edge9_Node000000_Node000002" title=" " alt="" coords="130,62,187,70,186,75,130,67"/>
+<area shape="rect" id="Node000003" href="$classILLIXR_1_1offload__rendering__server.html" title="Main server implementation for offload rendering." alt="" coords="397,63,583,103"/>
+<area shape="poly" id="edge10_Node000002_Node000003" title=" " alt="" coords="341,80,397,80,397,85,341,85"/>
+</map>

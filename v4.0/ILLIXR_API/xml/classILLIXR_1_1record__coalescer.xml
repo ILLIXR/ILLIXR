@@ -1,0 +1,174 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classILLIXR_1_1record__coalescer" kind="class" language="C++" prot="public">
+    <compoundname>ILLIXR::record_coalescer</compoundname>
+    <includes refid="record__logger_8hpp" local="no">record_logger.hpp</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1record__coalescer_1a551dc2614f5beda312b3816562bd2b7e" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classILLIXR_1_1record__logger" kindref="compound">record_logger</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;record_logger&gt; ILLIXR::record_coalescer::logger_</definition>
+        <argsstring></argsstring>
+        <name>logger_</name>
+        <qualifiedname>ILLIXR::record_coalescer::logger_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/record_logger.hpp" line="365" column="50" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/record_logger.hpp" bodystart="365" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1record__coalescer_1a1e617b34e8afea7c01426dc8fc272bde" prot="private" static="no" mutable="no">
+        <type>std::chrono::time_point&lt; std::chrono::high_resolution_clock &gt;</type>
+        <definition>std::chrono::time_point&lt;std::chrono::high_resolution_clock&gt; ILLIXR::record_coalescer::last_log_</definition>
+        <argsstring></argsstring>
+        <name>last_log_</name>
+        <qualifiedname>ILLIXR::record_coalescer::last_log_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/record_logger.hpp" line="366" column="29" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/record_logger.hpp" bodystart="366" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1record__coalescer_1af914aafe251c6f5067d419f72781d3a4" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="classILLIXR_1_1record" kindref="compound">record</ref> &gt;</type>
+        <definition>std::vector&lt;record&gt; ILLIXR::record_coalescer::buffer_</definition>
+        <argsstring></argsstring>
+        <name>buffer_</name>
+        <qualifiedname>ILLIXR::record_coalescer::buffer_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/record_logger.hpp" line="367" column="57" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/record_logger.hpp" bodystart="367" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classILLIXR_1_1record__coalescer_1ab8436172b853421aca714be8effa4bf7" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::record_coalescer::record_coalescer</definition>
+        <argsstring>(std::shared_ptr&lt; record_logger &gt; logger_)</argsstring>
+        <name>record_coalescer</name>
+        <qualifiedname>ILLIXR::record_coalescer::record_coalescer</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classILLIXR_1_1record__logger" kindref="compound">record_logger</ref> &gt;</type>
+          <declname>logger_</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/record_logger.hpp" line="310" column="14" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/record_logger.hpp" bodystart="310" bodyend="312"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1record__coalescer_1adf4fd526e034846f5f06975ed962a874" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::record_coalescer::~record_coalescer</definition>
+        <argsstring>()</argsstring>
+        <name>~record_coalescer</name>
+        <qualifiedname>ILLIXR::record_coalescer::~record_coalescer</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/record_logger.hpp" line="314" column="5" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/record_logger.hpp" bodystart="314" bodyend="316"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1record__coalescer_1a5f8d04c287941346456b860e1758b303" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void ILLIXR::record_coalescer::log</definition>
+        <argsstring>(const record &amp;r)</argsstring>
+        <name>log</name>
+        <qualifiedname>ILLIXR::record_coalescer::log</qualifiedname>
+        <param>
+          <type>const <ref refid="classILLIXR_1_1record" kindref="compound">record</ref> &amp;</type>
+          <declname>r</declname>
+        </param>
+        <briefdescription>
+<para>Appends a log to the buffer, which will eventually be written. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/record_logger.hpp" line="321" column="10" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/record_logger.hpp" bodystart="321" bodyend="337"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1record__coalescer_1a854a0ce81c6558c6f8a7a9579c9eb982" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void ILLIXR::record_coalescer::maybe_flush</definition>
+        <argsstring>()</argsstring>
+        <name>maybe_flush</name>
+        <qualifiedname>ILLIXR::record_coalescer::maybe_flush</qualifiedname>
+        <briefdescription>
+<para>Use internal decision process, and possibly trigger flush. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/record_logger.hpp" line="342" column="10" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/record_logger.hpp" bodystart="342" bodyend="346"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1record__coalescer_1a66c75672ea93e6f1ff706453c957a729" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void ILLIXR::record_coalescer::flush</definition>
+        <argsstring>()</argsstring>
+        <name>flush</name>
+        <qualifiedname>ILLIXR::record_coalescer::flush</qualifiedname>
+        <briefdescription>
+<para>Flush buffer of logs to the underlying logger. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/record_logger.hpp" line="351" column="10" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/record_logger.hpp" bodystart="351" bodyend="358"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1record__coalescer_1a71167eb8f4762779ae335176b9a1e929" prot="public" static="no" const="yes" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::record_coalescer::operator bool</definition>
+        <argsstring>() const</argsstring>
+        <name>operator bool</name>
+        <qualifiedname>ILLIXR::record_coalescer::operator bool</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/record_logger.hpp" line="360" column="14" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/record_logger.hpp" bodystart="360" bodyend="362"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Coalesces logs of the same type to be written back as a single-transaction. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Records should all be of the same type. TODO: remove this constraint. Use <computeroutput>log&lt;record_type&gt;(Args... args)</computeroutput> and <computeroutput>std::forward</computeroutput>.</para>
+<para>In some backend-implementations, logging many logs of the same type is more efficient than logging them individually; However, the client often wants to produce one log-record at a time. This class resolves this mismatch by buffering logs from the client. Every time a new log is added, an internal decision process determines whether or not to flush the buffer, or keep accumulating and wait until later.</para>
+<para>Currently this internal decision process is &quot;is the oldest log in the buffer more than 1
+second old?&quot;. I chose this because this frequency should have very little overhead, even if every component is also coalescing at 1 per second.</para>
+<para>At destructor time, any remaining logs are flushed.</para>
+<para>Use like:</para>
+<para><programlisting filename=".cpp"><codeline><highlight class="normal">log_coalescer(logger);</highlight></codeline>
+<codeline><highlight class="normal">lc.log(make_my_record(id_,<sp/>it,<sp/>skip_it,<sp/>...));</highlight></codeline>
+</programlisting> </para>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/include/illixr/record_logger.hpp" line="308" column="1" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/record_logger.hpp" bodystart="308" bodyend="368"/>
+    <listofallmembers>
+      <member refid="classILLIXR_1_1record__coalescer_1af914aafe251c6f5067d419f72781d3a4" prot="private" virt="non-virtual"><scope>ILLIXR::record_coalescer</scope><name>buffer_</name></member>
+      <member refid="classILLIXR_1_1record__coalescer_1a66c75672ea93e6f1ff706453c957a729" prot="public" virt="non-virtual"><scope>ILLIXR::record_coalescer</scope><name>flush</name></member>
+      <member refid="classILLIXR_1_1record__coalescer_1a1e617b34e8afea7c01426dc8fc272bde" prot="private" virt="non-virtual"><scope>ILLIXR::record_coalescer</scope><name>last_log_</name></member>
+      <member refid="classILLIXR_1_1record__coalescer_1a5f8d04c287941346456b860e1758b303" prot="public" virt="non-virtual"><scope>ILLIXR::record_coalescer</scope><name>log</name></member>
+      <member refid="classILLIXR_1_1record__coalescer_1a551dc2614f5beda312b3816562bd2b7e" prot="private" virt="non-virtual"><scope>ILLIXR::record_coalescer</scope><name>logger_</name></member>
+      <member refid="classILLIXR_1_1record__coalescer_1a854a0ce81c6558c6f8a7a9579c9eb982" prot="public" virt="non-virtual"><scope>ILLIXR::record_coalescer</scope><name>maybe_flush</name></member>
+      <member refid="classILLIXR_1_1record__coalescer_1a71167eb8f4762779ae335176b9a1e929" prot="public" virt="non-virtual"><scope>ILLIXR::record_coalescer</scope><name>operator bool</name></member>
+      <member refid="classILLIXR_1_1record__coalescer_1ab8436172b853421aca714be8effa4bf7" prot="public" virt="non-virtual"><scope>ILLIXR::record_coalescer</scope><name>record_coalescer</name></member>
+      <member refid="classILLIXR_1_1record__coalescer_1adf4fd526e034846f5f06975ed962a874" prot="public" virt="non-virtual"><scope>ILLIXR::record_coalescer</scope><name>~record_coalescer</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

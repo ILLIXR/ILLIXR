@@ -1,0 +1,270 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classILLIXR_1_1offload__data" kind="class" language="C++" prot="public">
+    <compoundname>ILLIXR::offload_data</compoundname>
+    <basecompoundref refid="classILLIXR_1_1plugin" prot="public" virt="non-virtual">ILLIXR::plugin</basecompoundref>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1offload__data_1a4987ef81e0a2cfa6ac88c46c5b2deed4" prot="private" static="no" mutable="no">
+        <type>const std::shared_ptr&lt; <ref refid="classILLIXR_1_1switchboard" kindref="compound">switchboard</ref> &gt;</type>
+        <definition>const std::shared_ptr&lt;switchboard&gt; ILLIXR::offload_data::switchboard_</definition>
+        <argsstring></argsstring>
+        <name>switchboard_</name>
+        <qualifiedname>ILLIXR::offload_data::switchboard_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_data/plugin.hpp" line="21" column="55" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_data/plugin.hpp" bodystart="21" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__data_1a8c125b1df85db0a30b43c44c597dbd57" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; long &gt;</type>
+        <definition>std::vector&lt;long&gt; ILLIXR::offload_data::time_seq_</definition>
+        <argsstring></argsstring>
+        <name>time_seq_</name>
+        <qualifiedname>ILLIXR::offload_data::time_seq_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_data/plugin.hpp" line="22" column="62" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_data/plugin.hpp" bodystart="22" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__data_1ac4d729ad485c44c95d1f76c110ea4af6" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="classILLIXR_1_1switchboard_1af91c1b9436918512e95e5fa8553846a7" kindref="member">switchboard::ptr</ref>&lt; const data_format::texture_pose &gt; &gt;</type>
+        <definition>std::vector&lt;switchboard::ptr&lt;const data_format::texture_pose&gt; &gt; ILLIXR::offload_data::offload_data_container_</definition>
+        <argsstring></argsstring>
+        <name>offload_data_container_</name>
+        <qualifiedname>ILLIXR::offload_data::offload_data_container_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_data/plugin.hpp" line="23" column="17" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_data/plugin.hpp" bodystart="23" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__data_1a001ed6074f10f58271d9f31e118dc40e" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int ILLIXR::offload_data::percent_</definition>
+        <argsstring></argsstring>
+        <name>percent_</name>
+        <qualifiedname>ILLIXR::offload_data::percent_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_data/plugin.hpp" line="25" column="17" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_data/plugin.hpp" bodystart="25" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__data_1a70a4a173cd0a850433272b7754d4bb65" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int ILLIXR::offload_data::img_idx_</definition>
+        <argsstring></argsstring>
+        <name>img_idx_</name>
+        <qualifiedname>ILLIXR::offload_data::img_idx_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_data/plugin.hpp" line="26" column="17" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_data/plugin.hpp" bodystart="26" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__data_1ad47429a3eb38e6f33270b37d9b1bae7d" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool ILLIXR::offload_data::enable_offload_</definition>
+        <argsstring></argsstring>
+        <name>enable_offload_</name>
+        <qualifiedname>ILLIXR::offload_data::enable_offload_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_data/plugin.hpp" line="27" column="17" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_data/plugin.hpp" bodystart="27" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__data_1abe7d3237d8ea7e3d54294ed7e53cd456" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool ILLIXR::offload_data::is_success_</definition>
+        <argsstring></argsstring>
+        <name>is_success_</name>
+        <qualifiedname>ILLIXR::offload_data::is_success_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_data/plugin.hpp" line="28" column="17" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_data/plugin.hpp" bodystart="28" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__data_1ad2bba4a8f466cff91c7d871ceda8038a" prot="private" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string ILLIXR::offload_data::obj_dir_</definition>
+        <argsstring></argsstring>
+        <name>obj_dir_</name>
+        <qualifiedname>ILLIXR::offload_data::obj_dir_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_data/plugin.hpp" line="29" column="17" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_data/plugin.hpp" bodystart="29" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classILLIXR_1_1offload__data_1a0a8af60db668db0ede1de3ee91609c84" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>offload_data::offload_data</definition>
+        <argsstring>(const std::string &amp;name, phonebook *pb)</argsstring>
+        <name>offload_data</name>
+        <qualifiedname>ILLIXR::offload_data::offload_data</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type><ref refid="classILLIXR_1_1phonebook" kindref="compound">phonebook</ref> *</type>
+          <declname>pb</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_data/plugin.hpp" line="13" column="6" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_data/plugin.cpp" bodystart="15" bodyend="27"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1offload__data_1a11b153c6e30928635a7a9c5c5b78638a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void offload_data::callback</definition>
+        <argsstring>(const switchboard::ptr&lt; const data_format::texture_pose &gt; &amp;datum)</argsstring>
+        <name>callback</name>
+        <qualifiedname>ILLIXR::offload_data::callback</qualifiedname>
+        <param>
+          <type>const <ref refid="classILLIXR_1_1switchboard_1af91c1b9436918512e95e5fa8553846a7" kindref="member">switchboard::ptr</ref>&lt; const data_format::texture_pose &gt; &amp;</type>
+          <declname>datum</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+<para>A texture pose is present. Store it back to our container.</para>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_data/plugin.hpp" line="14" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_data/plugin.cpp" bodystart="29" bodyend="35"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1offload__data_1ad92e05689450393c281caf3de2c03471" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>offload_data::~offload_data</definition>
+        <argsstring>() override</argsstring>
+        <name>~offload_data</name>
+        <qualifiedname>ILLIXR::offload_data::~offload_data</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_data/plugin.hpp" line="15" column="5" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_data/plugin.cpp" bodystart="37" bodyend="46"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classILLIXR_1_1offload__data_1a5c253a6c57963cecf4d7ce28cbb66639" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void offload_data::write_metadata</definition>
+        <argsstring>()</argsstring>
+        <name>write_metadata</name>
+        <qualifiedname>ILLIXR::offload_data::write_metadata</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_data/plugin.hpp" line="18" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_data/plugin.cpp" bodystart="48" bodyend="80"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1offload__data_1a28e9a5900b61fb8670de4e0276b48e4f" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void offload_data::write_data_to_disk</definition>
+        <argsstring>()</argsstring>
+        <name>write_data_to_disk</name>
+        <qualifiedname>ILLIXR::offload_data::write_data_to_disk</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_data/plugin.hpp" line="19" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_data/plugin.cpp" bodystart="82" bodyend="143"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>ILLIXR::offload_data</label>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ILLIXR::plugin</label>
+        <link refid="classILLIXR_1_1plugin"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>ILLIXR::offload_data</label>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>ILLIXR::phonebook</label>
+        <link refid="classILLIXR_1_1phonebook"/>
+      </node>
+      <node id="2">
+        <label>ILLIXR::plugin</label>
+        <link refid="classILLIXR_1_1plugin"/>
+        <childnode refid="3" relation="usage">
+          <edgelabel>phonebook_</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/home/friedel/devel/ILLIXR/plugins/offload_data/plugin.hpp" line="11" column="1" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_data/plugin.hpp" bodystart="11" bodyend="30"/>
+    <listofallmembers>
+      <member refid="classILLIXR_1_1offload__data_1a11b153c6e30928635a7a9c5c5b78638a" prot="public" virt="non-virtual"><scope>ILLIXR::offload_data</scope><name>callback</name></member>
+      <member refid="classILLIXR_1_1offload__data_1ad47429a3eb38e6f33270b37d9b1bae7d" prot="private" virt="non-virtual"><scope>ILLIXR::offload_data</scope><name>enable_offload_</name></member>
+      <member refid="classILLIXR_1_1plugin_1afe52734e7edc87bd0bf974caf112961b" prot="protected" virt="non-virtual"><scope>ILLIXR::offload_data</scope><name>gen_guid_</name></member>
+      <member refid="classILLIXR_1_1plugin_1aebda022998bd35983e83f391dc0e5193" prot="public" virt="non-virtual"><scope>ILLIXR::offload_data</scope><name>get_name</name></member>
+      <member refid="classILLIXR_1_1plugin_1aaedb3f9178bdd11e53815e158454aaf3" prot="protected" virt="non-virtual"><scope>ILLIXR::offload_data</scope><name>id_</name></member>
+      <member refid="classILLIXR_1_1offload__data_1a70a4a173cd0a850433272b7754d4bb65" prot="private" virt="non-virtual"><scope>ILLIXR::offload_data</scope><name>img_idx_</name></member>
+      <member refid="classILLIXR_1_1offload__data_1abe7d3237d8ea7e3d54294ed7e53cd456" prot="private" virt="non-virtual"><scope>ILLIXR::offload_data</scope><name>is_success_</name></member>
+      <member refid="classILLIXR_1_1plugin_1aa963c518af83966173840a8558490888" prot="protected" virt="non-virtual"><scope>ILLIXR::offload_data</scope><name>name_</name></member>
+      <member refid="classILLIXR_1_1offload__data_1ad2bba4a8f466cff91c7d871ceda8038a" prot="private" virt="non-virtual"><scope>ILLIXR::offload_data</scope><name>obj_dir_</name></member>
+      <member refid="classILLIXR_1_1offload__data_1a0a8af60db668db0ede1de3ee91609c84" prot="public" virt="non-virtual"><scope>ILLIXR::offload_data</scope><name>offload_data</name></member>
+      <member refid="classILLIXR_1_1offload__data_1ac4d729ad485c44c95d1f76c110ea4af6" prot="private" virt="non-virtual"><scope>ILLIXR::offload_data</scope><name>offload_data_container_</name></member>
+      <member refid="classILLIXR_1_1offload__data_1a001ed6074f10f58271d9f31e118dc40e" prot="private" virt="non-virtual"><scope>ILLIXR::offload_data</scope><name>percent_</name></member>
+      <member refid="classILLIXR_1_1plugin_1a6f7a2a9012350591c00d67a5bc0fd5a6" prot="protected" virt="non-virtual"><scope>ILLIXR::offload_data</scope><name>phonebook_</name></member>
+      <member refid="classILLIXR_1_1plugin_1abc91c0e5be180a8e0bbeaf114a127f17" prot="public" virt="non-virtual"><scope>ILLIXR::offload_data</scope><name>plugin</name></member>
+      <member refid="classILLIXR_1_1plugin_1a8d40c2421cde09079372d12bfe7d45fe" prot="protected" virt="non-virtual"><scope>ILLIXR::offload_data</scope><name>plugin_logger_</name></member>
+      <member refid="classILLIXR_1_1plugin_1aef671d0cd9b6de45d3ade16dedbf4974" prot="protected" virt="non-virtual"><scope>ILLIXR::offload_data</scope><name>record_logger_</name></member>
+      <member refid="classILLIXR_1_1plugin_1a7c1c7c1a0ec2e43bfa1118586a28932f" prot="public" virt="non-virtual"><scope>ILLIXR::offload_data</scope><name>spd_add_file_sink</name></member>
+      <member refid="classILLIXR_1_1plugin_1a569297189ef365cf93f6a95202c76d76" prot="public" virt="non-virtual"><scope>ILLIXR::offload_data</scope><name>spdlogger</name></member>
+      <member refid="classILLIXR_1_1plugin_1a30d7294817fc5e8a8216fbfbca233cdc" prot="public" virt="virtual"><scope>ILLIXR::offload_data</scope><name>start</name></member>
+      <member refid="classILLIXR_1_1plugin_1a2cefabfb6dd9800b1ebc8b07031661c4" prot="public" virt="virtual"><scope>ILLIXR::offload_data</scope><name>stop</name></member>
+      <member refid="classILLIXR_1_1offload__data_1a4987ef81e0a2cfa6ac88c46c5b2deed4" prot="private" virt="non-virtual"><scope>ILLIXR::offload_data</scope><name>switchboard_</name></member>
+      <member refid="classILLIXR_1_1offload__data_1a8c125b1df85db0a30b43c44c597dbd57" prot="private" virt="non-virtual"><scope>ILLIXR::offload_data</scope><name>time_seq_</name></member>
+      <member refid="classILLIXR_1_1offload__data_1a28e9a5900b61fb8670de4e0276b48e4f" prot="private" virt="non-virtual"><scope>ILLIXR::offload_data</scope><name>write_data_to_disk</name></member>
+      <member refid="classILLIXR_1_1offload__data_1a5c253a6c57963cecf4d7ce28cbb66639" prot="private" virt="non-virtual"><scope>ILLIXR::offload_data</scope><name>write_metadata</name></member>
+      <member refid="classILLIXR_1_1offload__data_1ad92e05689450393c281caf3de2c03471" prot="public" virt="non-virtual"><scope>ILLIXR::offload_data</scope><name>~offload_data</name></member>
+      <member refid="classILLIXR_1_1plugin_1a44d7b00c86e227bbc1a0b221da43d454" prot="public" virt="virtual"><scope>ILLIXR::offload_data</scope><name>~plugin</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

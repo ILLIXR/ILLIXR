@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_8c860899388e805501dff1578cdbc152" kind="dir">
+    <compoundname>/home/friedel/devel/ILLIXR/plugins/timewarp_vk</compoundname>
+    <innerdir refid="dir_b3ac6694119cf50b8ca895faceb83994">/home/friedel/devel/ILLIXR/plugins/timewarp_vk/monado</innerdir>
+    <innerfile refid="plugins_2timewarp__vk_2plugin_8cpp">plugin.cpp</innerfile>
+    <innerfile refid="plugins_2timewarp__vk_2plugin_8hpp">plugin.hpp</innerfile>
+    <innerfile refid="timewarp__vk_8cpp">timewarp_vk.cpp</innerfile>
+    <innerfile refid="timewarp__vk_8hpp">timewarp_vk.hpp</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/"/>
+  </compounddef>
+</doxygen>

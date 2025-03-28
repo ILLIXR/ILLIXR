@@ -1,0 +1,126 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classILLIXR_1_1switchboard_1_1network__writer" kind="class" language="C++" prot="public">
+    <compoundname>ILLIXR::switchboard::network_writer</compoundname>
+    <basecompoundref refid="classILLIXR_1_1switchboard_1_1writer" prot="public" virt="non-virtual">ILLIXR::switchboard::writer&lt; Serializable_event &gt;</basecompoundref>
+    <templateparamlist>
+      <param>
+        <type>typename Serializable_event</type>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1switchboard_1_1network__writer_1a75c2127e8247c80cc598a3328e6fc278" prot="private" static="no" mutable="no">
+        <type><ref refid="classILLIXR_1_1switchboard_1af91c1b9436918512e95e5fa8553846a7" kindref="member">ptr</ref>&lt; network::network_backend &gt;</type>
+        <definition>ptr&lt;network::network_backend&gt; ILLIXR::switchboard::network_writer&lt; Serializable_event &gt;::backend_</definition>
+        <argsstring></argsstring>
+        <name>backend_</name>
+        <qualifiedname>ILLIXR::switchboard::network_writer::backend_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="666" column="13" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="666" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1switchboard_1_1network__writer_1aa5d06e18c80b5e31a21535a59a311b77" prot="private" static="no" mutable="no">
+        <type>network::topic_config</type>
+        <definition>network::topic_config ILLIXR::switchboard::network_writer&lt; Serializable_event &gt;::config_</definition>
+        <argsstring></argsstring>
+        <name>config_</name>
+        <qualifiedname>ILLIXR::switchboard::network_writer::config_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="667" column="39" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="667" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classILLIXR_1_1switchboard_1_1network__writer_1ae6018352123ffadd9620c4dedeea7822" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::switchboard::network_writer&lt; Serializable_event &gt;::network_writer</definition>
+        <argsstring>(topic &amp;topic, ptr&lt; network::network_backend &gt; backend=nullptr, const network::topic_config &amp;config={})</argsstring>
+        <name>network_writer</name>
+        <qualifiedname>ILLIXR::switchboard::network_writer::network_writer</qualifiedname>
+        <param>
+          <type>topic &amp;</type>
+          <declname>topic</declname>
+        </param>
+        <param>
+          <type><ref refid="classILLIXR_1_1switchboard_1af91c1b9436918512e95e5fa8553846a7" kindref="member">ptr</ref>&lt; network::network_backend &gt;</type>
+          <declname>backend</declname>
+          <defval>nullptr</defval>
+        </param>
+        <param>
+          <type>const network::topic_config &amp;</type>
+          <declname>config</declname>
+          <defval>{}</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="634" column="18" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="634" bodyend="638"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1switchboard_1_1network__writer_1af3078d848e91150e0adac5af4c3c11c3" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void ILLIXR::switchboard::network_writer&lt; Serializable_event &gt;::put</definition>
+        <argsstring>(ptr&lt; Serializable_event &gt; &amp;&amp;this_specific_event) override</argsstring>
+        <name>put</name>
+        <qualifiedname>ILLIXR::switchboard::network_writer::put</qualifiedname>
+        <param>
+          <type><ref refid="classILLIXR_1_1switchboard_1af91c1b9436918512e95e5fa8553846a7" kindref="member">ptr</ref>&lt; Serializable_event &gt; &amp;&amp;</type>
+          <declname>this_specific_event</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="640" column="14" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="640" bodyend="663"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>ILLIXR::switchboard::network_writer&lt; Serializable_event &gt;</label>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ILLIXR::switchboard::writer&lt; Serializable_event &gt;</label>
+        <link refid="classILLIXR_1_1switchboard_1_1writer"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>ILLIXR::switchboard::network_writer&lt; Serializable_event &gt;</label>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ILLIXR::switchboard::writer&lt; Serializable_event &gt;</label>
+        <link refid="classILLIXR_1_1switchboard_1_1writer"/>
+      </node>
+    </collaborationgraph>
+    <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="632" column="5" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="632" bodyend="668"/>
+    <listofallmembers>
+      <member refid="classILLIXR_1_1switchboard_1_1writer_1aa79e6b3a1ddda30e7c58cbfef53d6895" prot="public" virt="non-virtual"><scope>ILLIXR::switchboard::network_writer</scope><name>allocate</name></member>
+      <member refid="classILLIXR_1_1switchboard_1_1network__writer_1a75c2127e8247c80cc598a3328e6fc278" prot="private" virt="non-virtual"><scope>ILLIXR::switchboard::network_writer</scope><name>backend_</name></member>
+      <member refid="classILLIXR_1_1switchboard_1_1network__writer_1aa5d06e18c80b5e31a21535a59a311b77" prot="private" virt="non-virtual"><scope>ILLIXR::switchboard::network_writer</scope><name>config_</name></member>
+      <member refid="classILLIXR_1_1switchboard_1_1network__writer_1ae6018352123ffadd9620c4dedeea7822" prot="public" virt="non-virtual"><scope>ILLIXR::switchboard::network_writer</scope><name>network_writer</name></member>
+      <member refid="classILLIXR_1_1switchboard_1_1network__writer_1af3078d848e91150e0adac5af4c3c11c3" prot="public" virt="non-virtual"><scope>ILLIXR::switchboard::network_writer</scope><name>put</name></member>
+      <member refid="classILLIXR_1_1switchboard_1_1writer_1a0885514a4c488c91e3d0b6532359eea3" prot="protected" virt="non-virtual"><scope>ILLIXR::switchboard::network_writer</scope><name>topic_</name></member>
+      <member refid="classILLIXR_1_1switchboard_1_1writer_1acb0ec861c8be1821fade6d115a12d7ba" prot="public" virt="non-virtual"><scope>ILLIXR::switchboard::network_writer</scope><name>writer</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

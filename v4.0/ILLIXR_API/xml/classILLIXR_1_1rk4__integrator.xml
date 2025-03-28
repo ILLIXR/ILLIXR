@@ -1,0 +1,355 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classILLIXR_1_1rk4__integrator" kind="class" language="C++" prot="public">
+    <compoundname>ILLIXR::rk4_integrator</compoundname>
+    <basecompoundref refid="classILLIXR_1_1plugin" prot="public" virt="non-virtual">ILLIXR::plugin</basecompoundref>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1rk4__integrator_1a22d43f294a964f0547c4897d8095a67b" prot="private" static="no" mutable="no">
+        <type>const std::shared_ptr&lt; <ref refid="classILLIXR_1_1switchboard" kindref="compound">switchboard</ref> &gt;</type>
+        <definition>const std::shared_ptr&lt;switchboard&gt; ILLIXR::rk4_integrator::switchboard_</definition>
+        <argsstring></argsstring>
+        <name>switchboard_</name>
+        <qualifiedname>ILLIXR::rk4_integrator::switchboard_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/rk4_integrator/plugin.hpp" line="24" column="27" bodyfile="/home/friedel/devel/ILLIXR/plugins/rk4_integrator/plugin.hpp" bodystart="24" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1rk4__integrator_1a175bdaf0f7b2f302406566b493434b9a" prot="private" static="no" mutable="no">
+        <type><ref refid="classILLIXR_1_1switchboard_1_1reader" kindref="compound">switchboard::reader</ref>&lt; <ref refid="structILLIXR_1_1data__format_1_1imu__integrator__input" kindref="compound">data_format::imu_integrator_input</ref> &gt;</type>
+        <definition>switchboard::reader&lt;data_format::imu_integrator_input&gt; ILLIXR::rk4_integrator::imu_integrator_input_</definition>
+        <argsstring></argsstring>
+        <name>imu_integrator_input_</name>
+        <qualifiedname>ILLIXR::rk4_integrator::imu_integrator_input_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/rk4_integrator/plugin.hpp" line="27" column="25" bodyfile="/home/friedel/devel/ILLIXR/plugins/rk4_integrator/plugin.hpp" bodystart="27" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1rk4__integrator_1a8d4397388ddd0ea22e6a3de1efd5cbdc" prot="private" static="no" mutable="no">
+        <type><ref refid="classILLIXR_1_1switchboard_1_1writer" kindref="compound">switchboard::writer</ref>&lt; <ref refid="structILLIXR_1_1data__format_1_1imu__raw__type" kindref="compound">data_format::imu_raw_type</ref> &gt;</type>
+        <definition>switchboard::writer&lt;data_format::imu_raw_type&gt; ILLIXR::rk4_integrator::imu_raw_</definition>
+        <argsstring></argsstring>
+        <name>imu_raw_</name>
+        <qualifiedname>ILLIXR::rk4_integrator::imu_raw_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/rk4_integrator/plugin.hpp" line="30" column="25" bodyfile="/home/friedel/devel/ILLIXR/plugins/rk4_integrator/plugin.hpp" bodystart="30" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1rk4__integrator_1ae2342115bdb5420bab755b39af99a2c1" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="structILLIXR_1_1data__format_1_1imu__type" kindref="compound">data_format::imu_type</ref> &gt;</type>
+        <definition>std::vector&lt;data_format::imu_type&gt; ILLIXR::rk4_integrator::imu_vec_</definition>
+        <argsstring></argsstring>
+        <name>imu_vec_</name>
+        <qualifiedname>ILLIXR::rk4_integrator::imu_vec_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/rk4_integrator/plugin.hpp" line="31" column="29" bodyfile="/home/friedel/devel/ILLIXR/plugins/rk4_integrator/plugin.hpp" bodystart="31" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1rk4__integrator_1a4ee29382c686a47a23f3b4d3d093f827" prot="private" static="no" mutable="no">
+        <type>duration</type>
+        <definition>duration ILLIXR::rk4_integrator::last_imu_offset_</definition>
+        <argsstring></argsstring>
+        <name>last_imu_offset_</name>
+        <qualifiedname>ILLIXR::rk4_integrator::last_imu_offset_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/rk4_integrator/plugin.hpp" line="32" column="52" bodyfile="/home/friedel/devel/ILLIXR/plugins/rk4_integrator/plugin.hpp" bodystart="32" bodyend="32"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1rk4__integrator_1a3ff36bee9295d5399b567cbc6bde2f0a" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool ILLIXR::rk4_integrator::has_last_offset_</definition>
+        <argsstring></argsstring>
+        <name>has_last_offset_</name>
+        <qualifiedname>ILLIXR::rk4_integrator::has_last_offset_</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/rk4_integrator/plugin.hpp" line="33" column="52" bodyfile="/home/friedel/devel/ILLIXR/plugins/rk4_integrator/plugin.hpp" bodystart="33" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1rk4__integrator_1a9e021c74a707f6512e3cf74fbe8551a8" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int ILLIXR::rk4_integrator::counter_</definition>
+        <argsstring></argsstring>
+        <name>counter_</name>
+        <qualifiedname>ILLIXR::rk4_integrator::counter_</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/rk4_integrator/plugin.hpp" line="35" column="13" bodyfile="/home/friedel/devel/ILLIXR/plugins/rk4_integrator/plugin.hpp" bodystart="35" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1rk4__integrator_1a6b0683175efa5c64f9c82539e1759b7c" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int ILLIXR::rk4_integrator::cam_count_</definition>
+        <argsstring></argsstring>
+        <name>cam_count_</name>
+        <qualifiedname>ILLIXR::rk4_integrator::cam_count_</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/rk4_integrator/plugin.hpp" line="36" column="13" bodyfile="/home/friedel/devel/ILLIXR/plugins/rk4_integrator/plugin.hpp" bodystart="36" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1rk4__integrator_1a37a1325b009da0c9765382f81b6e31a8" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int ILLIXR::rk4_integrator::total_imu_</definition>
+        <argsstring></argsstring>
+        <name>total_imu_</name>
+        <qualifiedname>ILLIXR::rk4_integrator::total_imu_</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/rk4_integrator/plugin.hpp" line="37" column="13" bodyfile="/home/friedel/devel/ILLIXR/plugins/rk4_integrator/plugin.hpp" bodystart="37" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1rk4__integrator_1ab382e99cbbcd4c278d90ebf39e0c6c43" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double ILLIXR::rk4_integrator::last_cam_time_</definition>
+        <argsstring></argsstring>
+        <name>last_cam_time_</name>
+        <qualifiedname>ILLIXR::rk4_integrator::last_cam_time_</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/rk4_integrator/plugin.hpp" line="38" column="13" bodyfile="/home/friedel/devel/ILLIXR/plugins/rk4_integrator/plugin.hpp" bodystart="38" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classILLIXR_1_1rk4__integrator_1aa355340bade474d98f9286c05b335bbc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>rk4_integrator::rk4_integrator</definition>
+        <argsstring>(const std::string &amp;name, phonebook *pb)</argsstring>
+        <name>rk4_integrator</name>
+        <qualifiedname>ILLIXR::rk4_integrator::rk4_integrator</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type><ref refid="classILLIXR_1_1phonebook" kindref="compound">phonebook</ref> *</type>
+          <declname>pb</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/rk4_integrator/plugin.hpp" line="13" column="6" bodyfile="/home/friedel/devel/ILLIXR/plugins/rk4_integrator/plugin.cpp" bodystart="19" bodyend="27"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1rk4__integrator_1a3ab16fa59f168df33e8ae10678e90ce5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void rk4_integrator::callback</definition>
+        <argsstring>(const switchboard::ptr&lt; const data_format::imu_type &gt; &amp;datum)</argsstring>
+        <name>callback</name>
+        <qualifiedname>ILLIXR::rk4_integrator::callback</qualifiedname>
+        <param>
+          <type>const <ref refid="classILLIXR_1_1switchboard_1af91c1b9436918512e95e5fa8553846a7" kindref="member">switchboard::ptr</ref>&lt; const <ref refid="structILLIXR_1_1data__format_1_1imu__type" kindref="compound">data_format::imu_type</ref> &gt; &amp;</type>
+          <declname>datum</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/rk4_integrator/plugin.hpp" line="14" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/rk4_integrator/plugin.cpp" bodystart="29" bodyend="36"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classILLIXR_1_1rk4__integrator_1a52d688a224937bfd69945c35a12eaaf7" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void rk4_integrator::clean_imu_vec</definition>
+        <argsstring>(time_point timestamp)</argsstring>
+        <name>clean_imu_vec</name>
+        <qualifiedname>ILLIXR::rk4_integrator::clean_imu_vec</qualifiedname>
+        <param>
+          <type>time_point</type>
+          <declname>timestamp</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/rk4_integrator/plugin.hpp" line="17" column="47" bodyfile="/home/friedel/devel/ILLIXR/plugins/rk4_integrator/plugin.cpp" bodystart="39" bodyend="47"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1rk4__integrator_1aee7ce5cace4eb9f10e719e15329a2e1f" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void rk4_integrator::propagate_imu_values</definition>
+        <argsstring>(time_point real_time)</argsstring>
+        <name>propagate_imu_values</name>
+        <qualifiedname>ILLIXR::rk4_integrator::propagate_imu_values</qualifiedname>
+        <param>
+          <type>time_point</type>
+          <declname>real_time</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+<para>TODO: Should be set and tested at the end of this function to avoid staleness from VIO.</para>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/rk4_integrator/plugin.hpp" line="18" column="47" bodyfile="/home/friedel/devel/ILLIXR/plugins/rk4_integrator/plugin.cpp" bodystart="50" bodyend="116"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-static-func">
+      <memberdef kind="function" id="classILLIXR_1_1rk4__integrator_1a0beb233354e4fd8e311530a1d3e46b78" prot="private" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::vector&lt; <ref refid="structILLIXR_1_1data__format_1_1imu__type" kindref="compound">data_format::imu_type</ref> &gt;</type>
+        <definition>std::vector&lt; imu_type &gt; rk4_integrator::select_imu_readings</definition>
+        <argsstring>(const std::vector&lt; data_format::imu_type &gt; &amp;imu_data, time_point time_begin, time_point time_end)</argsstring>
+        <name>select_imu_readings</name>
+        <qualifiedname>ILLIXR::rk4_integrator::select_imu_readings</qualifiedname>
+        <param>
+          <type>const std::vector&lt; <ref refid="structILLIXR_1_1data__format_1_1imu__type" kindref="compound">data_format::imu_type</ref> &gt; &amp;</type>
+          <declname>imu_data</declname>
+        </param>
+        <param>
+          <type>time_point</type>
+          <declname>time_begin</declname>
+        </param>
+        <param>
+          <type>time_point</type>
+          <declname>time_end</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/rk4_integrator/plugin.hpp" line="19" column="24" bodyfile="/home/friedel/devel/ILLIXR/plugins/rk4_integrator/plugin.cpp" bodystart="119" bodyend="158"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1rk4__integrator_1ad0f37af130ccf385685a1460d45165ae" prot="private" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structILLIXR_1_1data__format_1_1imu__type" kindref="compound">data_format::imu_type</ref></type>
+        <definition>imu_type rk4_integrator::interpolate_imu</definition>
+        <argsstring>(const data_format::imu_type &amp;imu1, const data_format::imu_type &amp;imu2, time_point timestamp)</argsstring>
+        <name>interpolate_imu</name>
+        <qualifiedname>ILLIXR::rk4_integrator::interpolate_imu</qualifiedname>
+        <param>
+          <type>const <ref refid="structILLIXR_1_1data__format_1_1imu__type" kindref="compound">data_format::imu_type</ref> &amp;</type>
+          <declname>imu1</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structILLIXR_1_1data__format_1_1imu__type" kindref="compound">data_format::imu_type</ref> &amp;</type>
+          <declname>imu2</declname>
+        </param>
+        <param>
+          <type>time_point</type>
+          <declname>timestamp</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/rk4_integrator/plugin.hpp" line="21" column="34" bodyfile="/home/friedel/devel/ILLIXR/plugins/rk4_integrator/plugin.cpp" bodystart="161" bodyend="165"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>ILLIXR::plugin</label>
+        <link refid="classILLIXR_1_1plugin"/>
+      </node>
+      <node id="1">
+        <label>ILLIXR::rk4_integrator</label>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="3">
+        <label>ILLIXR::phonebook</label>
+        <link refid="classILLIXR_1_1phonebook"/>
+      </node>
+      <node id="2">
+        <label>ILLIXR::plugin</label>
+        <link refid="classILLIXR_1_1plugin"/>
+        <childnode refid="3" relation="usage">
+          <edgelabel>phonebook_</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>ILLIXR::rk4_integrator</label>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/home/friedel/devel/ILLIXR/plugins/rk4_integrator/plugin.hpp" line="11" column="1" bodyfile="/home/friedel/devel/ILLIXR/plugins/rk4_integrator/plugin.hpp" bodystart="11" bodyend="39"/>
+    <listofallmembers>
+      <member refid="classILLIXR_1_1rk4__integrator_1a3ab16fa59f168df33e8ae10678e90ce5" prot="public" virt="non-virtual"><scope>ILLIXR::rk4_integrator</scope><name>callback</name></member>
+      <member refid="classILLIXR_1_1rk4__integrator_1a6b0683175efa5c64f9c82539e1759b7c" prot="private" virt="non-virtual"><scope>ILLIXR::rk4_integrator</scope><name>cam_count_</name></member>
+      <member refid="classILLIXR_1_1rk4__integrator_1a52d688a224937bfd69945c35a12eaaf7" prot="private" virt="non-virtual"><scope>ILLIXR::rk4_integrator</scope><name>clean_imu_vec</name></member>
+      <member refid="classILLIXR_1_1rk4__integrator_1a9e021c74a707f6512e3cf74fbe8551a8" prot="private" virt="non-virtual"><scope>ILLIXR::rk4_integrator</scope><name>counter_</name></member>
+      <member refid="classILLIXR_1_1plugin_1afe52734e7edc87bd0bf974caf112961b" prot="protected" virt="non-virtual"><scope>ILLIXR::rk4_integrator</scope><name>gen_guid_</name></member>
+      <member refid="classILLIXR_1_1plugin_1aebda022998bd35983e83f391dc0e5193" prot="public" virt="non-virtual"><scope>ILLIXR::rk4_integrator</scope><name>get_name</name></member>
+      <member refid="classILLIXR_1_1rk4__integrator_1a3ff36bee9295d5399b567cbc6bde2f0a" prot="private" virt="non-virtual"><scope>ILLIXR::rk4_integrator</scope><name>has_last_offset_</name></member>
+      <member refid="classILLIXR_1_1plugin_1aaedb3f9178bdd11e53815e158454aaf3" prot="protected" virt="non-virtual"><scope>ILLIXR::rk4_integrator</scope><name>id_</name></member>
+      <member refid="classILLIXR_1_1rk4__integrator_1a175bdaf0f7b2f302406566b493434b9a" prot="private" virt="non-virtual"><scope>ILLIXR::rk4_integrator</scope><name>imu_integrator_input_</name></member>
+      <member refid="classILLIXR_1_1rk4__integrator_1a8d4397388ddd0ea22e6a3de1efd5cbdc" prot="private" virt="non-virtual"><scope>ILLIXR::rk4_integrator</scope><name>imu_raw_</name></member>
+      <member refid="classILLIXR_1_1rk4__integrator_1ae2342115bdb5420bab755b39af99a2c1" prot="private" virt="non-virtual"><scope>ILLIXR::rk4_integrator</scope><name>imu_vec_</name></member>
+      <member refid="classILLIXR_1_1rk4__integrator_1ad0f37af130ccf385685a1460d45165ae" prot="private" virt="non-virtual"><scope>ILLIXR::rk4_integrator</scope><name>interpolate_imu</name></member>
+      <member refid="classILLIXR_1_1rk4__integrator_1ab382e99cbbcd4c278d90ebf39e0c6c43" prot="private" virt="non-virtual"><scope>ILLIXR::rk4_integrator</scope><name>last_cam_time_</name></member>
+      <member refid="classILLIXR_1_1rk4__integrator_1a4ee29382c686a47a23f3b4d3d093f827" prot="private" virt="non-virtual"><scope>ILLIXR::rk4_integrator</scope><name>last_imu_offset_</name></member>
+      <member refid="classILLIXR_1_1plugin_1aa963c518af83966173840a8558490888" prot="protected" virt="non-virtual"><scope>ILLIXR::rk4_integrator</scope><name>name_</name></member>
+      <member refid="classILLIXR_1_1plugin_1a6f7a2a9012350591c00d67a5bc0fd5a6" prot="protected" virt="non-virtual"><scope>ILLIXR::rk4_integrator</scope><name>phonebook_</name></member>
+      <member refid="classILLIXR_1_1plugin_1abc91c0e5be180a8e0bbeaf114a127f17" prot="public" virt="non-virtual"><scope>ILLIXR::rk4_integrator</scope><name>plugin</name></member>
+      <member refid="classILLIXR_1_1plugin_1a8d40c2421cde09079372d12bfe7d45fe" prot="protected" virt="non-virtual"><scope>ILLIXR::rk4_integrator</scope><name>plugin_logger_</name></member>
+      <member refid="classILLIXR_1_1rk4__integrator_1aee7ce5cace4eb9f10e719e15329a2e1f" prot="private" virt="non-virtual"><scope>ILLIXR::rk4_integrator</scope><name>propagate_imu_values</name></member>
+      <member refid="classILLIXR_1_1plugin_1aef671d0cd9b6de45d3ade16dedbf4974" prot="protected" virt="non-virtual"><scope>ILLIXR::rk4_integrator</scope><name>record_logger_</name></member>
+      <member refid="classILLIXR_1_1rk4__integrator_1aa355340bade474d98f9286c05b335bbc" prot="public" virt="non-virtual"><scope>ILLIXR::rk4_integrator</scope><name>rk4_integrator</name></member>
+      <member refid="classILLIXR_1_1rk4__integrator_1a0beb233354e4fd8e311530a1d3e46b78" prot="private" virt="non-virtual"><scope>ILLIXR::rk4_integrator</scope><name>select_imu_readings</name></member>
+      <member refid="classILLIXR_1_1plugin_1a7c1c7c1a0ec2e43bfa1118586a28932f" prot="public" virt="non-virtual"><scope>ILLIXR::rk4_integrator</scope><name>spd_add_file_sink</name></member>
+      <member refid="classILLIXR_1_1plugin_1a569297189ef365cf93f6a95202c76d76" prot="public" virt="non-virtual"><scope>ILLIXR::rk4_integrator</scope><name>spdlogger</name></member>
+      <member refid="classILLIXR_1_1plugin_1a30d7294817fc5e8a8216fbfbca233cdc" prot="public" virt="virtual"><scope>ILLIXR::rk4_integrator</scope><name>start</name></member>
+      <member refid="classILLIXR_1_1plugin_1a2cefabfb6dd9800b1ebc8b07031661c4" prot="public" virt="virtual"><scope>ILLIXR::rk4_integrator</scope><name>stop</name></member>
+      <member refid="classILLIXR_1_1rk4__integrator_1a22d43f294a964f0547c4897d8095a67b" prot="private" virt="non-virtual"><scope>ILLIXR::rk4_integrator</scope><name>switchboard_</name></member>
+      <member refid="classILLIXR_1_1rk4__integrator_1a37a1325b009da0c9765382f81b6e31a8" prot="private" virt="non-virtual"><scope>ILLIXR::rk4_integrator</scope><name>total_imu_</name></member>
+      <member refid="classILLIXR_1_1plugin_1a44d7b00c86e227bbc1a0b221da43d454" prot="public" virt="virtual"><scope>ILLIXR::rk4_integrator</scope><name>~plugin</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

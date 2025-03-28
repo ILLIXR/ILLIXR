@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_056ec8f0377ddc4293192cbc6b19c99c" kind="dir">
+    <compoundname>/home/friedel/devel/ILLIXR/services</compoundname>
+    <innerdir refid="dir_9629f7b573b56ae0116f56c1f3126994">/home/friedel/devel/ILLIXR/services/fauxpose</innerdir>
+    <innerdir refid="dir_513c1e104d4fed82bb3eedf56c3611bf">/home/friedel/devel/ILLIXR/services/pose_lookup</innerdir>
+    <innerdir refid="dir_5436d1ada92960bf250a6b19556e4201">/home/friedel/devel/ILLIXR/services/pose_prediction</innerdir>
+    <innerdir refid="dir_afea582717a47693732909439b44aeb5">/home/friedel/devel/ILLIXR/services/vkdemo</innerdir>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/services/"/>
+  </compounddef>
+</doxygen>

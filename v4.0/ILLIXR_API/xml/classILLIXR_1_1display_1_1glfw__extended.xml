@@ -1,0 +1,202 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classILLIXR_1_1display_1_1glfw__extended" kind="class" language="C++" prot="public">
+    <compoundname>ILLIXR::display::glfw_extended</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">ILLIXR::display::display_backend</basecompoundref>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1display_1_1glfw__extended_1af31210062c27ca6762ac4110eeb1d7f6" prot="private" static="no" mutable="no">
+        <type>void *</type>
+        <definition>void* ILLIXR::display::glfw_extended::window_</definition>
+        <argsstring></argsstring>
+        <name>window_</name>
+        <qualifiedname>ILLIXR::display::glfw_extended::window_</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/display/glfw_extended.hpp" line="32" column="10" bodyfile="/home/friedel/devel/ILLIXR/src/display/glfw_extended.hpp" bodystart="32" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classILLIXR_1_1display_1_1glfw__extended_1a5d432d972ecf31a1d11d40bc5245f608" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>glfw_extended::glfw_extended</definition>
+        <argsstring>()</argsstring>
+        <name>glfw_extended</name>
+        <qualifiedname>ILLIXR::display::glfw_extended::glfw_extended</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/display/glfw_extended.hpp" line="9" column="5" bodyfile="/home/friedel/devel/ILLIXR/src/display/glfw_extended.cpp" bodystart="59" bodyend="69"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1display_1_1glfw__extended_1aabe92f27b447a65813201d45795f229c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void glfw_extended::setup_display</definition>
+        <argsstring>(const std::shared_ptr&lt; switchboard &gt; sb, VkInstance vk_instance, VkPhysicalDevice vk_physical_device) override</argsstring>
+        <name>setup_display</name>
+        <qualifiedname>ILLIXR::display::glfw_extended::setup_display</qualifiedname>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classILLIXR_1_1switchboard" kindref="compound">switchboard</ref> &gt;</type>
+          <declname>sb</declname>
+        </param>
+        <param>
+          <type>VkInstance</type>
+          <declname>vk_instance</declname>
+        </param>
+        <param>
+          <type>VkPhysicalDevice</type>
+          <declname>vk_physical_device</declname>
+        </param>
+        <briefdescription>
+<para>Sets up the GLFW environment. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This function initializes the GLFW library, sets the window hints for the client API and resizability, and creates a GLFW window with the specified width and height.</para>
+<para><parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername>runtime_error</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>If GLFW initialization fails. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/display/glfw_extended.hpp" line="18" column="10" bodyfile="/home/friedel/devel/ILLIXR/src/display/glfw_extended.cpp" bodystart="11" bodyend="16"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1display_1_1glfw__extended_1ad9abc4873f08201b09c72b6fd02fd1fa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::pair&lt; uint32_t, uint32_t &gt;</type>
+        <definition>std::pair&lt; uint32_t, uint32_t &gt; glfw_extended::get_framebuffer_size</definition>
+        <argsstring>()</argsstring>
+        <name>get_framebuffer_size</name>
+        <qualifiedname>ILLIXR::display::glfw_extended::get_framebuffer_size</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/display/glfw_extended.hpp" line="23" column="15" bodyfile="/home/friedel/devel/ILLIXR/src/display/glfw_extended.cpp" bodystart="36" bodyend="43"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1display_1_1glfw__extended_1a11a9822d2827f791615ed4549f53eadc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void glfw_extended::cleanup</definition>
+        <argsstring>() override</argsstring>
+        <name>cleanup</name>
+        <qualifiedname>ILLIXR::display::glfw_extended::cleanup</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/display/glfw_extended.hpp" line="24" column="35" bodyfile="/home/friedel/devel/ILLIXR/src/display/glfw_extended.cpp" bodystart="45" bodyend="49"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1display_1_1glfw__extended_1a87f77471fc7f62a8dced1d2aea223212" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::set&lt; const char * &gt;</type>
+        <definition>std::set&lt; const char * &gt; glfw_extended::get_required_instance_extensions</definition>
+        <argsstring>() override</argsstring>
+        <name>get_required_instance_extensions</name>
+        <qualifiedname>ILLIXR::display::glfw_extended::get_required_instance_extensions</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/display/glfw_extended.hpp" line="25" column="22" bodyfile="/home/friedel/devel/ILLIXR/src/display/glfw_extended.cpp" bodystart="51" bodyend="57"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1display_1_1glfw__extended_1a774c32cc8f68c47f0e269fd657d50db5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::set&lt; const char * &gt;</type>
+        <definition>std::set&lt; const char * &gt; glfw_extended::get_required_device_extensions</definition>
+        <argsstring>() override</argsstring>
+        <name>get_required_device_extensions</name>
+        <qualifiedname>ILLIXR::display::glfw_extended::get_required_device_extensions</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/display/glfw_extended.hpp" line="26" column="22" bodyfile="/home/friedel/devel/ILLIXR/src/display/glfw_extended.cpp" bodystart="71" bodyend="73"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1display_1_1glfw__extended_1a4eaea18533617e6da4375811b07b98a4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>display_backend_type</type>
+        <definition>display_backend::display_backend_type glfw_extended::get_type</definition>
+        <argsstring>() override</argsstring>
+        <name>get_type</name>
+        <qualifiedname>ILLIXR::display::glfw_extended::get_type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/display/glfw_extended.hpp" line="27" column="35" bodyfile="/home/friedel/devel/ILLIXR/src/display/glfw_extended.cpp" bodystart="75" bodyend="77"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classILLIXR_1_1display_1_1glfw__extended_1a66ade9f5962845516d25b3e89b5a90ce" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void glfw_extended::poll_window_events</definition>
+        <argsstring>()</argsstring>
+        <name>poll_window_events</name>
+        <qualifiedname>ILLIXR::display::glfw_extended::poll_window_events</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/display/glfw_extended.hpp" line="21" column="17" bodyfile="/home/friedel/devel/ILLIXR/src/display/glfw_extended.cpp" bodystart="32" bodyend="34"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classILLIXR_1_1display_1_1glfw__extended_1a12adf5fb0ae52d84cbd4ee08fce784b2" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>VkSurfaceKHR</type>
+        <definition>VkSurfaceKHR glfw_extended::create_surface</definition>
+        <argsstring>() override</argsstring>
+        <name>create_surface</name>
+        <qualifiedname>ILLIXR::display::glfw_extended::create_surface</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/display/glfw_extended.hpp" line="30" column="18" bodyfile="/home/friedel/devel/ILLIXR/src/display/glfw_extended.cpp" bodystart="18" bodyend="30"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/src/display/glfw_extended.hpp" line="7" column="1" bodyfile="/home/friedel/devel/ILLIXR/src/display/glfw_extended.hpp" bodystart="7" bodyend="33"/>
+    <listofallmembers>
+      <member refid="classILLIXR_1_1display_1_1glfw__extended_1a11a9822d2827f791615ed4549f53eadc" prot="public" virt="non-virtual"><scope>ILLIXR::display::glfw_extended</scope><name>cleanup</name></member>
+      <member refid="classILLIXR_1_1display_1_1glfw__extended_1a12adf5fb0ae52d84cbd4ee08fce784b2" prot="private" virt="non-virtual"><scope>ILLIXR::display::glfw_extended</scope><name>create_surface</name></member>
+      <member refid="classILLIXR_1_1display_1_1display__backend_1a6bb549f03727635d111f544ca0c0cf35" prot="public" virt="non-virtual"><scope>ILLIXR::display::glfw_extended</scope><name>display_backend_type</name></member>
+      <member refid="classILLIXR_1_1display_1_1glfw__extended_1ad9abc4873f08201b09c72b6fd02fd1fa" prot="public" virt="non-virtual"><scope>ILLIXR::display::glfw_extended</scope><name>get_framebuffer_size</name></member>
+      <member refid="classILLIXR_1_1display_1_1glfw__extended_1a774c32cc8f68c47f0e269fd657d50db5" prot="public" virt="non-virtual"><scope>ILLIXR::display::glfw_extended</scope><name>get_required_device_extensions</name></member>
+      <member refid="classILLIXR_1_1display_1_1glfw__extended_1a87f77471fc7f62a8dced1d2aea223212" prot="public" virt="non-virtual"><scope>ILLIXR::display::glfw_extended</scope><name>get_required_instance_extensions</name></member>
+      <member refid="classILLIXR_1_1display_1_1glfw__extended_1a4eaea18533617e6da4375811b07b98a4" prot="public" virt="non-virtual"><scope>ILLIXR::display::glfw_extended</scope><name>get_type</name></member>
+      <member refid="classILLIXR_1_1display_1_1display__backend_1a6bb549f03727635d111f544ca0c0cf35a6c22ae7cd43cc6c85dc63463f39b30b3" prot="public" virt="non-virtual"><scope>ILLIXR::display::glfw_extended</scope><name>GLFW</name></member>
+      <member refid="classILLIXR_1_1display_1_1glfw__extended_1a5d432d972ecf31a1d11d40bc5245f608" prot="public" virt="non-virtual"><scope>ILLIXR::display::glfw_extended</scope><name>glfw_extended</name></member>
+      <member refid="classILLIXR_1_1display_1_1display__backend_1a6bb549f03727635d111f544ca0c0cf35a9d4de65feff923a0f7da4d0c8b8cd878" prot="public" virt="non-virtual"><scope>ILLIXR::display::glfw_extended</scope><name>HEADLESS</name></member>
+      <member refid="classILLIXR_1_1display_1_1glfw__extended_1a66ade9f5962845516d25b3e89b5a90ce" prot="public" virt="non-virtual"><scope>ILLIXR::display::glfw_extended</scope><name>poll_window_events</name></member>
+      <member refid="classILLIXR_1_1display_1_1glfw__extended_1aabe92f27b447a65813201d45795f229c" prot="public" virt="non-virtual"><scope>ILLIXR::display::glfw_extended</scope><name>setup_display</name></member>
+      <member refid="classILLIXR_1_1display_1_1display__backend_1a9ea10d97922d75ec50123c500e456e58" prot="protected" virt="non-virtual"><scope>ILLIXR::display::glfw_extended</scope><name>vk_instance_</name></member>
+      <member refid="classILLIXR_1_1display_1_1glfw__extended_1af31210062c27ca6762ac4110eeb1d7f6" prot="private" virt="non-virtual"><scope>ILLIXR::display::glfw_extended</scope><name>window_</name></member>
+      <member refid="classILLIXR_1_1display_1_1display__backend_1a6bb549f03727635d111f544ca0c0cf35a76bb4a005202c52102006cef21d0ee35" prot="public" virt="non-virtual"><scope>ILLIXR::display::glfw_extended</scope><name>X11_DIRECT</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

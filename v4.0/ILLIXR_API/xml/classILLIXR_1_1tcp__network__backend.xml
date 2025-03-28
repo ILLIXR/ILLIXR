@@ -1,0 +1,462 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classILLIXR_1_1tcp__network__backend" kind="class" language="C++" prot="public">
+    <compoundname>ILLIXR::tcp_network_backend</compoundname>
+    <basecompoundref refid="classILLIXR_1_1plugin" prot="public" virt="non-virtual">ILLIXR::plugin</basecompoundref>
+    <basecompoundref prot="public" virt="non-virtual">ILLIXR::network::network_backend</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1tcp__network__backend_1a8cf1e0b1fbccc2a5707e642b6eb6f69a" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool ILLIXR::tcp_network_backend::client</definition>
+        <argsstring></argsstring>
+        <name>client</name>
+        <qualifiedname>ILLIXR::tcp_network_backend::client</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/tcp_network_backend/plugin.hpp" line="24" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/tcp_network_backend/plugin.hpp" bodystart="24" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1tcp__network__backend_1ab0ce80807d252704497c44fd57c405bc" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classILLIXR_1_1switchboard" kindref="compound">switchboard</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;switchboard&gt; ILLIXR::tcp_network_backend::switchboard_</definition>
+        <argsstring></argsstring>
+        <name>switchboard_</name>
+        <qualifiedname>ILLIXR::tcp_network_backend::switchboard_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/tcp_network_backend/plugin.hpp" line="29" column="21" bodyfile="/home/friedel/devel/ILLIXR/plugins/tcp_network_backend/plugin.hpp" bodystart="29" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1tcp__network__backend_1a3e0657177affa7a15cf008d2ee05aeb5" prot="private" static="no" mutable="no">
+        <type>std::atomic&lt; bool &gt;</type>
+        <definition>std::atomic&lt;bool&gt; ILLIXR::tcp_network_backend::running_</definition>
+        <argsstring></argsstring>
+        <name>running_</name>
+        <qualifiedname>ILLIXR::tcp_network_backend::running_</qualifiedname>
+        <initializer>= true</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/tcp_network_backend/plugin.hpp" line="30" column="28" bodyfile="/home/friedel/devel/ILLIXR/plugins/tcp_network_backend/plugin.hpp" bodystart="30" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1tcp__network__backend_1a6a2d0801ec00f2f1214d0c7f2a86249e" prot="private" static="no" mutable="no">
+        <type>std::atomic&lt; bool &gt;</type>
+        <definition>std::atomic&lt;bool&gt; ILLIXR::tcp_network_backend::ready_</definition>
+        <argsstring></argsstring>
+        <name>ready_</name>
+        <qualifiedname>ILLIXR::tcp_network_backend::ready_</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/tcp_network_backend/plugin.hpp" line="31" column="28" bodyfile="/home/friedel/devel/ILLIXR/plugins/tcp_network_backend/plugin.hpp" bodystart="31" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1tcp__network__backend_1a2ae56e40e498e17028038ce9ab717fd3" prot="private" static="no" mutable="no">
+        <type>network::TCPSocket *</type>
+        <definition>network::TCPSocket* ILLIXR::tcp_network_backend::peer_socket_</definition>
+        <argsstring></argsstring>
+        <name>peer_socket_</name>
+        <qualifiedname>ILLIXR::tcp_network_backend::peer_socket_</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/tcp_network_backend/plugin.hpp" line="32" column="33" bodyfile="/home/friedel/devel/ILLIXR/plugins/tcp_network_backend/plugin.hpp" bodystart="32" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1tcp__network__backend_1aaeba6dfa9adc081fd0aee1ca6805c3c9" prot="private" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string ILLIXR::tcp_network_backend::server_ip_</definition>
+        <argsstring></argsstring>
+        <name>server_ip_</name>
+        <qualifiedname>ILLIXR::tcp_network_backend::server_ip_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/tcp_network_backend/plugin.hpp" line="34" column="17" bodyfile="/home/friedel/devel/ILLIXR/plugins/tcp_network_backend/plugin.hpp" bodystart="34" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1tcp__network__backend_1a79a7a6215f62168b189153c572e75640" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int ILLIXR::tcp_network_backend::server_port_</definition>
+        <argsstring></argsstring>
+        <name>server_port_</name>
+        <qualifiedname>ILLIXR::tcp_network_backend::server_port_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/tcp_network_backend/plugin.hpp" line="35" column="17" bodyfile="/home/friedel/devel/ILLIXR/plugins/tcp_network_backend/plugin.hpp" bodystart="35" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1tcp__network__backend_1a9e55224fc2bfddb05fb4191363c8484f" prot="private" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string ILLIXR::tcp_network_backend::client_ip_</definition>
+        <argsstring></argsstring>
+        <name>client_ip_</name>
+        <qualifiedname>ILLIXR::tcp_network_backend::client_ip_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/tcp_network_backend/plugin.hpp" line="36" column="17" bodyfile="/home/friedel/devel/ILLIXR/plugins/tcp_network_backend/plugin.hpp" bodystart="36" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1tcp__network__backend_1a2127495fe9204458e396dbe6e4c181fe" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int ILLIXR::tcp_network_backend::client_port_</definition>
+        <argsstring></argsstring>
+        <name>client_port_</name>
+        <qualifiedname>ILLIXR::tcp_network_backend::client_port_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/tcp_network_backend/plugin.hpp" line="37" column="17" bodyfile="/home/friedel/devel/ILLIXR/plugins/tcp_network_backend/plugin.hpp" bodystart="37" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1tcp__network__backend_1a3e9f680a6301e204c631b612b7db6660" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int ILLIXR::tcp_network_backend::is_client_</definition>
+        <argsstring></argsstring>
+        <name>is_client_</name>
+        <qualifiedname>ILLIXR::tcp_network_backend::is_client_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/tcp_network_backend/plugin.hpp" line="38" column="17" bodyfile="/home/friedel/devel/ILLIXR/plugins/tcp_network_backend/plugin.hpp" bodystart="38" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1tcp__network__backend_1ad1782db197d7a3a55416c8f056056a98" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>std::vector&lt;std::string&gt; ILLIXR::tcp_network_backend::networked_topics_</definition>
+        <argsstring></argsstring>
+        <name>networked_topics_</name>
+        <qualifiedname>ILLIXR::tcp_network_backend::networked_topics_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/tcp_network_backend/plugin.hpp" line="40" column="47" bodyfile="/home/friedel/devel/ILLIXR/plugins/tcp_network_backend/plugin.hpp" bodystart="40" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1tcp__network__backend_1afea0d13f0cefa00a6df1c372b5ab5aa0" prot="private" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::string, network::topic_config &gt;</type>
+        <definition>std::unordered_map&lt;std::string, network::topic_config&gt; ILLIXR::tcp_network_backend::networked_topics_configs_</definition>
+        <argsstring></argsstring>
+        <name>networked_topics_configs_</name>
+        <qualifiedname>ILLIXR::tcp_network_backend::networked_topics_configs_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/tcp_network_backend/plugin.hpp" line="41" column="24" bodyfile="/home/friedel/devel/ILLIXR/plugins/tcp_network_backend/plugin.hpp" bodystart="41" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1tcp__network__backend_1abbb3a0f29708edb22c965b5b7869993d" prot="private" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string ILLIXR::tcp_network_backend::delimiter_</definition>
+        <argsstring></argsstring>
+        <name>delimiter_</name>
+        <qualifiedname>ILLIXR::tcp_network_backend::delimiter_</qualifiedname>
+        <initializer>= &quot;:&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/tcp_network_backend/plugin.hpp" line="44" column="17" bodyfile="/home/friedel/devel/ILLIXR/plugins/tcp_network_backend/plugin.hpp" bodystart="44" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classILLIXR_1_1tcp__network__backend_1aa647459f49f690bb2722155803ed9a5d" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>tcp_network_backend::tcp_network_backend</definition>
+        <argsstring>(const std::string &amp;name_, phonebook *pb_)</argsstring>
+        <name>tcp_network_backend</name>
+        <qualifiedname>ILLIXR::tcp_network_backend::tcp_network_backend</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>name_</declname>
+        </param>
+        <param>
+          <type><ref refid="classILLIXR_1_1phonebook" kindref="compound">phonebook</ref> *</type>
+          <declname>pb_</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/tcp_network_backend/plugin.hpp" line="15" column="14" bodyfile="/home/friedel/devel/ILLIXR/plugins/tcp_network_backend/plugin.cpp" bodystart="5" bodyend="54"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1tcp__network__backend_1af5cc592fe50f46b83f8a7a543fe722d5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void tcp_network_backend::start_client</definition>
+        <argsstring>()</argsstring>
+        <name>start_client</name>
+        <qualifiedname>ILLIXR::tcp_network_backend::start_client</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/tcp_network_backend/plugin.hpp" line="16" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/tcp_network_backend/plugin.cpp" bodystart="56" bodyend="71"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1tcp__network__backend_1a04adf3d5bb841544338c4480f26d193c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void tcp_network_backend::start_server</definition>
+        <argsstring>()</argsstring>
+        <name>start_server</name>
+        <qualifiedname>ILLIXR::tcp_network_backend::start_server</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/tcp_network_backend/plugin.hpp" line="17" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/tcp_network_backend/plugin.cpp" bodystart="73" bodyend="85"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1tcp__network__backend_1aa49e7ceeb20ff0a48b330ef50c056061" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void tcp_network_backend::read_loop</definition>
+        <argsstring>(network::TCPSocket *socket)</argsstring>
+        <name>read_loop</name>
+        <qualifiedname>ILLIXR::tcp_network_backend::read_loop</qualifiedname>
+        <param>
+          <type>network::TCPSocket *</type>
+          <declname>socket</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/tcp_network_backend/plugin.hpp" line="18" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/tcp_network_backend/plugin.cpp" bodystart="87" bodyend="110"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1tcp__network__backend_1a1f6dabdb276b51452d48745f328e992d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void tcp_network_backend::topic_create</definition>
+        <argsstring>(std::string topic_name, network::topic_config &amp;config) override</argsstring>
+        <name>topic_create</name>
+        <qualifiedname>ILLIXR::tcp_network_backend::topic_create</qualifiedname>
+        <param>
+          <type>std::string</type>
+          <declname>topic_name</declname>
+        </param>
+        <param>
+          <type>network::topic_config &amp;</type>
+          <declname>config</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/tcp_network_backend/plugin.hpp" line="19" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/tcp_network_backend/plugin.cpp" bodystart="112" bodyend="123"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1tcp__network__backend_1a20f0e13e6d610f9382d843ad3766b94a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool tcp_network_backend::is_topic_networked</definition>
+        <argsstring>(std::string topic_name) override</argsstring>
+        <name>is_topic_networked</name>
+        <qualifiedname>ILLIXR::tcp_network_backend::is_topic_networked</qualifiedname>
+        <param>
+          <type>std::string</type>
+          <declname>topic_name</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/tcp_network_backend/plugin.hpp" line="20" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/tcp_network_backend/plugin.cpp" bodystart="125" bodyend="127"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1tcp__network__backend_1a2b6ca4503a8ba0198cf6c2f7a242c867" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void tcp_network_backend::topic_send</definition>
+        <argsstring>(std::string topic_name, std::string &amp;&amp;message) override</argsstring>
+        <name>topic_send</name>
+        <qualifiedname>ILLIXR::tcp_network_backend::topic_send</qualifiedname>
+        <param>
+          <type>std::string</type>
+          <declname>topic_name</declname>
+        </param>
+        <param>
+          <type>std::string &amp;&amp;</type>
+          <declname>message</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/tcp_network_backend/plugin.hpp" line="21" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/tcp_network_backend/plugin.cpp" bodystart="129" bodyend="137"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1tcp__network__backend_1a63728d5f98a04ecd4dd93e2c0dfaa4fb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void tcp_network_backend::topic_receive</definition>
+        <argsstring>(const std::string &amp;topic_name, std::vector&lt; char &gt; &amp;message)</argsstring>
+        <name>topic_receive</name>
+        <qualifiedname>ILLIXR::tcp_network_backend::topic_receive</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>topic_name</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; char &gt; &amp;</type>
+          <declname>message</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/tcp_network_backend/plugin.hpp" line="22" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/tcp_network_backend/plugin.cpp" bodystart="140" bodyend="167"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1tcp__network__backend_1a9180a91ffb15c3ae0f865a6b5a418216" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void tcp_network_backend::stop</definition>
+        <argsstring>() override</argsstring>
+        <name>stop</name>
+        <qualifiedname>ILLIXR::tcp_network_backend::stop</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/tcp_network_backend/plugin.hpp" line="23" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/tcp_network_backend/plugin.cpp" bodystart="169" bodyend="172"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classILLIXR_1_1tcp__network__backend_1a14022fe23e9e5f2eaa4cb8c056b2af87" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void tcp_network_backend::send_to_peer</definition>
+        <argsstring>(const std::string &amp;topic_name, std::string &amp;&amp;message)</argsstring>
+        <name>send_to_peer</name>
+        <qualifiedname>ILLIXR::tcp_network_backend::send_to_peer</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>topic_name</declname>
+        </param>
+        <param>
+          <type>std::string &amp;&amp;</type>
+          <declname>message</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/tcp_network_backend/plugin.hpp" line="27" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/tcp_network_backend/plugin.cpp" bodystart="174" bodyend="185"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>ILLIXR::plugin</label>
+        <link refid="classILLIXR_1_1plugin"/>
+      </node>
+      <node id="1">
+        <label>ILLIXR::tcp_network_backend</label>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="3">
+        <label>ILLIXR::phonebook</label>
+        <link refid="classILLIXR_1_1phonebook"/>
+      </node>
+      <node id="2">
+        <label>ILLIXR::plugin</label>
+        <link refid="classILLIXR_1_1plugin"/>
+        <childnode refid="3" relation="usage">
+          <edgelabel>phonebook_</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>ILLIXR::tcp_network_backend</label>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/home/friedel/devel/ILLIXR/plugins/tcp_network_backend/plugin.hpp" line="11" column="1" bodyfile="/home/friedel/devel/ILLIXR/plugins/tcp_network_backend/plugin.hpp" bodystart="13" bodyend="45"/>
+    <listofallmembers>
+      <member refid="classILLIXR_1_1tcp__network__backend_1a8cf1e0b1fbccc2a5707e642b6eb6f69a" prot="public" virt="non-virtual"><scope>ILLIXR::tcp_network_backend</scope><name>client</name></member>
+      <member refid="classILLIXR_1_1tcp__network__backend_1a9e55224fc2bfddb05fb4191363c8484f" prot="private" virt="non-virtual"><scope>ILLIXR::tcp_network_backend</scope><name>client_ip_</name></member>
+      <member refid="classILLIXR_1_1tcp__network__backend_1a2127495fe9204458e396dbe6e4c181fe" prot="private" virt="non-virtual"><scope>ILLIXR::tcp_network_backend</scope><name>client_port_</name></member>
+      <member refid="classILLIXR_1_1tcp__network__backend_1abbb3a0f29708edb22c965b5b7869993d" prot="private" virt="non-virtual"><scope>ILLIXR::tcp_network_backend</scope><name>delimiter_</name></member>
+      <member refid="classILLIXR_1_1plugin_1afe52734e7edc87bd0bf974caf112961b" prot="protected" virt="non-virtual"><scope>ILLIXR::tcp_network_backend</scope><name>gen_guid_</name></member>
+      <member refid="classILLIXR_1_1plugin_1aebda022998bd35983e83f391dc0e5193" prot="public" virt="non-virtual"><scope>ILLIXR::tcp_network_backend</scope><name>get_name</name></member>
+      <member refid="classILLIXR_1_1plugin_1aaedb3f9178bdd11e53815e158454aaf3" prot="protected" virt="non-virtual"><scope>ILLIXR::tcp_network_backend</scope><name>id_</name></member>
+      <member refid="classILLIXR_1_1tcp__network__backend_1a3e9f680a6301e204c631b612b7db6660" prot="private" virt="non-virtual"><scope>ILLIXR::tcp_network_backend</scope><name>is_client_</name></member>
+      <member refid="classILLIXR_1_1tcp__network__backend_1a20f0e13e6d610f9382d843ad3766b94a" prot="public" virt="non-virtual"><scope>ILLIXR::tcp_network_backend</scope><name>is_topic_networked</name></member>
+      <member refid="classILLIXR_1_1plugin_1aa963c518af83966173840a8558490888" prot="protected" virt="non-virtual"><scope>ILLIXR::tcp_network_backend</scope><name>name_</name></member>
+      <member refid="classILLIXR_1_1tcp__network__backend_1ad1782db197d7a3a55416c8f056056a98" prot="private" virt="non-virtual"><scope>ILLIXR::tcp_network_backend</scope><name>networked_topics_</name></member>
+      <member refid="classILLIXR_1_1tcp__network__backend_1afea0d13f0cefa00a6df1c372b5ab5aa0" prot="private" virt="non-virtual"><scope>ILLIXR::tcp_network_backend</scope><name>networked_topics_configs_</name></member>
+      <member refid="classILLIXR_1_1tcp__network__backend_1a2ae56e40e498e17028038ce9ab717fd3" prot="private" virt="non-virtual"><scope>ILLIXR::tcp_network_backend</scope><name>peer_socket_</name></member>
+      <member refid="classILLIXR_1_1plugin_1a6f7a2a9012350591c00d67a5bc0fd5a6" prot="protected" virt="non-virtual"><scope>ILLIXR::tcp_network_backend</scope><name>phonebook_</name></member>
+      <member refid="classILLIXR_1_1plugin_1abc91c0e5be180a8e0bbeaf114a127f17" prot="public" virt="non-virtual"><scope>ILLIXR::tcp_network_backend</scope><name>plugin</name></member>
+      <member refid="classILLIXR_1_1plugin_1a8d40c2421cde09079372d12bfe7d45fe" prot="protected" virt="non-virtual"><scope>ILLIXR::tcp_network_backend</scope><name>plugin_logger_</name></member>
+      <member refid="classILLIXR_1_1tcp__network__backend_1aa49e7ceeb20ff0a48b330ef50c056061" prot="public" virt="non-virtual"><scope>ILLIXR::tcp_network_backend</scope><name>read_loop</name></member>
+      <member refid="classILLIXR_1_1tcp__network__backend_1a6a2d0801ec00f2f1214d0c7f2a86249e" prot="private" virt="non-virtual"><scope>ILLIXR::tcp_network_backend</scope><name>ready_</name></member>
+      <member refid="classILLIXR_1_1plugin_1aef671d0cd9b6de45d3ade16dedbf4974" prot="protected" virt="non-virtual"><scope>ILLIXR::tcp_network_backend</scope><name>record_logger_</name></member>
+      <member refid="classILLIXR_1_1tcp__network__backend_1a3e0657177affa7a15cf008d2ee05aeb5" prot="private" virt="non-virtual"><scope>ILLIXR::tcp_network_backend</scope><name>running_</name></member>
+      <member refid="classILLIXR_1_1tcp__network__backend_1a14022fe23e9e5f2eaa4cb8c056b2af87" prot="private" virt="non-virtual"><scope>ILLIXR::tcp_network_backend</scope><name>send_to_peer</name></member>
+      <member refid="classILLIXR_1_1tcp__network__backend_1aaeba6dfa9adc081fd0aee1ca6805c3c9" prot="private" virt="non-virtual"><scope>ILLIXR::tcp_network_backend</scope><name>server_ip_</name></member>
+      <member refid="classILLIXR_1_1tcp__network__backend_1a79a7a6215f62168b189153c572e75640" prot="private" virt="non-virtual"><scope>ILLIXR::tcp_network_backend</scope><name>server_port_</name></member>
+      <member refid="classILLIXR_1_1plugin_1a7c1c7c1a0ec2e43bfa1118586a28932f" prot="public" virt="non-virtual"><scope>ILLIXR::tcp_network_backend</scope><name>spd_add_file_sink</name></member>
+      <member refid="classILLIXR_1_1plugin_1a569297189ef365cf93f6a95202c76d76" prot="public" virt="non-virtual"><scope>ILLIXR::tcp_network_backend</scope><name>spdlogger</name></member>
+      <member refid="classILLIXR_1_1plugin_1a30d7294817fc5e8a8216fbfbca233cdc" prot="public" virt="virtual"><scope>ILLIXR::tcp_network_backend</scope><name>start</name></member>
+      <member refid="classILLIXR_1_1tcp__network__backend_1af5cc592fe50f46b83f8a7a543fe722d5" prot="public" virt="non-virtual"><scope>ILLIXR::tcp_network_backend</scope><name>start_client</name></member>
+      <member refid="classILLIXR_1_1tcp__network__backend_1a04adf3d5bb841544338c4480f26d193c" prot="public" virt="non-virtual"><scope>ILLIXR::tcp_network_backend</scope><name>start_server</name></member>
+      <member refid="classILLIXR_1_1tcp__network__backend_1a9180a91ffb15c3ae0f865a6b5a418216" prot="public" virt="non-virtual"><scope>ILLIXR::tcp_network_backend</scope><name>stop</name></member>
+      <member refid="classILLIXR_1_1tcp__network__backend_1ab0ce80807d252704497c44fd57c405bc" prot="private" virt="non-virtual"><scope>ILLIXR::tcp_network_backend</scope><name>switchboard_</name></member>
+      <member refid="classILLIXR_1_1tcp__network__backend_1aa647459f49f690bb2722155803ed9a5d" prot="public" virt="non-virtual"><scope>ILLIXR::tcp_network_backend</scope><name>tcp_network_backend</name></member>
+      <member refid="classILLIXR_1_1tcp__network__backend_1a1f6dabdb276b51452d48745f328e992d" prot="public" virt="non-virtual"><scope>ILLIXR::tcp_network_backend</scope><name>topic_create</name></member>
+      <member refid="classILLIXR_1_1tcp__network__backend_1a63728d5f98a04ecd4dd93e2c0dfaa4fb" prot="public" virt="non-virtual"><scope>ILLIXR::tcp_network_backend</scope><name>topic_receive</name></member>
+      <member refid="classILLIXR_1_1tcp__network__backend_1a2b6ca4503a8ba0198cf6c2f7a242c867" prot="public" virt="non-virtual"><scope>ILLIXR::tcp_network_backend</scope><name>topic_send</name></member>
+      <member refid="classILLIXR_1_1plugin_1a44d7b00c86e227bbc1a0b221da43d454" prot="public" virt="virtual"><scope>ILLIXR::tcp_network_backend</scope><name>~plugin</name></member>
+      <member refid="classILLIXR_1_1phonebook_1_1service_1a6bc6e64a0d9b70223989fc3fb98c2d0d" prot="public" virt="virtual"><scope>ILLIXR::tcp_network_backend</scope><name>~service</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

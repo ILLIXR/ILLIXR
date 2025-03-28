@@ -1,0 +1,562 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classcxxopts_1_1ParseResult" kind="class" language="C++" prot="public">
+    <compoundname>cxxopts::ParseResult</compoundname>
+    <innerclass refid="classcxxopts_1_1ParseResult_1_1Iterator" prot="public">cxxopts::ParseResult::Iterator</innerclass>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classcxxopts_1_1ParseResult_1a80a096c08b5cbea6fb8b3cf9e5866cdc" prot="private" static="no" mutable="no">
+        <type>NameHashMap</type>
+        <definition>NameHashMap cxxopts::ParseResult::m_keys</definition>
+        <argsstring></argsstring>
+        <name>m_keys</name>
+        <qualifiedname>cxxopts::ParseResult::m_keys</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="1335" column="30" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" bodystart="1335" bodyend="1335"/>
+      </memberdef>
+      <memberdef kind="variable" id="classcxxopts_1_1ParseResult_1a3de3faf3da35a04f003b5b71e2f992d2" prot="private" static="no" mutable="no">
+        <type>ParsedHashMap</type>
+        <definition>ParsedHashMap cxxopts::ParseResult::m_values</definition>
+        <argsstring></argsstring>
+        <name>m_values</name>
+        <qualifiedname>cxxopts::ParseResult::m_values</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="1336" column="30" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" bodystart="1336" bodyend="1336"/>
+      </memberdef>
+      <memberdef kind="variable" id="classcxxopts_1_1ParseResult_1a5cfc659cc6dfeb1bb7506b613151b034" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; KeyValue &gt;</type>
+        <definition>std::vector&lt; KeyValue &gt; cxxopts::ParseResult::m_sequential</definition>
+        <argsstring></argsstring>
+        <name>m_sequential</name>
+        <qualifiedname>cxxopts::ParseResult::m_sequential</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="1337" column="20" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" bodystart="1337" bodyend="1337"/>
+      </memberdef>
+      <memberdef kind="variable" id="classcxxopts_1_1ParseResult_1a132c9639e48ea1d3373dbf6907424761" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; KeyValue &gt;</type>
+        <definition>std::vector&lt; KeyValue &gt; cxxopts::ParseResult::m_defaults</definition>
+        <argsstring></argsstring>
+        <name>m_defaults</name>
+        <qualifiedname>cxxopts::ParseResult::m_defaults</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="1338" column="20" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" bodystart="1338" bodyend="1338"/>
+      </memberdef>
+      <memberdef kind="variable" id="classcxxopts_1_1ParseResult_1a5318ab694406c1456654ebf7bd2917e3" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>std::vector&lt; std::string &gt; cxxopts::ParseResult::m_unmatched</definition>
+        <argsstring></argsstring>
+        <name>m_unmatched</name>
+        <qualifiedname>cxxopts::ParseResult::m_unmatched</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="1339" column="17" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" bodystart="1339" bodyend="1339"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classcxxopts_1_1ParseResult_1aa5f4a299ffec3be89782fc738ebd1065" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>cxxopts::ParseResult::ParseResult</definition>
+        <argsstring>()=default</argsstring>
+        <name>ParseResult</name>
+        <qualifiedname>cxxopts::ParseResult::ParseResult</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="1258" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1ParseResult_1a23ef5f632ad50d13f93d6b846708de18" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>cxxopts::ParseResult::ParseResult</definition>
+        <argsstring>(const ParseResult &amp;)=default</argsstring>
+        <name>ParseResult</name>
+        <qualifiedname>cxxopts::ParseResult::ParseResult</qualifiedname>
+        <param>
+          <type>const ParseResult &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="1259" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1ParseResult_1a1f05143f599a9c92a0321dd802988ba7" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>cxxopts::ParseResult::ParseResult</definition>
+        <argsstring>(NameHashMap &amp;&amp;keys, ParsedHashMap &amp;&amp;values, std::vector&lt; KeyValue &gt; sequential, std::vector&lt; KeyValue &gt; default_opts, std::vector&lt; std::string &gt; &amp;&amp;unmatched_args)</argsstring>
+        <name>ParseResult</name>
+        <qualifiedname>cxxopts::ParseResult::ParseResult</qualifiedname>
+        <param>
+          <type>NameHashMap &amp;&amp;</type>
+          <declname>keys</declname>
+        </param>
+        <param>
+          <type>ParsedHashMap &amp;&amp;</type>
+          <declname>values</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; KeyValue &gt;</type>
+          <declname>sequential</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; KeyValue &gt;</type>
+          <declname>default_opts</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; std::string &gt; &amp;&amp;</type>
+          <declname>unmatched_args</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="1261" column="5" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" bodystart="1261" bodyend="1267"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1ParseResult_1a2453c59c7645794d4dcdd5f953c626ea" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ParseResult &amp;</type>
+        <definition>ParseResult &amp; cxxopts::ParseResult::operator=</definition>
+        <argsstring>(ParseResult &amp;&amp;)=default</argsstring>
+        <name>operator=</name>
+        <qualifiedname>cxxopts::ParseResult::operator=</qualifiedname>
+        <param>
+          <type>ParseResult &amp;&amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="1269" column="17"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1ParseResult_1aeee4df793ee1619395f7c7030d97cfc1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ParseResult &amp;</type>
+        <definition>ParseResult &amp; cxxopts::ParseResult::operator=</definition>
+        <argsstring>(const ParseResult &amp;)=default</argsstring>
+        <name>operator=</name>
+        <qualifiedname>cxxopts::ParseResult::operator=</qualifiedname>
+        <param>
+          <type>const ParseResult &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="1270" column="17"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1ParseResult_1a04bc1c49adacb8ded2d4f615a1b8bc82" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Iterator</type>
+        <definition>Iterator cxxopts::ParseResult::begin</definition>
+        <argsstring>() const</argsstring>
+        <name>begin</name>
+        <qualifiedname>cxxopts::ParseResult::begin</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="1272" column="14" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" bodystart="1272" bodyend="1274"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1ParseResult_1a63ac972d67d59d5d6f2b6810ee1ad3c3" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Iterator</type>
+        <definition>Iterator cxxopts::ParseResult::end</definition>
+        <argsstring>() const</argsstring>
+        <name>end</name>
+        <qualifiedname>cxxopts::ParseResult::end</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="1276" column="14" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" bodystart="1276" bodyend="1278"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1ParseResult_1a5c713b5fa60e4286060fe2ca27f4981a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::size_t</type>
+        <definition>std::size_t cxxopts::ParseResult::count</definition>
+        <argsstring>(const std::string &amp;o) const</argsstring>
+        <name>count</name>
+        <qualifiedname>cxxopts::ParseResult::count</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>o</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="1280" column="17" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" bodystart="1280" bodyend="1293"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1ParseResult_1a99aafd900cfe43417ca23cb4a340f8f4" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const OptionValue &amp;</type>
+        <definition>const OptionValue &amp; cxxopts::ParseResult::operator[]</definition>
+        <argsstring>(const std::string &amp;option) const</argsstring>
+        <name>operator[]</name>
+        <qualifiedname>cxxopts::ParseResult::operator[]</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>option</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="1295" column="23" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" bodystart="1295" bodyend="1309"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1ParseResult_1aa36da283a42b3e75134af044f4ce6334" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const std::vector&lt; KeyValue &gt; &amp;</type>
+        <definition>const std::vector&lt; KeyValue &gt; &amp; cxxopts::ParseResult::arguments</definition>
+        <argsstring>() const</argsstring>
+        <name>arguments</name>
+        <qualifiedname>cxxopts::ParseResult::arguments</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="1311" column="23" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" bodystart="1311" bodyend="1313"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1ParseResult_1ab514eb0c342b577c2cb3fbce989016e3" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const std::vector&lt; std::string &gt; &amp;</type>
+        <definition>const std::vector&lt; std::string &gt; &amp; cxxopts::ParseResult::unmatched</definition>
+        <argsstring>() const</argsstring>
+        <name>unmatched</name>
+        <qualifiedname>cxxopts::ParseResult::unmatched</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="1315" column="23" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" bodystart="1315" bodyend="1317"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1ParseResult_1acfee63a8f9c7b1ba9fc3c8ed4e37ae03" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const std::vector&lt; KeyValue &gt; &amp;</type>
+        <definition>const std::vector&lt; KeyValue &gt; &amp; cxxopts::ParseResult::defaults</definition>
+        <argsstring>() const</argsstring>
+        <name>defaults</name>
+        <qualifiedname>cxxopts::ParseResult::defaults</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="1319" column="23" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" bodystart="1319" bodyend="1321"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1ParseResult_1ae6c51699ddbd78cf786006ce53aca228" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const std::string</type>
+        <definition>const std::string cxxopts::ParseResult::arguments_string</definition>
+        <argsstring>() const</argsstring>
+        <name>arguments_string</name>
+        <qualifiedname>cxxopts::ParseResult::arguments_string</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="1323" column="23" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" bodystart="1323" bodyend="1332"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1ParseResult_1aa5f4a299ffec3be89782fc738ebd1065" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>cxxopts::ParseResult::ParseResult</definition>
+        <argsstring>()=default</argsstring>
+        <name>ParseResult</name>
+        <qualifiedname>cxxopts::ParseResult::ParseResult</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/cxxopts.hpp" line="1258" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1ParseResult_1a23ef5f632ad50d13f93d6b846708de18" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>cxxopts::ParseResult::ParseResult</definition>
+        <argsstring>(const ParseResult &amp;)=default</argsstring>
+        <name>ParseResult</name>
+        <qualifiedname>cxxopts::ParseResult::ParseResult</qualifiedname>
+        <param>
+          <type>const ParseResult &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/cxxopts.hpp" line="1259" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1ParseResult_1a1f05143f599a9c92a0321dd802988ba7" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>cxxopts::ParseResult::ParseResult</definition>
+        <argsstring>(NameHashMap &amp;&amp;keys, ParsedHashMap &amp;&amp;values, std::vector&lt; KeyValue &gt; sequential, std::vector&lt; KeyValue &gt; default_opts, std::vector&lt; std::string &gt; &amp;&amp;unmatched_args)</argsstring>
+        <name>ParseResult</name>
+        <qualifiedname>cxxopts::ParseResult::ParseResult</qualifiedname>
+        <param>
+          <type>NameHashMap &amp;&amp;</type>
+          <declname>keys</declname>
+        </param>
+        <param>
+          <type>ParsedHashMap &amp;&amp;</type>
+          <declname>values</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; KeyValue &gt;</type>
+          <declname>sequential</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; KeyValue &gt;</type>
+          <declname>default_opts</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; std::string &gt; &amp;&amp;</type>
+          <declname>unmatched_args</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/cxxopts.hpp" line="1261" column="5" bodyfile="/home/friedel/devel/ILLIXR/src/cxxopts.hpp" bodystart="1261" bodyend="1267"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1ParseResult_1a2453c59c7645794d4dcdd5f953c626ea" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ParseResult &amp;</type>
+        <definition>ParseResult &amp; cxxopts::ParseResult::operator=</definition>
+        <argsstring>(ParseResult &amp;&amp;)=default</argsstring>
+        <name>operator=</name>
+        <qualifiedname>cxxopts::ParseResult::operator=</qualifiedname>
+        <param>
+          <type>ParseResult &amp;&amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/cxxopts.hpp" line="1269" column="17"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1ParseResult_1aeee4df793ee1619395f7c7030d97cfc1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ParseResult &amp;</type>
+        <definition>ParseResult &amp; cxxopts::ParseResult::operator=</definition>
+        <argsstring>(const ParseResult &amp;)=default</argsstring>
+        <name>operator=</name>
+        <qualifiedname>cxxopts::ParseResult::operator=</qualifiedname>
+        <param>
+          <type>const ParseResult &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/cxxopts.hpp" line="1270" column="17"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1ParseResult_1a04bc1c49adacb8ded2d4f615a1b8bc82" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Iterator</type>
+        <definition>Iterator cxxopts::ParseResult::begin</definition>
+        <argsstring>() const</argsstring>
+        <name>begin</name>
+        <qualifiedname>cxxopts::ParseResult::begin</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/cxxopts.hpp" line="1272" column="14" bodyfile="/home/friedel/devel/ILLIXR/src/cxxopts.hpp" bodystart="1272" bodyend="1274"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1ParseResult_1a63ac972d67d59d5d6f2b6810ee1ad3c3" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Iterator</type>
+        <definition>Iterator cxxopts::ParseResult::end</definition>
+        <argsstring>() const</argsstring>
+        <name>end</name>
+        <qualifiedname>cxxopts::ParseResult::end</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/cxxopts.hpp" line="1276" column="14" bodyfile="/home/friedel/devel/ILLIXR/src/cxxopts.hpp" bodystart="1276" bodyend="1278"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1ParseResult_1a5c713b5fa60e4286060fe2ca27f4981a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::size_t</type>
+        <definition>std::size_t cxxopts::ParseResult::count</definition>
+        <argsstring>(const std::string &amp;o) const</argsstring>
+        <name>count</name>
+        <qualifiedname>cxxopts::ParseResult::count</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>o</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/cxxopts.hpp" line="1280" column="17" bodyfile="/home/friedel/devel/ILLIXR/src/cxxopts.hpp" bodystart="1280" bodyend="1293"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1ParseResult_1a99aafd900cfe43417ca23cb4a340f8f4" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const OptionValue &amp;</type>
+        <definition>const OptionValue &amp; cxxopts::ParseResult::operator[]</definition>
+        <argsstring>(const std::string &amp;option) const</argsstring>
+        <name>operator[]</name>
+        <qualifiedname>cxxopts::ParseResult::operator[]</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>option</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/cxxopts.hpp" line="1295" column="23" bodyfile="/home/friedel/devel/ILLIXR/src/cxxopts.hpp" bodystart="1295" bodyend="1309"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1ParseResult_1aa36da283a42b3e75134af044f4ce6334" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const std::vector&lt; KeyValue &gt; &amp;</type>
+        <definition>const std::vector&lt; KeyValue &gt; &amp; cxxopts::ParseResult::arguments</definition>
+        <argsstring>() const</argsstring>
+        <name>arguments</name>
+        <qualifiedname>cxxopts::ParseResult::arguments</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/cxxopts.hpp" line="1311" column="23" bodyfile="/home/friedel/devel/ILLIXR/src/cxxopts.hpp" bodystart="1311" bodyend="1313"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1ParseResult_1ab514eb0c342b577c2cb3fbce989016e3" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const std::vector&lt; std::string &gt; &amp;</type>
+        <definition>const std::vector&lt; std::string &gt; &amp; cxxopts::ParseResult::unmatched</definition>
+        <argsstring>() const</argsstring>
+        <name>unmatched</name>
+        <qualifiedname>cxxopts::ParseResult::unmatched</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/cxxopts.hpp" line="1315" column="23" bodyfile="/home/friedel/devel/ILLIXR/src/cxxopts.hpp" bodystart="1315" bodyend="1317"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1ParseResult_1acfee63a8f9c7b1ba9fc3c8ed4e37ae03" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const std::vector&lt; KeyValue &gt; &amp;</type>
+        <definition>const std::vector&lt; KeyValue &gt; &amp; cxxopts::ParseResult::defaults</definition>
+        <argsstring>() const</argsstring>
+        <name>defaults</name>
+        <qualifiedname>cxxopts::ParseResult::defaults</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/cxxopts.hpp" line="1319" column="23" bodyfile="/home/friedel/devel/ILLIXR/src/cxxopts.hpp" bodystart="1319" bodyend="1321"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1ParseResult_1ae6c51699ddbd78cf786006ce53aca228" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const std::string</type>
+        <definition>const std::string cxxopts::ParseResult::arguments_string</definition>
+        <argsstring>() const</argsstring>
+        <name>arguments_string</name>
+        <qualifiedname>cxxopts::ParseResult::arguments_string</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/cxxopts.hpp" line="1323" column="23" bodyfile="/home/friedel/devel/ILLIXR/src/cxxopts.hpp" bodystart="1323" bodyend="1332"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="1184" column="1" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" bodystart="1184" bodyend="1340"/>
+    <listofallmembers>
+      <member refid="classcxxopts_1_1ParseResult_1aa36da283a42b3e75134af044f4ce6334" prot="public" virt="non-virtual"><scope>cxxopts::ParseResult</scope><name>arguments</name></member>
+      <member refid="classcxxopts_1_1ParseResult_1aa36da283a42b3e75134af044f4ce6334" prot="public" virt="non-virtual"><scope>cxxopts::ParseResult</scope><name>arguments</name></member>
+      <member refid="classcxxopts_1_1ParseResult_1ae6c51699ddbd78cf786006ce53aca228" prot="public" virt="non-virtual"><scope>cxxopts::ParseResult</scope><name>arguments_string</name></member>
+      <member refid="classcxxopts_1_1ParseResult_1ae6c51699ddbd78cf786006ce53aca228" prot="public" virt="non-virtual"><scope>cxxopts::ParseResult</scope><name>arguments_string</name></member>
+      <member refid="classcxxopts_1_1ParseResult_1a04bc1c49adacb8ded2d4f615a1b8bc82" prot="public" virt="non-virtual"><scope>cxxopts::ParseResult</scope><name>begin</name></member>
+      <member refid="classcxxopts_1_1ParseResult_1a04bc1c49adacb8ded2d4f615a1b8bc82" prot="public" virt="non-virtual"><scope>cxxopts::ParseResult</scope><name>begin</name></member>
+      <member refid="classcxxopts_1_1ParseResult_1a5c713b5fa60e4286060fe2ca27f4981a" prot="public" virt="non-virtual"><scope>cxxopts::ParseResult</scope><name>count</name></member>
+      <member refid="classcxxopts_1_1ParseResult_1a5c713b5fa60e4286060fe2ca27f4981a" prot="public" virt="non-virtual"><scope>cxxopts::ParseResult</scope><name>count</name></member>
+      <member refid="classcxxopts_1_1ParseResult_1acfee63a8f9c7b1ba9fc3c8ed4e37ae03" prot="public" virt="non-virtual"><scope>cxxopts::ParseResult</scope><name>defaults</name></member>
+      <member refid="classcxxopts_1_1ParseResult_1acfee63a8f9c7b1ba9fc3c8ed4e37ae03" prot="public" virt="non-virtual"><scope>cxxopts::ParseResult</scope><name>defaults</name></member>
+      <member refid="classcxxopts_1_1ParseResult_1a63ac972d67d59d5d6f2b6810ee1ad3c3" prot="public" virt="non-virtual"><scope>cxxopts::ParseResult</scope><name>end</name></member>
+      <member refid="classcxxopts_1_1ParseResult_1a63ac972d67d59d5d6f2b6810ee1ad3c3" prot="public" virt="non-virtual"><scope>cxxopts::ParseResult</scope><name>end</name></member>
+      <member refid="classcxxopts_1_1ParseResult_1a132c9639e48ea1d3373dbf6907424761" prot="private" virt="non-virtual"><scope>cxxopts::ParseResult</scope><name>m_defaults</name></member>
+      <member refid="classcxxopts_1_1ParseResult_1a80a096c08b5cbea6fb8b3cf9e5866cdc" prot="private" virt="non-virtual"><scope>cxxopts::ParseResult</scope><name>m_keys</name></member>
+      <member refid="classcxxopts_1_1ParseResult_1a5cfc659cc6dfeb1bb7506b613151b034" prot="private" virt="non-virtual"><scope>cxxopts::ParseResult</scope><name>m_sequential</name></member>
+      <member refid="classcxxopts_1_1ParseResult_1a5318ab694406c1456654ebf7bd2917e3" prot="private" virt="non-virtual"><scope>cxxopts::ParseResult</scope><name>m_unmatched</name></member>
+      <member refid="classcxxopts_1_1ParseResult_1a3de3faf3da35a04f003b5b71e2f992d2" prot="private" virt="non-virtual"><scope>cxxopts::ParseResult</scope><name>m_values</name></member>
+      <member refid="classcxxopts_1_1ParseResult_1a2453c59c7645794d4dcdd5f953c626ea" prot="public" virt="non-virtual"><scope>cxxopts::ParseResult</scope><name>operator=</name></member>
+      <member refid="classcxxopts_1_1ParseResult_1aeee4df793ee1619395f7c7030d97cfc1" prot="public" virt="non-virtual"><scope>cxxopts::ParseResult</scope><name>operator=</name></member>
+      <member refid="classcxxopts_1_1ParseResult_1a2453c59c7645794d4dcdd5f953c626ea" prot="public" virt="non-virtual"><scope>cxxopts::ParseResult</scope><name>operator=</name></member>
+      <member refid="classcxxopts_1_1ParseResult_1aeee4df793ee1619395f7c7030d97cfc1" prot="public" virt="non-virtual"><scope>cxxopts::ParseResult</scope><name>operator=</name></member>
+      <member refid="classcxxopts_1_1ParseResult_1a99aafd900cfe43417ca23cb4a340f8f4" prot="public" virt="non-virtual"><scope>cxxopts::ParseResult</scope><name>operator[]</name></member>
+      <member refid="classcxxopts_1_1ParseResult_1a99aafd900cfe43417ca23cb4a340f8f4" prot="public" virt="non-virtual"><scope>cxxopts::ParseResult</scope><name>operator[]</name></member>
+      <member refid="classcxxopts_1_1ParseResult_1aa5f4a299ffec3be89782fc738ebd1065" prot="public" virt="non-virtual"><scope>cxxopts::ParseResult</scope><name>ParseResult</name></member>
+      <member refid="classcxxopts_1_1ParseResult_1a23ef5f632ad50d13f93d6b846708de18" prot="public" virt="non-virtual"><scope>cxxopts::ParseResult</scope><name>ParseResult</name></member>
+      <member refid="classcxxopts_1_1ParseResult_1a1f05143f599a9c92a0321dd802988ba7" prot="public" virt="non-virtual"><scope>cxxopts::ParseResult</scope><name>ParseResult</name></member>
+      <member refid="classcxxopts_1_1ParseResult_1aa5f4a299ffec3be89782fc738ebd1065" prot="public" virt="non-virtual"><scope>cxxopts::ParseResult</scope><name>ParseResult</name></member>
+      <member refid="classcxxopts_1_1ParseResult_1a23ef5f632ad50d13f93d6b846708de18" prot="public" virt="non-virtual"><scope>cxxopts::ParseResult</scope><name>ParseResult</name></member>
+      <member refid="classcxxopts_1_1ParseResult_1a1f05143f599a9c92a0321dd802988ba7" prot="public" virt="non-virtual"><scope>cxxopts::ParseResult</scope><name>ParseResult</name></member>
+      <member refid="classcxxopts_1_1ParseResult_1ab514eb0c342b577c2cb3fbce989016e3" prot="public" virt="non-virtual"><scope>cxxopts::ParseResult</scope><name>unmatched</name></member>
+      <member refid="classcxxopts_1_1ParseResult_1ab514eb0c342b577c2cb3fbce989016e3" prot="public" virt="non-virtual"><scope>cxxopts::ParseResult</scope><name>unmatched</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

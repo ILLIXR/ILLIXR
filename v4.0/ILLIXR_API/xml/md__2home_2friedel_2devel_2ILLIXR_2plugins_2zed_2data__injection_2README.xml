@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="md__2home_2friedel_2devel_2ILLIXR_2plugins_2zed_2data__injection_2README" kind="page">
+    <compoundname>md__2home_2friedel_2devel_2ILLIXR_2plugins_2zed_2data__injection_2README</compoundname>
+    <title>ZED Data Injection</title>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para><anchor id="md__2home_2friedel_2devel_2ILLIXR_2plugins_2zed_2data__injection_2README_1autotoc_md0"/> This plugin reads in binocular images and pose information from files on disk and publishes them to <ref refid="namespaceILLIXR" kindref="compound">ILLIXR</ref>. It is designed to feed data recorded by the zed_capture binary into the <ref refid="namespaceILLIXR" kindref="compound">ILLIXR</ref> system. The root directory of the data must be specified in the <computeroutput>ILLIXR_TEST_DATA</computeroutput> environment variable. </para>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/plugins/zed/data_injection/README.md"/>
+  </compounddef>
+</doxygen>

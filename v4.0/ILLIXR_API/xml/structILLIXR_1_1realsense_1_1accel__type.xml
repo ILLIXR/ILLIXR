@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structILLIXR_1_1realsense_1_1accel__type" kind="struct" language="C++" prot="private">
+    <compoundname>ILLIXR::realsense::accel_type</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structILLIXR_1_1realsense_1_1accel__type_1a7669189753602314913466300a4f0c59" prot="public" static="no" mutable="no">
+        <type>rs2_vector</type>
+        <definition>rs2_vector ILLIXR::realsense::accel_type::data</definition>
+        <argsstring></argsstring>
+        <name>data</name>
+        <qualifiedname>ILLIXR::realsense::accel_type::data</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.hpp" line="25" column="20" bodyfile="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.hpp" bodystart="25" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1realsense_1_1accel__type_1a55b32a605adf91d096cef16b3f87c5af" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int ILLIXR::realsense::accel_type::iteration</definition>
+        <argsstring></argsstring>
+        <name>iteration</name>
+        <qualifiedname>ILLIXR::realsense::accel_type::iteration</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.hpp" line="26" column="20" bodyfile="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.hpp" bodystart="26" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.hpp" line="24" column="5" bodyfile="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.hpp" bodystart="24" bodyend="27"/>
+    <listofallmembers>
+      <member refid="structILLIXR_1_1realsense_1_1accel__type_1a7669189753602314913466300a4f0c59" prot="public" virt="non-virtual"><scope>ILLIXR::realsense::accel_type</scope><name>data</name></member>
+      <member refid="structILLIXR_1_1realsense_1_1accel__type_1a55b32a605adf91d096cef16b3f87c5af" prot="public" virt="non-virtual"><scope>ILLIXR::realsense::accel_type</scope><name>iteration</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

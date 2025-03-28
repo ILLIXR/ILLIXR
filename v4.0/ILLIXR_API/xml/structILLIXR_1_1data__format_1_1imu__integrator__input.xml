@@ -1,0 +1,213 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structILLIXR_1_1data__format_1_1imu__integrator__input" kind="struct" language="C++" prot="public">
+    <compoundname>ILLIXR::data_format::imu_integrator_input</compoundname>
+    <basecompoundref refid="classILLIXR_1_1switchboard_1_1event" prot="public" virt="non-virtual">ILLIXR::switchboard::event</basecompoundref>
+    <includes refid="imu_8hpp" local="no">imu.hpp</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1imu__integrator__input_1ab25528cead9077d85576c3de018e0efe" prot="public" static="no" mutable="no">
+        <type>time_point</type>
+        <definition>time_point ILLIXR::data_format::imu_integrator_input::last_cam_integration_time</definition>
+        <argsstring></argsstring>
+        <name>last_cam_integration_time</name>
+        <qualifiedname>ILLIXR::data_format::imu_integrator_input::last_cam_integration_time</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/imu.hpp" line="37" column="16" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/imu.hpp" bodystart="37" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1imu__integrator__input_1a6ed61d74f932999a6ea2a792be70f84c" prot="public" static="no" mutable="no">
+        <type>duration</type>
+        <definition>duration ILLIXR::data_format::imu_integrator_input::t_offset</definition>
+        <argsstring></argsstring>
+        <name>t_offset</name>
+        <qualifiedname>ILLIXR::data_format::imu_integrator_input::t_offset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/imu.hpp" line="38" column="16" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/imu.hpp" bodystart="38" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1imu__integrator__input_1a1c9b6d4841f55141cb6418860a0b59ed" prot="public" static="no" mutable="no">
+        <type>imu_params</type>
+        <definition>imu_params ILLIXR::data_format::imu_integrator_input::params</definition>
+        <argsstring></argsstring>
+        <name>params</name>
+        <qualifiedname>ILLIXR::data_format::imu_integrator_input::params</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/imu.hpp" line="39" column="16" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/imu.hpp" bodystart="39" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1imu__integrator__input_1a9640dbce10690bc83f08f9d4de933ce0" prot="public" static="no" mutable="no">
+        <type>Eigen::Vector3d</type>
+        <definition>Eigen::Vector3d ILLIXR::data_format::imu_integrator_input::bias_acc</definition>
+        <argsstring></argsstring>
+        <name>bias_acc</name>
+        <qualifiedname>ILLIXR::data_format::imu_integrator_input::bias_acc</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/imu.hpp" line="41" column="33" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/imu.hpp" bodystart="41" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1imu__integrator__input_1a7a578976b340163475cd2764ab68ca36" prot="public" static="no" mutable="no">
+        <type>Eigen::Vector3d</type>
+        <definition>Eigen::Vector3d ILLIXR::data_format::imu_integrator_input::bias_gyro</definition>
+        <argsstring></argsstring>
+        <name>bias_gyro</name>
+        <qualifiedname>ILLIXR::data_format::imu_integrator_input::bias_gyro</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/imu.hpp" line="42" column="33" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/imu.hpp" bodystart="42" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1imu__integrator__input_1a36a2d0714995175969d947ea72028332" prot="public" static="no" mutable="no">
+        <type>Eigen::Matrix&lt; double, 3, 1 &gt;</type>
+        <definition>Eigen::Matrix&lt;double, 3, 1&gt; ILLIXR::data_format::imu_integrator_input::position</definition>
+        <argsstring></argsstring>
+        <name>position</name>
+        <qualifiedname>ILLIXR::data_format::imu_integrator_input::position</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/imu.hpp" line="43" column="19" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/imu.hpp" bodystart="43" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1imu__integrator__input_1a6798183141c830220dd5a2c2503127ff" prot="public" static="no" mutable="no">
+        <type>Eigen::Matrix&lt; double, 3, 1 &gt;</type>
+        <definition>Eigen::Matrix&lt;double, 3, 1&gt; ILLIXR::data_format::imu_integrator_input::velocity</definition>
+        <argsstring></argsstring>
+        <name>velocity</name>
+        <qualifiedname>ILLIXR::data_format::imu_integrator_input::velocity</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/imu.hpp" line="44" column="19" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/imu.hpp" bodystart="44" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1imu__integrator__input_1abded6df42ee5246d57655105e96162ac" prot="public" static="no" mutable="no">
+        <type>Eigen::Quaterniond</type>
+        <definition>Eigen::Quaterniond ILLIXR::data_format::imu_integrator_input::quat</definition>
+        <argsstring></argsstring>
+        <name>quat</name>
+        <qualifiedname>ILLIXR::data_format::imu_integrator_input::quat</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/imu.hpp" line="45" column="33" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/imu.hpp" bodystart="45" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1imu__integrator__input_1aab4b2d9f4a902450bf6256f6dc2ea116" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::imu_integrator_input::imu_integrator_input</definition>
+        <argsstring>(time_point last_cam_integration_time_, duration t_offset_, imu_params params_, Eigen::Vector3d biasAcc_, Eigen::Vector3d biasGyro_, Eigen::Matrix&lt; double, 3, 1 &gt; position_, Eigen::Matrix&lt; double, 3, 1 &gt; velocity_, Eigen::Quaterniond quat_)</argsstring>
+        <name>imu_integrator_input</name>
+        <qualifiedname>ILLIXR::data_format::imu_integrator_input::imu_integrator_input</qualifiedname>
+        <param>
+          <type>time_point</type>
+          <declname>last_cam_integration_time_</declname>
+        </param>
+        <param>
+          <type>duration</type>
+          <declname>t_offset_</declname>
+        </param>
+        <param>
+          <type>imu_params</type>
+          <declname>params_</declname>
+        </param>
+        <param>
+          <type>Eigen::Vector3d</type>
+          <declname>biasAcc_</declname>
+        </param>
+        <param>
+          <type>Eigen::Vector3d</type>
+          <declname>biasGyro_</declname>
+        </param>
+        <param>
+          <type>Eigen::Matrix&lt; double, 3, 1 &gt;</type>
+          <declname>position_</declname>
+        </param>
+        <param>
+          <type>Eigen::Matrix&lt; double, 3, 1 &gt;</type>
+          <declname>velocity_</declname>
+        </param>
+        <param>
+          <type>Eigen::Quaterniond</type>
+          <declname>quat_</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/imu.hpp" line="47" column="5" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/imu.hpp" bodystart="47" bodyend="57"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>IMU biases, initialization params, and slow pose needed by the IMU integrator </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>ILLIXR::data_format::imu_integrator_input</label>
+        <link refid="structILLIXR_1_1data__format_1_1imu__integrator__input"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ILLIXR::switchboard::event</label>
+        <link refid="classILLIXR_1_1switchboard_1_1event"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>ILLIXR::data_format::imu_integrator_input</label>
+        <link refid="structILLIXR_1_1data__format_1_1imu__integrator__input"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ILLIXR::switchboard::event</label>
+        <link refid="classILLIXR_1_1switchboard_1_1event"/>
+      </node>
+    </collaborationgraph>
+    <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/imu.hpp" line="36" column="1" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/imu.hpp" bodystart="36" bodyend="58"/>
+    <listofallmembers>
+      <member refid="structILLIXR_1_1data__format_1_1imu__integrator__input_1a9640dbce10690bc83f08f9d4de933ce0" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::imu_integrator_input</scope><name>bias_acc</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1imu__integrator__input_1a7a578976b340163475cd2764ab68ca36" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::imu_integrator_input</scope><name>bias_gyro</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1imu__integrator__input_1aab4b2d9f4a902450bf6256f6dc2ea116" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::imu_integrator_input</scope><name>imu_integrator_input</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1imu__integrator__input_1ab25528cead9077d85576c3de018e0efe" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::imu_integrator_input</scope><name>last_cam_integration_time</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1imu__integrator__input_1a1c9b6d4841f55141cb6418860a0b59ed" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::imu_integrator_input</scope><name>params</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1imu__integrator__input_1a36a2d0714995175969d947ea72028332" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::imu_integrator_input</scope><name>position</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1imu__integrator__input_1abded6df42ee5246d57655105e96162ac" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::imu_integrator_input</scope><name>quat</name></member>
+      <member refid="classILLIXR_1_1switchboard_1_1event_1a55399aaf47bc0d3943fd89d7afb55624" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::imu_integrator_input</scope><name>serialize</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1imu__integrator__input_1a6ed61d74f932999a6ea2a792be70f84c" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::imu_integrator_input</scope><name>t_offset</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1imu__integrator__input_1a6798183141c830220dd5a2c2503127ff" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::imu_integrator_input</scope><name>velocity</name></member>
+      <member refid="classILLIXR_1_1switchboard_1_1event_1a01fb51a03e9025d71087de76823e449e" prot="public" virt="virtual"><scope>ILLIXR::data_format::imu_integrator_input</scope><name>~event</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,402 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespaceILLIXR_1_1data__format_1_1ht" kind="namespace" language="C++">
+    <compoundname>ILLIXR::data_format::ht</compoundname>
+    <innerclass refid="structILLIXR_1_1data__format_1_1ht_1_1hand__points" prot="public">ILLIXR::data_format::ht::hand_points</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1ht_1_1ht__detection" prot="public">ILLIXR::data_format::ht::ht_detection</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1ht_1_1ht__frame" prot="public">ILLIXR::data_format::ht::ht_frame</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1ht_1_1position" prot="public">ILLIXR::data_format::ht::position</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1ht_1_1raw__ht__data" prot="public">ILLIXR::data_format::ht::raw_ht_data</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1ht_1_1velocity" prot="public">ILLIXR::data_format::ht::velocity</innerclass>
+    <sectiondef kind="enum">
+      <memberdef kind="enum" id="hand__tracking__data_8hpp_1a07a33dc495fdd3b7a73f3719f59feb38" prot="public" static="no" strong="no">
+        <type>int</type>
+        <name>landmark_points</name>
+        <qualifiedname>ILLIXR::data_format::ht::landmark_points</qualifiedname>
+        <enumvalue id="hand__tracking__data_8hpp_1a07a33dc495fdd3b7a73f3719f59feb38aa6ab78df1f54b92ecab5566d7bb07e66" prot="public">
+          <name>WRIST</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="hand__tracking__data_8hpp_1a07a33dc495fdd3b7a73f3719f59feb38ad7f97aaa6c3ede981576a4aee272ee74" prot="public">
+          <name>THUMB_CMC</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="hand__tracking__data_8hpp_1a07a33dc495fdd3b7a73f3719f59feb38a5bb3638255eb23e9e098da268c561ac7" prot="public">
+          <name>THUMB_MCP</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="hand__tracking__data_8hpp_1a07a33dc495fdd3b7a73f3719f59feb38ae9267c9ca631a450dbfeaedff3933a8d" prot="public">
+          <name>THUMB_IP</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="hand__tracking__data_8hpp_1a07a33dc495fdd3b7a73f3719f59feb38a385a91f0f63adc68394177ee51fbcb2c" prot="public">
+          <name>THUMB_TIP</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="hand__tracking__data_8hpp_1a07a33dc495fdd3b7a73f3719f59feb38aa6c82146120fa915abb9dd1d37d6d5d6" prot="public">
+          <name>INDEX_FINGER_MCP</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="hand__tracking__data_8hpp_1a07a33dc495fdd3b7a73f3719f59feb38a478b4e57e9efd0843b27ef9057175107" prot="public">
+          <name>INDEX_FINGER_PIP</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="hand__tracking__data_8hpp_1a07a33dc495fdd3b7a73f3719f59feb38a07491e1778590cb206d478c39239f2c3" prot="public">
+          <name>INDEX_FINGER_DIP</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="hand__tracking__data_8hpp_1a07a33dc495fdd3b7a73f3719f59feb38ad8366fb95f3f733e2c136db45a367d00" prot="public">
+          <name>INDEX_FINGER_TIP</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="hand__tracking__data_8hpp_1a07a33dc495fdd3b7a73f3719f59feb38a1da6f35b4b246f111f38f6fa49ccb68d" prot="public">
+          <name>MIDDLE_FINGER_MCP</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="hand__tracking__data_8hpp_1a07a33dc495fdd3b7a73f3719f59feb38a9adcee4bc6206c52b3b1c00e2e75505a" prot="public">
+          <name>MIDDLE_FINGER_PIP</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="hand__tracking__data_8hpp_1a07a33dc495fdd3b7a73f3719f59feb38a5438e0e3229115a778202f7046994d34" prot="public">
+          <name>MIDDLE_FINGER_DIP</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="hand__tracking__data_8hpp_1a07a33dc495fdd3b7a73f3719f59feb38a3507db95b305d69cd6ef33c265388498" prot="public">
+          <name>MIDDLE_FINGER_TIP</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="hand__tracking__data_8hpp_1a07a33dc495fdd3b7a73f3719f59feb38a03833bf7e64ad17cd06e482eb935ca19" prot="public">
+          <name>RING_FINGER_MCP</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="hand__tracking__data_8hpp_1a07a33dc495fdd3b7a73f3719f59feb38a29cf2d29685d8cd1add6ff3f15df16e2" prot="public">
+          <name>RING_FINGER_PIP</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="hand__tracking__data_8hpp_1a07a33dc495fdd3b7a73f3719f59feb38a72de35572a06866bcdf92b0f94b1bf58" prot="public">
+          <name>RING_FINGER_DIP</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="hand__tracking__data_8hpp_1a07a33dc495fdd3b7a73f3719f59feb38a5c56f2b2d07cc8d05015b6b95884b8b8" prot="public">
+          <name>RING_FINGER_TIP</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="hand__tracking__data_8hpp_1a07a33dc495fdd3b7a73f3719f59feb38a1b6f299ac1050b098e951280e7b6db74" prot="public">
+          <name>PINKY_MCP</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="hand__tracking__data_8hpp_1a07a33dc495fdd3b7a73f3719f59feb38a7b9e81d676076d8470d36af5f3fe7dd4" prot="public">
+          <name>PINKY_PIP</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="hand__tracking__data_8hpp_1a07a33dc495fdd3b7a73f3719f59feb38a3b7b55513efbb492139618a4fdf1f414" prot="public">
+          <name>PINKY_DIP</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="hand__tracking__data_8hpp_1a07a33dc495fdd3b7a73f3719f59feb38aecea80f2f8f9f419356425413f06ba28" prot="public">
+          <name>PINKY_TIP</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/hand_tracking_data.hpp" line="23" column="5" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/hand_tracking_data.hpp" bodystart="23" bodyend="45"/>
+      </memberdef>
+      <memberdef kind="enum" id="hand__tracking__data_8hpp_1a3292db01a428fb4e6ca9c92b6c5b2488" prot="public" static="no" strong="no">
+        <type>int</type>
+        <name>hand</name>
+        <qualifiedname>ILLIXR::data_format::ht::hand</qualifiedname>
+        <enumvalue id="hand__tracking__data_8hpp_1a3292db01a428fb4e6ca9c92b6c5b2488a375b8af6e323ec6827e9e13b8cb46a6e" prot="public">
+          <name>LEFT_HAND</name>
+          <initializer>= 0</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="hand__tracking__data_8hpp_1a3292db01a428fb4e6ca9c92b6c5b2488ac57537b01ec25b8a67fb2f07d76498c8" prot="public">
+          <name>RIGHT_HAND</name>
+          <initializer>= 1</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/hand_tracking_data.hpp" line="72" column="5" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/hand_tracking_data.hpp" bodystart="72" bodyend="72"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="var">
+      <memberdef kind="variable" id="hand__tracking__data_8hpp_1a6ec66ea586da6ebd49be87f2befcee30" prot="public" static="no" mutable="no">
+        <type>const int</type>
+        <definition>const int ILLIXR::data_format::ht::NUM_LANDMARKS</definition>
+        <argsstring></argsstring>
+        <name>NUM_LANDMARKS</name>
+        <qualifiedname>ILLIXR::data_format::ht::NUM_LANDMARKS</qualifiedname>
+        <initializer>= 21</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/hand_tracking_data.hpp" line="18" column="15" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/hand_tracking_data.hpp" bodystart="18" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="hand__tracking__data_8hpp_1a18ee58a26b8e139c7bf64eeaacf5b839" prot="public" static="no" mutable="no">
+        <type>const std::map&lt; int, std::string &gt;</type>
+        <definition>const std::map&lt;int, std::string&gt; ILLIXR::data_format::ht::point_str_map</definition>
+        <argsstring></argsstring>
+        <name>point_str_map</name>
+        <qualifiedname>ILLIXR::data_format::ht::point_str_map</qualifiedname>
+        <initializer>{{WRIST, &quot;Wrist&quot;},
+                                                   {THUMB_CMC, &quot;Thumb CMC&quot;},
+                                                   {THUMB_MCP, &quot;Thumb MCP&quot;},
+                                                   {THUMB_IP, &quot;Thumb IP&quot;},
+                                                   {THUMB_TIP, &quot;Thumb Tip&quot;},
+                                                   {INDEX_FINGER_MCP, &quot;Index MCP&quot;},
+                                                   {INDEX_FINGER_PIP, &quot;Index PIP&quot;},
+                                                   {INDEX_FINGER_DIP, &quot;Index DIP&quot;},
+                                                   {INDEX_FINGER_TIP, &quot;Index Tip&quot;},
+                                                   {MIDDLE_FINGER_MCP, &quot;Middle MCP&quot;},
+                                                   {MIDDLE_FINGER_PIP, &quot;Middle PIP&quot;},
+                                                   {MIDDLE_FINGER_DIP, &quot;Middle DIP&quot;},
+                                                   {MIDDLE_FINGER_TIP, &quot;Middle Tip&quot;},
+                                                   {RING_FINGER_MCP, &quot;Ring MCP&quot;},
+                                                   {RING_FINGER_PIP, &quot;Ring PIP&quot;},
+                                                   {RING_FINGER_DIP, &quot;Ring DIP&quot;},
+                                                   {RING_FINGER_TIP, &quot;Ring Tip&quot;},
+                                                   {PINKY_MCP, &quot;Pinky MCP&quot;},
+                                                   {PINKY_PIP, &quot;Pinky PIP&quot;},
+                                                   {PINKY_DIP, &quot;Pinky DIP&quot;},
+                                                   {PINKY_TIP, &quot;Pinky Tip&quot;}}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Mapping of the hand landmark points to strings, useful for display purposes </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/hand_tracking_data.hpp" line="50" column="20" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/hand_tracking_data.hpp" bodystart="50" bodyend="70"/>
+      </memberdef>
+      <memberdef kind="variable" id="hand__tracking__data_8hpp_1a96c0ab556c019b17b383f883e5e447b3" prot="public" static="no" mutable="no">
+        <type>const std::vector&lt; hand &gt;</type>
+        <definition>const std::vector&lt;hand&gt; ILLIXR::data_format::ht::hand_map</definition>
+        <argsstring></argsstring>
+        <name>hand_map</name>
+        <qualifiedname>ILLIXR::data_format::ht::hand_map</qualifiedname>
+        <initializer>{LEFT_HAND, RIGHT_HAND}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/hand_tracking_data.hpp" line="74" column="23" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/hand_tracking_data.hpp" bodystart="74" bodyend="74"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="hand__tracking__data_8hpp_1a2e4f6d6762ac59b45a48e2c2187bf36b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::ostream &amp;</type>
+        <definition>std::ostream &amp; ILLIXR::data_format::ht::operator&lt;&lt;</definition>
+        <argsstring>(std::ostream &amp;os, const raw_ht_data &amp;data)</argsstring>
+        <name>operator&lt;&lt;</name>
+        <qualifiedname>ILLIXR::data_format::ht::operator&lt;&lt;</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>os</declname>
+        </param>
+        <param>
+          <type>const raw_ht_data &amp;</type>
+          <declname>data</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/hand_tracking_data.hpp" line="403" column="12" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/hand_tracking_data.hpp" bodystart="403" bodyend="463"/>
+      </memberdef>
+      <memberdef kind="function" id="hand__tracking__data_8hpp_1a3367c93345cc69cce3247a267aa5a9d0" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void ILLIXR::data_format::ht::transform_point</definition>
+        <argsstring>(point_with_units &amp;pnt, const pose_data &amp;pose)</argsstring>
+        <name>transform_point</name>
+        <qualifiedname>ILLIXR::data_format::ht::transform_point</qualifiedname>
+        <param>
+          <type>point_with_units &amp;</type>
+          <declname>pnt</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structILLIXR_1_1data__format_1_1pose__data" kindref="compound">pose_data</ref> &amp;</type>
+          <declname>pose</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Transform a point from its current position using the given pose <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>pnt</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Point to transform </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>pose</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Pose to use for the transformation </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/hand_tracking_data.hpp" line="472" column="18" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/hand_tracking_data.hpp" bodystart="472" bodyend="475"/>
+      </memberdef>
+      <memberdef kind="function" id="hand__tracking__data_8hpp_1ac55ca3f43ff228e5a57cdd10ebefba9a" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void ILLIXR::data_format::ht::transform_points</definition>
+        <argsstring>(points_with_units &amp;points, const pose_data &amp;pose, coordinates::reference_space from, coordinates::reference_space to)</argsstring>
+        <name>transform_points</name>
+        <qualifiedname>ILLIXR::data_format::ht::transform_points</qualifiedname>
+        <param>
+          <type>points_with_units &amp;</type>
+          <declname>points</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structILLIXR_1_1data__format_1_1pose__data" kindref="compound">pose_data</ref> &amp;</type>
+          <declname>pose</declname>
+        </param>
+        <param>
+          <type>coordinates::reference_space</type>
+          <declname>from</declname>
+        </param>
+        <param>
+          <type>coordinates::reference_space</type>
+          <declname>to</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>transform multiple points from their original position using the given pose <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>points</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The points to transform </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>pose</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Pose to use for the transformation </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>from</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The coordinate frame to convert from </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>to</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The coordinate from to convert to </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/hand_tracking_data.hpp" line="484" column="25" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/hand_tracking_data.hpp" bodystart="484" bodyend="495"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/hand_tracking_data.hpp" line="17" column="1"/>
+  </compounddef>
+</doxygen>

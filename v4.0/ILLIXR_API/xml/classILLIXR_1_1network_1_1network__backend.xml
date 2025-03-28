@@ -1,0 +1,157 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classILLIXR_1_1network_1_1network__backend" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>ILLIXR::network::network_backend</compoundname>
+    <basecompoundref refid="classILLIXR_1_1phonebook_1_1service" prot="public" virt="non-virtual">ILLIXR::phonebook::service</basecompoundref>
+    <derivedcompoundref refid="classILLIXR_1_1tcp__network__backend" prot="public" virt="non-virtual">ILLIXR::tcp_network_backend</derivedcompoundref>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classILLIXR_1_1network_1_1network__backend_1a3d80a1afc97fecb9403258d11499998b" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>void</type>
+        <definition>virtual void ILLIXR::network::network_backend::topic_create</definition>
+        <argsstring>(std::string topic_name, topic_config &amp;config)=0</argsstring>
+        <name>topic_create</name>
+        <qualifiedname>ILLIXR::network::network_backend::topic_create</qualifiedname>
+        <param>
+          <type>std::string</type>
+          <declname>topic_name</declname>
+        </param>
+        <param>
+          <type>topic_config &amp;</type>
+          <declname>config</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Called when a topic is created.</para>
+<para>The backend must maintain a list of networked topics. This adds a topic to that list. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>topic_name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The name of the topic. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>config</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The configuration of the topic. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/network/network_backend.hpp" line="19" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1network_1_1network__backend_1a302def403176262fbeb6ef436f89ddc8" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>bool</type>
+        <definition>virtual bool ILLIXR::network::network_backend::is_topic_networked</definition>
+        <argsstring>(std::string topic_name)=0</argsstring>
+        <name>is_topic_networked</name>
+        <qualifiedname>ILLIXR::network::network_backend::is_topic_networked</qualifiedname>
+        <param>
+          <type>std::string</type>
+          <declname>topic_name</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Used to query if a topic is networked.</para>
+<para>The backend should coordinate with the other endpoints to determine if a topic is networked. There are two cases where this should return true:<orderedlist>
+<listitem><para>topic_create has been called with the same topic_name</para>
+</listitem><listitem><para>topic_create has not been called with the same topic_name, but the topic is networked by another endpoint The backend implementation should coordinate with the other endpoints to determine if a topic is networked. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>topic_name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The name of the topic. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+</listitem></orderedlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/network/network_backend.hpp" line="31" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1network_1_1network__backend_1a2fe7cf47e5654e23df7da0adbe1fecee" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>void</type>
+        <definition>virtual void ILLIXR::network::network_backend::topic_send</definition>
+        <argsstring>(std::string topic_name, std::string &amp;&amp;message)=0</argsstring>
+        <name>topic_send</name>
+        <qualifiedname>ILLIXR::network::network_backend::topic_send</qualifiedname>
+        <param>
+          <type>std::string</type>
+          <declname>topic_name</declname>
+        </param>
+        <param>
+          <type>std::string &amp;&amp;</type>
+          <declname>message</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Called when a message is requested to be sent on a topic by a plugin. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>topic_name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The name of the topic. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>message</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The message to send. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/network/network_backend.hpp" line="38" column="18"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>ILLIXR::network::network_backend</label>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ILLIXR::phonebook::service</label>
+        <link refid="classILLIXR_1_1phonebook_1_1service"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>ILLIXR::network::network_backend</label>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ILLIXR::phonebook::service</label>
+        <link refid="classILLIXR_1_1phonebook_1_1service"/>
+      </node>
+    </collaborationgraph>
+    <location file="/home/friedel/devel/ILLIXR/include/illixr/network/network_backend.hpp" line="10" column="1" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/network/network_backend.hpp" bodystart="10" bodyend="39"/>
+    <listofallmembers>
+      <member refid="classILLIXR_1_1network_1_1network__backend_1a302def403176262fbeb6ef436f89ddc8" prot="public" virt="pure-virtual"><scope>ILLIXR::network::network_backend</scope><name>is_topic_networked</name></member>
+      <member refid="classILLIXR_1_1network_1_1network__backend_1a3d80a1afc97fecb9403258d11499998b" prot="public" virt="pure-virtual"><scope>ILLIXR::network::network_backend</scope><name>topic_create</name></member>
+      <member refid="classILLIXR_1_1network_1_1network__backend_1a2fe7cf47e5654e23df7da0adbe1fecee" prot="public" virt="pure-virtual"><scope>ILLIXR::network::network_backend</scope><name>topic_send</name></member>
+      <member refid="classILLIXR_1_1phonebook_1_1service_1a6bc6e64a0d9b70223989fc3fb98c2d0d" prot="public" virt="virtual"><scope>ILLIXR::network::network_backend</scope><name>~service</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

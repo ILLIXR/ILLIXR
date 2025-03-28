@@ -1,0 +1,544 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classILLIXR_1_1depthai" kind="class" language="C++" prot="public">
+    <compoundname>ILLIXR::depthai</compoundname>
+    <basecompoundref refid="classILLIXR_1_1plugin" prot="public" virt="non-virtual">ILLIXR::plugin</basecompoundref>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1depthai_1a95e24c0220b29115e293b2dbbcad3217" prot="private" static="no" mutable="no">
+        <type>const std::shared_ptr&lt; <ref refid="classILLIXR_1_1switchboard" kindref="compound">switchboard</ref> &gt;</type>
+        <definition>const std::shared_ptr&lt;switchboard&gt; ILLIXR::depthai::switchboard_</definition>
+        <argsstring></argsstring>
+        <name>switchboard_</name>
+        <qualifiedname>ILLIXR::depthai::switchboard_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" line="24" column="45" bodyfile="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" bodystart="24" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1depthai_1aeebdfe9c0d59269aa273586286bae52d" prot="private" static="no" mutable="no">
+        <type>const std::shared_ptr&lt; const <ref refid="classILLIXR_1_1relative__clock" kindref="compound">relative_clock</ref> &gt;</type>
+        <definition>const std::shared_ptr&lt;const relative_clock&gt; ILLIXR::depthai::clock_</definition>
+        <argsstring></argsstring>
+        <name>clock_</name>
+        <qualifiedname>ILLIXR::depthai::clock_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" line="25" column="36" bodyfile="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" bodystart="25" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1depthai_1a8693d2d75263c902257a21d661cbeed4" prot="private" static="no" mutable="no">
+        <type><ref refid="classILLIXR_1_1switchboard_1_1writer" kindref="compound">switchboard::writer</ref>&lt; <ref refid="structILLIXR_1_1data__format_1_1imu__type" kindref="compound">data_format::imu_type</ref> &gt;</type>
+        <definition>switchboard::writer&lt;data_format::imu_type&gt; ILLIXR::depthai::imu_writer_</definition>
+        <argsstring></argsstring>
+        <name>imu_writer_</name>
+        <qualifiedname>ILLIXR::depthai::imu_writer_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" line="26" column="35" bodyfile="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" bodystart="26" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1depthai_1a0e70f0391dc80ddd1ade93ad2385206c" prot="private" static="no" mutable="no">
+        <type><ref refid="classILLIXR_1_1switchboard_1_1writer" kindref="compound">switchboard::writer</ref>&lt; <ref refid="structILLIXR_1_1data__format_1_1binocular__cam__type" kindref="compound">data_format::binocular_cam_type</ref> &gt;</type>
+        <definition>switchboard::writer&lt;data_format::binocular_cam_type&gt; ILLIXR::depthai::cam_writer_</definition>
+        <argsstring></argsstring>
+        <name>cam_writer_</name>
+        <qualifiedname>ILLIXR::depthai::cam_writer_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" line="27" column="25" bodyfile="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" bodystart="27" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1depthai_1ac220b46a8182514592b8a33ad912b862" prot="private" static="no" mutable="no">
+        <type><ref refid="classILLIXR_1_1switchboard_1_1writer" kindref="compound">switchboard::writer</ref>&lt; <ref refid="structILLIXR_1_1data__format_1_1rgb__depth__type" kindref="compound">data_format::rgb_depth_type</ref> &gt;</type>
+        <definition>switchboard::writer&lt;data_format::rgb_depth_type&gt; ILLIXR::depthai::rgb_depth_</definition>
+        <argsstring></argsstring>
+        <name>rgb_depth_</name>
+        <qualifiedname>ILLIXR::depthai::rgb_depth_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" line="28" column="29" bodyfile="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" bodystart="28" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1depthai_1a6c391de7ecfdc1b60a4fa18a5af8b806" prot="private" static="no" mutable="no">
+        <type>std::mutex</type>
+        <definition>std::mutex ILLIXR::depthai::mutex_</definition>
+        <argsstring></argsstring>
+        <name>mutex_</name>
+        <qualifiedname>ILLIXR::depthai::mutex_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" line="29" column="58" bodyfile="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" bodystart="29" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1depthai_1afd4e3a5fc950ef21c90a5e6afe52956a" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int ILLIXR::depthai::imu_packet_</definition>
+        <argsstring></argsstring>
+        <name>imu_packet_</name>
+        <qualifiedname>ILLIXR::depthai::imu_packet_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" line="32" column="9" bodyfile="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" bodystart="32" bodyend="32"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1depthai_1a262684fe8ea78b3e6884ad1af918672a" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int ILLIXR::depthai::imu_pub_</definition>
+        <argsstring></argsstring>
+        <name>imu_pub_</name>
+        <qualifiedname>ILLIXR::depthai::imu_pub_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" line="33" column="9" bodyfile="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" bodystart="33" bodyend="33"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1depthai_1a888553083cda50ab40a04fbd71d18942" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int ILLIXR::depthai::rgbd_pub_</definition>
+        <argsstring></argsstring>
+        <name>rgbd_pub_</name>
+        <qualifiedname>ILLIXR::depthai::rgbd_pub_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" line="34" column="9" bodyfile="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" bodystart="34" bodyend="34"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1depthai_1acd88c1b8101d0ba7e6b7b4139f237822" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int ILLIXR::depthai::rgb_count_</definition>
+        <argsstring></argsstring>
+        <name>rgb_count_</name>
+        <qualifiedname>ILLIXR::depthai::rgb_count_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" line="35" column="9" bodyfile="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" bodystart="35" bodyend="35"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1depthai_1a8c84ed1512a1ad8cb8911e687aa95fd2" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int ILLIXR::depthai::left_count_</definition>
+        <argsstring></argsstring>
+        <name>left_count_</name>
+        <qualifiedname>ILLIXR::depthai::left_count_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" line="36" column="9" bodyfile="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" bodystart="36" bodyend="36"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1depthai_1aec859c53355154c7c2e16c59a6dd7631" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int ILLIXR::depthai::right_count_</definition>
+        <argsstring></argsstring>
+        <name>right_count_</name>
+        <qualifiedname>ILLIXR::depthai::right_count_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" line="37" column="9" bodyfile="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" bodystart="37" bodyend="37"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1depthai_1aa93f65282c39d718c8967f159ba1e174" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int ILLIXR::depthai::depth_count_</definition>
+        <argsstring></argsstring>
+        <name>depth_count_</name>
+        <qualifiedname>ILLIXR::depthai::depth_count_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" line="38" column="9" bodyfile="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" bodystart="38" bodyend="38"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1depthai_1ada7a18e9d7dd43c1d7380310b14fca69" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int ILLIXR::depthai::all_count_</definition>
+        <argsstring></argsstring>
+        <name>all_count_</name>
+        <qualifiedname>ILLIXR::depthai::all_count_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" line="39" column="9" bodyfile="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" bodystart="39" bodyend="39"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1depthai_1aeb05fc7341c55341120e50e3063308c5" prot="private" static="no" mutable="no">
+        <type>std::chrono::time_point&lt; std::chrono::steady_clock &gt;</type>
+        <definition>std::chrono::time_point&lt;std::chrono::steady_clock&gt; ILLIXR::depthai::first_packet_time_</definition>
+        <argsstring></argsstring>
+        <name>first_packet_time_</name>
+        <qualifiedname>ILLIXR::depthai::first_packet_time_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" line="41" column="66" bodyfile="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" bodystart="41" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1depthai_1a3a5232f5a1ae33f9f5708d08ba159391" prot="private" static="no" mutable="no">
+        <type>std::chrono::time_point&lt; std::chrono::steady_clock, std::chrono::steady_clock::duration &gt;</type>
+        <definition>std::chrono::time_point&lt;std::chrono::steady_clock, std::chrono::steady_clock::duration&gt; ILLIXR::depthai::test_time_point_</definition>
+        <argsstring></argsstring>
+        <name>test_time_point_</name>
+        <qualifiedname>ILLIXR::depthai::test_time_point_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" line="42" column="29" bodyfile="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" bodystart="42" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1depthai_1ad73956c937ce24c4103cb6062ed149e1" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool ILLIXR::depthai::use_raw_</definition>
+        <argsstring></argsstring>
+        <name>use_raw_</name>
+        <qualifiedname>ILLIXR::depthai::use_raw_</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" line="43" column="93" bodyfile="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" bodystart="43" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1depthai_1a915dd15f2e805005f1bbc7746f6c073f" prot="private" static="no" mutable="no">
+        <type>dai::Device</type>
+        <definition>dai::Device ILLIXR::depthai::device_</definition>
+        <argsstring></argsstring>
+        <name>device_</name>
+        <qualifiedname>ILLIXR::depthai::device_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" line="44" column="93" bodyfile="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" bodystart="44" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1depthai_1add2a0a4e27b7af605ef45ebd56436151" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; dai::DataOutputQueue &gt;</type>
+        <definition>std::shared_ptr&lt;dai::DataOutputQueue&gt; ILLIXR::depthai::color_queue_</definition>
+        <argsstring></argsstring>
+        <name>color_queue_</name>
+        <qualifiedname>ILLIXR::depthai::color_queue_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" line="46" column="21" bodyfile="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" bodystart="46" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1depthai_1a4df2a9d023631f4768aba441040ac0fc" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; dai::DataOutputQueue &gt;</type>
+        <definition>std::shared_ptr&lt;dai::DataOutputQueue&gt; ILLIXR::depthai::depth_queue_</definition>
+        <argsstring></argsstring>
+        <name>depth_queue_</name>
+        <qualifiedname>ILLIXR::depthai::depth_queue_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" line="47" column="21" bodyfile="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" bodystart="47" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1depthai_1a7b510f63563d2eb0662634e3f10b52bd" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; dai::DataOutputQueue &gt;</type>
+        <definition>std::shared_ptr&lt;dai::DataOutputQueue&gt; ILLIXR::depthai::rectif_left_queue_</definition>
+        <argsstring></argsstring>
+        <name>rectif_left_queue_</name>
+        <qualifiedname>ILLIXR::depthai::rectif_left_queue_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" line="48" column="21" bodyfile="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" bodystart="48" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1depthai_1a7182ac30b4ce992dba74be89913eee00" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; dai::DataOutputQueue &gt;</type>
+        <definition>std::shared_ptr&lt;dai::DataOutputQueue&gt; ILLIXR::depthai::rectif_right_queue_</definition>
+        <argsstring></argsstring>
+        <name>rectif_right_queue_</name>
+        <qualifiedname>ILLIXR::depthai::rectif_right_queue_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" line="49" column="21" bodyfile="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" bodystart="49" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1depthai_1a5a2761915a348b9df4d42207185988d6" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; dai::DataOutputQueue &gt;</type>
+        <definition>std::shared_ptr&lt;dai::DataOutputQueue&gt; ILLIXR::depthai::imu_queue_</definition>
+        <argsstring></argsstring>
+        <name>imu_queue_</name>
+        <qualifiedname>ILLIXR::depthai::imu_queue_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" line="50" column="21" bodyfile="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" bodystart="50" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1depthai_1a236af2346e5b5cad6c182a35ac2b0729" prot="private" static="no" mutable="no">
+        <type>std::optional&lt; ullong &gt;</type>
+        <definition>std::optional&lt;ullong&gt; ILLIXR::depthai::first_imu_time_</definition>
+        <argsstring></argsstring>
+        <name>first_imu_time_</name>
+        <qualifiedname>ILLIXR::depthai::first_imu_time_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" line="52" column="23" bodyfile="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" bodystart="52" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1depthai_1af88b2033a6194a3a010350ee684ea346" prot="private" static="no" mutable="no">
+        <type>std::optional&lt; time_point &gt;</type>
+        <definition>std::optional&lt;time_point&gt; ILLIXR::depthai::first_real_imu_time_</definition>
+        <argsstring></argsstring>
+        <name>first_real_imu_time_</name>
+        <qualifiedname>ILLIXR::depthai::first_real_imu_time_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" line="53" column="19" bodyfile="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" bodystart="53" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1depthai_1a2362e6ec0920f7e685a495a3abb8c75a" prot="private" static="no" mutable="no">
+        <type>std::optional&lt; ullong &gt;</type>
+        <definition>std::optional&lt;ullong&gt; ILLIXR::depthai::first_cam_time_</definition>
+        <argsstring></argsstring>
+        <name>first_cam_time_</name>
+        <qualifiedname>ILLIXR::depthai::first_cam_time_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" line="55" column="23" bodyfile="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" bodystart="55" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1depthai_1a03fa2678e95093f8f4e44a1c27f1e8d2" prot="private" static="no" mutable="no">
+        <type>std::optional&lt; time_point &gt;</type>
+        <definition>std::optional&lt;time_point&gt; ILLIXR::depthai::first_real_cam_time_</definition>
+        <argsstring></argsstring>
+        <name>first_real_cam_time_</name>
+        <qualifiedname>ILLIXR::depthai::first_real_cam_time_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" line="56" column="19" bodyfile="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" bodystart="56" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classILLIXR_1_1depthai_1a33e8fe9405978d9e7738f3350b139991" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>depthai::depthai</definition>
+        <argsstring>(const std::string &amp;name, phonebook *pb)</argsstring>
+        <name>depthai</name>
+        <qualifiedname>ILLIXR::depthai::depthai</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type><ref refid="classILLIXR_1_1phonebook" kindref="compound">phonebook</ref> *</type>
+          <declname>pb</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" line="16" column="6" bodyfile="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.cpp" bodystart="14" bodyend="36"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1depthai_1a0a7fe7072c298471b854b1cdc101c896" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void depthai::callback</definition>
+        <argsstring>()</argsstring>
+        <name>callback</name>
+        <qualifiedname>ILLIXR::depthai::callback</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" line="17" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.cpp" bodystart="38" bodyend="144"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1depthai_1aade8e62784facad83101069109049b18" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>depthai::~depthai</definition>
+        <argsstring>() override</argsstring>
+        <name>~depthai</name>
+        <qualifiedname>ILLIXR::depthai::~depthai</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" line="19" column="5" bodyfile="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.cpp" bodystart="146" bodyend="155"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classILLIXR_1_1depthai_1afca4eedda40c1ff5f3d515379aeaea0e" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>dai::Pipeline</type>
+        <definition>dai::Pipeline depthai::create_camera_pipeline</definition>
+        <argsstring>() const</argsstring>
+        <name>create_camera_pipeline</name>
+        <qualifiedname>ILLIXR::depthai::create_camera_pipeline</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" line="22" column="19" bodyfile="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.cpp" bodystart="157" bodyend="247"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>ILLIXR::depthai</label>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ILLIXR::plugin</label>
+        <link refid="classILLIXR_1_1plugin"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>ILLIXR::depthai</label>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>ILLIXR::phonebook</label>
+        <link refid="classILLIXR_1_1phonebook"/>
+      </node>
+      <node id="2">
+        <label>ILLIXR::plugin</label>
+        <link refid="classILLIXR_1_1plugin"/>
+        <childnode refid="3" relation="usage">
+          <edgelabel>phonebook_</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" line="14" column="1" bodyfile="/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp" bodystart="14" bodyend="57"/>
+    <listofallmembers>
+      <member refid="classILLIXR_1_1depthai_1ada7a18e9d7dd43c1d7380310b14fca69" prot="private" virt="non-virtual"><scope>ILLIXR::depthai</scope><name>all_count_</name></member>
+      <member refid="classILLIXR_1_1depthai_1a0a7fe7072c298471b854b1cdc101c896" prot="public" virt="non-virtual"><scope>ILLIXR::depthai</scope><name>callback</name></member>
+      <member refid="classILLIXR_1_1depthai_1a0e70f0391dc80ddd1ade93ad2385206c" prot="private" virt="non-virtual"><scope>ILLIXR::depthai</scope><name>cam_writer_</name></member>
+      <member refid="classILLIXR_1_1depthai_1aeebdfe9c0d59269aa273586286bae52d" prot="private" virt="non-virtual"><scope>ILLIXR::depthai</scope><name>clock_</name></member>
+      <member refid="classILLIXR_1_1depthai_1add2a0a4e27b7af605ef45ebd56436151" prot="private" virt="non-virtual"><scope>ILLIXR::depthai</scope><name>color_queue_</name></member>
+      <member refid="classILLIXR_1_1depthai_1afca4eedda40c1ff5f3d515379aeaea0e" prot="private" virt="non-virtual"><scope>ILLIXR::depthai</scope><name>create_camera_pipeline</name></member>
+      <member refid="classILLIXR_1_1depthai_1aa93f65282c39d718c8967f159ba1e174" prot="private" virt="non-virtual"><scope>ILLIXR::depthai</scope><name>depth_count_</name></member>
+      <member refid="classILLIXR_1_1depthai_1a4df2a9d023631f4768aba441040ac0fc" prot="private" virt="non-virtual"><scope>ILLIXR::depthai</scope><name>depth_queue_</name></member>
+      <member refid="classILLIXR_1_1depthai_1a33e8fe9405978d9e7738f3350b139991" prot="public" virt="non-virtual"><scope>ILLIXR::depthai</scope><name>depthai</name></member>
+      <member refid="classILLIXR_1_1depthai_1a915dd15f2e805005f1bbc7746f6c073f" prot="private" virt="non-virtual"><scope>ILLIXR::depthai</scope><name>device_</name></member>
+      <member refid="classILLIXR_1_1depthai_1a2362e6ec0920f7e685a495a3abb8c75a" prot="private" virt="non-virtual"><scope>ILLIXR::depthai</scope><name>first_cam_time_</name></member>
+      <member refid="classILLIXR_1_1depthai_1a236af2346e5b5cad6c182a35ac2b0729" prot="private" virt="non-virtual"><scope>ILLIXR::depthai</scope><name>first_imu_time_</name></member>
+      <member refid="classILLIXR_1_1depthai_1aeb05fc7341c55341120e50e3063308c5" prot="private" virt="non-virtual"><scope>ILLIXR::depthai</scope><name>first_packet_time_</name></member>
+      <member refid="classILLIXR_1_1depthai_1a03fa2678e95093f8f4e44a1c27f1e8d2" prot="private" virt="non-virtual"><scope>ILLIXR::depthai</scope><name>first_real_cam_time_</name></member>
+      <member refid="classILLIXR_1_1depthai_1af88b2033a6194a3a010350ee684ea346" prot="private" virt="non-virtual"><scope>ILLIXR::depthai</scope><name>first_real_imu_time_</name></member>
+      <member refid="classILLIXR_1_1plugin_1afe52734e7edc87bd0bf974caf112961b" prot="protected" virt="non-virtual"><scope>ILLIXR::depthai</scope><name>gen_guid_</name></member>
+      <member refid="classILLIXR_1_1plugin_1aebda022998bd35983e83f391dc0e5193" prot="public" virt="non-virtual"><scope>ILLIXR::depthai</scope><name>get_name</name></member>
+      <member refid="classILLIXR_1_1plugin_1aaedb3f9178bdd11e53815e158454aaf3" prot="protected" virt="non-virtual"><scope>ILLIXR::depthai</scope><name>id_</name></member>
+      <member refid="classILLIXR_1_1depthai_1afd4e3a5fc950ef21c90a5e6afe52956a" prot="private" virt="non-virtual"><scope>ILLIXR::depthai</scope><name>imu_packet_</name></member>
+      <member refid="classILLIXR_1_1depthai_1a262684fe8ea78b3e6884ad1af918672a" prot="private" virt="non-virtual"><scope>ILLIXR::depthai</scope><name>imu_pub_</name></member>
+      <member refid="classILLIXR_1_1depthai_1a5a2761915a348b9df4d42207185988d6" prot="private" virt="non-virtual"><scope>ILLIXR::depthai</scope><name>imu_queue_</name></member>
+      <member refid="classILLIXR_1_1depthai_1a8693d2d75263c902257a21d661cbeed4" prot="private" virt="non-virtual"><scope>ILLIXR::depthai</scope><name>imu_writer_</name></member>
+      <member refid="classILLIXR_1_1depthai_1a8c84ed1512a1ad8cb8911e687aa95fd2" prot="private" virt="non-virtual"><scope>ILLIXR::depthai</scope><name>left_count_</name></member>
+      <member refid="classILLIXR_1_1depthai_1a6c391de7ecfdc1b60a4fa18a5af8b806" prot="private" virt="non-virtual"><scope>ILLIXR::depthai</scope><name>mutex_</name></member>
+      <member refid="classILLIXR_1_1plugin_1aa963c518af83966173840a8558490888" prot="protected" virt="non-virtual"><scope>ILLIXR::depthai</scope><name>name_</name></member>
+      <member refid="classILLIXR_1_1plugin_1a6f7a2a9012350591c00d67a5bc0fd5a6" prot="protected" virt="non-virtual"><scope>ILLIXR::depthai</scope><name>phonebook_</name></member>
+      <member refid="classILLIXR_1_1plugin_1abc91c0e5be180a8e0bbeaf114a127f17" prot="public" virt="non-virtual"><scope>ILLIXR::depthai</scope><name>plugin</name></member>
+      <member refid="classILLIXR_1_1plugin_1a8d40c2421cde09079372d12bfe7d45fe" prot="protected" virt="non-virtual"><scope>ILLIXR::depthai</scope><name>plugin_logger_</name></member>
+      <member refid="classILLIXR_1_1plugin_1aef671d0cd9b6de45d3ade16dedbf4974" prot="protected" virt="non-virtual"><scope>ILLIXR::depthai</scope><name>record_logger_</name></member>
+      <member refid="classILLIXR_1_1depthai_1a7b510f63563d2eb0662634e3f10b52bd" prot="private" virt="non-virtual"><scope>ILLIXR::depthai</scope><name>rectif_left_queue_</name></member>
+      <member refid="classILLIXR_1_1depthai_1a7182ac30b4ce992dba74be89913eee00" prot="private" virt="non-virtual"><scope>ILLIXR::depthai</scope><name>rectif_right_queue_</name></member>
+      <member refid="classILLIXR_1_1depthai_1acd88c1b8101d0ba7e6b7b4139f237822" prot="private" virt="non-virtual"><scope>ILLIXR::depthai</scope><name>rgb_count_</name></member>
+      <member refid="classILLIXR_1_1depthai_1ac220b46a8182514592b8a33ad912b862" prot="private" virt="non-virtual"><scope>ILLIXR::depthai</scope><name>rgb_depth_</name></member>
+      <member refid="classILLIXR_1_1depthai_1a888553083cda50ab40a04fbd71d18942" prot="private" virt="non-virtual"><scope>ILLIXR::depthai</scope><name>rgbd_pub_</name></member>
+      <member refid="classILLIXR_1_1depthai_1aec859c53355154c7c2e16c59a6dd7631" prot="private" virt="non-virtual"><scope>ILLIXR::depthai</scope><name>right_count_</name></member>
+      <member refid="classILLIXR_1_1plugin_1a7c1c7c1a0ec2e43bfa1118586a28932f" prot="public" virt="non-virtual"><scope>ILLIXR::depthai</scope><name>spd_add_file_sink</name></member>
+      <member refid="classILLIXR_1_1plugin_1a569297189ef365cf93f6a95202c76d76" prot="public" virt="non-virtual"><scope>ILLIXR::depthai</scope><name>spdlogger</name></member>
+      <member refid="classILLIXR_1_1plugin_1a30d7294817fc5e8a8216fbfbca233cdc" prot="public" virt="virtual"><scope>ILLIXR::depthai</scope><name>start</name></member>
+      <member refid="classILLIXR_1_1plugin_1a2cefabfb6dd9800b1ebc8b07031661c4" prot="public" virt="virtual"><scope>ILLIXR::depthai</scope><name>stop</name></member>
+      <member refid="classILLIXR_1_1depthai_1a95e24c0220b29115e293b2dbbcad3217" prot="private" virt="non-virtual"><scope>ILLIXR::depthai</scope><name>switchboard_</name></member>
+      <member refid="classILLIXR_1_1depthai_1a3a5232f5a1ae33f9f5708d08ba159391" prot="private" virt="non-virtual"><scope>ILLIXR::depthai</scope><name>test_time_point_</name></member>
+      <member refid="classILLIXR_1_1depthai_1ad73956c937ce24c4103cb6062ed149e1" prot="private" virt="non-virtual"><scope>ILLIXR::depthai</scope><name>use_raw_</name></member>
+      <member refid="classILLIXR_1_1depthai_1aade8e62784facad83101069109049b18" prot="public" virt="non-virtual"><scope>ILLIXR::depthai</scope><name>~depthai</name></member>
+      <member refid="classILLIXR_1_1plugin_1a44d7b00c86e227bbc1a0b221da43d454" prot="public" virt="virtual"><scope>ILLIXR::depthai</scope><name>~plugin</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

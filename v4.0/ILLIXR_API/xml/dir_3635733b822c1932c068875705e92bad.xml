@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_3635733b822c1932c068875705e92bad" kind="dir">
+    <compoundname>/home/friedel/devel/ILLIXR/plugins/offload_vio/server_rx</compoundname>
+    <innerfile refid="plugins_2offload__vio_2server__rx_2plugin_8cpp">plugin.cpp</innerfile>
+    <innerfile refid="plugins_2offload__vio_2server__rx_2plugin_8hpp">plugin.hpp</innerfile>
+    <innerfile refid="video__decoder_8cpp">video_decoder.cpp</innerfile>
+    <innerfile refid="video__decoder_8hpp">video_decoder.hpp</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/plugins/offload_vio/server_rx/"/>
+  </compounddef>
+</doxygen>

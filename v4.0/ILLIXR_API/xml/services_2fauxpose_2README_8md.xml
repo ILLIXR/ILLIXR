@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="services_2fauxpose_2README_8md" kind="file" language="Markdown">
+    <compoundname>README.md</compoundname>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline><highlight class="normal">#<sp/>FauxPose<sp/>ILLIXR<sp/>plugin</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Summary</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">The<sp/>`FauxPose`<sp/>ILLIXR<sp/>plugin<sp/>generates<sp/>&quot;fast_pose&quot;<sp/>data<sp/>from<sp/>a<sp/>simple<sp/>mathematical<sp/>algorithm<sp/>(circular<sp/>movement).<sp/>The</highlight></codeline>
+<codeline><highlight class="normal">intent<sp/>is<sp/>for<sp/>use<sp/>when<sp/>debugging<sp/>other<sp/>plugins<sp/>and<sp/>the<sp/>developer<sp/>wants<sp/>a<sp/>known<sp/>pose<sp/>trajectory<sp/>without<sp/>having<sp/>to</highlight></codeline>
+<codeline><highlight class="normal">configure<sp/>actual<sp/>tracking.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">The<sp/>movement<sp/>is<sp/>hard-coded<sp/>to<sp/>be<sp/>on<sp/>the<sp/>Y=center.y<sp/>plane,<sp/>with<sp/>the<sp/>X<sp/>and<sp/>Z<sp/>values<sp/>set<sp/>to<sp/>rotate<sp/>in<sp/>a<sp/>circle.<sp/>The<sp/>period</highlight></codeline>
+<codeline><highlight class="normal">and<sp/>amplitude<sp/>of<sp/>the<sp/>movement</highlight></codeline>
+<codeline><highlight class="normal">are<sp/>have<sp/>default<sp/>values<sp/>(0.5,<sp/>and<sp/>2.0<sp/>respectively)<sp/>that<sp/>can<sp/>be<sp/>changed<sp/>through<sp/>environment<sp/>variables.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Topic<sp/>details:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>-<sp/><sp/><sp/>*Publishes*<sp/>`pose_position`<sp/>on<sp/>`fast_pose`<sp/>topic.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Usage</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">The<sp/>&quot;FauxPose&quot;<sp/>plugin<sp/>must<sp/>be<sp/>included<sp/>in<sp/>the<sp/>YAML<sp/>configuration<sp/>file<sp/>prior<sp/>to<sp/>any<sp/>rendering<sp/>plugin<sp/>(such<sp/>as<sp/>[</highlight></codeline>
+<codeline><highlight class="normal">`debugview`][P10]<sp/>or<sp/>[`gldemo`][P11]).<sp/>Also,<sp/>no<sp/>other<sp/>pose-generating<sp/>plugin<sp/>should<sp/>be<sp/>included.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">An<sp/>example<sp/>`profiles/fauxpose.yaml`<sp/>configuration<sp/>file<sp/>is<sp/>included<sp/>as<sp/>an<sp/>example.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">By<sp/>default,<sp/>the<sp/>&quot;orbit&quot;<sp/>of<sp/>the<sp/>tracked<sp/>position<sp/>will<sp/>be<sp/>about<sp/>the<sp/>point<sp/>(0.0,<sp/>1.5,<sp/>0.0),<sp/>with<sp/>a<sp/>default<sp/>amplitude<sp/>of<sp/>&quot;</highlight></codeline>
+<codeline><highlight class="normal">2.0&quot;,<sp/>and<sp/>period<sp/>of<sp/>&quot;0.5&quot;<sp/>seconds,<sp/>with<sp/>the<sp/>orientation<sp/>facing<sp/>the<sp/>negative-X<sp/>direction.<sp/>The<sp/>first<sp/>three<sp/>of<sp/>these<sp/>values</highlight></codeline>
+<codeline><highlight class="normal">can<sp/>be<sp/>overridden<sp/>through<sp/>environment<sp/>variables:</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>-<sp/>FAUXPOSE_PERIOD=&lt;n&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>-<sp/>FAUXPOSE_AMPLITUDE=&lt;n&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>-<sp/>FAUXPOSE_CENTER=&lt;x,y,z&gt;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">[//]:<sp/>#<sp/>(-<sp/>plugins<sp/>-)</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">[P10]:<sp/><sp/>../illixr_plugins.md#debugview</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">[P11]:<sp/><sp/>../illixr_plugins.md#gldemo</highlight></codeline>
+    </programlisting>
+    <location file="/home/friedel/devel/ILLIXR/services/fauxpose/README.md"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="plugins_2openni_2README_8md" kind="file" language="Markdown">
+    <compoundname>README.md</compoundname>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline><highlight class="normal">#<sp/>OpenNI</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Set<sp/>Camera<sp/>Mode</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">If<sp/>you<sp/>wish<sp/>to<sp/>switch<sp/>up<sp/>the<sp/>video<sp/>modes<sp/>of<sp/>OpenNI,<sp/>update<sp/>these<sp/>two<sp/>macros<sp/>in<sp/>`openni/plugin.cpp`<sp/>accordingly:</highlight></codeline>
+<codeline><highlight class="normal">```</highlight></codeline>
+<codeline><highlight class="normal">#define<sp/>RGB_MODE<sp/>0</highlight></codeline>
+<codeline><highlight class="normal">#define<sp/>DEPTH_MODE<sp/>0</highlight></codeline>
+<codeline><highlight class="normal">```</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">You<sp/>can<sp/>see<sp/>the<sp/>list<sp/>of<sp/>available<sp/>modes<sp/>once<sp/>you<sp/>run<sp/>ILLIXR<sp/>the<sp/>first<sp/>time.<sp/></highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Debugging</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">```</highlight></codeline>
+<codeline><highlight class="normal">Device<sp/>open<sp/>failed:<sp/><sp/><sp/><sp/><sp/>DeviceOpen<sp/>using<sp/>default:<sp/>no<sp/>devices<sp/>found</highlight></codeline>
+<codeline><highlight class="normal">```</highlight></codeline>
+<codeline><highlight class="normal">**Solution**:<sp/>No<sp/>OpenNI<sp/>compatible<sp/>device<sp/>is<sp/>plugged<sp/>in.<sp/>So<sp/>plug<sp/>one<sp/>in</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">```</highlight></codeline>
+<codeline><highlight class="normal">Device<sp/>open<sp/>failed:<sp/><sp/><sp/><sp/><sp/>Could<sp/>not<sp/>open<sp/>&quot;1d27/0601@3/2&quot;:<sp/>USB<sp/>transfer<sp/>timeout!</highlight></codeline>
+<codeline><highlight class="normal">```</highlight></codeline>
+<codeline><highlight class="normal">**Solution**:<sp/>This<sp/>is<sp/>usually<sp/>fixed<sp/>by<sp/>unplug<sp/>and<sp/>plug<sp/>back<sp/>in.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">```</highlight></codeline>
+<codeline><highlight class="normal">Device<sp/>open<sp/>failed:<sp/><sp/><sp/><sp/><sp/>Could<sp/>not<sp/>open<sp/>&quot;1d27/0601@3/2&quot;:<sp/>Failed<sp/>to<sp/>open<sp/>the<sp/>USB<sp/>device!</highlight></codeline>
+<codeline><highlight class="normal">```</highlight></codeline>
+<codeline><highlight class="normal">**Solution**:<sp/>Fix<sp/>by<sp/>running<sp/>with<sp/>sudo<sp/></highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Environment<sp/>Variables</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">**OPENNI_LOG_LEVEL**:<sp/>logging<sp/>level<sp/>for<sp/>this<sp/>plugin,<sp/>values<sp/>can<sp/>be<sp/>&quot;trace&quot;,<sp/>&quot;debug&quot;,<sp/>&quot;info&quot;,<sp/>&quot;warning&quot;,<sp/>&quot;error&quot;,<sp/>&quot;critical&quot;,<sp/>or<sp/>&quot;off&quot;</highlight></codeline>
+    </programlisting>
+    <location file="/home/friedel/devel/ILLIXR/plugins/openni/README.md"/>
+  </compounddef>
+</doxygen>

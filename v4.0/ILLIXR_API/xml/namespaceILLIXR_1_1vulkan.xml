@@ -1,0 +1,678 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespaceILLIXR_1_1vulkan" kind="namespace" language="C++">
+    <compoundname>ILLIXR::vulkan</compoundname>
+    <innerclass refid="classILLIXR_1_1vulkan_1_1app" prot="public">ILLIXR::vulkan::app</innerclass>
+    <innerclass refid="structILLIXR_1_1vulkan_1_1buffer__pool" prot="public">ILLIXR::vulkan::buffer_pool</innerclass>
+    <innerclass refid="classILLIXR_1_1vulkan_1_1display__provider" prot="public">ILLIXR::vulkan::display_provider</innerclass>
+    <innerclass refid="structILLIXR_1_1vulkan_1_1queue" prot="public">ILLIXR::vulkan::queue</innerclass>
+    <innerclass refid="structILLIXR_1_1vulkan_1_1queue__families" prot="public">ILLIXR::vulkan::queue_families</innerclass>
+    <innerclass refid="classILLIXR_1_1vulkan_1_1render__pass" prot="public">ILLIXR::vulkan::render_pass</innerclass>
+    <innerclass refid="structILLIXR_1_1vulkan_1_1swapchain__details" prot="public">ILLIXR::vulkan::swapchain_details</innerclass>
+    <innerclass refid="classILLIXR_1_1vulkan_1_1timewarp" prot="public">ILLIXR::vulkan::timewarp</innerclass>
+    <innerclass refid="structILLIXR_1_1vulkan_1_1vk__image" prot="public">ILLIXR::vulkan::vk_image</innerclass>
+    <innernamespace refid="namespaceILLIXR_1_1vulkan_1_1ffmpeg__utils">ILLIXR::vulkan::ffmpeg_utils</innernamespace>
+    <sectiondef kind="typedef">
+      <memberdef kind="typedef" id="vulkan__objects_8hpp_1a09887bcc26a4e939600f1d34e6256bc0" prot="public" static="no">
+        <type>int8_t</type>
+        <definition>typedef int8_t ILLIXR::vulkan::image_index_t</definition>
+        <argsstring></argsstring>
+        <name>image_index_t</name>
+        <qualifiedname>ILLIXR::vulkan::image_index_t</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_objects.hpp" line="9" column="16" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_objects.hpp" bodystart="9" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="include_2illixr_2vk_2vulkan__utils_8hpp_1a20f22673f2baa705a1676ec7032bf5ed" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string ILLIXR::vulkan::error_string</definition>
+        <argsstring>(VkResult err_code)</argsstring>
+        <name>error_string</name>
+        <qualifiedname>ILLIXR::vulkan::error_string</qualifiedname>
+        <param>
+          <type>VkResult</type>
+          <declname>err_code</declname>
+        </param>
+        <briefdescription>
+<para>Returns the string representation of a VkResult. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>err_code</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The VkResult to convert to a string. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The string representation of the VkResult. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" line="71" column="13" bodyfile="/home/friedel/devel/ILLIXR/utils/vulkan_utils.cpp" bodystart="28" bodyend="97" declfile="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" declline="71" declcolumn="13"/>
+      </memberdef>
+      <memberdef kind="function" id="include_2illixr_2vk_2vulkan__utils_8hpp_1a9285327158cdb7e90d25b63516e7f523" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>VkShaderModule</type>
+        <definition>VkShaderModule ILLIXR::vulkan::create_shader_module</definition>
+        <argsstring>(VkDevice device, std::vector&lt; char &gt; &amp;&amp;code)</argsstring>
+        <name>create_shader_module</name>
+        <qualifiedname>ILLIXR::vulkan::create_shader_module</qualifiedname>
+        <param>
+          <type>VkDevice</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; char &gt; &amp;&amp;</type>
+          <declname>code</declname>
+        </param>
+        <briefdescription>
+<para>Creates a VkShaderModule from SPIR-V bytecode. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The Vulkan device to use. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>code</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The SPIR-V bytecode. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The created VkShaderModule. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" line="80" column="16" bodyfile="/home/friedel/devel/ILLIXR/utils/vulkan_utils.cpp" bodystart="106" bodyend="119" declfile="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" declline="80" declcolumn="16"/>
+      </memberdef>
+      <memberdef kind="function" id="include_2illixr_2vk_2vulkan__utils_8hpp_1a8c0505f047848ed20f9e4a59f0a8cadc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>VkSemaphore</type>
+        <definition>VkSemaphore ILLIXR::vulkan::create_timeline_semaphore</definition>
+        <argsstring>(VkDevice device, int initial_value=0, VkExportSemaphoreCreateInfo *export_semaphore_create_info=nullptr)</argsstring>
+        <name>create_timeline_semaphore</name>
+        <qualifiedname>ILLIXR::vulkan::create_timeline_semaphore</qualifiedname>
+        <param>
+          <type>VkDevice</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>initial_value</declname>
+          <defval>0</defval>
+        </param>
+        <param>
+          <type>VkExportSemaphoreCreateInfo *</type>
+          <declname>export_semaphore_create_info</declname>
+          <defval>nullptr</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" line="82" column="13" bodyfile="/home/friedel/devel/ILLIXR/utils/vulkan_utils.cpp" bodystart="121" bodyend="139" declfile="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" declline="82" declcolumn="13"/>
+      </memberdef>
+      <memberdef kind="function" id="include_2illixr_2vk_2vulkan__utils_8hpp_1a90e29f9d1e1bbaaae29a08ed6a6dd85c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void ILLIXR::vulkan::wait_timeline_semaphore</definition>
+        <argsstring>(VkDevice device, VkSemaphore semaphore, uint64_t value)</argsstring>
+        <name>wait_timeline_semaphore</name>
+        <qualifiedname>ILLIXR::vulkan::wait_timeline_semaphore</qualifiedname>
+        <param>
+          <type>VkDevice</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>VkSemaphore</type>
+          <declname>semaphore</declname>
+        </param>
+        <param>
+          <type>uint64_t</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" line="85" column="7" bodyfile="/home/friedel/devel/ILLIXR/utils/vulkan_utils.cpp" bodystart="141" bodyend="152" declfile="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" declline="85" declcolumn="7"/>
+      </memberdef>
+      <memberdef kind="function" id="include_2illixr_2vk_2vulkan__utils_8hpp_1a5da1cfd80ac07f11f1ae4659d2fecf7b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void ILLIXR::vulkan::wait_timeline_semaphores</definition>
+        <argsstring>(VkDevice device, const std::map&lt; VkSemaphore, uint64_t &gt; &amp;semaphores)</argsstring>
+        <name>wait_timeline_semaphores</name>
+        <qualifiedname>ILLIXR::vulkan::wait_timeline_semaphores</qualifiedname>
+        <param>
+          <type>VkDevice</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>const std::map&lt; VkSemaphore, uint64_t &gt; &amp;</type>
+          <declname>semaphores</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" line="87" column="6" bodyfile="/home/friedel/devel/ILLIXR/utils/vulkan_utils.cpp" bodystart="154" bodyend="171" declfile="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" declline="87" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="include_2illixr_2vk_2vulkan__utils_8hpp_1a4178f08e031ebd8b0e0807af50bd0f64" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>VmaAllocator</type>
+        <definition>VmaAllocator ILLIXR::vulkan::create_vma_allocator</definition>
+        <argsstring>(VkInstance vk_instance, VkPhysicalDevice vk_physical_device, VkDevice vk_device)</argsstring>
+        <name>create_vma_allocator</name>
+        <qualifiedname>ILLIXR::vulkan::create_vma_allocator</qualifiedname>
+        <param>
+          <type>VkInstance</type>
+          <declname>vk_instance</declname>
+        </param>
+        <param>
+          <type>VkPhysicalDevice</type>
+          <declname>vk_physical_device</declname>
+        </param>
+        <param>
+          <type>VkDevice</type>
+          <declname>vk_device</declname>
+        </param>
+        <briefdescription>
+<para>Creates a VMA allocator. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>vk_instance</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The Vulkan instance to use. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>vk_physical_device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The Vulkan physical device to use. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>vk_device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The Vulkan device to use. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The created VMA allocator. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" line="97" column="14" bodyfile="/home/friedel/devel/ILLIXR/utils/vulkan_utils.cpp" bodystart="181" bodyend="197" declfile="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" declline="97" declcolumn="14"/>
+      </memberdef>
+      <memberdef kind="function" id="include_2illixr_2vk_2vulkan__utils_8hpp_1a23c41dc11e494e62a84aeb205f367871" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>VkCommandBuffer</type>
+        <definition>VkCommandBuffer ILLIXR::vulkan::begin_one_time_command</definition>
+        <argsstring>(VkDevice vk_device, VkCommandPool vk_command_pool)</argsstring>
+        <name>begin_one_time_command</name>
+        <qualifiedname>ILLIXR::vulkan::begin_one_time_command</qualifiedname>
+        <param>
+          <type>VkDevice</type>
+          <declname>vk_device</declname>
+        </param>
+        <param>
+          <type>VkCommandPool</type>
+          <declname>vk_command_pool</declname>
+        </param>
+        <briefdescription>
+<para>Creates a one-time command buffer. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>vk_device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The Vulkan device to use. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>vk_command_pool</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The Vulkan command pool to use. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The created command buffer. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" line="106" column="17" bodyfile="/home/friedel/devel/ILLIXR/utils/vulkan_utils.cpp" bodystart="206" bodyend="227" declfile="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" declline="106" declcolumn="17"/>
+      </memberdef>
+      <memberdef kind="function" id="include_2illixr_2vk_2vulkan__utils_8hpp_1ac19f746e597c57345d4f5c1573647010" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void ILLIXR::vulkan::end_one_time_command</definition>
+        <argsstring>(VkDevice vk_device, VkCommandPool vk_command_pool, const queue &amp;q, VkCommandBuffer vk_command_buffer)</argsstring>
+        <name>end_one_time_command</name>
+        <qualifiedname>ILLIXR::vulkan::end_one_time_command</qualifiedname>
+        <param>
+          <type>VkDevice</type>
+          <declname>vk_device</declname>
+        </param>
+        <param>
+          <type>VkCommandPool</type>
+          <declname>vk_command_pool</declname>
+        </param>
+        <param>
+          <type>const queue &amp;</type>
+          <declname>q</declname>
+        </param>
+        <param>
+          <type>VkCommandBuffer</type>
+          <declname>vk_command_buffer</declname>
+        </param>
+        <briefdescription>
+<para>Ends, submits and frees a one-time command buffer. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This function waits for the queue to become idle.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>vk_device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The Vulkan device to use. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>vk_command_pool</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The Vulkan command pool to use. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>vk_queue</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The Vulkan queue to use. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>vk_command_buffer</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The Vulkan command buffer to use. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" line="118" column="6" bodyfile="/home/friedel/devel/ILLIXR/utils/vulkan_utils.cpp" bodystart="239" bodyend="260" declfile="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" declline="118" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="include_2illixr_2vk_2vulkan__utils_8hpp_1a6314e8dda222ee8912a3201efcf3052b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>VkCommandPool</type>
+        <definition>VkCommandPool ILLIXR::vulkan::create_command_pool</definition>
+        <argsstring>(VkDevice device, uint32_t queue_family_index)</argsstring>
+        <name>create_command_pool</name>
+        <qualifiedname>ILLIXR::vulkan::create_command_pool</qualifiedname>
+        <param>
+          <type>VkDevice</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>uint32_t</type>
+          <declname>queue_family_index</declname>
+        </param>
+        <briefdescription>
+<para>Creates a VkCommandPool. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The Vulkan device to use. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>queue_family_index</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The queue family index to use. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The created VkCommandPool. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" line="127" column="15" bodyfile="/home/friedel/devel/ILLIXR/utils/vulkan_utils.cpp" bodystart="269" bodyend="280" declfile="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" declline="127" declcolumn="15"/>
+      </memberdef>
+      <memberdef kind="function" id="include_2illixr_2vk_2vulkan__utils_8hpp_1a94a843f545e81eaf0d5835211be7cbba" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>VkCommandBuffer</type>
+        <definition>VkCommandBuffer ILLIXR::vulkan::create_command_buffer</definition>
+        <argsstring>(VkDevice device, VkCommandPool command_pool)</argsstring>
+        <name>create_command_buffer</name>
+        <qualifiedname>ILLIXR::vulkan::create_command_buffer</qualifiedname>
+        <param>
+          <type>VkDevice</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>VkCommandPool</type>
+          <declname>command_pool</declname>
+        </param>
+        <briefdescription>
+<para>Creates a VkCommandBuffer. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The Vulkan device to use. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>command_pool</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The Vulkan command pool to use. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" line="135" column="17" bodyfile="/home/friedel/devel/ILLIXR/utils/vulkan_utils.cpp" bodystart="288" bodyend="300" declfile="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" declline="135" declcolumn="17"/>
+      </memberdef>
+      <memberdef kind="function" id="include_2illixr_2vk_2vulkan__utils_8hpp_1aa65b035bc7aff828ae32641568517ff1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>VkResult</type>
+        <definition>VkResult ILLIXR::vulkan::locked_queue_submit</definition>
+        <argsstring>(queue &amp;q, uint32_t submitCount, const VkSubmitInfo *pSubmits, VkFence fence)</argsstring>
+        <name>locked_queue_submit</name>
+        <qualifiedname>ILLIXR::vulkan::locked_queue_submit</qualifiedname>
+        <param>
+          <type>queue &amp;</type>
+          <declname>q</declname>
+        </param>
+        <param>
+          <type>uint32_t</type>
+          <declname>submitCount</declname>
+        </param>
+        <param>
+          <type>const VkSubmitInfo *</type>
+          <declname>pSubmits</declname>
+        </param>
+        <param>
+          <type>VkFence</type>
+          <declname>fence</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" line="137" column="10" bodyfile="/home/friedel/devel/ILLIXR/utils/vulkan_utils.cpp" bodystart="302" bodyend="305" declfile="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" declline="137" declcolumn="10"/>
+      </memberdef>
+      <memberdef kind="function" id="include_2illixr_2vk_2vulkan__utils_8hpp_1a63bc356775975e5d919eaa741d1d7216" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::vector&lt; char &gt;</type>
+        <definition>std::vector&lt; char &gt; ILLIXR::vulkan::read_file</definition>
+        <argsstring>(const std::string &amp;path)</argsstring>
+        <name>read_file</name>
+        <qualifiedname>ILLIXR::vulkan::read_file</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>path</declname>
+        </param>
+        <briefdescription>
+<para>Reads a file into a vector of chars. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>path</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The path to the file. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The vector of chars. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" line="145" column="13" bodyfile="/home/friedel/devel/ILLIXR/utils/vulkan_utils.cpp" bodystart="313" bodyend="328" declfile="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" declline="145" declcolumn="13"/>
+      </memberdef>
+      <memberdef kind="function" id="include_2illixr_2vk_2vulkan__utils_8hpp_1a0e9b9343de2bb24532289078fd1e92f1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void ILLIXR::vulkan::copy_buffer_to_image</definition>
+        <argsstring>(VkDevice vk_device, queue q, VkCommandPool vk_command_pool, VkBuffer buffer, VkImage image, uint32_t width, uint32_t height)</argsstring>
+        <name>copy_buffer_to_image</name>
+        <qualifiedname>ILLIXR::vulkan::copy_buffer_to_image</qualifiedname>
+        <param>
+          <type>VkDevice</type>
+          <declname>vk_device</declname>
+        </param>
+        <param>
+          <type>queue</type>
+          <declname>q</declname>
+        </param>
+        <param>
+          <type>VkCommandPool</type>
+          <declname>vk_command_pool</declname>
+        </param>
+        <param>
+          <type>VkBuffer</type>
+          <declname>buffer</declname>
+        </param>
+        <param>
+          <type>VkImage</type>
+          <declname>image</declname>
+        </param>
+        <param>
+          <type>uint32_t</type>
+          <declname>width</declname>
+        </param>
+        <param>
+          <type>uint32_t</type>
+          <declname>height</declname>
+        </param>
+        <briefdescription>
+<para>Copies a buffer to an image of the same size. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>vk_device</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The Vulkan device to use. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>vk_queue</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The Vulkan queue to use. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>vk_command_pool</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The Vulkan command pool to use. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>buffer</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The buffer to copy from. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>image</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The image to copy to. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>width</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The width of the image. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>height</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The height of the image. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" line="158" column="6" bodyfile="/home/friedel/devel/ILLIXR/utils/vulkan_utils.cpp" bodystart="341" bodyend="362" declfile="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" declline="158" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="include_2illixr_2vk_2vulkan__utils_8hpp_1a21e05d13666caf10d720a748f804279a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>swapchain_details</type>
+        <definition>swapchain_details ILLIXR::vulkan::query_swapchain_details</definition>
+        <argsstring>(VkPhysicalDevice const &amp;physical_device, VkSurfaceKHR const &amp;vk_surface)</argsstring>
+        <name>query_swapchain_details</name>
+        <qualifiedname>ILLIXR::vulkan::query_swapchain_details</qualifiedname>
+        <param>
+          <type>VkPhysicalDevice const &amp;</type>
+          <declname>physical_device</declname>
+        </param>
+        <param>
+          <type>VkSurfaceKHR const &amp;</type>
+          <declname>vk_surface</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" line="161" column="19" bodyfile="/home/friedel/devel/ILLIXR/utils/vulkan_utils.cpp" bodystart="364" bodyend="388" declfile="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" declline="161" declcolumn="19"/>
+      </memberdef>
+      <memberdef kind="function" id="include_2illixr_2vk_2vulkan__utils_8hpp_1a0b1404b40a63391cdcdd16cb7cf31c22" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>queue_families</type>
+        <definition>queue_families ILLIXR::vulkan::find_queue_families</definition>
+        <argsstring>(VkPhysicalDevice const &amp;physical_device, VkSurfaceKHR const &amp;vk_surface, bool no_present=false)</argsstring>
+        <name>find_queue_families</name>
+        <qualifiedname>ILLIXR::vulkan::find_queue_families</qualifiedname>
+        <param>
+          <type>VkPhysicalDevice const &amp;</type>
+          <declname>physical_device</declname>
+        </param>
+        <param>
+          <type>VkSurfaceKHR const &amp;</type>
+          <declname>vk_surface</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>no_present</declname>
+          <defval>false</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" line="163" column="16" bodyfile="/home/friedel/devel/ILLIXR/utils/vulkan_utils.cpp" bodystart="390" bodyend="435" declfile="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" declline="163" declcolumn="16"/>
+      </memberdef>
+      <memberdef kind="function" id="include_2illixr_2vk_2vulkan__utils_8hpp_1a452ef64b5f6329461464d5d172cfc9d2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>VkImageView</type>
+        <definition>VkImageView ILLIXR::vulkan::create_image_view</definition>
+        <argsstring>(VkDevice device, VkImage image, VkFormat format, VkImageAspectFlags aspect_flags)</argsstring>
+        <name>create_image_view</name>
+        <qualifiedname>ILLIXR::vulkan::create_image_view</qualifiedname>
+        <param>
+          <type>VkDevice</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>VkImage</type>
+          <declname>image</declname>
+        </param>
+        <param>
+          <type>VkFormat</type>
+          <declname>format</declname>
+        </param>
+        <param>
+          <type>VkImageAspectFlags</type>
+          <declname>aspect_flags</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" line="166" column="13" bodyfile="/home/friedel/devel/ILLIXR/utils/vulkan_utils.cpp" bodystart="437" bodyend="454" declfile="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" declline="166" declcolumn="13"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/include/illixr/vk/display_provider.hpp" line="11" column="1"/>
+  </compounddef>
+</doxygen>

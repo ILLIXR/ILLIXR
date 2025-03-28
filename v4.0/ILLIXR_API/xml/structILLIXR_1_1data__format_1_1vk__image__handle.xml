@@ -1,0 +1,127 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structILLIXR_1_1data__format_1_1vk__image__handle" kind="struct" language="C++" prot="public">
+    <compoundname>ILLIXR::data_format::vk_image_handle</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1vk__image__handle_1a2d75f6d42883e661d739cc007e278249" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int ILLIXR::data_format::vk_image_handle::file_descriptor</definition>
+        <argsstring></argsstring>
+        <name>file_descriptor</name>
+        <qualifiedname>ILLIXR::data_format::vk_image_handle::file_descriptor</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/misc.hpp" line="28" column="14" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/misc.hpp" bodystart="28" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1vk__image__handle_1a2e4bd4b37dd59dd9648394767b1e516e" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t ILLIXR::data_format::vk_image_handle::format</definition>
+        <argsstring></argsstring>
+        <name>format</name>
+        <qualifiedname>ILLIXR::data_format::vk_image_handle::format</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/misc.hpp" line="29" column="14" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/misc.hpp" bodystart="29" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1vk__image__handle_1ae5d117106ed4cd78e9a7d0dcb877777f" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t ILLIXR::data_format::vk_image_handle::allocation_size</definition>
+        <argsstring></argsstring>
+        <name>allocation_size</name>
+        <qualifiedname>ILLIXR::data_format::vk_image_handle::allocation_size</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/misc.hpp" line="30" column="14" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/misc.hpp" bodystart="30" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1vk__image__handle_1a2a487c9a5d3e0c5f5b82f58b3caa52e2" prot="public" static="no" mutable="no">
+        <type>uint32_t</type>
+        <definition>uint32_t ILLIXR::data_format::vk_image_handle::width</definition>
+        <argsstring></argsstring>
+        <name>width</name>
+        <qualifiedname>ILLIXR::data_format::vk_image_handle::width</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/misc.hpp" line="31" column="14" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/misc.hpp" bodystart="31" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1vk__image__handle_1a3ad9055c16a26eb1642d1e3af05eb1bd" prot="public" static="no" mutable="no">
+        <type>uint32_t</type>
+        <definition>uint32_t ILLIXR::data_format::vk_image_handle::height</definition>
+        <argsstring></argsstring>
+        <name>height</name>
+        <qualifiedname>ILLIXR::data_format::vk_image_handle::height</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/misc.hpp" line="32" column="14" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/misc.hpp" bodystart="32" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1vk__image__handle_1ad4f77b4dc028611bcdb04ccafdf8a486" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::vk_image_handle::vk_image_handle</definition>
+        <argsstring>(int fd_, int64_t format_, size_t alloc_size, uint32_t width_, uint32_t height_)</argsstring>
+        <name>vk_image_handle</name>
+        <qualifiedname>ILLIXR::data_format::vk_image_handle::vk_image_handle</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>fd_</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>format_</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>alloc_size</declname>
+        </param>
+        <param>
+          <type>uint32_t</type>
+          <declname>width_</declname>
+        </param>
+        <param>
+          <type>uint32_t</type>
+          <declname>height_</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/misc.hpp" line="34" column="5" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/misc.hpp" bodystart="34" bodyend="39"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/misc.hpp" line="27" column="1" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/misc.hpp" bodystart="27" bodyend="40"/>
+    <listofallmembers>
+      <member refid="structILLIXR_1_1data__format_1_1vk__image__handle_1ae5d117106ed4cd78e9a7d0dcb877777f" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::vk_image_handle</scope><name>allocation_size</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1vk__image__handle_1a2d75f6d42883e661d739cc007e278249" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::vk_image_handle</scope><name>file_descriptor</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1vk__image__handle_1a2e4bd4b37dd59dd9648394767b1e516e" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::vk_image_handle</scope><name>format</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1vk__image__handle_1a3ad9055c16a26eb1642d1e3af05eb1bd" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::vk_image_handle</scope><name>height</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1vk__image__handle_1ad4f77b4dc028611bcdb04ccafdf8a486" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::vk_image_handle</scope><name>vk_image_handle</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1vk__image__handle_1a2a487c9a5d3e0c5f5b82f58b3caa52e2" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::vk_image_handle</scope><name>width</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

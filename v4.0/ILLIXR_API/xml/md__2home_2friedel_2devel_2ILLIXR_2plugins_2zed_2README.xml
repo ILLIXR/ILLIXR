@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="md__2home_2friedel_2devel_2ILLIXR_2plugins_2zed_2README" kind="page">
+    <compoundname>md__2home_2friedel_2devel_2ILLIXR_2plugins_2zed_2README</compoundname>
+    <title>ZED Mini</title>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para><anchor id="md__2home_2friedel_2devel_2ILLIXR_2plugins_2zed_2README_1autotoc_md58"/> </para>
+<sect1 id="md__2home_2friedel_2devel_2ILLIXR_2plugins_2zed_2README_1autotoc_md59">
+<title>Getting started</title>
+<para><itemizedlist>
+<listitem><para>First, download the latest version of the ZED SDK on <ulink url="https://www.stereolabs.com/docs/installation/linux/">stereolabs.com</ulink>.</para>
+</listitem><listitem><para>For more information, read the ZED <ulink url="https://www.stereolabs.com/developers/documentation/API/">API documentation</ulink>.</para>
+</listitem></itemizedlist>
+</para>
+<sect2 id="md__2home_2friedel_2devel_2ILLIXR_2plugins_2zed_2README_1autotoc_md60">
+<title>Prerequisites</title>
+<para><itemizedlist>
+<listitem><para>Ubuntu 22.04 or 24.04</para>
+</listitem><listitem><para><ulink url="https://developer.nvidia.com/cuda-toolkit-archive">CUDA</ulink></para>
+</listitem><listitem><para><ulink url="https://www.stereolabs.com/docs/installation/linux/">ZED SDK</ulink></para>
+</listitem><listitem><para>OpenCV 4 </para>
+</listitem></itemizedlist>
+</para>
+</sect2>
+</sect1>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/plugins/zed/README.md"/>
+  </compounddef>
+</doxygen>

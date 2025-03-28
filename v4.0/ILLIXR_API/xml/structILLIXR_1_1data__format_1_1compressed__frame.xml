@@ -1,0 +1,372 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structILLIXR_1_1data__format_1_1compressed__frame" kind="struct" language="C++" prot="public">
+    <compoundname>ILLIXR::data_format::compressed_frame</compoundname>
+    <basecompoundref refid="classILLIXR_1_1switchboard_1_1event" prot="public" virt="non-virtual">ILLIXR::switchboard::event</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1compressed__frame_1abe9264f2e56751926c189c4f7e4b7341" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool ILLIXR::data_format::compressed_frame::nalu_only</definition>
+        <argsstring></argsstring>
+        <name>nalu_only</name>
+        <qualifiedname>ILLIXR::data_format::compressed_frame::nalu_only</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/frame.hpp" line="47" column="11" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/frame.hpp" bodystart="47" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1compressed__frame_1a6863becb05c17343390bac61a061abdd" prot="public" static="no" mutable="no">
+        <type>char *</type>
+        <definition>char* ILLIXR::data_format::compressed_frame::left_color_nalu</definition>
+        <argsstring></argsstring>
+        <name>left_color_nalu</name>
+        <qualifiedname>ILLIXR::data_format::compressed_frame::left_color_nalu</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/frame.hpp" line="48" column="10" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/frame.hpp" bodystart="48" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1compressed__frame_1ac2c593a1bffc3327fdb0a2b16f81da15" prot="public" static="no" mutable="no">
+        <type>char *</type>
+        <definition>char* ILLIXR::data_format::compressed_frame::right_color_nalu</definition>
+        <argsstring></argsstring>
+        <name>right_color_nalu</name>
+        <qualifiedname>ILLIXR::data_format::compressed_frame::right_color_nalu</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/frame.hpp" line="49" column="10" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/frame.hpp" bodystart="49" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1compressed__frame_1a38308c43e23bc419e6eda5d498d17308" prot="public" static="no" mutable="no">
+        <type>char *</type>
+        <definition>char* ILLIXR::data_format::compressed_frame::left_depth_nalu</definition>
+        <argsstring></argsstring>
+        <name>left_depth_nalu</name>
+        <qualifiedname>ILLIXR::data_format::compressed_frame::left_depth_nalu</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/frame.hpp" line="50" column="10" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/frame.hpp" bodystart="50" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1compressed__frame_1aeec2dc77c653ade4b509a2e9f327c2f7" prot="public" static="no" mutable="no">
+        <type>char *</type>
+        <definition>char* ILLIXR::data_format::compressed_frame::right_depth_nalu</definition>
+        <argsstring></argsstring>
+        <name>right_depth_nalu</name>
+        <qualifiedname>ILLIXR::data_format::compressed_frame::right_depth_nalu</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/frame.hpp" line="51" column="10" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/frame.hpp" bodystart="51" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1compressed__frame_1a57e14a2fcf48f998f9ebe90cdbb2b403" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int ILLIXR::data_format::compressed_frame::left_color_nalu_size</definition>
+        <argsstring></argsstring>
+        <name>left_color_nalu_size</name>
+        <qualifiedname>ILLIXR::data_format::compressed_frame::left_color_nalu_size</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/frame.hpp" line="52" column="11" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/frame.hpp" bodystart="52" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1compressed__frame_1ae90243c46a9e90bffd086678d71828ed" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int ILLIXR::data_format::compressed_frame::right_color_nalu_size</definition>
+        <argsstring></argsstring>
+        <name>right_color_nalu_size</name>
+        <qualifiedname>ILLIXR::data_format::compressed_frame::right_color_nalu_size</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/frame.hpp" line="53" column="11" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/frame.hpp" bodystart="53" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1compressed__frame_1ad06400e5e0ca1e8ac134ae1a820343cc" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int ILLIXR::data_format::compressed_frame::left_depth_nalu_size</definition>
+        <argsstring></argsstring>
+        <name>left_depth_nalu_size</name>
+        <qualifiedname>ILLIXR::data_format::compressed_frame::left_depth_nalu_size</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/frame.hpp" line="54" column="11" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/frame.hpp" bodystart="54" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1compressed__frame_1aed0c52595e286e525990c245506cf750" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int ILLIXR::data_format::compressed_frame::right_depth_nalu_size</definition>
+        <argsstring></argsstring>
+        <name>right_depth_nalu_size</name>
+        <qualifiedname>ILLIXR::data_format::compressed_frame::right_depth_nalu_size</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/frame.hpp" line="55" column="11" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/frame.hpp" bodystart="55" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1compressed__frame_1a230bd2ca68a469d2b15df951e57073b4" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool ILLIXR::data_format::compressed_frame::use_depth</definition>
+        <argsstring></argsstring>
+        <name>use_depth</name>
+        <qualifiedname>ILLIXR::data_format::compressed_frame::use_depth</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/frame.hpp" line="57" column="10" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/frame.hpp" bodystart="57" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1compressed__frame_1af5ee561c7ff49f4e8667e3626bf80224" prot="public" static="no" mutable="no">
+        <type><ref refid="structILLIXR_1_1data__format_1_1fast__pose__type" kindref="compound">fast_pose_type</ref></type>
+        <definition>fast_pose_type ILLIXR::data_format::compressed_frame::pose</definition>
+        <argsstring></argsstring>
+        <name>pose</name>
+        <qualifiedname>ILLIXR::data_format::compressed_frame::pose</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/frame.hpp" line="66" column="20" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/frame.hpp" bodystart="66" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1compressed__frame_1af3c0a3c62d912a9d519c0972eabee1ca" prot="public" static="no" mutable="no">
+        <type>uint64_t</type>
+        <definition>uint64_t ILLIXR::data_format::compressed_frame::sent_time</definition>
+        <argsstring></argsstring>
+        <name>sent_time</name>
+        <qualifiedname>ILLIXR::data_format::compressed_frame::sent_time</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/frame.hpp" line="67" column="20" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/frame.hpp" bodystart="67" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1compressed__frame_1a3b8c161796eccd9472efa9349e996e8d" prot="public" static="no" mutable="no">
+        <type>long</type>
+        <definition>long ILLIXR::data_format::compressed_frame::magic</definition>
+        <argsstring></argsstring>
+        <name>magic</name>
+        <qualifiedname>ILLIXR::data_format::compressed_frame::magic</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/frame.hpp" line="68" column="20" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/frame.hpp" bodystart="68" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="friend">
+      <memberdef kind="friend" id="structILLIXR_1_1data__format_1_1compressed__frame_1ac98d07dd8f7b70e16ccb9a01abf56b9c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>class</type>
+        <definition>friend class boost::serialization::access</definition>
+        <argsstring></argsstring>
+        <name>boost::serialization::access</name>
+        <qualifiedname>ILLIXR::data_format::compressed_frame::access</qualifiedname>
+        <param>
+          <type>boost::serialization::access</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/frame.hpp" line="70" column="18" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/frame.hpp" bodystart="70" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1compressed__frame_1a2a2edc1290c13500093623758bdfb7f5" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Archive</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void ILLIXR::data_format::compressed_frame::save</definition>
+        <argsstring>(Archive &amp;ar, const unsigned int version) const</argsstring>
+        <name>save</name>
+        <qualifiedname>ILLIXR::data_format::compressed_frame::save</qualifiedname>
+        <param>
+          <type>Archive &amp;</type>
+          <declname>ar</declname>
+        </param>
+        <param>
+          <type>const unsigned int</type>
+          <declname>version</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/frame.hpp" line="119" column="10" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/frame.hpp" bodystart="119" bodyend="151"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1compressed__frame_1af1c09a9bc2e3b74d4e098a5c8f5a595b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Archive</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void ILLIXR::data_format::compressed_frame::load</definition>
+        <argsstring>(Archive &amp;ar, const unsigned int version)</argsstring>
+        <name>load</name>
+        <qualifiedname>ILLIXR::data_format::compressed_frame::load</qualifiedname>
+        <param>
+          <type>Archive &amp;</type>
+          <declname>ar</declname>
+        </param>
+        <param>
+          <type>const unsigned int</type>
+          <declname>version</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/frame.hpp" line="154" column="10" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/frame.hpp" bodystart="154" bodyend="198"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1compressed__frame_1a323e1a123c5f50863800340d70b0e8ff" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::compressed_frame::compressed_frame</definition>
+        <argsstring>()=default</argsstring>
+        <name>compressed_frame</name>
+        <qualifiedname>ILLIXR::data_format::compressed_frame::compressed_frame</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/frame.hpp" line="202" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1compressed__frame_1a5803fbcc3173149187754a8c2f730659" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::compressed_frame::~compressed_frame</definition>
+        <argsstring>()</argsstring>
+        <name>~compressed_frame</name>
+        <qualifiedname>ILLIXR::data_format::compressed_frame::~compressed_frame</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/frame.hpp" line="229" column="5" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/frame.hpp" bodystart="229" bodyend="238"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>ILLIXR::data_format::compressed_frame</label>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ILLIXR::switchboard::event</label>
+        <link refid="classILLIXR_1_1switchboard_1_1event"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>ILLIXR::data_format::compressed_frame</label>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>pose</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>ILLIXR::data_format::fast_pose_type</label>
+        <link refid="structILLIXR_1_1data__format_1_1fast__pose__type"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>pose</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>ILLIXR::data_format::pose_data</label>
+        <link refid="structILLIXR_1_1data__format_1_1pose__data"/>
+      </node>
+      <node id="4">
+        <label>ILLIXR::data_format::pose_type</label>
+        <link refid="structILLIXR_1_1data__format_1_1pose__type"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ILLIXR::switchboard::event</label>
+        <link refid="classILLIXR_1_1switchboard_1_1event"/>
+      </node>
+    </collaborationgraph>
+    <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/frame.hpp" line="46" column="1" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/frame.hpp" bodystart="46" bodyend="239"/>
+    <listofallmembers>
+      <member refid="structILLIXR_1_1data__format_1_1compressed__frame_1ac98d07dd8f7b70e16ccb9a01abf56b9c" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::compressed_frame</scope><name>boost::serialization::access</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1compressed__frame_1a323e1a123c5f50863800340d70b0e8ff" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::compressed_frame</scope><name>compressed_frame</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1compressed__frame_1a6863becb05c17343390bac61a061abdd" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::compressed_frame</scope><name>left_color_nalu</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1compressed__frame_1a57e14a2fcf48f998f9ebe90cdbb2b403" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::compressed_frame</scope><name>left_color_nalu_size</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1compressed__frame_1a38308c43e23bc419e6eda5d498d17308" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::compressed_frame</scope><name>left_depth_nalu</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1compressed__frame_1ad06400e5e0ca1e8ac134ae1a820343cc" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::compressed_frame</scope><name>left_depth_nalu_size</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1compressed__frame_1af1c09a9bc2e3b74d4e098a5c8f5a595b" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::compressed_frame</scope><name>load</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1compressed__frame_1a3b8c161796eccd9472efa9349e996e8d" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::compressed_frame</scope><name>magic</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1compressed__frame_1abe9264f2e56751926c189c4f7e4b7341" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::compressed_frame</scope><name>nalu_only</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1compressed__frame_1af5ee561c7ff49f4e8667e3626bf80224" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::compressed_frame</scope><name>pose</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1compressed__frame_1ac2c593a1bffc3327fdb0a2b16f81da15" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::compressed_frame</scope><name>right_color_nalu</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1compressed__frame_1ae90243c46a9e90bffd086678d71828ed" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::compressed_frame</scope><name>right_color_nalu_size</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1compressed__frame_1aeec2dc77c653ade4b509a2e9f327c2f7" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::compressed_frame</scope><name>right_depth_nalu</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1compressed__frame_1aed0c52595e286e525990c245506cf750" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::compressed_frame</scope><name>right_depth_nalu_size</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1compressed__frame_1a2a2edc1290c13500093623758bdfb7f5" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::compressed_frame</scope><name>save</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1compressed__frame_1af3c0a3c62d912a9d519c0972eabee1ca" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::compressed_frame</scope><name>sent_time</name></member>
+      <member refid="classILLIXR_1_1switchboard_1_1event_1a55399aaf47bc0d3943fd89d7afb55624" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::compressed_frame</scope><name>serialize</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1compressed__frame_1a230bd2ca68a469d2b15df951e57073b4" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::compressed_frame</scope><name>use_depth</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1compressed__frame_1a5803fbcc3173149187754a8c2f730659" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::compressed_frame</scope><name>~compressed_frame</name></member>
+      <member refid="classILLIXR_1_1switchboard_1_1event_1a01fb51a03e9025d71087de76823e449e" prot="public" virt="virtual"><scope>ILLIXR::data_format::compressed_frame</scope><name>~event</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

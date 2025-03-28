@@ -1,0 +1,60 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structILLIXR_1_1WarpMatrices" kind="struct" language="C++" prot="public">
+    <compoundname>ILLIXR::WarpMatrices</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structILLIXR_1_1WarpMatrices_1a46af72b6a8cc1b608749176fb5d97944" prot="public" static="no" mutable="no">
+        <type>glm::mat4</type>
+        <definition>glm::mat4 ILLIXR::WarpMatrices::render_inv_projection[2]</definition>
+        <argsstring>[2]</argsstring>
+        <name>render_inv_projection</name>
+        <qualifiedname>ILLIXR::WarpMatrices::render_inv_projection</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/openwarp_vk/openwarp_vk.hpp" line="106" column="15" bodyfile="/home/friedel/devel/ILLIXR/plugins/openwarp_vk/openwarp_vk.hpp" bodystart="106" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1WarpMatrices_1a9216708a1cfb7f666b387cf55f23830a" prot="public" static="no" mutable="no">
+        <type>glm::mat4</type>
+        <definition>glm::mat4 ILLIXR::WarpMatrices::render_inv_view[2]</definition>
+        <argsstring>[2]</argsstring>
+        <name>render_inv_view</name>
+        <qualifiedname>ILLIXR::WarpMatrices::render_inv_view</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/openwarp_vk/openwarp_vk.hpp" line="107" column="15" bodyfile="/home/friedel/devel/ILLIXR/plugins/openwarp_vk/openwarp_vk.hpp" bodystart="107" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1WarpMatrices_1a29947960e22c918fc124530bd52369f0" prot="public" static="no" mutable="no">
+        <type>glm::mat4</type>
+        <definition>glm::mat4 ILLIXR::WarpMatrices::warp_view_projection[2]</definition>
+        <argsstring>[2]</argsstring>
+        <name>warp_view_projection</name>
+        <qualifiedname>ILLIXR::WarpMatrices::warp_view_projection</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/openwarp_vk/openwarp_vk.hpp" line="108" column="15" bodyfile="/home/friedel/devel/ILLIXR/plugins/openwarp_vk/openwarp_vk.hpp" bodystart="108" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/plugins/openwarp_vk/openwarp_vk.hpp" line="105" column="1" bodyfile="/home/friedel/devel/ILLIXR/plugins/openwarp_vk/openwarp_vk.hpp" bodystart="105" bodyend="109"/>
+    <listofallmembers>
+      <member refid="structILLIXR_1_1WarpMatrices_1a46af72b6a8cc1b608749176fb5d97944" prot="public" virt="non-virtual"><scope>ILLIXR::WarpMatrices</scope><name>render_inv_projection</name></member>
+      <member refid="structILLIXR_1_1WarpMatrices_1a9216708a1cfb7f666b387cf55f23830a" prot="public" virt="non-virtual"><scope>ILLIXR::WarpMatrices</scope><name>render_inv_view</name></member>
+      <member refid="structILLIXR_1_1WarpMatrices_1a29947960e22c918fc124530bd52369f0" prot="public" virt="non-virtual"><scope>ILLIXR::WarpMatrices</scope><name>warp_view_projection</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

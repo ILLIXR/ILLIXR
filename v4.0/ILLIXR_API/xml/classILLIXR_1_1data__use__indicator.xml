@@ -1,0 +1,133 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classILLIXR_1_1data__use__indicator" kind="class" language="C++" prot="public">
+    <compoundname>ILLIXR::data_use_indicator</compoundname>
+    <includes refid="record__logger_8hpp" local="no">record_logger.hpp</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1data__use__indicator_1ac6a2dfd7a3bdcb14e7322e5e60ff9118" prot="private" static="no" mutable="yes">
+        <type>bool</type>
+        <definition>bool ILLIXR::data_use_indicator::used_</definition>
+        <argsstring></argsstring>
+        <name>used_</name>
+        <qualifiedname>ILLIXR::data_use_indicator::used_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/record_logger.hpp" line="136" column="18" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/record_logger.hpp" bodystart="136" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classILLIXR_1_1data__use__indicator_1aa6af50fc2ca0d03e8c68d7e2e99a153a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_use_indicator::data_use_indicator</definition>
+        <argsstring>()</argsstring>
+        <name>data_use_indicator</name>
+        <qualifiedname>ILLIXR::data_use_indicator::data_use_indicator</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/record_logger.hpp" line="103" column="5" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/record_logger.hpp" bodystart="103" bodyend="104"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1data__use__indicator_1ac116b493195570f164ddcb9baa8c4221" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_use_indicator::data_use_indicator</definition>
+        <argsstring>(const data_use_indicator &amp;other)</argsstring>
+        <name>data_use_indicator</name>
+        <qualifiedname>ILLIXR::data_use_indicator::data_use_indicator</qualifiedname>
+        <param>
+          <type>const <ref refid="classILLIXR_1_1data__use__indicator" kindref="compound">data_use_indicator</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/record_logger.hpp" line="106" column="5" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/record_logger.hpp" bodystart="106" bodyend="109"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1data__use__indicator_1a6b669ba47df3dde3a48658c75d9f7731" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classILLIXR_1_1data__use__indicator" kindref="compound">data_use_indicator</ref> &amp;</type>
+        <definition>data_use_indicator &amp; ILLIXR::data_use_indicator::operator=</definition>
+        <argsstring>(const data_use_indicator &amp;other)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>ILLIXR::data_use_indicator::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classILLIXR_1_1data__use__indicator" kindref="compound">data_use_indicator</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/record_logger.hpp" line="111" column="24" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/record_logger.hpp" bodystart="111" bodyend="117"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1data__use__indicator_1ab1b0247cce5e43c47ad1626ca139244f" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool ILLIXR::data_use_indicator::is_used</definition>
+        <argsstring>() const</argsstring>
+        <name>is_used</name>
+        <qualifiedname>ILLIXR::data_use_indicator::is_used</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/record_logger.hpp" line="123" column="10" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/record_logger.hpp" bodystart="123" bodyend="125"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1data__use__indicator_1af6ff90fb59a14ac39c8ebe83a17e4fa4" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void ILLIXR::data_use_indicator::mark_used</definition>
+        <argsstring>() const</argsstring>
+        <name>mark_used</name>
+        <qualifiedname>ILLIXR::data_use_indicator::mark_used</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/record_logger.hpp" line="127" column="10" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/record_logger.hpp" bodystart="127" bodyend="129"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1data__use__indicator_1a824bdb38a802c3b147c40727563af501" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void ILLIXR::data_use_indicator::mark_unused</definition>
+        <argsstring>() const</argsstring>
+        <name>mark_unused</name>
+        <qualifiedname>ILLIXR::data_use_indicator::mark_unused</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/record_logger.hpp" line="131" column="11" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/record_logger.hpp" bodystart="131" bodyend="133"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A helper class that lets one dynamically determine if some data gets used. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>When a <ref refid="classILLIXR_1_1data__use__indicator" kindref="compound">data_use_indicator</ref> gets copied, the original is considered used and the new one is considered unused. </para>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/include/illixr/record_logger.hpp" line="101" column="1" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/record_logger.hpp" bodystart="101" bodyend="137"/>
+    <listofallmembers>
+      <member refid="classILLIXR_1_1data__use__indicator_1aa6af50fc2ca0d03e8c68d7e2e99a153a" prot="public" virt="non-virtual"><scope>ILLIXR::data_use_indicator</scope><name>data_use_indicator</name></member>
+      <member refid="classILLIXR_1_1data__use__indicator_1ac116b493195570f164ddcb9baa8c4221" prot="public" virt="non-virtual"><scope>ILLIXR::data_use_indicator</scope><name>data_use_indicator</name></member>
+      <member refid="classILLIXR_1_1data__use__indicator_1ab1b0247cce5e43c47ad1626ca139244f" prot="public" virt="non-virtual"><scope>ILLIXR::data_use_indicator</scope><name>is_used</name></member>
+      <member refid="classILLIXR_1_1data__use__indicator_1a824bdb38a802c3b147c40727563af501" prot="public" virt="non-virtual"><scope>ILLIXR::data_use_indicator</scope><name>mark_unused</name></member>
+      <member refid="classILLIXR_1_1data__use__indicator_1af6ff90fb59a14ac39c8ebe83a17e4fa4" prot="public" virt="non-virtual"><scope>ILLIXR::data_use_indicator</scope><name>mark_used</name></member>
+      <member refid="classILLIXR_1_1data__use__indicator_1a6b669ba47df3dde3a48658c75d9f7731" prot="public" virt="non-virtual"><scope>ILLIXR::data_use_indicator</scope><name>operator=</name></member>
+      <member refid="classILLIXR_1_1data__use__indicator_1ac6a2dfd7a3bdcb14e7322e5e60ff9118" prot="private" virt="non-virtual"><scope>ILLIXR::data_use_indicator</scope><name>used_</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

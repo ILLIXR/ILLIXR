@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structILLIXR_1_1vulkan_1_1ffmpeg__utils_1_1ffmpeg__vk__frame" kind="struct" language="C++" prot="public">
+    <compoundname>ILLIXR::vulkan::ffmpeg_utils::ffmpeg_vk_frame</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structILLIXR_1_1vulkan_1_1ffmpeg__utils_1_1ffmpeg__vk__frame_1a13412fe9dd85774221675f1370c0c98a" prot="public" static="no" mutable="no">
+        <type>AVFrame *</type>
+        <definition>AVFrame* ILLIXR::vulkan::ffmpeg_utils::ffmpeg_vk_frame::frame</definition>
+        <argsstring></argsstring>
+        <name>frame</name>
+        <qualifiedname>ILLIXR::vulkan::ffmpeg_utils::ffmpeg_vk_frame::frame</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/vk/ffmpeg_utils.hpp" line="82" column="15" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/vk/ffmpeg_utils.hpp" bodystart="82" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1vulkan_1_1ffmpeg__utils_1_1ffmpeg__vk__frame_1ad77c19550b748308049c21b7d94d9905" prot="public" static="no" mutable="no">
+        <type>AVVkFrame *</type>
+        <definition>AVVkFrame* ILLIXR::vulkan::ffmpeg_utils::ffmpeg_vk_frame::vk_frame</definition>
+        <argsstring></argsstring>
+        <name>vk_frame</name>
+        <qualifiedname>ILLIXR::vulkan::ffmpeg_utils::ffmpeg_vk_frame::vk_frame</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/vk/ffmpeg_utils.hpp" line="83" column="15" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/vk/ffmpeg_utils.hpp" bodystart="83" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/include/illixr/vk/ffmpeg_utils.hpp" line="81" column="1" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/vk/ffmpeg_utils.hpp" bodystart="81" bodyend="84"/>
+    <listofallmembers>
+      <member refid="structILLIXR_1_1vulkan_1_1ffmpeg__utils_1_1ffmpeg__vk__frame_1a13412fe9dd85774221675f1370c0c98a" prot="public" virt="non-virtual"><scope>ILLIXR::vulkan::ffmpeg_utils::ffmpeg_vk_frame</scope><name>frame</name></member>
+      <member refid="structILLIXR_1_1vulkan_1_1ffmpeg__utils_1_1ffmpeg__vk__frame_1ad77c19550b748308049c21b7d94d9905" prot="public" virt="non-virtual"><scope>ILLIXR::vulkan::ffmpeg_utils::ffmpeg_vk_frame</scope><name>vk_frame</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

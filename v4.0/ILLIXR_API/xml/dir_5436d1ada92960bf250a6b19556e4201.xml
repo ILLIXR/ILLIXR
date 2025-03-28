@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_5436d1ada92960bf250a6b19556e4201" kind="dir">
+    <compoundname>/home/friedel/devel/ILLIXR/services/pose_prediction</compoundname>
+    <innerfile refid="pose__prediction_2service_8cpp">service.cpp</innerfile>
+    <innerfile refid="pose__prediction_2service_8hpp">service.hpp</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/services/pose_prediction/"/>
+  </compounddef>
+</doxygen>

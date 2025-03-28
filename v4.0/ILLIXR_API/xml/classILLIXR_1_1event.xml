@@ -1,0 +1,168 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classILLIXR_1_1event" kind="class" language="C++" prot="public">
+    <compoundname>ILLIXR::event</compoundname>
+    <includes refid="stoplight_8hpp" local="no">stoplight.hpp</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1event_1a644bd99c4280d4c91296e8a2a87103b3" prot="private" static="no" mutable="yes">
+        <type>std::mutex</type>
+        <definition>std::mutex ILLIXR::event::mutex_</definition>
+        <argsstring></argsstring>
+        <name>mutex_</name>
+        <qualifiedname>ILLIXR::event::mutex_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/stoplight.hpp" line="82" column="37" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/stoplight.hpp" bodystart="82" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1event_1a3f79238111066b3ed2f19a94fc84fb94" prot="private" static="no" mutable="yes">
+        <type>std::condition_variable</type>
+        <definition>std::condition_variable ILLIXR::event::cv_</definition>
+        <argsstring></argsstring>
+        <name>cv_</name>
+        <qualifiedname>ILLIXR::event::cv_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/stoplight.hpp" line="83" column="37" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/stoplight.hpp" bodystart="83" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1event_1ab787fc13e481e59264eefeb978b5ff83" prot="private" static="no" mutable="no">
+        <type>std::atomic&lt; bool &gt;</type>
+        <definition>std::atomic&lt;bool&gt; ILLIXR::event::value_</definition>
+        <argsstring></argsstring>
+        <name>value_</name>
+        <qualifiedname>ILLIXR::event::value_</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/stoplight.hpp" line="84" column="31" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/stoplight.hpp" bodystart="84" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classILLIXR_1_1event_1a088662a03d2409f789c8c37eee5948ac" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void ILLIXR::event::set</definition>
+        <argsstring>(bool new_value=true)</argsstring>
+        <name>set</name>
+        <qualifiedname>ILLIXR::event::set</qualifiedname>
+        <param>
+          <type>bool</type>
+          <declname>new_value</declname>
+          <defval>true</defval>
+        </param>
+        <briefdescription>
+<para>Sets the condition-variable to new_value. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Defaults to true, so that <ref refid="classILLIXR_1_1event_1a088662a03d2409f789c8c37eee5948ac" kindref="member">set()</ref> sets the bool. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/stoplight.hpp" line="23" column="10" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/stoplight.hpp" bodystart="23" bodyend="31"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1event_1a9e34934febebd0b35b316fd2ea93cfd9" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void ILLIXR::event::clear</definition>
+        <argsstring>()</argsstring>
+        <name>clear</name>
+        <qualifiedname>ILLIXR::event::clear</qualifiedname>
+        <briefdescription>
+<para>Clears the condition-variable. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/stoplight.hpp" line="36" column="10" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/stoplight.hpp" bodystart="36" bodyend="38"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1event_1a5cbf2f03b664787937335dfc1349a346" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool ILLIXR::event::is_set</definition>
+        <argsstring>() const</argsstring>
+        <name>is_set</name>
+        <qualifiedname>ILLIXR::event::is_set</qualifiedname>
+        <briefdescription>
+<para>Test if is set without blocking. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/stoplight.hpp" line="43" column="10" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/stoplight.hpp" bodystart="43" bodyend="45"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1event_1aaca83ac27d1f85e693bd6b5deffa6600" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void ILLIXR::event::wait</definition>
+        <argsstring>() const</argsstring>
+        <name>wait</name>
+        <qualifiedname>ILLIXR::event::wait</qualifiedname>
+        <briefdescription>
+<para>Wait indefinitely for the event to be set. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/stoplight.hpp" line="50" column="10" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/stoplight.hpp" bodystart="50" bodyend="59"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1event_1af3e551333c9d9c3f3e9c5fb1bbda57dd" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Clock</type>
+          </param>
+          <param>
+            <type>class Rep</type>
+          </param>
+          <param>
+            <type>class Period</type>
+          </param>
+        </templateparamlist>
+        <type>bool</type>
+        <definition>bool ILLIXR::event::wait_timeout</definition>
+        <argsstring>(const std::chrono::duration&lt; Rep, Period &gt; &amp;duration) const</argsstring>
+        <name>wait_timeout</name>
+        <qualifiedname>ILLIXR::event::wait_timeout</qualifiedname>
+        <param>
+          <type>const std::chrono::duration&lt; Rep, Period &gt; &amp;</type>
+          <declname>duration</declname>
+        </param>
+        <briefdescription>
+<para>Wait for the event to be set with a timeout. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Returns whether the event was actually set. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/stoplight.hpp" line="67" column="11" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/stoplight.hpp" bodystart="67" bodyend="79"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A boolean condition-variable. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Inspired by <ulink url="https://docs.python.org/3/library/threading.html#event-objects">https://docs.python.org/3/library/threading.html#event-objects</ulink> </para>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/include/illixr/stoplight.hpp" line="16" column="1" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/stoplight.hpp" bodystart="16" bodyend="85"/>
+    <listofallmembers>
+      <member refid="classILLIXR_1_1event_1a9e34934febebd0b35b316fd2ea93cfd9" prot="public" virt="non-virtual"><scope>ILLIXR::event</scope><name>clear</name></member>
+      <member refid="classILLIXR_1_1event_1a3f79238111066b3ed2f19a94fc84fb94" prot="private" virt="non-virtual"><scope>ILLIXR::event</scope><name>cv_</name></member>
+      <member refid="classILLIXR_1_1event_1a5cbf2f03b664787937335dfc1349a346" prot="public" virt="non-virtual"><scope>ILLIXR::event</scope><name>is_set</name></member>
+      <member refid="classILLIXR_1_1event_1a644bd99c4280d4c91296e8a2a87103b3" prot="private" virt="non-virtual"><scope>ILLIXR::event</scope><name>mutex_</name></member>
+      <member refid="classILLIXR_1_1event_1a088662a03d2409f789c8c37eee5948ac" prot="public" virt="non-virtual"><scope>ILLIXR::event</scope><name>set</name></member>
+      <member refid="classILLIXR_1_1event_1ab787fc13e481e59264eefeb978b5ff83" prot="private" virt="non-virtual"><scope>ILLIXR::event</scope><name>value_</name></member>
+      <member refid="classILLIXR_1_1event_1aaca83ac27d1f85e693bd6b5deffa6600" prot="public" virt="non-virtual"><scope>ILLIXR::event</scope><name>wait</name></member>
+      <member refid="classILLIXR_1_1event_1af3e551333c9d9c3f3e9c5fb1bbda57dd" prot="public" virt="non-virtual"><scope>ILLIXR::event</scope><name>wait_timeout</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

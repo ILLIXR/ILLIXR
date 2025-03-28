@@ -1,0 +1,496 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classILLIXR_1_1offload__writer" kind="class" language="C++" prot="public">
+    <compoundname>ILLIXR::offload_writer</compoundname>
+    <basecompoundref refid="classILLIXR_1_1threadloop" prot="public" virt="non-virtual">ILLIXR::threadloop</basecompoundref>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1offload__writer_1ac38bd2aaba6fd0b98a45f6a90e2f6c33" prot="private" static="no" mutable="no">
+        <type>boost::lockfree::spsc_queue&lt; uint64_t &gt;</type>
+        <definition>boost::lockfree::spsc_queue&lt;uint64_t&gt; ILLIXR::offload_writer::queue_</definition>
+        <argsstring></argsstring>
+        <name>queue_</name>
+        <qualifiedname>ILLIXR::offload_writer::queue_</qualifiedname>
+        <initializer>{1000}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_vio/device_tx/plugin.hpp" line="35" column="33" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_vio/device_tx/plugin.hpp" bodystart="35" bodyend="35"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__writer_1af6092300b0d67117c40b8159f2755f50" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; int32_t &gt;</type>
+        <definition>std::vector&lt;int32_t&gt; ILLIXR::offload_writer::sizes_</definition>
+        <argsstring></argsstring>
+        <name>sizes_</name>
+        <qualifiedname>ILLIXR::offload_writer::sizes_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_vio/device_tx/plugin.hpp" line="36" column="34" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_vio/device_tx/plugin.hpp" bodystart="36" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__writer_1acbd58a2377333f5b11594c8cc666102d" prot="private" static="no" mutable="no">
+        <type>std::mutex</type>
+        <definition>std::mutex ILLIXR::offload_writer::mutex_</definition>
+        <argsstring></argsstring>
+        <name>mutex_</name>
+        <qualifiedname>ILLIXR::offload_writer::mutex_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_vio/device_tx/plugin.hpp" line="37" column="43" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_vio/device_tx/plugin.hpp" bodystart="37" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__writer_1aa0ab6979ee01ec6792f3ab3cbdfaf98c" prot="private" static="no" mutable="no">
+        <type>std::condition_variable</type>
+        <definition>std::condition_variable ILLIXR::offload_writer::condition_var_</definition>
+        <argsstring></argsstring>
+        <name>condition_var_</name>
+        <qualifiedname>ILLIXR::offload_writer::condition_var_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_vio/device_tx/plugin.hpp" line="38" column="43" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_vio/device_tx/plugin.hpp" bodystart="38" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__writer_1a822b3943238d37da0b15eb24890b5726" prot="private" static="no" mutable="no">
+        <type>GstMapInfo</type>
+        <definition>GstMapInfo ILLIXR::offload_writer::img0_</definition>
+        <argsstring></argsstring>
+        <name>img0_</name>
+        <qualifiedname>ILLIXR::offload_writer::img0_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_vio/device_tx/plugin.hpp" line="39" column="43" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_vio/device_tx/plugin.hpp" bodystart="39" bodyend="39"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__writer_1af045c615968c630ccfcf9c6506548b8d" prot="private" static="no" mutable="no">
+        <type>GstMapInfo</type>
+        <definition>GstMapInfo ILLIXR::offload_writer::img1_</definition>
+        <argsstring></argsstring>
+        <name>img1_</name>
+        <qualifiedname>ILLIXR::offload_writer::img1_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_vio/device_tx/plugin.hpp" line="40" column="43" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_vio/device_tx/plugin.hpp" bodystart="40" bodyend="40"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__writer_1a762c4418c229ab8fef86e4d723bf4a0e" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool ILLIXR::offload_writer::img_ready_</definition>
+        <argsstring></argsstring>
+        <name>img_ready_</name>
+        <qualifiedname>ILLIXR::offload_writer::img_ready_</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_vio/device_tx/plugin.hpp" line="41" column="43" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_vio/device_tx/plugin.hpp" bodystart="41" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__writer_1a0d66e5d7bed5d65173dc7ec204c089a6" prot="private" static="no" mutable="no">
+        <type>std::unique_ptr&lt; video_encoder &gt;</type>
+        <definition>std::unique_ptr&lt;video_encoder&gt; ILLIXR::offload_writer::encoder_</definition>
+        <argsstring></argsstring>
+        <name>encoder_</name>
+        <qualifiedname>ILLIXR::offload_writer::encoder_</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_vio/device_tx/plugin.hpp" line="43" column="59" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_vio/device_tx/plugin.hpp" bodystart="43" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__writer_1a2310fc4b523157e506bfced3ed1195fc" prot="private" static="no" mutable="no">
+        <type>std::optional&lt; time_point &gt;</type>
+        <definition>std::optional&lt;time_point&gt; ILLIXR::offload_writer::latest_imu_time_</definition>
+        <argsstring></argsstring>
+        <name>latest_imu_time_</name>
+        <qualifiedname>ILLIXR::offload_writer::latest_imu_time_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_vio/device_tx/plugin.hpp" line="44" column="62" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_vio/device_tx/plugin.hpp" bodystart="44" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__writer_1a819adc6817ff950e579c6821eb4d3d21" prot="private" static="no" mutable="no">
+        <type>std::optional&lt; time_point &gt;</type>
+        <definition>std::optional&lt;time_point&gt; ILLIXR::offload_writer::latest_cam_time_</definition>
+        <argsstring></argsstring>
+        <name>latest_cam_time_</name>
+        <qualifiedname>ILLIXR::offload_writer::latest_cam_time_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_vio/device_tx/plugin.hpp" line="45" column="62" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_vio/device_tx/plugin.hpp" bodystart="45" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__writer_1a247894ef61726a4961d5995877b97990" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int ILLIXR::offload_writer::frame_id_</definition>
+        <argsstring></argsstring>
+        <name>frame_id_</name>
+        <qualifiedname>ILLIXR::offload_writer::frame_id_</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_vio/device_tx/plugin.hpp" line="46" column="74" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_vio/device_tx/plugin.hpp" bodystart="46" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__writer_1a56fd503e03f3c118d6f57dcefd6b6ca3" prot="private" static="no" mutable="no">
+        <type>vio_input_proto::IMUCamVec *</type>
+        <definition>vio_input_proto::IMUCamVec* ILLIXR::offload_writer::data_buffer_</definition>
+        <argsstring></argsstring>
+        <name>data_buffer_</name>
+        <qualifiedname>ILLIXR::offload_writer::data_buffer_</qualifiedname>
+        <initializer>= new vio_input_proto::IMUCamVec()</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_vio/device_tx/plugin.hpp" line="47" column="73" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_vio/device_tx/plugin.hpp" bodystart="47" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__writer_1a3e8e06520b35febbd2827735bdc31afa" prot="private" static="no" mutable="no">
+        <type>const std::shared_ptr&lt; <ref refid="classILLIXR_1_1switchboard" kindref="compound">switchboard</ref> &gt;</type>
+        <definition>const std::shared_ptr&lt;switchboard&gt; ILLIXR::offload_writer::switchboard_</definition>
+        <argsstring></argsstring>
+        <name>switchboard_</name>
+        <qualifiedname>ILLIXR::offload_writer::switchboard_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_vio/device_tx/plugin.hpp" line="48" column="61" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_vio/device_tx/plugin.hpp" bodystart="48" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__writer_1abc9a448fbb8212b3341b81a97f4eef2b" prot="private" static="no" mutable="no">
+        <type>const std::shared_ptr&lt; <ref refid="classILLIXR_1_1relative__clock" kindref="compound">relative_clock</ref> &gt;</type>
+        <definition>const std::shared_ptr&lt;relative_clock&gt; ILLIXR::offload_writer::clock_</definition>
+        <argsstring></argsstring>
+        <name>clock_</name>
+        <qualifiedname>ILLIXR::offload_writer::clock_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_vio/device_tx/plugin.hpp" line="49" column="58" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_vio/device_tx/plugin.hpp" bodystart="49" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__writer_1a75ec7812ee8e691fdee13aa912a2b4f3" prot="private" static="no" mutable="no">
+        <type>const std::shared_ptr&lt; <ref refid="classILLIXR_1_1stoplight" kindref="compound">stoplight</ref> &gt;</type>
+        <definition>const std::shared_ptr&lt;stoplight&gt; ILLIXR::offload_writer::stoplight_</definition>
+        <argsstring></argsstring>
+        <name>stoplight_</name>
+        <qualifiedname>ILLIXR::offload_writer::stoplight_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_vio/device_tx/plugin.hpp" line="50" column="63" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_vio/device_tx/plugin.hpp" bodystart="50" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__writer_1a36b5dedc0b3fb19f16260aef5288b8a9" prot="private" static="no" mutable="no">
+        <type>switchboard::buffered_reader&lt; <ref refid="structILLIXR_1_1data__format_1_1binocular__cam__type" kindref="compound">data_format::binocular_cam_type</ref> &gt;</type>
+        <definition>switchboard::buffered_reader&lt;data_format::binocular_cam_type&gt; ILLIXR::offload_writer::cam_</definition>
+        <argsstring></argsstring>
+        <name>cam_</name>
+        <qualifiedname>ILLIXR::offload_writer::cam_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_vio/device_tx/plugin.hpp" line="51" column="41" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_vio/device_tx/plugin.hpp" bodystart="51" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__writer_1a32876f11e72da1c0dd6e19635dab134f" prot="private" static="no" mutable="no">
+        <type>switchboard::network_writer&lt; <ref refid="classILLIXR_1_1switchboard_1_1event__wrapper" kindref="compound">switchboard::event_wrapper</ref>&lt; std::string &gt; &gt;</type>
+        <definition>switchboard::network_writer&lt;switchboard::event_wrapper&lt;std::string&gt; &gt; ILLIXR::offload_writer::imu_cam_writer_</definition>
+        <argsstring></argsstring>
+        <name>imu_cam_writer_</name>
+        <qualifiedname>ILLIXR::offload_writer::imu_cam_writer_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_vio/device_tx/plugin.hpp" line="52" column="33" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_vio/device_tx/plugin.hpp" bodystart="52" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__writer_1a11e445c913ae370b177316065e732df2" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; spdlog::logger &gt;</type>
+        <definition>std::shared_ptr&lt;spdlog::logger&gt; ILLIXR::offload_writer::log_</definition>
+        <argsstring></argsstring>
+        <name>log_</name>
+        <qualifiedname>ILLIXR::offload_writer::log_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_vio/device_tx/plugin.hpp" line="53" column="58" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_vio/device_tx/plugin.hpp" bodystart="53" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__writer_1a461ee7a0c63ed4c0a6c6f649f43f9340" prot="private" static="no" mutable="no">
+        <type>network::TCPSocket</type>
+        <definition>network::TCPSocket ILLIXR::offload_writer::socket_</definition>
+        <argsstring></argsstring>
+        <name>socket_</name>
+        <qualifiedname>ILLIXR::offload_writer::socket_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_vio/device_tx/plugin.hpp" line="54" column="74" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_vio/device_tx/plugin.hpp" bodystart="54" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__writer_1ab69a23e93ff1a3f36cc998b88dac97f6" prot="private" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string ILLIXR::offload_writer::server_ip_</definition>
+        <argsstring></argsstring>
+        <name>server_ip_</name>
+        <qualifiedname>ILLIXR::offload_writer::server_ip_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_vio/device_tx/plugin.hpp" line="55" column="74" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_vio/device_tx/plugin.hpp" bodystart="55" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classILLIXR_1_1offload__writer_1aa20c08b089e2f74bf55076b3cd613ddf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>offload_writer::offload_writer</definition>
+        <argsstring>(const std::string &amp;name, phonebook *pb)</argsstring>
+        <name>offload_writer</name>
+        <qualifiedname>ILLIXR::offload_writer::offload_writer</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type><ref refid="classILLIXR_1_1phonebook" kindref="compound">phonebook</ref> *</type>
+          <declname>pb</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_vio/device_tx/plugin.hpp" line="24" column="6" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_vio/device_tx/plugin.cpp" bodystart="14" bodyend="25"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1offload__writer_1a51833c0d2741c0794864e60159601857" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void offload_writer::start</definition>
+        <argsstring>() override</argsstring>
+        <name>start</name>
+        <qualifiedname>ILLIXR::offload_writer::start</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_vio/device_tx/plugin.hpp" line="25" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_vio/device_tx/plugin.cpp" bodystart="27" bodyend="50"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1offload__writer_1a6127d56db37cea1a397cb8dec2bd62ac" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void offload_writer::send_imu_cam_data</definition>
+        <argsstring>(std::optional&lt; time_point &gt; &amp;cam_time)</argsstring>
+        <name>send_imu_cam_data</name>
+        <qualifiedname>ILLIXR::offload_writer::send_imu_cam_data</qualifiedname>
+        <param>
+          <type>std::optional&lt; time_point &gt; &amp;</type>
+          <declname>cam_time</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_vio/device_tx/plugin.hpp" line="26" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_vio/device_tx/plugin.cpp" bodystart="58" bodyend="75"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1offload__writer_1a01b49b3d24e5c008cdd7c9cd99120833" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void offload_writer::prepare_imu_cam_data</definition>
+        <argsstring>(switchboard::ptr&lt; const data_format::imu_type &gt; datum)</argsstring>
+        <name>prepare_imu_cam_data</name>
+        <qualifiedname>ILLIXR::offload_writer::prepare_imu_cam_data</qualifiedname>
+        <param>
+          <type><ref refid="classILLIXR_1_1switchboard_1af91c1b9436918512e95e5fa8553846a7" kindref="member">switchboard::ptr</ref>&lt; const <ref refid="structILLIXR_1_1data__format_1_1imu__type" kindref="compound">data_format::imu_type</ref> &gt;</type>
+          <declname>datum</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+<para>NO COMPRESSION</para>
+<para>NO COMPRESSION END</para>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_vio/device_tx/plugin.hpp" line="27" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_vio/device_tx/plugin.cpp" bodystart="77" bodyend="165"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classILLIXR_1_1offload__writer_1abfec12ec7d96dcf8682f5ebdbc12aa24" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void ILLIXR::offload_writer::_p_thread_setup</definition>
+        <argsstring>() override</argsstring>
+        <name>_p_thread_setup</name>
+        <qualifiedname>ILLIXR::offload_writer::_p_thread_setup</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_vio/device_tx/plugin.hpp" line="30" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_vio/device_tx/plugin.hpp" bodystart="30" bodyend="30"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1offload__writer_1a93f4ef31c83b710cb5d95636416aaa8f" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void offload_writer::_p_one_iteration</definition>
+        <argsstring>() override</argsstring>
+        <name>_p_one_iteration</name>
+        <qualifiedname>ILLIXR::offload_writer::_p_one_iteration</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_vio/device_tx/plugin.hpp" line="32" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_vio/device_tx/plugin.cpp" bodystart="52" bodyend="56"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>ILLIXR::offload_writer</label>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>ILLIXR::plugin</label>
+        <link refid="classILLIXR_1_1plugin"/>
+      </node>
+      <node id="2">
+        <label>ILLIXR::threadloop</label>
+        <link refid="classILLIXR_1_1threadloop"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>ILLIXR::offload_writer</label>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>ILLIXR::phonebook</label>
+        <link refid="classILLIXR_1_1phonebook"/>
+      </node>
+      <node id="3">
+        <label>ILLIXR::plugin</label>
+        <link refid="classILLIXR_1_1plugin"/>
+        <childnode refid="4" relation="usage">
+          <edgelabel>phonebook_</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ILLIXR::threadloop</label>
+        <link refid="classILLIXR_1_1threadloop"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/home/friedel/devel/ILLIXR/plugins/offload_vio/device_tx/plugin.hpp" line="22" column="1" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_vio/device_tx/plugin.hpp" bodystart="22" bodyend="56"/>
+    <listofallmembers>
+      <member refid="classILLIXR_1_1offload__writer_1a93f4ef31c83b710cb5d95636416aaa8f" prot="protected" virt="non-virtual"><scope>ILLIXR::offload_writer</scope><name>_p_one_iteration</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a9ff83bb9e47beff3efccbd26bc3e874a" prot="protected" virt="virtual"><scope>ILLIXR::offload_writer</scope><name>_p_should_skip</name></member>
+      <member refid="classILLIXR_1_1offload__writer_1abfec12ec7d96dcf8682f5ebdbc12aa24" prot="protected" virt="non-virtual"><scope>ILLIXR::offload_writer</scope><name>_p_thread_setup</name></member>
+      <member refid="classILLIXR_1_1offload__writer_1a36b5dedc0b3fb19f16260aef5288b8a9" prot="private" virt="non-virtual"><scope>ILLIXR::offload_writer</scope><name>cam_</name></member>
+      <member refid="classILLIXR_1_1offload__writer_1abc9a448fbb8212b3341b81a97f4eef2b" prot="private" virt="non-virtual"><scope>ILLIXR::offload_writer</scope><name>clock_</name></member>
+      <member refid="classILLIXR_1_1offload__writer_1aa0ab6979ee01ec6792f3ab3cbdfaf98c" prot="private" virt="non-virtual"><scope>ILLIXR::offload_writer</scope><name>condition_var_</name></member>
+      <member refid="classILLIXR_1_1offload__writer_1a56fd503e03f3c118d6f57dcefd6b6ca3" prot="private" virt="non-virtual"><scope>ILLIXR::offload_writer</scope><name>data_buffer_</name></member>
+      <member refid="classILLIXR_1_1offload__writer_1a0d66e5d7bed5d65173dc7ec204c089a6" prot="private" virt="non-virtual"><scope>ILLIXR::offload_writer</scope><name>encoder_</name></member>
+      <member refid="classILLIXR_1_1offload__writer_1a247894ef61726a4961d5995877b97990" prot="private" virt="non-virtual"><scope>ILLIXR::offload_writer</scope><name>frame_id_</name></member>
+      <member refid="classILLIXR_1_1plugin_1afe52734e7edc87bd0bf974caf112961b" prot="protected" virt="non-virtual"><scope>ILLIXR::offload_writer</scope><name>gen_guid_</name></member>
+      <member refid="classILLIXR_1_1plugin_1aebda022998bd35983e83f391dc0e5193" prot="public" virt="non-virtual"><scope>ILLIXR::offload_writer</scope><name>get_name</name></member>
+      <member refid="classILLIXR_1_1plugin_1aaedb3f9178bdd11e53815e158454aaf3" prot="protected" virt="non-virtual"><scope>ILLIXR::offload_writer</scope><name>id_</name></member>
+      <member refid="classILLIXR_1_1offload__writer_1a822b3943238d37da0b15eb24890b5726" prot="private" virt="non-virtual"><scope>ILLIXR::offload_writer</scope><name>img0_</name></member>
+      <member refid="classILLIXR_1_1offload__writer_1af045c615968c630ccfcf9c6506548b8d" prot="private" virt="non-virtual"><scope>ILLIXR::offload_writer</scope><name>img1_</name></member>
+      <member refid="classILLIXR_1_1offload__writer_1a762c4418c229ab8fef86e4d723bf4a0e" prot="private" virt="non-virtual"><scope>ILLIXR::offload_writer</scope><name>img_ready_</name></member>
+      <member refid="classILLIXR_1_1offload__writer_1a32876f11e72da1c0dd6e19635dab134f" prot="private" virt="non-virtual"><scope>ILLIXR::offload_writer</scope><name>imu_cam_writer_</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a3e12891e504c782da98e21328dbcf0af" prot="public" virt="virtual"><scope>ILLIXR::offload_writer</scope><name>internal_stop</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a54e0814711e7a582630d38d45ddbe3f3" prot="protected" virt="non-virtual"><scope>ILLIXR::offload_writer</scope><name>iteration_no</name></member>
+      <member refid="classILLIXR_1_1offload__writer_1a819adc6817ff950e579c6821eb4d3d21" prot="private" virt="non-virtual"><scope>ILLIXR::offload_writer</scope><name>latest_cam_time_</name></member>
+      <member refid="classILLIXR_1_1offload__writer_1a2310fc4b523157e506bfced3ed1195fc" prot="private" virt="non-virtual"><scope>ILLIXR::offload_writer</scope><name>latest_imu_time_</name></member>
+      <member refid="classILLIXR_1_1offload__writer_1a11e445c913ae370b177316065e732df2" prot="private" virt="non-virtual"><scope>ILLIXR::offload_writer</scope><name>log_</name></member>
+      <member refid="classILLIXR_1_1offload__writer_1acbd58a2377333f5b11594c8cc666102d" prot="private" virt="non-virtual"><scope>ILLIXR::offload_writer</scope><name>mutex_</name></member>
+      <member refid="classILLIXR_1_1plugin_1aa963c518af83966173840a8558490888" prot="protected" virt="non-virtual"><scope>ILLIXR::offload_writer</scope><name>name_</name></member>
+      <member refid="classILLIXR_1_1offload__writer_1aa20c08b089e2f74bf55076b3cd613ddf" prot="public" virt="non-virtual"><scope>ILLIXR::offload_writer</scope><name>offload_writer</name></member>
+      <member refid="classILLIXR_1_1plugin_1a6f7a2a9012350591c00d67a5bc0fd5a6" prot="protected" virt="non-virtual"><scope>ILLIXR::offload_writer</scope><name>phonebook_</name></member>
+      <member refid="classILLIXR_1_1plugin_1abc91c0e5be180a8e0bbeaf114a127f17" prot="public" virt="non-virtual"><scope>ILLIXR::offload_writer</scope><name>plugin</name></member>
+      <member refid="classILLIXR_1_1plugin_1a8d40c2421cde09079372d12bfe7d45fe" prot="protected" virt="non-virtual"><scope>ILLIXR::offload_writer</scope><name>plugin_logger_</name></member>
+      <member refid="classILLIXR_1_1offload__writer_1a01b49b3d24e5c008cdd7c9cd99120833" prot="public" virt="non-virtual"><scope>ILLIXR::offload_writer</scope><name>prepare_imu_cam_data</name></member>
+      <member refid="classILLIXR_1_1offload__writer_1ac38bd2aaba6fd0b98a45f6a90e2f6c33" prot="private" virt="non-virtual"><scope>ILLIXR::offload_writer</scope><name>queue_</name></member>
+      <member refid="classILLIXR_1_1plugin_1aef671d0cd9b6de45d3ade16dedbf4974" prot="protected" virt="non-virtual"><scope>ILLIXR::offload_writer</scope><name>record_logger_</name></member>
+      <member refid="classILLIXR_1_1offload__writer_1a6127d56db37cea1a397cb8dec2bd62ac" prot="public" virt="non-virtual"><scope>ILLIXR::offload_writer</scope><name>send_imu_cam_data</name></member>
+      <member refid="classILLIXR_1_1offload__writer_1ab69a23e93ff1a3f36cc998b88dac97f6" prot="private" virt="non-virtual"><scope>ILLIXR::offload_writer</scope><name>server_ip_</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a75009fa785455bdb4b285424f0494bf7" prot="protected" virt="non-virtual"><scope>ILLIXR::offload_writer</scope><name>should_terminate</name></member>
+      <member refid="classILLIXR_1_1offload__writer_1af6092300b0d67117c40b8159f2755f50" prot="private" virt="non-virtual"><scope>ILLIXR::offload_writer</scope><name>sizes_</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a8f6ce8b95d3d9aadf83e4e1414477cd0" prot="protected" virt="non-virtual"><scope>ILLIXR::offload_writer</scope><name>skip_no</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a26c08942158dc019cbc78c9880417652" prot="protected" virt="non-virtual"><scope>ILLIXR::offload_writer</scope><name>skip_option</name></member>
+      <member refid="classILLIXR_1_1offload__writer_1a461ee7a0c63ed4c0a6c6f649f43f9340" prot="private" virt="non-virtual"><scope>ILLIXR::offload_writer</scope><name>socket_</name></member>
+      <member refid="classILLIXR_1_1plugin_1a7c1c7c1a0ec2e43bfa1118586a28932f" prot="public" virt="non-virtual"><scope>ILLIXR::offload_writer</scope><name>spd_add_file_sink</name></member>
+      <member refid="classILLIXR_1_1plugin_1a569297189ef365cf93f6a95202c76d76" prot="public" virt="non-virtual"><scope>ILLIXR::offload_writer</scope><name>spdlogger</name></member>
+      <member refid="classILLIXR_1_1offload__writer_1a51833c0d2741c0794864e60159601857" prot="public" virt="non-virtual"><scope>ILLIXR::offload_writer</scope><name>start</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a7a968606c7ddfbd1ac6b0fb067ecc5a5" prot="public" virt="virtual"><scope>ILLIXR::offload_writer</scope><name>stop</name></member>
+      <member refid="classILLIXR_1_1offload__writer_1a75ec7812ee8e691fdee13aa912a2b4f3" prot="private" virt="non-virtual"><scope>ILLIXR::offload_writer</scope><name>stoplight_</name></member>
+      <member refid="classILLIXR_1_1offload__writer_1a3e8e06520b35febbd2827735bdc31afa" prot="private" virt="non-virtual"><scope>ILLIXR::offload_writer</scope><name>switchboard_</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a8e69bfe104a92c0b98caa5583439c34a" prot="public" virt="non-virtual"><scope>ILLIXR::offload_writer</scope><name>threadloop</name></member>
+      <member refid="classILLIXR_1_1plugin_1a44d7b00c86e227bbc1a0b221da43d454" prot="public" virt="virtual"><scope>ILLIXR::offload_writer</scope><name>~plugin</name></member>
+      <member refid="classILLIXR_1_1threadloop_1afbf7b56801b484b60e9cf43448332195" prot="public" virt="non-virtual"><scope>ILLIXR::offload_writer</scope><name>~threadloop</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

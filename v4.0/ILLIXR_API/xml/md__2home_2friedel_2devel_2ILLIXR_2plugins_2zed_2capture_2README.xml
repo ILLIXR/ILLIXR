@@ -1,0 +1,42 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="md__2home_2friedel_2devel_2ILLIXR_2plugins_2zed_2capture_2README" kind="page">
+    <compoundname>md__2home_2friedel_2devel_2ILLIXR_2plugins_2zed_2capture_2README</compoundname>
+    <title>zed_capture</title>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para><anchor id="md__2home_2friedel_2devel_2ILLIXR_2plugins_2zed_2capture_2README_1autotoc_md1"/> The <computeroutput>zed_capture</computeroutput> binary is used to generate test data for injection into <ref refid="namespaceILLIXR" kindref="compound">ILLIXR</ref>. The binary is a stand-alone feature and does not interact with the rest of <ref refid="namespaceILLIXR" kindref="compound">ILLIXR</ref>. It takes the following command line arguments.</para>
+<para><table rows="5" cols="3"><row>
+<entry thead="yes"><para>Argument   </para>
+</entry><entry thead="yes"><para>Description   </para>
+</entry><entry thead="yes"><para>Default    </para>
+</entry></row>
+<row>
+<entry thead="no"><para>-d, <ndash/>duration   </para>
+</entry><entry thead="no"><para>The duration to run for in seconds   </para>
+</entry><entry thead="no"><para>10    </para>
+</entry></row>
+<row>
+<entry thead="no"><para>-f, <ndash/>fps   </para>
+</entry><entry thead="no"><para>Frames per second   </para>
+</entry><entry thead="no"><para>30    </para>
+</entry></row>
+<row>
+<entry thead="no"><para><ndash/>wc   </para>
+</entry><entry thead="no"><para>The origin of the world coordinate system in relation to the camera. Must be 7 comma separated values x, y, z, w, wx, wy, wz.   </para>
+</entry><entry thead="no"><para>0., 0., 0., 1., 0., 0., 0.    </para>
+</entry></row>
+<row>
+<entry thead="no"><para>-p <ndash/>path   </para>
+</entry><entry thead="no"><para>The root path to write the data to.   </para>
+</entry><entry thead="no"><para>Current working directory   </para>
+</entry></row>
+</table>
+</para>
+<para><computeroutput>zed_capture</computeroutput> will write out the left and right camera images and the current pose at each frame. Note that it may not work at the requested fps due to overheads of writing files. This will be addressed in future updates. Note that the depth information is also not captured currently as <ulink url="../glossary.md#opencv"><emphasis>OpenCV</emphasis></ulink> does not properly write out cv::Mat objects with float formats. This will also be addressed in future updates.</para>
+<para>Data are written to &lt;path&gt;/&apos;fps&apos; + &lt;fps_value&gt; + &apos;dur&apos; + &lt;duration_value&gt; (e.g. &lt;path&gt;/fps30_dur10 will contain data taken at 30 frames per second with a total run time of 10 seconds, or 300 frames, it will always contain 300 frames regardless of any slow down due to overheads). This format is compatible with the zed.data_injection plugin. </para>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/README.md"/>
+  </compounddef>
+</doxygen>

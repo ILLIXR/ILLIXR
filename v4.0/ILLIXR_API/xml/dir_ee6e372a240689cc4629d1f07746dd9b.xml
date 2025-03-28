@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_ee6e372a240689cc4629d1f07746dd9b" kind="dir">
+    <compoundname>/home/friedel/devel/ILLIXR/include/illixr/network</compoundname>
+    <innerfile refid="net__config_8hpp">net_config.hpp</innerfile>
+    <innerfile refid="network__backend_8hpp">network_backend.hpp</innerfile>
+    <innerfile refid="tcpsocket_8hpp">tcpsocket.hpp</innerfile>
+    <innerfile refid="topic__config_8hpp">topic_config.hpp</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/include/illixr/network/"/>
+  </compounddef>
+</doxygen>

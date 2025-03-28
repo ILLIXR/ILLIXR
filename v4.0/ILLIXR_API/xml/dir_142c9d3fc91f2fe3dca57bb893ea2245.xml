@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_142c9d3fc91f2fe3dca57bb893ea2245" kind="dir">
+    <compoundname>/home/friedel/devel/ILLIXR/plugins/realsense</compoundname>
+    <innerfile refid="plugins_2realsense_2plugin_8cpp">plugin.cpp</innerfile>
+    <innerfile refid="plugins_2realsense_2plugin_8hpp">plugin.hpp</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/plugins/realsense/"/>
+  </compounddef>
+</doxygen>

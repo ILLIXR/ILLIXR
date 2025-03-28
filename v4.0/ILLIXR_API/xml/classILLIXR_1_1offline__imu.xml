@@ -1,0 +1,255 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classILLIXR_1_1offline__imu" kind="class" language="C++" prot="public">
+    <compoundname>ILLIXR::offline_imu</compoundname>
+    <basecompoundref refid="classILLIXR_1_1threadloop" prot="public" virt="non-virtual">ILLIXR::threadloop</basecompoundref>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1offline__imu_1a2c97cbeadcd199eb3d905b8d19bb7a03" prot="private" static="no" mutable="no">
+        <type>const std::shared_ptr&lt; <ref refid="classILLIXR_1_1switchboard" kindref="compound">switchboard</ref> &gt;</type>
+        <definition>const std::shared_ptr&lt;switchboard&gt; ILLIXR::offline_imu::switchboard_</definition>
+        <argsstring></argsstring>
+        <name>switchboard_</name>
+        <qualifiedname>ILLIXR::offline_imu::switchboard_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offline_imu/plugin.hpp" line="33" column="39" bodyfile="/home/friedel/devel/ILLIXR/plugins/offline_imu/plugin.hpp" bodystart="33" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offline__imu_1a4891db71f678b80766cc1f8a6382f45c" prot="private" static="no" mutable="no">
+        <type>const std::map&lt; ullong, sensor_types &gt;</type>
+        <definition>const std::map&lt;ullong, sensor_types&gt; ILLIXR::offline_imu::sensor_data_</definition>
+        <argsstring></argsstring>
+        <name>sensor_data_</name>
+        <qualifiedname>ILLIXR::offline_imu::sensor_data_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offline_imu/plugin.hpp" line="34" column="30" bodyfile="/home/friedel/devel/ILLIXR/plugins/offline_imu/plugin.hpp" bodystart="34" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offline__imu_1a3fec0c1738a2e1a56c8f7ef09cf577c8" prot="private" static="no" mutable="no">
+        <type>std::map&lt; ullong, sensor_types &gt;::const_iterator</type>
+        <definition>std::map&lt;ullong,sensor_types&gt;::const_iterator ILLIXR::offline_imu::sensor_data_it_</definition>
+        <argsstring></argsstring>
+        <name>sensor_data_it_</name>
+        <qualifiedname>ILLIXR::offline_imu::sensor_data_it_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offline_imu/plugin.hpp" line="35" column="31" bodyfile="/home/friedel/devel/ILLIXR/plugins/offline_imu/plugin.hpp" bodystart="35" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offline__imu_1af77cb651e7a9a72543a9f3e4b1836f40" prot="private" static="no" mutable="no">
+        <type><ref refid="classILLIXR_1_1switchboard_1_1writer" kindref="compound">switchboard::writer</ref>&lt; <ref refid="structILLIXR_1_1data__format_1_1imu__type" kindref="compound">data_format::imu_type</ref> &gt;</type>
+        <definition>switchboard::writer&lt;data_format::imu_type&gt; ILLIXR::offline_imu::imu_</definition>
+        <argsstring></argsstring>
+        <name>imu_</name>
+        <qualifiedname>ILLIXR::offline_imu::imu_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offline_imu/plugin.hpp" line="36" column="29" bodyfile="/home/friedel/devel/ILLIXR/plugins/offline_imu/plugin.hpp" bodystart="36" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offline__imu_1ad3b7461cc68d8d9e89cf5f1defa93666" prot="private" static="no" mutable="no">
+        <type>ullong</type>
+        <definition>ullong ILLIXR::offline_imu::dataset_first_time_</definition>
+        <argsstring></argsstring>
+        <name>dataset_first_time_</name>
+        <qualifiedname>ILLIXR::offline_imu::dataset_first_time_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offline_imu/plugin.hpp" line="39" column="12" bodyfile="/home/friedel/devel/ILLIXR/plugins/offline_imu/plugin.hpp" bodystart="39" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offline__imu_1a80227d6a551a57410f974308932ade81" prot="private" static="no" mutable="no">
+        <type>ullong</type>
+        <definition>ullong ILLIXR::offline_imu::dataset_now_</definition>
+        <argsstring></argsstring>
+        <name>dataset_now_</name>
+        <qualifiedname>ILLIXR::offline_imu::dataset_now_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offline_imu/plugin.hpp" line="41" column="12" bodyfile="/home/friedel/devel/ILLIXR/plugins/offline_imu/plugin.hpp" bodystart="41" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offline__imu_1afa18fe5b2aced768bf6bfc712905733f" prot="private" static="no" mutable="no">
+        <type><ref refid="classILLIXR_1_1record__coalescer" kindref="compound">record_coalescer</ref></type>
+        <definition>record_coalescer ILLIXR::offline_imu::imu_cam_log_</definition>
+        <argsstring></argsstring>
+        <name>imu_cam_log_</name>
+        <qualifiedname>ILLIXR::offline_imu::imu_cam_log_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offline_imu/plugin.hpp" line="43" column="22" bodyfile="/home/friedel/devel/ILLIXR/plugins/offline_imu/plugin.hpp" bodystart="43" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offline__imu_1aa48162f46e5d5afe4a3febd0477e9d97" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classILLIXR_1_1relative__clock" kindref="compound">relative_clock</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;relative_clock&gt; ILLIXR::offline_imu::clock_</definition>
+        <argsstring></argsstring>
+        <name>clock_</name>
+        <qualifiedname>ILLIXR::offline_imu::clock_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offline_imu/plugin.hpp" line="45" column="21" bodyfile="/home/friedel/devel/ILLIXR/plugins/offline_imu/plugin.hpp" bodystart="45" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classILLIXR_1_1offline__imu_1abae3009f38047361d0b24c3cb5ebea76" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>offline_imu::offline_imu</definition>
+        <argsstring>(const std::string &amp;name, phonebook *pb)</argsstring>
+        <name>offline_imu</name>
+        <qualifiedname>ILLIXR::offline_imu::offline_imu</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type><ref refid="classILLIXR_1_1phonebook" kindref="compound">phonebook</ref> *</type>
+          <declname>pb</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offline_imu/plugin.hpp" line="26" column="6" bodyfile="/home/friedel/devel/ILLIXR/plugins/offline_imu/plugin.cpp" bodystart="23" bodyend="32"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classILLIXR_1_1offline__imu_1aea3fd028f407dc77f44f8058f2071d69" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classILLIXR_1_1threadloop_1a26c08942158dc019cbc78c9880417652" kindref="member">skip_option</ref></type>
+        <definition>ILLIXR::threadloop::skip_option offline_imu::_p_should_skip</definition>
+        <argsstring>() override</argsstring>
+        <name>_p_should_skip</name>
+        <qualifiedname>ILLIXR::offline_imu::_p_should_skip</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offline_imu/plugin.hpp" line="29" column="17" bodyfile="/home/friedel/devel/ILLIXR/plugins/offline_imu/plugin.cpp" bodystart="34" bodyend="48"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1offline__imu_1a8fa55149305dc10d3fb663ebef95edf0" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void offline_imu::_p_one_iteration</definition>
+        <argsstring>() override</argsstring>
+        <name>_p_one_iteration</name>
+        <qualifiedname>ILLIXR::offline_imu::_p_one_iteration</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offline_imu/plugin.hpp" line="30" column="17" bodyfile="/home/friedel/devel/ILLIXR/plugins/offline_imu/plugin.cpp" bodystart="50" bodyend="57"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>ILLIXR::offline_imu</label>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>ILLIXR::plugin</label>
+        <link refid="classILLIXR_1_1plugin"/>
+      </node>
+      <node id="2">
+        <label>ILLIXR::threadloop</label>
+        <link refid="classILLIXR_1_1threadloop"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>ILLIXR::offline_imu</label>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>ILLIXR::phonebook</label>
+        <link refid="classILLIXR_1_1phonebook"/>
+      </node>
+      <node id="3">
+        <label>ILLIXR::plugin</label>
+        <link refid="classILLIXR_1_1plugin"/>
+        <childnode refid="4" relation="usage">
+          <edgelabel>phonebook_</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ILLIXR::threadloop</label>
+        <link refid="classILLIXR_1_1threadloop"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/home/friedel/devel/ILLIXR/plugins/offline_imu/plugin.hpp" line="24" column="1" bodyfile="/home/friedel/devel/ILLIXR/plugins/offline_imu/plugin.hpp" bodystart="24" bodyend="46"/>
+    <listofallmembers>
+      <member refid="classILLIXR_1_1offline__imu_1a8fa55149305dc10d3fb663ebef95edf0" prot="protected" virt="non-virtual"><scope>ILLIXR::offline_imu</scope><name>_p_one_iteration</name></member>
+      <member refid="classILLIXR_1_1offline__imu_1aea3fd028f407dc77f44f8058f2071d69" prot="protected" virt="non-virtual"><scope>ILLIXR::offline_imu</scope><name>_p_should_skip</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a00a89b3f3e9caa870f4c70bbc2f8fe97" prot="protected" virt="virtual"><scope>ILLIXR::offline_imu</scope><name>_p_thread_setup</name></member>
+      <member refid="classILLIXR_1_1offline__imu_1aa48162f46e5d5afe4a3febd0477e9d97" prot="private" virt="non-virtual"><scope>ILLIXR::offline_imu</scope><name>clock_</name></member>
+      <member refid="classILLIXR_1_1offline__imu_1ad3b7461cc68d8d9e89cf5f1defa93666" prot="private" virt="non-virtual"><scope>ILLIXR::offline_imu</scope><name>dataset_first_time_</name></member>
+      <member refid="classILLIXR_1_1offline__imu_1a80227d6a551a57410f974308932ade81" prot="private" virt="non-virtual"><scope>ILLIXR::offline_imu</scope><name>dataset_now_</name></member>
+      <member refid="classILLIXR_1_1plugin_1afe52734e7edc87bd0bf974caf112961b" prot="protected" virt="non-virtual"><scope>ILLIXR::offline_imu</scope><name>gen_guid_</name></member>
+      <member refid="classILLIXR_1_1plugin_1aebda022998bd35983e83f391dc0e5193" prot="public" virt="non-virtual"><scope>ILLIXR::offline_imu</scope><name>get_name</name></member>
+      <member refid="classILLIXR_1_1plugin_1aaedb3f9178bdd11e53815e158454aaf3" prot="protected" virt="non-virtual"><scope>ILLIXR::offline_imu</scope><name>id_</name></member>
+      <member refid="classILLIXR_1_1offline__imu_1af77cb651e7a9a72543a9f3e4b1836f40" prot="private" virt="non-virtual"><scope>ILLIXR::offline_imu</scope><name>imu_</name></member>
+      <member refid="classILLIXR_1_1offline__imu_1afa18fe5b2aced768bf6bfc712905733f" prot="private" virt="non-virtual"><scope>ILLIXR::offline_imu</scope><name>imu_cam_log_</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a3e12891e504c782da98e21328dbcf0af" prot="public" virt="virtual"><scope>ILLIXR::offline_imu</scope><name>internal_stop</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a54e0814711e7a582630d38d45ddbe3f3" prot="protected" virt="non-virtual"><scope>ILLIXR::offline_imu</scope><name>iteration_no</name></member>
+      <member refid="classILLIXR_1_1plugin_1aa963c518af83966173840a8558490888" prot="protected" virt="non-virtual"><scope>ILLIXR::offline_imu</scope><name>name_</name></member>
+      <member refid="classILLIXR_1_1offline__imu_1abae3009f38047361d0b24c3cb5ebea76" prot="public" virt="non-virtual"><scope>ILLIXR::offline_imu</scope><name>offline_imu</name></member>
+      <member refid="classILLIXR_1_1plugin_1a6f7a2a9012350591c00d67a5bc0fd5a6" prot="protected" virt="non-virtual"><scope>ILLIXR::offline_imu</scope><name>phonebook_</name></member>
+      <member refid="classILLIXR_1_1plugin_1abc91c0e5be180a8e0bbeaf114a127f17" prot="public" virt="non-virtual"><scope>ILLIXR::offline_imu</scope><name>plugin</name></member>
+      <member refid="classILLIXR_1_1plugin_1a8d40c2421cde09079372d12bfe7d45fe" prot="protected" virt="non-virtual"><scope>ILLIXR::offline_imu</scope><name>plugin_logger_</name></member>
+      <member refid="classILLIXR_1_1plugin_1aef671d0cd9b6de45d3ade16dedbf4974" prot="protected" virt="non-virtual"><scope>ILLIXR::offline_imu</scope><name>record_logger_</name></member>
+      <member refid="classILLIXR_1_1offline__imu_1a4891db71f678b80766cc1f8a6382f45c" prot="private" virt="non-virtual"><scope>ILLIXR::offline_imu</scope><name>sensor_data_</name></member>
+      <member refid="classILLIXR_1_1offline__imu_1a3fec0c1738a2e1a56c8f7ef09cf577c8" prot="private" virt="non-virtual"><scope>ILLIXR::offline_imu</scope><name>sensor_data_it_</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a75009fa785455bdb4b285424f0494bf7" prot="protected" virt="non-virtual"><scope>ILLIXR::offline_imu</scope><name>should_terminate</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a8f6ce8b95d3d9aadf83e4e1414477cd0" prot="protected" virt="non-virtual"><scope>ILLIXR::offline_imu</scope><name>skip_no</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a26c08942158dc019cbc78c9880417652" prot="protected" virt="non-virtual"><scope>ILLIXR::offline_imu</scope><name>skip_option</name></member>
+      <member refid="classILLIXR_1_1plugin_1a7c1c7c1a0ec2e43bfa1118586a28932f" prot="public" virt="non-virtual"><scope>ILLIXR::offline_imu</scope><name>spd_add_file_sink</name></member>
+      <member refid="classILLIXR_1_1plugin_1a569297189ef365cf93f6a95202c76d76" prot="public" virt="non-virtual"><scope>ILLIXR::offline_imu</scope><name>spdlogger</name></member>
+      <member refid="classILLIXR_1_1threadloop_1af001e97f74595e18f589f66ac0595bfb" prot="public" virt="virtual"><scope>ILLIXR::offline_imu</scope><name>start</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a7a968606c7ddfbd1ac6b0fb067ecc5a5" prot="public" virt="virtual"><scope>ILLIXR::offline_imu</scope><name>stop</name></member>
+      <member refid="classILLIXR_1_1offline__imu_1a2c97cbeadcd199eb3d905b8d19bb7a03" prot="private" virt="non-virtual"><scope>ILLIXR::offline_imu</scope><name>switchboard_</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a8e69bfe104a92c0b98caa5583439c34a" prot="public" virt="non-virtual"><scope>ILLIXR::offline_imu</scope><name>threadloop</name></member>
+      <member refid="classILLIXR_1_1plugin_1a44d7b00c86e227bbc1a0b221da43d454" prot="public" virt="virtual"><scope>ILLIXR::offline_imu</scope><name>~plugin</name></member>
+      <member refid="classILLIXR_1_1threadloop_1afbf7b56801b484b60e9cf43448332195" prot="public" virt="non-virtual"><scope>ILLIXR::offline_imu</scope><name>~threadloop</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

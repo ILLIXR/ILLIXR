@@ -1,0 +1,1231 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classILLIXR_1_1offload__rendering__client" kind="class" language="C++" prot="public">
+    <compoundname>ILLIXR::offload_rendering_client</compoundname>
+    <basecompoundref refid="classILLIXR_1_1threadloop" prot="public" virt="non-virtual">ILLIXR::threadloop</basecompoundref>
+    <basecompoundref prot="public" virt="non-virtual">ILLIXR::vulkan::app</basecompoundref>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client_1ac09b99ead139495c3b5d6a492c614257" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classILLIXR_1_1switchboard" kindref="compound">switchboard</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;switchboard&gt; ILLIXR::offload_rendering_client::switchboard_</definition>
+        <argsstring></argsstring>
+        <name>switchboard_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::switchboard_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="200" column="52" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" bodystart="200" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client_1a120ba63e4176a86a8c40d8600f267bf3" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; spdlog::logger &gt;</type>
+        <definition>std::shared_ptr&lt;spdlog::logger&gt; ILLIXR::offload_rendering_client::log_</definition>
+        <argsstring></argsstring>
+        <name>log_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::log_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="201" column="49" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" bodystart="201" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client_1a5202160941bf20e09eac0041f5b042ef" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classILLIXR_1_1vulkan_1_1display__provider" kindref="compound">vulkan::display_provider</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;vulkan::display_provider&gt; ILLIXR::offload_rendering_client::display_provider_</definition>
+        <argsstring></argsstring>
+        <name>display_provider_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::display_provider_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="202" column="39" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" bodystart="202" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client_1a065bb3bb9dbb2c0249d482b77ae85e38" prot="private" static="no" mutable="no">
+        <type>switchboard::buffered_reader&lt; data_format::compressed_frame &gt;</type>
+        <definition>switchboard::buffered_reader&lt;data_format::compressed_frame&gt; ILLIXR::offload_rendering_client::frames_reader_</definition>
+        <argsstring></argsstring>
+        <name>frames_reader_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::frames_reader_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="203" column="34" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" bodystart="203" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client_1ac3dc68cce2071406fb82adcbf1237a3a" prot="private" static="no" mutable="no">
+        <type>switchboard::network_writer&lt; <ref refid="structILLIXR_1_1data__format_1_1fast__pose__type" kindref="compound">data_format::fast_pose_type</ref> &gt;</type>
+        <definition>switchboard::network_writer&lt;data_format::fast_pose_type&gt; ILLIXR::offload_rendering_client::pose_writer_</definition>
+        <argsstring></argsstring>
+        <name>pose_writer_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::pose_writer_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="204" column="36" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" bodystart="204" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client_1a7d4bbc0b9bccc25888fb7243f2adfe1e" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; data_format::pose_prediction &gt;</type>
+        <definition>std::shared_ptr&lt;data_format::pose_prediction&gt; ILLIXR::offload_rendering_client::pose_prediction_</definition>
+        <argsstring></argsstring>
+        <name>pose_prediction_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::pose_prediction_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="205" column="35" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" bodystart="205" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client_1a87202de9114fabcad6fe2a77535ff73e" prot="private" static="no" mutable="no">
+        <type>std::atomic&lt; bool &gt;</type>
+        <definition>std::atomic&lt;bool&gt; ILLIXR::offload_rendering_client::ready_</definition>
+        <argsstring></argsstring>
+        <name>ready_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::ready_</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="206" column="59" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" bodystart="206" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client_1a0f21c1b5e6fa0144640ac311bc6a5fda" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; vulkan::buffer_pool&lt; <ref refid="structILLIXR_1_1data__format_1_1fast__pose__type" kindref="compound">data_format::fast_pose_type</ref> &gt; &gt;</type>
+        <definition>std::shared_ptr&lt;vulkan::buffer_pool&lt;data_format::fast_pose_type&gt; &gt; ILLIXR::offload_rendering_client::buffer_pool_</definition>
+        <argsstring></argsstring>
+        <name>buffer_pool_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::buffer_pool_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="208" column="21" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" bodystart="208" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client_1a380e16cec716ade7e698d3f51fba72a2" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool ILLIXR::offload_rendering_client::use_depth_</definition>
+        <argsstring></argsstring>
+        <name>use_depth_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::use_depth_</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="209" column="71" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" bodystart="209" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client_1ac2006e1e9c687209d502a2e758326737" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; std::array&lt; vulkan::ffmpeg_utils::ffmpeg_vk_frame, 2 &gt; &gt;</type>
+        <definition>std::vector&lt;std::array&lt;vulkan::ffmpeg_utils::ffmpeg_vk_frame, 2&gt; &gt; ILLIXR::offload_rendering_client::avvk_color_frames_</definition>
+        <argsstring></argsstring>
+        <name>avvk_color_frames_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::avvk_color_frames_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="210" column="17" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" bodystart="210" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client_1a87c91b09fd499f2fc17e9d1ee74875cf" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; std::array&lt; vulkan::ffmpeg_utils::ffmpeg_vk_frame, 2 &gt; &gt;</type>
+        <definition>std::vector&lt;std::array&lt;vulkan::ffmpeg_utils::ffmpeg_vk_frame, 2&gt; &gt; ILLIXR::offload_rendering_client::avvk_depth_frames_</definition>
+        <argsstring></argsstring>
+        <name>avvk_depth_frames_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::avvk_depth_frames_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="211" column="17" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" bodystart="211" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client_1a2127c948c02823d2da1c27e7a8e3ec93" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; std::array&lt; VkCommandBuffer, 2 &gt; &gt;</type>
+        <definition>std::vector&lt;std::array&lt;VkCommandBuffer, 2&gt; &gt; ILLIXR::offload_rendering_client::layout_transition_start_cmd_bufs_</definition>
+        <argsstring></argsstring>
+        <name>layout_transition_start_cmd_bufs_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::layout_transition_start_cmd_bufs_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="212" column="39" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" bodystart="212" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client_1a58e706c45f40cf0de0a95f3c009ebd28" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; std::array&lt; VkCommandBuffer, 2 &gt; &gt;</type>
+        <definition>std::vector&lt;std::array&lt;VkCommandBuffer, 2&gt; &gt; ILLIXR::offload_rendering_client::layout_transition_end_cmd_bufs_</definition>
+        <argsstring></argsstring>
+        <name>layout_transition_end_cmd_bufs_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::layout_transition_end_cmd_bufs_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="213" column="39" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" bodystart="213" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client_1aab543ddf1c88783472e77a96e2edb4fa" prot="private" static="no" mutable="no">
+        <type>AVBufferRef *</type>
+        <definition>AVBufferRef* ILLIXR::offload_rendering_client::device_ctx_</definition>
+        <argsstring></argsstring>
+        <name>device_ctx_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::device_ctx_</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="214" column="70" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" bodystart="214" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client_1a102f4f6c78246630ee5f2e1269dd51a7" prot="private" static="no" mutable="no">
+        <type>AVBufferRef *</type>
+        <definition>AVBufferRef* ILLIXR::offload_rendering_client::cuda_device_ctx_</definition>
+        <argsstring></argsstring>
+        <name>cuda_device_ctx_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::cuda_device_ctx_</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="215" column="70" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" bodystart="215" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client_1acccbcba2c169f73de3e1d941486fe530" prot="private" static="no" mutable="no">
+        <type>AVBufferRef *</type>
+        <definition>AVBufferRef* ILLIXR::offload_rendering_client::frame_ctx_</definition>
+        <argsstring></argsstring>
+        <name>frame_ctx_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::frame_ctx_</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="216" column="70" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" bodystart="216" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client_1aa11e2991ceb55782c28b4003b35eab86" prot="private" static="no" mutable="no">
+        <type>AVBufferRef *</type>
+        <definition>AVBufferRef* ILLIXR::offload_rendering_client::cuda_nv12_frame_ctx_</definition>
+        <argsstring></argsstring>
+        <name>cuda_nv12_frame_ctx_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::cuda_nv12_frame_ctx_</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="217" column="70" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" bodystart="217" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client_1ab811907469677df886e20de0093e68ca" prot="private" static="no" mutable="no">
+        <type>AVBufferRef *</type>
+        <definition>AVBufferRef* ILLIXR::offload_rendering_client::cuda_bgra_frame_ctx_</definition>
+        <argsstring></argsstring>
+        <name>cuda_bgra_frame_ctx_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::cuda_bgra_frame_ctx_</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="218" column="70" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" bodystart="218" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client_1a042e3c03bec5fd644b49d144cbb2ba60" prot="private" static="no" mutable="no">
+        <type>AVCodecContext *</type>
+        <definition>AVCodecContext* ILLIXR::offload_rendering_client::codec_color_ctx_</definition>
+        <argsstring></argsstring>
+        <name>codec_color_ctx_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::codec_color_ctx_</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="220" column="29" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" bodystart="220" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client_1af99705dc509f22fdc16eba3fc84bab2e" prot="private" static="no" mutable="no">
+        <type>std::array&lt; AVPacket *, 2 &gt;</type>
+        <definition>std::array&lt;AVPacket*, 2&gt; ILLIXR::offload_rendering_client::decode_src_color_packets_</definition>
+        <argsstring></argsstring>
+        <name>decode_src_color_packets_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::decode_src_color_packets_</qualifiedname>
+        <initializer>= {nullptr, nullptr}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="221" column="16" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" bodystart="221" bodyend="221"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client_1acba490542b6b4aee2bbe872c4c38657f" prot="private" static="no" mutable="no">
+        <type>std::array&lt; AVFrame *, 2 &gt;</type>
+        <definition>std::array&lt;AVFrame*, 2&gt; ILLIXR::offload_rendering_client::decode_out_color_frames_</definition>
+        <argsstring></argsstring>
+        <name>decode_out_color_frames_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::decode_out_color_frames_</qualifiedname>
+        <initializer>= {nullptr, nullptr}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="222" column="17" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" bodystart="222" bodyend="222"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client_1a7b64a6b6303dbb5c7c63b90ba436237d" prot="private" static="no" mutable="no">
+        <type>std::array&lt; AVFrame *, 2 &gt;</type>
+        <definition>std::array&lt;AVFrame*, 2&gt; ILLIXR::offload_rendering_client::decode_converted_color_frames_</definition>
+        <argsstring></argsstring>
+        <name>decode_converted_color_frames_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::decode_converted_color_frames_</qualifiedname>
+        <initializer>= {nullptr, nullptr}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="223" column="17" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" bodystart="223" bodyend="223"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client_1a02db2e4b4b6a77b97407321162e4136b" prot="private" static="no" mutable="no">
+        <type>AVCodecContext *</type>
+        <definition>AVCodecContext* ILLIXR::offload_rendering_client::codec_depth_ctx_</definition>
+        <argsstring></argsstring>
+        <name>codec_depth_ctx_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::codec_depth_ctx_</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="225" column="29" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" bodystart="225" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client_1aad7953aadb9a3600a8a0e1bf98dd7147" prot="private" static="no" mutable="no">
+        <type>std::array&lt; AVPacket *, 2 &gt;</type>
+        <definition>std::array&lt;AVPacket*, 2&gt; ILLIXR::offload_rendering_client::decode_src_depth_packets_</definition>
+        <argsstring></argsstring>
+        <name>decode_src_depth_packets_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::decode_src_depth_packets_</qualifiedname>
+        <initializer>= {nullptr, nullptr}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="226" column="16" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" bodystart="226" bodyend="226"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client_1a6da007e5a2e0963d2cdf79f01f55367c" prot="private" static="no" mutable="no">
+        <type>std::array&lt; AVFrame *, 2 &gt;</type>
+        <definition>std::array&lt;AVFrame*, 2&gt; ILLIXR::offload_rendering_client::decode_out_depth_frames_</definition>
+        <argsstring></argsstring>
+        <name>decode_out_depth_frames_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::decode_out_depth_frames_</qualifiedname>
+        <initializer>= {nullptr, nullptr}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="227" column="17" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" bodystart="227" bodyend="227"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client_1a6b6ef37cd14725e4287677e385782cef" prot="private" static="no" mutable="no">
+        <type>std::array&lt; AVFrame *, 2 &gt;</type>
+        <definition>std::array&lt;AVFrame*, 2&gt; ILLIXR::offload_rendering_client::decode_converted_depth_frames_</definition>
+        <argsstring></argsstring>
+        <name>decode_converted_depth_frames_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::decode_converted_depth_frames_</qualifiedname>
+        <initializer>= {nullptr, nullptr}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="228" column="17" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" bodystart="228" bodyend="228"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client_1ad59f7c939574a3272f5aa95e98a533d3" prot="private" static="no" mutable="no">
+        <type><ref refid="structILLIXR_1_1data__format_1_1fast__pose__type" kindref="compound">data_format::fast_pose_type</ref></type>
+        <definition>data_format::fast_pose_type ILLIXR::offload_rendering_client::decoded_frame_pose_</definition>
+        <argsstring></argsstring>
+        <name>decoded_frame_pose_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::decoded_frame_pose_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="230" column="33" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" bodystart="230" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client_1a229f1c77eac944fb09c0d90f62b87885" prot="private" static="no" mutable="no">
+        <type>VkCommandPool</type>
+        <definition>VkCommandPool ILLIXR::offload_rendering_client::command_pool</definition>
+        <argsstring></argsstring>
+        <name>command_pool</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::command_pool</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="232" column="19" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" bodystart="232" bodyend="232"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client_1afb3cd5ede5b9147898192fb0cbe974c4" prot="private" static="no" mutable="no">
+        <type>Npp8u *</type>
+        <definition>Npp8u* ILLIXR::offload_rendering_client::yuv420_y_plane_</definition>
+        <argsstring></argsstring>
+        <name>yuv420_y_plane_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::yuv420_y_plane_</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="233" column="18" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" bodystart="233" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client_1a9f55a4ea67ba3e897ddfa8edeb5921d7" prot="private" static="no" mutable="no">
+        <type>Npp8u *</type>
+        <definition>Npp8u* ILLIXR::offload_rendering_client::yuv420_u_plane_</definition>
+        <argsstring></argsstring>
+        <name>yuv420_u_plane_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::yuv420_u_plane_</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="234" column="18" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" bodystart="234" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client_1a0d9394df7c3b41e74187e22efec88035" prot="private" static="no" mutable="no">
+        <type>Npp8u *</type>
+        <definition>Npp8u* ILLIXR::offload_rendering_client::yuv420_v_plane_</definition>
+        <argsstring></argsstring>
+        <name>yuv420_v_plane_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::yuv420_v_plane_</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="235" column="18" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" bodystart="235" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client_1a729af110b267b77d6cdb769e33d318be" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int ILLIXR::offload_rendering_client::y_step_</definition>
+        <argsstring></argsstring>
+        <name>y_step_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::y_step_</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="236" column="19" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" bodystart="236" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client_1a56989aaf4e47b08eb7410d6c5356dd7e" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int ILLIXR::offload_rendering_client::u_step_</definition>
+        <argsstring></argsstring>
+        <name>u_step_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::u_step_</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="237" column="19" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" bodystart="237" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client_1a7199c8b13d0a877dcd226d6a6e1b0297" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int ILLIXR::offload_rendering_client::v_step_</definition>
+        <argsstring></argsstring>
+        <name>v_step_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::v_step_</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="238" column="19" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" bodystart="238" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client_1a1e61f039675aebcc7ad558a2ccc9de47" prot="private" static="no" mutable="no">
+        <type>uint64_t</type>
+        <definition>uint64_t ILLIXR::offload_rendering_client::frame_count_</definition>
+        <argsstring></argsstring>
+        <name>frame_count_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::frame_count_</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="240" column="14" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" bodystart="240" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client_1a234bc6f843b7dfa63d72a6d0612abac2" prot="private" static="no" mutable="no">
+        <type>VkFence</type>
+        <definition>VkFence ILLIXR::offload_rendering_client::fence_</definition>
+        <argsstring></argsstring>
+        <name>fence_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::fence_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="242" column="13" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" bodystart="242" bodyend="242"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client_1a5fece99366abd9d03883a192a81d5ee0" prot="private" static="no" mutable="no">
+        <type>uint16_t</type>
+        <definition>uint16_t ILLIXR::offload_rendering_client::fps_counter_</definition>
+        <argsstring></argsstring>
+        <name>fps_counter_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::fps_counter_</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="244" column="52" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" bodystart="244" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client_1a264534be2d776b5d8111ca5ea896d768" prot="private" static="no" mutable="no">
+        <type>std::chrono::high_resolution_clock::time_point</type>
+        <definition>std::chrono::high_resolution_clock::time_point ILLIXR::offload_rendering_client::fps_start_time_</definition>
+        <argsstring></argsstring>
+        <name>fps_start_time_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::fps_start_time_</qualifiedname>
+        <initializer>= std::chrono::high_resolution_clock::now()</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="245" column="52" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" bodystart="245" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client_1acaecebbf49e01187d1118f48aef11b94" prot="private" static="no" mutable="no">
+        <type>std::map&lt; std::string, uint32_t &gt;</type>
+        <definition>std::map&lt;std::string, uint32_t&gt; ILLIXR::offload_rendering_client::metrics_</definition>
+        <argsstring></argsstring>
+        <name>metrics_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::metrics_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="246" column="29" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" bodystart="246" bodyend="246"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1offload__rendering__client_1a43cb77b916a317479789bf6915f91677" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classILLIXR_1_1relative__clock" kindref="compound">relative_clock</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;relative_clock&gt; ILLIXR::offload_rendering_client::clock_</definition>
+        <argsstring></argsstring>
+        <name>clock_</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::clock_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="248" column="21" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" bodystart="248" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classILLIXR_1_1offload__rendering__client_1a1f72a19567bf1df489a0f14cbc42fe4c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>offload_rendering_client::offload_rendering_client</definition>
+        <argsstring>(const std::string &amp;name, phonebook *pb)</argsstring>
+        <name>offload_rendering_client</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::offload_rendering_client</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type><ref refid="classILLIXR_1_1phonebook" kindref="compound">phonebook</ref> *</type>
+          <declname>pb</declname>
+        </param>
+        <briefdescription>
+<para>Constructor initializes the client with configuration from environment variables. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Plugin name </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>pb</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Phonebook for component lookup </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="56" column="5" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.cpp" bodystart="9" bodyend="23"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1offload__rendering__client_1a9333b97292b80299a51ae64b195191be" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void offload_rendering_client::start</definition>
+        <argsstring>() override</argsstring>
+        <name>start</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::start</qualifiedname>
+        <briefdescription>
+<para>Start the client thread and initialize FFmpeg/CUDA resources. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="61" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.cpp" bodystart="25" bodyend="29"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1offload__rendering__client_1a960bbc2cd3aa813d701ee36533d00d5d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void offload_rendering_client::setup</definition>
+        <argsstring>(VkRenderPass render_pass, uint32_t subpass, std::shared_ptr&lt; vulkan::buffer_pool&lt; data_format::fast_pose_type &gt; &gt; buffer_pool) override</argsstring>
+        <name>setup</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::setup</qualifiedname>
+        <param>
+          <type>VkRenderPass</type>
+          <declname>render_pass</declname>
+        </param>
+        <param>
+          <type>uint32_t</type>
+          <declname>subpass</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; vulkan::buffer_pool&lt; <ref refid="structILLIXR_1_1data__format_1_1fast__pose__type" kindref="compound">data_format::fast_pose_type</ref> &gt; &gt;</type>
+          <declname>buffer_pool</declname>
+        </param>
+        <briefdescription>
+<para>Set up Vulkan resources and initialize frame buffers. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>render_pass</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The Vulkan render pass to use </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>subpass</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The subpass index </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>buffer_pool</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The buffer pool for frame data </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="69" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.cpp" bodystart="31" bodyend="105"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1offload__rendering__client_1ad0be33b1cab02bc4765a43fd5b60c176" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void ILLIXR::offload_rendering_client::record_command_buffer</definition>
+        <argsstring>(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left) override</argsstring>
+        <name>record_command_buffer</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::record_command_buffer</qualifiedname>
+        <param>
+          <type>VkCommandBuffer</type>
+          <declname>commandBuffer</declname>
+        </param>
+        <param>
+          <type>VkFramebuffer</type>
+          <declname>framebuffer</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>buffer_ind</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>left</declname>
+        </param>
+        <briefdescription>
+<para>Record command buffer (no-op in this implementation) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="75" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" bodystart="75" bodyend="80"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1offload__rendering__client_1a85c0f17c5fb6306a4e4bdcbde175838b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void ILLIXR::offload_rendering_client::update_uniforms</definition>
+        <argsstring>(const data_format::pose_type &amp;render_pose) override</argsstring>
+        <name>update_uniforms</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::update_uniforms</qualifiedname>
+        <param>
+          <type>const <ref refid="structILLIXR_1_1data__format_1_1pose__type" kindref="compound">data_format::pose_type</ref> &amp;</type>
+          <declname>render_pose</declname>
+        </param>
+        <briefdescription>
+<para>Update uniforms (no-op in this implementation) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="85" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" bodystart="85" bodyend="87"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1offload__rendering__client_1ad5c7b9bbd9689c5ad828a7fb7833521e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool ILLIXR::offload_rendering_client::is_external</definition>
+        <argsstring>() override</argsstring>
+        <name>is_external</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::is_external</qualifiedname>
+        <briefdescription>
+<para>Indicates this is an external renderer. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>true since this is an external renderer </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="93" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" bodystart="93" bodyend="95"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1offload__rendering__client_1a96c6f6e3c7a1f514e7f645a3b4fdf6ac" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void offload_rendering_client::destroy</definition>
+        <argsstring>() override</argsstring>
+        <name>destroy</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::destroy</qualifiedname>
+        <briefdescription>
+<para>Clean up resources on destruction. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="100" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.cpp" bodystart="107" bodyend="125"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classILLIXR_1_1offload__rendering__client_1ae626e64e24f8d15081cc747185e1ac95" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void ILLIXR::offload_rendering_client::_p_thread_setup</definition>
+        <argsstring>() override</argsstring>
+        <name>_p_thread_setup</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::_p_thread_setup</qualifiedname>
+        <briefdescription>
+<para>Thread setup (no-op in this implementation) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="106" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" bodystart="106" bodyend="106"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1offload__rendering__client_1aa3146f78437f89209d358d8ccbd9b046" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classILLIXR_1_1threadloop_1a26c08942158dc019cbc78c9880417652" kindref="member">skip_option</ref></type>
+        <definition>skip_option ILLIXR::offload_rendering_client::_p_should_skip</definition>
+        <argsstring>() override</argsstring>
+        <name>_p_should_skip</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::_p_should_skip</qualifiedname>
+        <briefdescription>
+<para>Determines if the current iteration should be skipped. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="111" column="17" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" bodystart="111" bodyend="113"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1offload__rendering__client_1a6355afca1b9101fb28cd27ca3e7d3249" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void offload_rendering_client::copy_image_to_cpu_and_save_file</definition>
+        <argsstring>(AVFrame *frame)</argsstring>
+        <name>copy_image_to_cpu_and_save_file</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::copy_image_to_cpu_and_save_file</qualifiedname>
+        <param>
+          <type>AVFrame *</type>
+          <declname>frame</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="115" column="11" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.cpp" bodystart="127" bodyend="158"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1offload__rendering__client_1a6590bb40d4d5400e64138db10b4e4922" prot="protected" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void offload_rendering_client::save_nv12_img_to_png</definition>
+        <argsstring>(AVFrame *cuda_frame) const</argsstring>
+        <name>save_nv12_img_to_png</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::save_nv12_img_to_png</qualifiedname>
+        <param>
+          <type>AVFrame *</type>
+          <declname>cuda_frame</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="116" column="11" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.cpp" bodystart="160" bodyend="204"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1offload__rendering__client_1a15ff9f303ae16ac3b365594a76233e48" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void offload_rendering_client::transition_layout</definition>
+        <argsstring>(VkCommandBuffer cmd_buf, AVFrame *frame, VkImageLayout old_layout, VkImageLayout new_layout)</argsstring>
+        <name>transition_layout</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::transition_layout</qualifiedname>
+        <param>
+          <type>VkCommandBuffer</type>
+          <declname>cmd_buf</declname>
+        </param>
+        <param>
+          <type>AVFrame *</type>
+          <declname>frame</declname>
+        </param>
+        <param>
+          <type>VkImageLayout</type>
+          <declname>old_layout</declname>
+        </param>
+        <param>
+          <type>VkImageLayout</type>
+          <declname>new_layout</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="117" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.cpp" bodystart="208" bodyend="250"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1offload__rendering__client_1aa9f0efdeb4188070edc9ed0c648c3efe" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void offload_rendering_client::_p_one_iteration</definition>
+        <argsstring>() override</argsstring>
+        <name>_p_one_iteration</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::_p_one_iteration</qualifiedname>
+        <briefdescription>
+<para>Main processing loop for frame decoding and display. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This method:<orderedlist>
+<listitem><para>Sends the latest pose to the server</para>
+</listitem><listitem><para>Receives and decodes encoded frames</para>
+</listitem><listitem><para>Performs color space conversion</para>
+</listitem><listitem><para>Updates display buffers</para>
+</listitem><listitem><para>Tracks performance metrics </para>
+</listitem></orderedlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="129" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.cpp" bodystart="252" bodyend="486"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classILLIXR_1_1offload__rendering__client_1af3ddc49a1e1f9dce6166fe5b8636927d" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void offload_rendering_client::push_pose</definition>
+        <argsstring>()</argsstring>
+        <name>push_pose</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::push_pose</qualifiedname>
+        <briefdescription>
+<para>Send the latest pose to the server. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="135" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.cpp" bodystart="488" bodyend="496"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1offload__rendering__client_1a3646b1c0c8bdd0bb46620a075ec27238" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool offload_rendering_client::network_receive</definition>
+        <argsstring>()</argsstring>
+        <name>network_receive</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::network_receive</qualifiedname>
+        <briefdescription>
+<para>Receive and process network data. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>true if data was received successfully, false otherwise </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="141" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.cpp" bodystart="498" bodyend="536"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1offload__rendering__client_1ab243a51d9c3c9e6959c331162a30962d" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void offload_rendering_client::submit_command_buffer</definition>
+        <argsstring>(VkCommandBuffer vk_command_buffer)</argsstring>
+        <name>submit_command_buffer</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::submit_command_buffer</qualifiedname>
+        <param>
+          <type>VkCommandBuffer</type>
+          <declname>vk_command_buffer</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="143" column="11" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.cpp" bodystart="538" bodyend="551"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1offload__rendering__client_1a28966da26f61538595c5e3013b605913" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void offload_rendering_client::ffmpeg_init_device</definition>
+        <argsstring>()</argsstring>
+        <name>ffmpeg_init_device</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::ffmpeg_init_device</qualifiedname>
+        <briefdescription>
+<para>Initialize FFmpeg Vulkan device context. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Sets up the FFmpeg Vulkan device context with the appropriate queues_, features, and extensions required for hardware-accelerated decoding. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="151" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.cpp" bodystart="553" bodyend="606"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1offload__rendering__client_1a0968c82f3b0834db7ff7a95d23517191" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void offload_rendering_client::ffmpeg_init_cuda_device</definition>
+        <argsstring>()</argsstring>
+        <name>ffmpeg_init_cuda_device</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::ffmpeg_init_cuda_device</qualifiedname>
+        <briefdescription>
+<para>Initialize FFmpeg CUDA device context. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Creates and initializes the CUDA hardware device context for FFmpeg. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="158" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.cpp" bodystart="608" bodyend="615"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1offload__rendering__client_1ae1030556c53b76e7a92ca2623f94ce6e" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void offload_rendering_client::ffmpeg_init_frame_ctx</definition>
+        <argsstring>()</argsstring>
+        <name>ffmpeg_init_frame_ctx</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::ffmpeg_init_frame_ctx</qualifiedname>
+        <briefdescription>
+<para>Initialize FFmpeg frame context for Vulkan. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Sets up the frame context for Vulkan image handling, configuring the pixel format and dimensions based on the buffer pool settings. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="166" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.cpp" bodystart="617" bodyend="637"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1offload__rendering__client_1a6f335a90f4c09f5470047d01366817fc" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>AVBufferRef *</type>
+        <definition>AVBufferRef * offload_rendering_client::create_cuda_frame_ctx</definition>
+        <argsstring>(AVPixelFormat fmt)</argsstring>
+        <name>create_cuda_frame_ctx</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::create_cuda_frame_ctx</qualifiedname>
+        <param>
+          <type>AVPixelFormat</type>
+          <declname>fmt</declname>
+        </param>
+        <briefdescription>
+<para>Create CUDA frame context for a specific pixel format. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>fmt</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The desired pixel format </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>AVBufferRef* The created frame context </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="173" column="17" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.cpp" bodystart="639" bodyend="653"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1offload__rendering__client_1a0ebd22d6aa20057e88ce4736a7f79c54" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void offload_rendering_client::ffmpeg_init_cuda_frame_ctx</definition>
+        <argsstring>()</argsstring>
+        <name>ffmpeg_init_cuda_frame_ctx</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::ffmpeg_init_cuda_frame_ctx</qualifiedname>
+        <briefdescription>
+<para>Initialize CUDA frame contexts for NV12 and BGRA formats. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="178" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.cpp" bodystart="655" bodyend="659"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1offload__rendering__client_1a21472ba2af792cf49cac3f11a9f39e97" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void offload_rendering_client::ffmpeg_init_buffer_pool</definition>
+        <argsstring>()</argsstring>
+        <name>ffmpeg_init_buffer_pool</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::ffmpeg_init_buffer_pool</qualifiedname>
+        <briefdescription>
+<para>Initialize FFmpeg buffer pool and frame resources. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Sets up the buffer pool for both color and depth frames, including:<itemizedlist>
+<listitem><para>AVVkFrame creation and configuration</para>
+</listitem><listitem><para>AVFrame allocation and setup</para>
+</listitem><listitem><para>Command buffer creation for layout transitions</para>
+</listitem><listitem><para>NPP buffer allocation for color space conversion </para>
+</listitem></itemizedlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="189" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.cpp" bodystart="661" bodyend="801"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1offload__rendering__client_1a4c1d28b92fdd40831ed73492bbff5da8" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void offload_rendering_client::ffmpeg_init_decoder</definition>
+        <argsstring>()</argsstring>
+        <name>ffmpeg_init_decoder</name>
+        <qualifiedname>ILLIXR::offload_rendering_client::ffmpeg_init_decoder</qualifiedname>
+        <briefdescription>
+<para>Initialize FFmpeg decoder. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Sets up the HEVC decoder with CUDA hardware acceleration for both color and depth frames (if enabled). Configures decoder parameters for optimal low-latency decoding. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="198" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.cpp" bodystart="803" bodyend="869"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>ILLIXR::offload_rendering_client</label>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>ILLIXR::plugin</label>
+        <link refid="classILLIXR_1_1plugin"/>
+      </node>
+      <node id="2">
+        <label>ILLIXR::threadloop</label>
+        <link refid="classILLIXR_1_1threadloop"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>ILLIXR::offload_rendering_client</label>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>ILLIXR::phonebook</label>
+        <link refid="classILLIXR_1_1phonebook"/>
+      </node>
+      <node id="3">
+        <label>ILLIXR::plugin</label>
+        <link refid="classILLIXR_1_1plugin"/>
+        <childnode refid="4" relation="usage">
+          <edgelabel>phonebook_</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ILLIXR::threadloop</label>
+        <link refid="classILLIXR_1_1threadloop"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="47" column="1" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" bodystart="49" bodyend="249"/>
+    <listofallmembers>
+      <member refid="classILLIXR_1_1offload__rendering__client_1aa9f0efdeb4188070edc9ed0c648c3efe" prot="protected" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>_p_one_iteration</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1aa3146f78437f89209d358d8ccbd9b046" prot="protected" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>_p_should_skip</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1ae626e64e24f8d15081cc747185e1ac95" prot="protected" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>_p_thread_setup</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1ac2006e1e9c687209d502a2e758326737" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>avvk_color_frames_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1a87c91b09fd499f2fc17e9d1ee74875cf" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>avvk_depth_frames_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1a0f21c1b5e6fa0144640ac311bc6a5fda" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>buffer_pool_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1a43cb77b916a317479789bf6915f91677" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>clock_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1a042e3c03bec5fd644b49d144cbb2ba60" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>codec_color_ctx_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1a02db2e4b4b6a77b97407321162e4136b" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>codec_depth_ctx_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1a229f1c77eac944fb09c0d90f62b87885" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>command_pool</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1a6355afca1b9101fb28cd27ca3e7d3249" prot="protected" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>copy_image_to_cpu_and_save_file</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1a6f335a90f4c09f5470047d01366817fc" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>create_cuda_frame_ctx</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1ab811907469677df886e20de0093e68ca" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>cuda_bgra_frame_ctx_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1a102f4f6c78246630ee5f2e1269dd51a7" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>cuda_device_ctx_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1aa11e2991ceb55782c28b4003b35eab86" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>cuda_nv12_frame_ctx_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1a7b64a6b6303dbb5c7c63b90ba436237d" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>decode_converted_color_frames_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1a6b6ef37cd14725e4287677e385782cef" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>decode_converted_depth_frames_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1acba490542b6b4aee2bbe872c4c38657f" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>decode_out_color_frames_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1a6da007e5a2e0963d2cdf79f01f55367c" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>decode_out_depth_frames_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1af99705dc509f22fdc16eba3fc84bab2e" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>decode_src_color_packets_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1aad7953aadb9a3600a8a0e1bf98dd7147" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>decode_src_depth_packets_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1ad59f7c939574a3272f5aa95e98a533d3" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>decoded_frame_pose_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1a96c6f6e3c7a1f514e7f645a3b4fdf6ac" prot="public" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>destroy</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1aab543ddf1c88783472e77a96e2edb4fa" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>device_ctx_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1a5202160941bf20e09eac0041f5b042ef" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>display_provider_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1a234bc6f843b7dfa63d72a6d0612abac2" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>fence_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1a21472ba2af792cf49cac3f11a9f39e97" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>ffmpeg_init_buffer_pool</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1a0968c82f3b0834db7ff7a95d23517191" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>ffmpeg_init_cuda_device</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1a0ebd22d6aa20057e88ce4736a7f79c54" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>ffmpeg_init_cuda_frame_ctx</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1a4c1d28b92fdd40831ed73492bbff5da8" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>ffmpeg_init_decoder</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1a28966da26f61538595c5e3013b605913" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>ffmpeg_init_device</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1ae1030556c53b76e7a92ca2623f94ce6e" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>ffmpeg_init_frame_ctx</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1a5fece99366abd9d03883a192a81d5ee0" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>fps_counter_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1a264534be2d776b5d8111ca5ea896d768" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>fps_start_time_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1a1e61f039675aebcc7ad558a2ccc9de47" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>frame_count_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1acccbcba2c169f73de3e1d941486fe530" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>frame_ctx_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1a065bb3bb9dbb2c0249d482b77ae85e38" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>frames_reader_</name></member>
+      <member refid="classILLIXR_1_1plugin_1afe52734e7edc87bd0bf974caf112961b" prot="protected" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>gen_guid_</name></member>
+      <member refid="classILLIXR_1_1plugin_1aebda022998bd35983e83f391dc0e5193" prot="public" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>get_name</name></member>
+      <member refid="classILLIXR_1_1plugin_1aaedb3f9178bdd11e53815e158454aaf3" prot="protected" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>id_</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a3e12891e504c782da98e21328dbcf0af" prot="public" virt="virtual"><scope>ILLIXR::offload_rendering_client</scope><name>internal_stop</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1ad5c7b9bbd9689c5ad828a7fb7833521e" prot="public" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>is_external</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a54e0814711e7a582630d38d45ddbe3f3" prot="protected" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>iteration_no</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1a58e706c45f40cf0de0a95f3c009ebd28" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>layout_transition_end_cmd_bufs_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1a2127c948c02823d2da1c27e7a8e3ec93" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>layout_transition_start_cmd_bufs_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1a120ba63e4176a86a8c40d8600f267bf3" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>log_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1acaecebbf49e01187d1118f48aef11b94" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>metrics_</name></member>
+      <member refid="classILLIXR_1_1plugin_1aa963c518af83966173840a8558490888" prot="protected" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>name_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1a3646b1c0c8bdd0bb46620a075ec27238" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>network_receive</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1a1f72a19567bf1df489a0f14cbc42fe4c" prot="public" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>offload_rendering_client</name></member>
+      <member refid="classILLIXR_1_1plugin_1a6f7a2a9012350591c00d67a5bc0fd5a6" prot="protected" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>phonebook_</name></member>
+      <member refid="classILLIXR_1_1vulkan_1_1render__pass_1a59471ec4496602094f87dcdd740c3fa8" prot="public" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>pipeline_</name></member>
+      <member refid="classILLIXR_1_1plugin_1abc91c0e5be180a8e0bbeaf114a127f17" prot="public" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>plugin</name></member>
+      <member refid="classILLIXR_1_1plugin_1a8d40c2421cde09079372d12bfe7d45fe" prot="protected" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>plugin_logger_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1a7d4bbc0b9bccc25888fb7243f2adfe1e" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>pose_prediction_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1ac3dc68cce2071406fb82adcbf1237a3a" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>pose_writer_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1af3ddc49a1e1f9dce6166fe5b8636927d" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>push_pose</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1a87202de9114fabcad6fe2a77535ff73e" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>ready_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1ad0be33b1cab02bc4765a43fd5b60c176" prot="public" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>record_command_buffer</name></member>
+      <member refid="classILLIXR_1_1plugin_1aef671d0cd9b6de45d3ade16dedbf4974" prot="protected" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>record_logger_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1a6590bb40d4d5400e64138db10b4e4922" prot="protected" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>save_nv12_img_to_png</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1a960bbc2cd3aa813d701ee36533d00d5d" prot="public" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>setup</name></member>
+      <member refid="classILLIXR_1_1vulkan_1_1app_1a343363b55ec070db70030ae3381e10d8" prot="public" virt="pure-virtual" ambiguityscope="ILLIXR::vulkan::app::"><scope>ILLIXR::offload_rendering_client</scope><name>setup</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a75009fa785455bdb4b285424f0494bf7" prot="protected" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>should_terminate</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a8f6ce8b95d3d9aadf83e4e1414477cd0" prot="protected" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>skip_no</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a26c08942158dc019cbc78c9880417652" prot="protected" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>skip_option</name></member>
+      <member refid="classILLIXR_1_1plugin_1a7c1c7c1a0ec2e43bfa1118586a28932f" prot="public" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>spd_add_file_sink</name></member>
+      <member refid="classILLIXR_1_1plugin_1a569297189ef365cf93f6a95202c76d76" prot="public" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>spdlogger</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1a9333b97292b80299a51ae64b195191be" prot="public" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>start</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a7a968606c7ddfbd1ac6b0fb067ecc5a5" prot="public" virt="virtual"><scope>ILLIXR::offload_rendering_client</scope><name>stop</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1ab243a51d9c3c9e6959c331162a30962d" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>submit_command_buffer</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1ac09b99ead139495c3b5d6a492c614257" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>switchboard_</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a8e69bfe104a92c0b98caa5583439c34a" prot="public" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>threadloop</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1a15ff9f303ae16ac3b365594a76233e48" prot="protected" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>transition_layout</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1a56989aaf4e47b08eb7410d6c5356dd7e" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>u_step_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1a85c0f17c5fb6306a4e4bdcbde175838b" prot="public" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>update_uniforms</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1a380e16cec716ade7e698d3f51fba72a2" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>use_depth_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1a7199c8b13d0a877dcd226d6a6e1b0297" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>v_step_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1a729af110b267b77d6cdb769e33d318be" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>y_step_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1a9f55a4ea67ba3e897ddfa8edeb5921d7" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>yuv420_u_plane_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1a0d9394df7c3b41e74187e22efec88035" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>yuv420_v_plane_</name></member>
+      <member refid="classILLIXR_1_1offload__rendering__client_1afb3cd5ede5b9147898192fb0cbe974c4" prot="private" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>yuv420_y_plane_</name></member>
+      <member refid="classILLIXR_1_1plugin_1a44d7b00c86e227bbc1a0b221da43d454" prot="public" virt="virtual"><scope>ILLIXR::offload_rendering_client</scope><name>~plugin</name></member>
+      <member refid="classILLIXR_1_1vulkan_1_1render__pass_1ae57133967b6196133e8832759f3fc881" prot="public" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>~render_pass</name></member>
+      <member refid="classILLIXR_1_1phonebook_1_1service_1a6bc6e64a0d9b70223989fc3fb98c2d0d" prot="public" virt="virtual"><scope>ILLIXR::offload_rendering_client</scope><name>~service</name></member>
+      <member refid="classILLIXR_1_1threadloop_1afbf7b56801b484b60e9cf43448332195" prot="public" virt="non-virtual"><scope>ILLIXR::offload_rendering_client</scope><name>~threadloop</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

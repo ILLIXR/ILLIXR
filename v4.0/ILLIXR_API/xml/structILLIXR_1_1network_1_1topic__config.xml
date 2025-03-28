@@ -1,0 +1,230 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structILLIXR_1_1network_1_1topic__config" kind="struct" language="C++" prot="public">
+    <compoundname>ILLIXR::network::topic_config</compoundname>
+    <sectiondef kind="public-type">
+      <memberdef kind="enum" id="structILLIXR_1_1network_1_1topic__config_1acc516e7f18e3a77746ffce9f9a7ce453" prot="public" static="no" strong="no">
+        <type></type>
+        <name>priority_type</name>
+        <qualifiedname>ILLIXR::network::topic_config::priority_type</qualifiedname>
+        <enumvalue id="structILLIXR_1_1network_1_1topic__config_1acc516e7f18e3a77746ffce9f9a7ce453a535907bf4c71379efb0f423da97d0357" prot="public">
+          <name>LOWEST</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structILLIXR_1_1network_1_1topic__config_1acc516e7f18e3a77746ffce9f9a7ce453a12de00dd529363bfd3bd5c15d381522d" prot="public">
+          <name>LOW</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structILLIXR_1_1network_1_1topic__config_1acc516e7f18e3a77746ffce9f9a7ce453af5adbacc976cf6be8b4d7cfe38477c8f" prot="public">
+          <name>MEDIUM</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structILLIXR_1_1network_1_1topic__config_1acc516e7f18e3a77746ffce9f9a7ce453ac72ebf61ab2900eeaab925c87caebb5a" prot="public">
+          <name>HIGH</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structILLIXR_1_1network_1_1topic__config_1acc516e7f18e3a77746ffce9f9a7ce453a54f97a24dcbe5c84027e513faf1bf3fe" prot="public">
+          <name>HIGHEST</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/network/topic_config.hpp" line="9" column="5" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/network/topic_config.hpp" bodystart="9" bodyend="9"/>
+      </memberdef>
+      <memberdef kind="enum" id="structILLIXR_1_1network_1_1topic__config_1a9dff11b45b190e19b1875c6a9bdfaec7" prot="public" static="no" strong="no">
+        <type></type>
+        <name>packetization_type</name>
+        <qualifiedname>ILLIXR::network::topic_config::packetization_type</qualifiedname>
+        <enumvalue id="structILLIXR_1_1network_1_1topic__config_1a9dff11b45b190e19b1875c6a9bdfaec7acaca552f26c796fddb5cd0a3fc58e5d5" prot="public">
+          <name>IMMEDIATE</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structILLIXR_1_1network_1_1topic__config_1a9dff11b45b190e19b1875c6a9bdfaec7a82e2d2639bd4329f28a82a434648870e" prot="public">
+          <name>DEFAULT</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structILLIXR_1_1network_1_1topic__config_1a9dff11b45b190e19b1875c6a9bdfaec7a8c0178fdea6a447193a1ac6ed7a4e47f" prot="public">
+          <name>SUGGEST_LATENCY</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/network/topic_config.hpp" line="11" column="5" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/network/topic_config.hpp" bodystart="11" bodyend="11"/>
+      </memberdef>
+      <memberdef kind="enum" id="structILLIXR_1_1network_1_1topic__config_1a01b1f8db0598cbf2ad886c76e88d2046" prot="public" static="no" strong="no">
+        <type></type>
+        <name>SerializationMethod</name>
+        <qualifiedname>ILLIXR::network::topic_config::SerializationMethod</qualifiedname>
+        <enumvalue id="structILLIXR_1_1network_1_1topic__config_1a01b1f8db0598cbf2ad886c76e88d2046abb4f8e721ff23d33ba07c895410de1a9" prot="public">
+          <name>BOOST</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structILLIXR_1_1network_1_1topic__config_1a01b1f8db0598cbf2ad886c76e88d2046a8edf17e12ebf451dcd9263d7ec544ee4" prot="public">
+          <name>PROTOBUF</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/network/topic_config.hpp" line="19" column="5" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/network/topic_config.hpp" bodystart="19" bodyend="19"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structILLIXR_1_1network_1_1topic__config_1a2198bdf2f0c079613568a7195b68baa8" prot="public" static="no" mutable="no">
+        <type>priority_type</type>
+        <definition>priority_type ILLIXR::network::topic_config::priority</definition>
+        <argsstring></argsstring>
+        <name>priority</name>
+        <qualifiedname>ILLIXR::network::topic_config::priority</qualifiedname>
+        <initializer>= MEDIUM</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/network/topic_config.hpp" line="13" column="59" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/network/topic_config.hpp" bodystart="13" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1network_1_1topic__config_1a3c745819da5c5e8080762acb7698c7a5" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool ILLIXR::network::topic_config::retransmit</definition>
+        <argsstring></argsstring>
+        <name>retransmit</name>
+        <qualifiedname>ILLIXR::network::topic_config::retransmit</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/network/topic_config.hpp" line="14" column="59" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/network/topic_config.hpp" bodystart="14" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1network_1_1topic__config_1a901ab7ce2fe89dbf340d0ede8b31494d" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool ILLIXR::network::topic_config::allow_out_of_order</definition>
+        <argsstring></argsstring>
+        <name>allow_out_of_order</name>
+        <qualifiedname>ILLIXR::network::topic_config::allow_out_of_order</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/network/topic_config.hpp" line="15" column="59" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/network/topic_config.hpp" bodystart="15" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1network_1_1topic__config_1a818f48de1cb4141f29b53f379459abaa" prot="public" static="no" mutable="no">
+        <type>packetization_type</type>
+        <definition>packetization_type ILLIXR::network::topic_config::packetization</definition>
+        <argsstring></argsstring>
+        <name>packetization</name>
+        <qualifiedname>ILLIXR::network::topic_config::packetization</qualifiedname>
+        <initializer>= DEFAULT</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/network/topic_config.hpp" line="16" column="59" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/network/topic_config.hpp" bodystart="16" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1network_1_1topic__config_1acb30cc38429947ff690f7bba7404b428" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; std::chrono::duration&lt; long, std::nano &gt; &gt;</type>
+        <definition>std::optional&lt;std::chrono::duration&lt;long, std::nano&gt; &gt; ILLIXR::network::topic_config::latency</definition>
+        <argsstring></argsstring>
+        <name>latency</name>
+        <qualifiedname>ILLIXR::network::topic_config::latency</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/network/topic_config.hpp" line="17" column="19" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/network/topic_config.hpp" bodystart="17" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1network_1_1topic__config_1ae06e8e74da0737d520bba1f7072695f4" prot="public" static="no" mutable="no">
+        <type>enum ILLIXR::network::topic_config::SerializationMethod</type>
+        <definition>enum ILLIXR::network::topic_config::SerializationMethod ILLIXR::network::topic_config::serialization_method</definition>
+        <argsstring></argsstring>
+        <name>serialization_method</name>
+        <qualifiedname>ILLIXR::network::topic_config::serialization_method</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/network/topic_config.hpp" line="19" column="50"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/include/illixr/network/topic_config.hpp" line="8" column="1" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/network/topic_config.hpp" bodystart="8" bodyend="20"/>
+    <listofallmembers>
+      <member refid="structILLIXR_1_1network_1_1topic__config_1a901ab7ce2fe89dbf340d0ede8b31494d" prot="public" virt="non-virtual"><scope>ILLIXR::network::topic_config</scope><name>allow_out_of_order</name></member>
+      <member refid="structILLIXR_1_1network_1_1topic__config_1a01b1f8db0598cbf2ad886c76e88d2046abb4f8e721ff23d33ba07c895410de1a9" prot="public" virt="non-virtual"><scope>ILLIXR::network::topic_config</scope><name>BOOST</name></member>
+      <member refid="structILLIXR_1_1network_1_1topic__config_1a9dff11b45b190e19b1875c6a9bdfaec7a82e2d2639bd4329f28a82a434648870e" prot="public" virt="non-virtual"><scope>ILLIXR::network::topic_config</scope><name>DEFAULT</name></member>
+      <member refid="structILLIXR_1_1network_1_1topic__config_1acc516e7f18e3a77746ffce9f9a7ce453ac72ebf61ab2900eeaab925c87caebb5a" prot="public" virt="non-virtual"><scope>ILLIXR::network::topic_config</scope><name>HIGH</name></member>
+      <member refid="structILLIXR_1_1network_1_1topic__config_1acc516e7f18e3a77746ffce9f9a7ce453a54f97a24dcbe5c84027e513faf1bf3fe" prot="public" virt="non-virtual"><scope>ILLIXR::network::topic_config</scope><name>HIGHEST</name></member>
+      <member refid="structILLIXR_1_1network_1_1topic__config_1a9dff11b45b190e19b1875c6a9bdfaec7acaca552f26c796fddb5cd0a3fc58e5d5" prot="public" virt="non-virtual"><scope>ILLIXR::network::topic_config</scope><name>IMMEDIATE</name></member>
+      <member refid="structILLIXR_1_1network_1_1topic__config_1acb30cc38429947ff690f7bba7404b428" prot="public" virt="non-virtual"><scope>ILLIXR::network::topic_config</scope><name>latency</name></member>
+      <member refid="structILLIXR_1_1network_1_1topic__config_1acc516e7f18e3a77746ffce9f9a7ce453a12de00dd529363bfd3bd5c15d381522d" prot="public" virt="non-virtual"><scope>ILLIXR::network::topic_config</scope><name>LOW</name></member>
+      <member refid="structILLIXR_1_1network_1_1topic__config_1acc516e7f18e3a77746ffce9f9a7ce453a535907bf4c71379efb0f423da97d0357" prot="public" virt="non-virtual"><scope>ILLIXR::network::topic_config</scope><name>LOWEST</name></member>
+      <member refid="structILLIXR_1_1network_1_1topic__config_1acc516e7f18e3a77746ffce9f9a7ce453af5adbacc976cf6be8b4d7cfe38477c8f" prot="public" virt="non-virtual"><scope>ILLIXR::network::topic_config</scope><name>MEDIUM</name></member>
+      <member refid="structILLIXR_1_1network_1_1topic__config_1a818f48de1cb4141f29b53f379459abaa" prot="public" virt="non-virtual"><scope>ILLIXR::network::topic_config</scope><name>packetization</name></member>
+      <member refid="structILLIXR_1_1network_1_1topic__config_1a9dff11b45b190e19b1875c6a9bdfaec7" prot="public" virt="non-virtual"><scope>ILLIXR::network::topic_config</scope><name>packetization_type</name></member>
+      <member refid="structILLIXR_1_1network_1_1topic__config_1a2198bdf2f0c079613568a7195b68baa8" prot="public" virt="non-virtual"><scope>ILLIXR::network::topic_config</scope><name>priority</name></member>
+      <member refid="structILLIXR_1_1network_1_1topic__config_1acc516e7f18e3a77746ffce9f9a7ce453" prot="public" virt="non-virtual"><scope>ILLIXR::network::topic_config</scope><name>priority_type</name></member>
+      <member refid="structILLIXR_1_1network_1_1topic__config_1a01b1f8db0598cbf2ad886c76e88d2046a8edf17e12ebf451dcd9263d7ec544ee4" prot="public" virt="non-virtual"><scope>ILLIXR::network::topic_config</scope><name>PROTOBUF</name></member>
+      <member refid="structILLIXR_1_1network_1_1topic__config_1a3c745819da5c5e8080762acb7698c7a5" prot="public" virt="non-virtual"><scope>ILLIXR::network::topic_config</scope><name>retransmit</name></member>
+      <member refid="structILLIXR_1_1network_1_1topic__config_1ae06e8e74da0737d520bba1f7072695f4" prot="public" virt="non-virtual"><scope>ILLIXR::network::topic_config</scope><name>serialization_method</name></member>
+      <member refid="structILLIXR_1_1network_1_1topic__config_1a01b1f8db0598cbf2ad886c76e88d2046" prot="public" virt="non-virtual"><scope>ILLIXR::network::topic_config</scope><name>SerializationMethod</name></member>
+      <member refid="structILLIXR_1_1network_1_1topic__config_1a9dff11b45b190e19b1875c6a9bdfaec7a8c0178fdea6a447193a1ac6ed7a4e47f" prot="public" virt="non-virtual"><scope>ILLIXR::network::topic_config</scope><name>SUGGEST_LATENCY</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

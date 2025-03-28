@@ -1,0 +1,120 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structILLIXR_1_1data__format_1_1imu__params" kind="struct" language="C++" prot="public">
+    <compoundname>ILLIXR::data_format::imu_params</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1imu__params_1ae7cd6c88a3beec6f49dad510fbf9795e" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double ILLIXR::data_format::imu_params::gyro_noise</definition>
+        <argsstring></argsstring>
+        <name>gyro_noise</name>
+        <qualifiedname>ILLIXR::data_format::imu_params::gyro_noise</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/imu.hpp" line="24" column="33" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/imu.hpp" bodystart="24" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1imu__params_1a0314478049d11927c7958f715c6b7864" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double ILLIXR::data_format::imu_params::acc_noise</definition>
+        <argsstring></argsstring>
+        <name>acc_noise</name>
+        <qualifiedname>ILLIXR::data_format::imu_params::acc_noise</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/imu.hpp" line="25" column="33" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/imu.hpp" bodystart="25" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1imu__params_1a12759b8541e16e11c297ff8280df7e33" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double ILLIXR::data_format::imu_params::gyro_walk</definition>
+        <argsstring></argsstring>
+        <name>gyro_walk</name>
+        <qualifiedname>ILLIXR::data_format::imu_params::gyro_walk</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/imu.hpp" line="26" column="33" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/imu.hpp" bodystart="26" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1imu__params_1ab28a9f7660637f7512a6b274c35142ca" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double ILLIXR::data_format::imu_params::acc_walk</definition>
+        <argsstring></argsstring>
+        <name>acc_walk</name>
+        <qualifiedname>ILLIXR::data_format::imu_params::acc_walk</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/imu.hpp" line="27" column="33" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/imu.hpp" bodystart="27" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1imu__params_1ae7663239fcbd1a5d8b6857c3aee07955" prot="public" static="no" mutable="no">
+        <type>Eigen::Matrix&lt; double, 3, 1 &gt;</type>
+        <definition>Eigen::Matrix&lt;double, 3, 1&gt; ILLIXR::data_format::imu_params::n_gravity</definition>
+        <argsstring></argsstring>
+        <name>n_gravity</name>
+        <qualifiedname>ILLIXR::data_format::imu_params::n_gravity</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/imu.hpp" line="28" column="19" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/imu.hpp" bodystart="28" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1imu__params_1a43f126ba9a73cf493bddd974ef2925d6" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double ILLIXR::data_format::imu_params::imu_integration_sigma</definition>
+        <argsstring></argsstring>
+        <name>imu_integration_sigma</name>
+        <qualifiedname>ILLIXR::data_format::imu_params::imu_integration_sigma</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/imu.hpp" line="29" column="33" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/imu.hpp" bodystart="29" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1imu__params_1ae526d10f577cef8b3d77511037d74c7f" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double ILLIXR::data_format::imu_params::nominal_rate</definition>
+        <argsstring></argsstring>
+        <name>nominal_rate</name>
+        <qualifiedname>ILLIXR::data_format::imu_params::nominal_rate</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/imu.hpp" line="30" column="33" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/imu.hpp" bodystart="30" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/imu.hpp" line="23" column="1" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/imu.hpp" bodystart="23" bodyend="31"/>
+    <listofallmembers>
+      <member refid="structILLIXR_1_1data__format_1_1imu__params_1a0314478049d11927c7958f715c6b7864" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::imu_params</scope><name>acc_noise</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1imu__params_1ab28a9f7660637f7512a6b274c35142ca" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::imu_params</scope><name>acc_walk</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1imu__params_1ae7cd6c88a3beec6f49dad510fbf9795e" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::imu_params</scope><name>gyro_noise</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1imu__params_1a12759b8541e16e11c297ff8280df7e33" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::imu_params</scope><name>gyro_walk</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1imu__params_1a43f126ba9a73cf493bddd974ef2925d6" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::imu_params</scope><name>imu_integration_sigma</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1imu__params_1ae7663239fcbd1a5d8b6857c3aee07955" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::imu_params</scope><name>n_gravity</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1imu__params_1ae526d10f577cef8b3d77511037d74c7f" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::imu_params</scope><name>nominal_rate</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,85 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classcsv__row" kind="class" language="C++" prot="public">
+    <compoundname>csv_row</compoundname>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classcsv__row_1ae712f51d9dcbf9b1238ff951bcc6c3ad" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>std::vector&lt;std::string&gt; csv_row::data_</definition>
+        <argsstring></argsstring>
+        <name>data_</name>
+        <qualifiedname>csv_row::data_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/csv_iterator.hpp" line="39" column="17" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/csv_iterator.hpp" bodystart="39" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classcsv__row_1aa74b05c2e1937d14c7866b27d8cde237" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string const &amp;</type>
+        <definition>std::string const  &amp; csv_row::operator[]</definition>
+        <argsstring>(std::size_t index) const</argsstring>
+        <name>operator[]</name>
+        <qualifiedname>csv_row::operator[]</qualifiedname>
+        <param>
+          <type>std::size_t</type>
+          <declname>index</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/csv_iterator.hpp" line="10" column="23" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/csv_iterator.hpp" bodystart="10" bodyend="12"/>
+      </memberdef>
+      <memberdef kind="function" id="classcsv__row_1a09f0ee48e0e08a74b1b23e7fdc582c51" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::size_t</type>
+        <definition>std::size_t csv_row::size</definition>
+        <argsstring>() const</argsstring>
+        <name>size</name>
+        <qualifiedname>csv_row::size</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/csv_iterator.hpp" line="14" column="18" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/csv_iterator.hpp" bodystart="14" bodyend="16"/>
+      </memberdef>
+      <memberdef kind="function" id="classcsv__row_1ad2a71cee8ed670f7e2dceadbb9a3089d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void csv_row::read_next_row</definition>
+        <argsstring>(std::istream &amp;str)</argsstring>
+        <name>read_next_row</name>
+        <qualifiedname>csv_row::read_next_row</qualifiedname>
+        <param>
+          <type>std::istream &amp;</type>
+          <declname>str</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/csv_iterator.hpp" line="18" column="10" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/csv_iterator.hpp" bodystart="18" bodyend="36"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/include/illixr/csv_iterator.hpp" line="8" column="1" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/csv_iterator.hpp" bodystart="8" bodyend="40"/>
+    <listofallmembers>
+      <member refid="classcsv__row_1ae712f51d9dcbf9b1238ff951bcc6c3ad" prot="private" virt="non-virtual"><scope>csv_row</scope><name>data_</name></member>
+      <member refid="classcsv__row_1aa74b05c2e1937d14c7866b27d8cde237" prot="public" virt="non-virtual"><scope>csv_row</scope><name>operator[]</name></member>
+      <member refid="classcsv__row_1ad2a71cee8ed670f7e2dceadbb9a3089d" prot="public" virt="non-virtual"><scope>csv_row</scope><name>read_next_row</name></member>
+      <member refid="classcsv__row_1a09f0ee48e0e08a74b1b23e7fdc582c51" prot="public" virt="non-virtual"><scope>csv_row</scope><name>size</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

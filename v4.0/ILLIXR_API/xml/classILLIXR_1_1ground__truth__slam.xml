@@ -1,0 +1,207 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classILLIXR_1_1ground__truth__slam" kind="class" language="C++" prot="public">
+    <compoundname>ILLIXR::ground_truth_slam</compoundname>
+    <basecompoundref refid="classILLIXR_1_1plugin" prot="public" virt="non-virtual">ILLIXR::plugin</basecompoundref>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1ground__truth__slam_1a14e26959bf61dc2a5872d3c6e8b9b546" prot="private" static="no" mutable="no">
+        <type>const std::shared_ptr&lt; <ref refid="classILLIXR_1_1switchboard" kindref="compound">switchboard</ref> &gt;</type>
+        <definition>const std::shared_ptr&lt;switchboard&gt; ILLIXR::ground_truth_slam::switchboard_</definition>
+        <argsstring></argsstring>
+        <name>switchboard_</name>
+        <qualifiedname>ILLIXR::ground_truth_slam::switchboard_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/ground_truth_slam/plugin.hpp" line="28" column="36" bodyfile="/home/friedel/devel/ILLIXR/plugins/ground_truth_slam/plugin.hpp" bodystart="28" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1ground__truth__slam_1ac803a3f970b650ee12c201d03b1af7fc" prot="private" static="no" mutable="no">
+        <type><ref refid="classILLIXR_1_1switchboard_1_1writer" kindref="compound">switchboard::writer</ref>&lt; <ref refid="structILLIXR_1_1data__format_1_1pose__type" kindref="compound">data_format::pose_type</ref> &gt;</type>
+        <definition>switchboard::writer&lt;data_format::pose_type&gt; ILLIXR::ground_truth_slam::true_pose_</definition>
+        <argsstring></argsstring>
+        <name>true_pose_</name>
+        <qualifiedname>ILLIXR::ground_truth_slam::true_pose_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/ground_truth_slam/plugin.hpp" line="29" column="25" bodyfile="/home/friedel/devel/ILLIXR/plugins/ground_truth_slam/plugin.hpp" bodystart="29" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1ground__truth__slam_1af398eeb1801c4c2981c3bd665a6aefa8" prot="private" static="no" mutable="no">
+        <type><ref refid="classILLIXR_1_1switchboard_1_1writer" kindref="compound">switchboard::writer</ref>&lt; <ref refid="classILLIXR_1_1switchboard_1_1event__wrapper" kindref="compound">switchboard::event_wrapper</ref>&lt; Eigen::Vector3f &gt; &gt;</type>
+        <definition>switchboard::writer&lt;switchboard::event_wrapper&lt;Eigen::Vector3f&gt; &gt; ILLIXR::ground_truth_slam::ground_truth_offset_</definition>
+        <argsstring></argsstring>
+        <name>ground_truth_offset_</name>
+        <qualifiedname>ILLIXR::ground_truth_slam::ground_truth_offset_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/ground_truth_slam/plugin.hpp" line="31" column="25" bodyfile="/home/friedel/devel/ILLIXR/plugins/ground_truth_slam/plugin.hpp" bodystart="31" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1ground__truth__slam_1a7756774ef40cf4b70fdd20d6529c5d6d" prot="private" static="no" mutable="no">
+        <type>const std::map&lt; ullong, sensor_types &gt;</type>
+        <definition>const std::map&lt;ullong, sensor_types&gt; ILLIXR::ground_truth_slam::sensor_data_</definition>
+        <argsstring></argsstring>
+        <name>sensor_data_</name>
+        <qualifiedname>ILLIXR::ground_truth_slam::sensor_data_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/ground_truth_slam/plugin.hpp" line="32" column="48" bodyfile="/home/friedel/devel/ILLIXR/plugins/ground_truth_slam/plugin.hpp" bodystart="32" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1ground__truth__slam_1ac461cf9064903b9dce244ad5205e8b4e" prot="private" static="no" mutable="no">
+        <type>ullong</type>
+        <definition>ullong ILLIXR::ground_truth_slam::dataset_first_time_</definition>
+        <argsstring></argsstring>
+        <name>dataset_first_time_</name>
+        <qualifiedname>ILLIXR::ground_truth_slam::dataset_first_time_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/ground_truth_slam/plugin.hpp" line="33" column="70" bodyfile="/home/friedel/devel/ILLIXR/plugins/ground_truth_slam/plugin.hpp" bodystart="33" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1ground__truth__slam_1af4e2af5519c6861e4e23c35c8d58601b" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool ILLIXR::ground_truth_slam::first_time_</definition>
+        <argsstring></argsstring>
+        <name>first_time_</name>
+        <qualifiedname>ILLIXR::ground_truth_slam::first_time_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/ground_truth_slam/plugin.hpp" line="34" column="70" bodyfile="/home/friedel/devel/ILLIXR/plugins/ground_truth_slam/plugin.hpp" bodystart="34" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classILLIXR_1_1ground__truth__slam_1a2e5732e422baea486d53365b4eb22735" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>ground_truth_slam::ground_truth_slam</definition>
+        <argsstring>(const std::string &amp;name, phonebook *pb)</argsstring>
+        <name>ground_truth_slam</name>
+        <qualifiedname>ILLIXR::ground_truth_slam::ground_truth_slam</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type><ref refid="classILLIXR_1_1phonebook" kindref="compound">phonebook</ref> *</type>
+          <declname>pb</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/ground_truth_slam/plugin.hpp" line="23" column="6" bodyfile="/home/friedel/devel/ILLIXR/plugins/ground_truth_slam/plugin.cpp" bodystart="23" bodyend="35"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1ground__truth__slam_1aab178b8ba7badc2475fe853ef5e41f65" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void ground_truth_slam::start</definition>
+        <argsstring>() override</argsstring>
+        <name>start</name>
+        <qualifiedname>ILLIXR::ground_truth_slam::start</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/ground_truth_slam/plugin.hpp" line="24" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/ground_truth_slam/plugin.cpp" bodystart="37" bodyend="42"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1ground__truth__slam_1a984cc891dd11f34581286ed91b6cf9f2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void ground_truth_slam::feed_ground_truth</definition>
+        <argsstring>(const switchboard::ptr&lt; const data_format::imu_type &gt; &amp;datum)</argsstring>
+        <name>feed_ground_truth</name>
+        <qualifiedname>ILLIXR::ground_truth_slam::feed_ground_truth</qualifiedname>
+        <param>
+          <type>const <ref refid="classILLIXR_1_1switchboard_1af91c1b9436918512e95e5fa8553846a7" kindref="member">switchboard::ptr</ref>&lt; const <ref refid="structILLIXR_1_1data__format_1_1imu__type" kindref="compound">data_format::imu_type</ref> &gt; &amp;</type>
+          <declname>datum</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+<para>Ground truth position offset is the first ground truth position</para>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/ground_truth_slam/plugin.hpp" line="25" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/ground_truth_slam/plugin.cpp" bodystart="44" bodyend="72"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>ILLIXR::ground_truth_slam</label>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ILLIXR::plugin</label>
+        <link refid="classILLIXR_1_1plugin"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>ILLIXR::ground_truth_slam</label>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>ILLIXR::phonebook</label>
+        <link refid="classILLIXR_1_1phonebook"/>
+      </node>
+      <node id="2">
+        <label>ILLIXR::plugin</label>
+        <link refid="classILLIXR_1_1plugin"/>
+        <childnode refid="3" relation="usage">
+          <edgelabel>phonebook_</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/home/friedel/devel/ILLIXR/plugins/ground_truth_slam/plugin.hpp" line="21" column="1" bodyfile="/home/friedel/devel/ILLIXR/plugins/ground_truth_slam/plugin.hpp" bodystart="21" bodyend="35"/>
+    <listofallmembers>
+      <member refid="classILLIXR_1_1ground__truth__slam_1ac461cf9064903b9dce244ad5205e8b4e" prot="private" virt="non-virtual"><scope>ILLIXR::ground_truth_slam</scope><name>dataset_first_time_</name></member>
+      <member refid="classILLIXR_1_1ground__truth__slam_1a984cc891dd11f34581286ed91b6cf9f2" prot="public" virt="non-virtual"><scope>ILLIXR::ground_truth_slam</scope><name>feed_ground_truth</name></member>
+      <member refid="classILLIXR_1_1ground__truth__slam_1af4e2af5519c6861e4e23c35c8d58601b" prot="private" virt="non-virtual"><scope>ILLIXR::ground_truth_slam</scope><name>first_time_</name></member>
+      <member refid="classILLIXR_1_1plugin_1afe52734e7edc87bd0bf974caf112961b" prot="protected" virt="non-virtual"><scope>ILLIXR::ground_truth_slam</scope><name>gen_guid_</name></member>
+      <member refid="classILLIXR_1_1plugin_1aebda022998bd35983e83f391dc0e5193" prot="public" virt="non-virtual"><scope>ILLIXR::ground_truth_slam</scope><name>get_name</name></member>
+      <member refid="classILLIXR_1_1ground__truth__slam_1af398eeb1801c4c2981c3bd665a6aefa8" prot="private" virt="non-virtual"><scope>ILLIXR::ground_truth_slam</scope><name>ground_truth_offset_</name></member>
+      <member refid="classILLIXR_1_1ground__truth__slam_1a2e5732e422baea486d53365b4eb22735" prot="public" virt="non-virtual"><scope>ILLIXR::ground_truth_slam</scope><name>ground_truth_slam</name></member>
+      <member refid="classILLIXR_1_1plugin_1aaedb3f9178bdd11e53815e158454aaf3" prot="protected" virt="non-virtual"><scope>ILLIXR::ground_truth_slam</scope><name>id_</name></member>
+      <member refid="classILLIXR_1_1plugin_1aa963c518af83966173840a8558490888" prot="protected" virt="non-virtual"><scope>ILLIXR::ground_truth_slam</scope><name>name_</name></member>
+      <member refid="classILLIXR_1_1plugin_1a6f7a2a9012350591c00d67a5bc0fd5a6" prot="protected" virt="non-virtual"><scope>ILLIXR::ground_truth_slam</scope><name>phonebook_</name></member>
+      <member refid="classILLIXR_1_1plugin_1abc91c0e5be180a8e0bbeaf114a127f17" prot="public" virt="non-virtual"><scope>ILLIXR::ground_truth_slam</scope><name>plugin</name></member>
+      <member refid="classILLIXR_1_1plugin_1a8d40c2421cde09079372d12bfe7d45fe" prot="protected" virt="non-virtual"><scope>ILLIXR::ground_truth_slam</scope><name>plugin_logger_</name></member>
+      <member refid="classILLIXR_1_1plugin_1aef671d0cd9b6de45d3ade16dedbf4974" prot="protected" virt="non-virtual"><scope>ILLIXR::ground_truth_slam</scope><name>record_logger_</name></member>
+      <member refid="classILLIXR_1_1ground__truth__slam_1a7756774ef40cf4b70fdd20d6529c5d6d" prot="private" virt="non-virtual"><scope>ILLIXR::ground_truth_slam</scope><name>sensor_data_</name></member>
+      <member refid="classILLIXR_1_1plugin_1a7c1c7c1a0ec2e43bfa1118586a28932f" prot="public" virt="non-virtual"><scope>ILLIXR::ground_truth_slam</scope><name>spd_add_file_sink</name></member>
+      <member refid="classILLIXR_1_1plugin_1a569297189ef365cf93f6a95202c76d76" prot="public" virt="non-virtual"><scope>ILLIXR::ground_truth_slam</scope><name>spdlogger</name></member>
+      <member refid="classILLIXR_1_1ground__truth__slam_1aab178b8ba7badc2475fe853ef5e41f65" prot="public" virt="non-virtual"><scope>ILLIXR::ground_truth_slam</scope><name>start</name></member>
+      <member refid="classILLIXR_1_1plugin_1a2cefabfb6dd9800b1ebc8b07031661c4" prot="public" virt="virtual"><scope>ILLIXR::ground_truth_slam</scope><name>stop</name></member>
+      <member refid="classILLIXR_1_1ground__truth__slam_1a14e26959bf61dc2a5872d3c6e8b9b546" prot="private" virt="non-virtual"><scope>ILLIXR::ground_truth_slam</scope><name>switchboard_</name></member>
+      <member refid="classILLIXR_1_1ground__truth__slam_1ac803a3f970b650ee12c201d03b1af7fc" prot="private" virt="non-virtual"><scope>ILLIXR::ground_truth_slam</scope><name>true_pose_</name></member>
+      <member refid="classILLIXR_1_1plugin_1a44d7b00c86e227bbc1a0b221da43d454" prot="public" virt="virtual"><scope>ILLIXR::ground_truth_slam</scope><name>~plugin</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

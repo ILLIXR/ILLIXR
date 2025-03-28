@@ -1,0 +1,179 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classILLIXR_1_1webcam" kind="class" language="C++" prot="public">
+    <compoundname>ILLIXR::webcam</compoundname>
+    <basecompoundref refid="classILLIXR_1_1threadloop" prot="public" virt="non-virtual">ILLIXR::threadloop</basecompoundref>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1webcam_1a8d523affbecba15763a418dd4d207006" prot="private" static="no" mutable="no">
+        <type>const std::shared_ptr&lt; <ref refid="classILLIXR_1_1switchboard" kindref="compound">switchboard</ref> &gt;</type>
+        <definition>const std::shared_ptr&lt;switchboard&gt; ILLIXR::webcam::switchboard_</definition>
+        <argsstring></argsstring>
+        <name>switchboard_</name>
+        <qualifiedname>ILLIXR::webcam::switchboard_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/webcam/plugin.hpp" line="15" column="45" bodyfile="/home/friedel/devel/ILLIXR/plugins/webcam/plugin.hpp" bodystart="15" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1webcam_1a20515ba80fd0e5a79a20383235e83de3" prot="private" static="no" mutable="no">
+        <type><ref refid="classILLIXR_1_1switchboard_1_1writer" kindref="compound">switchboard::writer</ref>&lt; <ref refid="structILLIXR_1_1data__format_1_1monocular__cam__type" kindref="compound">data_format::monocular_cam_type</ref> &gt;</type>
+        <definition>switchboard::writer&lt;data_format::monocular_cam_type&gt; ILLIXR::webcam::frame_pub_</definition>
+        <argsstring></argsstring>
+        <name>frame_pub_</name>
+        <qualifiedname>ILLIXR::webcam::frame_pub_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/webcam/plugin.hpp" line="16" column="25" bodyfile="/home/friedel/devel/ILLIXR/plugins/webcam/plugin.hpp" bodystart="16" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1webcam_1ae93cb7517d5854fb206b3ac33ffcd7da" prot="private" static="no" mutable="no">
+        <type>cv::VideoCapture</type>
+        <definition>cv::VideoCapture ILLIXR::webcam::capture_</definition>
+        <argsstring></argsstring>
+        <name>capture_</name>
+        <qualifiedname>ILLIXR::webcam::capture_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/webcam/plugin.hpp" line="17" column="58" bodyfile="/home/friedel/devel/ILLIXR/plugins/webcam/plugin.hpp" bodystart="17" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1webcam_1aceec4edd2b77bd2207eeb7d57416fbf5" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool ILLIXR::webcam::load_video_</definition>
+        <argsstring></argsstring>
+        <name>load_video_</name>
+        <qualifiedname>ILLIXR::webcam::load_video_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/webcam/plugin.hpp" line="18" column="58" bodyfile="/home/friedel/devel/ILLIXR/plugins/webcam/plugin.hpp" bodystart="18" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classILLIXR_1_1webcam_1a9fb755ac4fceecfe168837b0bdd77aa9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>webcam::webcam</definition>
+        <argsstring>(const std::string &amp;name_, phonebook *pb_)</argsstring>
+        <name>webcam</name>
+        <qualifiedname>ILLIXR::webcam::webcam</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>name_</declname>
+        </param>
+        <param>
+          <type><ref refid="classILLIXR_1_1phonebook" kindref="compound">phonebook</ref> *</type>
+          <declname>pb_</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/webcam/plugin.hpp" line="11" column="6" bodyfile="/home/friedel/devel/ILLIXR/plugins/webcam/plugin.cpp" bodystart="10" bodyend="29"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1webcam_1a11e367d31c5fd00435a755e40bdca348" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void webcam::_p_one_iteration</definition>
+        <argsstring>() override</argsstring>
+        <name>_p_one_iteration</name>
+        <qualifiedname>ILLIXR::webcam::_p_one_iteration</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/webcam/plugin.hpp" line="12" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/webcam/plugin.cpp" bodystart="31" bodyend="41"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="3">
+        <label>ILLIXR::plugin</label>
+        <link refid="classILLIXR_1_1plugin"/>
+      </node>
+      <node id="2">
+        <label>ILLIXR::threadloop</label>
+        <link refid="classILLIXR_1_1threadloop"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>ILLIXR::webcam</label>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="4">
+        <label>ILLIXR::phonebook</label>
+        <link refid="classILLIXR_1_1phonebook"/>
+      </node>
+      <node id="3">
+        <label>ILLIXR::plugin</label>
+        <link refid="classILLIXR_1_1plugin"/>
+        <childnode refid="4" relation="usage">
+          <edgelabel>phonebook_</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ILLIXR::threadloop</label>
+        <link refid="classILLIXR_1_1threadloop"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>ILLIXR::webcam</label>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/home/friedel/devel/ILLIXR/plugins/webcam/plugin.hpp" line="9" column="1" bodyfile="/home/friedel/devel/ILLIXR/plugins/webcam/plugin.hpp" bodystart="9" bodyend="19"/>
+    <listofallmembers>
+      <member refid="classILLIXR_1_1webcam_1a11e367d31c5fd00435a755e40bdca348" prot="public" virt="non-virtual"><scope>ILLIXR::webcam</scope><name>_p_one_iteration</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a9ff83bb9e47beff3efccbd26bc3e874a" prot="protected" virt="virtual"><scope>ILLIXR::webcam</scope><name>_p_should_skip</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a00a89b3f3e9caa870f4c70bbc2f8fe97" prot="protected" virt="virtual"><scope>ILLIXR::webcam</scope><name>_p_thread_setup</name></member>
+      <member refid="classILLIXR_1_1webcam_1ae93cb7517d5854fb206b3ac33ffcd7da" prot="private" virt="non-virtual"><scope>ILLIXR::webcam</scope><name>capture_</name></member>
+      <member refid="classILLIXR_1_1webcam_1a20515ba80fd0e5a79a20383235e83de3" prot="private" virt="non-virtual"><scope>ILLIXR::webcam</scope><name>frame_pub_</name></member>
+      <member refid="classILLIXR_1_1plugin_1afe52734e7edc87bd0bf974caf112961b" prot="protected" virt="non-virtual"><scope>ILLIXR::webcam</scope><name>gen_guid_</name></member>
+      <member refid="classILLIXR_1_1plugin_1aebda022998bd35983e83f391dc0e5193" prot="public" virt="non-virtual"><scope>ILLIXR::webcam</scope><name>get_name</name></member>
+      <member refid="classILLIXR_1_1plugin_1aaedb3f9178bdd11e53815e158454aaf3" prot="protected" virt="non-virtual"><scope>ILLIXR::webcam</scope><name>id_</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a3e12891e504c782da98e21328dbcf0af" prot="public" virt="virtual"><scope>ILLIXR::webcam</scope><name>internal_stop</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a54e0814711e7a582630d38d45ddbe3f3" prot="protected" virt="non-virtual"><scope>ILLIXR::webcam</scope><name>iteration_no</name></member>
+      <member refid="classILLIXR_1_1webcam_1aceec4edd2b77bd2207eeb7d57416fbf5" prot="private" virt="non-virtual"><scope>ILLIXR::webcam</scope><name>load_video_</name></member>
+      <member refid="classILLIXR_1_1plugin_1aa963c518af83966173840a8558490888" prot="protected" virt="non-virtual"><scope>ILLIXR::webcam</scope><name>name_</name></member>
+      <member refid="classILLIXR_1_1plugin_1a6f7a2a9012350591c00d67a5bc0fd5a6" prot="protected" virt="non-virtual"><scope>ILLIXR::webcam</scope><name>phonebook_</name></member>
+      <member refid="classILLIXR_1_1plugin_1abc91c0e5be180a8e0bbeaf114a127f17" prot="public" virt="non-virtual"><scope>ILLIXR::webcam</scope><name>plugin</name></member>
+      <member refid="classILLIXR_1_1plugin_1a8d40c2421cde09079372d12bfe7d45fe" prot="protected" virt="non-virtual"><scope>ILLIXR::webcam</scope><name>plugin_logger_</name></member>
+      <member refid="classILLIXR_1_1plugin_1aef671d0cd9b6de45d3ade16dedbf4974" prot="protected" virt="non-virtual"><scope>ILLIXR::webcam</scope><name>record_logger_</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a75009fa785455bdb4b285424f0494bf7" prot="protected" virt="non-virtual"><scope>ILLIXR::webcam</scope><name>should_terminate</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a8f6ce8b95d3d9aadf83e4e1414477cd0" prot="protected" virt="non-virtual"><scope>ILLIXR::webcam</scope><name>skip_no</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a26c08942158dc019cbc78c9880417652" prot="protected" virt="non-virtual"><scope>ILLIXR::webcam</scope><name>skip_option</name></member>
+      <member refid="classILLIXR_1_1plugin_1a7c1c7c1a0ec2e43bfa1118586a28932f" prot="public" virt="non-virtual"><scope>ILLIXR::webcam</scope><name>spd_add_file_sink</name></member>
+      <member refid="classILLIXR_1_1plugin_1a569297189ef365cf93f6a95202c76d76" prot="public" virt="non-virtual"><scope>ILLIXR::webcam</scope><name>spdlogger</name></member>
+      <member refid="classILLIXR_1_1threadloop_1af001e97f74595e18f589f66ac0595bfb" prot="public" virt="virtual"><scope>ILLIXR::webcam</scope><name>start</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a7a968606c7ddfbd1ac6b0fb067ecc5a5" prot="public" virt="virtual"><scope>ILLIXR::webcam</scope><name>stop</name></member>
+      <member refid="classILLIXR_1_1webcam_1a8d523affbecba15763a418dd4d207006" prot="private" virt="non-virtual"><scope>ILLIXR::webcam</scope><name>switchboard_</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a8e69bfe104a92c0b98caa5583439c34a" prot="public" virt="non-virtual"><scope>ILLIXR::webcam</scope><name>threadloop</name></member>
+      <member refid="classILLIXR_1_1webcam_1a9fb755ac4fceecfe168837b0bdd77aa9" prot="public" virt="non-virtual"><scope>ILLIXR::webcam</scope><name>webcam</name></member>
+      <member refid="classILLIXR_1_1plugin_1a44d7b00c86e227bbc1a0b221da43d454" prot="public" virt="virtual"><scope>ILLIXR::webcam</scope><name>~plugin</name></member>
+      <member refid="classILLIXR_1_1threadloop_1afbf7b56801b484b60e9cf43448332195" prot="public" virt="non-virtual"><scope>ILLIXR::webcam</scope><name>~threadloop</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

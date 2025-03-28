@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_896702a6becdb992133bce403d5f6094" kind="dir">
+    <compoundname>/home/friedel/devel/ILLIXR/include/illixr</compoundname>
+    <innerdir refid="dir_1d3c6769330bfebb870e950d8a9389ac">/home/friedel/devel/ILLIXR/include/illixr/data_format</innerdir>
+    <innerdir refid="dir_ee6e372a240689cc4629d1f07746dd9b">/home/friedel/devel/ILLIXR/include/illixr/network</innerdir>
+    <innerdir refid="dir_943771b1ac3f22b90d88ddfd145baa27">/home/friedel/devel/ILLIXR/include/illixr/vk</innerdir>
+    <innerfile refid="cpu__timer_8hpp">cpu_timer.hpp</innerfile>
+    <innerfile refid="csv__iterator_8hpp">csv_iterator.hpp</innerfile>
+    <innerfile refid="data__loading_8hpp">data_loading.hpp</innerfile>
+    <innerfile refid="dynamic__lib_8hpp">dynamic_lib.hpp</innerfile>
+    <innerfile refid="error__util_8hpp">error_util.hpp</innerfile>
+    <innerfile refid="extended__window_8hpp">extended_window.hpp</innerfile>
+    <innerfile refid="global__module__defs_8hpp">global_module_defs.hpp</innerfile>
+    <innerfile refid="include_2illixr_2hmd_8hpp">hmd.hpp</innerfile>
+    <innerfile refid="managed__thread_8hpp">managed_thread.hpp</innerfile>
+    <innerfile refid="math__util_8hpp">math_util.hpp</innerfile>
+    <innerfile refid="phonebook_8hpp">phonebook.hpp</innerfile>
+    <innerfile refid="include_2illixr_2plugin_8hpp">plugin.hpp</innerfile>
+    <innerfile refid="record__logger_8hpp">record_logger.hpp</innerfile>
+    <innerfile refid="relative__clock_8hpp">relative_clock.hpp</innerfile>
+    <innerfile refid="runge-kutta_8hpp">runge-kutta.hpp</innerfile>
+    <innerfile refid="runtime_8hpp">runtime.hpp</innerfile>
+    <innerfile refid="shader__util_8hpp">shader_util.hpp</innerfile>
+    <innerfile refid="stoplight_8hpp">stoplight.hpp</innerfile>
+    <innerfile refid="switchboard_8hpp">switchboard.hpp</innerfile>
+    <innerfile refid="threadloop_8hpp">threadloop.hpp</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/include/illixr/"/>
+  </compounddef>
+</doxygen>

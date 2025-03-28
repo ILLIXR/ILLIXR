@@ -1,0 +1,117 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classILLIXR_1_1switchboard_1_1buffered__reader" kind="class" language="C++" prot="public">
+    <compoundname>ILLIXR::switchboard::buffered_reader</compoundname>
+    <templateparamlist>
+      <param>
+        <type>typename Specific_event</type>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1switchboard_1_1buffered__reader_1a1c8fd1884162b9405c088a7665c15ef5" prot="private" static="no" mutable="no">
+        <type>topic &amp;</type>
+        <definition>topic&amp; ILLIXR::switchboard::buffered_reader&lt; Specific_event &gt;::topic_</definition>
+        <argsstring></argsstring>
+        <name>topic_</name>
+        <qualifiedname>ILLIXR::switchboard::buffered_reader::topic_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="582" column="22" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="582" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1switchboard_1_1buffered__reader_1af43a9a0915b146f7122cff0767efdb39" prot="private" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t ILLIXR::switchboard::buffered_reader&lt; Specific_event &gt;::serial_no_</definition>
+        <argsstring></argsstring>
+        <name>serial_no_</name>
+        <qualifiedname>ILLIXR::switchboard::buffered_reader::serial_no_</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="583" column="23" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="583" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1switchboard_1_1buffered__reader_1ac08027a711b53961fe265d484b8a588e" prot="private" static="no" mutable="no">
+        <type>topic_buffer &amp;</type>
+        <definition>topic_buffer&amp; ILLIXR::switchboard::buffered_reader&lt; Specific_event &gt;::topic_buffer_</definition>
+        <argsstring></argsstring>
+        <name>topic_buffer_</name>
+        <qualifiedname>ILLIXR::switchboard::buffered_reader::topic_buffer_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="584" column="22" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="584" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classILLIXR_1_1switchboard_1_1buffered__reader_1ac58fba2a37e9043dc3284882836da68d" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::switchboard::buffered_reader&lt; Specific_event &gt;::buffered_reader</definition>
+        <argsstring>(topic &amp;topic)</argsstring>
+        <name>buffered_reader</name>
+        <qualifiedname>ILLIXR::switchboard::buffered_reader::buffered_reader</qualifiedname>
+        <param>
+          <type>topic &amp;</type>
+          <declname>topic</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="564" column="18" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="564" bodyend="566"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1switchboard_1_1buffered__reader_1ae2083c81880a0be9620bc4a7c70c9196" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t ILLIXR::switchboard::buffered_reader&lt; Specific_event &gt;::size</definition>
+        <argsstring>() const</argsstring>
+        <name>size</name>
+        <qualifiedname>ILLIXR::switchboard::buffered_reader::size</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="568" column="17" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="568" bodyend="570"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1switchboard_1_1buffered__reader_1aa45740fa2d45c3a006c770f670ede8e2" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type><ref refid="classILLIXR_1_1switchboard_1af91c1b9436918512e95e5fa8553846a7" kindref="member">ptr</ref>&lt; const Specific_event &gt;</type>
+        <definition>virtual ptr&lt; const Specific_event &gt; ILLIXR::switchboard::buffered_reader&lt; Specific_event &gt;::dequeue</definition>
+        <argsstring>()</argsstring>
+        <name>dequeue</name>
+        <qualifiedname>ILLIXR::switchboard::buffered_reader::dequeue</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="572" column="21" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="572" bodyend="579"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="562" column="5" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="562" bodyend="585"/>
+    <listofallmembers>
+      <member refid="classILLIXR_1_1switchboard_1_1buffered__reader_1ac58fba2a37e9043dc3284882836da68d" prot="public" virt="non-virtual"><scope>ILLIXR::switchboard::buffered_reader</scope><name>buffered_reader</name></member>
+      <member refid="classILLIXR_1_1switchboard_1_1buffered__reader_1aa45740fa2d45c3a006c770f670ede8e2" prot="public" virt="virtual"><scope>ILLIXR::switchboard::buffered_reader</scope><name>dequeue</name></member>
+      <member refid="classILLIXR_1_1switchboard_1_1buffered__reader_1af43a9a0915b146f7122cff0767efdb39" prot="private" virt="non-virtual"><scope>ILLIXR::switchboard::buffered_reader</scope><name>serial_no_</name></member>
+      <member refid="classILLIXR_1_1switchboard_1_1buffered__reader_1ae2083c81880a0be9620bc4a7c70c9196" prot="public" virt="non-virtual"><scope>ILLIXR::switchboard::buffered_reader</scope><name>size</name></member>
+      <member refid="classILLIXR_1_1switchboard_1_1buffered__reader_1a1c8fd1884162b9405c088a7665c15ef5" prot="private" virt="non-virtual"><scope>ILLIXR::switchboard::buffered_reader</scope><name>topic_</name></member>
+      <member refid="classILLIXR_1_1switchboard_1_1buffered__reader_1ac08027a711b53961fe265d484b8a588e" prot="private" virt="non-virtual"><scope>ILLIXR::switchboard::buffered_reader</scope><name>topic_buffer_</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,341 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classHMD" kind="class" language="C++" prot="public">
+    <compoundname>HMD</compoundname>
+    <innerclass refid="structHMD_1_1hmd__info__t" prot="public">HMD::hmd_info_t</innerclass>
+    <innerclass refid="structHMD_1_1mesh__coord2d__t" prot="public">HMD::mesh_coord2d_t</innerclass>
+    <innerclass refid="structHMD_1_1mesh__coord3d__t" prot="public">HMD::mesh_coord3d_t</innerclass>
+    <innerclass refid="structHMD_1_1uv__coord__t" prot="public">HMD::uv_coord_t</innerclass>
+    <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="classHMD_1a16091b1d8c74d7e3f548e63979542641" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int</type>
+        <definition>static constexpr int HMD::NUM_EYES</definition>
+        <argsstring></argsstring>
+        <name>NUM_EYES</name>
+        <qualifiedname>HMD::NUM_EYES</qualifiedname>
+        <initializer>= 2</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/hmd.hpp" line="16" column="26" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/hmd.hpp" bodystart="16" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classHMD_1a6870d84e1c95e20f382fdec3d8328cd6" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int</type>
+        <definition>static constexpr int HMD::NUM_COLOR_CHANNELS</definition>
+        <argsstring></argsstring>
+        <name>NUM_COLOR_CHANNELS</name>
+        <qualifiedname>HMD::NUM_COLOR_CHANNELS</qualifiedname>
+        <initializer>= 3</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/hmd.hpp" line="17" column="26" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/hmd.hpp" bodystart="17" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classHMD_1a838e4f528d5363dcc1af22b84ce75176" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>float</type>
+        <definition>float HMD::max_float</definition>
+        <argsstring>(float x, float y)</argsstring>
+        <name>max_float</name>
+        <qualifiedname>HMD::max_float</qualifiedname>
+        <param>
+          <type>float</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>y</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/hmd.hpp" line="53" column="34" bodyfile="/home/friedel/devel/ILLIXR/utils/hmd.cpp" bodystart="5" bodyend="7"/>
+      </memberdef>
+      <memberdef kind="function" id="classHMD_1a2060b43b87214f783e11ad8075eff1a3" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>float</type>
+        <definition>float HMD::min_float</definition>
+        <argsstring>(float x, float y)</argsstring>
+        <name>min_float</name>
+        <qualifiedname>HMD::min_float</qualifiedname>
+        <param>
+          <type>float</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>y</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/hmd.hpp" line="54" column="34" bodyfile="/home/friedel/devel/ILLIXR/utils/hmd.cpp" bodystart="9" bodyend="11"/>
+      </memberdef>
+      <memberdef kind="function" id="classHMD_1a4f6ccb1f8014eb3ce16651ecf8d6cbe0" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>float</type>
+        <definition>float HMD::evaluate_catmull_rom_spline</definition>
+        <argsstring>(float value, const float *K, int num_knots)</argsstring>
+        <name>evaluate_catmull_rom_spline</name>
+        <qualifiedname>HMD::evaluate_catmull_rom_spline</qualifiedname>
+        <param>
+          <type>float</type>
+          <declname>value</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>K</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>num_knots</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/hmd.hpp" line="55" column="34" bodyfile="/home/friedel/devel/ILLIXR/utils/hmd.cpp" bodystart="14" bodyend="50"/>
+      </memberdef>
+      <memberdef kind="function" id="classHMD_1a50c0c6cb4a3611a2f233db63aceed6b9" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void HMD::get_default_hmd_info</definition>
+        <argsstring>(const int display_pixels_wide, const int display_pixels_high, const float display_meters_wide, const float display_meters_high, const float lens_separation, const float meters_per_tan_angle, const float aberration[4], hmd_info_t &amp;hmd_info)</argsstring>
+        <name>get_default_hmd_info</name>
+        <qualifiedname>HMD::get_default_hmd_info</qualifiedname>
+        <param>
+          <type>const int</type>
+          <declname>display_pixels_wide</declname>
+        </param>
+        <param>
+          <type>const int</type>
+          <declname>display_pixels_high</declname>
+        </param>
+        <param>
+          <type>const float</type>
+          <declname>display_meters_wide</declname>
+        </param>
+        <param>
+          <type>const float</type>
+          <declname>display_meters_high</declname>
+        </param>
+        <param>
+          <type>const float</type>
+          <declname>lens_separation</declname>
+        </param>
+        <param>
+          <type>const float</type>
+          <declname>meters_per_tan_angle</declname>
+        </param>
+        <param>
+          <type>const float</type>
+          <declname>aberration</declname>
+          <array>[4]</array>
+        </param>
+        <param>
+          <type>hmd_info_t &amp;</type>
+          <declname>hmd_info</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/hmd.hpp" line="56" column="18" bodyfile="/home/friedel/devel/ILLIXR/utils/hmd.cpp" bodystart="105" bodyend="139"/>
+      </memberdef>
+      <memberdef kind="function" id="classHMD_1aac1d83b857c1e43542a17795f8fcb5b5" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void HMD::build_distortion_meshes</definition>
+        <argsstring>(std::array&lt; std::array&lt; std::vector&lt; mesh_coord2d_t &gt;, NUM_COLOR_CHANNELS &gt;, NUM_EYES &gt; &amp;distort_coords, hmd_info_t &amp;hmd_info)</argsstring>
+        <name>build_distortion_meshes</name>
+        <qualifiedname>HMD::build_distortion_meshes</qualifiedname>
+        <param>
+          <type>std::array&lt; std::array&lt; std::vector&lt; mesh_coord2d_t &gt;, NUM_COLOR_CHANNELS &gt;, NUM_EYES &gt; &amp;</type>
+          <declname>distort_coords</declname>
+        </param>
+        <param>
+          <type>hmd_info_t &amp;</type>
+          <declname>hmd_info</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/hmd.hpp" line="61" column="5" bodyfile="/home/friedel/devel/ILLIXR/utils/hmd.cpp" bodystart="53" bodyend="103"/>
+      </memberdef>
+      <memberdef kind="function" id="classHMD_1af98901685233e3292b558173361e0b12" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>float</type>
+        <definition>static float HMD::max_float</definition>
+        <argsstring>(float x, float y)</argsstring>
+        <name>max_float</name>
+        <qualifiedname>HMD::max_float</qualifiedname>
+        <param>
+          <type>float</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>y</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/utils/hmd.hpp" line="53" column="34"/>
+      </memberdef>
+      <memberdef kind="function" id="classHMD_1a957fe95d6f0e0145767f07dbc55b8117" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>float</type>
+        <definition>static float HMD::min_float</definition>
+        <argsstring>(float x, float y)</argsstring>
+        <name>min_float</name>
+        <qualifiedname>HMD::min_float</qualifiedname>
+        <param>
+          <type>float</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>y</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/utils/hmd.hpp" line="54" column="34"/>
+      </memberdef>
+      <memberdef kind="function" id="classHMD_1a7c071f29768da420beef3ffed3ff45f3" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>float</type>
+        <definition>static float HMD::evaluate_catmull_rom_spline</definition>
+        <argsstring>(float value, const float *K, int num_knots)</argsstring>
+        <name>evaluate_catmull_rom_spline</name>
+        <qualifiedname>HMD::evaluate_catmull_rom_spline</qualifiedname>
+        <param>
+          <type>float</type>
+          <declname>value</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>K</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>num_knots</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/utils/hmd.hpp" line="55" column="34"/>
+      </memberdef>
+      <memberdef kind="function" id="classHMD_1a490b8542a2c76c172fcffe36df1ae856" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>static void HMD::get_default_hmd_info</definition>
+        <argsstring>(const int display_pixels_wide, const int display_pixels_high, const float display_meters_wide, const float display_meters_high, const float lens_separation, const float meters_per_tan_angle, const float aberration[4], hmd_info_t &amp;hmd_info)</argsstring>
+        <name>get_default_hmd_info</name>
+        <qualifiedname>HMD::get_default_hmd_info</qualifiedname>
+        <param>
+          <type>const int</type>
+          <declname>display_pixels_wide</declname>
+        </param>
+        <param>
+          <type>const int</type>
+          <declname>display_pixels_high</declname>
+        </param>
+        <param>
+          <type>const float</type>
+          <declname>display_meters_wide</declname>
+        </param>
+        <param>
+          <type>const float</type>
+          <declname>display_meters_high</declname>
+        </param>
+        <param>
+          <type>const float</type>
+          <declname>lens_separation</declname>
+        </param>
+        <param>
+          <type>const float</type>
+          <declname>meters_per_tan_angle</declname>
+        </param>
+        <param>
+          <type>const float</type>
+          <declname>aberration</declname>
+          <array>[4]</array>
+        </param>
+        <param>
+          <type>hmd_info_t &amp;</type>
+          <declname>hmd_info</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/utils/hmd.hpp" line="56" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classHMD_1a1055cd957b25aa059bbe2662e832d303" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>static void HMD::build_distortion_meshes</definition>
+        <argsstring>(std::array&lt; std::array&lt; std::vector&lt; mesh_coord2d_t &gt;, NUM_COLOR_CHANNELS &gt;, NUM_EYES &gt; &amp;distort_coords, hmd_info_t &amp;hmd_info)</argsstring>
+        <name>build_distortion_meshes</name>
+        <qualifiedname>HMD::build_distortion_meshes</qualifiedname>
+        <param>
+          <type>std::array&lt; std::array&lt; std::vector&lt; mesh_coord2d_t &gt;, NUM_COLOR_CHANNELS &gt;, NUM_EYES &gt; &amp;</type>
+          <declname>distort_coords</declname>
+        </param>
+        <param>
+          <type>hmd_info_t &amp;</type>
+          <declname>hmd_info</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/utils/hmd.hpp" line="61" column="5"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/include/illixr/hmd.hpp" line="14" column="1" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/hmd.hpp" bodystart="14" bodyend="63"/>
+    <listofallmembers>
+      <member refid="classHMD_1aac1d83b857c1e43542a17795f8fcb5b5" prot="public" virt="non-virtual"><scope>HMD</scope><name>build_distortion_meshes</name></member>
+      <member refid="classHMD_1a1055cd957b25aa059bbe2662e832d303" prot="public" virt="non-virtual"><scope>HMD</scope><name>build_distortion_meshes</name></member>
+      <member refid="classHMD_1a4f6ccb1f8014eb3ce16651ecf8d6cbe0" prot="public" virt="non-virtual"><scope>HMD</scope><name>evaluate_catmull_rom_spline</name></member>
+      <member refid="classHMD_1a7c071f29768da420beef3ffed3ff45f3" prot="public" virt="non-virtual"><scope>HMD</scope><name>evaluate_catmull_rom_spline</name></member>
+      <member refid="classHMD_1a50c0c6cb4a3611a2f233db63aceed6b9" prot="public" virt="non-virtual"><scope>HMD</scope><name>get_default_hmd_info</name></member>
+      <member refid="classHMD_1a490b8542a2c76c172fcffe36df1ae856" prot="public" virt="non-virtual"><scope>HMD</scope><name>get_default_hmd_info</name></member>
+      <member refid="classHMD_1a838e4f528d5363dcc1af22b84ce75176" prot="public" virt="non-virtual"><scope>HMD</scope><name>max_float</name></member>
+      <member refid="classHMD_1af98901685233e3292b558173361e0b12" prot="public" virt="non-virtual"><scope>HMD</scope><name>max_float</name></member>
+      <member refid="classHMD_1a2060b43b87214f783e11ad8075eff1a3" prot="public" virt="non-virtual"><scope>HMD</scope><name>min_float</name></member>
+      <member refid="classHMD_1a957fe95d6f0e0145767f07dbc55b8117" prot="public" virt="non-virtual"><scope>HMD</scope><name>min_float</name></member>
+      <member refid="classHMD_1a6870d84e1c95e20f382fdec3d8328cd6" prot="public" virt="non-virtual"><scope>HMD</scope><name>NUM_COLOR_CHANNELS</name></member>
+      <member refid="classHMD_1a16091b1d8c74d7e3f548e63979542641" prot="public" virt="non-virtual"><scope>HMD</scope><name>NUM_EYES</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

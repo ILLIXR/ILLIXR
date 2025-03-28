@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classoffload__rendering__client" kind="class" language="C++" prot="public">
+    <compoundname>offload_rendering_client</compoundname>
+    <includes refid="offload__rendering__client_8hpp" local="no">offload_rendering_client.hpp</includes>
+    <briefdescription>
+<para>Main client implementation for offload rendering. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>This class handles:<orderedlist>
+<listitem><para>Reception of encoded frames from the server</para>
+</listitem><listitem><para>Hardware-accelerated HEVC decoding using FFmpeg/CUDA</para>
+</listitem><listitem><para>Color space conversion (NV12 to RGBA)</para>
+</listitem><listitem><para>Vulkan image management and synchronization</para>
+</listitem><listitem><para>Pose synchronization with the server</para>
+</listitem></orderedlist>
+</para>
+<para>The client supports two modes:<itemizedlist>
+<listitem><para>Realtime mode: Receives and displays frames with real-time pose updates</para>
+</listitem><listitem><para>Comparison mode: Uses a fixed pose for image quality comparison</para>
+</listitem></itemizedlist>
+</para>
+<para>Configuration is controlled through environment variables:<itemizedlist>
+<listitem><para>ILLIXR_USE_DEPTH_IMAGES: Enable depth frame reception/decoding </para>
+</listitem></itemizedlist>
+</para>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp" line="4" column="1"/>
+    <listofallmembers>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

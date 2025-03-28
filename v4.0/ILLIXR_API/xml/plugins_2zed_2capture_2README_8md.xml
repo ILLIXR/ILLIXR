@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="plugins_2zed_2capture_2README_8md" kind="file" language="Markdown">
+    <compoundname>README.md</compoundname>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline><highlight class="normal">#<sp/>zed_capture</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">The<sp/>`zed_capture`<sp/>binary<sp/>is<sp/>used<sp/>to<sp/>generate<sp/>test<sp/>data<sp/>for<sp/>injection<sp/>into<sp/>ILLIXR.<sp/>The<sp/>binary<sp/>is<sp/>a<sp/>stand-alone<sp/>feature<sp/>and</highlight></codeline>
+<codeline><highlight class="normal">does<sp/>not<sp/>interact<sp/>with<sp/>the<sp/>rest<sp/>of<sp/>ILLIXR.<sp/>It<sp/>takes<sp/>the<sp/>following<sp/>command<sp/>line<sp/>arguments.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">|<sp/>Argument<sp/><sp/><sp/><sp/><sp/><sp/><sp/>|<sp/>Description<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>|<sp/>Default<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>|</highlight></codeline>
+<codeline><highlight class="normal">|----------------|-------------------------------------------------------------------------------------------------------------------------------|----------------------------|</highlight></codeline>
+<codeline><highlight class="normal">|<sp/>-d,<sp/>--duration<sp/>|<sp/>The<sp/>duration<sp/>to<sp/>run<sp/>for<sp/>in<sp/>seconds<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>|<sp/>10<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>|</highlight></codeline>
+<codeline><highlight class="normal">|<sp/>-f,<sp/>--fps<sp/><sp/><sp/><sp/><sp/><sp/>|<sp/>Frames<sp/>per<sp/>second<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>|<sp/>30<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>|</highlight></codeline>
+<codeline><highlight class="normal">|<sp/>--wc<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>|<sp/>The<sp/>origin<sp/>of<sp/>the<sp/>world<sp/>coordinate<sp/>system<sp/>in<sp/>relation<sp/>to<sp/>the<sp/>camera.<sp/>Must<sp/>be<sp/>7<sp/>comma<sp/>separated<sp/>values<sp/>x,<sp/>y,<sp/>z,<sp/>w,<sp/>wx,<sp/>wy,<sp/>wz.<sp/>|<sp/>0.,<sp/>0.,<sp/>0.,<sp/>1.,<sp/>0.,<sp/>0.,<sp/>0.<sp/>|</highlight></codeline>
+<codeline><highlight class="normal">|<sp/>-p<sp/>--path<sp/><sp/><sp/><sp/><sp/><sp/>|<sp/>The<sp/>root<sp/>path<sp/>to<sp/>write<sp/>the<sp/>data<sp/>to.<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>|<sp/>Current<sp/>working<sp/>directory<sp/><sp/>|</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">`zed_capture`<sp/>will<sp/>write<sp/>out<sp/>the<sp/>left<sp/>and<sp/>right<sp/>camera<sp/>images<sp/>and<sp/>the<sp/>current<sp/>pose<sp/>at<sp/>each<sp/>frame.<sp/>Note<sp/>that<sp/>it<sp/>may<sp/>not</highlight></codeline>
+<codeline><highlight class="normal">work<sp/>at<sp/>the<sp/>requested<sp/>fps<sp/>due<sp/>to<sp/>overheads<sp/>of<sp/>writing<sp/>files.<sp/>This<sp/>will<sp/>be<sp/>addressed<sp/>in<sp/>future<sp/>updates.<sp/>Note<sp/>that<sp/>the</highlight></codeline>
+<codeline><highlight class="normal">depth<sp/>information<sp/>is<sp/>also<sp/>not<sp/>captured<sp/>currently<sp/>as<sp/>[_OpenCV_][G10]<sp/>does<sp/>not<sp/>properly<sp/>write<sp/>out<sp/>cv::Mat<sp/>objects<sp/>with<sp/>float<sp/>formats.</highlight></codeline>
+<codeline><highlight class="normal">This<sp/>will<sp/>also<sp/>be<sp/>addressed<sp/>in<sp/>future<sp/>updates.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">Data<sp/>are<sp/>written<sp/>to<sp/>&lt;path&gt;/&apos;fps&apos;<sp/>+<sp/>&lt;fps_value&gt;<sp/>+<sp/>&apos;dur&apos;<sp/>+<sp/>&lt;duration_value&gt;<sp/>(e.g.<sp/>&lt;path&gt;/fps30_dur10<sp/>will<sp/>contain<sp/>data<sp/></highlight></codeline>
+<codeline><highlight class="normal">taken<sp/>at<sp/>30<sp/>frames<sp/>per<sp/>second<sp/>with<sp/>a<sp/>total<sp/>run<sp/>time<sp/>of<sp/>10<sp/>seconds,<sp/>or<sp/>300<sp/>frames,<sp/>it<sp/>will<sp/>always<sp/>contain<sp/>300<sp/>frames</highlight></codeline>
+<codeline><highlight class="normal">regardless<sp/>of<sp/>any<sp/>slow<sp/>down<sp/>due<sp/>to<sp/>overheads).<sp/>This<sp/>format<sp/>is<sp/>compatible<sp/>with<sp/>the<sp/>zed.data_injection<sp/>plugin.</highlight></codeline>
+<codeline></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">[//]:<sp/>#<sp/>(-<sp/>glossary<sp/>-)</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">[G10]:<sp/><sp/>../glossary.md#opencv</highlight></codeline>
+    </programlisting>
+    <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/README.md"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,210 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classILLIXR_1_1zed__camera" kind="class" language="C++" prot="public">
+    <compoundname>ILLIXR::zed_camera</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">sl::Camera</basecompoundref>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1zed__camera_1a14cba360bb01fa5a8964da180d0c7caa" prot="private" static="no" mutable="no">
+        <type>const std::shared_ptr&lt; <ref refid="classILLIXR_1_1switchboard" kindref="compound">switchboard</ref> &gt;</type>
+        <definition>const std::shared_ptr&lt;switchboard&gt; ILLIXR::zed_camera::switchboard_</definition>
+        <argsstring></argsstring>
+        <name>switchboard_</name>
+        <qualifiedname>ILLIXR::zed_camera::switchboard_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/zed_camera.hpp" line="49" column="27" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/zed_camera.hpp" bodystart="49" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1zed__camera_1a0ced2d17a9a9f1bffd9ad418f13e78ff" prot="private" static="no" mutable="no">
+        <type>sl::Transform</type>
+        <definition>sl::Transform ILLIXR::zed_camera::initial_position_</definition>
+        <argsstring></argsstring>
+        <name>initial_position_</name>
+        <qualifiedname>ILLIXR::zed_camera::initial_position_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/zed_camera.hpp" line="50" column="40" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/zed_camera.hpp" bodystart="50" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1zed__camera_1a99211a49b1ddb625039614fc98bbb817" prot="private" static="no" mutable="no">
+        <type><ref refid="structILLIXR_1_1data__format_1_1camera__data" kindref="compound">data_format::camera_data</ref></type>
+        <definition>data_format::camera_data ILLIXR::zed_camera::config_</definition>
+        <argsstring></argsstring>
+        <name>config_</name>
+        <qualifiedname>ILLIXR::zed_camera::config_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/zed_camera.hpp" line="51" column="40" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/zed_camera.hpp" bodystart="51" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1zed__camera_1ae28d169af05e6fda2a32e768d1c28a38" prot="private" static="no" mutable="no">
+        <type>sl::REFERENCE_FRAME</type>
+        <definition>sl::REFERENCE_FRAME ILLIXR::zed_camera::frame_</definition>
+        <argsstring></argsstring>
+        <name>frame_</name>
+        <qualifiedname>ILLIXR::zed_camera::frame_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/zed_camera.hpp" line="52" column="40" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/zed_camera.hpp" bodystart="52" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classILLIXR_1_1zed__camera_1ae09d7f1274873ababd3cc9e0c6b81052" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::zed_camera::zed_camera</definition>
+        <argsstring>(const std::shared_ptr&lt; switchboard &gt; &amp;sb)</argsstring>
+        <name>zed_camera</name>
+        <qualifiedname>ILLIXR::zed_camera::zed_camera</qualifiedname>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classILLIXR_1_1switchboard" kindref="compound">switchboard</ref> &gt; &amp;</type>
+          <declname>sb</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/zed_camera.hpp" line="14" column="14" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/zed_camera.hpp" bodystart="14" bodyend="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1zed__camera_1a74aaaa92b672a87eb36cd7f42d609e92" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>sl::ERROR_CODE</type>
+        <definition>sl::ERROR_CODE zed_camera::open</definition>
+        <argsstring>(const sl::InitParameters &amp;params)</argsstring>
+        <name>open</name>
+        <qualifiedname>ILLIXR::zed_camera::open</qualifiedname>
+        <param>
+          <type>const sl::InitParameters &amp;</type>
+          <declname>params</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/zed_camera.hpp" line="20" column="20" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/zed_camera.cpp" bodystart="8" bodyend="40"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1zed__camera_1ae37cb39f16a362dfd73165313415d33a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const sl::Transform &amp;</type>
+        <definition>const sl::Transform &amp; ILLIXR::zed_camera::get_initial_position</definition>
+        <argsstring>() const</argsstring>
+        <name>get_initial_position</name>
+        <qualifiedname>ILLIXR::zed_camera::get_initial_position</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/zed_camera.hpp" line="22" column="26" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/zed_camera.hpp" bodystart="22" bodyend="24"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1zed__camera_1a74bf8bb2f7856d674de1a056c3fff2ef" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const <ref refid="structILLIXR_1_1data__format_1_1camera__data" kindref="compound">data_format::camera_data</ref> &amp;</type>
+        <definition>const data_format::camera_data &amp; ILLIXR::zed_camera::get_config</definition>
+        <argsstring>() const</argsstring>
+        <name>get_config</name>
+        <qualifiedname>ILLIXR::zed_camera::get_config</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/zed_camera.hpp" line="26" column="37" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/zed_camera.hpp" bodystart="26" bodyend="28"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1zed__camera_1a8ec1cb3eb42caae37d2df84916da55f1" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Eigen::Vector3f</type>
+        <definition>Eigen::Vector3f ILLIXR::zed_camera::get_translation</definition>
+        <argsstring>() const</argsstring>
+        <name>get_translation</name>
+        <qualifiedname>ILLIXR::zed_camera::get_translation</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/zed_camera.hpp" line="30" column="22" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/zed_camera.hpp" bodystart="30" bodyend="33"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1zed__camera_1af38623ab081341fe406e06ab108107d8" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Eigen::Quaternionf</type>
+        <definition>Eigen::Quaternionf ILLIXR::zed_camera::get_orientation</definition>
+        <argsstring>() const</argsstring>
+        <name>get_orientation</name>
+        <qualifiedname>ILLIXR::zed_camera::get_orientation</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/zed_camera.hpp" line="35" column="25" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/zed_camera.hpp" bodystart="35" bodyend="38"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1zed__camera_1a27fde11723c49f99f01ce540e1e4f678" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>sl::POSITIONAL_TRACKING_STATE</type>
+        <definition>sl::POSITIONAL_TRACKING_STATE ILLIXR::zed_camera::getPosition</definition>
+        <argsstring>(sl::Pose &amp;pose)</argsstring>
+        <name>getPosition</name>
+        <qualifiedname>ILLIXR::zed_camera::getPosition</qualifiedname>
+        <param>
+          <type>sl::Pose &amp;</type>
+          <declname>pose</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/zed_camera.hpp" line="40" column="35" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/zed_camera.hpp" bodystart="40" bodyend="42"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1zed__camera_1a83698cf481c5c5bbcb70dc090eab79e9" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>float</type>
+        <definition>float ILLIXR::zed_camera::getBaseline</definition>
+        <argsstring>() const</argsstring>
+        <name>getBaseline</name>
+        <qualifiedname>ILLIXR::zed_camera::getBaseline</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/zed_camera.hpp" line="44" column="12" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/zed_camera.hpp" bodystart="44" bodyend="46"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/plugins/zed/zed_camera.hpp" line="12" column="1" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/zed_camera.hpp" bodystart="12" bodyend="53"/>
+    <listofallmembers>
+      <member refid="classILLIXR_1_1zed__camera_1a99211a49b1ddb625039614fc98bbb817" prot="private" virt="non-virtual"><scope>ILLIXR::zed_camera</scope><name>config_</name></member>
+      <member refid="classILLIXR_1_1zed__camera_1ae28d169af05e6fda2a32e768d1c28a38" prot="private" virt="non-virtual"><scope>ILLIXR::zed_camera</scope><name>frame_</name></member>
+      <member refid="classILLIXR_1_1zed__camera_1a74bf8bb2f7856d674de1a056c3fff2ef" prot="public" virt="non-virtual"><scope>ILLIXR::zed_camera</scope><name>get_config</name></member>
+      <member refid="classILLIXR_1_1zed__camera_1ae37cb39f16a362dfd73165313415d33a" prot="public" virt="non-virtual"><scope>ILLIXR::zed_camera</scope><name>get_initial_position</name></member>
+      <member refid="classILLIXR_1_1zed__camera_1af38623ab081341fe406e06ab108107d8" prot="public" virt="non-virtual"><scope>ILLIXR::zed_camera</scope><name>get_orientation</name></member>
+      <member refid="classILLIXR_1_1zed__camera_1a8ec1cb3eb42caae37d2df84916da55f1" prot="public" virt="non-virtual"><scope>ILLIXR::zed_camera</scope><name>get_translation</name></member>
+      <member refid="classILLIXR_1_1zed__camera_1a83698cf481c5c5bbcb70dc090eab79e9" prot="public" virt="non-virtual"><scope>ILLIXR::zed_camera</scope><name>getBaseline</name></member>
+      <member refid="classILLIXR_1_1zed__camera_1a27fde11723c49f99f01ce540e1e4f678" prot="public" virt="non-virtual"><scope>ILLIXR::zed_camera</scope><name>getPosition</name></member>
+      <member refid="classILLIXR_1_1zed__camera_1a0ced2d17a9a9f1bffd9ad418f13e78ff" prot="private" virt="non-virtual"><scope>ILLIXR::zed_camera</scope><name>initial_position_</name></member>
+      <member refid="classILLIXR_1_1zed__camera_1a74aaaa92b672a87eb36cd7f42d609e92" prot="public" virt="non-virtual"><scope>ILLIXR::zed_camera</scope><name>open</name></member>
+      <member refid="classILLIXR_1_1zed__camera_1a14cba360bb01fa5a8964da180d0c7caa" prot="private" virt="non-virtual"><scope>ILLIXR::zed_camera</scope><name>switchboard_</name></member>
+      <member refid="classILLIXR_1_1zed__camera_1ae09d7f1274873ababd3cc9e0c6b81052" prot="public" virt="non-virtual"><scope>ILLIXR::zed_camera</scope><name>zed_camera</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
