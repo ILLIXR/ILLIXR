@@ -277,7 +277,7 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
 
         bool have_plugins = false;
         // run entry supersedes plugins entry
-        for (auto item : {"plugins", "run"}) {
+        for (auto item : {"plugins"}) {
             if (options.count(item)) {
                 plugins      = options[item].as<std::vector<std::string>>();
                 have_plugins = true;

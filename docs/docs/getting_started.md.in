@@ -150,22 +150,19 @@ plugins: pose_lookup,timewarp_vk,vkdemo,native_renderer
 build_type: Debug
 install_prefix: /home/user/illixr
 env_vars:
-  illixr_run_duration: 5
-  data: data/mav0
-  demo_data: demo_data
-  enable_offload: true
-  enable_alignment: false
-  enable_verbose_errors: false
-  enable_pre_sleep: false
+  ILLIXR_RUN_DURATION: 5
+  DATA: data/mav0
+  DEMO_DATA: demo_data
+  ENABLE_OFFLOAD: false
+  ENABLE_ALIGNMENT: false
+  ENABLE_VERBOSE_ERRORS: false
+  ENABLE_PRE_SLEEP: false
 ```
 
 Where the entries are defined as (* indicates required field):
 
 - plugins *
 : Comma separated list of plugins (case-sensitive) to build or load at runtime.
-
-- run
-: Comma separated list of plugins (case-sensitive) which are used at run time. This is only needed in cases like offload_vio where multiple plugin libraries are built by a single plugin, but must be loaded individually. (e.g. offload_vio.server_rx)
 
 - build_type
 : The type of build to perform (Debug, Release, or RelWithDebInfo). Ignored at run time.
