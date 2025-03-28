@@ -7,7 +7,7 @@ If you are asked to review code for a pull request please:
 
 - Review the code not the author
 - Critique the code in a constructive format
-- If possible offer suggestions/examples for changes or specific points, do just say `this doesn't work`
+- If possible offer suggestions/examples for changes or specific points, do not just say `this doesn't work`
 - If any questions are asked, be specific, feel free to ask several questions
 - If critiques/questions deal with a specific section of code, start a conversation in that part of the code by clicking
   on the `+` for the line of code in question
