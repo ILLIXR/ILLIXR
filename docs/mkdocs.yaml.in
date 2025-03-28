@@ -87,8 +87,7 @@ nav:
           - 'Monado Overview': plugin_README/monado_illixr_runtime_overview.md
           - 'Monado Dataflow': plugin_README/monado_integration_dataflow.md
           - 'Native Renderer': plugin_README/README_native_renderer.md
-          - 'Offload Rendering Client': plugin_README/README_offload_rendering_client_jetson.md
-          - 'Offload Rendering Client Jetson': plugin_README/README_offload_rendering_client.md
+          - 'Offload Rendering Client': plugin_README/README_offload_rendering_client.md
           - 'Offload Rendering Server': plugin_README/README_offload_rendering_server.md
           - 'Offload VIO': plugin_README/README_offload_vio.md
           - 'OpenNI': plugin_README/README_openni.md
