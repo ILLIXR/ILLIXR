@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="md__2home_2friedel_2devel_2ILLIXR_2plugins_2offload__rendering__client_2README" kind="page">
+    <compoundname>md__2home_2friedel_2devel_2ILLIXR_2plugins_2offload__rendering__client_2README</compoundname>
+    <title>offload_rendering_client</title>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para><anchor id="md__2home_2friedel_2devel_2ILLIXR_2plugins_2offload__rendering__client_2README_1autotoc_md25"/> </para>
+<sect1 id="md__2home_2friedel_2devel_2ILLIXR_2plugins_2offload__rendering__client_2README_1autotoc_md26">
+<title>Summary</title>
+<para><computeroutput><ref refid="classoffload__rendering__client" kindref="compound">offload_rendering_client</ref></computeroutput> receives encoded frames from the network, and uses a mix of NPPI and FFMPEG to decode the frames before updating the buffer pool. Setting the environment variable <computeroutput>ILLIXR_USE_DEPTH_IMAGES</computeroutput> to a non-zero value indicates that depth images are being received, and should thus also be decoded.</para>
+<para>Note that there is a known color shift issue (to be fixed), where the decoded frame&apos;s colors are slightly different from the original frame (likely due to the many conversions between YUV and RGBA). </para>
+</sect1>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/README.md"/>
+  </compounddef>
+</doxygen>

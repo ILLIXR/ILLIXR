@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="md__2home_2friedel_2devel_2ILLIXR_2plugins_2openwarp__vk_2README" kind="page">
+    <compoundname>md__2home_2friedel_2devel_2ILLIXR_2plugins_2openwarp__vk_2README</compoundname>
+    <title>openwarp_vk</title>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para><anchor id="md__2home_2friedel_2devel_2ILLIXR_2plugins_2openwarp__vk_2README_1autotoc_md33"/> </para>
+<sect1 id="md__2home_2friedel_2devel_2ILLIXR_2plugins_2openwarp__vk_2README_1autotoc_md34">
+<title>Summary</title>
+<para><computeroutput>openwarp_vk</computeroutput> is a Vulkan-based translational reprojection service intended for use in the <ref refid="namespaceILLIXR" kindref="compound">ILLIXR</ref> architecture.</para>
+</sect1>
+<sect1 id="md__2home_2friedel_2devel_2ILLIXR_2plugins_2openwarp__vk_2README_1autotoc_md35">
+<title>Phonebook Service</title>
+<para><computeroutput>openwarp_vk</computeroutput> is registered as a service in phonebook, conforming to the <computeroutput>timewarp</computeroutput> render pass interface. Three functions are exposed:</para>
+<para><itemizedlist>
+<listitem><para><computeroutput>setup(VkRenderPass render_pass, uint32_t subpass)</computeroutput> initializes the required Vulkan pipeline and resources given a specific render pass and subpass, to which <computeroutput>openwarp_vk</computeroutput> binds to</para>
+</listitem><listitem><para><computeroutput>update_uniforms(const pose_type render_pose)</computeroutput> calculates the reprojection matrix given the current pose and the pose used to render the frame, and updates the uniform buffer with the reprojection matrix. This must be called before <computeroutput>record_command_buffer</computeroutput> is called</para>
+</listitem><listitem><para><computeroutput>record_command_buffer(VkCommandBuffer commandBuffer, int left)</computeroutput> records the commands into a given command buffer that would perform the reprojection for one eye, for which 1 is left and 0 is right</para>
+</listitem></itemizedlist>
+</para>
+<para>!!! note <verbatim>Note that at the moment, OpenWarp assumes that a reverse depth buffer is being used (as in Unreal Engine, Godot, and our native demo). If you&apos;re using an application that uses forward depth, the projection matrices and Vulkan pipeline configuration should be updated accordingly.
+</verbatim> </para>
+</sect1>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/plugins/openwarp_vk/README.md"/>
+  </compounddef>
+</doxygen>

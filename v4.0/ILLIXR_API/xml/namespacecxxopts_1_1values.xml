@@ -1,0 +1,269 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespacecxxopts_1_1values" kind="namespace" language="C++">
+    <compoundname>cxxopts::values</compoundname>
+    <innerclass refid="classcxxopts_1_1values_1_1abstract__value" prot="public">cxxopts::values::abstract_value</innerclass>
+    <innerclass refid="classcxxopts_1_1values_1_1standard__value" prot="public">cxxopts::values::standard_value</innerclass>
+    <innerclass refid="classcxxopts_1_1values_1_1standard__value_3_01bool_01_4" prot="public">cxxopts::values::standard_value&lt; bool &gt;</innerclass>
+    <innerclass refid="structcxxopts_1_1values_1_1type__is__container" prot="public">cxxopts::values::type_is_container</innerclass>
+    <innerclass refid="structcxxopts_1_1values_1_1type__is__container_3_01std_1_1vector_3_01T_01_4_01_4" prot="public">cxxopts::values::type_is_container&lt; std::vector&lt; T &gt; &gt;</innerclass>
+    <innernamespace refid="namespacecxxopts_1_1values_1_1detail">cxxopts::values::detail</innernamespace>
+    <innernamespace refid="namespacecxxopts_1_1values_1_1parser__tool">cxxopts::values::parser_tool</innernamespace>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="plugins_2zed_2capture_2cxxopts_8hpp_1a49e0fbdea76975c4b740475dd9aec816" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename R</type>
+          </param>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void cxxopts::values::checked_negate</definition>
+        <argsstring>(R &amp;r, T &amp;&amp;t, const std::string &amp;, std::true_type)</argsstring>
+        <name>checked_negate</name>
+        <qualifiedname>cxxopts::values::checked_negate</qualifiedname>
+        <param>
+          <type>R &amp;</type>
+          <declname>r</declname>
+        </param>
+        <param>
+          <type>T &amp;&amp;</type>
+          <declname>t</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+        </param>
+        <param>
+          <type>std::true_type</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="708" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" bodystart="708" bodyend="713"/>
+      </memberdef>
+      <memberdef kind="function" id="plugins_2zed_2capture_2cxxopts_8hpp_1ad346cd7dc5d4d470492c85de801a16b4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename R</type>
+          </param>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void cxxopts::values::checked_negate</definition>
+        <argsstring>(R &amp;, T &amp;&amp;, const std::string &amp;text, std::false_type)</argsstring>
+        <name>checked_negate</name>
+        <qualifiedname>cxxopts::values::checked_negate</qualifiedname>
+        <param>
+          <type>R &amp;</type>
+        </param>
+        <param>
+          <type>T &amp;&amp;</type>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>text</declname>
+        </param>
+        <param>
+          <type>std::false_type</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="716" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" bodystart="716" bodyend="718"/>
+      </memberdef>
+      <memberdef kind="function" id="plugins_2zed_2capture_2cxxopts_8hpp_1a2e205dc91741b7dde43b825da60c9f4c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void cxxopts::values::integer_parser</definition>
+        <argsstring>(const std::string &amp;text, T &amp;value)</argsstring>
+        <name>integer_parser</name>
+        <qualifiedname>cxxopts::values::integer_parser</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>text</declname>
+        </param>
+        <param>
+          <type>T &amp;</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="721" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" bodystart="721" bodyend="761"/>
+      </memberdef>
+      <memberdef kind="function" id="plugins_2zed_2capture_2cxxopts_8hpp_1a56fb16f3a09e011db85757491c52691e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void cxxopts::values::stringstream_parser</definition>
+        <argsstring>(const std::string &amp;text, T &amp;value)</argsstring>
+        <name>stringstream_parser</name>
+        <qualifiedname>cxxopts::values::stringstream_parser</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>text</declname>
+        </param>
+        <param>
+          <type>T &amp;</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="764" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" bodystart="764" bodyend="770"/>
+      </memberdef>
+      <memberdef kind="function" id="plugins_2zed_2capture_2cxxopts_8hpp_1a9782d53713f30ced7138719bd966db2b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+          <param>
+            <type>typename std::enable_if&lt; std::is_integral&lt; T &gt;::value &gt;::type *</type>
+            <defval>nullptr</defval>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void cxxopts::values::parse_value</definition>
+        <argsstring>(const std::string &amp;text, T &amp;value)</argsstring>
+        <name>parse_value</name>
+        <qualifiedname>cxxopts::values::parse_value</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>text</declname>
+        </param>
+        <param>
+          <type>T &amp;</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="773" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" bodystart="773" bodyend="775"/>
+      </memberdef>
+      <memberdef kind="function" id="plugins_2zed_2capture_2cxxopts_8hpp_1aaa73e425c1d63db7975dbebd86c2f947" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void cxxopts::values::parse_value</definition>
+        <argsstring>(const std::string &amp;text, bool &amp;value)</argsstring>
+        <name>parse_value</name>
+        <qualifiedname>cxxopts::values::parse_value</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>text</declname>
+        </param>
+        <param>
+          <type>bool &amp;</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="777" column="17" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" bodystart="777" bodyend="789"/>
+      </memberdef>
+      <memberdef kind="function" id="plugins_2zed_2capture_2cxxopts_8hpp_1a1643e21992e1d5ad5f2012f01f6f6f0a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void cxxopts::values::parse_value</definition>
+        <argsstring>(const std::string &amp;text, std::string &amp;value)</argsstring>
+        <name>parse_value</name>
+        <qualifiedname>cxxopts::values::parse_value</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>text</declname>
+        </param>
+        <param>
+          <type>std::string &amp;</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="791" column="17" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" bodystart="791" bodyend="793"/>
+      </memberdef>
+      <memberdef kind="function" id="plugins_2zed_2capture_2cxxopts_8hpp_1a9cc26abde531fd7df6ff0ff07cc6d413" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void cxxopts::values::parse_value</definition>
+        <argsstring>(const std::string &amp;text, std::vector&lt; T &gt; &amp;value)</argsstring>
+        <name>parse_value</name>
+        <qualifiedname>cxxopts::values::parse_value</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>text</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; T &gt; &amp;</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="804" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" bodystart="804" bodyend="818"/>
+      </memberdef>
+      <memberdef kind="function" id="plugins_2zed_2capture_2cxxopts_8hpp_1a9db2f6a97c2fbfd06a5a342917fbd21f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void cxxopts::values::parse_value</definition>
+        <argsstring>(const std::string &amp;text, char &amp;c)</argsstring>
+        <name>parse_value</name>
+        <qualifiedname>cxxopts::values::parse_value</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>text</declname>
+        </param>
+        <param>
+          <type>char &amp;</type>
+          <declname>c</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="829" column="17" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" bodystart="829" bodyend="835"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="434" column="1"/>
+  </compounddef>
+</doxygen>

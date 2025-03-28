@@ -1,0 +1,366 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="shader__util_8hpp" kind="file" language="C++">
+    <compoundname>shader_util.hpp</compoundname>
+    <includes refid="error__util_8hpp" local="yes">error_util.hpp</includes>
+    <includes local="no">cassert</includes>
+    <includes local="no">cstring</includes>
+    <includes local="no">GL/glew.h</includes>
+    <includes local="no">GL/gl.h</includes>
+    <includes local="no">spdlog/spdlog.h</includes>
+    <includes local="no">string</includes>
+    <includes local="no">vector</includes>
+    <includedby refid="plugins_2debugview_2plugin_8cpp" local="yes">/home/friedel/devel/ILLIXR/plugins/debugview/plugin.cpp</includedby>
+    <includedby refid="plugins_2gldemo_2plugin_8hpp" local="yes">/home/friedel/devel/ILLIXR/plugins/gldemo/plugin.hpp</includedby>
+    <includedby refid="plugins_2hand__tracking_2viewer_2plugin_8cpp" local="yes">/home/friedel/devel/ILLIXR/plugins/hand_tracking/viewer/plugin.cpp</includedby>
+    <includedby refid="plugins_2timewarp__gl_2plugin_8cpp" local="yes">/home/friedel/devel/ILLIXR/plugins/timewarp_gl/plugin.cpp</includedby>
+    <includedby refid="capture_8cpp" local="yes">/home/friedel/devel/ILLIXR/plugins/zed/capture/capture.cpp</includedby>
+    <incdepgraph>
+      <node id="2">
+        <label>error_util.hpp</label>
+        <link refid="error__util_8hpp_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>global_module_defs.hpp</label>
+        <link refid="global__module__defs_8hpp_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>phonebook.hpp</label>
+        <link refid="phonebook_8hpp_source"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>relative_clock.hpp</label>
+        <link refid="relative__clock_8hpp_source"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>/home/friedel/devel/ILLIXR/include/illixr/shader_util.hpp</label>
+        <link refid="shader__util_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+      </node>
+      <node id="22">
+        <label>GL/gl.h</label>
+      </node>
+      <node id="21">
+        <label>GL/glew.h</label>
+      </node>
+      <node id="17">
+        <label>algorithm</label>
+      </node>
+      <node id="6">
+        <label>cassert</label>
+      </node>
+      <node id="15">
+        <label>chrono</label>
+      </node>
+      <node id="18">
+        <label>cmath</label>
+      </node>
+      <node id="20">
+        <label>cstring</label>
+      </node>
+      <node id="13">
+        <label>iostream</label>
+      </node>
+      <node id="7">
+        <label>memory</label>
+      </node>
+      <node id="8">
+        <label>mutex</label>
+      </node>
+      <node id="16">
+        <label>ratio</label>
+      </node>
+      <node id="9">
+        <label>shared_mutex</label>
+      </node>
+      <node id="14">
+        <label>spdlog/spdlog.h</label>
+      </node>
+      <node id="10">
+        <label>stdexcept</label>
+      </node>
+      <node id="19">
+        <label>string</label>
+      </node>
+      <node id="11">
+        <label>typeindex</label>
+      </node>
+      <node id="12">
+        <label>unordered_map</label>
+      </node>
+      <node id="23">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="1">
+        <label>/home/friedel/devel/ILLIXR/include/illixr/shader_util.hpp</label>
+        <link refid="shader__util_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>/home/friedel/devel/ILLIXR/plugins/gldemo/plugin.hpp</label>
+        <link refid="plugins_2gldemo_2plugin_8hpp_source"/>
+      </node>
+    </invincdepgraph>
+    <sectiondef kind="var">
+      <memberdef kind="variable" id="shader__util_8hpp_1ae6a710f316f232bc4c3610350c7da191" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr std::size_t</type>
+        <definition>constexpr std::size_t GL_MAX_LOG_LENGTH</definition>
+        <argsstring></argsstring>
+        <name>GL_MAX_LOG_LENGTH</name>
+        <initializer>= 4096U</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/shader_util.hpp" line="17" column="30" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/shader_util.hpp" bodystart="17" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="shader__util_8hpp_1a35c42227b9c7eccf2d45f5fe2d8f63a6" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void GLAPIENTRY</type>
+        <definition>static void GLAPIENTRY message_callback</definition>
+        <argsstring>(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *user_param)</argsstring>
+        <name>message_callback</name>
+        <param>
+          <type>GLenum</type>
+          <declname>source</declname>
+        </param>
+        <param>
+          <type>GLenum</type>
+          <declname>type</declname>
+        </param>
+        <param>
+          <type>GLuint</type>
+          <declname>id</declname>
+        </param>
+        <param>
+          <type>GLenum</type>
+          <declname>severity</declname>
+        </param>
+        <param>
+          <type>GLsizei</type>
+          <declname>length</declname>
+        </param>
+        <param>
+          <type>const GLchar *</type>
+          <declname>message</declname>
+        </param>
+        <param>
+          <type>const void *</type>
+          <declname>user_param</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+<para>Don&apos;t show message if severity level is notification. Non-fatal.</para>
+<para>Fatal error if severity level is high.</para>
+<para>else =&gt; severity level low and medium are non-fatal.</para>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/shader_util.hpp" line="19" column="24" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/shader_util.hpp" bodystart="19" bodyend="37"/>
+      </memberdef>
+      <memberdef kind="function" id="shader__util_8hpp_1ac6368b7f5aff202e248f296d5e3b9952" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>GLuint</type>
+        <definition>static GLuint init_and_link</definition>
+        <argsstring>(const char *vertex_shader, const char *fragment_shader)</argsstring>
+        <name>init_and_link</name>
+        <param>
+          <type>const char *</type>
+          <declname>vertex_shader</declname>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>fragment_shader</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/shader_util.hpp" line="39" column="15" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/shader_util.hpp" bodystart="39" bodyend="112"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;error_util.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cassert&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstring&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="comment">//<sp/>clang-format<sp/>off</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;GL/glew.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;GL/gl.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="comment">//<sp/>clang-format<sp/>on</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;spdlog/spdlog.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;string&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vector&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceILLIXR" kindref="compound">ILLIXR</ref>;</highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>std::size_t<sp/>GL_MAX_LOG_LENGTH<sp/>=<sp/>4096U;</highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>GLAPIENTRY<sp/>message_callback([[maybe_unused]]<sp/>GLenum<sp/>source,<sp/>[[maybe_unused]]<sp/>GLenum<sp/>type,</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>[[maybe_unused]]<sp/>GLuint<sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">,<sp/>[[maybe_unused]]<sp/>GLenum<sp/>severity,</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>[[maybe_unused]]<sp/>GLsizei<sp/>length,<sp/>[[maybe_unused]]<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>GLchar*<sp/>message,</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>[[maybe_unused]]<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/>user_param)<sp/>{</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight><highlight class="preprocessor">#ifndef<sp/>NDEBUG</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(severity<sp/>==<sp/>GL_DEBUG_SEVERITY_NOTIFICATION)<sp/>{</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/>type_error<sp/>=<sp/>(type<sp/>==<sp/>GL_DEBUG_TYPE_ERROR)<sp/>?<sp/></highlight><highlight class="stringliteral">&quot;**<sp/>GL<sp/>ERROR<sp/>**&quot;</highlight><highlight class="normal"><sp/>:<sp/></highlight><highlight class="stringliteral">&quot;&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/>spdlog::get(</highlight><highlight class="stringliteral">&quot;illixr&quot;</highlight><highlight class="normal">)-&gt;warn(</highlight><highlight class="stringliteral">&quot;[shader_util]<sp/>GL<sp/>CALLBACK:<sp/>{}<sp/>type<sp/>=<sp/>{:x},<sp/>severity<sp/>=<sp/>{:x},<sp/>message<sp/>=<sp/>{}&quot;</highlight><highlight class="normal">,<sp/>type_error,<sp/>type,</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>severity,<sp/>message);</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>https://www.khronos.org/opengl/wiki/Debug_Output#Message_Components</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(severity<sp/>==<sp/>GL_DEBUG_SEVERITY_HIGH)<sp/>{</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a0f43f628688a8968a09a358bfa012a22" kindref="member">ILLIXR::abort</ref>();</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/></highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>GLuint<sp/>init_and_link(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>vertex_shader,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>fragment_shader)<sp/>{</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>GL<sp/>handles<sp/>for<sp/>intermediary<sp/>objects.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/>GLint<sp/>result,<sp/>vertex_shader_handle,<sp/>fragment_shader_handle,<sp/>shader_program;</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"></highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/>vertex_shader_handle<sp/>=<sp/>glCreateShader(GL_VERTEX_SHADER);</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>vert_shader_len<sp/>=<sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="normal">GLint</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(strlen(vertex_shader));</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/>glShaderSource(vertex_shader_handle,<sp/>1,<sp/>&amp;vertex_shader,<sp/>&amp;vert_shader_len);</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/>glCompileShader(vertex_shader_handle);</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/>glGetShaderiv(vertex_shader_handle,<sp/>GL_COMPILE_STATUS,<sp/>&amp;result);</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(result<sp/>==<sp/>GL_FALSE)<sp/>{</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>GLsizei<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>length<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;GLchar&gt;<sp/>gl_buf_log;</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>gl_buf_log.resize(GL_MAX_LOG_LENGTH);</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"></highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>glGetShaderInfoLog(vertex_shader_handle,<sp/>GL_MAX_LOG_LENGTH<sp/>*<sp/></highlight><highlight class="keyword">sizeof</highlight><highlight class="normal">(GLchar),<sp/>&amp;length,<sp/>gl_buf_log.data());</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>msg{gl_buf_log.begin(),<sp/>gl_buf_log.end()};</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>assert(length<sp/>==<sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="normal">GLsizei</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(msg.size())<sp/>&amp;&amp;<sp/></highlight><highlight class="stringliteral">&quot;Length<sp/>of<sp/>log<sp/>should<sp/>match<sp/>GLchar<sp/>vector<sp/>contents&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a0f43f628688a8968a09a358bfa012a22" kindref="member">ILLIXR::abort</ref>(</highlight><highlight class="stringliteral">&quot;[shader_util]<sp/>Failed<sp/>to<sp/>get<sp/>vertex_shader_handle:<sp/>&quot;</highlight><highlight class="normal"><sp/>+<sp/>msg);</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"></highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/>GLint<sp/>frag_result<sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>GL_FALSE;</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/>fragment_shader_handle<sp/>=<sp/>glCreateShader(GL_FRAGMENT_SHADER);</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>frag_shader_len<sp/><sp/><sp/>=<sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="normal">GLint</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(strlen(fragment_shader));</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/>glShaderSource(fragment_shader_handle,<sp/>1,<sp/>&amp;fragment_shader,<sp/>&amp;frag_shader_len);</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/>glCompileShader(fragment_shader_handle);</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/>glGetShaderiv(fragment_shader_handle,<sp/>GL_COMPILE_STATUS,<sp/>&amp;frag_result);</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(frag_result<sp/>==<sp/>GL_FALSE)<sp/>{</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>GLsizei<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>length<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;GLchar&gt;<sp/>gl_buf_log;</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>gl_buf_log.resize(GL_MAX_LOG_LENGTH);</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"></highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>glGetShaderInfoLog(fragment_shader_handle,<sp/>GL_MAX_LOG_LENGTH<sp/>*<sp/></highlight><highlight class="keyword">sizeof</highlight><highlight class="normal">(GLchar),<sp/>&amp;length,<sp/>gl_buf_log.data());</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>msg{gl_buf_log.begin(),<sp/>gl_buf_log.end()};</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>assert(length<sp/>==<sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="normal">GLsizei</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(msg.size())<sp/>&amp;&amp;<sp/></highlight><highlight class="stringliteral">&quot;Length<sp/>of<sp/>log<sp/>should<sp/>match<sp/>GLchar<sp/>vector<sp/>contents&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a0f43f628688a8968a09a358bfa012a22" kindref="member">ILLIXR::abort</ref>(</highlight><highlight class="stringliteral">&quot;[shader_util]<sp/>Failed<sp/>to<sp/>get<sp/>fragment_shader_handle:<sp/>&quot;</highlight><highlight class="normal"><sp/>+<sp/>msg);</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"></highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Create<sp/>program<sp/>and<sp/>link<sp/>shaders</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/>shader_program<sp/>=<sp/>glCreateProgram();</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/>glAttachShader(shader_program,<sp/>vertex_shader_handle);</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/>glAttachShader(shader_program,<sp/>fragment_shader_handle);</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>GLenum<sp/>gl_err_attach<sp/>=<sp/>glGetError();</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(gl_err_attach<sp/>!=<sp/>GL_NO_ERROR)<sp/>{</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a0f43f628688a8968a09a358bfa012a22" kindref="member">ILLIXR::abort</ref>(</highlight><highlight class="stringliteral">&quot;[shader_util]<sp/>AttachShader<sp/>or<sp/>createProgram<sp/>failed&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"></highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Link<sp/>and<sp/>verify</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="87"><highlight class="normal"></highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/>glLinkProgram(shader_program);</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"></highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>GLenum<sp/>gl_err_link<sp/>=<sp/>glGetError();</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(gl_err_link<sp/>!=<sp/>GL_NO_ERROR)<sp/>{</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a0f43f628688a8968a09a358bfa012a22" kindref="member">ILLIXR::abort</ref>(</highlight><highlight class="stringliteral">&quot;[shader_util]<sp/>Linking<sp/>failed&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"></highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/>glGetProgramiv(shader_program,<sp/>GL_LINK_STATUS,<sp/>&amp;result);</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(result<sp/>==<sp/>GL_FALSE)<sp/>{</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>GLsizei<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>length<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;GLchar&gt;<sp/>gl_buf_log;</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>gl_buf_log.resize(GL_MAX_LOG_LENGTH);</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"></highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>glGetProgramInfoLog(shader_program,<sp/>GL_MAX_LOG_LENGTH<sp/>*<sp/></highlight><highlight class="keyword">sizeof</highlight><highlight class="normal">(GLchar),<sp/>&amp;length,<sp/>gl_buf_log.data());</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>msg{gl_buf_log.begin(),<sp/>gl_buf_log.end()};</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>assert(length<sp/>==<sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="normal">GLsizei</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(msg.size())<sp/>&amp;&amp;<sp/></highlight><highlight class="stringliteral">&quot;Length<sp/>of<sp/>log<sp/>should<sp/>match<sp/>GLchar<sp/>vector<sp/>contents&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a0f43f628688a8968a09a358bfa012a22" kindref="member">ILLIXR::abort</ref>(</highlight><highlight class="stringliteral">&quot;[shader_util]<sp/>Failed<sp/>to<sp/>get<sp/>shader<sp/>program:<sp/>&quot;</highlight><highlight class="normal"><sp/>+<sp/>msg);</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"></highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>After<sp/>successful<sp/>link,<sp/>detach<sp/>shaders<sp/>from<sp/>shader<sp/>program</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/>glDetachShader(shader_program,<sp/>vertex_shader_handle);</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/>glDetachShader(shader_program,<sp/>fragment_shader_handle);</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"></highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>shader_program;</highlight></codeline>
+<codeline lineno="112"><highlight class="normal">}</highlight></codeline>
+    </programlisting>
+    <location file="/home/friedel/devel/ILLIXR/include/illixr/shader_util.hpp"/>
+  </compounddef>
+</doxygen>

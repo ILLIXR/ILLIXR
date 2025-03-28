@@ -1,0 +1,193 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classILLIXR_1_1vulkan_1_1render__pass" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>ILLIXR::vulkan::render_pass</compoundname>
+    <basecompoundref refid="classILLIXR_1_1phonebook_1_1service" prot="public" virt="non-virtual">ILLIXR::phonebook::service</basecompoundref>
+    <derivedcompoundref refid="classILLIXR_1_1vulkan_1_1app" prot="public" virt="non-virtual">ILLIXR::vulkan::app</derivedcompoundref>
+    <derivedcompoundref refid="classILLIXR_1_1vulkan_1_1timewarp" prot="public" virt="non-virtual">ILLIXR::vulkan::timewarp</derivedcompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1vulkan_1_1render__pass_1a59471ec4496602094f87dcdd740c3fa8" prot="public" static="no" mutable="no">
+        <type>VkPipeline</type>
+        <definition>VkPipeline ILLIXR::vulkan::render_pass::pipeline_</definition>
+        <argsstring></argsstring>
+        <name>pipeline_</name>
+        <qualifiedname>ILLIXR::vulkan::render_pass::pipeline_</qualifiedname>
+        <initializer>= VK_NULL_HANDLE</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/vk/render_pass.hpp" line="46" column="16" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/vk/render_pass.hpp" bodystart="46" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classILLIXR_1_1vulkan_1_1render__pass_1aa23ecb2623f7c35fdf8a69bc6db4ac74" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>void</type>
+        <definition>virtual void ILLIXR::vulkan::render_pass::record_command_buffer</definition>
+        <argsstring>(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left)=0</argsstring>
+        <name>record_command_buffer</name>
+        <qualifiedname>ILLIXR::vulkan::render_pass::record_command_buffer</qualifiedname>
+        <param>
+          <type>VkCommandBuffer</type>
+          <declname>commandBuffer</declname>
+        </param>
+        <param>
+          <type>VkFramebuffer</type>
+          <declname>framebuffer</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>buffer_ind</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>left</declname>
+        </param>
+        <briefdescription>
+<para>Record a command buffer for a given eye. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>commandBuffer</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The command buffer to record to. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>buffer_ind</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The index of the buffer to use. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>left</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>0 for left eye, 1 for right eye. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/vk/render_pass.hpp" line="25" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1vulkan_1_1render__pass_1a4f39115e24d981a62eb2987abe4a3a06" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>void</type>
+        <definition>virtual void ILLIXR::vulkan::render_pass::update_uniforms</definition>
+        <argsstring>(const data_format::pose_type &amp;render_pose)</argsstring>
+        <name>update_uniforms</name>
+        <qualifiedname>ILLIXR::vulkan::render_pass::update_uniforms</qualifiedname>
+        <param>
+          <type>const <ref refid="structILLIXR_1_1data__format_1_1pose__type" kindref="compound">data_format::pose_type</ref> &amp;</type>
+          <declname>render_pose</declname>
+        </param>
+        <briefdescription>
+<para>Update the uniforms for the render pass. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>render_pose</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>For an app pass, this is the pose to use for rendering. For a timewarp pass, this is the pose previously supplied to the app pass. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/vk/render_pass.hpp" line="33" column="18" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/vk/render_pass.hpp" bodystart="33" bodyend="35"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1vulkan_1_1render__pass_1abcd887fa0fecd8b4bf27a7ae51ee6318" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>void</type>
+        <definition>virtual void ILLIXR::vulkan::render_pass::destroy</definition>
+        <argsstring>()</argsstring>
+        <name>destroy</name>
+        <qualifiedname>ILLIXR::vulkan::render_pass::destroy</qualifiedname>
+        <briefdescription>
+<para>Destroy the render pass and free all Vulkan resources. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/vk/render_pass.hpp" line="40" column="18" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/vk/render_pass.hpp" bodystart="40" bodyend="40"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1vulkan_1_1render__pass_1aeca32dadd39610a5708b9cac9624a7b5" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>bool</type>
+        <definition>virtual bool ILLIXR::vulkan::render_pass::is_external</definition>
+        <argsstring>()=0</argsstring>
+        <name>is_external</name>
+        <qualifiedname>ILLIXR::vulkan::render_pass::is_external</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/vk/render_pass.hpp" line="42" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1vulkan_1_1render__pass_1ae57133967b6196133e8832759f3fc881" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::vulkan::render_pass::~render_pass</definition>
+        <argsstring>() override=default</argsstring>
+        <name>~render_pass</name>
+        <qualifiedname>ILLIXR::vulkan::render_pass::~render_pass</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/vk/render_pass.hpp" line="44" column="5"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>ILLIXR::phonebook::service</label>
+        <link refid="classILLIXR_1_1phonebook_1_1service"/>
+      </node>
+      <node id="1">
+        <label>ILLIXR::vulkan::render_pass</label>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>ILLIXR::phonebook::service</label>
+        <link refid="classILLIXR_1_1phonebook_1_1service"/>
+      </node>
+      <node id="1">
+        <label>ILLIXR::vulkan::render_pass</label>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/home/friedel/devel/ILLIXR/include/illixr/vk/render_pass.hpp" line="16" column="1" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/vk/render_pass.hpp" bodystart="16" bodyend="47"/>
+    <listofallmembers>
+      <member refid="classILLIXR_1_1vulkan_1_1render__pass_1abcd887fa0fecd8b4bf27a7ae51ee6318" prot="public" virt="virtual"><scope>ILLIXR::vulkan::render_pass</scope><name>destroy</name></member>
+      <member refid="classILLIXR_1_1vulkan_1_1render__pass_1aeca32dadd39610a5708b9cac9624a7b5" prot="public" virt="pure-virtual"><scope>ILLIXR::vulkan::render_pass</scope><name>is_external</name></member>
+      <member refid="classILLIXR_1_1vulkan_1_1render__pass_1a59471ec4496602094f87dcdd740c3fa8" prot="public" virt="non-virtual"><scope>ILLIXR::vulkan::render_pass</scope><name>pipeline_</name></member>
+      <member refid="classILLIXR_1_1vulkan_1_1render__pass_1aa23ecb2623f7c35fdf8a69bc6db4ac74" prot="public" virt="pure-virtual"><scope>ILLIXR::vulkan::render_pass</scope><name>record_command_buffer</name></member>
+      <member refid="classILLIXR_1_1vulkan_1_1render__pass_1a4f39115e24d981a62eb2987abe4a3a06" prot="public" virt="virtual"><scope>ILLIXR::vulkan::render_pass</scope><name>update_uniforms</name></member>
+      <member refid="classILLIXR_1_1vulkan_1_1render__pass_1ae57133967b6196133e8832759f3fc881" prot="public" virt="non-virtual"><scope>ILLIXR::vulkan::render_pass</scope><name>~render_pass</name></member>
+      <member refid="classILLIXR_1_1phonebook_1_1service_1a6bc6e64a0d9b70223989fc3fb98c2d0d" prot="public" virt="virtual"><scope>ILLIXR::vulkan::render_pass</scope><name>~service</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

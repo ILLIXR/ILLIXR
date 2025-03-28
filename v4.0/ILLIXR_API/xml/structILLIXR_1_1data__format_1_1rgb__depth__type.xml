@@ -1,0 +1,116 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structILLIXR_1_1data__format_1_1rgb__depth__type" kind="struct" language="C++" prot="public">
+    <compoundname>ILLIXR::data_format::rgb_depth_type</compoundname>
+    <basecompoundref refid="structILLIXR_1_1data__format_1_1cam__base__type" prot="public" virt="non-virtual">ILLIXR::data_format::cam_base_type</basecompoundref>
+    <includes refid="opencv__data__types_8hpp" local="no">opencv_data_types.hpp</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1rgb__depth__type_1aa18394c3e33e512d862474c4fe68a544" prot="public" static="no" mutable="no">
+        <type>units::measurement_unit</type>
+        <definition>units::measurement_unit ILLIXR::data_format::rgb_depth_type::units</definition>
+        <argsstring></argsstring>
+        <name>units</name>
+        <qualifiedname>ILLIXR::data_format::rgb_depth_type::units</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/opencv_data_types.hpp" line="104" column="29" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/opencv_data_types.hpp" bodystart="104" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1rgb__depth__type_1a702392c4a078ef9be0fd5fcfb940427d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::rgb_depth_type::rgb_depth_type</definition>
+        <argsstring>(time_point _time, cv::Mat _rgb, cv::Mat _depth, units::measurement_unit units_=units::UNSET)</argsstring>
+        <name>rgb_depth_type</name>
+        <qualifiedname>ILLIXR::data_format::rgb_depth_type::rgb_depth_type</qualifiedname>
+        <param>
+          <type>time_point</type>
+          <declname>_time</declname>
+        </param>
+        <param>
+          <type>cv::Mat</type>
+          <declname>_rgb</declname>
+        </param>
+        <param>
+          <type>cv::Mat</type>
+          <declname>_depth</declname>
+        </param>
+        <param>
+          <type>units::measurement_unit</type>
+          <declname>units_</declname>
+          <defval>units::UNSET</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/opencv_data_types.hpp" line="106" column="5" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/opencv_data_types.hpp" bodystart="106" bodyend="108"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>For RGB based depth images </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>ILLIXR::data_format::cam_base_type</label>
+        <link refid="structILLIXR_1_1data__format_1_1cam__base__type"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>ILLIXR::data_format::rgb_depth_type</label>
+        <link refid="structILLIXR_1_1data__format_1_1rgb__depth__type"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>ILLIXR::switchboard::event</label>
+        <link refid="classILLIXR_1_1switchboard_1_1event"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>ILLIXR::data_format::cam_base_type</label>
+        <link refid="structILLIXR_1_1data__format_1_1cam__base__type"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>ILLIXR::data_format::rgb_depth_type</label>
+        <link refid="structILLIXR_1_1data__format_1_1rgb__depth__type"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>ILLIXR::switchboard::event</label>
+        <link refid="classILLIXR_1_1switchboard_1_1event"/>
+      </node>
+    </collaborationgraph>
+    <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/opencv_data_types.hpp" line="103" column="1" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/opencv_data_types.hpp" bodystart="103" bodyend="109"/>
+    <listofallmembers>
+      <member refid="structILLIXR_1_1data__format_1_1cam__base__type_1a4fb81ce8dd5c08e65d00e7c9e820ac02" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::rgb_depth_type</scope><name>at</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1cam__base__type_1ab5d6f89e0fa318c97cc104c2ab19154f" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::rgb_depth_type</scope><name>begin</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1cam__base__type_1a62fe93814aa4cc7439202dd2959f35e0" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::rgb_depth_type</scope><name>cam_base_type</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1cam__base__type_1a2006545280a2b1e95fb8c3e71ed37dbe" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::rgb_depth_type</scope><name>end</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1cam__base__type_1a33dfbcba260f9679c47b8c14d373c81b" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::rgb_depth_type</scope><name>find</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1cam__base__type_1a6ac568f543cbffb47a24faa94d8b6621" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::rgb_depth_type</scope><name>format</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1cam__base__type_1acf202ca766b851725335b1bf5cdc156b" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::rgb_depth_type</scope><name>images</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1cam__base__type_1af9947f6832ca78161cffccdd17e97412" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::rgb_depth_type</scope><name>operator[]</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1rgb__depth__type_1a702392c4a078ef9be0fd5fcfb940427d" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::rgb_depth_type</scope><name>rgb_depth_type</name></member>
+      <member refid="classILLIXR_1_1switchboard_1_1event_1a55399aaf47bc0d3943fd89d7afb55624" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::rgb_depth_type</scope><name>serialize</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1cam__base__type_1ab6a260353774aa52676dfa54556bda12" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::rgb_depth_type</scope><name>size</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1cam__base__type_1a38c6d85c01e35357fd04f9f7d1c5e9eb" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::rgb_depth_type</scope><name>time</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1cam__base__type_1a9a4e8ef77b7c12c3c595f7afd1ba5d1f" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::rgb_depth_type</scope><name>type</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1rgb__depth__type_1aa18394c3e33e512d862474c4fe68a544" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::rgb_depth_type</scope><name>units</name></member>
+      <member refid="classILLIXR_1_1switchboard_1_1event_1a01fb51a03e9025d71087de76823e449e" prot="public" virt="virtual"><scope>ILLIXR::data_format::rgb_depth_type</scope><name>~event</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

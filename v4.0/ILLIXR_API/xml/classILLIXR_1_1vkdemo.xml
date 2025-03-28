@@ -1,0 +1,804 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classILLIXR_1_1vkdemo" kind="class" language="C++" prot="public">
+    <compoundname>ILLIXR::vkdemo</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">ILLIXR::vulkan::app</basecompoundref>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1vkdemo_1afcea8339fd57aada08541139dc0d3534" prot="private" static="no" mutable="no">
+        <type>const std::shared_ptr&lt; <ref refid="classILLIXR_1_1switchboard" kindref="compound">switchboard</ref> &gt;</type>
+        <definition>const std::shared_ptr&lt;switchboard&gt; ILLIXR::vkdemo::switchboard_</definition>
+        <argsstring></argsstring>
+        <name>switchboard_</name>
+        <qualifiedname>ILLIXR::vkdemo::switchboard_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" line="100" column="44" bodyfile="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" bodystart="100" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1vkdemo_1a7206aba69233432ac5954fcde1bf0eaa" prot="private" static="no" mutable="no">
+        <type>const std::shared_ptr&lt; data_format::pose_prediction &gt;</type>
+        <definition>const std::shared_ptr&lt;data_format::pose_prediction&gt; ILLIXR::vkdemo::pose_prediction_</definition>
+        <argsstring></argsstring>
+        <name>pose_prediction_</name>
+        <qualifiedname>ILLIXR::vkdemo::pose_prediction_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" line="101" column="27" bodyfile="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" bodystart="101" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1vkdemo_1a0dd9d6b9b72bc1d627877a92b3aaead3" prot="private" static="no" mutable="no">
+        <type>const std::shared_ptr&lt; <ref refid="classILLIXR_1_1vulkan_1_1display__provider" kindref="compound">vulkan::display_provider</ref> &gt;</type>
+        <definition>const std::shared_ptr&lt;vulkan::display_provider&gt; ILLIXR::vkdemo::display_provider_</definition>
+        <argsstring></argsstring>
+        <name>display_provider_</name>
+        <qualifiedname>ILLIXR::vkdemo::display_provider_</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" line="102" column="31" bodyfile="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" bodystart="102" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1vkdemo_1a22642916b20764a7f1e560b429ee47bf" prot="private" static="no" mutable="no">
+        <type>const std::shared_ptr&lt; const <ref refid="classILLIXR_1_1relative__clock" kindref="compound">relative_clock</ref> &gt;</type>
+        <definition>const std::shared_ptr&lt;const relative_clock&gt; ILLIXR::vkdemo::clock_</definition>
+        <argsstring></argsstring>
+        <name>clock_</name>
+        <qualifiedname>ILLIXR::vkdemo::clock_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" line="103" column="35" bodyfile="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" bodystart="103" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1vkdemo_1abe96712eab5fc0514b53cd94e6ffcce1" prot="private" static="no" mutable="no">
+        <type>Eigen::Matrix4f</type>
+        <definition>Eigen::Matrix4f ILLIXR::vkdemo::basic_projection_[2]</definition>
+        <argsstring>[2]</argsstring>
+        <name>basic_projection_</name>
+        <qualifiedname>ILLIXR::vkdemo::basic_projection_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" line="105" column="27" bodyfile="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" bodystart="105" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1vkdemo_1a3a7efb00adb40d3c0ce2d6d729078e0b" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; model &gt;</type>
+        <definition>std::vector&lt;model&gt; ILLIXR::vkdemo::models_</definition>
+        <argsstring></argsstring>
+        <name>models_</name>
+        <qualifiedname>ILLIXR::vkdemo::models_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" line="106" column="20" bodyfile="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" bodystart="106" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1vkdemo_1af5858a3e776c95da53fa168615a5d2d8" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; vertex &gt;</type>
+        <definition>std::vector&lt;vertex&gt; ILLIXR::vkdemo::vertices_</definition>
+        <argsstring></argsstring>
+        <name>vertices_</name>
+        <qualifiedname>ILLIXR::vkdemo::vertices_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" line="107" column="19" bodyfile="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" bodystart="107" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1vkdemo_1a924c9344e914794b1ab5225841c46e46" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; uint32_t &gt;</type>
+        <definition>std::vector&lt;uint32_t&gt; ILLIXR::vkdemo::indices_</definition>
+        <argsstring></argsstring>
+        <name>indices_</name>
+        <qualifiedname>ILLIXR::vkdemo::indices_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" line="108" column="17" bodyfile="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" bodystart="108" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1vkdemo_1a071229b5afe300892ef59644ac18a8da" prot="private" static="no" mutable="no">
+        <type>std::array&lt; std::vector&lt; VkImageView &gt;, 2 &gt;</type>
+        <definition>std::array&lt;std::vector&lt;VkImageView&gt;, 2&gt; ILLIXR::vkdemo::buffer_pool_</definition>
+        <argsstring></argsstring>
+        <name>buffer_pool_</name>
+        <qualifiedname>ILLIXR::vkdemo::buffer_pool_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" line="110" column="16" bodyfile="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" bodystart="110" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1vkdemo_1a0ed273e815551e8db96b62675e410b16" prot="private" static="no" mutable="no">
+        <type>std::stack&lt; std::function&lt; void()&gt; &gt;</type>
+        <definition>std::stack&lt;std::function&lt;void()&gt; &gt; ILLIXR::vkdemo::deletion_queue_</definition>
+        <argsstring></argsstring>
+        <name>deletion_queue_</name>
+        <qualifiedname>ILLIXR::vkdemo::deletion_queue_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" line="112" column="16" bodyfile="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" bodystart="112" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1vkdemo_1a3ed6427958639eaf563f1321f06b24f8" prot="private" static="no" mutable="no">
+        <type>VmaAllocator</type>
+        <definition>VmaAllocator ILLIXR::vkdemo::vma_allocator_</definition>
+        <argsstring></argsstring>
+        <name>vma_allocator_</name>
+        <qualifiedname>ILLIXR::vkdemo::vma_allocator_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" line="113" column="39" bodyfile="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" bodystart="113" bodyend="113"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1vkdemo_1a39cdba31296b0b824df5385b9ca3a2bb" prot="private" static="no" mutable="no">
+        <type>VkCommandPool</type>
+        <definition>VkCommandPool ILLIXR::vkdemo::command_pool_</definition>
+        <argsstring></argsstring>
+        <name>command_pool_</name>
+        <qualifiedname>ILLIXR::vkdemo::command_pool_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" line="114" column="39" bodyfile="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" bodystart="114" bodyend="114"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1vkdemo_1a5aa1340d69bd2223c2e3aec3c302d3bc" prot="private" static="no" mutable="no">
+        <type>VkCommandBuffer</type>
+        <definition>VkCommandBuffer ILLIXR::vkdemo::command_buffer_</definition>
+        <argsstring></argsstring>
+        <name>command_buffer_</name>
+        <qualifiedname>ILLIXR::vkdemo::command_buffer_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" line="115" column="23" bodyfile="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" bodystart="115" bodyend="115"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1vkdemo_1a7cc5e570192d81a27b4f358e3303b1e0" prot="private" static="no" mutable="no">
+        <type>VkDescriptorSetLayout</type>
+        <definition>VkDescriptorSetLayout ILLIXR::vkdemo::descriptor_set_layout_</definition>
+        <argsstring></argsstring>
+        <name>descriptor_set_layout_</name>
+        <qualifiedname>ILLIXR::vkdemo::descriptor_set_layout_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" line="117" column="36" bodyfile="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" bodystart="117" bodyend="117"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1vkdemo_1a763cc07bcb62962d860d1268c697a772" prot="private" static="no" mutable="no">
+        <type>VkDescriptorPool</type>
+        <definition>VkDescriptorPool ILLIXR::vkdemo::descriptor_pool_</definition>
+        <argsstring></argsstring>
+        <name>descriptor_pool_</name>
+        <qualifiedname>ILLIXR::vkdemo::descriptor_pool_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" line="118" column="36" bodyfile="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" bodystart="118" bodyend="118"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1vkdemo_1afd5f630905c406e4c49b8bbdebdb569e" prot="private" static="no" mutable="no">
+        <type>std::array&lt; VkDescriptorSet, 2 &gt;</type>
+        <definition>std::array&lt;VkDescriptorSet, 2&gt; ILLIXR::vkdemo::descriptor_sets_</definition>
+        <argsstring></argsstring>
+        <name>descriptor_sets_</name>
+        <qualifiedname>ILLIXR::vkdemo::descriptor_sets_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" line="119" column="16" bodyfile="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" bodystart="119" bodyend="119"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1vkdemo_1a9363b16d69ed5cea52c78c169d14153a" prot="private" static="no" mutable="no">
+        <type>std::array&lt; VkBuffer, 2 &gt;</type>
+        <definition>std::array&lt;VkBuffer, 2&gt; ILLIXR::vkdemo::uniform_buffers_</definition>
+        <argsstring></argsstring>
+        <name>uniform_buffers_</name>
+        <qualifiedname>ILLIXR::vkdemo::uniform_buffers_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" line="121" column="25" bodyfile="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" bodystart="121" bodyend="121"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1vkdemo_1a3576d5c1b9411724086789ef27396aa1" prot="private" static="no" mutable="no">
+        <type>std::array&lt; VmaAllocation, 2 &gt;</type>
+        <definition>std::array&lt;VmaAllocation, 2&gt; ILLIXR::vkdemo::uniform_buffer_allocations_</definition>
+        <argsstring></argsstring>
+        <name>uniform_buffer_allocations_</name>
+        <qualifiedname>ILLIXR::vkdemo::uniform_buffer_allocations_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" line="122" column="20" bodyfile="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" bodystart="122" bodyend="122"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1vkdemo_1abcaef39ab468ffd0d92a0b6abddcfa31" prot="private" static="no" mutable="no">
+        <type>std::array&lt; VmaAllocationInfo, 2 &gt;</type>
+        <definition>std::array&lt;VmaAllocationInfo, 2&gt; ILLIXR::vkdemo::uniform_buffer_allocation_infos_</definition>
+        <argsstring></argsstring>
+        <name>uniform_buffer_allocation_infos_</name>
+        <qualifiedname>ILLIXR::vkdemo::uniform_buffer_allocation_infos_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" line="123" column="16" bodyfile="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" bodystart="123" bodyend="123"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1vkdemo_1a4eaa35be94e5dbc9b7b68b15959d6d6e" prot="private" static="no" mutable="no">
+        <type>VkBuffer</type>
+        <definition>VkBuffer ILLIXR::vkdemo::vertex_buffer_</definition>
+        <argsstring></argsstring>
+        <name>vertex_buffer_</name>
+        <qualifiedname>ILLIXR::vkdemo::vertex_buffer_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" line="125" column="14" bodyfile="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" bodystart="125" bodyend="125"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1vkdemo_1a8b5d87b51b2d6349524718a2eaec40ee" prot="private" static="no" mutable="no">
+        <type>VkBuffer</type>
+        <definition>VkBuffer ILLIXR::vkdemo::index_buffer_</definition>
+        <argsstring></argsstring>
+        <name>index_buffer_</name>
+        <qualifiedname>ILLIXR::vkdemo::index_buffer_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" line="126" column="14" bodyfile="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" bodystart="126" bodyend="126"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1vkdemo_1a84f4f104c8f215cd4bd88bd540721e20" prot="private" static="no" mutable="no">
+        <type>VkPipelineLayout</type>
+        <definition>VkPipelineLayout ILLIXR::vkdemo::pipeline_layout_</definition>
+        <argsstring></argsstring>
+        <name>pipeline_layout_</name>
+        <qualifiedname>ILLIXR::vkdemo::pipeline_layout_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" line="128" column="22" bodyfile="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" bodystart="128" bodyend="128"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1vkdemo_1a03b48d051b75b96d454baa113934fd58" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; VkDescriptorImageInfo &gt;</type>
+        <definition>std::vector&lt;VkDescriptorImageInfo&gt; ILLIXR::vkdemo::image_infos_</definition>
+        <argsstring></argsstring>
+        <name>image_infos_</name>
+        <qualifiedname>ILLIXR::vkdemo::image_infos_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" line="130" column="17" bodyfile="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" bodystart="130" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1vkdemo_1a2af456dee98076a321ffe3b3fb036e56" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; texture &gt;</type>
+        <definition>std::vector&lt;texture&gt; ILLIXR::vkdemo::textures_</definition>
+        <argsstring></argsstring>
+        <name>textures_</name>
+        <qualifiedname>ILLIXR::vkdemo::textures_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" line="131" column="31" bodyfile="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" bodystart="131" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1vkdemo_1a202a662a9f42875c20be9e7de779f7ec" prot="private" static="no" mutable="no">
+        <type>VkSampler</type>
+        <definition>VkSampler ILLIXR::vkdemo::texture_sampler_</definition>
+        <argsstring></argsstring>
+        <name>texture_sampler_</name>
+        <qualifiedname>ILLIXR::vkdemo::texture_sampler_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" line="132" column="40" bodyfile="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" bodystart="132" bodyend="132"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1vkdemo_1a4e4f44c1175f39d2063a2bba9cc6e705" prot="private" static="no" mutable="no">
+        <type>std::map&lt; uint32_t, uint32_t &gt;</type>
+        <definition>std::map&lt;uint32_t, uint32_t&gt; ILLIXR::vkdemo::texture_map_</definition>
+        <argsstring></argsstring>
+        <name>texture_map_</name>
+        <qualifiedname>ILLIXR::vkdemo::texture_map_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" line="133" column="20" bodyfile="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" bodystart="133" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classILLIXR_1_1vkdemo_1a8eadd273c3f6f737224e896e82bd0a11" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>vkdemo::vkdemo</definition>
+        <argsstring>(const phonebook *const pb)</argsstring>
+        <name>vkdemo</name>
+        <qualifiedname>ILLIXR::vkdemo::vkdemo</qualifiedname>
+        <param>
+          <type>const <ref refid="classILLIXR_1_1phonebook" kindref="compound">phonebook</ref> *const</type>
+          <declname>pb</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" line="72" column="14" bodyfile="/home/friedel/devel/ILLIXR/services/vkdemo/service.cpp" bodystart="45" bodyend="48"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1vkdemo_1a8ed4f4a1cb152413252fac20c10ca4d8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void vkdemo::initialize</definition>
+        <argsstring>()</argsstring>
+        <name>initialize</name>
+        <qualifiedname>ILLIXR::vkdemo::initialize</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" line="73" column="10" bodyfile="/home/friedel/devel/ILLIXR/services/vkdemo/service.cpp" bodystart="50" bodyend="87"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1vkdemo_1a5846daa2b943e73d9c6a0c6e97c9cd2e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void vkdemo::setup</definition>
+        <argsstring>(VkRenderPass render_pass, uint32_t subpass, std::shared_ptr&lt; vulkan::buffer_pool&lt; data_format::fast_pose_type &gt; &gt; _) override</argsstring>
+        <name>setup</name>
+        <qualifiedname>ILLIXR::vkdemo::setup</qualifiedname>
+        <param>
+          <type>VkRenderPass</type>
+          <declname>render_pass</declname>
+        </param>
+        <param>
+          <type>uint32_t</type>
+          <declname>subpass</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; vulkan::buffer_pool&lt; <ref refid="structILLIXR_1_1data__format_1_1fast__pose__type" kindref="compound">data_format::fast_pose_type</ref> &gt; &gt;</type>
+          <declname>_</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" line="74" column="10" bodyfile="/home/friedel/devel/ILLIXR/services/vkdemo/service.cpp" bodystart="89" bodyend="91"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1vkdemo_1a80968fa018d9ad2a0ebf2d90f6ea3f35" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void vkdemo::update_uniforms</definition>
+        <argsstring>(const data_format::pose_type &amp;fp) override</argsstring>
+        <name>update_uniforms</name>
+        <qualifiedname>ILLIXR::vkdemo::update_uniforms</qualifiedname>
+        <param>
+          <type>const <ref refid="structILLIXR_1_1data__format_1_1pose__type" kindref="compound">data_format::pose_type</ref> &amp;</type>
+          <declname>fp</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" line="76" column="10" bodyfile="/home/friedel/devel/ILLIXR/services/vkdemo/service.cpp" bodystart="93" bodyend="96"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1vkdemo_1a302af91742f38d536a8b9d1433f65ae3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void vkdemo::record_command_buffer</definition>
+        <argsstring>(VkCommandBuffer command_buffer, VkFramebuffer frame_buffer, int buffer_ind, bool left) override</argsstring>
+        <name>record_command_buffer</name>
+        <qualifiedname>ILLIXR::vkdemo::record_command_buffer</qualifiedname>
+        <param>
+          <type>VkCommandBuffer</type>
+          <declname>command_buffer</declname>
+        </param>
+        <param>
+          <type>VkFramebuffer</type>
+          <declname>frame_buffer</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>buffer_ind</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>left</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" line="77" column="10" bodyfile="/home/friedel/devel/ILLIXR/services/vkdemo/service.cpp" bodystart="98" bodyend="116"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1vkdemo_1a0ebb1196c800511929e050a7e6ae9c0d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void vkdemo::destroy</definition>
+        <argsstring>() override</argsstring>
+        <name>destroy</name>
+        <qualifiedname>ILLIXR::vkdemo::destroy</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" line="78" column="10" bodyfile="/home/friedel/devel/ILLIXR/services/vkdemo/service.cpp" bodystart="118" bodyend="126"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1vkdemo_1a8e91a2a74111be0832957671ea1f9c7a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool ILLIXR::vkdemo::is_external</definition>
+        <argsstring>() override</argsstring>
+        <name>is_external</name>
+        <qualifiedname>ILLIXR::vkdemo::is_external</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" line="80" column="11" bodyfile="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" bodystart="80" bodyend="82"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classILLIXR_1_1vkdemo_1a4bf1488f9091b80c726f6e4db8b92d6c" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void vkdemo::update_uniform</definition>
+        <argsstring>(const data_format::pose_type &amp;pose, int eye)</argsstring>
+        <name>update_uniform</name>
+        <qualifiedname>ILLIXR::vkdemo::update_uniform</qualifiedname>
+        <param>
+          <type>const <ref refid="structILLIXR_1_1data__format_1_1pose__type" kindref="compound">data_format::pose_type</ref> &amp;</type>
+          <declname>pose</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>eye</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" line="85" column="10" bodyfile="/home/friedel/devel/ILLIXR/services/vkdemo/service.cpp" bodystart="128" bodyend="157"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1vkdemo_1a4b624dcdabfa202aec29b7f8fc1b24dd" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void vkdemo::bake_models</definition>
+        <argsstring>()</argsstring>
+        <name>bake_models</name>
+        <qualifiedname>ILLIXR::vkdemo::bake_models</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" line="86" column="10" bodyfile="/home/friedel/devel/ILLIXR/services/vkdemo/service.cpp" bodystart="159" bodyend="172"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1vkdemo_1a055cbe0a3dc2825b6f35ddc537e77532" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void vkdemo::create_descriptor_set_layout</definition>
+        <argsstring>()</argsstring>
+        <name>create_descriptor_set_layout</name>
+        <qualifiedname>ILLIXR::vkdemo::create_descriptor_set_layout</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" line="87" column="10" bodyfile="/home/friedel/devel/ILLIXR/services/vkdemo/service.cpp" bodystart="174" bodyend="215"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1vkdemo_1aa45fc76dfa8e1c992672e7b52d42f78d" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void vkdemo::create_uniform_buffers</definition>
+        <argsstring>()</argsstring>
+        <name>create_uniform_buffers</name>
+        <qualifiedname>ILLIXR::vkdemo::create_uniform_buffers</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" line="88" column="10" bodyfile="/home/friedel/devel/ILLIXR/services/vkdemo/service.cpp" bodystart="217" bodyend="241"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1vkdemo_1af30575004bbc24b5bf785a877e457b85" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void vkdemo::create_descriptor_pool</definition>
+        <argsstring>()</argsstring>
+        <name>create_descriptor_pool</name>
+        <qualifiedname>ILLIXR::vkdemo::create_descriptor_pool</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" line="89" column="10" bodyfile="/home/friedel/devel/ILLIXR/services/vkdemo/service.cpp" bodystart="243" bodyend="269"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1vkdemo_1a07e637e70ee5380869b2c3c4bb10470d" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void vkdemo::create_texture_sampler_</definition>
+        <argsstring>()</argsstring>
+        <name>create_texture_sampler_</name>
+        <qualifiedname>ILLIXR::vkdemo::create_texture_sampler_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" line="90" column="10" bodyfile="/home/friedel/devel/ILLIXR/services/vkdemo/service.cpp" bodystart="271" bodyend="298"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1vkdemo_1a8f136693e60bccbf006f1d99e93fa9ec" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void vkdemo::create_descriptor_set</definition>
+        <argsstring>()</argsstring>
+        <name>create_descriptor_set</name>
+        <qualifiedname>ILLIXR::vkdemo::create_descriptor_set</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" line="91" column="10" bodyfile="/home/friedel/devel/ILLIXR/services/vkdemo/service.cpp" bodystart="300" bodyend="384"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1vkdemo_1a8b89d9faa07f097d3ede3d0d08ce6527" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void vkdemo::load_texture</definition>
+        <argsstring>(const std::string &amp;path, int i)</argsstring>
+        <name>load_texture</name>
+        <qualifiedname>ILLIXR::vkdemo::load_texture</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>path</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>i</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" line="92" column="10" bodyfile="/home/friedel/devel/ILLIXR/services/vkdemo/service.cpp" bodystart="386" bodyend="505"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1vkdemo_1a86104d3163e990af4bfe3ad7183c4b67" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void vkdemo::image_layout_transition</definition>
+        <argsstring>(VkImage image, VkFormat format, VkImageLayout old_layout, VkImageLayout new_layout)</argsstring>
+        <name>image_layout_transition</name>
+        <qualifiedname>ILLIXR::vkdemo::image_layout_transition</qualifiedname>
+        <param>
+          <type>VkImage</type>
+          <declname>image</declname>
+        </param>
+        <param>
+          <type>VkFormat</type>
+          <declname>format</declname>
+        </param>
+        <param>
+          <type>VkImageLayout</type>
+          <declname>old_layout</declname>
+        </param>
+        <param>
+          <type>VkImageLayout</type>
+          <declname>new_layout</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" line="93" column="10" bodyfile="/home/friedel/devel/ILLIXR/services/vkdemo/service.cpp" bodystart="507" bodyend="560"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1vkdemo_1a191ebe78826df51a664b64613894b16c" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void vkdemo::load_model</definition>
+        <argsstring>()</argsstring>
+        <name>load_model</name>
+        <qualifiedname>ILLIXR::vkdemo::load_model</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" line="95" column="10" bodyfile="/home/friedel/devel/ILLIXR/services/vkdemo/service.cpp" bodystart="562" bodyend="615"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1vkdemo_1adffd745eb4b6570236f0a4729d07aea2" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void vkdemo::create_vertex_buffer</definition>
+        <argsstring>()</argsstring>
+        <name>create_vertex_buffer</name>
+        <qualifiedname>ILLIXR::vkdemo::create_vertex_buffer</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" line="96" column="10" bodyfile="/home/friedel/devel/ILLIXR/services/vkdemo/service.cpp" bodystart="617" bodyend="675"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1vkdemo_1af8373d2a57dd95359861b9de4c4e0bdc" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void vkdemo::create_index_buffer</definition>
+        <argsstring>()</argsstring>
+        <name>create_index_buffer</name>
+        <qualifiedname>ILLIXR::vkdemo::create_index_buffer</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" line="97" column="10" bodyfile="/home/friedel/devel/ILLIXR/services/vkdemo/service.cpp" bodystart="677" bodyend="735"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1vkdemo_1a5f5766b91801da36579fad1d2e6f98ed" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void vkdemo::create_pipeline</definition>
+        <argsstring>(VkRenderPass render_pass, uint32_t subpass)</argsstring>
+        <name>create_pipeline</name>
+        <qualifiedname>ILLIXR::vkdemo::create_pipeline</qualifiedname>
+        <param>
+          <type>VkRenderPass</type>
+          <declname>render_pass</declname>
+        </param>
+        <param>
+          <type>uint32_t</type>
+          <declname>subpass</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" line="98" column="10" bodyfile="/home/friedel/devel/ILLIXR/services/vkdemo/service.cpp" bodystart="737" bodyend="949"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" line="70" column="1" bodyfile="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" bodystart="70" bodyend="134"/>
+    <listofallmembers>
+      <member refid="classILLIXR_1_1vkdemo_1a4b624dcdabfa202aec29b7f8fc1b24dd" prot="private" virt="non-virtual"><scope>ILLIXR::vkdemo</scope><name>bake_models</name></member>
+      <member refid="classILLIXR_1_1vkdemo_1abe96712eab5fc0514b53cd94e6ffcce1" prot="private" virt="non-virtual"><scope>ILLIXR::vkdemo</scope><name>basic_projection_</name></member>
+      <member refid="classILLIXR_1_1vkdemo_1a071229b5afe300892ef59644ac18a8da" prot="private" virt="non-virtual"><scope>ILLIXR::vkdemo</scope><name>buffer_pool_</name></member>
+      <member refid="classILLIXR_1_1vkdemo_1a22642916b20764a7f1e560b429ee47bf" prot="private" virt="non-virtual"><scope>ILLIXR::vkdemo</scope><name>clock_</name></member>
+      <member refid="classILLIXR_1_1vkdemo_1a5aa1340d69bd2223c2e3aec3c302d3bc" prot="private" virt="non-virtual"><scope>ILLIXR::vkdemo</scope><name>command_buffer_</name></member>
+      <member refid="classILLIXR_1_1vkdemo_1a39cdba31296b0b824df5385b9ca3a2bb" prot="private" virt="non-virtual"><scope>ILLIXR::vkdemo</scope><name>command_pool_</name></member>
+      <member refid="classILLIXR_1_1vkdemo_1af30575004bbc24b5bf785a877e457b85" prot="private" virt="non-virtual"><scope>ILLIXR::vkdemo</scope><name>create_descriptor_pool</name></member>
+      <member refid="classILLIXR_1_1vkdemo_1a8f136693e60bccbf006f1d99e93fa9ec" prot="private" virt="non-virtual"><scope>ILLIXR::vkdemo</scope><name>create_descriptor_set</name></member>
+      <member refid="classILLIXR_1_1vkdemo_1a055cbe0a3dc2825b6f35ddc537e77532" prot="private" virt="non-virtual"><scope>ILLIXR::vkdemo</scope><name>create_descriptor_set_layout</name></member>
+      <member refid="classILLIXR_1_1vkdemo_1af8373d2a57dd95359861b9de4c4e0bdc" prot="private" virt="non-virtual"><scope>ILLIXR::vkdemo</scope><name>create_index_buffer</name></member>
+      <member refid="classILLIXR_1_1vkdemo_1a5f5766b91801da36579fad1d2e6f98ed" prot="private" virt="non-virtual"><scope>ILLIXR::vkdemo</scope><name>create_pipeline</name></member>
+      <member refid="classILLIXR_1_1vkdemo_1a07e637e70ee5380869b2c3c4bb10470d" prot="private" virt="non-virtual"><scope>ILLIXR::vkdemo</scope><name>create_texture_sampler_</name></member>
+      <member refid="classILLIXR_1_1vkdemo_1aa45fc76dfa8e1c992672e7b52d42f78d" prot="private" virt="non-virtual"><scope>ILLIXR::vkdemo</scope><name>create_uniform_buffers</name></member>
+      <member refid="classILLIXR_1_1vkdemo_1adffd745eb4b6570236f0a4729d07aea2" prot="private" virt="non-virtual"><scope>ILLIXR::vkdemo</scope><name>create_vertex_buffer</name></member>
+      <member refid="classILLIXR_1_1vkdemo_1a0ed273e815551e8db96b62675e410b16" prot="private" virt="non-virtual"><scope>ILLIXR::vkdemo</scope><name>deletion_queue_</name></member>
+      <member refid="classILLIXR_1_1vkdemo_1a763cc07bcb62962d860d1268c697a772" prot="private" virt="non-virtual"><scope>ILLIXR::vkdemo</scope><name>descriptor_pool_</name></member>
+      <member refid="classILLIXR_1_1vkdemo_1a7cc5e570192d81a27b4f358e3303b1e0" prot="private" virt="non-virtual"><scope>ILLIXR::vkdemo</scope><name>descriptor_set_layout_</name></member>
+      <member refid="classILLIXR_1_1vkdemo_1afd5f630905c406e4c49b8bbdebdb569e" prot="private" virt="non-virtual"><scope>ILLIXR::vkdemo</scope><name>descriptor_sets_</name></member>
+      <member refid="classILLIXR_1_1vkdemo_1a0ebb1196c800511929e050a7e6ae9c0d" prot="public" virt="non-virtual"><scope>ILLIXR::vkdemo</scope><name>destroy</name></member>
+      <member refid="classILLIXR_1_1vkdemo_1a0dd9d6b9b72bc1d627877a92b3aaead3" prot="private" virt="non-virtual"><scope>ILLIXR::vkdemo</scope><name>display_provider_</name></member>
+      <member refid="classILLIXR_1_1vkdemo_1a03b48d051b75b96d454baa113934fd58" prot="private" virt="non-virtual"><scope>ILLIXR::vkdemo</scope><name>image_infos_</name></member>
+      <member refid="classILLIXR_1_1vkdemo_1a86104d3163e990af4bfe3ad7183c4b67" prot="private" virt="non-virtual"><scope>ILLIXR::vkdemo</scope><name>image_layout_transition</name></member>
+      <member refid="classILLIXR_1_1vkdemo_1a8b5d87b51b2d6349524718a2eaec40ee" prot="private" virt="non-virtual"><scope>ILLIXR::vkdemo</scope><name>index_buffer_</name></member>
+      <member refid="classILLIXR_1_1vkdemo_1a924c9344e914794b1ab5225841c46e46" prot="private" virt="non-virtual"><scope>ILLIXR::vkdemo</scope><name>indices_</name></member>
+      <member refid="classILLIXR_1_1vkdemo_1a8ed4f4a1cb152413252fac20c10ca4d8" prot="public" virt="non-virtual"><scope>ILLIXR::vkdemo</scope><name>initialize</name></member>
+      <member refid="classILLIXR_1_1vkdemo_1a8e91a2a74111be0832957671ea1f9c7a" prot="public" virt="non-virtual"><scope>ILLIXR::vkdemo</scope><name>is_external</name></member>
+      <member refid="classILLIXR_1_1vkdemo_1a191ebe78826df51a664b64613894b16c" prot="private" virt="non-virtual"><scope>ILLIXR::vkdemo</scope><name>load_model</name></member>
+      <member refid="classILLIXR_1_1vkdemo_1a8b89d9faa07f097d3ede3d0d08ce6527" prot="private" virt="non-virtual"><scope>ILLIXR::vkdemo</scope><name>load_texture</name></member>
+      <member refid="classILLIXR_1_1vkdemo_1a3a7efb00adb40d3c0ce2d6d729078e0b" prot="private" virt="non-virtual"><scope>ILLIXR::vkdemo</scope><name>models_</name></member>
+      <member refid="classILLIXR_1_1vulkan_1_1render__pass_1a59471ec4496602094f87dcdd740c3fa8" prot="public" virt="non-virtual"><scope>ILLIXR::vkdemo</scope><name>pipeline_</name></member>
+      <member refid="classILLIXR_1_1vkdemo_1a84f4f104c8f215cd4bd88bd540721e20" prot="private" virt="non-virtual"><scope>ILLIXR::vkdemo</scope><name>pipeline_layout_</name></member>
+      <member refid="classILLIXR_1_1vkdemo_1a7206aba69233432ac5954fcde1bf0eaa" prot="private" virt="non-virtual"><scope>ILLIXR::vkdemo</scope><name>pose_prediction_</name></member>
+      <member refid="classILLIXR_1_1vkdemo_1a302af91742f38d536a8b9d1433f65ae3" prot="public" virt="non-virtual"><scope>ILLIXR::vkdemo</scope><name>record_command_buffer</name></member>
+      <member refid="classILLIXR_1_1vkdemo_1a5846daa2b943e73d9c6a0c6e97c9cd2e" prot="public" virt="non-virtual"><scope>ILLIXR::vkdemo</scope><name>setup</name></member>
+      <member refid="classILLIXR_1_1vulkan_1_1app_1a343363b55ec070db70030ae3381e10d8" prot="public" virt="pure-virtual" ambiguityscope="ILLIXR::vulkan::app::"><scope>ILLIXR::vkdemo</scope><name>setup</name></member>
+      <member refid="classILLIXR_1_1vkdemo_1afcea8339fd57aada08541139dc0d3534" prot="private" virt="non-virtual"><scope>ILLIXR::vkdemo</scope><name>switchboard_</name></member>
+      <member refid="classILLIXR_1_1vkdemo_1a4e4f44c1175f39d2063a2bba9cc6e705" prot="private" virt="non-virtual"><scope>ILLIXR::vkdemo</scope><name>texture_map_</name></member>
+      <member refid="classILLIXR_1_1vkdemo_1a202a662a9f42875c20be9e7de779f7ec" prot="private" virt="non-virtual"><scope>ILLIXR::vkdemo</scope><name>texture_sampler_</name></member>
+      <member refid="classILLIXR_1_1vkdemo_1a2af456dee98076a321ffe3b3fb036e56" prot="private" virt="non-virtual"><scope>ILLIXR::vkdemo</scope><name>textures_</name></member>
+      <member refid="classILLIXR_1_1vkdemo_1abcaef39ab468ffd0d92a0b6abddcfa31" prot="private" virt="non-virtual"><scope>ILLIXR::vkdemo</scope><name>uniform_buffer_allocation_infos_</name></member>
+      <member refid="classILLIXR_1_1vkdemo_1a3576d5c1b9411724086789ef27396aa1" prot="private" virt="non-virtual"><scope>ILLIXR::vkdemo</scope><name>uniform_buffer_allocations_</name></member>
+      <member refid="classILLIXR_1_1vkdemo_1a9363b16d69ed5cea52c78c169d14153a" prot="private" virt="non-virtual"><scope>ILLIXR::vkdemo</scope><name>uniform_buffers_</name></member>
+      <member refid="classILLIXR_1_1vkdemo_1a4bf1488f9091b80c726f6e4db8b92d6c" prot="private" virt="non-virtual"><scope>ILLIXR::vkdemo</scope><name>update_uniform</name></member>
+      <member refid="classILLIXR_1_1vkdemo_1a80968fa018d9ad2a0ebf2d90f6ea3f35" prot="public" virt="non-virtual"><scope>ILLIXR::vkdemo</scope><name>update_uniforms</name></member>
+      <member refid="classILLIXR_1_1vkdemo_1a4eaa35be94e5dbc9b7b68b15959d6d6e" prot="private" virt="non-virtual"><scope>ILLIXR::vkdemo</scope><name>vertex_buffer_</name></member>
+      <member refid="classILLIXR_1_1vkdemo_1af5858a3e776c95da53fa168615a5d2d8" prot="private" virt="non-virtual"><scope>ILLIXR::vkdemo</scope><name>vertices_</name></member>
+      <member refid="classILLIXR_1_1vkdemo_1a8eadd273c3f6f737224e896e82bd0a11" prot="public" virt="non-virtual"><scope>ILLIXR::vkdemo</scope><name>vkdemo</name></member>
+      <member refid="classILLIXR_1_1vkdemo_1a3ed6427958639eaf563f1321f06b24f8" prot="private" virt="non-virtual"><scope>ILLIXR::vkdemo</scope><name>vma_allocator_</name></member>
+      <member refid="classILLIXR_1_1vulkan_1_1render__pass_1ae57133967b6196133e8832759f3fc881" prot="public" virt="non-virtual"><scope>ILLIXR::vkdemo</scope><name>~render_pass</name></member>
+      <member refid="classILLIXR_1_1phonebook_1_1service_1a6bc6e64a0d9b70223989fc3fb98c2d0d" prot="public" virt="virtual"><scope>ILLIXR::vkdemo</scope><name>~service</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

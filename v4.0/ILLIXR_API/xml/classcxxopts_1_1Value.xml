@@ -1,0 +1,435 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classcxxopts_1_1Value" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>cxxopts::Value</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">std::enable_shared_from_this&lt; Value &gt;</basecompoundref>
+    <basecompoundref prot="public" virt="non-virtual">std::enable_shared_from_this&lt; Value &gt;</basecompoundref>
+    <derivedcompoundref refid="classcxxopts_1_1values_1_1abstract__value" prot="public" virt="non-virtual">cxxopts::values::abstract_value&lt; bool &gt;</derivedcompoundref>
+    <derivedcompoundref refid="classcxxopts_1_1values_1_1abstract__value" prot="public" virt="non-virtual">cxxopts::values::abstract_value&lt; bool &gt;</derivedcompoundref>
+    <derivedcompoundref refid="classcxxopts_1_1values_1_1abstract__value" prot="public" virt="non-virtual">cxxopts::values::abstract_value&lt; T &gt;</derivedcompoundref>
+    <derivedcompoundref refid="classcxxopts_1_1values_1_1abstract__value" prot="public" virt="non-virtual">cxxopts::values::abstract_value&lt; T &gt;</derivedcompoundref>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classcxxopts_1_1Value_1afbbfc1c371d0b8bab3548be76523d12c" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>virtual cxxopts::Value::~Value</definition>
+        <argsstring>()=default</argsstring>
+        <name>~Value</name>
+        <qualifiedname>cxxopts::Value::~Value</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="294" column="13"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1Value_1a17916d6a48e57c999c2dc23fa6b22539" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>std::shared_ptr&lt; Value &gt;</type>
+        <definition>virtual std::shared_ptr&lt; Value &gt; cxxopts::Value::clone</definition>
+        <argsstring>() const =0</argsstring>
+        <name>clone</name>
+        <qualifiedname>cxxopts::Value::clone</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="296" column="29"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1Value_1a3c962e4ff3294721f5c9f6ac3fc00cc7" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>void</type>
+        <definition>virtual void cxxopts::Value::parse</definition>
+        <argsstring>(const std::string &amp;text) const =0</argsstring>
+        <name>parse</name>
+        <qualifiedname>cxxopts::Value::parse</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>text</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="298" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1Value_1a9246a55e299ea5ef34346af46977fab4" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>void</type>
+        <definition>virtual void cxxopts::Value::parse</definition>
+        <argsstring>() const =0</argsstring>
+        <name>parse</name>
+        <qualifiedname>cxxopts::Value::parse</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="300" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1Value_1aac3233a0414ac39d54ed0b98365afc7e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>bool</type>
+        <definition>virtual bool cxxopts::Value::has_default</definition>
+        <argsstring>() const =0</argsstring>
+        <name>has_default</name>
+        <qualifiedname>cxxopts::Value::has_default</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="302" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1Value_1a632f3263dd598e30999a6bcff0652132" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>bool</type>
+        <definition>virtual bool cxxopts::Value::is_container</definition>
+        <argsstring>() const =0</argsstring>
+        <name>is_container</name>
+        <qualifiedname>cxxopts::Value::is_container</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="304" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1Value_1aac3425b87db8ef41157892449999b183" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>bool</type>
+        <definition>virtual bool cxxopts::Value::has_implicit</definition>
+        <argsstring>() const =0</argsstring>
+        <name>has_implicit</name>
+        <qualifiedname>cxxopts::Value::has_implicit</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="306" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1Value_1a25ac95c499771a6f5ca295e01452f380" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>std::string</type>
+        <definition>virtual std::string cxxopts::Value::get_default_value</definition>
+        <argsstring>() const =0</argsstring>
+        <name>get_default_value</name>
+        <qualifiedname>cxxopts::Value::get_default_value</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="308" column="25"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1Value_1a436f0a8a6621de420088839f4c728230" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>std::string</type>
+        <definition>virtual std::string cxxopts::Value::get_implicit_value</definition>
+        <argsstring>() const =0</argsstring>
+        <name>get_implicit_value</name>
+        <qualifiedname>cxxopts::Value::get_implicit_value</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="310" column="25"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1Value_1a96cc46d76d458baf37099cd94cf4e857" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>std::shared_ptr&lt; Value &gt;</type>
+        <definition>virtual std::shared_ptr&lt; Value &gt; cxxopts::Value::default_value</definition>
+        <argsstring>(const std::string &amp;value)=0</argsstring>
+        <name>default_value</name>
+        <qualifiedname>cxxopts::Value::default_value</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="312" column="29"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1Value_1adf963773eb53a7af1bc8cb97a517b27e" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>std::shared_ptr&lt; Value &gt;</type>
+        <definition>virtual std::shared_ptr&lt; Value &gt; cxxopts::Value::implicit_value</definition>
+        <argsstring>(const std::string &amp;value)=0</argsstring>
+        <name>implicit_value</name>
+        <qualifiedname>cxxopts::Value::implicit_value</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="314" column="29"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1Value_1a4bba2137fbc7ee9c670a64e552ac05fe" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>std::shared_ptr&lt; Value &gt;</type>
+        <definition>virtual std::shared_ptr&lt; Value &gt; cxxopts::Value::no_implicit_value</definition>
+        <argsstring>()=0</argsstring>
+        <name>no_implicit_value</name>
+        <qualifiedname>cxxopts::Value::no_implicit_value</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="316" column="29"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1Value_1a77a4a731bcbbd95afca43f82affe5aaa" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>bool</type>
+        <definition>virtual bool cxxopts::Value::is_boolean</definition>
+        <argsstring>() const =0</argsstring>
+        <name>is_boolean</name>
+        <qualifiedname>cxxopts::Value::is_boolean</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="318" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1Value_1afbbfc1c371d0b8bab3548be76523d12c" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>virtual cxxopts::Value::~Value</definition>
+        <argsstring>()=default</argsstring>
+        <name>~Value</name>
+        <qualifiedname>cxxopts::Value::~Value</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/cxxopts.hpp" line="294" column="13"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1Value_1a17916d6a48e57c999c2dc23fa6b22539" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>std::shared_ptr&lt; Value &gt;</type>
+        <definition>virtual std::shared_ptr&lt; Value &gt; cxxopts::Value::clone</definition>
+        <argsstring>() const =0</argsstring>
+        <name>clone</name>
+        <qualifiedname>cxxopts::Value::clone</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/cxxopts.hpp" line="296" column="29"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1Value_1a3c962e4ff3294721f5c9f6ac3fc00cc7" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>void</type>
+        <definition>virtual void cxxopts::Value::parse</definition>
+        <argsstring>(const std::string &amp;text) const =0</argsstring>
+        <name>parse</name>
+        <qualifiedname>cxxopts::Value::parse</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>text</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/cxxopts.hpp" line="298" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1Value_1a9246a55e299ea5ef34346af46977fab4" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>void</type>
+        <definition>virtual void cxxopts::Value::parse</definition>
+        <argsstring>() const =0</argsstring>
+        <name>parse</name>
+        <qualifiedname>cxxopts::Value::parse</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/cxxopts.hpp" line="300" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1Value_1aac3233a0414ac39d54ed0b98365afc7e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>bool</type>
+        <definition>virtual bool cxxopts::Value::has_default</definition>
+        <argsstring>() const =0</argsstring>
+        <name>has_default</name>
+        <qualifiedname>cxxopts::Value::has_default</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/cxxopts.hpp" line="302" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1Value_1a632f3263dd598e30999a6bcff0652132" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>bool</type>
+        <definition>virtual bool cxxopts::Value::is_container</definition>
+        <argsstring>() const =0</argsstring>
+        <name>is_container</name>
+        <qualifiedname>cxxopts::Value::is_container</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/cxxopts.hpp" line="304" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1Value_1aac3425b87db8ef41157892449999b183" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>bool</type>
+        <definition>virtual bool cxxopts::Value::has_implicit</definition>
+        <argsstring>() const =0</argsstring>
+        <name>has_implicit</name>
+        <qualifiedname>cxxopts::Value::has_implicit</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/cxxopts.hpp" line="306" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1Value_1a25ac95c499771a6f5ca295e01452f380" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>std::string</type>
+        <definition>virtual std::string cxxopts::Value::get_default_value</definition>
+        <argsstring>() const =0</argsstring>
+        <name>get_default_value</name>
+        <qualifiedname>cxxopts::Value::get_default_value</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/cxxopts.hpp" line="308" column="25"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1Value_1a436f0a8a6621de420088839f4c728230" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>std::string</type>
+        <definition>virtual std::string cxxopts::Value::get_implicit_value</definition>
+        <argsstring>() const =0</argsstring>
+        <name>get_implicit_value</name>
+        <qualifiedname>cxxopts::Value::get_implicit_value</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/cxxopts.hpp" line="310" column="25"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1Value_1a96cc46d76d458baf37099cd94cf4e857" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>std::shared_ptr&lt; Value &gt;</type>
+        <definition>virtual std::shared_ptr&lt; Value &gt; cxxopts::Value::default_value</definition>
+        <argsstring>(const std::string &amp;value)=0</argsstring>
+        <name>default_value</name>
+        <qualifiedname>cxxopts::Value::default_value</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/cxxopts.hpp" line="312" column="29"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1Value_1adf963773eb53a7af1bc8cb97a517b27e" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>std::shared_ptr&lt; Value &gt;</type>
+        <definition>virtual std::shared_ptr&lt; Value &gt; cxxopts::Value::implicit_value</definition>
+        <argsstring>(const std::string &amp;value)=0</argsstring>
+        <name>implicit_value</name>
+        <qualifiedname>cxxopts::Value::implicit_value</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/cxxopts.hpp" line="314" column="29"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1Value_1a4bba2137fbc7ee9c670a64e552ac05fe" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>std::shared_ptr&lt; Value &gt;</type>
+        <definition>virtual std::shared_ptr&lt; Value &gt; cxxopts::Value::no_implicit_value</definition>
+        <argsstring>()=0</argsstring>
+        <name>no_implicit_value</name>
+        <qualifiedname>cxxopts::Value::no_implicit_value</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/cxxopts.hpp" line="316" column="29"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1Value_1a77a4a731bcbbd95afca43f82affe5aaa" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>bool</type>
+        <definition>virtual bool cxxopts::Value::is_boolean</definition>
+        <argsstring>() const =0</argsstring>
+        <name>is_boolean</name>
+        <qualifiedname>cxxopts::Value::is_boolean</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/cxxopts.hpp" line="318" column="18"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="292" column="1" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" bodystart="292" bodyend="319"/>
+    <listofallmembers>
+      <member refid="classcxxopts_1_1Value_1a17916d6a48e57c999c2dc23fa6b22539" prot="public" virt="pure-virtual"><scope>cxxopts::Value</scope><name>clone</name></member>
+      <member refid="classcxxopts_1_1Value_1a17916d6a48e57c999c2dc23fa6b22539" prot="public" virt="pure-virtual"><scope>cxxopts::Value</scope><name>clone</name></member>
+      <member refid="classcxxopts_1_1Value_1a96cc46d76d458baf37099cd94cf4e857" prot="public" virt="pure-virtual"><scope>cxxopts::Value</scope><name>default_value</name></member>
+      <member refid="classcxxopts_1_1Value_1a96cc46d76d458baf37099cd94cf4e857" prot="public" virt="pure-virtual"><scope>cxxopts::Value</scope><name>default_value</name></member>
+      <member refid="classcxxopts_1_1Value_1a25ac95c499771a6f5ca295e01452f380" prot="public" virt="pure-virtual"><scope>cxxopts::Value</scope><name>get_default_value</name></member>
+      <member refid="classcxxopts_1_1Value_1a25ac95c499771a6f5ca295e01452f380" prot="public" virt="pure-virtual"><scope>cxxopts::Value</scope><name>get_default_value</name></member>
+      <member refid="classcxxopts_1_1Value_1a436f0a8a6621de420088839f4c728230" prot="public" virt="pure-virtual"><scope>cxxopts::Value</scope><name>get_implicit_value</name></member>
+      <member refid="classcxxopts_1_1Value_1a436f0a8a6621de420088839f4c728230" prot="public" virt="pure-virtual"><scope>cxxopts::Value</scope><name>get_implicit_value</name></member>
+      <member refid="classcxxopts_1_1Value_1aac3233a0414ac39d54ed0b98365afc7e" prot="public" virt="pure-virtual"><scope>cxxopts::Value</scope><name>has_default</name></member>
+      <member refid="classcxxopts_1_1Value_1aac3233a0414ac39d54ed0b98365afc7e" prot="public" virt="pure-virtual"><scope>cxxopts::Value</scope><name>has_default</name></member>
+      <member refid="classcxxopts_1_1Value_1aac3425b87db8ef41157892449999b183" prot="public" virt="pure-virtual"><scope>cxxopts::Value</scope><name>has_implicit</name></member>
+      <member refid="classcxxopts_1_1Value_1aac3425b87db8ef41157892449999b183" prot="public" virt="pure-virtual"><scope>cxxopts::Value</scope><name>has_implicit</name></member>
+      <member refid="classcxxopts_1_1Value_1adf963773eb53a7af1bc8cb97a517b27e" prot="public" virt="pure-virtual"><scope>cxxopts::Value</scope><name>implicit_value</name></member>
+      <member refid="classcxxopts_1_1Value_1adf963773eb53a7af1bc8cb97a517b27e" prot="public" virt="pure-virtual"><scope>cxxopts::Value</scope><name>implicit_value</name></member>
+      <member refid="classcxxopts_1_1Value_1a77a4a731bcbbd95afca43f82affe5aaa" prot="public" virt="pure-virtual"><scope>cxxopts::Value</scope><name>is_boolean</name></member>
+      <member refid="classcxxopts_1_1Value_1a77a4a731bcbbd95afca43f82affe5aaa" prot="public" virt="pure-virtual"><scope>cxxopts::Value</scope><name>is_boolean</name></member>
+      <member refid="classcxxopts_1_1Value_1a632f3263dd598e30999a6bcff0652132" prot="public" virt="pure-virtual"><scope>cxxopts::Value</scope><name>is_container</name></member>
+      <member refid="classcxxopts_1_1Value_1a632f3263dd598e30999a6bcff0652132" prot="public" virt="pure-virtual"><scope>cxxopts::Value</scope><name>is_container</name></member>
+      <member refid="classcxxopts_1_1Value_1a4bba2137fbc7ee9c670a64e552ac05fe" prot="public" virt="pure-virtual"><scope>cxxopts::Value</scope><name>no_implicit_value</name></member>
+      <member refid="classcxxopts_1_1Value_1a4bba2137fbc7ee9c670a64e552ac05fe" prot="public" virt="pure-virtual"><scope>cxxopts::Value</scope><name>no_implicit_value</name></member>
+      <member refid="classcxxopts_1_1Value_1a3c962e4ff3294721f5c9f6ac3fc00cc7" prot="public" virt="pure-virtual"><scope>cxxopts::Value</scope><name>parse</name></member>
+      <member refid="classcxxopts_1_1Value_1a9246a55e299ea5ef34346af46977fab4" prot="public" virt="pure-virtual"><scope>cxxopts::Value</scope><name>parse</name></member>
+      <member refid="classcxxopts_1_1Value_1a3c962e4ff3294721f5c9f6ac3fc00cc7" prot="public" virt="pure-virtual"><scope>cxxopts::Value</scope><name>parse</name></member>
+      <member refid="classcxxopts_1_1Value_1a9246a55e299ea5ef34346af46977fab4" prot="public" virt="pure-virtual"><scope>cxxopts::Value</scope><name>parse</name></member>
+      <member refid="classcxxopts_1_1Value_1afbbfc1c371d0b8bab3548be76523d12c" prot="public" virt="virtual"><scope>cxxopts::Value</scope><name>~Value</name></member>
+      <member refid="classcxxopts_1_1Value_1afbbfc1c371d0b8bab3548be76523d12c" prot="public" virt="virtual"><scope>cxxopts::Value</scope><name>~Value</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

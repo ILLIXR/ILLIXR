@@ -1,0 +1,84 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structcxxopts_1_1values_1_1detail_1_1SignedCheck_3_01T_00_01true_01_4" kind="struct" language="C++" prot="public">
+    <compoundname>cxxopts::values::detail::SignedCheck&lt; T, true &gt;</compoundname>
+    <templateparamlist>
+      <param>
+        <type>typename T</type>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structcxxopts_1_1values_1_1detail_1_1SignedCheck_3_01T_00_01true_01_4_1a03b02f6c1e500d96c8b8b13cbe858ce4" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename U</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void cxxopts::values::detail::SignedCheck&lt; T, true &gt;::operator()</definition>
+        <argsstring>(bool negative, U u, const std::string &amp;text)</argsstring>
+        <name>operator()</name>
+        <qualifiedname>cxxopts::values::detail::SignedCheck&lt; T, true &gt;::operator()</qualifiedname>
+        <param>
+          <type>bool</type>
+          <declname>negative</declname>
+        </param>
+        <param>
+          <type>U</type>
+          <declname>u</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>text</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="681" column="18" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" bodystart="681" bodyend="691"/>
+      </memberdef>
+      <memberdef kind="function" id="structcxxopts_1_1values_1_1detail_1_1SignedCheck_3_01T_00_01true_01_4_1a03b02f6c1e500d96c8b8b13cbe858ce4" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename U</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void cxxopts::values::detail::SignedCheck&lt; T, true &gt;::operator()</definition>
+        <argsstring>(bool negative, U u, const std::string &amp;text)</argsstring>
+        <name>operator()</name>
+        <qualifiedname>cxxopts::values::detail::SignedCheck&lt; T, true &gt;::operator()</qualifiedname>
+        <param>
+          <type>bool</type>
+          <declname>negative</declname>
+        </param>
+        <param>
+          <type>U</type>
+          <declname>u</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>text</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/cxxopts.hpp" line="681" column="18" bodyfile="/home/friedel/devel/ILLIXR/src/cxxopts.hpp" bodystart="681" bodyend="691"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="679" column="9" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" bodystart="679" bodyend="692"/>
+    <listofallmembers>
+      <member refid="structcxxopts_1_1values_1_1detail_1_1SignedCheck_3_01T_00_01true_01_4_1a03b02f6c1e500d96c8b8b13cbe858ce4" prot="public" virt="non-virtual"><scope>cxxopts::values::detail::SignedCheck&lt; T, true &gt;</scope><name>operator()</name></member>
+      <member refid="structcxxopts_1_1values_1_1detail_1_1SignedCheck_3_01T_00_01true_01_4_1a03b02f6c1e500d96c8b8b13cbe858ce4" prot="public" virt="non-virtual"><scope>cxxopts::values::detail::SignedCheck&lt; T, true &gt;</scope><name>operator()</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

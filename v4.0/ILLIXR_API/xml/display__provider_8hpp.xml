@@ -1,0 +1,333 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="display__provider_8hpp" kind="file" language="C++">
+    <compoundname>display_provider.hpp</compoundname>
+    <includes refid="global__module__defs_8hpp" local="yes">illixr/global_module_defs.hpp</includes>
+    <includes refid="phonebook_8hpp" local="yes">illixr/phonebook.hpp</includes>
+    <includes refid="include_2illixr_2vk_2vulkan__utils_8hpp" local="yes">vulkan_utils.hpp</includes>
+    <includes local="no">cstdint</includes>
+    <includedby refid="plugins_2native__renderer_2plugin_8hpp" local="yes">/home/friedel/devel/ILLIXR/plugins/native_renderer/plugin.hpp</includedby>
+    <includedby refid="offload__rendering__client_8hpp" local="yes">/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp</includedby>
+    <includedby refid="offload__rendering__server_8hpp" local="yes">/home/friedel/devel/ILLIXR/plugins/offload_rendering_server/offload_rendering_server.hpp</includedby>
+    <includedby refid="openwarp__vk_8hpp" local="yes">/home/friedel/devel/ILLIXR/plugins/openwarp_vk/openwarp_vk.hpp</includedby>
+    <includedby refid="timewarp__vk_8hpp" local="yes">/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp</includedby>
+    <includedby refid="vkdemo_2service_8cpp" local="yes">/home/friedel/devel/ILLIXR/services/vkdemo/service.cpp</includedby>
+    <includedby refid="vkdemo_2service_8hpp" local="yes">/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp</includedby>
+    <includedby refid="display__backend_8hpp" local="yes">/home/friedel/devel/ILLIXR/src/display/display_backend.hpp</includedby>
+    <includedby refid="vulkan__display_8hpp" local="yes">/home/friedel/devel/ILLIXR/src/vulkan_display.hpp</includedby>
+    <incdepgraph>
+      <node id="2">
+        <label>illixr/global_module_defs.hpp</label>
+        <link refid="global__module__defs_8hpp_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>phonebook.hpp</label>
+        <link refid="phonebook_8hpp_source"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>relative_clock.hpp</label>
+        <link refid="relative__clock_8hpp_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>/home/friedel/devel/ILLIXR/include/illixr/vk/display_provider.hpp</label>
+        <link refid="display__provider_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+      </node>
+      <node id="19">
+        <label>vulkan_utils.hpp</label>
+        <link refid="include_2illixr_2vk_2vulkan__utils_8hpp_source"/>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+      </node>
+      <node id="16">
+        <label>algorithm</label>
+      </node>
+      <node id="5">
+        <label>cassert</label>
+      </node>
+      <node id="14">
+        <label>chrono</label>
+      </node>
+      <node id="17">
+        <label>cmath</label>
+      </node>
+      <node id="27">
+        <label>cstdint</label>
+      </node>
+      <node id="20">
+        <label>fstream</label>
+      </node>
+      <node id="12">
+        <label>iostream</label>
+      </node>
+      <node id="21">
+        <label>map</label>
+      </node>
+      <node id="6">
+        <label>memory</label>
+      </node>
+      <node id="7">
+        <label>mutex</label>
+      </node>
+      <node id="22">
+        <label>optional</label>
+      </node>
+      <node id="15">
+        <label>ratio</label>
+      </node>
+      <node id="23">
+        <label>set</label>
+      </node>
+      <node id="8">
+        <label>shared_mutex</label>
+      </node>
+      <node id="13">
+        <label>spdlog/spdlog.h</label>
+      </node>
+      <node id="9">
+        <label>stdexcept</label>
+      </node>
+      <node id="18">
+        <label>string</label>
+      </node>
+      <node id="10">
+        <label>typeindex</label>
+      </node>
+      <node id="11">
+        <label>unordered_map</label>
+      </node>
+      <node id="24">
+        <label>utility</label>
+      </node>
+      <node id="25">
+        <label>vector</label>
+      </node>
+      <node id="26">
+        <label>vulkan/vulkan.h</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="1">
+        <label>/home/friedel/devel/ILLIXR/include/illixr/vk/display_provider.hpp</label>
+        <link refid="display__provider_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>/home/friedel/devel/ILLIXR/plugins/native_renderer/plugin.hpp</label>
+        <link refid="plugins_2native__renderer_2plugin_8hpp_source"/>
+      </node>
+      <node id="3">
+        <label>/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp</label>
+        <link refid="offload__rendering__client_8hpp_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/plugin.cpp</label>
+        <link refid="plugins_2offload__rendering__client_2plugin_8cpp"/>
+      </node>
+      <node id="5">
+        <label>/home/friedel/devel/ILLIXR/plugins/offload_rendering_server/offload_rendering_server.hpp</label>
+        <link refid="offload__rendering__server_8hpp_source"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>/home/friedel/devel/ILLIXR/plugins/offload_rendering_server/plugin.cpp</label>
+        <link refid="plugins_2offload__rendering__server_2plugin_8cpp"/>
+      </node>
+      <node id="6">
+        <label>/home/friedel/devel/ILLIXR/plugins/offload_rendering_server/plugin.hpp</label>
+        <link refid="plugins_2offload__rendering__server_2plugin_8hpp_source"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>/home/friedel/devel/ILLIXR/plugins/openwarp_vk/openwarp_vk.hpp</label>
+        <link refid="openwarp__vk_8hpp_source"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>/home/friedel/devel/ILLIXR/plugins/openwarp_vk/plugin.hpp</label>
+        <link refid="plugins_2openwarp__vk_2plugin_8hpp_source"/>
+      </node>
+      <node id="11">
+        <label>/home/friedel/devel/ILLIXR/plugins/timewarp_vk/plugin.hpp</label>
+        <link refid="plugins_2timewarp__vk_2plugin_8hpp_source"/>
+      </node>
+      <node id="10">
+        <label>/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp</label>
+        <link refid="timewarp__vk_8hpp_source"/>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp</label>
+        <link refid="vkdemo_2service_8hpp_source"/>
+      </node>
+      <node id="13">
+        <label>/home/friedel/devel/ILLIXR/src/display/display_backend.hpp</label>
+        <link refid="display__backend_8hpp_source"/>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>/home/friedel/devel/ILLIXR/src/display/glfw_extended.hpp</label>
+        <link refid="glfw__extended_8hpp_source"/>
+        <childnode refid="15" relation="include">
+        </childnode>
+      </node>
+      <node id="16">
+        <label>/home/friedel/devel/ILLIXR/src/display/headless.hpp</label>
+        <link refid="headless_8hpp_source"/>
+        <childnode refid="15" relation="include">
+        </childnode>
+      </node>
+      <node id="17">
+        <label>/home/friedel/devel/ILLIXR/src/display/x11_direct.hpp</label>
+        <link refid="x11__direct_8hpp_source"/>
+        <childnode refid="15" relation="include">
+        </childnode>
+      </node>
+      <node id="15">
+        <label>/home/friedel/devel/ILLIXR/src/vulkan_display.hpp</label>
+        <link refid="vulkan__display_8hpp_source"/>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="classILLIXR_1_1vulkan_1_1display__provider" prot="public">ILLIXR::vulkan::display_provider</innerclass>
+    <innernamespace refid="namespaceILLIXR">ILLIXR</innernamespace>
+    <innernamespace refid="namespaceILLIXR_1_1vulkan">ILLIXR::vulkan</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;illixr/global_module_defs.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;illixr/phonebook.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;vulkan_utils.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstdint&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceILLIXR" kindref="compound">ILLIXR</ref>;</highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">ILLIXR::vulkan<sp/>{<sp/></highlight></codeline>
+<codeline lineno="22" refid="classILLIXR_1_1vulkan_1_1display__provider" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classILLIXR_1_1vulkan_1_1display__provider" kindref="compound">display_provider</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1phonebook_1_1service" kindref="compound">phonebook::service</ref><sp/>{</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1vulkan_1_1display__provider" kindref="compound">~display_provider</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal"><sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>required<sp/>by<sp/>timewarp_vk<sp/>as<sp/>a<sp/>service</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/>VkInstance<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vk_instance_<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>VK_NULL_HANDLE;</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/>VkPhysicalDevice<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vk_physical_device_<sp/>=<sp/>VK_NULL_HANDLE;</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/>VkDevice<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vk_device_<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>VK_NULL_HANDLE;</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/>std::unordered_map&lt;queue::queue_type,<sp/>queue&gt;<sp/>queues_;</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight></codeline>
+<codeline lineno="36" refid="classILLIXR_1_1vulkan_1_1display__provider_1a0e0e0033c2b3dced892df08969223c7d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1vulkan_1_1display__provider_1a0e0e0033c2b3dced892df08969223c7d" kindref="member">poll_window_events</ref>()<sp/>{<sp/>};</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>addtionally<sp/>required<sp/>for<sp/>native<sp/>display</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight></codeline>
+<codeline lineno="43" refid="classILLIXR_1_1vulkan_1_1display__provider_1a5cdafcbb931624bede8ffb5c883f012c" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1vulkan_1_1display__provider_1a5cdafcbb931624bede8ffb5c883f012c" kindref="member">recreate_swapchain</ref>()<sp/>{<sp/>};</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"></highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/>VkSurfaceKHR<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vk_surface_<sp/><sp/><sp/>=<sp/>VK_NULL_HANDLE;</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/>VkSwapchainKHR<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vk_swapchain_<sp/>=<sp/>VK_NULL_HANDLE;</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/>VkSurfaceFormatKHR<sp/><sp/><sp/><sp/><sp/><sp/><sp/>swapchain_image_format_;</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;VkImage&gt;<sp/><sp/><sp/><sp/><sp/>swapchain_images_;</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;VkImageView&gt;<sp/>swapchain_image_views_;</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/>VkExtent2D<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>swapchain_extent_<sp/>=<sp/>{display_params::width_pixels,<sp/>display_params::height_pixels};</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"></highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>optional</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/>VmaAllocator<sp/>vma_allocator_;</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"></highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>for<sp/>ffmpeg</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/>VkPhysicalDeviceFeatures2<sp/>features_;</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;const<sp/>char*&gt;<sp/><sp/>enabled_instance_extensions_;</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;const<sp/>char*&gt;<sp/><sp/>enabled_device_extensions_;</highlight></codeline>
+<codeline lineno="59"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="60"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>ILLIXR::vulkan</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="/home/friedel/devel/ILLIXR/include/illixr/vk/display_provider.hpp"/>
+  </compounddef>
+</doxygen>

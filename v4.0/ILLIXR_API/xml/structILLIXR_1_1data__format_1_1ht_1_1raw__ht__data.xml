@@ -1,0 +1,360 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structILLIXR_1_1data__format_1_1ht_1_1raw__ht__data" kind="struct" language="C++" prot="public">
+    <compoundname>ILLIXR::data_format::ht::raw_ht_data</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1ht_1_1raw__ht__data_1a31c6b05503f2c63b77f723ffd24c22ac" prot="public" static="no" mutable="no">
+        <type>uint64_t</type>
+        <definition>uint64_t ILLIXR::data_format::ht::raw_ht_data::time</definition>
+        <argsstring></argsstring>
+        <name>time</name>
+        <qualifiedname>ILLIXR::data_format::ht::raw_ht_data::time</qualifiedname>
+        <briefdescription>
+<para>Time associated with these data. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/hand_tracking_data.hpp" line="313" column="38" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/hand_tracking_data.hpp" bodystart="313" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1ht_1_1raw__ht__data_1a555069c383fe67ef0d58f2bd25877ada" prot="public" static="no" mutable="no">
+        <type>raw_point</type>
+        <definition>raw_point ILLIXR::data_format::ht::raw_ht_data::h_points[2][NUM_LANDMARKS]</definition>
+        <argsstring>[2][NUM_LANDMARKS]</argsstring>
+        <name>h_points</name>
+        <qualifiedname>ILLIXR::data_format::ht::raw_ht_data::h_points</qualifiedname>
+        <briefdescription>
+<para>list of points for each hand </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/hand_tracking_data.hpp" line="314" column="38" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/hand_tracking_data.hpp" bodystart="314" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1ht_1_1raw__ht__data_1afc2b24d7f1c48376067611d0ea1e9394" prot="public" static="no" mutable="no">
+        <type>raw_point</type>
+        <definition>raw_point ILLIXR::data_format::ht::raw_ht_data::h_velocities[2][NUM_LANDMARKS]</definition>
+        <argsstring>[2][NUM_LANDMARKS]</argsstring>
+        <name>h_velocities</name>
+        <qualifiedname>ILLIXR::data_format::ht::raw_ht_data::h_velocities</qualifiedname>
+        <briefdescription>
+<para>list of velocities for each hand </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/hand_tracking_data.hpp" line="315" column="38" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/hand_tracking_data.hpp" bodystart="315" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1ht_1_1raw__ht__data_1a6ed3c7060e93af5974597ebfbf4eb20d" prot="public" static="no" mutable="no">
+        <type><ref refid="structILLIXR_1_1data__format_1_1raw__pose" kindref="compound">raw_pose</ref></type>
+        <definition>raw_pose ILLIXR::data_format::ht::raw_ht_data::wcs_origin</definition>
+        <argsstring></argsstring>
+        <name>wcs_origin</name>
+        <qualifiedname>ILLIXR::data_format::ht::raw_ht_data::wcs_origin</qualifiedname>
+        <briefdescription>
+<para>the offset pose </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/hand_tracking_data.hpp" line="316" column="38" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/hand_tracking_data.hpp" bodystart="316" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1ht_1_1raw__ht__data_1ae07afb0f38dcd245b8b9de41a1338d65" prot="public" static="no" mutable="no">
+        <type>coordinates::reference_space</type>
+        <definition>coordinates::reference_space ILLIXR::data_format::ht::raw_ht_data::reference</definition>
+        <argsstring></argsstring>
+        <name>reference</name>
+        <qualifiedname>ILLIXR::data_format::ht::raw_ht_data::reference</qualifiedname>
+        <initializer>= coordinates::VIEWER</initializer>
+        <briefdescription>
+<para>the reference space </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/hand_tracking_data.hpp" line="317" column="38" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/hand_tracking_data.hpp" bodystart="317" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1ht_1_1raw__ht__data_1a89fb10d3d99bc8ea618858d3514d864d" prot="public" static="no" mutable="no">
+        <type>units::measurement_unit</type>
+        <definition>units::measurement_unit ILLIXR::data_format::ht::raw_ht_data::unit</definition>
+        <argsstring></argsstring>
+        <name>unit</name>
+        <qualifiedname>ILLIXR::data_format::ht::raw_ht_data::unit</qualifiedname>
+        <initializer>= units::measurement_unit::UNSET</initializer>
+        <briefdescription>
+<para>the units of all data </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/hand_tracking_data.hpp" line="318" column="38" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/hand_tracking_data.hpp" bodystart="318" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1ht_1_1raw__ht__data_1ad8b57e801fbacc84bc8968502db3a07b" prot="public" static="no" mutable="no">
+        <type>coordinates::frame</type>
+        <definition>coordinates::frame ILLIXR::data_format::ht::raw_ht_data::frame</definition>
+        <argsstring></argsstring>
+        <name>frame</name>
+        <qualifiedname>ILLIXR::data_format::ht::raw_ht_data::frame</qualifiedname>
+        <initializer>= coordinates::RIGHT_HANDED_Y_UP</initializer>
+        <briefdescription>
+<para>the coordinate system for all data </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/hand_tracking_data.hpp" line="319" column="38" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/hand_tracking_data.hpp" bodystart="319" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1ht_1_1raw__ht__data_1ade21105eb97c0e8bec57c12798536a96" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool ILLIXR::data_format::ht::raw_ht_data::hp_valid[2]</definition>
+        <argsstring>[2]</argsstring>
+        <name>hp_valid</name>
+        <qualifiedname>ILLIXR::data_format::ht::raw_ht_data::hp_valid</qualifiedname>
+        <initializer>= {false, false}</initializer>
+        <briefdescription>
+<para>validity of hand points </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/hand_tracking_data.hpp" line="320" column="38" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/hand_tracking_data.hpp" bodystart="320" bodyend="320"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1ht_1_1raw__ht__data_1a233e4f66e6284af07856654c495bb5b5" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool ILLIXR::data_format::ht::raw_ht_data::hv_valid[2]</definition>
+        <argsstring>[2]</argsstring>
+        <name>hv_valid</name>
+        <qualifiedname>ILLIXR::data_format::ht::raw_ht_data::hv_valid</qualifiedname>
+        <initializer>= {false, false}</initializer>
+        <briefdescription>
+<para>validity of hand velocities </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/hand_tracking_data.hpp" line="321" column="38" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/hand_tracking_data.hpp" bodystart="321" bodyend="321"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1ht_1_1raw__ht__data_1a14c7e59d54d95d301d924aebf5aa7c44" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool ILLIXR::data_format::ht::raw_ht_data::valid</definition>
+        <argsstring></argsstring>
+        <name>valid</name>
+        <qualifiedname>ILLIXR::data_format::ht::raw_ht_data::valid</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+<para>validity of all data </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/hand_tracking_data.hpp" line="322" column="38" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/hand_tracking_data.hpp" bodystart="322" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1ht_1_1raw__ht__data_1a20fb65589962c84f8535669a311f810f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::ht::raw_ht_data::raw_ht_data</definition>
+        <argsstring>()</argsstring>
+        <name>raw_ht_data</name>
+        <qualifiedname>ILLIXR::data_format::ht::raw_ht_data::raw_ht_data</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Basic constructor </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/hand_tracking_data.hpp" line="327" column="9" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/hand_tracking_data.hpp" bodystart="327" bodyend="328"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1ht_1_1raw__ht__data_1af2917498645f1da111a8054eef436025" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::ht::raw_ht_data::raw_ht_data</definition>
+        <argsstring>(const time_point time, const std::map&lt; ht::hand, hand_points &gt; &amp;points, const std::map&lt; ht::hand, velocity &gt; &amp;velocities, const pose_data &amp;pose, coordinates::reference_space ref_sp=coordinates::VIEWER, units::measurement_unit _unit=units::measurement_unit::UNSET)</argsstring>
+        <name>raw_ht_data</name>
+        <qualifiedname>ILLIXR::data_format::ht::raw_ht_data::raw_ht_data</qualifiedname>
+        <param>
+          <type>const time_point</type>
+          <declname>time</declname>
+        </param>
+        <param>
+          <type>const std::map&lt; ht::hand, <ref refid="structILLIXR_1_1data__format_1_1ht_1_1hand__points" kindref="compound">hand_points</ref> &gt; &amp;</type>
+          <declname>points</declname>
+        </param>
+        <param>
+          <type>const std::map&lt; ht::hand, <ref refid="structILLIXR_1_1data__format_1_1ht_1_1velocity" kindref="compound">velocity</ref> &gt; &amp;</type>
+          <declname>velocities</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structILLIXR_1_1data__format_1_1pose__data" kindref="compound">pose_data</ref> &amp;</type>
+          <declname>pose</declname>
+        </param>
+        <param>
+          <type>coordinates::reference_space</type>
+          <declname>ref_sp</declname>
+          <defval>coordinates::VIEWER</defval>
+        </param>
+        <param>
+          <type>units::measurement_unit</type>
+          <declname>_unit</declname>
+          <defval>units::measurement_unit::UNSET</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Create an instance from the given data <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>time</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Time associated with these data </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>points</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The points for each hand </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>velocities</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The velocities for each hand </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>pose</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The offset pose </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>ref_sp</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The reference space, default is VIEWER </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>_unit</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The units for all data, defaults to UNSET </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/hand_tracking_data.hpp" line="339" column="9" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/hand_tracking_data.hpp" bodystart="339" bodyend="369"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1ht_1_1raw__ht__data_1a203123dc281cc80442f2c74db0d5d975" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::ht::raw_ht_data::raw_ht_data</definition>
+        <argsstring>(const ht_frame &amp;frame_)</argsstring>
+        <name>raw_ht_data</name>
+        <qualifiedname>ILLIXR::data_format::ht::raw_ht_data::raw_ht_data</qualifiedname>
+        <param>
+          <type>const <ref refid="structILLIXR_1_1data__format_1_1ht_1_1ht__frame" kindref="compound">ht_frame</ref> &amp;</type>
+          <declname>frame_</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Create an instance from the given <computeroutput><ref refid="structILLIXR_1_1data__format_1_1ht_1_1ht__frame" kindref="compound">ht_frame</ref></computeroutput> <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>frame_</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The data to use </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/hand_tracking_data.hpp" line="375" column="18" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/hand_tracking_data.hpp" bodystart="375" bodyend="377"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1ht_1_1raw__ht__data_1aebf3626917a31c03b8a57b7f68f7f4dc" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void ILLIXR::data_format::ht::raw_ht_data::copy</definition>
+        <argsstring>(const ht_frame &amp;frame_)</argsstring>
+        <name>copy</name>
+        <qualifiedname>ILLIXR::data_format::ht::raw_ht_data::copy</qualifiedname>
+        <param>
+          <type>const <ref refid="structILLIXR_1_1data__format_1_1ht_1_1ht__frame" kindref="compound">ht_frame</ref> &amp;</type>
+          <declname>frame_</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Copy the data from an <computeroutput><ref refid="structILLIXR_1_1data__format_1_1ht_1_1ht__frame" kindref="compound">ht_frame</ref></computeroutput> instance into this structure <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>frame_</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The frame to copy </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/hand_tracking_data.hpp" line="383" column="14" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/hand_tracking_data.hpp" bodystart="383" bodyend="400"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>ILLIXR::data_format::ht::raw_ht_data</label>
+        <childnode refid="2" relation="usage">
+          <edgelabel>wcs_origin</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ILLIXR::data_format::raw_pose</label>
+        <link refid="structILLIXR_1_1data__format_1_1raw__pose"/>
+      </node>
+    </collaborationgraph>
+    <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/hand_tracking_data.hpp" line="312" column="5" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/hand_tracking_data.hpp" bodystart="312" bodyend="401"/>
+    <listofallmembers>
+      <member refid="structILLIXR_1_1data__format_1_1ht_1_1raw__ht__data_1aebf3626917a31c03b8a57b7f68f7f4dc" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::ht::raw_ht_data</scope><name>copy</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1ht_1_1raw__ht__data_1ad8b57e801fbacc84bc8968502db3a07b" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::ht::raw_ht_data</scope><name>frame</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1ht_1_1raw__ht__data_1a555069c383fe67ef0d58f2bd25877ada" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::ht::raw_ht_data</scope><name>h_points</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1ht_1_1raw__ht__data_1afc2b24d7f1c48376067611d0ea1e9394" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::ht::raw_ht_data</scope><name>h_velocities</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1ht_1_1raw__ht__data_1ade21105eb97c0e8bec57c12798536a96" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::ht::raw_ht_data</scope><name>hp_valid</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1ht_1_1raw__ht__data_1a233e4f66e6284af07856654c495bb5b5" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::ht::raw_ht_data</scope><name>hv_valid</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1ht_1_1raw__ht__data_1a20fb65589962c84f8535669a311f810f" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::ht::raw_ht_data</scope><name>raw_ht_data</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1ht_1_1raw__ht__data_1af2917498645f1da111a8054eef436025" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::ht::raw_ht_data</scope><name>raw_ht_data</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1ht_1_1raw__ht__data_1a203123dc281cc80442f2c74db0d5d975" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::ht::raw_ht_data</scope><name>raw_ht_data</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1ht_1_1raw__ht__data_1ae07afb0f38dcd245b8b9de41a1338d65" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::ht::raw_ht_data</scope><name>reference</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1ht_1_1raw__ht__data_1a31c6b05503f2c63b77f723ffd24c22ac" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::ht::raw_ht_data</scope><name>time</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1ht_1_1raw__ht__data_1a89fb10d3d99bc8ea618858d3514d864d" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::ht::raw_ht_data</scope><name>unit</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1ht_1_1raw__ht__data_1a14c7e59d54d95d301d924aebf5aa7c44" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::ht::raw_ht_data</scope><name>valid</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1ht_1_1raw__ht__data_1a6ed3c7060e93af5974597ebfbf4eb20d" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::ht::raw_ht_data</scope><name>wcs_origin</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

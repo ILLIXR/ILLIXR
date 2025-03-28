@@ -1,0 +1,268 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespaceparser" kind="namespace" language="Python">
+    <compoundname>parser</compoundname>
+    <sectiondef kind="var">
+      <memberdef kind="variable" id="parser_8py_1ab4501768b1057deae532e01649e48a3c" prot="public" static="no" mutable="no">
+        <type>list</type>
+        <definition>list parser.triangles</definition>
+        <argsstring></argsstring>
+        <name>triangles</name>
+        <qualifiedname>parser.triangles</qualifiedname>
+        <initializer>=  []</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/gldemo/parser.py" line="6" column="1" bodyfile="/home/friedel/devel/ILLIXR/plugins/gldemo/parser.py" bodystart="6" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="parser_8py_1a112a70a230579d5160ecf562797b2a23" prot="public" static="no" mutable="no">
+        <type>list</type>
+        <definition>list parser.mats</definition>
+        <argsstring></argsstring>
+        <name>mats</name>
+        <qualifiedname>parser.mats</qualifiedname>
+        <initializer>=  []</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/gldemo/parser.py" line="7" column="1" bodyfile="/home/friedel/devel/ILLIXR/plugins/gldemo/parser.py" bodystart="7" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="parser_8py_1a7acabb726ac23c1e78c136bd4631eb84" prot="public" static="no" mutable="no">
+        <type>str</type>
+        <definition>str parser.result</definition>
+        <argsstring></argsstring>
+        <name>result</name>
+        <qualifiedname>parser.result</qualifiedname>
+        <initializer>=  &quot;&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/gldemo/parser.py" line="8" column="1" bodyfile="/home/friedel/devel/ILLIXR/plugins/gldemo/parser.py" bodystart="8" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="parser_8py_1a28f1a34ea4eb80454ba3ab6c2ec450d0" prot="public" static="no" mutable="no">
+        <type>list</type>
+        <definition>list parser.global_verts</definition>
+        <argsstring></argsstring>
+        <name>global_verts</name>
+        <qualifiedname>parser.global_verts</qualifiedname>
+        <initializer>=  []</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/gldemo/parser.py" line="12" column="1" bodyfile="/home/friedel/devel/ILLIXR/plugins/gldemo/parser.py" bodystart="12" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="parser_8py_1ae9994d8edd8326caec09f1294ef3f783" prot="public" static="no" mutable="no">
+        <type>list</type>
+        <definition>list parser.global_normals</definition>
+        <argsstring></argsstring>
+        <name>global_normals</name>
+        <qualifiedname>parser.global_normals</qualifiedname>
+        <initializer>=  []</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/gldemo/parser.py" line="13" column="1" bodyfile="/home/friedel/devel/ILLIXR/plugins/gldemo/parser.py" bodystart="13" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="parser_8py_1a52da24a822395feff392f1053462852e" prot="public" static="no" mutable="no">
+        <type>list</type>
+        <definition>list parser.objects</definition>
+        <argsstring></argsstring>
+        <name>objects</name>
+        <qualifiedname>parser.objects</qualifiedname>
+        <initializer>=  []</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/gldemo/parser.py" line="15" column="1" bodyfile="/home/friedel/devel/ILLIXR/plugins/gldemo/parser.py" bodystart="15" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="parser_8py_1a3df9774c5dd2b152a544307be536a59b" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int parser.num_normals</definition>
+        <argsstring></argsstring>
+        <name>num_normals</name>
+        <qualifiedname>parser.num_normals</qualifiedname>
+        <initializer>=  0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/gldemo/parser.py" line="17" column="1" bodyfile="/home/friedel/devel/ILLIXR/plugins/gldemo/parser.py" bodystart="17" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="parser_8py_1abb4e7ed61537c3c45cb045b6463430b5" prot="public" static="no" mutable="no">
+        <type>str</type>
+        <definition>str parser.currentMat</definition>
+        <argsstring></argsstring>
+        <name>currentMat</name>
+        <qualifiedname>parser.currentMat</qualifiedname>
+        <initializer>=  &quot;&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/gldemo/parser.py" line="20" column="1" bodyfile="/home/friedel/devel/ILLIXR/plugins/gldemo/parser.py" bodystart="20" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="parser_8py_1a8ba0fc26850be2535a2b12bab2c7c506" prot="public" static="no" mutable="no">
+        <type></type>
+        <definition>parser.splitLine</definition>
+        <argsstring></argsstring>
+        <name>splitLine</name>
+        <qualifiedname>parser.splitLine</qualifiedname>
+        <initializer>=  line.rstrip().replace(&quot;  &quot;, &quot; &quot;).split(&apos; &apos;)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/gldemo/parser.py" line="22" column="1" bodyfile="/home/friedel/devel/ILLIXR/plugins/gldemo/parser.py" bodystart="22" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="parser_8py_1af33b31591875c28dc0f94af374999fa4" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int parser.v0_idx</definition>
+        <argsstring></argsstring>
+        <name>v0_idx</name>
+        <qualifiedname>parser.v0_idx</qualifiedname>
+        <initializer>=  int(splitLine[1].split(&apos;/&apos;)[0])-1</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/gldemo/parser.py" line="38" column="1" bodyfile="/home/friedel/devel/ILLIXR/plugins/gldemo/parser.py" bodystart="38" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="parser_8py_1ad0a381162b53b0ffb551497c8da64fc2" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int parser.v1_idx</definition>
+        <argsstring></argsstring>
+        <name>v1_idx</name>
+        <qualifiedname>parser.v1_idx</qualifiedname>
+        <initializer>=  int(splitLine[2].split(&apos;/&apos;)[0])-1</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/gldemo/parser.py" line="39" column="1" bodyfile="/home/friedel/devel/ILLIXR/plugins/gldemo/parser.py" bodystart="39" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="parser_8py_1a8e16fae7d5457af795eb3c08408b17cf" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int parser.v2_idx</definition>
+        <argsstring></argsstring>
+        <name>v2_idx</name>
+        <qualifiedname>parser.v2_idx</qualifiedname>
+        <initializer>=  int(splitLine[3].split(&apos;/&apos;)[0])-1</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/gldemo/parser.py" line="40" column="1" bodyfile="/home/friedel/devel/ILLIXR/plugins/gldemo/parser.py" bodystart="40" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="parser_8py_1a85137e3d89282bfdd6f35742c5181cd8" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int parser.n0_idx</definition>
+        <argsstring></argsstring>
+        <name>n0_idx</name>
+        <qualifiedname>parser.n0_idx</qualifiedname>
+        <initializer>=  int(splitLine[1].split(&apos;/&apos;)[2])-1</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/gldemo/parser.py" line="45" column="1" bodyfile="/home/friedel/devel/ILLIXR/plugins/gldemo/parser.py" bodystart="45" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="parser_8py_1ae33243242c7f08bc82e33680319dfd82" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int parser.n1_idx</definition>
+        <argsstring></argsstring>
+        <name>n1_idx</name>
+        <qualifiedname>parser.n1_idx</qualifiedname>
+        <initializer>=  int(splitLine[2].split(&apos;/&apos;)[2])-1</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/gldemo/parser.py" line="46" column="1" bodyfile="/home/friedel/devel/ILLIXR/plugins/gldemo/parser.py" bodystart="46" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="parser_8py_1a1d581a1db5aead388ffee598e9f8d3d0" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int parser.n2_idx</definition>
+        <argsstring></argsstring>
+        <name>n2_idx</name>
+        <qualifiedname>parser.n2_idx</qualifiedname>
+        <initializer>=  int(splitLine[3].split(&apos;/&apos;)[2])-1</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/gldemo/parser.py" line="47" column="1" bodyfile="/home/friedel/devel/ILLIXR/plugins/gldemo/parser.py" bodystart="47" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="parser_8py_1ac741f1f21d8e12260efd9c33a742af51" prot="public" static="no" mutable="no">
+        <type>list</type>
+        <definition>list parser.vertex</definition>
+        <argsstring></argsstring>
+        <name>vertex</name>
+        <qualifiedname>parser.vertex</qualifiedname>
+        <initializer>=  global_verts[vert_idx]</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/gldemo/parser.py" line="68" column="1" bodyfile="/home/friedel/devel/ILLIXR/plugins/gldemo/parser.py" bodystart="68" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="parser_8py_1aa2e65538509d6db748ffba76e46531ad" prot="public" static="no" mutable="no">
+        <type>list</type>
+        <definition>list parser.normal</definition>
+        <argsstring></argsstring>
+        <name>normal</name>
+        <qualifiedname>parser.normal</qualifiedname>
+        <initializer>=  global_normals[norm_idx]</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/gldemo/parser.py" line="75" column="1" bodyfile="/home/friedel/devel/ILLIXR/plugins/gldemo/parser.py" bodystart="75" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/plugins/gldemo/parser.py" line="1" column="1"/>
+  </compounddef>
+</doxygen>

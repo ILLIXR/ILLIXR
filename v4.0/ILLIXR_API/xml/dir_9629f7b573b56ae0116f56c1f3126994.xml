@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_9629f7b573b56ae0116f56c1f3126994" kind="dir">
+    <compoundname>/home/friedel/devel/ILLIXR/services/fauxpose</compoundname>
+    <innerfile refid="fauxpose_2service_8cpp">service.cpp</innerfile>
+    <innerfile refid="fauxpose_2service_8hpp">service.hpp</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/services/fauxpose/"/>
+  </compounddef>
+</doxygen>

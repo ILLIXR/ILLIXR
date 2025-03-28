@@ -1,0 +1,96 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classILLIXR_1_1fauxpose" kind="class" language="C++" prot="public">
+    <compoundname>ILLIXR::fauxpose</compoundname>
+    <basecompoundref refid="classILLIXR_1_1plugin" prot="public" virt="non-virtual">ILLIXR::plugin</basecompoundref>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classILLIXR_1_1fauxpose_1a85c14b811c9ca8f00d7fe1477dffe286" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>fauxpose::fauxpose</definition>
+        <argsstring>(const std::string &amp;name, phonebook *pb)</argsstring>
+        <name>fauxpose</name>
+        <qualifiedname>ILLIXR::fauxpose::fauxpose</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type><ref refid="classILLIXR_1_1phonebook" kindref="compound">phonebook</ref> *</type>
+          <declname>pb</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/fauxpose/service.hpp" line="58" column="6" bodyfile="/home/friedel/devel/ILLIXR/services/fauxpose/service.cpp" bodystart="147" bodyend="155"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1fauxpose_1a2764eb90ea9b5e63cd56b1bebe064d97" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>fauxpose::~fauxpose</definition>
+        <argsstring>() override</argsstring>
+        <name>~fauxpose</name>
+        <qualifiedname>ILLIXR::fauxpose::~fauxpose</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/fauxpose/service.hpp" line="59" column="5" bodyfile="/home/friedel/devel/ILLIXR/services/fauxpose/service.cpp" bodystart="157" bodyend="161"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>ILLIXR::fauxpose</label>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ILLIXR::plugin</label>
+        <link refid="classILLIXR_1_1plugin"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>ILLIXR::fauxpose</label>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>ILLIXR::phonebook</label>
+        <link refid="classILLIXR_1_1phonebook"/>
+      </node>
+      <node id="2">
+        <label>ILLIXR::plugin</label>
+        <link refid="classILLIXR_1_1plugin"/>
+        <childnode refid="3" relation="usage">
+          <edgelabel>phonebook_</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/home/friedel/devel/ILLIXR/services/fauxpose/service.hpp" line="54" column="1" bodyfile="/home/friedel/devel/ILLIXR/services/fauxpose/service.hpp" bodystart="54" bodyend="60"/>
+    <listofallmembers>
+      <member refid="classILLIXR_1_1fauxpose_1a85c14b811c9ca8f00d7fe1477dffe286" prot="public" virt="non-virtual"><scope>ILLIXR::fauxpose</scope><name>fauxpose</name></member>
+      <member refid="classILLIXR_1_1plugin_1afe52734e7edc87bd0bf974caf112961b" prot="protected" virt="non-virtual"><scope>ILLIXR::fauxpose</scope><name>gen_guid_</name></member>
+      <member refid="classILLIXR_1_1plugin_1aebda022998bd35983e83f391dc0e5193" prot="public" virt="non-virtual"><scope>ILLIXR::fauxpose</scope><name>get_name</name></member>
+      <member refid="classILLIXR_1_1plugin_1aaedb3f9178bdd11e53815e158454aaf3" prot="protected" virt="non-virtual"><scope>ILLIXR::fauxpose</scope><name>id_</name></member>
+      <member refid="classILLIXR_1_1plugin_1aa963c518af83966173840a8558490888" prot="protected" virt="non-virtual"><scope>ILLIXR::fauxpose</scope><name>name_</name></member>
+      <member refid="classILLIXR_1_1plugin_1a6f7a2a9012350591c00d67a5bc0fd5a6" prot="protected" virt="non-virtual"><scope>ILLIXR::fauxpose</scope><name>phonebook_</name></member>
+      <member refid="classILLIXR_1_1plugin_1abc91c0e5be180a8e0bbeaf114a127f17" prot="public" virt="non-virtual"><scope>ILLIXR::fauxpose</scope><name>plugin</name></member>
+      <member refid="classILLIXR_1_1plugin_1a8d40c2421cde09079372d12bfe7d45fe" prot="protected" virt="non-virtual"><scope>ILLIXR::fauxpose</scope><name>plugin_logger_</name></member>
+      <member refid="classILLIXR_1_1plugin_1aef671d0cd9b6de45d3ade16dedbf4974" prot="protected" virt="non-virtual"><scope>ILLIXR::fauxpose</scope><name>record_logger_</name></member>
+      <member refid="classILLIXR_1_1plugin_1a7c1c7c1a0ec2e43bfa1118586a28932f" prot="public" virt="non-virtual"><scope>ILLIXR::fauxpose</scope><name>spd_add_file_sink</name></member>
+      <member refid="classILLIXR_1_1plugin_1a569297189ef365cf93f6a95202c76d76" prot="public" virt="non-virtual"><scope>ILLIXR::fauxpose</scope><name>spdlogger</name></member>
+      <member refid="classILLIXR_1_1plugin_1a30d7294817fc5e8a8216fbfbca233cdc" prot="public" virt="virtual"><scope>ILLIXR::fauxpose</scope><name>start</name></member>
+      <member refid="classILLIXR_1_1plugin_1a2cefabfb6dd9800b1ebc8b07031661c4" prot="public" virt="virtual"><scope>ILLIXR::fauxpose</scope><name>stop</name></member>
+      <member refid="classILLIXR_1_1fauxpose_1a2764eb90ea9b5e63cd56b1bebe064d97" prot="public" virt="non-virtual"><scope>ILLIXR::fauxpose</scope><name>~fauxpose</name></member>
+      <member refid="classILLIXR_1_1plugin_1a44d7b00c86e227bbc1a0b221da43d454" prot="public" virt="virtual"><scope>ILLIXR::fauxpose</scope><name>~plugin</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,76 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structILLIXR_1_1data__format_1_1connection__signal" kind="struct" language="C++" prot="public">
+    <compoundname>ILLIXR::data_format::connection_signal</compoundname>
+    <basecompoundref refid="classILLIXR_1_1switchboard_1_1event" prot="public" virt="non-virtual">ILLIXR::switchboard::event</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1connection__signal_1a096252887574ddce76de7b0d44600b66" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool ILLIXR::data_format::connection_signal::start</definition>
+        <argsstring></argsstring>
+        <name>start</name>
+        <qualifiedname>ILLIXR::data_format::connection_signal::start</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/misc.hpp" line="15" column="10" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/misc.hpp" bodystart="15" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1connection__signal_1ab752dd7b1caecab7c54531c6e3de405f" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::connection_signal::connection_signal</definition>
+        <argsstring>(bool start_)</argsstring>
+        <name>connection_signal</name>
+        <qualifiedname>ILLIXR::data_format::connection_signal::connection_signal</qualifiedname>
+        <param>
+          <type>bool</type>
+          <declname>start_</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/misc.hpp" line="17" column="14" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/misc.hpp" bodystart="17" bodyend="18"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>ILLIXR::data_format::connection_signal</label>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ILLIXR::switchboard::event</label>
+        <link refid="classILLIXR_1_1switchboard_1_1event"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>ILLIXR::data_format::connection_signal</label>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ILLIXR::switchboard::event</label>
+        <link refid="classILLIXR_1_1switchboard_1_1event"/>
+      </node>
+    </collaborationgraph>
+    <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/misc.hpp" line="14" column="1" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/misc.hpp" bodystart="14" bodyend="19"/>
+    <listofallmembers>
+      <member refid="structILLIXR_1_1data__format_1_1connection__signal_1ab752dd7b1caecab7c54531c6e3de405f" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::connection_signal</scope><name>connection_signal</name></member>
+      <member refid="classILLIXR_1_1switchboard_1_1event_1a55399aaf47bc0d3943fd89d7afb55624" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::connection_signal</scope><name>serialize</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1connection__signal_1a096252887574ddce76de7b0d44600b66" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::connection_signal</scope><name>start</name></member>
+      <member refid="classILLIXR_1_1switchboard_1_1event_1a01fb51a03e9025d71087de76823e449e" prot="public" virt="virtual"><scope>ILLIXR::data_format::connection_signal</scope><name>~event</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

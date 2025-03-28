@@ -1,0 +1,167 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structILLIXR_1_1vulkan_1_1queue__families" kind="struct" language="C++" prot="public">
+    <compoundname>ILLIXR::vulkan::queue_families</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structILLIXR_1_1vulkan_1_1queue__families_1acdfe307c0f5409b6fcf24e0f02a0179a" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; uint32_t &gt;</type>
+        <definition>std::optional&lt; uint32_t &gt; ILLIXR::vulkan::queue_families::graphics_family</definition>
+        <argsstring></argsstring>
+        <name>graphics_family</name>
+        <qualifiedname>ILLIXR::vulkan::queue_families::graphics_family</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" line="28" column="19" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" bodystart="28" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1vulkan_1_1queue__families_1af9cf55022e717c0b23fd20cd0710755f" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; uint32_t &gt;</type>
+        <definition>std::optional&lt; uint32_t &gt; ILLIXR::vulkan::queue_families::present_family</definition>
+        <argsstring></argsstring>
+        <name>present_family</name>
+        <qualifiedname>ILLIXR::vulkan::queue_families::present_family</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" line="29" column="19" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" bodystart="29" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1vulkan_1_1queue__families_1aba83bae01186081b3c03df73461fa21e" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; uint32_t &gt;</type>
+        <definition>std::optional&lt; uint32_t &gt; ILLIXR::vulkan::queue_families::encode_family</definition>
+        <argsstring></argsstring>
+        <name>encode_family</name>
+        <qualifiedname>ILLIXR::vulkan::queue_families::encode_family</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" line="30" column="19" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" bodystart="30" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1vulkan_1_1queue__families_1a250e6ae290d3bc1690004a8784cbbb3a" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; uint32_t &gt;</type>
+        <definition>std::optional&lt; uint32_t &gt; ILLIXR::vulkan::queue_families::decode_family</definition>
+        <argsstring></argsstring>
+        <name>decode_family</name>
+        <qualifiedname>ILLIXR::vulkan::queue_families::decode_family</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" line="31" column="19" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" bodystart="31" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1vulkan_1_1queue__families_1a69b4df66ff58fb3ab5805752e0be0760" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; uint32_t &gt;</type>
+        <definition>std::optional&lt; uint32_t &gt; ILLIXR::vulkan::queue_families::dedicated_transfer</definition>
+        <argsstring></argsstring>
+        <name>dedicated_transfer</name>
+        <qualifiedname>ILLIXR::vulkan::queue_families::dedicated_transfer</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" line="32" column="19" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" bodystart="32" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1vulkan_1_1queue__families_1a7efbfeabee18e2419c841b479d62f609" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; uint32_t &gt;</type>
+        <definition>std::optional&lt; uint32_t &gt; ILLIXR::vulkan::queue_families::compute_family</definition>
+        <argsstring></argsstring>
+        <name>compute_family</name>
+        <qualifiedname>ILLIXR::vulkan::queue_families::compute_family</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" line="33" column="19" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" bodystart="33" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structILLIXR_1_1vulkan_1_1queue__families_1a9db2222a87b179d556b84349853ee089" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool ILLIXR::vulkan::queue_families::has_presentation</definition>
+        <argsstring>() const</argsstring>
+        <name>has_presentation</name>
+        <qualifiedname>ILLIXR::vulkan::queue_families::has_presentation</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" line="35" column="12" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" bodystart="35" bodyend="37"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1vulkan_1_1queue__families_1a64b19e5ed1b8d491b89b8442cb9d642a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool ILLIXR::vulkan::queue_families::has_compression</definition>
+        <argsstring>() const</argsstring>
+        <name>has_compression</name>
+        <qualifiedname>ILLIXR::vulkan::queue_families::has_compression</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" line="39" column="11" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" bodystart="39" bodyend="41"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1vulkan_1_1queue__families_1a9db2222a87b179d556b84349853ee089" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool ILLIXR::vulkan::queue_families::has_presentation</definition>
+        <argsstring>() const</argsstring>
+        <name>has_presentation</name>
+        <qualifiedname>ILLIXR::vulkan::queue_families::has_presentation</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/utils/vulkan_utils.hpp" line="35" column="12" bodyfile="/home/friedel/devel/ILLIXR/utils/vulkan_utils.hpp" bodystart="35" bodyend="37"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1vulkan_1_1queue__families_1a64b19e5ed1b8d491b89b8442cb9d642a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool ILLIXR::vulkan::queue_families::has_compression</definition>
+        <argsstring>() const</argsstring>
+        <name>has_compression</name>
+        <qualifiedname>ILLIXR::vulkan::queue_families::has_compression</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/utils/vulkan_utils.hpp" line="39" column="11" bodyfile="/home/friedel/devel/ILLIXR/utils/vulkan_utils.hpp" bodystart="39" bodyend="41"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" line="27" column="1" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" bodystart="27" bodyend="42"/>
+    <listofallmembers>
+      <member refid="structILLIXR_1_1vulkan_1_1queue__families_1a7efbfeabee18e2419c841b479d62f609" prot="public" virt="non-virtual"><scope>ILLIXR::vulkan::queue_families</scope><name>compute_family</name></member>
+      <member refid="structILLIXR_1_1vulkan_1_1queue__families_1a250e6ae290d3bc1690004a8784cbbb3a" prot="public" virt="non-virtual"><scope>ILLIXR::vulkan::queue_families</scope><name>decode_family</name></member>
+      <member refid="structILLIXR_1_1vulkan_1_1queue__families_1a69b4df66ff58fb3ab5805752e0be0760" prot="public" virt="non-virtual"><scope>ILLIXR::vulkan::queue_families</scope><name>dedicated_transfer</name></member>
+      <member refid="structILLIXR_1_1vulkan_1_1queue__families_1aba83bae01186081b3c03df73461fa21e" prot="public" virt="non-virtual"><scope>ILLIXR::vulkan::queue_families</scope><name>encode_family</name></member>
+      <member refid="structILLIXR_1_1vulkan_1_1queue__families_1acdfe307c0f5409b6fcf24e0f02a0179a" prot="public" virt="non-virtual"><scope>ILLIXR::vulkan::queue_families</scope><name>graphics_family</name></member>
+      <member refid="structILLIXR_1_1vulkan_1_1queue__families_1a64b19e5ed1b8d491b89b8442cb9d642a" prot="public" virt="non-virtual"><scope>ILLIXR::vulkan::queue_families</scope><name>has_compression</name></member>
+      <member refid="structILLIXR_1_1vulkan_1_1queue__families_1a64b19e5ed1b8d491b89b8442cb9d642a" prot="public" virt="non-virtual"><scope>ILLIXR::vulkan::queue_families</scope><name>has_compression</name></member>
+      <member refid="structILLIXR_1_1vulkan_1_1queue__families_1a9db2222a87b179d556b84349853ee089" prot="public" virt="non-virtual"><scope>ILLIXR::vulkan::queue_families</scope><name>has_presentation</name></member>
+      <member refid="structILLIXR_1_1vulkan_1_1queue__families_1a9db2222a87b179d556b84349853ee089" prot="public" virt="non-virtual"><scope>ILLIXR::vulkan::queue_families</scope><name>has_presentation</name></member>
+      <member refid="structILLIXR_1_1vulkan_1_1queue__families_1af9cf55022e717c0b23fd20cd0710755f" prot="public" virt="non-virtual"><scope>ILLIXR::vulkan::queue_families</scope><name>present_family</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

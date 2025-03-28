@@ -1,0 +1,481 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="plugins_2gtsam__integrator_2plugin_8hpp" kind="file" language="C++">
+    <compoundname>plugin.hpp</compoundname>
+    <includes refid="imu_8hpp" local="yes">illixr/data_format/imu.hpp</includes>
+    <includes refid="phonebook_8hpp" local="yes">illixr/phonebook.hpp</includes>
+    <includes refid="include_2illixr_2plugin_8hpp" local="yes">illixr/plugin.hpp</includes>
+    <includes refid="switchboard_8hpp" local="yes">illixr/switchboard.hpp</includes>
+    <includes local="yes">third_party/filter.h</includes>
+    <includes local="no">gtsam/navigation/CombinedImuFactor.h</includes>
+    <includes local="no">gtsam/navigation/ImuFactor.h</includes>
+    <includedby refid="plugins_2gtsam__integrator_2plugin_8cpp" local="yes">/home/friedel/devel/ILLIXR/plugins/gtsam_integrator/plugin.cpp</includedby>
+    <incdepgraph>
+      <node id="2">
+        <label>illixr/data_format/imu.hpp</label>
+        <link refid="imu_8hpp_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>managed_thread.hpp</label>
+        <link refid="managed__thread_8hpp_source"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>network/network_backend.hpp</label>
+        <link refid="network__backend_8hpp_source"/>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+      </node>
+      <node id="21">
+        <label>topic_config.hpp</label>
+        <link refid="topic__config_8hpp_source"/>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>illixr/phonebook.hpp</label>
+        <link refid="phonebook_8hpp_source"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+      </node>
+      <node id="38">
+        <label>illixr/plugin.hpp</label>
+        <link refid="include_2illixr_2plugin_8hpp_source"/>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="39" relation="include">
+        </childnode>
+        <childnode refid="40" relation="include">
+        </childnode>
+        <childnode refid="41" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="42" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="25">
+        <label>record_logger.hpp</label>
+        <link refid="record__logger_8hpp_source"/>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>illixr/switchboard.hpp</label>
+        <link refid="switchboard_8hpp_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>/home/friedel/devel/ILLIXR/plugins/gtsam_integrator/plugin.hpp</label>
+        <link refid="plugins_2gtsam__integrator_2plugin_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="38" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="43" relation="include">
+        </childnode>
+        <childnode refid="44" relation="include">
+        </childnode>
+        <childnode refid="45" relation="include">
+        </childnode>
+      </node>
+      <node id="26">
+        <label>any</label>
+      </node>
+      <node id="6">
+        <label>atomic</label>
+      </node>
+      <node id="32">
+        <label>boost/archive/binary_iarchive.hpp</label>
+      </node>
+      <node id="33">
+        <label>boost/archive/binary_oarchive.hpp</label>
+      </node>
+      <node id="34">
+        <label>boost/iostreams/device/back_inserter.hpp</label>
+      </node>
+      <node id="35">
+        <label>boost/iostreams/stream.hpp</label>
+      </node>
+      <node id="36">
+        <label>boost/serialization/shared_ptr.hpp</label>
+      </node>
+      <node id="7">
+        <label>cassert</label>
+      </node>
+      <node id="22">
+        <label>chrono</label>
+      </node>
+      <node id="4">
+        <label>concurrentqueue/blockingconcurrentqueue.hpp</label>
+      </node>
+      <node id="29">
+        <label>eigen3/Eigen/Core</label>
+      </node>
+      <node id="37">
+        <label>eigen3/Eigen/Dense</label>
+      </node>
+      <node id="30">
+        <label>eigen3/Eigen/Geometry</label>
+      </node>
+      <node id="8">
+        <label>functional</label>
+      </node>
+      <node id="44">
+        <label>gtsam/navigation/CombinedImuFactor.h</label>
+      </node>
+      <node id="45">
+        <label>gtsam/navigation/ImuFactor.h</label>
+      </node>
+      <node id="19">
+        <label>iostream</label>
+      </node>
+      <node id="31">
+        <label>list</label>
+      </node>
+      <node id="14">
+        <label>memory</label>
+      </node>
+      <node id="15">
+        <label>mutex</label>
+      </node>
+      <node id="23">
+        <label>optional</label>
+      </node>
+      <node id="16">
+        <label>shared_mutex</label>
+      </node>
+      <node id="39">
+        <label>spdlog/common.h</label>
+      </node>
+      <node id="40">
+        <label>spdlog/sinks/basic_file_sink.h</label>
+      </node>
+      <node id="41">
+        <label>spdlog/sinks/stdout_color_sinks.h</label>
+      </node>
+      <node id="20">
+        <label>spdlog/spdlog.h</label>
+      </node>
+      <node id="28">
+        <label>sstream</label>
+      </node>
+      <node id="9">
+        <label>stdexcept</label>
+      </node>
+      <node id="27">
+        <label>string</label>
+      </node>
+      <node id="43">
+        <label>third_party/filter.h</label>
+      </node>
+      <node id="10">
+        <label>thread</label>
+      </node>
+      <node id="17">
+        <label>typeindex</label>
+      </node>
+      <node id="42">
+        <label>typeinfo</label>
+      </node>
+      <node id="18">
+        <label>unordered_map</label>
+      </node>
+      <node id="11">
+        <label>utility</label>
+      </node>
+      <node id="24">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <innerclass refid="classILLIXR_1_1gtsam__integrator" prot="public">ILLIXR::gtsam_integrator</innerclass>
+    <innerclass refid="classILLIXR_1_1gtsam__integrator_1_1pim__object" prot="private">ILLIXR::gtsam_integrator::pim_object</innerclass>
+    <innernamespace refid="namespaceILLIXR">ILLIXR</innernamespace>
+    <sectiondef kind="typedef">
+      <memberdef kind="typedef" id="plugins_2gtsam__integrator_2plugin_8hpp_1a3ac0b841f4b8dd3e6e022fde38cafc5c" prot="public" static="no">
+        <type>gtsam::imuBias::ConstantBias</type>
+        <definition>using ImuBias =  gtsam::imuBias::ConstantBias</definition>
+        <argsstring></argsstring>
+        <name>ImuBias</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/gtsam_integrator/plugin.hpp" line="11" column="1" bodyfile="/home/friedel/devel/ILLIXR/plugins/gtsam_integrator/plugin.hpp" bodystart="11" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="plugins_2gtsam__integrator_2plugin_8hpp_1aed287de68c92e717803fe4a47068aaeb" prot="public" static="no">
+        <type><ref refid="structILLIXR_1_1data__format_1_1imu__integrator__input" kindref="compound">ILLIXR::data_format::imu_integrator_input</ref></type>
+        <definition>using imu_int_t =  ILLIXR::data_format::imu_integrator_input</definition>
+        <argsstring></argsstring>
+        <name>imu_int_t</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/gtsam_integrator/plugin.hpp" line="13" column="1" bodyfile="/home/friedel/devel/ILLIXR/plugins/gtsam_integrator/plugin.hpp" bodystart="13" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="plugins_2gtsam__integrator_2plugin_8hpp_1a269a2c8db18069b99867c1cea9f44fc6" prot="public" static="no">
+        <type><ref refid="structILLIXR_1_1data__format_1_1imu__type" kindref="compound">ILLIXR::data_format::imu_type</ref></type>
+        <definition>using imu_t =  ILLIXR::data_format::imu_type</definition>
+        <argsstring></argsstring>
+        <name>imu_t</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/gtsam_integrator/plugin.hpp" line="14" column="1" bodyfile="/home/friedel/devel/ILLIXR/plugins/gtsam_integrator/plugin.hpp" bodystart="14" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="plugins_2gtsam__integrator_2plugin_8hpp_1abc24afd5ef6a70f053972519022f72fd" prot="public" static="no">
+        <type>ImuBias</type>
+        <definition>using bias_t =  ImuBias</definition>
+        <argsstring></argsstring>
+        <name>bias_t</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/gtsam_integrator/plugin.hpp" line="15" column="1" bodyfile="/home/friedel/devel/ILLIXR/plugins/gtsam_integrator/plugin.hpp" bodystart="15" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="plugins_2gtsam__integrator_2plugin_8hpp_1a799a5bc2ce34933e262950250d18611e" prot="public" static="no">
+        <type>gtsam::NavState</type>
+        <definition>using nav_t =  gtsam::NavState</definition>
+        <argsstring></argsstring>
+        <name>nav_t</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/gtsam_integrator/plugin.hpp" line="16" column="1" bodyfile="/home/friedel/devel/ILLIXR/plugins/gtsam_integrator/plugin.hpp" bodystart="16" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="plugins_2gtsam__integrator_2plugin_8hpp_1a4de2813cb4e7377af262dfe73f009028" prot="public" static="no">
+        <type>gtsam::PreintegratedCombinedMeasurements</type>
+        <definition>using pim_t =  gtsam::PreintegratedCombinedMeasurements</definition>
+        <argsstring></argsstring>
+        <name>pim_t</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/gtsam_integrator/plugin.hpp" line="17" column="1" bodyfile="/home/friedel/devel/ILLIXR/plugins/gtsam_integrator/plugin.hpp" bodystart="17" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="plugins_2gtsam__integrator_2plugin_8hpp_1acfde40ebcd4e25afb9a8f724b76684f2" prot="public" static="no">
+        <type>gtsam::PreintegrationType *</type>
+        <definition>using pim_ptr_t =  gtsam::PreintegrationType*</definition>
+        <argsstring></argsstring>
+        <name>pim_ptr_t</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/gtsam_integrator/plugin.hpp" line="18" column="1" bodyfile="/home/friedel/devel/ILLIXR/plugins/gtsam_integrator/plugin.hpp" bodystart="18" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;illixr/data_format/imu.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;illixr/phonebook.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;illixr/plugin.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;illixr/switchboard.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;third_party/filter.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;gtsam/navigation/CombinedImuFactor.h&gt;</highlight><highlight class="normal"><sp/></highlight><highlight class="comment">//<sp/>Used<sp/>if<sp/>IMU<sp/>combined<sp/>is<sp/>off.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;gtsam/navigation/ImuFactor.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">ImuBias<sp/>=<sp/>gtsam::imuBias::ConstantBias;</highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="structILLIXR_1_1data__format_1_1imu__integrator__input" kindref="compound">imu_int_t</ref><sp/>=<sp/><ref refid="structILLIXR_1_1data__format_1_1imu__integrator__input" kindref="compound">ILLIXR::data_format::imu_integrator_input</ref>;</highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="structILLIXR_1_1data__format_1_1imu__type" kindref="compound">imu_t</ref><sp/><sp/><sp/><sp/><sp/>=<sp/><ref refid="structILLIXR_1_1data__format_1_1imu__type" kindref="compound">ILLIXR::data_format::imu_type</ref>;</highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">bias_t<sp/><sp/><sp/><sp/>=<sp/>ImuBias;</highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">nav_t<sp/><sp/><sp/><sp/><sp/>=<sp/>gtsam::NavState;</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">pim_t<sp/><sp/><sp/><sp/><sp/>=<sp/>gtsam::PreintegratedCombinedMeasurements;</highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">pim_ptr_t<sp/>=<sp/>gtsam::PreintegrationType*;</highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceILLIXR" kindref="compound">ILLIXR</ref><sp/>{</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal">gtsam_integrator<sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/>plugin<sp/>{</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/>[[maybe_unused]]<sp/>gtsam_integrator(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>name,<sp/>phonebook*<sp/>pb);</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>callback(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>switchboard::ptr&lt;const<sp/>data_format::imu_type&gt;&amp;<sp/>datum);</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal">pim_object<sp/>{</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/>pim_object(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structILLIXR_1_1data__format_1_1imu__integrator__input" kindref="compound">imu_int_t</ref>&amp;<sp/>imu_int_input);</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>~pim_object();</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>reset_integration_and_set_bias(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structILLIXR_1_1data__format_1_1imu__integrator__input" kindref="compound">imu_int_t</ref>&amp;<sp/>imu_int_input)<sp/></highlight><highlight class="keyword">noexcept</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>integrate_measurement(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structILLIXR_1_1data__format_1_1imu__type" kindref="compound">imu_t</ref>&amp;<sp/>imu_input,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structILLIXR_1_1data__format_1_1imu__type" kindref="compound">imu_t</ref>&amp;<sp/>imu_input_next)<sp/></highlight><highlight class="keyword">noexcept</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>[[nodiscard]]<sp/>bias_t<sp/>bias_hat()<sp/>const<sp/>noexcept;</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>[[nodiscard]]<sp/>nav_t<sp/><sp/>predict()<sp/>const<sp/>noexcept;</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/>private:</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bias_t<sp/><sp/><sp/><sp/>imu_bias_;</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>nav_t<sp/><sp/><sp/><sp/><sp/>nav_state_lkf_;</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>pim_ptr_t<sp/>pim_;</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"></highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>clean_imu_vec(time_point<sp/>timestamp);</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>propagate_imu_values(time_point<sp/>real_time);</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>std::vector&lt;data_format::imu_type&gt;<sp/>select_imu_readings(const<sp/>std::vector&lt;data_format::imu_type&gt;&amp;<sp/>imu_data,</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>time_point<sp/>time_begin,<sp/>const<sp/>time_point<sp/>time_end);</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>data_format::imu_type<sp/>interpolate_imu(const<sp/>data_format::imu_type&amp;<sp/>imu_1,<sp/>const<sp/>data_format::imu_type&amp;<sp/>imu_2,</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>time_point<sp/>timestamp);</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"></highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/>const<sp/>std::shared_ptr&lt;switchboard&gt;<sp/><sp/><sp/><sp/>switchboard_;</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/>const<sp/>std::shared_ptr&lt;relative_clock&gt;<sp/>clock_;</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"></highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>IMU<sp/>Data,<sp/>Sequence<sp/>Flag,<sp/>and<sp/>State<sp/>Vars<sp/>Needed</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/>switchboard::reader&lt;data_format::imu_integrator_input&gt;<sp/>imu_integrator_input_;</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"></highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Write<sp/>IMU<sp/>Biases<sp/>for<sp/>PP</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/>switchboard::writer&lt;data_format::imu_raw_type&gt;<sp/>imu_raw_;</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"></highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_ptr&lt;spdlog::logger&gt;<sp/>log_;</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"></highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;one_euro_filter&lt;Eigen::Array&lt;</highlight><highlight class="keywordtype">double</highlight><highlight class="normal">,<sp/>3,<sp/>1&gt;,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal">&gt;&gt;<sp/>filters_;</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>has_prev_<sp/>=<sp/>false;</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/>Eigen::Matrix&lt;</highlight><highlight class="keywordtype">double</highlight><highlight class="normal">,<sp/>3,<sp/>1&gt;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>prev_euler_angles_;</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;data_format::imu_type&gt;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>imu_vector_;</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"></highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>std::vector&lt;pose_type&gt;<sp/>filtered_poses;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="69"><highlight class="normal"></highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/>[[maybe_unused]]<sp/>time_point<sp/>last_cam_time_{};</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/>duration<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>last_imu_offset_{};</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"></highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/>std::unique_ptr&lt;pim_object&gt;<sp/>pim_obj_;</highlight></codeline>
+<codeline lineno="74"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="75"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>ILLIXR</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="/home/friedel/devel/ILLIXR/plugins/gtsam_integrator/plugin.hpp"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,167 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="proper__quaternion_8hpp" kind="file" language="C++">
+    <compoundname>proper_quaternion.hpp</compoundname>
+    <includes local="no">eigen3/Eigen/Dense</includes>
+    <includes local="no">iostream</includes>
+    <includedby refid="runge-kutta_8hpp" local="yes">/home/friedel/devel/ILLIXR/include/illixr/runge-kutta.hpp</includedby>
+    <incdepgraph>
+      <node id="1">
+        <label>/home/friedel/devel/ILLIXR/include/illixr/data_format/proper_quaternion.hpp</label>
+        <link refid="proper__quaternion_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>eigen3/Eigen/Dense</label>
+      </node>
+      <node id="3">
+        <label>iostream</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="1">
+        <label>/home/friedel/devel/ILLIXR/include/illixr/data_format/proper_quaternion.hpp</label>
+        <link refid="proper__quaternion_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>/home/friedel/devel/ILLIXR/include/illixr/runge-kutta.hpp</label>
+        <link refid="runge-kutta_8hpp_source"/>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="classILLIXR_1_1data__format_1_1proper__quaternion" prot="public">ILLIXR::data_format::proper_quaternion</innerclass>
+    <innernamespace refid="namespaceILLIXR">ILLIXR</innernamespace>
+    <innernamespace refid="namespaceILLIXR_1_1data__format">ILLIXR::data_format</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;eigen3/Eigen/Dense&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;iostream&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">ILLIXR::data_format<sp/>{</highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>Scalar_,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>Options_<sp/>=<sp/>Eigen::AutoAlign&gt;</highlight></codeline>
+<codeline lineno="17" refid="classILLIXR_1_1data__format_1_1proper__quaternion" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classILLIXR_1_1data__format_1_1proper__quaternion" kindref="compound">proper_quaternion</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/>Eigen::Quaternion&lt;Scalar_,<sp/>Options_&gt;<sp/>{</highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="19"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>Eigen::Quaternion&lt;Scalar_&gt;::Base<sp/>Base;</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">Base::operator=;</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight></codeline>
+<codeline lineno="28" refid="classILLIXR_1_1data__format_1_1proper__quaternion_1a90327d2cab04380f896908912a50c7d0" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1data__format_1_1proper__quaternion" kindref="compound">proper_quaternion</ref>&amp;<sp/><ref refid="classILLIXR_1_1data__format_1_1proper__quaternion_1a90327d2cab04380f896908912a50c7d0" kindref="member">operator=</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1data__format_1_1proper__quaternion" kindref="compound">proper_quaternion</ref>&amp;<sp/>other)<sp/>{</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Base::operator=(other);</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>*</highlight><highlight class="keyword">this</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">Base::operator*=;</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>constructors</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1data__format_1_1proper__quaternion" kindref="compound">proper_quaternion</ref>()<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1data__format_1_1proper__quaternion" kindref="compound">proper_quaternion</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1data__format_1_1proper__quaternion" kindref="compound">proper_quaternion</ref>&amp;<sp/>other)<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight></codeline>
+<codeline lineno="43" refid="classILLIXR_1_1data__format_1_1proper__quaternion_1a214999eff0db3c3388d40db7910594a1" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>[[maybe_unused]]<sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1data__format_1_1proper__quaternion_1a214999eff0db3c3388d40db7910594a1" kindref="member">proper_quaternion</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Eigen::Quaternion&lt;Scalar_,<sp/>Options_&gt;&amp;<sp/>other)</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>Eigen::Quaternion&lt;Scalar_,<sp/>Options_&gt;(other)<sp/>{<sp/>}</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"></highlight></codeline>
+<codeline lineno="53" refid="classILLIXR_1_1data__format_1_1proper__quaternion_1ac34f5bdda430fd8cb211380553b0f2a0" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>[[maybe_unused]]<sp/><ref refid="classILLIXR_1_1data__format_1_1proper__quaternion_1ac34f5bdda430fd8cb211380553b0f2a0" kindref="member">proper_quaternion</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Scalar_&amp;<sp/>w,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Scalar_&amp;<sp/>x,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Scalar_&amp;<sp/>y,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Scalar_&amp;<sp/>z)</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>Eigen::Quaternion&lt;Scalar_,<sp/>Options_&gt;(w,<sp/>x,<sp/>y,<sp/>z)<sp/>{<sp/>}</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"></highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>Derived&gt;</highlight></codeline>
+<codeline lineno="63" refid="classILLIXR_1_1data__format_1_1proper__quaternion_1a596f7d824849288674500b1616f93f77" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>[[maybe_unused]]<sp/><ref refid="classILLIXR_1_1data__format_1_1proper__quaternion_1a596f7d824849288674500b1616f93f77" kindref="member">proper_quaternion</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Scalar_&amp;<sp/>w,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Eigen::MatrixBase&lt;Derived&gt;&amp;<sp/>vec)</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>Eigen::Quaternion&lt;Scalar_,<sp/>Options_&gt;(w,<sp/>vec)<sp/>{<sp/>}</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"></highlight></codeline>
+<codeline lineno="70" refid="classILLIXR_1_1data__format_1_1proper__quaternion_1a8ed11957494b49f1f14b87e38bacc33a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>[[maybe_unused]]<sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1data__format_1_1proper__quaternion_1a8ed11957494b49f1f14b87e38bacc33a" kindref="member">proper_quaternion</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Scalar_*<sp/>data)</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>Eigen::Quaternion&lt;Scalar_,<sp/>Options_&gt;(data)<sp/>{<sp/>}</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"></highlight></codeline>
+<codeline lineno="77" refid="classILLIXR_1_1data__format_1_1proper__quaternion_1a96b00e23e9b0b028d71067c0d268c65b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>[[maybe_unused]]<sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1data__format_1_1proper__quaternion_1a96b00e23e9b0b028d71067c0d268c65b" kindref="member">proper_quaternion</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Eigen::Matrix&lt;Scalar_,<sp/>4,<sp/>1&gt;&amp;<sp/>vec)</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>Eigen::Quaternion&lt;Scalar_,<sp/>Options_&gt;(vec[3],<sp/>vec[0],<sp/>vec[1],<sp/>vec[2])<sp/>{<sp/>}</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"></highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>Derived&gt;</highlight></codeline>
+<codeline lineno="86" refid="classILLIXR_1_1data__format_1_1proper__quaternion_1aa317d268748c35aa957c3198948ddbf0" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>[[maybe_unused]]<sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1data__format_1_1proper__quaternion_1aa317d268748c35aa957c3198948ddbf0" kindref="member">proper_quaternion</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Eigen::QuaternionBase&lt;Derived&gt;&amp;<sp/>other)</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>Eigen::Quaternion&lt;Scalar_&gt;(other)<sp/>{<sp/>}</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"></highlight></codeline>
+<codeline lineno="94" refid="classILLIXR_1_1data__format_1_1proper__quaternion_1ad4ba5e28336154fc4c31f12c63531ad8" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1data__format_1_1proper__quaternion" kindref="compound">proper_quaternion</ref>&amp;<sp/><ref refid="classILLIXR_1_1data__format_1_1proper__quaternion_1ad4ba5e28336154fc4c31f12c63531ad8" kindref="member">operator*=</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Scalar_&amp;<sp/>a)<sp/>{</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;x()<sp/>*=<sp/>a;</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;y()<sp/>*=<sp/>a;</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;z()<sp/>*=<sp/>a;</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;w()<sp/>*=<sp/>a;</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>*</highlight><highlight class="keyword">this</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"></highlight></codeline>
+<codeline lineno="107" refid="classILLIXR_1_1data__format_1_1proper__quaternion_1ad0e2f9c1d6f3a73d0994b294a364fb1c" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1data__format_1_1proper__quaternion" kindref="compound">proper_quaternion</ref><sp/><ref refid="classILLIXR_1_1data__format_1_1proper__quaternion_1ad0e2f9c1d6f3a73d0994b294a364fb1c" kindref="member">operator*</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>a)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1data__format_1_1proper__quaternion" kindref="compound">proper_quaternion&lt;Scalar_, Options_&gt;</ref>(this-&gt;w()<sp/>*<sp/>a,<sp/>this-&gt;x()<sp/>*<sp/>a,<sp/>this-&gt;y()<sp/>*<sp/>a,<sp/>this-&gt;z()<sp/>*<sp/>a);</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"></highlight></codeline>
+<codeline lineno="116" refid="classILLIXR_1_1data__format_1_1proper__quaternion_1aad06c9a17775685c7183a1b29fe15e75" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1data__format_1_1proper__quaternion" kindref="compound">proper_quaternion</ref><sp/><ref refid="classILLIXR_1_1data__format_1_1proper__quaternion_1aad06c9a17775685c7183a1b29fe15e75" kindref="member">operator*</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>a)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1data__format_1_1proper__quaternion" kindref="compound">proper_quaternion&lt;Scalar_, Options_&gt;</ref>(this-&gt;w()<sp/>*<sp/>a,<sp/>this-&gt;x()<sp/>*<sp/>a,<sp/>this-&gt;y()<sp/>*<sp/>a,<sp/>this-&gt;z()<sp/>*<sp/>a);</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"></highlight></codeline>
+<codeline lineno="125" refid="classILLIXR_1_1data__format_1_1proper__quaternion_1a5c74052413ce0c275229627c49faaeb5" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1data__format_1_1proper__quaternion" kindref="compound">proper_quaternion</ref><sp/><ref refid="classILLIXR_1_1data__format_1_1proper__quaternion_1a5c74052413ce0c275229627c49faaeb5" kindref="member">operator*</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>a)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1data__format_1_1proper__quaternion" kindref="compound">proper_quaternion&lt;Scalar_, Options_&gt;</ref>(this-&gt;w()<sp/>*<sp/>a,<sp/>this-&gt;x()<sp/>*<sp/>a,<sp/>this-&gt;y()<sp/>*<sp/>a,<sp/>this-&gt;z()<sp/>*<sp/>a);</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="128"><highlight class="normal"></highlight></codeline>
+<codeline lineno="134" refid="classILLIXR_1_1data__format_1_1proper__quaternion_1ae126791d9ad83a0fa151a0b1441d21ff" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1data__format_1_1proper__quaternion" kindref="compound">proper_quaternion&lt;Scalar_&gt;</ref><sp/><ref refid="classILLIXR_1_1data__format_1_1proper__quaternion_1ae126791d9ad83a0fa151a0b1441d21ff" kindref="member">operator*</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Eigen::Quaternion&lt;Scalar_&gt;&amp;<sp/>other)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1data__format_1_1proper__quaternion" kindref="compound">proper_quaternion&lt;Scalar_&gt;</ref>(Eigen::Quaternion&lt;Scalar_&gt;::operator*(other));</highlight></codeline>
+<codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"></highlight></codeline>
+<codeline lineno="142" refid="classILLIXR_1_1data__format_1_1proper__quaternion_1a716e4dde8fcc89c6bf218e975bcce36f" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>Eigen::Matrix&lt;Scalar_,<sp/>4,<sp/>1&gt;<sp/><ref refid="classILLIXR_1_1data__format_1_1proper__quaternion_1a716e4dde8fcc89c6bf218e975bcce36f" kindref="member">asVector</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="143"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>Eigen::Matrix&lt;Scalar_,<sp/>4,<sp/>1&gt;(this-&gt;x(),<sp/>this-&gt;y(),<sp/>this-&gt;z(),<sp/>this-&gt;w());</highlight></codeline>
+<codeline lineno="144"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="145"><highlight class="normal"></highlight></codeline>
+<codeline lineno="151" refid="classILLIXR_1_1data__format_1_1proper__quaternion_1a3443b9b632506dd9525d0dd9a0579b83" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1data__format_1_1proper__quaternion" kindref="compound">proper_quaternion&lt;Scalar_&gt;</ref>&amp;<sp/><ref refid="classILLIXR_1_1data__format_1_1proper__quaternion_1a3443b9b632506dd9525d0dd9a0579b83" kindref="member">operator+=</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1data__format_1_1proper__quaternion" kindref="compound">proper_quaternion&lt;Scalar_&gt;</ref>&amp;<sp/>other)<sp/>{</highlight></codeline>
+<codeline lineno="152"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;w()<sp/>+=<sp/>other.w();</highlight></codeline>
+<codeline lineno="153"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;x()<sp/>+=<sp/>other.x();</highlight></codeline>
+<codeline lineno="154"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;y()<sp/>+=<sp/>other.y();</highlight></codeline>
+<codeline lineno="155"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;z()<sp/>+=<sp/>other.z();</highlight></codeline>
+<codeline lineno="156"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>*</highlight><highlight class="keyword">this</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="157"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="158"><highlight class="normal"></highlight></codeline>
+<codeline lineno="164" refid="classILLIXR_1_1data__format_1_1proper__quaternion_1adefbc893df7b6ab6187ee71a7bd7cee5" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1data__format_1_1proper__quaternion" kindref="compound">proper_quaternion&lt;Scalar_&gt;</ref><sp/><ref refid="classILLIXR_1_1data__format_1_1proper__quaternion_1adefbc893df7b6ab6187ee71a7bd7cee5" kindref="member">operator+</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1data__format_1_1proper__quaternion" kindref="compound">proper_quaternion&lt;Scalar_&gt;</ref>&amp;<sp/>other)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="165"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1data__format_1_1proper__quaternion" kindref="compound">proper_quaternion&lt;Scalar_&gt;</ref><sp/>result(*</highlight><highlight class="keyword">this</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="166"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>result<sp/>+=<sp/>other;</highlight></codeline>
+<codeline lineno="167"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>result;</highlight></codeline>
+<codeline lineno="168"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="169"><highlight class="normal"></highlight></codeline>
+<codeline lineno="175"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T&gt;</highlight></codeline>
+<codeline lineno="176" refid="classILLIXR_1_1data__format_1_1proper__quaternion_1a1b58fbf08947f1f571c6b4788a87cd45" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1data__format_1_1proper__quaternion" kindref="compound">proper_quaternion&lt;T&gt;</ref><sp/><ref refid="classILLIXR_1_1data__format_1_1proper__quaternion_1a1b58fbf08947f1f571c6b4788a87cd45" kindref="member">cast</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="177"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1data__format_1_1proper__quaternion" kindref="compound">proper_quaternion&lt;T&gt;</ref>(</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="normal">T</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(this-&gt;w()),<sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="normal">T</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(this-&gt;x()),<sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="normal">T</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(this-&gt;y()),</highlight></codeline>
+<codeline lineno="178"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="normal">T</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(this-&gt;z()));</highlight></codeline>
+<codeline lineno="179"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="180"><highlight class="normal"></highlight></codeline>
+<codeline lineno="184" refid="classILLIXR_1_1data__format_1_1proper__quaternion_1a682f50b5b1d69abbf5ac28d0d3ab9fc1" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1data__format_1_1proper__quaternion_1a682f50b5b1d69abbf5ac28d0d3ab9fc1" kindref="member">normalize</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="185"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(this-&gt;w()<sp/>&lt;<sp/>0.)</highlight></codeline>
+<codeline lineno="186"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(*this)<sp/>*=<sp/>-1.;</highlight></codeline>
+<codeline lineno="187"><highlight class="normal"></highlight></codeline>
+<codeline lineno="188"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Eigen::Quaternion&lt;Scalar_,<sp/>Options_&gt;::normalize();</highlight></codeline>
+<codeline lineno="189"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="190"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="191"><highlight class="normal"></highlight></codeline>
+<codeline lineno="199"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T&gt;</highlight></codeline>
+<codeline lineno="200"><highlight class="normal">std::ostream&amp;<sp/>operator&lt;&lt;(std::ostream&amp;<sp/>os,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>proper_quaternion&lt;T&gt;&amp;<sp/>pq)<sp/>{</highlight></codeline>
+<codeline lineno="201"><highlight class="normal"><sp/><sp/><sp/><sp/>os<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;X<sp/>&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/>pq.x()<sp/>&lt;&lt;<sp/>std::endl<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;Y<sp/>&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/>pq.y()<sp/>&lt;&lt;<sp/>std::endl<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;Z<sp/>&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/>pq.z()<sp/>&lt;&lt;<sp/>std::endl<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;W<sp/>&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/>pq.w();</highlight></codeline>
+<codeline lineno="202"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>os;</highlight></codeline>
+<codeline lineno="203"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="204"><highlight class="normal"></highlight></codeline>
+<codeline lineno="205"><highlight class="normal">[[maybe_unused]]<sp/></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/>proper_quaternion&lt;double&gt;<sp/>proper_quaterniond;</highlight></codeline>
+<codeline lineno="206"><highlight class="normal">[[maybe_unused]]<sp/></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/>proper_quaternion&lt;float&gt;<sp/><sp/>proper_quaternionf;</highlight></codeline>
+<codeline lineno="207"><highlight class="normal"></highlight></codeline>
+<codeline lineno="215"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>Scalar_&gt;</highlight></codeline>
+<codeline lineno="216"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>proper_quaternion&lt;Scalar_&gt;<sp/>operator*(Scalar_<sp/>x,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>proper_quaternion&lt;Scalar_&gt;&amp;<sp/>pq)<sp/>{</highlight></codeline>
+<codeline lineno="217"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>proper_quaternion&lt;Scalar_&gt;(x<sp/>*<sp/>pq.w(),<sp/>x<sp/>*<sp/>pq.x(),<sp/>x<sp/>*<sp/>pq.y(),<sp/>x<sp/>*<sp/>pq.z());</highlight></codeline>
+<codeline lineno="218"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="219"><highlight class="normal"></highlight></codeline>
+<codeline lineno="227"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>Scalar_&gt;</highlight></codeline>
+<codeline lineno="228"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>proper_quaternion&lt;Scalar_&gt;<sp/>operator/(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>proper_quaternion&lt;Scalar_&gt;&amp;<sp/>pq,<sp/>Scalar_<sp/>x)<sp/>{</highlight></codeline>
+<codeline lineno="229"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>proper_quaternion&lt;Scalar_&gt;(pq.w()<sp/>/<sp/>x,<sp/>pq.x()<sp/>/<sp/>x,<sp/>pq.y()<sp/>/<sp/>x,<sp/>pq.z()<sp/>/<sp/>x);</highlight></codeline>
+<codeline lineno="230"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="231"><highlight class="normal"></highlight></codeline>
+<codeline lineno="232"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>ILLIXR::data_format</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/proper_quaternion.hpp"/>
+  </compounddef>
+</doxygen>

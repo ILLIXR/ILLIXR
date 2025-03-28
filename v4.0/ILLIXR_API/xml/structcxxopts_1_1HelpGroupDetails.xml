@@ -1,0 +1,63 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structcxxopts_1_1HelpGroupDetails" kind="struct" language="C++" prot="public">
+    <compoundname>cxxopts::HelpGroupDetails</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structcxxopts_1_1HelpGroupDetails_1abc389252a862724a1404d3c22fda6fc2" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string cxxopts::HelpGroupDetails::name</definition>
+        <argsstring></argsstring>
+        <name>name</name>
+        <qualifiedname>cxxopts::HelpGroupDetails::name</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="1084" column="36" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" bodystart="1084" bodyend="1084"/>
+      </memberdef>
+      <memberdef kind="variable" id="structcxxopts_1_1HelpGroupDetails_1a42db1cc0f95adbda0b1d73ca54ffb468" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string cxxopts::HelpGroupDetails::description</definition>
+        <argsstring></argsstring>
+        <name>description</name>
+        <qualifiedname>cxxopts::HelpGroupDetails::description</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="1085" column="36" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" bodystart="1085" bodyend="1085"/>
+      </memberdef>
+      <memberdef kind="variable" id="structcxxopts_1_1HelpGroupDetails_1a1de29250cd4cfe1f69b9f94ed082c69d" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; HelpOptionDetails &gt;</type>
+        <definition>std::vector&lt; HelpOptionDetails &gt; cxxopts::HelpGroupDetails::options</definition>
+        <argsstring></argsstring>
+        <name>options</name>
+        <qualifiedname>cxxopts::HelpGroupDetails::options</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="1086" column="17" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" bodystart="1086" bodyend="1086"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="1083" column="1" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" bodystart="1083" bodyend="1087"/>
+    <listofallmembers>
+      <member refid="structcxxopts_1_1HelpGroupDetails_1a42db1cc0f95adbda0b1d73ca54ffb468" prot="public" virt="non-virtual"><scope>cxxopts::HelpGroupDetails</scope><name>description</name></member>
+      <member refid="structcxxopts_1_1HelpGroupDetails_1abc389252a862724a1404d3c22fda6fc2" prot="public" virt="non-virtual"><scope>cxxopts::HelpGroupDetails</scope><name>name</name></member>
+      <member refid="structcxxopts_1_1HelpGroupDetails_1a1de29250cd4cfe1f69b9f94ed082c69d" prot="public" virt="non-virtual"><scope>cxxopts::HelpGroupDetails</scope><name>options</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

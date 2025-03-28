@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_0879f110ae87fbd48213ca4f072ab8de" kind="dir">
+    <compoundname>/home/friedel/devel/ILLIXR/plugins/zed/capture</compoundname>
+    <innerfile refid="capture_8cpp">capture.cpp</innerfile>
+    <innerfile refid="capture_8hpp">capture.hpp</innerfile>
+    <innerfile refid="capture__main_8cpp">capture_main.cpp</innerfile>
+    <innerfile refid="plugins_2zed_2capture_2cxxopts_8hpp">cxxopts.hpp</innerfile>
+    <innerfile refid="files_8cpp">files.cpp</innerfile>
+    <innerfile refid="files_8hpp">files.hpp</innerfile>
+    <innerfile refid="zed__opencv_8hpp">zed_opencv.hpp</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/"/>
+  </compounddef>
+</doxygen>

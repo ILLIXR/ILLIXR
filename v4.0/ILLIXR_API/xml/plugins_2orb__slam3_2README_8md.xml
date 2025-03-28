@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="plugins_2orb__slam3_2README_8md" kind="file" language="Markdown">
+    <compoundname>README.md</compoundname>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline><highlight class="normal">#<sp/>ORB-SLAM</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">This<sp/>plugin<sp/>uses<sp/>the<sp/>[ORB-SLAM3](https://github.com/UZ-SLAMLab/ORB_SLAM3)<sp/>library<sp/>for<sp/>real-time<sp/>VIO.</highlight></codeline>
+    </programlisting>
+    <location file="/home/friedel/devel/ILLIXR/plugins/orb_slam3/README.md"/>
+  </compounddef>
+</doxygen>

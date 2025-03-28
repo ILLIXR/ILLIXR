@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_c580989b7f1f02a5cd21e8d9e22322c0" kind="dir">
+    <compoundname>/home/friedel/devel/ILLIXR/plugins/tcp_network_backend</compoundname>
+    <innerfile refid="plugins_2tcp__network__backend_2plugin_8cpp">plugin.cpp</innerfile>
+    <innerfile refid="plugins_2tcp__network__backend_2plugin_8hpp">plugin.hpp</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/plugins/tcp_network_backend/"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,327 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classILLIXR_1_1fauxpose__impl" kind="class" language="C++" prot="public">
+    <compoundname>ILLIXR::fauxpose_impl</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">ILLIXR::data_format::pose_prediction</basecompoundref>
+    <includes refid="fauxpose_2service_8hpp" local="no">service.hpp</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1fauxpose__impl_1ae8889c2fd22f5a08a80f9b9f4f2db7f9" prot="private" static="no" mutable="no">
+        <type>const std::shared_ptr&lt; <ref refid="classILLIXR_1_1switchboard" kindref="compound">switchboard</ref> &gt;</type>
+        <definition>const std::shared_ptr&lt;switchboard&gt; ILLIXR::fauxpose_impl::switchboard_</definition>
+        <argsstring></argsstring>
+        <name>switchboard_</name>
+        <qualifiedname>ILLIXR::fauxpose_impl::switchboard_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/fauxpose/service.hpp" line="40" column="52" bodyfile="/home/friedel/devel/ILLIXR/services/fauxpose/service.hpp" bodystart="40" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1fauxpose__impl_1a6cd1ffebbd2c47230cb936e33bd9dd75" prot="private" static="no" mutable="no">
+        <type>const std::shared_ptr&lt; const <ref refid="classILLIXR_1_1relative__clock" kindref="compound">relative_clock</ref> &gt;</type>
+        <definition>const std::shared_ptr&lt;const relative_clock&gt; ILLIXR::fauxpose_impl::clock_</definition>
+        <argsstring></argsstring>
+        <name>clock_</name>
+        <qualifiedname>ILLIXR::fauxpose_impl::clock_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/fauxpose/service.hpp" line="41" column="43" bodyfile="/home/friedel/devel/ILLIXR/services/fauxpose/service.hpp" bodystart="41" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1fauxpose__impl_1a47920cb1f3b9dd111bdd98afdfa91fd6" prot="private" static="no" mutable="no">
+        <type><ref refid="classILLIXR_1_1switchboard_1_1reader" kindref="compound">switchboard::reader</ref>&lt; <ref refid="classILLIXR_1_1switchboard_1_1event__wrapper" kindref="compound">switchboard::event_wrapper</ref>&lt; time_point &gt; &gt;</type>
+        <definition>switchboard::reader&lt;switchboard::event_wrapper&lt;time_point&gt; &gt; ILLIXR::fauxpose_impl::vsync_estimate_</definition>
+        <argsstring></argsstring>
+        <name>vsync_estimate_</name>
+        <qualifiedname>ILLIXR::fauxpose_impl::vsync_estimate_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/fauxpose/service.hpp" line="42" column="25" bodyfile="/home/friedel/devel/ILLIXR/services/fauxpose/service.hpp" bodystart="42" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1fauxpose__impl_1a497f6ecaac346027e9fd8a21d9061092" prot="private" static="no" mutable="yes">
+        <type>Eigen::Quaternionf</type>
+        <definition>Eigen::Quaternionf ILLIXR::fauxpose_impl::offset_</definition>
+        <argsstring></argsstring>
+        <name>offset_</name>
+        <qualifiedname>ILLIXR::fauxpose_impl::offset_</qualifiedname>
+        <initializer>{Eigen::Quaternionf::Identity()}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/fauxpose/service.hpp" line="43" column="65" bodyfile="/home/friedel/devel/ILLIXR/services/fauxpose/service.hpp" bodystart="43" bodyend="43"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1fauxpose__impl_1a40a16ddb0f55c53069fd8b0339320292" prot="private" static="no" mutable="yes">
+        <type>std::shared_mutex</type>
+        <definition>std::shared_mutex ILLIXR::fauxpose_impl::offset_mutex_</definition>
+        <argsstring></argsstring>
+        <name>offset_mutex_</name>
+        <qualifiedname>ILLIXR::fauxpose_impl::offset_mutex_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/fauxpose/service.hpp" line="44" column="65" bodyfile="/home/friedel/devel/ILLIXR/services/fauxpose/service.hpp" bodystart="44" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1fauxpose__impl_1ab127cb056e98320dbae7438099c0241e" prot="private" static="no" mutable="no">
+        <type>time_point</type>
+        <definition>time_point ILLIXR::fauxpose_impl::sim_start_time_</definition>
+        <argsstring></argsstring>
+        <name>sim_start_time_</name>
+        <qualifiedname>ILLIXR::fauxpose_impl::sim_start_time_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/fauxpose/service.hpp" line="46" column="16" bodyfile="/home/friedel/devel/ILLIXR/services/fauxpose/service.hpp" bodystart="46" bodyend="46"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1fauxpose__impl_1a3af3519d7f14b94a0c0e13023689edf4" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double ILLIXR::fauxpose_impl::period_</definition>
+        <argsstring></argsstring>
+        <name>period_</name>
+        <qualifiedname>ILLIXR::fauxpose_impl::period_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/fauxpose/service.hpp" line="49" column="21" bodyfile="/home/friedel/devel/ILLIXR/services/fauxpose/service.hpp" bodystart="49" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1fauxpose__impl_1a0b4f1fd60f3786739877c3e14b6be5c8" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double ILLIXR::fauxpose_impl::amplitude_</definition>
+        <argsstring></argsstring>
+        <name>amplitude_</name>
+        <qualifiedname>ILLIXR::fauxpose_impl::amplitude_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/fauxpose/service.hpp" line="50" column="21" bodyfile="/home/friedel/devel/ILLIXR/services/fauxpose/service.hpp" bodystart="50" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1fauxpose__impl_1a9a2a051599ed471d0857523284513d7d" prot="private" static="no" mutable="no">
+        <type>Eigen::Vector3f</type>
+        <definition>Eigen::Vector3f ILLIXR::fauxpose_impl::center_location_</definition>
+        <argsstring></argsstring>
+        <name>center_location_</name>
+        <qualifiedname>ILLIXR::fauxpose_impl::center_location_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/fauxpose/service.hpp" line="51" column="21" bodyfile="/home/friedel/devel/ILLIXR/services/fauxpose/service.hpp" bodystart="51" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classILLIXR_1_1fauxpose__impl_1a3e59c59dd6e3e178df69645ecc9136ab" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>fauxpose_impl::fauxpose_impl</definition>
+        <argsstring>(const phonebook *pb)</argsstring>
+        <name>fauxpose_impl</name>
+        <qualifiedname>ILLIXR::fauxpose_impl::fauxpose_impl</qualifiedname>
+        <param>
+          <type>const <ref refid="classILLIXR_1_1phonebook" kindref="compound">phonebook</ref> *</type>
+          <declname>pb</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/fauxpose/service.hpp" line="12" column="14" bodyfile="/home/friedel/devel/ILLIXR/services/fauxpose/service.cpp" bodystart="42" bodyend="86"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1fauxpose__impl_1acad2a53f501ba2db9d83e63bf3d90670" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>fauxpose_impl::~fauxpose_impl</definition>
+        <argsstring>() override</argsstring>
+        <name>~fauxpose_impl</name>
+        <qualifiedname>ILLIXR::fauxpose_impl::~fauxpose_impl</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/fauxpose/service.hpp" line="13" column="5" bodyfile="/home/friedel/devel/ILLIXR/services/fauxpose/service.cpp" bodystart="88" bodyend="92"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1fauxpose__impl_1a12f3745d33f31b372fae1959b8c74ff4" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structILLIXR_1_1data__format_1_1pose__type" kindref="compound">data_format::pose_type</ref></type>
+        <definition>data_format::pose_type ILLIXR::fauxpose_impl::get_true_pose</definition>
+        <argsstring>() const override</argsstring>
+        <name>get_true_pose</name>
+        <qualifiedname>ILLIXR::fauxpose_impl::get_true_pose</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/fauxpose/service.hpp" line="15" column="28" bodyfile="/home/friedel/devel/ILLIXR/services/fauxpose/service.hpp" bodystart="15" bodyend="17"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1fauxpose__impl_1a16c1b03552bd1a5c51c34b1c10d9981c" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool ILLIXR::fauxpose_impl::fast_pose_reliable</definition>
+        <argsstring>() const override</argsstring>
+        <name>fast_pose_reliable</name>
+        <qualifiedname>ILLIXR::fauxpose_impl::fast_pose_reliable</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/fauxpose/service.hpp" line="19" column="10" bodyfile="/home/friedel/devel/ILLIXR/services/fauxpose/service.hpp" bodystart="19" bodyend="21"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1fauxpose__impl_1a2016a4bfebf22c030eb01ddc209049be" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool ILLIXR::fauxpose_impl::true_pose_reliable</definition>
+        <argsstring>() const override</argsstring>
+        <name>true_pose_reliable</name>
+        <qualifiedname>ILLIXR::fauxpose_impl::true_pose_reliable</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/fauxpose/service.hpp" line="23" column="10" bodyfile="/home/friedel/devel/ILLIXR/services/fauxpose/service.hpp" bodystart="23" bodyend="25"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1fauxpose__impl_1a4e62a1880280138bf0201d10b5be189c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structILLIXR_1_1data__format_1_1pose__type" kindref="compound">data_format::pose_type</ref></type>
+        <definition>pose_type fauxpose_impl::correct_pose</definition>
+        <argsstring>(const data_format::pose_type &amp;pose) const override</argsstring>
+        <name>correct_pose</name>
+        <qualifiedname>ILLIXR::fauxpose_impl::correct_pose</qualifiedname>
+        <param>
+          <type>const <ref refid="structILLIXR_1_1data__format_1_1pose__type" kindref="compound">data_format::pose_type</ref> &amp;</type>
+          <declname>pose</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/fauxpose/service.hpp" line="27" column="33" bodyfile="/home/friedel/devel/ILLIXR/services/fauxpose/service.cpp" bodystart="94" bodyend="99"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1fauxpose__impl_1a16fa694a9ae9067138af71552a13d742" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Eigen::Quaternionf</type>
+        <definition>Eigen::Quaternionf fauxpose_impl::get_offset</definition>
+        <argsstring>() override</argsstring>
+        <name>get_offset</name>
+        <qualifiedname>ILLIXR::fauxpose_impl::get_offset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/fauxpose/service.hpp" line="28" column="33" bodyfile="/home/friedel/devel/ILLIXR/services/fauxpose/service.cpp" bodystart="101" bodyend="103"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1fauxpose__impl_1ab21303fd7681f20f191113e97166344e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void fauxpose_impl::set_offset</definition>
+        <argsstring>(const Eigen::Quaternionf &amp;raw_o_times_offset) override</argsstring>
+        <name>set_offset</name>
+        <qualifiedname>ILLIXR::fauxpose_impl::set_offset</qualifiedname>
+        <param>
+          <type>const Eigen::Quaternionf &amp;</type>
+          <declname>raw_o_times_offset</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/fauxpose/service.hpp" line="29" column="33" bodyfile="/home/friedel/devel/ILLIXR/services/fauxpose/service.cpp" bodystart="105" bodyend="109"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1fauxpose__impl_1ad44183b5b14426f8b61d72e842913c7a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structILLIXR_1_1data__format_1_1fast__pose__type" kindref="compound">data_format::fast_pose_type</ref></type>
+        <definition>fast_pose_type fauxpose_impl::get_fast_pose</definition>
+        <argsstring>() const override</argsstring>
+        <name>get_fast_pose</name>
+        <qualifiedname>ILLIXR::fauxpose_impl::get_fast_pose</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/fauxpose/service.hpp" line="30" column="33" bodyfile="/home/friedel/devel/ILLIXR/services/fauxpose/service.cpp" bodystart="111" bodyend="120"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1fauxpose__impl_1a0f6d6ac4f8c2d64672f43079af5e808f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structILLIXR_1_1data__format_1_1fast__pose__type" kindref="compound">data_format::fast_pose_type</ref></type>
+        <definition>fast_pose_type fauxpose_impl::get_fast_pose</definition>
+        <argsstring>(time_point time) const override</argsstring>
+        <name>get_fast_pose</name>
+        <qualifiedname>ILLIXR::fauxpose_impl::get_fast_pose</qualifiedname>
+        <param>
+          <type>time_point</type>
+          <declname>time</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/fauxpose/service.hpp" line="37" column="33" bodyfile="/home/friedel/devel/ILLIXR/services/fauxpose/service.cpp" bodystart="122" bodyend="145"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Create a &quot;pose_prediction&quot; type service. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/services/fauxpose/service.hpp" line="10" column="1" bodyfile="/home/friedel/devel/ILLIXR/services/fauxpose/service.hpp" bodystart="10" bodyend="52"/>
+    <listofallmembers>
+      <member refid="classILLIXR_1_1data__format_1_1pose__prediction_1a071229a53e9c710cffd58e0164297394" prot="protected" virt="non-virtual"><scope>ILLIXR::fauxpose_impl</scope><name>_correct_pose</name></member>
+      <member refid="classILLIXR_1_1data__format_1_1pose__prediction_1a8d55392ab96fa14ce9131dff2982676a" prot="protected" virt="non-virtual"><scope>ILLIXR::fauxpose_impl</scope><name>_set_offset</name></member>
+      <member refid="classILLIXR_1_1fauxpose__impl_1a0b4f1fd60f3786739877c3e14b6be5c8" prot="private" virt="non-virtual"><scope>ILLIXR::fauxpose_impl</scope><name>amplitude_</name></member>
+      <member refid="classILLIXR_1_1fauxpose__impl_1a9a2a051599ed471d0857523284513d7d" prot="private" virt="non-virtual"><scope>ILLIXR::fauxpose_impl</scope><name>center_location_</name></member>
+      <member refid="classILLIXR_1_1fauxpose__impl_1a6cd1ffebbd2c47230cb936e33bd9dd75" prot="private" virt="non-virtual"><scope>ILLIXR::fauxpose_impl</scope><name>clock_</name></member>
+      <member refid="classILLIXR_1_1fauxpose__impl_1a4e62a1880280138bf0201d10b5be189c" prot="public" virt="non-virtual"><scope>ILLIXR::fauxpose_impl</scope><name>correct_pose</name></member>
+      <member refid="classILLIXR_1_1fauxpose__impl_1a16c1b03552bd1a5c51c34b1c10d9981c" prot="public" virt="non-virtual"><scope>ILLIXR::fauxpose_impl</scope><name>fast_pose_reliable</name></member>
+      <member refid="classILLIXR_1_1fauxpose__impl_1a3e59c59dd6e3e178df69645ecc9136ab" prot="public" virt="non-virtual"><scope>ILLIXR::fauxpose_impl</scope><name>fauxpose_impl</name></member>
+      <member refid="classILLIXR_1_1fauxpose__impl_1ad44183b5b14426f8b61d72e842913c7a" prot="public" virt="non-virtual"><scope>ILLIXR::fauxpose_impl</scope><name>get_fast_pose</name></member>
+      <member refid="classILLIXR_1_1fauxpose__impl_1a0f6d6ac4f8c2d64672f43079af5e808f" prot="public" virt="non-virtual"><scope>ILLIXR::fauxpose_impl</scope><name>get_fast_pose</name></member>
+      <member refid="classILLIXR_1_1fauxpose__impl_1a16fa694a9ae9067138af71552a13d742" prot="public" virt="non-virtual"><scope>ILLIXR::fauxpose_impl</scope><name>get_offset</name></member>
+      <member refid="classILLIXR_1_1fauxpose__impl_1a12f3745d33f31b372fae1959b8c74ff4" prot="public" virt="non-virtual"><scope>ILLIXR::fauxpose_impl</scope><name>get_true_pose</name></member>
+      <member refid="classILLIXR_1_1fauxpose__impl_1a497f6ecaac346027e9fd8a21d9061092" prot="private" virt="non-virtual"><scope>ILLIXR::fauxpose_impl</scope><name>offset_</name></member>
+      <member refid="classILLIXR_1_1fauxpose__impl_1a40a16ddb0f55c53069fd8b0339320292" prot="private" virt="non-virtual"><scope>ILLIXR::fauxpose_impl</scope><name>offset_mutex_</name></member>
+      <member refid="classILLIXR_1_1fauxpose__impl_1a3af3519d7f14b94a0c0e13023689edf4" prot="private" virt="non-virtual"><scope>ILLIXR::fauxpose_impl</scope><name>period_</name></member>
+      <member refid="classILLIXR_1_1fauxpose__impl_1ab21303fd7681f20f191113e97166344e" prot="public" virt="non-virtual"><scope>ILLIXR::fauxpose_impl</scope><name>set_offset</name></member>
+      <member refid="classILLIXR_1_1fauxpose__impl_1ab127cb056e98320dbae7438099c0241e" prot="private" virt="non-virtual"><scope>ILLIXR::fauxpose_impl</scope><name>sim_start_time_</name></member>
+      <member refid="classILLIXR_1_1fauxpose__impl_1ae8889c2fd22f5a08a80f9b9f4f2db7f9" prot="private" virt="non-virtual"><scope>ILLIXR::fauxpose_impl</scope><name>switchboard_</name></member>
+      <member refid="classILLIXR_1_1fauxpose__impl_1a2016a4bfebf22c030eb01ddc209049be" prot="public" virt="non-virtual"><scope>ILLIXR::fauxpose_impl</scope><name>true_pose_reliable</name></member>
+      <member refid="classILLIXR_1_1fauxpose__impl_1a47920cb1f3b9dd111bdd98afdfa91fd6" prot="private" virt="non-virtual"><scope>ILLIXR::fauxpose_impl</scope><name>vsync_estimate_</name></member>
+      <member refid="classILLIXR_1_1fauxpose__impl_1acad2a53f501ba2db9d83e63bf3d90670" prot="public" virt="non-virtual"><scope>ILLIXR::fauxpose_impl</scope><name>~fauxpose_impl</name></member>
+      <member refid="classILLIXR_1_1data__format_1_1pose__prediction_1acea6d7b4f9b4d15cda0289398b67892f" prot="public" virt="non-virtual"><scope>ILLIXR::fauxpose_impl</scope><name>~pose_prediction</name></member>
+      <member refid="classILLIXR_1_1phonebook_1_1service_1a6bc6e64a0d9b70223989fc3fb98c2d0d" prot="public" virt="virtual"><scope>ILLIXR::fauxpose_impl</scope><name>~service</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

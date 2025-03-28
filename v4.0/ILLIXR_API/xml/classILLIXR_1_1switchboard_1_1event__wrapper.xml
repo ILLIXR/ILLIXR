@@ -1,0 +1,148 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classILLIXR_1_1switchboard_1_1event__wrapper" kind="class" language="C++" prot="public">
+    <compoundname>ILLIXR::switchboard::event_wrapper</compoundname>
+    <basecompoundref refid="classILLIXR_1_1switchboard_1_1event" prot="public" virt="non-virtual">ILLIXR::switchboard::event</basecompoundref>
+    <includes refid="switchboard_8hpp" local="no">switchboard.hpp</includes>
+    <templateparamlist>
+      <param>
+        <type>typename Underlying_type</type>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1switchboard_1_1event__wrapper_1a6315c29f297cdd7bdf01117f89c413c8" prot="private" static="no" mutable="no">
+        <type>Underlying_type</type>
+        <definition>Underlying_type ILLIXR::switchboard::event_wrapper&lt; Underlying_type &gt;::underlying_data_</definition>
+        <argsstring></argsstring>
+        <name>underlying_data_</name>
+        <qualifiedname>ILLIXR::switchboard::event_wrapper::underlying_data_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="182" column="25" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="182" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classILLIXR_1_1switchboard_1_1event__wrapper_1af8580ca5586253481bea8d31f2398f2d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::switchboard::event_wrapper&lt; Underlying_type &gt;::event_wrapper</definition>
+        <argsstring>()=default</argsstring>
+        <name>event_wrapper</name>
+        <qualifiedname>ILLIXR::switchboard::event_wrapper::event_wrapper</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="164" column="9"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1switchboard_1_1event__wrapper_1a92c3e25cafb58aa9a9c5f9461ce35b3d" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::switchboard::event_wrapper&lt; Underlying_type &gt;::event_wrapper</definition>
+        <argsstring>(Underlying_type underlying_data)</argsstring>
+        <name>event_wrapper</name>
+        <qualifiedname>ILLIXR::switchboard::event_wrapper::event_wrapper</qualifiedname>
+        <param>
+          <type>Underlying_type</type>
+          <declname>underlying_data</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="166" column="18" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="166" bodyend="167"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1switchboard_1_1event__wrapper_1a1600feab39da7cf0baf2a8c49194550b" prot="public" static="no" const="yes" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::switchboard::event_wrapper&lt; Underlying_type &gt;::operator Underlying_type</definition>
+        <argsstring>() const</argsstring>
+        <name>operator Underlying_type</name>
+        <qualifiedname>ILLIXR::switchboard::event_wrapper::operator Underlying_type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="169" column="18" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="169" bodyend="171"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1switchboard_1_1event__wrapper_1af4109a53ac09321bd6627289277adf78" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Underlying_type &amp;</type>
+        <definition>Underlying_type &amp; ILLIXR::switchboard::event_wrapper&lt; Underlying_type &gt;::operator*</definition>
+        <argsstring>()</argsstring>
+        <name>operator*</name>
+        <qualifiedname>ILLIXR::switchboard::event_wrapper::operator*</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="173" column="25" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="173" bodyend="175"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1switchboard_1_1event__wrapper_1a8153c2f5e468eb14fefb25d199aafa54" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const Underlying_type &amp;</type>
+        <definition>const Underlying_type &amp; ILLIXR::switchboard::event_wrapper&lt; Underlying_type &gt;::operator*</definition>
+        <argsstring>() const</argsstring>
+        <name>operator*</name>
+        <qualifiedname>ILLIXR::switchboard::event_wrapper::operator*</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="177" column="31" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="177" bodyend="179"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Helper class for making event types. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Since topic has no static type-information on the contained events, this class does not either.</para>
+<para><programlisting filename=".cpp"><codeline><highlight class="normal">event_wrapper&lt;int&gt;<sp/>int_event<sp/>=<sp/>5;</highlight></codeline>
+</programlisting> </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>ILLIXR::switchboard::event</label>
+        <link refid="classILLIXR_1_1switchboard_1_1event"/>
+      </node>
+      <node id="1">
+        <label>ILLIXR::switchboard::event_wrapper&lt; Underlying_type &gt;</label>
+        <link refid="classILLIXR_1_1switchboard_1_1event__wrapper"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>ILLIXR::switchboard::event</label>
+        <link refid="classILLIXR_1_1switchboard_1_1event"/>
+      </node>
+      <node id="1">
+        <label>ILLIXR::switchboard::event_wrapper&lt; Underlying_type &gt;</label>
+        <link refid="classILLIXR_1_1switchboard_1_1event__wrapper"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="162" column="5" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="162" bodyend="183"/>
+    <listofallmembers>
+      <member refid="classILLIXR_1_1switchboard_1_1event__wrapper_1af8580ca5586253481bea8d31f2398f2d" prot="public" virt="non-virtual"><scope>ILLIXR::switchboard::event_wrapper</scope><name>event_wrapper</name></member>
+      <member refid="classILLIXR_1_1switchboard_1_1event__wrapper_1a92c3e25cafb58aa9a9c5f9461ce35b3d" prot="public" virt="non-virtual"><scope>ILLIXR::switchboard::event_wrapper</scope><name>event_wrapper</name></member>
+      <member refid="classILLIXR_1_1switchboard_1_1event__wrapper_1a1600feab39da7cf0baf2a8c49194550b" prot="public" virt="non-virtual"><scope>ILLIXR::switchboard::event_wrapper</scope><name>operator Underlying_type</name></member>
+      <member refid="classILLIXR_1_1switchboard_1_1event__wrapper_1af4109a53ac09321bd6627289277adf78" prot="public" virt="non-virtual"><scope>ILLIXR::switchboard::event_wrapper</scope><name>operator*</name></member>
+      <member refid="classILLIXR_1_1switchboard_1_1event__wrapper_1a8153c2f5e468eb14fefb25d199aafa54" prot="public" virt="non-virtual"><scope>ILLIXR::switchboard::event_wrapper</scope><name>operator*</name></member>
+      <member refid="classILLIXR_1_1switchboard_1_1event_1a55399aaf47bc0d3943fd89d7afb55624" prot="public" virt="non-virtual"><scope>ILLIXR::switchboard::event_wrapper</scope><name>serialize</name></member>
+      <member refid="classILLIXR_1_1switchboard_1_1event__wrapper_1a6315c29f297cdd7bdf01117f89c413c8" prot="private" virt="non-virtual"><scope>ILLIXR::switchboard::event_wrapper</scope><name>underlying_data_</name></member>
+      <member refid="classILLIXR_1_1switchboard_1_1event_1a01fb51a03e9025d71087de76823e449e" prot="public" virt="virtual"><scope>ILLIXR::switchboard::event_wrapper</scope><name>~event</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

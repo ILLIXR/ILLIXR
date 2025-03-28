@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_25685f9c6d837c57f295dee081495707" kind="dir">
+    <compoundname>/home/friedel/devel/ILLIXR/src/display</compoundname>
+    <innerfile refid="display__backend_8hpp">display_backend.hpp</innerfile>
+    <innerfile refid="glfw__extended_8cpp">glfw_extended.cpp</innerfile>
+    <innerfile refid="glfw__extended_8hpp">glfw_extended.hpp</innerfile>
+    <innerfile refid="headless_8cpp">headless.cpp</innerfile>
+    <innerfile refid="headless_8hpp">headless.hpp</innerfile>
+    <innerfile refid="x11__direct_8cpp">x11_direct.cpp</innerfile>
+    <innerfile refid="x11__direct_8hpp">x11_direct.hpp</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/src/display/"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,187 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structILLIXR_1_1data__format_1_1raw__point" kind="struct" language="C++" prot="public">
+    <compoundname>ILLIXR::data_format::raw_point</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1raw__point_1a3de9bd38f1a6dd06bd1f7f4e61350886" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float ILLIXR::data_format::raw_point::x</definition>
+        <argsstring></argsstring>
+        <name>x</name>
+        <qualifiedname>ILLIXR::data_format::raw_point::x</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" line="578" column="11" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" bodystart="578" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1raw__point_1a67c66750d4ad751dcfbf0aa745563298" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float ILLIXR::data_format::raw_point::y</definition>
+        <argsstring></argsstring>
+        <name>y</name>
+        <qualifiedname>ILLIXR::data_format::raw_point::y</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" line="579" column="11" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" bodystart="579" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1raw__point_1a06efc1d912bca8ce4e616de6db3c7aa8" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float ILLIXR::data_format::raw_point::z</definition>
+        <argsstring></argsstring>
+        <name>z</name>
+        <qualifiedname>ILLIXR::data_format::raw_point::z</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" line="580" column="11" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" bodystart="580" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1raw__point_1ab85d13db730e1c5cab105b275c151b05" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool ILLIXR::data_format::raw_point::valid</definition>
+        <argsstring></argsstring>
+        <name>valid</name>
+        <qualifiedname>ILLIXR::data_format::raw_point::valid</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" line="581" column="11" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" bodystart="581" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1raw__point_1af12f02480ffbd15223b3dc1603cc81db" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::raw_point::raw_point</definition>
+        <argsstring>()</argsstring>
+        <name>raw_point</name>
+        <qualifiedname>ILLIXR::data_format::raw_point::raw_point</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" line="583" column="5" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" bodystart="583" bodyend="587"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1raw__point_1a4c3e084a4db3b0a3684d3648923a7a33" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::raw_point::raw_point</definition>
+        <argsstring>(const point_with_units &amp;pnt)</argsstring>
+        <name>raw_point</name>
+        <qualifiedname>ILLIXR::data_format::raw_point::raw_point</qualifiedname>
+        <param>
+          <type>const point_with_units &amp;</type>
+          <declname>pnt</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" line="589" column="15" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" bodystart="589" bodyend="593"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1raw__point_1a01b4774005f25ed0a0ed34452be087c1" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void ILLIXR::data_format::raw_point::copy</definition>
+        <argsstring>(const point_with_units &amp;pnt)</argsstring>
+        <name>copy</name>
+        <qualifiedname>ILLIXR::data_format::raw_point::copy</qualifiedname>
+        <param>
+          <type>const point_with_units &amp;</type>
+          <declname>pnt</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" line="595" column="10" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" bodystart="595" bodyend="600"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1raw__point_1a2b4a39411df0e2562b5e5bc9d56d4f6d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void ILLIXR::data_format::raw_point::mult</definition>
+        <argsstring>(const Eigen::Matrix3f &amp;ref_frm)</argsstring>
+        <name>mult</name>
+        <qualifiedname>ILLIXR::data_format::raw_point::mult</qualifiedname>
+        <param>
+          <type>const Eigen::Matrix3f &amp;</type>
+          <declname>ref_frm</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" line="602" column="11" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" bodystart="602" bodyend="608"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1raw__point_1a61bb93de992f386f9ab369a9fe873b98" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void ILLIXR::data_format::raw_point::transform</definition>
+        <argsstring>(const pose_data &amp;pose)</argsstring>
+        <name>transform</name>
+        <qualifiedname>ILLIXR::data_format::raw_point::transform</qualifiedname>
+        <param>
+          <type>const <ref refid="structILLIXR_1_1data__format_1_1pose__data" kindref="compound">pose_data</ref> &amp;</type>
+          <declname>pose</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" line="610" column="10" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" bodystart="610" bodyend="616"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1raw__point_1accdb6f905b27ca163fece8ff5a528e65" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void ILLIXR::data_format::raw_point::de_transform</definition>
+        <argsstring>(const pose_data &amp;pose)</argsstring>
+        <name>de_transform</name>
+        <qualifiedname>ILLIXR::data_format::raw_point::de_transform</qualifiedname>
+        <param>
+          <type>const <ref refid="structILLIXR_1_1data__format_1_1pose__data" kindref="compound">pose_data</ref> &amp;</type>
+          <declname>pose</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" line="618" column="11" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" bodystart="618" bodyend="625"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" line="577" column="1" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" bodystart="577" bodyend="626"/>
+    <listofallmembers>
+      <member refid="structILLIXR_1_1data__format_1_1raw__point_1a01b4774005f25ed0a0ed34452be087c1" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::raw_point</scope><name>copy</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1raw__point_1accdb6f905b27ca163fece8ff5a528e65" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::raw_point</scope><name>de_transform</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1raw__point_1a2b4a39411df0e2562b5e5bc9d56d4f6d" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::raw_point</scope><name>mult</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1raw__point_1af12f02480ffbd15223b3dc1603cc81db" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::raw_point</scope><name>raw_point</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1raw__point_1a4c3e084a4db3b0a3684d3648923a7a33" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::raw_point</scope><name>raw_point</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1raw__point_1a61bb93de992f386f9ab369a9fe873b98" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::raw_point</scope><name>transform</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1raw__point_1ab85d13db730e1c5cab105b275c151b05" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::raw_point</scope><name>valid</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1raw__point_1a3de9bd38f1a6dd06bd1f7f4e61350886" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::raw_point</scope><name>x</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1raw__point_1a67c66750d4ad751dcfbf0aa745563298" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::raw_point</scope><name>y</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1raw__point_1a06efc1d912bca8ce4e616de6db3c7aa8" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::raw_point</scope><name>z</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

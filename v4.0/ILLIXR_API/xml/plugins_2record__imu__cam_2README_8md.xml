@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="plugins_2record__imu__cam_2README_8md" kind="file" language="Markdown">
+    <compoundname>README.md</compoundname>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline><highlight class="normal">#<sp/>Record<sp/>IMU<sp/>Cam</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">The<sp/>purpose<sp/>of<sp/>this<sp/>plugin<sp/>is<sp/>to<sp/>record<sp/>a<sp/>dataset,<sp/>similar<sp/>to<sp/>the<sp/>[EuRoC<sp/>MAV<sp/>dataset][E10]<sp/>that<sp/>includes<sp/>the<sp/>[_IMU_][G10]<sp/>data<sp/>and</highlight></codeline>
+<codeline><highlight class="normal">Cam<sp/>images.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>How<sp/>to<sp/>record<sp/>a<sp/>dataset</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">Add<sp/>`record_imu_cam`<sp/>to<sp/>either<sp/>your<sp/>input<sp/>yaml<sp/>file<sp/>or<sp/>to<sp/>your<sp/>`--plugins`<sp/>argument<sp/>when<sp/>invoking<sp/>the<sp/>ILLIXR<sp/>executable.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">After<sp/>recording,<sp/>the<sp/>dataset<sp/>will<sp/>be<sp/>stored<sp/>in<sp/>the<sp/>ILLIXR<sp/>project<sp/>directory,<sp/>with<sp/>the<sp/>following<sp/>structure:</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>ILLIXR/data_record</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\_<sp/>cam0/</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\_<sp/>data/<sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\_<sp/>timestamp.png</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\_<sp/>...</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\_<sp/>data.csv</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\_<sp/>cam1/</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\_<sp/>data/</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\_<sp/>timestamp.png</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\_<sp/>...</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\_<sp/>data.csv</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\_<sp/>imu0</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\_<sp/>data.csv</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">###<sp/>Format</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">1.<sp/>`cam0/data.csv`<sp/>and<sp/>`cam1/data.csv`<sp/>are<sp/>both<sp/>formatted<sp/>as</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>timestamp<sp/>[ns],<sp/>timestamp.png</highlight></codeline>
+<codeline><highlight class="normal">2.<sp/>`imu0/data.csv`<sp/>is<sp/>formatted<sp/>as</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>timestamp<sp/>[ns],w_x<sp/>[rad<sp/>s^-1],w_y<sp/>[rad<sp/>s^-1],w_z<sp/>[rad<sp/>s^-1],a_x<sp/>[m<sp/>s^-2],a_y<sp/>[m<sp/>s^-2],a_z<sp/>[m<sp/>s^-2]</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>How<sp/>to<sp/>rerun<sp/>recorded<sp/>dataset</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">1.<sp/>**(IMPORTANT)**<sp/>Do<sp/>not<sp/>specify<sp/>`record_imu_cam`<sp/>in<sp/>either<sp/>your<sp/>input<sp/>yaml<sp/>file<sp/>or<sp/>to<sp/>your<sp/>`--plugins`<sp/>argument<sp/>when</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>invoking<sp/>the<sp/>ILLIXR<sp/>executable.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">2.<sp/>When<sp/>running<sp/>the<sp/>ILLIXR<sp/>executable<sp/>do<sp/>one<sp/>of<sp/>the<sp/>following:</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>-<sp/>In<sp/>the<sp/>input<sp/>yaml<sp/>file<sp/>add<sp/>a<sp/>line<sp/>to<sp/>the<sp/>`env_vars`<sp/>section:<sp/>`<sp/><sp/>data:<sp/>&lt;PATH_TO_ILLIXR&gt;/data_record`</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>-<sp/>Add<sp/>`--data=&lt;PATH_TO_ILLIXR&gt;/data_record`<sp/>to<sp/>the<sp/>command<sp/>line<sp/>arguments</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>-<sp/>Set<sp/>the<sp/>environment<sp/>variable<sp/>`ILLIXR_DATA`<sp/>to<sp/>`&lt;PATH_TO_ILLIXR&gt;/data_record`</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">3.<sp/>Make<sp/>sure<sp/>other<sp/>plugins<sp/>that<sp/>feed<sp/>images<sp/>and<sp/>IMU<sp/>are<sp/>not<sp/>being<sp/>used,<sp/>such<sp/>as<sp/>[`offline_cam`][P10],<sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>[`offline_imu`][P11],<sp/>[`zed`][P12],<sp/>and<sp/>[`realsense`][P13].</highlight></codeline>
+<codeline></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">[//]:<sp/>#<sp/>(-<sp/>glossary<sp/>-)</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">[G10]:<sp/><sp/>../glossary.md#inertial-measurement-unit</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">[//]:<sp/>#<sp/>(-<sp/>plugins<sp/>-)</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">[P10]:<sp/><sp/>../illixr_plugins.md#offline_cam</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">[P11]:<sp/><sp/>../illixr_plugins.md#offline_imu</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">[P12]:<sp/><sp/>../illixr_plugins.md#zed</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">[P13]:<sp/><sp/>../illixr_plugins.md#realsense</highlight></codeline>
+<codeline></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">[//]:<sp/>#<sp/>(-<sp/>External<sp/>-)</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">[E10]:<sp/><sp/><sp/><sp/>https://projects.asl.ethz.ch/datasets/doku.php?id=kmavvisualinertialdatasets</highlight></codeline>
+    </programlisting>
+    <location file="/home/friedel/devel/ILLIXR/plugins/record_imu_cam/README.md"/>
+  </compounddef>
+</doxygen>

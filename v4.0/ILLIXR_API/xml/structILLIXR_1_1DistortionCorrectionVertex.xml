@@ -1,0 +1,107 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structILLIXR_1_1DistortionCorrectionVertex" kind="struct" language="C++" prot="public">
+    <compoundname>ILLIXR::DistortionCorrectionVertex</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structILLIXR_1_1DistortionCorrectionVertex_1a8efe42605b3c84c42132ccf09a244661" prot="public" static="no" mutable="no">
+        <type>glm::vec3</type>
+        <definition>glm::vec3 ILLIXR::DistortionCorrectionVertex::pos</definition>
+        <argsstring></argsstring>
+        <name>pos</name>
+        <qualifiedname>ILLIXR::DistortionCorrectionVertex::pos</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/openwarp_vk/openwarp_vk.hpp" line="22" column="15" bodyfile="/home/friedel/devel/ILLIXR/plugins/openwarp_vk/openwarp_vk.hpp" bodystart="22" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1DistortionCorrectionVertex_1a49835981caf037c170362fc582d6e2a1" prot="public" static="no" mutable="no">
+        <type>glm::vec2</type>
+        <definition>glm::vec2 ILLIXR::DistortionCorrectionVertex::uv0</definition>
+        <argsstring></argsstring>
+        <name>uv0</name>
+        <qualifiedname>ILLIXR::DistortionCorrectionVertex::uv0</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/openwarp_vk/openwarp_vk.hpp" line="23" column="15" bodyfile="/home/friedel/devel/ILLIXR/plugins/openwarp_vk/openwarp_vk.hpp" bodystart="23" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1DistortionCorrectionVertex_1a3f71a899745beea2013c7b7e4c2692ea" prot="public" static="no" mutable="no">
+        <type>glm::vec2</type>
+        <definition>glm::vec2 ILLIXR::DistortionCorrectionVertex::uv1</definition>
+        <argsstring></argsstring>
+        <name>uv1</name>
+        <qualifiedname>ILLIXR::DistortionCorrectionVertex::uv1</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/openwarp_vk/openwarp_vk.hpp" line="24" column="15" bodyfile="/home/friedel/devel/ILLIXR/plugins/openwarp_vk/openwarp_vk.hpp" bodystart="24" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1DistortionCorrectionVertex_1ad1993c2be74411c1ab45e7c5d1c8df52" prot="public" static="no" mutable="no">
+        <type>glm::vec2</type>
+        <definition>glm::vec2 ILLIXR::DistortionCorrectionVertex::uv2</definition>
+        <argsstring></argsstring>
+        <name>uv2</name>
+        <qualifiedname>ILLIXR::DistortionCorrectionVertex::uv2</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/openwarp_vk/openwarp_vk.hpp" line="25" column="15" bodyfile="/home/friedel/devel/ILLIXR/plugins/openwarp_vk/openwarp_vk.hpp" bodystart="25" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="structILLIXR_1_1DistortionCorrectionVertex_1a949e4444ad18da6b678d457d0f4d2e72" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>VkVertexInputBindingDescription</type>
+        <definition>static VkVertexInputBindingDescription ILLIXR::DistortionCorrectionVertex::get_binding_description</definition>
+        <argsstring>()</argsstring>
+        <name>get_binding_description</name>
+        <qualifiedname>ILLIXR::DistortionCorrectionVertex::get_binding_description</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/openwarp_vk/openwarp_vk.hpp" line="27" column="44" bodyfile="/home/friedel/devel/ILLIXR/plugins/openwarp_vk/openwarp_vk.hpp" bodystart="27" bodyend="34"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1DistortionCorrectionVertex_1a8a730191278a921b57868f0b85adda5a" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::array&lt; VkVertexInputAttributeDescription, 4 &gt;</type>
+        <definition>static std::array&lt; VkVertexInputAttributeDescription, 4 &gt; ILLIXR::DistortionCorrectionVertex::get_attribute_descriptions</definition>
+        <argsstring>()</argsstring>
+        <name>get_attribute_descriptions</name>
+        <qualifiedname>ILLIXR::DistortionCorrectionVertex::get_attribute_descriptions</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/openwarp_vk/openwarp_vk.hpp" line="36" column="23" bodyfile="/home/friedel/devel/ILLIXR/plugins/openwarp_vk/openwarp_vk.hpp" bodystart="36" bodyend="65"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/plugins/openwarp_vk/openwarp_vk.hpp" line="21" column="1" bodyfile="/home/friedel/devel/ILLIXR/plugins/openwarp_vk/openwarp_vk.hpp" bodystart="21" bodyend="66"/>
+    <listofallmembers>
+      <member refid="structILLIXR_1_1DistortionCorrectionVertex_1a8a730191278a921b57868f0b85adda5a" prot="public" virt="non-virtual"><scope>ILLIXR::DistortionCorrectionVertex</scope><name>get_attribute_descriptions</name></member>
+      <member refid="structILLIXR_1_1DistortionCorrectionVertex_1a949e4444ad18da6b678d457d0f4d2e72" prot="public" virt="non-virtual"><scope>ILLIXR::DistortionCorrectionVertex</scope><name>get_binding_description</name></member>
+      <member refid="structILLIXR_1_1DistortionCorrectionVertex_1a8efe42605b3c84c42132ccf09a244661" prot="public" virt="non-virtual"><scope>ILLIXR::DistortionCorrectionVertex</scope><name>pos</name></member>
+      <member refid="structILLIXR_1_1DistortionCorrectionVertex_1a49835981caf037c170362fc582d6e2a1" prot="public" virt="non-virtual"><scope>ILLIXR::DistortionCorrectionVertex</scope><name>uv0</name></member>
+      <member refid="structILLIXR_1_1DistortionCorrectionVertex_1a3f71a899745beea2013c7b7e4c2692ea" prot="public" virt="non-virtual"><scope>ILLIXR::DistortionCorrectionVertex</scope><name>uv1</name></member>
+      <member refid="structILLIXR_1_1DistortionCorrectionVertex_1ad1993c2be74411c1ab45e7c5d1c8df52" prot="public" virt="non-virtual"><scope>ILLIXR::DistortionCorrectionVertex</scope><name>uv2</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

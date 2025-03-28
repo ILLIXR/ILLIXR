@@ -1,0 +1,114 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="plugins_2offload__vio_2server__rx_2CMakeLists_8txt" kind="file" language="C++">
+    <compoundname>CMakeLists.txt</compoundname>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="plugins_2offload__vio_2server__rx_2CMakeLists_8txt_1a10d31f17f48164e0f149cf84b6c0e17a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>cmake_minimum_required</definition>
+        <argsstring>(VERSION 3.22) find_package(Protobuf REQUIRED) include(../protoc_generate_cpp.cmake) set(PLUGIN_NAME plugin.offload_vio.server_rx$</argsstring>
+        <name>cmake_minimum_required</name>
+        <param>
+          <type>VERSION 3.</type>
+          <declname>22</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_vio/server_rx/CMakeLists.txt" line="3" column="1" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_vio/server_rx/CMakeLists.txt" bodystart="3" bodyend="7"/>
+      </memberdef>
+      <memberdef kind="function" id="plugins_2offload__vio_2server__rx_2CMakeLists_8txt_1a6771ec710ffb5ee20378b196191a3bf7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>add_library</definition>
+        <argsstring>(${PLUGIN_NAME} SHARED plugin.cpp plugin.hpp video_decoder.cpp video_decoder.hpp ${CMAKE_SOURCE_DIR}/include/illixr/plugin.hpp ${CMAKE_SOURCE_DIR}/include/illixr/data_format/misc.hpp ${CMAKE_SOURCE_DIR}/include/illixr/data_format/opencv_data_types.hpp ${CMAKE_SOURCE_DIR}/include/illixr/phonebook.hpp ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp) set(protobuf_files $</argsstring>
+        <name>add_library</name>
+        <param>
+          <declname>${PLUGIN_NAME} SHARED plugin.cpp plugin.hpp video_decoder.cpp video_decoder.hpp ${CMAKE_SOURCE_DIR}/include/illixr/plugin.hpp ${CMAKE_SOURCE_DIR}/include/illixr/data_format/misc.hpp ${CMAKE_SOURCE_DIR}/include/illixr/data_format/opencv_data_types.hpp ${CMAKE_SOURCE_DIR}/include/illixr/phonebook.hpp ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_vio/server_rx/CMakeLists.txt" line="10" column="1" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_vio/server_rx/CMakeLists.txt" bodystart="10" bodyend="22"/>
+      </memberdef>
+      <memberdef kind="function" id="plugins_2offload__vio_2server__rx_2CMakeLists_8txt_1ae747798c30ba7c02be29d8d0ab7f572b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>proto vio_input proto</type>
+        <definition>proto vio_input proto target_include_directories</definition>
+        <argsstring>(${PLUGIN_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${OpenCV_INCLUDE_DIRS} ${Protobuf_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR}/include) target_link_libraries($</argsstring>
+        <name>target_include_directories</name>
+        <param>
+          <declname>${PLUGIN_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${OpenCV_INCLUDE_DIRS} ${Protobuf_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR}/</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_vio/server_rx/CMakeLists.txt" line="25" column="1" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_vio/server_rx/CMakeLists.txt" bodystart="25" bodyend="28"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#<sp/>module<sp/>to<sp/>build<sp/>and<sp/>install<sp/>the<sp/>offload_vio.server_rx<sp/>ILLIXR<sp/>plugin</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal">cmake_minimum_required(VERSION<sp/>3.22)</highlight></codeline>
+<codeline lineno="4"><highlight class="normal">find_package(Protobuf<sp/>REQUIRED)</highlight></codeline>
+<codeline lineno="5"><highlight class="normal">include(../protoc_generate_cpp.cmake)</highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal">set(PLUGIN_NAME<sp/>plugin.offload_vio.server_rx${ILLIXR_BUILD_SUFFIX})</highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal">#<sp/>source<sp/>files,<sp/>listed<sp/>individually<sp/>so<sp/>that<sp/>any<sp/>changes<sp/>will<sp/>trigger<sp/>a<sp/>rebuild</highlight></codeline>
+<codeline lineno="10"><highlight class="normal">add_library(${PLUGIN_NAME}<sp/>SHARED<sp/>plugin.cpp</highlight></codeline>
+<codeline lineno="11"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>plugin.hpp</highlight></codeline>
+<codeline lineno="12"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>video_decoder.cpp</highlight></codeline>
+<codeline lineno="13"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>video_decoder.hpp</highlight></codeline>
+<codeline lineno="14"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/plugin.hpp</highlight></codeline>
+<codeline lineno="15"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/data_format/misc.hpp</highlight></codeline>
+<codeline lineno="16"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/data_format/opencv_data_types.hpp</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/phonebook.hpp</highlight></codeline>
+<codeline lineno="18"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp</highlight></codeline>
+<codeline lineno="19"><highlight class="normal">)</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal">set(protobuf_files</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${CMAKE_CURRENT_SOURCE_DIR}/../proto/vio_input.proto</highlight></codeline>
+<codeline lineno="23"><highlight class="normal">)</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal">target_include_directories(${PLUGIN_NAME}<sp/>PUBLIC<sp/>${CMAKE_CURRENT_SOURCE_DIR}<sp/>${OpenCV_INCLUDE_DIRS}<sp/><sp/>${Protobuf_INCLUDE_DIRS}<sp/>${ILLIXR_SOURCE_DIR}/include)</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal">PROTOBUF_TARGET_CPP(${PLUGIN_NAME}<sp/>${CMAKE_CURRENT_SOURCE_DIR}/../proto<sp/>${protobuf_files})</highlight></codeline>
+<codeline lineno="28"><highlight class="normal">target_link_libraries(${PLUGIN_NAME}</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${OpenCV_LIBS}</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>protobuf::libprotobuf</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>spdlog::spdlog</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>)</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal">target_compile_features(${PLUGIN_NAME}<sp/>PRIVATE<sp/>cxx_std_17)</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight></codeline>
+<codeline lineno="36"><highlight class="normal">find_package(PkgConfig)</highlight></codeline>
+<codeline lineno="37"><highlight class="normal">pkg_search_module(GLIB<sp/>REQUIRED<sp/>glib-2.0)</highlight></codeline>
+<codeline lineno="38"><highlight class="normal">pkg_check_modules(GSTREAMER<sp/>REQUIRED<sp/>gstreamer-1.0)</highlight></codeline>
+<codeline lineno="39"><highlight class="normal">pkg_check_modules(GST_APP<sp/>REQUIRED<sp/>gstreamer-app-1.0)</highlight></codeline>
+<codeline lineno="40"><highlight class="normal">pkg_check_modules(GST_VIDEO<sp/>REQUIRED<sp/>gstreamer-video-1.0)</highlight></codeline>
+<codeline lineno="41"><highlight class="normal">pkg_check_modules(GST_AUDIO<sp/>REQUIRED<sp/>gstreamer-audio-1.0)</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"></highlight></codeline>
+<codeline lineno="43"><highlight class="normal">include_directories(</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${GSTREAMER_INCLUDE_DIRS}</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${GLIB_INCLUDE_DIRS}</highlight></codeline>
+<codeline lineno="46"><highlight class="normal">)</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"></highlight></codeline>
+<codeline lineno="48"><highlight class="normal">target_link_libraries(${PLUGIN_NAME}<sp/>${GST_APP_LIBRARIES}<sp/>${GST_VIDEO_LIBRARIES}<sp/>${GST_AUDIO_LIBRARIES})</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"></highlight></codeline>
+<codeline lineno="50"><highlight class="normal">install(TARGETS<sp/>${PLUGIN_NAME}<sp/>DESTINATION<sp/>lib)</highlight></codeline>
+    </programlisting>
+    <location file="/home/friedel/devel/ILLIXR/plugins/offload_vio/server_rx/CMakeLists.txt"/>
+  </compounddef>
+</doxygen>

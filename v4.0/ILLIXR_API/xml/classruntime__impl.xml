@@ -1,0 +1,186 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classruntime__impl" kind="class" language="C++" prot="public">
+    <compoundname>runtime_impl</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">ILLIXR::runtime</basecompoundref>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classruntime__impl_1ab2ae08480b937c09da1b7d7674135785" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; dynamic_lib &gt;</type>
+        <definition>std::vector&lt;dynamic_lib&gt; runtime_impl::libraries_</definition>
+        <argsstring></argsstring>
+        <name>libraries_</name>
+        <qualifiedname>runtime_impl::libraries_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/runtime_impl.cpp" line="178" column="29" bodyfile="/home/friedel/devel/ILLIXR/src/runtime_impl.cpp" bodystart="178" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classruntime__impl_1a5f36c2db374e9eb063fd5243798fb4ee" prot="private" static="no" mutable="no">
+        <type><ref refid="classILLIXR_1_1phonebook" kindref="compound">phonebook</ref></type>
+        <definition>phonebook runtime_impl::phonebook_</definition>
+        <argsstring></argsstring>
+        <name>phonebook_</name>
+        <qualifiedname>runtime_impl::phonebook_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/runtime_impl.cpp" line="179" column="42" bodyfile="/home/friedel/devel/ILLIXR/src/runtime_impl.cpp" bodystart="179" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classruntime__impl_1a4a1ce3fc67cde3ece61c0bdd5146f193" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; std::shared_ptr&lt; <ref refid="classILLIXR_1_1plugin" kindref="compound">plugin</ref> &gt; &gt;</type>
+        <definition>std::vector&lt;std::shared_ptr&lt;plugin&gt; &gt; runtime_impl::plugins_</definition>
+        <argsstring></argsstring>
+        <name>plugins_</name>
+        <qualifiedname>runtime_impl::plugins_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/runtime_impl.cpp" line="180" column="17" bodyfile="/home/friedel/devel/ILLIXR/src/runtime_impl.cpp" bodystart="180" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classruntime__impl_1a85e8450edc763e06b062f094515b6983" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>runtime_impl::runtime_impl</definition>
+        <argsstring>()</argsstring>
+        <name>runtime_impl</name>
+        <qualifiedname>runtime_impl::runtime_impl</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/runtime_impl.cpp" line="42" column="14" bodyfile="/home/friedel/devel/ILLIXR/src/runtime_impl.cpp" bodystart="42" bodyend="51"/>
+      </memberdef>
+      <memberdef kind="function" id="classruntime__impl_1ae14aa0449c90c13d929be08a8c5d5a44" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void runtime_impl::load_so</definition>
+        <argsstring>(const std::vector&lt; std::string &gt; &amp;so_paths) override</argsstring>
+        <name>load_so</name>
+        <qualifiedname>runtime_impl::load_so</qualifiedname>
+        <param>
+          <type>const std::vector&lt; std::string &gt; &amp;</type>
+          <declname>so_paths</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/runtime_impl.cpp" line="53" column="10" bodyfile="/home/friedel/devel/ILLIXR/src/runtime_impl.cpp" bodystart="53" bodyend="119"/>
+      </memberdef>
+      <memberdef kind="function" id="classruntime__impl_1a60ebfaa17a568fede3270b246d4c0539" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void runtime_impl::load_so</definition>
+        <argsstring>(const std::string_view &amp;so) override</argsstring>
+        <name>load_so</name>
+        <qualifiedname>runtime_impl::load_so</qualifiedname>
+        <param>
+          <type>const std::string_view &amp;</type>
+          <declname>so</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/runtime_impl.cpp" line="121" column="10" bodyfile="/home/friedel/devel/ILLIXR/src/runtime_impl.cpp" bodystart="121" bodyend="126"/>
+      </memberdef>
+      <memberdef kind="function" id="classruntime__impl_1ac891d73f498369a5d000af2b4b88c8b3" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void runtime_impl::load_plugin_factory</definition>
+        <argsstring>(plugin_factory plugin_main) override</argsstring>
+        <name>load_plugin_factory</name>
+        <qualifiedname>runtime_impl::load_plugin_factory</qualifiedname>
+        <param>
+          <type>plugin_factory</type>
+          <declname>plugin_main</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/runtime_impl.cpp" line="128" column="10" bodyfile="/home/friedel/devel/ILLIXR/src/runtime_impl.cpp" bodystart="128" bodyend="131"/>
+      </memberdef>
+      <memberdef kind="function" id="classruntime__impl_1aee11a89f388cb674e23176382390aed9" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void runtime_impl::wait</definition>
+        <argsstring>() override</argsstring>
+        <name>wait</name>
+        <qualifiedname>runtime_impl::wait</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/runtime_impl.cpp" line="133" column="10" bodyfile="/home/friedel/devel/ILLIXR/src/runtime_impl.cpp" bodystart="133" bodyend="137"/>
+      </memberdef>
+      <memberdef kind="function" id="classruntime__impl_1a7e7fc61aa684156f0fa9bc20b77d4963" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void runtime_impl::_stop</definition>
+        <argsstring>() override</argsstring>
+        <name>_stop</name>
+        <qualifiedname>runtime_impl::_stop</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/runtime_impl.cpp" line="139" column="10" bodyfile="/home/friedel/devel/ILLIXR/src/runtime_impl.cpp" bodystart="139" bodyend="154"/>
+      </memberdef>
+      <memberdef kind="function" id="classruntime__impl_1aeaf7973b1d3dce44a8c8e0c15661de87" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>runtime_impl::~runtime_impl</definition>
+        <argsstring>() override</argsstring>
+        <name>~runtime_impl</name>
+        <qualifiedname>runtime_impl::~runtime_impl</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/runtime_impl.cpp" line="156" column="5" bodyfile="/home/friedel/devel/ILLIXR/src/runtime_impl.cpp" bodystart="156" bodyend="174"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/src/runtime_impl.cpp" line="40" column="1" bodyfile="/home/friedel/devel/ILLIXR/src/runtime_impl.cpp" bodystart="40" bodyend="181"/>
+    <listofallmembers>
+      <member refid="classruntime__impl_1a7e7fc61aa684156f0fa9bc20b77d4963" prot="public" virt="non-virtual"><scope>runtime_impl</scope><name>_stop</name></member>
+      <member refid="classILLIXR_1_1runtime_1ae28b425b468fcc0d38476cfb5606fe28" prot="protected" virt="non-virtual"><scope>runtime_impl</scope><name>enable_monado_</name></member>
+      <member refid="classILLIXR_1_1runtime_1afbe76acd9cb0e5c20330c860f390367c" prot="public" virt="non-virtual"><scope>runtime_impl</scope><name>get_switchboard</name></member>
+      <member refid="classruntime__impl_1ab2ae08480b937c09da1b7d7674135785" prot="private" virt="non-virtual"><scope>runtime_impl</scope><name>libraries_</name></member>
+      <member refid="classruntime__impl_1ac891d73f498369a5d000af2b4b88c8b3" prot="public" virt="non-virtual"><scope>runtime_impl</scope><name>load_plugin_factory</name></member>
+      <member refid="classILLIXR_1_1runtime_1a0c264423747087d6fbdc59a00d877620" prot="public" virt="pure-virtual" ambiguityscope="ILLIXR::runtime::"><scope>runtime_impl</scope><name>load_plugin_factory</name></member>
+      <member refid="classruntime__impl_1ae14aa0449c90c13d929be08a8c5d5a44" prot="public" virt="non-virtual"><scope>runtime_impl</scope><name>load_so</name></member>
+      <member refid="classruntime__impl_1a60ebfaa17a568fede3270b246d4c0539" prot="public" virt="non-virtual"><scope>runtime_impl</scope><name>load_so</name></member>
+      <member refid="classruntime__impl_1a5f36c2db374e9eb063fd5243798fb4ee" prot="private" virt="non-virtual"><scope>runtime_impl</scope><name>phonebook_</name></member>
+      <member refid="classruntime__impl_1a4a1ce3fc67cde3ece61c0bdd5146f193" prot="private" virt="non-virtual"><scope>runtime_impl</scope><name>plugins_</name></member>
+      <member refid="classruntime__impl_1a85e8450edc763e06b062f094515b6983" prot="public" virt="non-virtual"><scope>runtime_impl</scope><name>runtime_impl</name></member>
+      <member refid="classILLIXR_1_1runtime_1a43cda807e0520d6005ed53ac58e57d2a" prot="public" virt="non-virtual"><scope>runtime_impl</scope><name>stop</name></member>
+      <member refid="classILLIXR_1_1runtime_1a384580bae727bc0697843297f67363c7" prot="protected" virt="non-virtual"><scope>runtime_impl</scope><name>switchboard_</name></member>
+      <member refid="classruntime__impl_1aee11a89f388cb674e23176382390aed9" prot="public" virt="non-virtual"><scope>runtime_impl</scope><name>wait</name></member>
+      <member refid="classILLIXR_1_1runtime_1a932186ca859d4ef52943073de0ec061e" prot="public" virt="virtual"><scope>runtime_impl</scope><name>~runtime</name></member>
+      <member refid="classruntime__impl_1aeaf7973b1d3dce44a8c8e0c15661de87" prot="public" virt="non-virtual"><scope>runtime_impl</scope><name>~runtime_impl</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

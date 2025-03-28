@@ -1,0 +1,225 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structILLIXR_1_1display__params" kind="struct" language="C++" prot="public">
+    <compoundname>ILLIXR::display_params</compoundname>
+    <includes refid="global__module__defs_8hpp" local="no">global_module_defs.hpp</includes>
+    <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="structILLIXR_1_1display__params_1a2d781ddf67e9869ec2e426d07416565a" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr unsigned</type>
+        <definition>constexpr unsigned ILLIXR::display_params::width_pixels</definition>
+        <argsstring></argsstring>
+        <name>width_pixels</name>
+        <qualifiedname>ILLIXR::display_params::width_pixels</qualifiedname>
+        <initializer>= 2880</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/global_module_defs.hpp" line="16" column="31" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/global_module_defs.hpp" bodystart="16" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1display__params_1a58e64579b660eef8d8eed5b4deac7b38" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr unsigned</type>
+        <definition>constexpr unsigned ILLIXR::display_params::height_pixels</definition>
+        <argsstring></argsstring>
+        <name>height_pixels</name>
+        <qualifiedname>ILLIXR::display_params::height_pixels</qualifiedname>
+        <initializer>= 1600</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/global_module_defs.hpp" line="19" column="31" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/global_module_defs.hpp" bodystart="19" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1display__params_1a9a93b21d76b3637135fd1f8aaafeebbb" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr float</type>
+        <definition>constexpr float ILLIXR::display_params::width_meters</definition>
+        <argsstring></argsstring>
+        <name>width_meters</name>
+        <qualifiedname>ILLIXR::display_params::width_meters</qualifiedname>
+        <initializer>= 0.11047f</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/global_module_defs.hpp" line="22" column="28" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/global_module_defs.hpp" bodystart="22" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1display__params_1a60db0839b752e21e3067e40757742040" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr float</type>
+        <definition>constexpr float ILLIXR::display_params::height_meters</definition>
+        <argsstring></argsstring>
+        <name>height_meters</name>
+        <qualifiedname>ILLIXR::display_params::height_meters</qualifiedname>
+        <initializer>= 0.06214f</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/global_module_defs.hpp" line="25" column="28" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/global_module_defs.hpp" bodystart="25" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1display__params_1abf451a8fa4b4dff801a8b16030fa3669" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr float</type>
+        <definition>constexpr float ILLIXR::display_params::lens_separation</definition>
+        <argsstring></argsstring>
+        <name>lens_separation</name>
+        <qualifiedname>ILLIXR::display_params::lens_separation</qualifiedname>
+        <initializer>= 0.05</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/global_module_defs.hpp" line="28" column="28" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/global_module_defs.hpp" bodystart="28" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1display__params_1a1db7cbb7664d8c700a4e07f86b076ea4" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr float</type>
+        <definition>constexpr float ILLIXR::display_params::lens_vertical_position</definition>
+        <argsstring></argsstring>
+        <name>lens_vertical_position</name>
+        <qualifiedname>ILLIXR::display_params::lens_vertical_position</qualifiedname>
+        <initializer>= height_meters / 2.0f</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/global_module_defs.hpp" line="31" column="29" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/global_module_defs.hpp" bodystart="31" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1display__params_1a5440c5dd3a8e1a63abc876fe55aafb5e" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr float</type>
+        <definition>constexpr float ILLIXR::display_params::fov_x</definition>
+        <argsstring></argsstring>
+        <name>fov_x</name>
+        <qualifiedname>ILLIXR::display_params::fov_x</qualifiedname>
+        <initializer>= 108.06f</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/global_module_defs.hpp" line="34" column="28" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/global_module_defs.hpp" bodystart="34" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1display__params_1ac1d7040b802ce0b13558910d9ad5920f" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr float</type>
+        <definition>constexpr float ILLIXR::display_params::fov_y</definition>
+        <argsstring></argsstring>
+        <name>fov_y</name>
+        <qualifiedname>ILLIXR::display_params::fov_y</qualifiedname>
+        <initializer>= 109.16f</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/global_module_defs.hpp" line="37" column="28" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/global_module_defs.hpp" bodystart="37" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1display__params_1a31022e31c922c752de223c2e1aed9ce7" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr float</type>
+        <definition>constexpr float ILLIXR::display_params::meters_per_tan_angle</definition>
+        <argsstring></argsstring>
+        <name>meters_per_tan_angle</name>
+        <qualifiedname>ILLIXR::display_params::meters_per_tan_angle</qualifiedname>
+        <initializer>= width_meters / (2 * (fov_x * M_PI / 180.0f))</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/global_module_defs.hpp" line="40" column="28" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/global_module_defs.hpp" bodystart="40" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1display__params_1abea6cdf3023b234d59c49a0e5f60beec" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr float</type>
+        <definition>constexpr float ILLIXR::display_params::ipd</definition>
+        <argsstring></argsstring>
+        <name>ipd</name>
+        <qualifiedname>ILLIXR::display_params::ipd</qualifiedname>
+        <initializer>= 0.064f</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/global_module_defs.hpp" line="43" column="28" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/global_module_defs.hpp" bodystart="43" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1display__params_1a79fa47daf3e3995182c1b43f3a7ac3db" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr float</type>
+        <definition>constexpr float ILLIXR::display_params::frequency</definition>
+        <argsstring></argsstring>
+        <name>frequency</name>
+        <qualifiedname>ILLIXR::display_params::frequency</qualifiedname>
+        <initializer>= 144.0f</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/global_module_defs.hpp" line="46" column="28" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/global_module_defs.hpp" bodystart="46" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1display__params_1a699ba7f49656c17bfd17ac9e8ae7b5ce" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr duration</type>
+        <definition>constexpr duration ILLIXR::display_params::period</definition>
+        <argsstring></argsstring>
+        <name>period</name>
+        <qualifiedname>ILLIXR::display_params::period</qualifiedname>
+        <initializer>= freq_to_period(frequency)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/global_module_defs.hpp" line="49" column="31" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/global_module_defs.hpp" bodystart="49" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1display__params_1aecd0b2e9d9faa694c78215d57b3e6eae" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr float</type>
+        <definition>constexpr float ILLIXR::display_params::aberration[4]</definition>
+        <argsstring>[4]</argsstring>
+        <name>aberration</name>
+        <qualifiedname>ILLIXR::display_params::aberration</qualifiedname>
+        <initializer>= {-0.016f, 0.0f, 0.024f, 0.0f}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/global_module_defs.hpp" line="52" column="28" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/global_module_defs.hpp" bodystart="52" bodyend="52"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Display parameters. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/include/illixr/global_module_defs.hpp" line="14" column="1" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/global_module_defs.hpp" bodystart="14" bodyend="53"/>
+    <listofallmembers>
+      <member refid="structILLIXR_1_1display__params_1aecd0b2e9d9faa694c78215d57b3e6eae" prot="public" virt="non-virtual"><scope>ILLIXR::display_params</scope><name>aberration</name></member>
+      <member refid="structILLIXR_1_1display__params_1a5440c5dd3a8e1a63abc876fe55aafb5e" prot="public" virt="non-virtual"><scope>ILLIXR::display_params</scope><name>fov_x</name></member>
+      <member refid="structILLIXR_1_1display__params_1ac1d7040b802ce0b13558910d9ad5920f" prot="public" virt="non-virtual"><scope>ILLIXR::display_params</scope><name>fov_y</name></member>
+      <member refid="structILLIXR_1_1display__params_1a79fa47daf3e3995182c1b43f3a7ac3db" prot="public" virt="non-virtual"><scope>ILLIXR::display_params</scope><name>frequency</name></member>
+      <member refid="structILLIXR_1_1display__params_1a60db0839b752e21e3067e40757742040" prot="public" virt="non-virtual"><scope>ILLIXR::display_params</scope><name>height_meters</name></member>
+      <member refid="structILLIXR_1_1display__params_1a58e64579b660eef8d8eed5b4deac7b38" prot="public" virt="non-virtual"><scope>ILLIXR::display_params</scope><name>height_pixels</name></member>
+      <member refid="structILLIXR_1_1display__params_1abea6cdf3023b234d59c49a0e5f60beec" prot="public" virt="non-virtual"><scope>ILLIXR::display_params</scope><name>ipd</name></member>
+      <member refid="structILLIXR_1_1display__params_1abf451a8fa4b4dff801a8b16030fa3669" prot="public" virt="non-virtual"><scope>ILLIXR::display_params</scope><name>lens_separation</name></member>
+      <member refid="structILLIXR_1_1display__params_1a1db7cbb7664d8c700a4e07f86b076ea4" prot="public" virt="non-virtual"><scope>ILLIXR::display_params</scope><name>lens_vertical_position</name></member>
+      <member refid="structILLIXR_1_1display__params_1a31022e31c922c752de223c2e1aed9ce7" prot="public" virt="non-virtual"><scope>ILLIXR::display_params</scope><name>meters_per_tan_angle</name></member>
+      <member refid="structILLIXR_1_1display__params_1a699ba7f49656c17bfd17ac9e8ae7b5ce" prot="public" virt="non-virtual"><scope>ILLIXR::display_params</scope><name>period</name></member>
+      <member refid="structILLIXR_1_1display__params_1a9a93b21d76b3637135fd1f8aaafeebbb" prot="public" virt="non-virtual"><scope>ILLIXR::display_params</scope><name>width_meters</name></member>
+      <member refid="structILLIXR_1_1display__params_1a2d781ddf67e9869ec2e426d07416565a" prot="public" virt="non-virtual"><scope>ILLIXR::display_params</scope><name>width_pixels</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

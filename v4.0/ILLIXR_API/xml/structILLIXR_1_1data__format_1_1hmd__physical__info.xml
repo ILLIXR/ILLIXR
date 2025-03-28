@@ -1,0 +1,180 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structILLIXR_1_1data__format_1_1hmd__physical__info" kind="struct" language="C++" prot="public">
+    <compoundname>ILLIXR::data_format::hmd_physical_info</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1hmd__physical__info_1ac8285c42e2bca2301ef75bfdba6babe2" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float ILLIXR::data_format::hmd_physical_info::ipd</definition>
+        <argsstring></argsstring>
+        <name>ipd</name>
+        <qualifiedname>ILLIXR::data_format::hmd_physical_info::ipd</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/misc.hpp" line="95" column="11" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/misc.hpp" bodystart="95" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1hmd__physical__info_1a50d8b9c89eaadf43e68ce397c5575c8a" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int ILLIXR::data_format::hmd_physical_info::displayPixelsWide</definition>
+        <argsstring></argsstring>
+        <name>displayPixelsWide</name>
+        <qualifiedname>ILLIXR::data_format::hmd_physical_info::displayPixelsWide</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/misc.hpp" line="96" column="11" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/misc.hpp" bodystart="96" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1hmd__physical__info_1a4a52012fe94c3a73102a72b6667f2f93" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int ILLIXR::data_format::hmd_physical_info::displayPixelsHigh</definition>
+        <argsstring></argsstring>
+        <name>displayPixelsHigh</name>
+        <qualifiedname>ILLIXR::data_format::hmd_physical_info::displayPixelsHigh</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/misc.hpp" line="97" column="11" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/misc.hpp" bodystart="97" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1hmd__physical__info_1aec556d4f258fa80610d0abc9ef8f3914" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float ILLIXR::data_format::hmd_physical_info::chromaticAberration[4]</definition>
+        <argsstring>[4]</argsstring>
+        <name>chromaticAberration</name>
+        <qualifiedname>ILLIXR::data_format::hmd_physical_info::chromaticAberration</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/misc.hpp" line="98" column="11" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/misc.hpp" bodystart="98" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1hmd__physical__info_1a55d66b685f848c3c2b718f46f7b10275" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float ILLIXR::data_format::hmd_physical_info::K[11]</definition>
+        <argsstring>[11]</argsstring>
+        <name>K</name>
+        <qualifiedname>ILLIXR::data_format::hmd_physical_info::K</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/misc.hpp" line="99" column="11" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/misc.hpp" bodystart="99" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1hmd__physical__info_1a77f37aafc7db18aca4322139e813cd0d" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int ILLIXR::data_format::hmd_physical_info::visiblePixelsWide</definition>
+        <argsstring></argsstring>
+        <name>visiblePixelsWide</name>
+        <qualifiedname>ILLIXR::data_format::hmd_physical_info::visiblePixelsWide</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/misc.hpp" line="100" column="11" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/misc.hpp" bodystart="100" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1hmd__physical__info_1ac2573c37b6374ff6d88b9b021d933ff2" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int ILLIXR::data_format::hmd_physical_info::visiblePixelsHigh</definition>
+        <argsstring></argsstring>
+        <name>visiblePixelsHigh</name>
+        <qualifiedname>ILLIXR::data_format::hmd_physical_info::visiblePixelsHigh</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/misc.hpp" line="101" column="11" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/misc.hpp" bodystart="101" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1hmd__physical__info_1a7187df26d78d8f651b77032c3615a541" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float ILLIXR::data_format::hmd_physical_info::visibleMetersWide</definition>
+        <argsstring></argsstring>
+        <name>visibleMetersWide</name>
+        <qualifiedname>ILLIXR::data_format::hmd_physical_info::visibleMetersWide</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/misc.hpp" line="102" column="11" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/misc.hpp" bodystart="102" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1hmd__physical__info_1ad99fdaaf0d285a27a8f418de6a97c723" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float ILLIXR::data_format::hmd_physical_info::visibleMetersHigh</definition>
+        <argsstring></argsstring>
+        <name>visibleMetersHigh</name>
+        <qualifiedname>ILLIXR::data_format::hmd_physical_info::visibleMetersHigh</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/misc.hpp" line="103" column="11" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/misc.hpp" bodystart="103" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1hmd__physical__info_1adeef1902cd5ba22f3b0be47c512116d7" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float ILLIXR::data_format::hmd_physical_info::lensSeparationInMeters</definition>
+        <argsstring></argsstring>
+        <name>lensSeparationInMeters</name>
+        <qualifiedname>ILLIXR::data_format::hmd_physical_info::lensSeparationInMeters</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/misc.hpp" line="104" column="11" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/misc.hpp" bodystart="104" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1hmd__physical__info_1a4d7c328ae46c7503c5cd62dc87037b33" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float ILLIXR::data_format::hmd_physical_info::metersPerTanAngleAtCenter</definition>
+        <argsstring></argsstring>
+        <name>metersPerTanAngleAtCenter</name>
+        <qualifiedname>ILLIXR::data_format::hmd_physical_info::metersPerTanAngleAtCenter</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/misc.hpp" line="105" column="11" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/misc.hpp" bodystart="105" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/misc.hpp" line="94" column="1" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/misc.hpp" bodystart="94" bodyend="106"/>
+    <listofallmembers>
+      <member refid="structILLIXR_1_1data__format_1_1hmd__physical__info_1aec556d4f258fa80610d0abc9ef8f3914" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::hmd_physical_info</scope><name>chromaticAberration</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1hmd__physical__info_1a4a52012fe94c3a73102a72b6667f2f93" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::hmd_physical_info</scope><name>displayPixelsHigh</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1hmd__physical__info_1a50d8b9c89eaadf43e68ce397c5575c8a" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::hmd_physical_info</scope><name>displayPixelsWide</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1hmd__physical__info_1ac8285c42e2bca2301ef75bfdba6babe2" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::hmd_physical_info</scope><name>ipd</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1hmd__physical__info_1a55d66b685f848c3c2b718f46f7b10275" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::hmd_physical_info</scope><name>K</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1hmd__physical__info_1adeef1902cd5ba22f3b0be47c512116d7" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::hmd_physical_info</scope><name>lensSeparationInMeters</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1hmd__physical__info_1a4d7c328ae46c7503c5cd62dc87037b33" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::hmd_physical_info</scope><name>metersPerTanAngleAtCenter</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1hmd__physical__info_1ad99fdaaf0d285a27a8f418de6a97c723" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::hmd_physical_info</scope><name>visibleMetersHigh</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1hmd__physical__info_1a7187df26d78d8f651b77032c3615a541" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::hmd_physical_info</scope><name>visibleMetersWide</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1hmd__physical__info_1ac2573c37b6374ff6d88b9b021d933ff2" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::hmd_physical_info</scope><name>visiblePixelsHigh</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1hmd__physical__info_1a77f37aafc7db18aca4322139e813cd0d" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::hmd_physical_info</scope><name>visiblePixelsWide</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

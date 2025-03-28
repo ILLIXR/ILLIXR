@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_95e9b2328c86d5546b3904253917b4ea" kind="dir">
+    <compoundname>/home/friedel/devel/ILLIXR/plugins/offline_cam</compoundname>
+    <innerfile refid="plugins_2offline__cam_2plugin_8cpp">plugin.cpp</innerfile>
+    <innerfile refid="plugins_2offline__cam_2plugin_8hpp">plugin.hpp</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/plugins/offline_cam/"/>
+  </compounddef>
+</doxygen>

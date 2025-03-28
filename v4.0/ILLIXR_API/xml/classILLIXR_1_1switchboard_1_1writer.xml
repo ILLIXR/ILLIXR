@@ -1,0 +1,110 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classILLIXR_1_1switchboard_1_1writer" kind="class" language="C++" prot="public">
+    <compoundname>ILLIXR::switchboard::writer</compoundname>
+    <derivedcompoundref refid="classILLIXR_1_1switchboard_1_1network__writer" prot="public" virt="non-virtual">ILLIXR::switchboard::network_writer&lt; ILLIXR::data_format::fast_pose_type &gt;</derivedcompoundref>
+    <derivedcompoundref refid="classILLIXR_1_1switchboard_1_1network__writer" prot="public" virt="non-virtual">ILLIXR::switchboard::network_writer&lt; data_format::compressed_frame &gt;</derivedcompoundref>
+    <derivedcompoundref refid="classILLIXR_1_1switchboard_1_1network__writer" prot="public" virt="non-virtual">ILLIXR::switchboard::network_writer&lt; ILLIXR::switchboard::event_wrapper&lt; std::string &gt; &gt;</derivedcompoundref>
+    <includes refid="switchboard_8hpp" local="no">switchboard.hpp</includes>
+    <templateparamlist>
+      <param>
+        <type>typename Specific_event</type>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="protected-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1switchboard_1_1writer_1a0885514a4c488c91e3d0b6532359eea3" prot="protected" static="no" mutable="no">
+        <type>topic &amp;</type>
+        <definition>topic&amp; ILLIXR::switchboard::writer&lt; Specific_event &gt;::topic_</definition>
+        <argsstring></argsstring>
+        <name>topic_</name>
+        <qualifiedname>ILLIXR::switchboard::writer::topic_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="628" column="15" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="628" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classILLIXR_1_1switchboard_1_1writer_1acb0ec861c8be1821fade6d115a12d7ba" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::switchboard::writer&lt; Specific_event &gt;::writer</definition>
+        <argsstring>(topic &amp;topic)</argsstring>
+        <name>writer</name>
+        <qualifiedname>ILLIXR::switchboard::writer::writer</qualifiedname>
+        <param>
+          <type>topic &amp;</type>
+          <declname>topic</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="593" column="18" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="593" bodyend="594"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1switchboard_1_1writer_1aa79e6b3a1ddda30e7c58cbfef53d6895" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class...</type>
+            <declname>Args</declname>
+            <defname>Args</defname>
+          </param>
+        </templateparamlist>
+        <type><ref refid="classILLIXR_1_1switchboard_1af91c1b9436918512e95e5fa8553846a7" kindref="member">ptr</ref>&lt; Specific_event &gt;</type>
+        <definition>ptr&lt; Specific_event &gt; ILLIXR::switchboard::writer&lt; Specific_event &gt;::allocate</definition>
+        <argsstring>(Args &amp;&amp;... args)</argsstring>
+        <name>allocate</name>
+        <qualifiedname>ILLIXR::switchboard::writer::allocate</qualifiedname>
+        <param>
+          <type>Args &amp;&amp;...</type>
+          <declname>args</declname>
+        </param>
+        <briefdescription>
+<para>Like <computeroutput>new</computeroutput>/<computeroutput>malloc</computeroutput> but more efficient for this specific case. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>There is an optimization available which has not yet been implemented: switchboard can reuse memory from old events, like a <ulink url="https://en.wikipedia.org/wiki/Slab_allocation">slab allocator</ulink>. Suppose module A publishes data for module B. B&apos;s deallocation through the destructor, and A&apos;s allocation through this method completes the cycle in a <ulink url="https://en.wikipedia.org/wiki/Multiple_buffering">double-buffer (AKA swap-chain)</ulink>. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="608" column="13" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="608" bodyend="610"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1switchboard_1_1writer_1a3accadec10128766d2c59c72baa20a18" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>void</type>
+        <definition>virtual void ILLIXR::switchboard::writer&lt; Specific_event &gt;::put</definition>
+        <argsstring>(ptr&lt; Specific_event &gt; &amp;&amp;this_specific_event)</argsstring>
+        <name>put</name>
+        <qualifiedname>ILLIXR::switchboard::writer::put</qualifiedname>
+        <param>
+          <type><ref refid="classILLIXR_1_1switchboard_1af91c1b9436918512e95e5fa8553846a7" kindref="member">ptr</ref>&lt; Specific_event &gt; &amp;&amp;</type>
+          <declname>this_specific_event</declname>
+        </param>
+        <briefdescription>
+<para>Publish <computeroutput>ev</computeroutput> to this topic. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+<para>TODO: Revisit for solution that guarantees uniqueness</para>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="615" column="22" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="615" bodyend="624"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A handle which can publish events to a topic. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="591" column="5" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="591" bodyend="629"/>
+    <listofallmembers>
+      <member refid="classILLIXR_1_1switchboard_1_1writer_1aa79e6b3a1ddda30e7c58cbfef53d6895" prot="public" virt="non-virtual"><scope>ILLIXR::switchboard::writer</scope><name>allocate</name></member>
+      <member refid="classILLIXR_1_1switchboard_1_1writer_1a3accadec10128766d2c59c72baa20a18" prot="public" virt="virtual"><scope>ILLIXR::switchboard::writer</scope><name>put</name></member>
+      <member refid="classILLIXR_1_1switchboard_1_1writer_1a0885514a4c488c91e3d0b6532359eea3" prot="protected" virt="non-virtual"><scope>ILLIXR::switchboard::writer</scope><name>topic_</name></member>
+      <member refid="classILLIXR_1_1switchboard_1_1writer_1acb0ec861c8be1821fade6d115a12d7ba" prot="public" virt="non-virtual"><scope>ILLIXR::switchboard::writer</scope><name>writer</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,107 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classILLIXR_1_1switchboard_1_1coordinate__system" kind="class" language="C++" prot="private">
+    <compoundname>ILLIXR::switchboard::coordinate_system</compoundname>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1switchboard_1_1coordinate__system_1a960e47f3354604621c26b29bb6d2861f" prot="private" static="no" mutable="no">
+        <type>Eigen::Vector3f</type>
+        <definition>Eigen::Vector3f ILLIXR::switchboard::coordinate_system::position_</definition>
+        <argsstring></argsstring>
+        <name>position_</name>
+        <qualifiedname>ILLIXR::switchboard::coordinate_system::position_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="900" column="28" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="900" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1switchboard_1_1coordinate__system_1a130a3acb9b251f7e03a186a53868251c" prot="private" static="no" mutable="no">
+        <type>Eigen::Quaternionf</type>
+        <definition>Eigen::Quaternionf ILLIXR::switchboard::coordinate_system::orientation_</definition>
+        <argsstring></argsstring>
+        <name>orientation_</name>
+        <qualifiedname>ILLIXR::switchboard::coordinate_system::orientation_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="901" column="28" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="901" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classILLIXR_1_1switchboard_1_1coordinate__system_1afef37fa5b39a3d9632973f6f1a2c8502" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::switchboard::coordinate_system::coordinate_system</definition>
+        <argsstring>()</argsstring>
+        <name>coordinate_system</name>
+        <qualifiedname>ILLIXR::switchboard::coordinate_system::coordinate_system</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="904" column="9" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="904" bodyend="937"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1switchboard_1_1coordinate__system_1ac03fa53c8087c4b9687640a994344d6d" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const Eigen::Vector3f &amp;</type>
+        <definition>const Eigen::Vector3f &amp; ILLIXR::switchboard::coordinate_system::position</definition>
+        <argsstring>() const</argsstring>
+        <name>position</name>
+        <qualifiedname>ILLIXR::switchboard::coordinate_system::position</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Get the position portion of the WCS origin <simplesect kind="return"><para>Eigen::Vector3f </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="943" column="32" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="943" bodyend="945"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1switchboard_1_1coordinate__system_1a66b0296f67df44cf9611133db63f18a6" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const Eigen::Quaternionf &amp;</type>
+        <definition>const Eigen::Quaternionf &amp; ILLIXR::switchboard::coordinate_system::orientation</definition>
+        <argsstring>() const</argsstring>
+        <name>orientation</name>
+        <qualifiedname>ILLIXR::switchboard::coordinate_system::orientation</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Get the orientation portion of the WCS origin <simplesect kind="return"><para>Eigen::Quaternionf </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="951" column="35" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="951" bodyend="953"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Base coordinate system. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>This class reads in and hold the world coordinate system origin. The origin can be provided by the WCS_ORIGIN environment/yaml variable and can be specified in one of three ways</para>
+<para><itemizedlist>
+<listitem><para>a set of 3 comma separated values, representing only the origin in x, y, and z coordinates</para>
+</listitem><listitem><para>a set of 4 comma separated values, representing only the quaternion of the origin in w, x, y, z</para>
+</listitem><listitem><para>a set of 7 comma seperated values, representing both the origin and its quaternion in the form x, y, z, w, wx, wy, wz</para>
+</listitem></itemizedlist>
+</para>
+<para>Any component which is not given defaults to 0 (except w which is set to 1) </para>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="898" column="5" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="898" bodyend="954"/>
+    <listofallmembers>
+      <member refid="classILLIXR_1_1switchboard_1_1coordinate__system_1afef37fa5b39a3d9632973f6f1a2c8502" prot="public" virt="non-virtual"><scope>ILLIXR::switchboard::coordinate_system</scope><name>coordinate_system</name></member>
+      <member refid="classILLIXR_1_1switchboard_1_1coordinate__system_1a66b0296f67df44cf9611133db63f18a6" prot="public" virt="non-virtual"><scope>ILLIXR::switchboard::coordinate_system</scope><name>orientation</name></member>
+      <member refid="classILLIXR_1_1switchboard_1_1coordinate__system_1a130a3acb9b251f7e03a186a53868251c" prot="private" virt="non-virtual"><scope>ILLIXR::switchboard::coordinate_system</scope><name>orientation_</name></member>
+      <member refid="classILLIXR_1_1switchboard_1_1coordinate__system_1ac03fa53c8087c4b9687640a994344d6d" prot="public" virt="non-virtual"><scope>ILLIXR::switchboard::coordinate_system</scope><name>position</name></member>
+      <member refid="classILLIXR_1_1switchboard_1_1coordinate__system_1a960e47f3354604621c26b29bb6d2861f" prot="private" virt="non-virtual"><scope>ILLIXR::switchboard::coordinate_system</scope><name>position_</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

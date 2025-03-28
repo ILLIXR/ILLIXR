@@ -1,0 +1,392 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classILLIXR_1_1zed__capture_1_1capture" kind="class" language="C++" prot="public">
+    <compoundname>ILLIXR::zed_capture::capture</compoundname>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1zed__capture_1_1capture_1a81c880ee1ab5a9537af000316854e020" prot="private" static="no" mutable="no">
+        <type>std::ofstream</type>
+        <definition>std::ofstream ILLIXR::zed_capture::capture::data_of_</definition>
+        <argsstring></argsstring>
+        <name>data_of_</name>
+        <qualifiedname>ILLIXR::zed_capture::capture::data_of_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/capture.hpp" line="25" column="19" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/capture.hpp" bodystart="25" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1zed__capture_1_1capture_1a480f916c3085418d1471590d43fffc0a" prot="private" static="no" mutable="no">
+        <type>std::ofstream</type>
+        <definition>std::ofstream ILLIXR::zed_capture::capture::camL_of_</definition>
+        <argsstring></argsstring>
+        <name>camL_of_</name>
+        <qualifiedname>ILLIXR::zed_capture::capture::camL_of_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/capture.hpp" line="26" column="19" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/capture.hpp" bodystart="26" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1zed__capture_1_1capture_1a818590863398a4a449e7e6125af79c0a" prot="private" static="no" mutable="no">
+        <type>std::ofstream</type>
+        <definition>std::ofstream ILLIXR::zed_capture::capture::camR_of_</definition>
+        <argsstring></argsstring>
+        <name>camR_of_</name>
+        <qualifiedname>ILLIXR::zed_capture::capture::camR_of_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/capture.hpp" line="27" column="19" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/capture.hpp" bodystart="27" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1zed__capture_1_1capture_1a5ab77cc97efdd1bab60b192499e9fd2a" prot="private" static="no" mutable="no">
+        <type>sl::Camera *</type>
+        <definition>sl::Camera* ILLIXR::zed_capture::capture::camera_</definition>
+        <argsstring></argsstring>
+        <name>camera_</name>
+        <qualifiedname>ILLIXR::zed_capture::capture::camera_</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/capture.hpp" line="31" column="16" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/capture.hpp" bodystart="31" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1zed__capture_1_1capture_1a2f296d1dbc0b4313361f2aff3f9b3077" prot="private" static="no" mutable="no">
+        <type>sl::Mat</type>
+        <definition>sl::Mat ILLIXR::zed_capture::capture::imageL_zed_</definition>
+        <argsstring></argsstring>
+        <name>imageL_zed_</name>
+        <qualifiedname>ILLIXR::zed_capture::capture::imageL_zed_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/capture.hpp" line="33" column="13" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/capture.hpp" bodystart="33" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1zed__capture_1_1capture_1a1dc97f2d183924cbabe5274736473841" prot="private" static="no" mutable="no">
+        <type>sl::Mat</type>
+        <definition>sl::Mat ILLIXR::zed_capture::capture::imageR_zed_</definition>
+        <argsstring></argsstring>
+        <name>imageR_zed_</name>
+        <qualifiedname>ILLIXR::zed_capture::capture::imageR_zed_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/capture.hpp" line="34" column="13" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/capture.hpp" bodystart="34" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1zed__capture_1_1capture_1a1d77c1ad427746550af10458c55e6f53" prot="private" static="no" mutable="no">
+        <type>cv::Mat</type>
+        <definition>cv::Mat ILLIXR::zed_capture::capture::imageL_ocv_</definition>
+        <argsstring></argsstring>
+        <name>imageL_ocv_</name>
+        <qualifiedname>ILLIXR::zed_capture::capture::imageL_ocv_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/capture.hpp" line="38" column="13" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/capture.hpp" bodystart="38" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1zed__capture_1_1capture_1a30e332135a9a860f8b8f2be4e9e8665f" prot="private" static="no" mutable="no">
+        <type>cv::Mat</type>
+        <definition>cv::Mat ILLIXR::zed_capture::capture::imageR_ocv_</definition>
+        <argsstring></argsstring>
+        <name>imageR_ocv_</name>
+        <qualifiedname>ILLIXR::zed_capture::capture::imageR_ocv_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/capture.hpp" line="39" column="13" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/capture.hpp" bodystart="39" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1zed__capture_1_1capture_1a72208e6be3c006f9fda6b40135745367" prot="private" static="no" mutable="no">
+        <type>uint64_t</type>
+        <definition>uint64_t ILLIXR::zed_capture::capture::timepoint_</definition>
+        <argsstring></argsstring>
+        <name>timepoint_</name>
+        <qualifiedname>ILLIXR::zed_capture::capture::timepoint_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/capture.hpp" line="42" column="14" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/capture.hpp" bodystart="42" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1zed__capture_1_1capture_1ab168ffc8c8778b82b8f8a8aaae7c3736" prot="private" static="no" mutable="no">
+        <type>sl::Resolution</type>
+        <definition>sl::Resolution ILLIXR::zed_capture::capture::img_size_</definition>
+        <argsstring></argsstring>
+        <name>img_size_</name>
+        <qualifiedname>ILLIXR::zed_capture::capture::img_size_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/capture.hpp" line="44" column="20" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/capture.hpp" bodystart="44" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1zed__capture_1_1capture_1ad80981ea771f1f85bd656d22e07ce326" prot="private" static="no" mutable="no">
+        <type>sl::RuntimeParameters</type>
+        <definition>sl::RuntimeParameters ILLIXR::zed_capture::capture::runtime_params_</definition>
+        <argsstring></argsstring>
+        <name>runtime_params_</name>
+        <qualifiedname>ILLIXR::zed_capture::capture::runtime_params_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/capture.hpp" line="46" column="27" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/capture.hpp" bodystart="46" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1zed__capture_1_1capture_1ae29b3c8e0ce4fb6598b4502192d0d988" prot="private" static="no" mutable="no">
+        <type>sl::Transform</type>
+        <definition>sl::Transform ILLIXR::zed_capture::capture::wcs_xform_</definition>
+        <argsstring></argsstring>
+        <name>wcs_xform_</name>
+        <qualifiedname>ILLIXR::zed_capture::capture::wcs_xform_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/capture.hpp" line="47" column="27" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/capture.hpp" bodystart="47" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1zed__capture_1_1capture_1a2479005f9263cd349f08f632bd719313" prot="private" static="no" mutable="no">
+        <type>GLFWwindow *</type>
+        <definition>GLFWwindow* ILLIXR::zed_capture::capture::viewport_</definition>
+        <argsstring></argsstring>
+        <name>viewport_</name>
+        <qualifiedname>ILLIXR::zed_capture::capture::viewport_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/capture.hpp" line="49" column="16" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/capture.hpp" bodystart="49" bodyend="49"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1zed__capture_1_1capture_1a8e3cb50c69d8829b14fdc717ea85a6f0" prot="private" static="no" mutable="no">
+        <type>GLuint</type>
+        <definition>GLuint ILLIXR::zed_capture::capture::textures_[2]</definition>
+        <argsstring>[2]</argsstring>
+        <name>textures_</name>
+        <qualifiedname>ILLIXR::zed_capture::capture::textures_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/capture.hpp" line="50" column="17" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/capture.hpp" bodystart="50" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1zed__capture_1_1capture_1a7f9d3d318d6793ee485a92f53659bf77" prot="private" static="no" mutable="no">
+        <type>ImVec4</type>
+        <definition>ImVec4 ILLIXR::zed_capture::capture::clear_color_</definition>
+        <argsstring></argsstring>
+        <name>clear_color_</name>
+        <qualifiedname>ILLIXR::zed_capture::capture::clear_color_</qualifiedname>
+        <initializer>= ImVec4(0.45f, 0.55f, 0.60f, 1.00f)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/capture.hpp" line="51" column="17" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/capture.hpp" bodystart="51" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1zed__capture_1_1capture_1a29e2077f59c7b05538bb552b759772b3" prot="private" static="no" mutable="no">
+        <type>cv::Mat</type>
+        <definition>cv::Mat ILLIXR::zed_capture::capture::raw_img_[2]</definition>
+        <argsstring>[2]</argsstring>
+        <name>raw_img_</name>
+        <qualifiedname>ILLIXR::zed_capture::capture::raw_img_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/capture.hpp" line="52" column="17" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/capture.hpp" bodystart="52" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1zed__capture_1_1capture_1acc62bd609fe273f106ae844fffc9b787" prot="private" static="no" mutable="no">
+        <type>const int</type>
+        <definition>const int ILLIXR::zed_capture::capture::fps_</definition>
+        <argsstring></argsstring>
+        <name>fps_</name>
+        <qualifiedname>ILLIXR::zed_capture::capture::fps_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/capture.hpp" line="53" column="17" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/capture.hpp" bodystart="53" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classILLIXR_1_1zed__capture_1_1capture_1ae42811258554643c5a4612f5b2017d7d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::zed_capture::capture::capture</definition>
+        <argsstring>()=delete</argsstring>
+        <name>capture</name>
+        <qualifiedname>ILLIXR::zed_capture::capture::capture</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/capture.hpp" line="16" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1zed__capture_1_1capture_1aaa4e989918c70c1d1eac43407f2ef1ca" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>capture::capture</definition>
+        <argsstring>(int fp, const ILLIXR::data_format::pose_data &amp;wcf)</argsstring>
+        <name>capture</name>
+        <qualifiedname>ILLIXR::zed_capture::capture::capture</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>fp</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structILLIXR_1_1data__format_1_1pose__data" kindref="compound">ILLIXR::data_format::pose_data</ref> &amp;</type>
+          <declname>wcf</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/capture.hpp" line="17" column="5" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/capture.cpp" bodystart="162" bodyend="244"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1zed__capture_1_1capture_1a1a8f3901162be29838b8e17305b324e4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>capture::~capture</definition>
+        <argsstring>()</argsstring>
+        <name>~capture</name>
+        <qualifiedname>ILLIXR::zed_capture::capture::~capture</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/capture.hpp" line="18" column="5" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/capture.cpp" bodystart="145" bodyend="160"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1zed__capture_1_1capture_1ab5ad1dd7c214a4afef056b15e2d0590e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void capture::get_camera</definition>
+        <argsstring>(const ILLIXR::data_format::pose_data &amp;wcf)</argsstring>
+        <name>get_camera</name>
+        <qualifiedname>ILLIXR::zed_capture::capture::get_camera</qualifiedname>
+        <param>
+          <type>const <ref refid="structILLIXR_1_1data__format_1_1pose__data" kindref="compound">ILLIXR::data_format::pose_data</ref> &amp;</type>
+          <declname>wcf</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/capture.hpp" line="19" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/capture.cpp" bodystart="17" bodyend="42"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1zed__capture_1_1capture_1a8307685e90e8e4afa58caa2c18364763" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void capture::get_config</definition>
+        <argsstring>()</argsstring>
+        <name>get_config</name>
+        <qualifiedname>ILLIXR::zed_capture::capture::get_config</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/capture.hpp" line="20" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/capture.cpp" bodystart="44" bodyend="64"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1zed__capture_1_1capture_1ac7cd212fc9896043f57b40fb059d991e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int capture::get_data</definition>
+        <argsstring>()</argsstring>
+        <name>get_data</name>
+        <qualifiedname>ILLIXR::zed_capture::capture::get_data</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/capture.hpp" line="21" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/capture.cpp" bodystart="106" bodyend="143"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1zed__capture_1_1capture_1a5b4f386bbba6691c69640c138a9311ad" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void capture::make_gui</definition>
+        <argsstring>()</argsstring>
+        <name>make_gui</name>
+        <qualifiedname>ILLIXR::zed_capture::capture::make_gui</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/capture.hpp" line="22" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/capture.cpp" bodystart="66" bodyend="104"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/capture.hpp" line="14" column="1" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/capture.hpp" bodystart="14" bodyend="54"/>
+    <listofallmembers>
+      <member refid="classILLIXR_1_1zed__capture_1_1capture_1a5ab77cc97efdd1bab60b192499e9fd2a" prot="private" virt="non-virtual"><scope>ILLIXR::zed_capture::capture</scope><name>camera_</name></member>
+      <member refid="classILLIXR_1_1zed__capture_1_1capture_1a480f916c3085418d1471590d43fffc0a" prot="private" virt="non-virtual"><scope>ILLIXR::zed_capture::capture</scope><name>camL_of_</name></member>
+      <member refid="classILLIXR_1_1zed__capture_1_1capture_1a818590863398a4a449e7e6125af79c0a" prot="private" virt="non-virtual"><scope>ILLIXR::zed_capture::capture</scope><name>camR_of_</name></member>
+      <member refid="classILLIXR_1_1zed__capture_1_1capture_1ae42811258554643c5a4612f5b2017d7d" prot="public" virt="non-virtual"><scope>ILLIXR::zed_capture::capture</scope><name>capture</name></member>
+      <member refid="classILLIXR_1_1zed__capture_1_1capture_1aaa4e989918c70c1d1eac43407f2ef1ca" prot="public" virt="non-virtual"><scope>ILLIXR::zed_capture::capture</scope><name>capture</name></member>
+      <member refid="classILLIXR_1_1zed__capture_1_1capture_1a7f9d3d318d6793ee485a92f53659bf77" prot="private" virt="non-virtual"><scope>ILLIXR::zed_capture::capture</scope><name>clear_color_</name></member>
+      <member refid="classILLIXR_1_1zed__capture_1_1capture_1a81c880ee1ab5a9537af000316854e020" prot="private" virt="non-virtual"><scope>ILLIXR::zed_capture::capture</scope><name>data_of_</name></member>
+      <member refid="classILLIXR_1_1zed__capture_1_1capture_1acc62bd609fe273f106ae844fffc9b787" prot="private" virt="non-virtual"><scope>ILLIXR::zed_capture::capture</scope><name>fps_</name></member>
+      <member refid="classILLIXR_1_1zed__capture_1_1capture_1ab5ad1dd7c214a4afef056b15e2d0590e" prot="public" virt="non-virtual"><scope>ILLIXR::zed_capture::capture</scope><name>get_camera</name></member>
+      <member refid="classILLIXR_1_1zed__capture_1_1capture_1a8307685e90e8e4afa58caa2c18364763" prot="public" virt="non-virtual"><scope>ILLIXR::zed_capture::capture</scope><name>get_config</name></member>
+      <member refid="classILLIXR_1_1zed__capture_1_1capture_1ac7cd212fc9896043f57b40fb059d991e" prot="public" virt="non-virtual"><scope>ILLIXR::zed_capture::capture</scope><name>get_data</name></member>
+      <member refid="classILLIXR_1_1zed__capture_1_1capture_1a1d77c1ad427746550af10458c55e6f53" prot="private" virt="non-virtual"><scope>ILLIXR::zed_capture::capture</scope><name>imageL_ocv_</name></member>
+      <member refid="classILLIXR_1_1zed__capture_1_1capture_1a2f296d1dbc0b4313361f2aff3f9b3077" prot="private" virt="non-virtual"><scope>ILLIXR::zed_capture::capture</scope><name>imageL_zed_</name></member>
+      <member refid="classILLIXR_1_1zed__capture_1_1capture_1a30e332135a9a860f8b8f2be4e9e8665f" prot="private" virt="non-virtual"><scope>ILLIXR::zed_capture::capture</scope><name>imageR_ocv_</name></member>
+      <member refid="classILLIXR_1_1zed__capture_1_1capture_1a1dc97f2d183924cbabe5274736473841" prot="private" virt="non-virtual"><scope>ILLIXR::zed_capture::capture</scope><name>imageR_zed_</name></member>
+      <member refid="classILLIXR_1_1zed__capture_1_1capture_1ab168ffc8c8778b82b8f8a8aaae7c3736" prot="private" virt="non-virtual"><scope>ILLIXR::zed_capture::capture</scope><name>img_size_</name></member>
+      <member refid="classILLIXR_1_1zed__capture_1_1capture_1a5b4f386bbba6691c69640c138a9311ad" prot="public" virt="non-virtual"><scope>ILLIXR::zed_capture::capture</scope><name>make_gui</name></member>
+      <member refid="classILLIXR_1_1zed__capture_1_1capture_1a29e2077f59c7b05538bb552b759772b3" prot="private" virt="non-virtual"><scope>ILLIXR::zed_capture::capture</scope><name>raw_img_</name></member>
+      <member refid="classILLIXR_1_1zed__capture_1_1capture_1ad80981ea771f1f85bd656d22e07ce326" prot="private" virt="non-virtual"><scope>ILLIXR::zed_capture::capture</scope><name>runtime_params_</name></member>
+      <member refid="classILLIXR_1_1zed__capture_1_1capture_1a8e3cb50c69d8829b14fdc717ea85a6f0" prot="private" virt="non-virtual"><scope>ILLIXR::zed_capture::capture</scope><name>textures_</name></member>
+      <member refid="classILLIXR_1_1zed__capture_1_1capture_1a72208e6be3c006f9fda6b40135745367" prot="private" virt="non-virtual"><scope>ILLIXR::zed_capture::capture</scope><name>timepoint_</name></member>
+      <member refid="classILLIXR_1_1zed__capture_1_1capture_1a2479005f9263cd349f08f632bd719313" prot="private" virt="non-virtual"><scope>ILLIXR::zed_capture::capture</scope><name>viewport_</name></member>
+      <member refid="classILLIXR_1_1zed__capture_1_1capture_1ae29b3c8e0ce4fb6598b4502192d0d988" prot="private" virt="non-virtual"><scope>ILLIXR::zed_capture::capture</scope><name>wcs_xform_</name></member>
+      <member refid="classILLIXR_1_1zed__capture_1_1capture_1a1a8f3901162be29838b8e17305b324e4" prot="public" virt="non-virtual"><scope>ILLIXR::zed_capture::capture</scope><name>~capture</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

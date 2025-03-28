@@ -1,0 +1,589 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classILLIXR_1_1switchboard" kind="class" language="C++" prot="public">
+    <compoundname>ILLIXR::switchboard</compoundname>
+    <basecompoundref refid="classILLIXR_1_1phonebook_1_1service" prot="public" virt="non-virtual">ILLIXR::phonebook::service</basecompoundref>
+    <includes refid="switchboard_8hpp" local="no">switchboard.hpp</includes>
+    <innerclass refid="classILLIXR_1_1switchboard_1_1buffered__reader" prot="public">ILLIXR::switchboard::buffered_reader</innerclass>
+    <innerclass refid="classILLIXR_1_1switchboard_1_1coordinate__system" prot="private">ILLIXR::switchboard::coordinate_system</innerclass>
+    <innerclass refid="classILLIXR_1_1switchboard_1_1event" prot="public">ILLIXR::switchboard::event</innerclass>
+    <innerclass refid="classILLIXR_1_1switchboard_1_1event__wrapper" prot="public">ILLIXR::switchboard::event_wrapper</innerclass>
+    <innerclass refid="classILLIXR_1_1switchboard_1_1network__writer" prot="public">ILLIXR::switchboard::network_writer</innerclass>
+    <innerclass refid="classILLIXR_1_1switchboard_1_1reader" prot="public">ILLIXR::switchboard::reader</innerclass>
+    <innerclass refid="classILLIXR_1_1switchboard_1_1topic" prot="private">ILLIXR::switchboard::topic</innerclass>
+    <innerclass refid="classILLIXR_1_1switchboard_1_1topic__buffer" prot="private">ILLIXR::switchboard::topic_buffer</innerclass>
+    <innerclass refid="classILLIXR_1_1switchboard_1_1topic__subscription" prot="private">ILLIXR::switchboard::topic_subscription</innerclass>
+    <innerclass refid="classILLIXR_1_1switchboard_1_1writer" prot="public">ILLIXR::switchboard::writer</innerclass>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="classILLIXR_1_1switchboard_1af91c1b9436918512e95e5fa8553846a7" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>typename Specific_event</type>
+          </param>
+        </templateparamlist>
+        <type>std::shared_ptr&lt; Specific_event &gt;</type>
+        <definition>using ILLIXR::switchboard::ptr =  std::shared_ptr&lt;Specific_event&gt;</definition>
+        <argsstring></argsstring>
+        <name>ptr</name>
+        <qualifiedname>ILLIXR::switchboard::ptr</qualifiedname>
+        <briefdescription>
+<para>The type of shared pointer returned by switchboard. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>TODO: Make this agnostic to the type of <computeroutput>ptr</computeroutput> Currently, it depends on <computeroutput>ptr</computeroutput> == shared_ptr </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="127" column="5" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="127" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1switchboard_1acb9dcb4e284b96ecaf5a7462b0c9b1e9" prot="private" static="no" mutable="no">
+        <type>const <ref refid="classILLIXR_1_1phonebook" kindref="compound">phonebook</ref> *</type>
+        <definition>const phonebook* ILLIXR::switchboard::phonebook_</definition>
+        <argsstring></argsstring>
+        <name>phonebook_</name>
+        <qualifiedname>ILLIXR::switchboard::phonebook_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="853" column="49" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="853" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1switchboard_1a67cbec90a2e88003df82b7135e2fbd72" prot="private" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::string, topic &gt;</type>
+        <definition>std::unordered_map&lt;std::string, topic&gt; ILLIXR::switchboard::registry_</definition>
+        <argsstring></argsstring>
+        <name>registry_</name>
+        <qualifiedname>ILLIXR::switchboard::registry_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="854" column="30" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="854" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1switchboard_1a2bedc77e272e9cf6c002ee6c6dc12245" prot="private" static="no" mutable="no">
+        <type>std::shared_mutex</type>
+        <definition>std::shared_mutex ILLIXR::switchboard::registry_lock_</definition>
+        <argsstring></argsstring>
+        <name>registry_lock_</name>
+        <qualifiedname>ILLIXR::switchboard::registry_lock_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="855" column="50" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="855" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1switchboard_1a75d1ddb8e68d197d8f36d015ce14d186" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classILLIXR_1_1record__logger" kindref="compound">record_logger</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;record_logger&gt; ILLIXR::switchboard::record_logger_</definition>
+        <argsstring></argsstring>
+        <name>record_logger_</name>
+        <qualifiedname>ILLIXR::switchboard::record_logger_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="856" column="35" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="856" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1switchboard_1a17e40f245de754421ad04c371b2b9c23" prot="private" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+        <definition>std::unordered_map&lt;std::string, std::string&gt; ILLIXR::switchboard::env_vars_</definition>
+        <argsstring></argsstring>
+        <name>env_vars_</name>
+        <qualifiedname>ILLIXR::switchboard::env_vars_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="857" column="24" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="857" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1switchboard_1a4a8de4e44dd68cd0bafb88f63431e665" prot="public" static="no" mutable="no">
+        <type>coordinate_system</type>
+        <definition>coordinate_system ILLIXR::switchboard::root_coordinates</definition>
+        <argsstring></argsstring>
+        <name>root_coordinates</name>
+        <qualifiedname>ILLIXR::switchboard::root_coordinates</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="957" column="23" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="957" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classILLIXR_1_1switchboard_1ac3db6721c3279350e0030c6133297212" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::switchboard::switchboard</definition>
+        <argsstring>(const phonebook *pb)</argsstring>
+        <name>switchboard</name>
+        <qualifiedname>ILLIXR::switchboard::switchboard</qualifiedname>
+        <param>
+          <type>const <ref refid="classILLIXR_1_1phonebook" kindref="compound">phonebook</ref> *</type>
+          <declname>pb</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>If <computeroutput>pb</computeroutput> is null, then logging is disabled. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="674" column="14" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="674" bodyend="685"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1switchboard_1af5b23adccaa9d3455fbc7ffba72be49e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool ILLIXR::switchboard::topic_exists</definition>
+        <argsstring>(const std::string &amp;topic_name)</argsstring>
+        <name>topic_exists</name>
+        <qualifiedname>ILLIXR::switchboard::topic_exists</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>topic_name</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="687" column="11" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="687" bodyend="691"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1switchboard_1abe81927743aa84cdaeb83acc3f77b050" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>topic &amp;</type>
+        <definition>topic &amp; ILLIXR::switchboard::get_topic</definition>
+        <argsstring>(const std::string &amp;topic_name)</argsstring>
+        <name>get_topic</name>
+        <qualifiedname>ILLIXR::switchboard::get_topic</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>topic_name</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="693" column="12" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="693" bodyend="701"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1switchboard_1a2ac5c149b2c8c2c3944021c4c6bc983f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void ILLIXR::switchboard::set_env</definition>
+        <argsstring>(const std::string &amp;var, const std::string &amp;val)</argsstring>
+        <name>set_env</name>
+        <qualifiedname>ILLIXR::switchboard::set_env</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>var</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+<para>Set the local environment variable to the given value. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="706" column="10" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="706" bodyend="709"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1switchboard_1a3b71d3372d6263c75d0b367019859220" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>std::vector&lt; std::string &gt; ILLIXR::switchboard::env_names</definition>
+        <argsstring>() const</argsstring>
+        <name>env_names</name>
+        <qualifiedname>ILLIXR::switchboard::env_names</qualifiedname>
+        <briefdescription>
+<para>Get a vector of the currently known environment variables. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="714" column="17" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="714" bodyend="720"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1switchboard_1adfa6a404ec2db3d0bd9816147510010a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string ILLIXR::switchboard::get_env</definition>
+        <argsstring>(const std::string &amp;var, std::string _default=&quot;&quot;)</argsstring>
+        <name>get_env</name>
+        <qualifiedname>ILLIXR::switchboard::get_env</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>var</declname>
+        </param>
+        <param>
+          <type>std::string</type>
+          <declname>_default</declname>
+          <defval>&quot;&quot;</defval>
+        </param>
+        <briefdescription>
+<para>Switchboard access point for environment variables. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>If the given variable <computeroutput>var</computeroutput> has a non-empty entry in the map, that value is returned. If the entry is empty then the system getenv is called. If this is non-empty then that value is stored and returned, otherwise the default value is returned (not stored). </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="729" column="17" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="729" bodyend="743"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1switchboard_1a9f079764b8dd61e555b755aa8a03b66a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool ILLIXR::switchboard::get_env_bool</definition>
+        <argsstring>(const std::string &amp;var, const std::string &amp;def=&quot;false&quot;)</argsstring>
+        <name>get_env_bool</name>
+        <qualifiedname>ILLIXR::switchboard::get_env_bool</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>var</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>def</declname>
+          <defval>&quot;false&quot;</defval>
+        </param>
+        <briefdescription>
+<para>Get the boolean value of the given environment variable. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="748" column="10" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="748" bodyend="766"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1switchboard_1a039d11d26042d5a7c1286956e37354fe" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>const char *</type>
+        <definition>const char * ILLIXR::switchboard::get_env_char</definition>
+        <argsstring>(const std::string &amp;var, const std::string _default=&quot;&quot;)</argsstring>
+        <name>get_env_char</name>
+        <qualifiedname>ILLIXR::switchboard::get_env_char</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>var</declname>
+        </param>
+        <param>
+          <type>const std::string</type>
+          <declname>_default</declname>
+          <defval>&quot;&quot;</defval>
+        </param>
+        <briefdescription>
+<para>Get a char* of the given environment variable. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="771" column="16" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="771" bodyend="776"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1switchboard_1ada8d5229a42d29a1313d970cb8b4d750" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename Specific_event</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void ILLIXR::switchboard::schedule</definition>
+        <argsstring>(plugin_id_t plugin_id, std::string topic_name, std::function&lt; void(ptr&lt; const Specific_event &gt; &amp;&amp;, std::size_t)&gt; fn)</argsstring>
+        <name>schedule</name>
+        <qualifiedname>ILLIXR::switchboard::schedule</qualifiedname>
+        <param>
+          <type>plugin_id_t</type>
+          <declname>plugin_id</declname>
+        </param>
+        <param>
+          <type>std::string</type>
+          <declname>topic_name</declname>
+        </param>
+        <param>
+          <type>std::function&lt; void(<ref refid="classILLIXR_1_1switchboard_1af91c1b9436918512e95e5fa8553846a7" kindref="member">ptr</ref>&lt; const Specific_event &gt; &amp;&amp;, std::size_t)&gt;</type>
+          <declname>fn</declname>
+        </param>
+        <briefdescription>
+<para>Schedules the callback <computeroutput>fn</computeroutput> every time an event is published to <computeroutput>topic_name</computeroutput>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Switchboard maintains a threadpool to call <computeroutput>fn</computeroutput>.</para>
+<para>This is safe to be called from any thread.</para>
+<para><parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername>if</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>topic already exists and its type does not match the <computeroutput>event</computeroutput>. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="788" column="10" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="788" bodyend="798"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1switchboard_1aa54b8252415614fb216630eab44ba106" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename Specific_event</type>
+          </param>
+        </templateparamlist>
+        <type><ref refid="classILLIXR_1_1switchboard_1_1writer" kindref="compound">writer</ref>&lt; Specific_event &gt;</type>
+        <definition>writer&lt; Specific_event &gt; ILLIXR::switchboard::get_writer</definition>
+        <argsstring>(const std::string &amp;topic_name)</argsstring>
+        <name>get_writer</name>
+        <qualifiedname>ILLIXR::switchboard::get_writer</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>topic_name</declname>
+        </param>
+        <briefdescription>
+<para>Gets a handle to publish to the topic <computeroutput>topic_name</computeroutput>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This is safe to be called from any thread.</para>
+<para><parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername>If</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>topic already exists, and its type does not match the <computeroutput>event</computeroutput>. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="808" column="12" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="808" bodyend="810"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1switchboard_1aa4116feaa4497b1085586b0ea5816f95" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename Specific_event</type>
+          </param>
+        </templateparamlist>
+        <type>network_writer&lt; Specific_event &gt;</type>
+        <definition>network_writer&lt; Specific_event &gt; ILLIXR::switchboard::get_network_writer</definition>
+        <argsstring>(const std::string &amp;topic_name, network::topic_config config={})</argsstring>
+        <name>get_network_writer</name>
+        <qualifiedname>ILLIXR::switchboard::get_network_writer</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>topic_name</declname>
+        </param>
+        <param>
+          <type>network::topic_config</type>
+          <declname>config</declname>
+          <defval>{}</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="813" column="20" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="813" bodyend="819"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1switchboard_1a548994eaf64cd0922aab32a2378f5fc8" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename Specific_event</type>
+          </param>
+        </templateparamlist>
+        <type><ref refid="classILLIXR_1_1switchboard_1_1reader" kindref="compound">reader</ref>&lt; Specific_event &gt;</type>
+        <definition>reader&lt; Specific_event &gt; ILLIXR::switchboard::get_reader</definition>
+        <argsstring>(const std::string &amp;topic_name)</argsstring>
+        <name>get_reader</name>
+        <qualifiedname>ILLIXR::switchboard::get_reader</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>topic_name</declname>
+        </param>
+        <briefdescription>
+<para>Gets a handle to read to the latest value from the topic <computeroutput>topic_name</computeroutput>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This is safe to be called from any thread.</para>
+<para><parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername>If</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>topic already exists, and its type does not match the <computeroutput>event</computeroutput>. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="829" column="12" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="829" bodyend="831"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1switchboard_1ae86b29b57356f96506581d2849c15a07" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename Specific_event</type>
+          </param>
+        </templateparamlist>
+        <type>buffered_reader&lt; Specific_event &gt;</type>
+        <definition>buffered_reader&lt; Specific_event &gt; ILLIXR::switchboard::get_buffered_reader</definition>
+        <argsstring>(const std::string &amp;topic_name)</argsstring>
+        <name>get_buffered_reader</name>
+        <qualifiedname>ILLIXR::switchboard::get_buffered_reader</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>topic_name</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="834" column="21" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="834" bodyend="836"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1switchboard_1a3fc3c3a10b658c5551224fd54aa6a09c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void ILLIXR::switchboard::stop</definition>
+        <argsstring>()</argsstring>
+        <name>stop</name>
+        <qualifiedname>ILLIXR::switchboard::stop</qualifiedname>
+        <briefdescription>
+<para>Stops calling switchboard callbacks. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This is safe to be called from any thread.</para>
+<para>Leave topics in place, so existing reader/writer handles will not crash. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="845" column="10" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="845" bodyend="850"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classILLIXR_1_1switchboard_1ac01412ec55e25b6e24b8bd74b4c63e2b" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename Specific_event</type>
+          </param>
+        </templateparamlist>
+        <type>topic &amp;</type>
+        <definition>topic &amp; ILLIXR::switchboard::try_register_topic</definition>
+        <argsstring>(const std::string &amp;topic_name)</argsstring>
+        <name>try_register_topic</name>
+        <qualifiedname>ILLIXR::switchboard::try_register_topic</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>topic_name</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="860" column="11" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="860" bodyend="883"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A manager for typesafe, threadsafe, named event-streams (called topics). </para>
+    </briefdescription>
+    <detaileddescription>
+<para><itemizedlist>
+<listitem><para>Writing: One can write to a topic (in any thread) through the object returned by <computeroutput><ref refid="classILLIXR_1_1switchboard_1aa54b8252415614fb216630eab44ba106" kindref="member">get_writer()</ref></computeroutput>.</para>
+</listitem><listitem><para>There are two ways of reading: asynchronous reading and synchronous reading:<itemizedlist>
+<listitem><para>Asynchronous reading returns the most-recent event on the topic (idempotently). One can do this through (in any thread) the object returned by <computeroutput><ref refid="classILLIXR_1_1switchboard_1a548994eaf64cd0922aab32a2378f5fc8" kindref="member">get_reader()</ref></computeroutput>.</para>
+</listitem><listitem><para>Synchronous reading schedules a callback to be executed on <emphasis>every</emphasis> event which gets published. One can schedule computation by <computeroutput><ref refid="classILLIXR_1_1switchboard_1ada8d5229a42d29a1313d970cb8b4d750" kindref="member">schedule()</ref></computeroutput>, which will run the computation in a thread managed by switchboard.</para>
+</listitem></itemizedlist>
+</para>
+</listitem></itemizedlist>
+</para>
+<para><programlisting filename=".cpp"><codeline><highlight class="comment">//<sp/>Get<sp/>a<sp/>reader<sp/>on<sp/>topic1</highlight><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal">switchboard::reader&lt;topic1_type&gt;<sp/>topic1<sp/>=<sp/><ref refid="classILLIXR_1_1switchboard_1ac3db6721c3279350e0030c6133297212" kindref="member">switchboard</ref>.get_reader&lt;topic1_type&gt;(</highlight><highlight class="stringliteral">&quot;topic1&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal"></highlight><highlight class="comment">//<sp/>Get<sp/>a<sp/>writer<sp/>on<sp/>topic2</highlight><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal">switchboard::writer&lt;topic2_type&gt;<sp/>topic2<sp/>=<sp/><ref refid="classILLIXR_1_1switchboard_1ac3db6721c3279350e0030c6133297212" kindref="member">switchboard</ref>.get_writer&lt;topic2_type&gt;(</highlight><highlight class="stringliteral">&quot;topic2&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal"></highlight><highlight class="keywordflow">while</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keyword">true</highlight><highlight class="normal">)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Read<sp/>topic<sp/>1</highlight><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>switchboard::ptr&lt;topic1_type&gt;<sp/>event1<sp/>=<sp/>topic1.get_rw();</highlight></codeline>
+<codeline><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Write<sp/>to<sp/>topic<sp/>2<sp/>using<sp/>topic<sp/>1<sp/>input</highlight><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>topic2.put(topic2.allocate&lt;topic2_type&gt;(<sp/>do_something(event1-&gt;foo)<sp/>));</highlight></codeline>
+<codeline><highlight class="normal">}</highlight></codeline>
+<codeline><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal"></highlight><highlight class="comment">//<sp/>Read<sp/>topic<sp/>3<sp/>synchronously</highlight><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal"><ref refid="classILLIXR_1_1switchboard_1ac3db6721c3279350e0030c6133297212" kindref="member">switchboard</ref>.schedule&lt;topic3_type&gt;(plugin_id,<sp/></highlight><highlight class="stringliteral">&quot;topic3&quot;</highlight><highlight class="normal">,<sp/>[&amp;](switchboard::ptr&lt;topic3_type&gt;<sp/>event3,<sp/>std::size_t<sp/>it)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>This<sp/>is<sp/>a<sp/>lambda<sp/>expression</highlight><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>https://en.cppreference.com/w/cpp/language/lambda</highlight><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>std::cout<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;Got<sp/>a<sp/>new<sp/>event<sp/>on<sp/>topic3:<sp/>&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/>event3-&gt;foo<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;<sp/>for<sp/>iteration<sp/>&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/>it<sp/>&lt;&lt;<sp/>std::endl;</highlight></codeline>
+<codeline><highlight class="normal">});</highlight></codeline>
+</programlisting> </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>ILLIXR::phonebook::service</label>
+        <link refid="classILLIXR_1_1phonebook_1_1service"/>
+      </node>
+      <node id="1">
+        <label>ILLIXR::switchboard</label>
+        <link refid="classILLIXR_1_1switchboard"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>ILLIXR::phonebook::service</label>
+        <link refid="classILLIXR_1_1phonebook_1_1service"/>
+      </node>
+      <node id="1">
+        <label>ILLIXR::switchboard</label>
+        <link refid="classILLIXR_1_1switchboard"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="118" column="1" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="118" bodyend="958"/>
+    <listofallmembers>
+      <member refid="classILLIXR_1_1switchboard_1a3b71d3372d6263c75d0b367019859220" prot="public" virt="non-virtual"><scope>ILLIXR::switchboard</scope><name>env_names</name></member>
+      <member refid="classILLIXR_1_1switchboard_1a17e40f245de754421ad04c371b2b9c23" prot="private" virt="non-virtual"><scope>ILLIXR::switchboard</scope><name>env_vars_</name></member>
+      <member refid="classILLIXR_1_1switchboard_1ae86b29b57356f96506581d2849c15a07" prot="public" virt="non-virtual"><scope>ILLIXR::switchboard</scope><name>get_buffered_reader</name></member>
+      <member refid="classILLIXR_1_1switchboard_1adfa6a404ec2db3d0bd9816147510010a" prot="public" virt="non-virtual"><scope>ILLIXR::switchboard</scope><name>get_env</name></member>
+      <member refid="classILLIXR_1_1switchboard_1a9f079764b8dd61e555b755aa8a03b66a" prot="public" virt="non-virtual"><scope>ILLIXR::switchboard</scope><name>get_env_bool</name></member>
+      <member refid="classILLIXR_1_1switchboard_1a039d11d26042d5a7c1286956e37354fe" prot="public" virt="non-virtual"><scope>ILLIXR::switchboard</scope><name>get_env_char</name></member>
+      <member refid="classILLIXR_1_1switchboard_1aa4116feaa4497b1085586b0ea5816f95" prot="public" virt="non-virtual"><scope>ILLIXR::switchboard</scope><name>get_network_writer</name></member>
+      <member refid="classILLIXR_1_1switchboard_1a548994eaf64cd0922aab32a2378f5fc8" prot="public" virt="non-virtual"><scope>ILLIXR::switchboard</scope><name>get_reader</name></member>
+      <member refid="classILLIXR_1_1switchboard_1abe81927743aa84cdaeb83acc3f77b050" prot="public" virt="non-virtual"><scope>ILLIXR::switchboard</scope><name>get_topic</name></member>
+      <member refid="classILLIXR_1_1switchboard_1aa54b8252415614fb216630eab44ba106" prot="public" virt="non-virtual"><scope>ILLIXR::switchboard</scope><name>get_writer</name></member>
+      <member refid="classILLIXR_1_1switchboard_1acb9dcb4e284b96ecaf5a7462b0c9b1e9" prot="private" virt="non-virtual"><scope>ILLIXR::switchboard</scope><name>phonebook_</name></member>
+      <member refid="classILLIXR_1_1switchboard_1af91c1b9436918512e95e5fa8553846a7" prot="public" virt="non-virtual"><scope>ILLIXR::switchboard</scope><name>ptr</name></member>
+      <member refid="classILLIXR_1_1switchboard_1a75d1ddb8e68d197d8f36d015ce14d186" prot="private" virt="non-virtual"><scope>ILLIXR::switchboard</scope><name>record_logger_</name></member>
+      <member refid="classILLIXR_1_1switchboard_1a67cbec90a2e88003df82b7135e2fbd72" prot="private" virt="non-virtual"><scope>ILLIXR::switchboard</scope><name>registry_</name></member>
+      <member refid="classILLIXR_1_1switchboard_1a2bedc77e272e9cf6c002ee6c6dc12245" prot="private" virt="non-virtual"><scope>ILLIXR::switchboard</scope><name>registry_lock_</name></member>
+      <member refid="classILLIXR_1_1switchboard_1a4a8de4e44dd68cd0bafb88f63431e665" prot="public" virt="non-virtual"><scope>ILLIXR::switchboard</scope><name>root_coordinates</name></member>
+      <member refid="classILLIXR_1_1switchboard_1ada8d5229a42d29a1313d970cb8b4d750" prot="public" virt="non-virtual"><scope>ILLIXR::switchboard</scope><name>schedule</name></member>
+      <member refid="classILLIXR_1_1switchboard_1a2ac5c149b2c8c2c3944021c4c6bc983f" prot="public" virt="non-virtual"><scope>ILLIXR::switchboard</scope><name>set_env</name></member>
+      <member refid="classILLIXR_1_1switchboard_1a3fc3c3a10b658c5551224fd54aa6a09c" prot="public" virt="non-virtual"><scope>ILLIXR::switchboard</scope><name>stop</name></member>
+      <member refid="classILLIXR_1_1switchboard_1ac3db6721c3279350e0030c6133297212" prot="public" virt="non-virtual"><scope>ILLIXR::switchboard</scope><name>switchboard</name></member>
+      <member refid="classILLIXR_1_1switchboard_1af5b23adccaa9d3455fbc7ffba72be49e" prot="public" virt="non-virtual"><scope>ILLIXR::switchboard</scope><name>topic_exists</name></member>
+      <member refid="classILLIXR_1_1switchboard_1ac01412ec55e25b6e24b8bd74b4c63e2b" prot="private" virt="non-virtual"><scope>ILLIXR::switchboard</scope><name>try_register_topic</name></member>
+      <member refid="classILLIXR_1_1phonebook_1_1service_1a6bc6e64a0d9b70223989fc3fb98c2d0d" prot="public" virt="virtual"><scope>ILLIXR::switchboard</scope><name>~service</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
