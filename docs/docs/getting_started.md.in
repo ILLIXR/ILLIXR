@@ -22,8 +22,10 @@ are not available in the distribution repos. The instructions below are a genera
 ### Clone the repository
 
 ``` { .bash .copy }
-git clone https://github.com/ILLIXR/ILLIXR
+git clone https://github.com/ILLIXR/ILLIXR --single-branch
 ```
+
+This will clone only the default branch, if you want all branches then remove the `--single-branch` flag.
 
 ### Install dependencies
 
@@ -118,11 +120,10 @@ The CMake process will also create a [_YAML_][G12] file call `illixr.yaml` which
 
 ## Running ILLIXR
 
-To run the ILLIXR binary just call `main.<>.exe` with any of the following command line arguments. (the `&lt;&gt;` indicate
+To run the ILLIXR binary just call `main.<>.exe` with any of the following command line arguments. (the `<>` indicate
 an infix specifying the build type, for `Debug` use `dbg`, for `Release` use `opt`, for `RelWithDebInfo` use `optdbg`)
 
 - -p,--plugins=<>, comma separated list of plugins to use (case sensitive, all lowercase, no spaces)
-- -r,--run=<>, comma separated list of plugins to use (case sensitive, all lowercase, no spaces), supersedes plugins entry.  This is only necessary if a plugin builds more than one library (e.g. offload_vio builds 4 libraries) as each must be loaded individually.
 - -y,--yaml=<>, the [profile][G23] file to use which specifies some or all of the above arguments (e.g. the generated `illixr.yaml`)
 - --<ANY ENVIRONMENT VARIABLE NAME>, you can specify any variable the ILLIXR uses on the command line. Common ones are:
   - --duration=<>, the duration to run for in seconds (default is 60)
@@ -145,26 +146,23 @@ For specific usage instructions, refer to the README files of the respective plu
 ### Profile file format
 An example of a [_YAML_][G12] [profile][G23] file is
 ```yaml
-plugins: timewarp_vk,vkdemo,ground_truth_slam,offload_vio
+plugins: pose_lookup,timewarp_vk,vkdemo,native_renderer
 build_type: Debug
 install_prefix: /home/user/illixr
 env_vars:
-  illixr_run_duration: 5
-  data: data/mav0
-  demo_data: demo_data
-  enable_offload: true
-  enable_alignment: false
-  enable_verbose_errors: false
-  enable_pre_sleep: false
+  ILLIXR_RUN_DURATION: 5
+  DATA: data/mav0
+  DEMO_DATA: demo_data
+  ENABLE_OFFLOAD: false
+  ENABLE_ALIGNMENT: false
+  ENABLE_VERBOSE_ERRORS: false
+  ENABLE_PRE_SLEEP: false
 ```
 
 Where the entries are defined as (* indicates required field):
 
 - plugins *
 : Comma separated list of plugins (case-sensitive) to build or load at runtime.
-
-- run
-: Comma separated list of plugins (case-sensitive) which are used at run time. This is only needed in cases like offload_vio where multiple plugin libraries are built by a single plugin, but must be loaded individually. (e.g. offload_vio.server_rx)
 
 - build_type
 : The type of build to perform (Debug, Release, or RelWithDebInfo). Ignored at run time.
@@ -238,6 +236,10 @@ Each plugin can define environment variables to use. See the documentation of ea
 ## ILLIXR Graphics Backends
 
 ILLIXR currently supports both OpenGL and Vulkan backends (indicated as `gl` and `vk` in the config suffixes). Since some plugins should behave differently (and compile differently) based on what backend is being used, it's important to run `make clean` if you want to try swapping between the two backends.
+
+!!! warning
+
+    The use of the OpenGL back end is in the process of being deprecated. Thus `gl` based plugins are not guaranteed to work in every instance.
 
 ## Rationale
 
