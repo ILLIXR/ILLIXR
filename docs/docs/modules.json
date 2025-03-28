@@ -267,8 +267,7 @@
       "name": "openwarp_vk",
       "cmake_flag": "USE_OPENWARP_VK=ON",
       "dependencies": [
-        "glm",
-        "glslang"
+        "glm"
       ]
     },
     {
@@ -325,7 +324,6 @@
       "cmake_flag": "USE_TIMEWARP_GL=ON",
       "dependencies": [
         "ccache",
-        "glslang",
         "gflags",
         "JPEG",
         "PNG",
@@ -371,7 +369,6 @@
         "ccache",
         "glfw3",
         "glm",
-        "glslang",
         "OpenXR",
         "libusb",
         "libuvc",
@@ -605,22 +602,6 @@
           },
           "Fedora": {
             "pkg": "glog-devel",
-            "postnotes": "",
-            "notes": ""
-          }
-        }
-      }
-    },
-    {
-      "glslang": {
-        "pkg": {
-          "Ubuntu": {
-            "pkg": "glslang-dev glslang-tools",
-            "postnotes": "",
-            "notes": ""
-          },
-          "Fedora": {
-            "pkg": "glslang-devel",
             "postnotes": "",
             "notes": ""
           }
@@ -1092,6 +1073,22 @@
       }
     },
     {
+      "libsrt": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "libsrt-openssl-dev",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "libsrt-openssl-dev",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
       "libssh": {
         "pkg": {
           "Ubuntu": {
@@ -1100,7 +1097,23 @@
             "notes": ""
           },
           "Fedora": {
-            "pkg": "libssh-devel",
+            "pkg": "libssh-dev",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "libsvtav1": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "libsvtav1enc-dev",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "libsvtav1enc-dev",
             "postnotes": "",
             "notes": ""
           }
@@ -1357,6 +1370,22 @@
           },
           "Fedora": {
             "pkg": "openxr-devel",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "libzimg": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "libzimg-dev",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "patch",
             "postnotes": "",
             "notes": ""
           }

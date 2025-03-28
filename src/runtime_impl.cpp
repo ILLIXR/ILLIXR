@@ -8,10 +8,7 @@
 #include "illixr/record_logger.hpp"
 #include "illixr/stoplight.hpp"
 #include "illixr/switchboard.hpp"
-#include "illixr/vk/display_provider.hpp"
-#include "illixr/vk/vk_extension_request.hpp"
 #include "sqlite_record_logger.hpp"
-#include "vulkan_display.hpp"
 
 #include <algorithm>
 #include <memory>
@@ -22,7 +19,6 @@
 #include <vector>
 
 using namespace ILLIXR;
-typedef bool (*n_vulkan_t)();
 typedef bool (*n_monado_t)();
 
 void spdlogger(const std::string& name, const char* log_level) {

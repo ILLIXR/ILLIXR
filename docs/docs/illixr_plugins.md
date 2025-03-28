@@ -41,7 +41,7 @@ Topic details:
 
 &nbsp;&nbsp;**Details**&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C3]
 
-## gldemo[^1]
+## gldemo [^1]
 
 Renders a static scene (into left and right [_eye buffers_][34]) given the [_pose_][37]
 from [`pose_prediction`][57].

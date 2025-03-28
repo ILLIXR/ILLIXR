@@ -74,7 +74,6 @@ endif()
 
 # needed to generate runtime scripts
 set(OPENXR_RUNTIME "")
-set(OPENXR_PLUGINS "")
 
 # set the CMake search path to include the local files
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH})

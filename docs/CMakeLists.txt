@@ -207,10 +207,9 @@ extra:
                       DEPENDS doc_mkdocs)
 
     # set up redirects for moved pages
-    file(MAKE_DIRECTORY ${MKDOCS_DOCS_DIR}/ILLIXR)
-    file(GLOB_RECURSE MD_FILES RELATIVE ${CMAKE_SOURCE_DIR}/docs/docs "*.md")
+    set(MD_FILES "adding_mediapipe.md;debugging_illixr.md;display_backend.md;external_switchboard_and_phonebook.md;logging_and_metrics.md;modifying_a_plugin.md;updating_tags_and_docs.md;modules.md;using_cameras.md;virtualization.md;writing_your_plugin.md")
     foreach(MD_FILE IN LISTS MD_FILES)
-        set(CURRENT_MD_FILE "${MKDOCS_DOCS_DIR}/ILLIXR/${MD_FILE}")
+        set(CURRENT_MD_FILE "${MKDOCS_DOCS_DIR}/${MD_FILE}")
         string(REGEX MATCHALL "/" MATCHES "${MD_FILE}")
         list(LENGTH MATCHES COUNT)
         set(PREPEND "")
@@ -218,10 +217,10 @@ extra:
             set(PREPEND "${PREPEND}../")
         endforeach()
         string(REPLACE ".md" "" STRIPPED_FILE "${MD_FILE}")
-        file(WRITE ${CURRENT_MD_FILE} "This file has moved to [https://illixr.github.io/${STRIPPED_FILE}][RD10]\n\n")
+        file(WRITE ${CURRENT_MD_FILE} "This file has moved to [https://illixr.github.io/ILLIXR/working_with/${STRIPPED_FILE}][RD10]\n\n")
         file(APPEND ${CURRENT_MD_FILE} "You should be automatically redirected in 5 seconds.\n")
-        file(APPEND ${CURRENT_MD_FILE} "<script>\n    let timer = setTimeout(function() {\n        window.location=\"https://illixr.github.io/${STRIPPED_FILE}\"},\n        5000);\n</script>\n\n")
-        file(APPEND ${CURRENT_MD_FILE} "[RD10]:  https://illixr.github.io/${STRIPPED_FILE}/")
+        file(APPEND ${CURRENT_MD_FILE} "<script>\n    let timer = setTimeout(function() {\n        window.location=\"https://illixr.github.io/ILLIXR/working_with/${STRIPPED_FILE}\"},\n        5000);\n</script>\n\n")
+        file(APPEND ${CURRENT_MD_FILE} "[RD10]:  https://illixr.github.io/ILLIXR/working_with/${STRIPPED_FILE}/")
     endforeach()
 
     add_custom_target(docs ALL
