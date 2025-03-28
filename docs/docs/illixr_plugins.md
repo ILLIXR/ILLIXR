@@ -71,7 +71,7 @@ Topic details:
 
 ## gtsam_integrator
 
-Integrates over all [_IMU_][G13] samples since the last published [_SLAM_][G16] pose to provide a
+Integrates over all [_IMU_][G13] samples since the last published visual-inertial [_pose_][G14] to provide a
 [_fast pose_][G14] every time a new IMU sample arrives using the GTSAM library ([upstream][E10]).
 
 Topic details:
@@ -262,7 +262,7 @@ Topic details:
 
 ## open_vins
 
-An alternate [_SLAM_][G16] ([upstream][E11]) implementation that uses a MSCKF
+An alternate head tracking ([upstream][E11]) implementation that uses a MSCKF
 (Multi-State Constrained Kalman Filter) to determine poses via camera/[_IMU_][G13].
 
 Topic details:
@@ -286,11 +286,12 @@ Topic details:
 
 ## orb_slam3
 
-Utilizes the ORB_SLAM3 library to enable real-time head tracking (VIO).
+Utilizes the ORB_SLAM3 library to enable real-time head tracking.
 
 Topic details:
 
 -   Asynchronously *reads* [`binocular_cam_type`][A14] from `cam` topic.
+-   Synchronously *reads*/*subscribes* to [`imu_type`][A15] on `imu` topic.
 -   *Publishes* [`pose_type`][A12] to `slow_pose` topic.
 -   *Publishes* [`imu_integrator_input`][A17] to `imu_integrator_input` topic.
 
@@ -343,7 +344,7 @@ Topic details:
 
 ## rk4_integrator
 
-Integrates over all [_IMU_][G13] samples since the last published [_SLAM_][G16] [_pose_][G14] to
+Integrates over all [_IMU_][G13] samples since the last published visual-inertial [_pose_][G14] to
 provide a [_fast pose_][G14] every time a new IMU sample arrives using RK4 integration.
 
 Topic details:
@@ -363,7 +364,7 @@ Provides network communications over TCP.
 ## timewarp_gl [^1]
 
 [Asynchronous reprojection][G12] of the [_eye buffers_][G11].
-The timewarp ends just after [_vsync_][G11], so it can deduce when the next vsync will be.
+The timewarp ends right before [_vsync_][G11], so it can deduce when the next vsync will be.
 
 Topic details:
 
@@ -381,7 +382,7 @@ Topic details:
 ## timewarp_vk
 
 [Asynchronous reprojection][G12] of the [_eye buffers_][G11].
-The timewarp ends just after [_vsync_][G11], so it can deduce when the next vsync will be.
+The timewarp ends right before [_vsync_][G11], so it can deduce when the next vsync will be.
 
 Topic details:
 
