@@ -11,7 +11,7 @@ The processing of rendered video for motion interpolation.
 Asynchronous reprojection improves the perception of the rendered video to the [_HMD_][G16]
 when rendering misses it target [_frame rate_][G17].
 
-Asynchronous reprojection is implemented in the [`timewarpgl`].
+Asynchronous reprojection is implemented in the [`timewarpgl`][P18].
 
 See the [Wikipedia article][E23].
 
@@ -96,7 +96,7 @@ For more information, see the [Wikipedia article][E26].
 A device that reports its orientation in space and any forces applied it.
 Also known as an _IMU_.
 
-An IMU is implemented in the [`offline_imu`].
+An IMU is implemented in the [`offline_imu`][P18].
 
 For more information, see the [Wikipedia article][E24].
 
@@ -152,7 +152,7 @@ Internally, ILLIXR has multiple classifications of poses which are used for vari
   To improve the user's perceived latency, pose prediction leverages historical and current system information such as poses and sensor inputs to pre-compute the user's future pose.
   This pre-computation enables downstream components to begin processing earlier, reducing end-to-end latency.
 
-Pose Prediction is implemented in the [`pose_prediction`].
+Pose Prediction is implemented in [`pose_prediction`][P18].
 
 For more information, see the [Wikipedia article][E28].
 
