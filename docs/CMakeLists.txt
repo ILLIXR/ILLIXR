@@ -79,7 +79,6 @@ from mkdocs_glightbox import plugin
                                 ERROR_VARIABLE PIP_MESSAGE
                 )
                 set(PIP_RUN YES)
-                message("UV")
             elseif(PIP_FOUND)
                 if(IN_VENV)
                     set(_pip_args)
@@ -91,7 +90,6 @@ from mkdocs_glightbox import plugin
                                 ERROR_VARIABLE PIP_MESSAGE
                 )
                 set(PIP_RUN YES)
-                message("PIP")
             else()
                 message(WARNING "Cannot locate pip. If it is installed try setting -DPIP_LOCATION to its path")
                 set(BUILD_DOCS NO CACHE BOOL "")
