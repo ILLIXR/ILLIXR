@@ -200,19 +200,6 @@ Topic details:
 
 &nbsp;&nbsp;[**Details**][P22]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C14]
 
-## offload_rendering_client_jetson
-
-Receives encoded frames from the network, sent by [offload_rendering_server](#offload_rendering_server), but specialized to run on a Jetson.
-
-Topic details:
-
--   *Calls* [`vulkan::display_provider`][E15]
--   *Calls* [`pose_prediction`][E16]
--   Asynchronously *reads* `compresswed_frame` from `compressed_frames` topic.
--   *Publishes* [`fast_pose_type`][A11] to `render_pose` topic.
-
-&nbsp;&nbsp;[**Details**][P23]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C15]
-
 ## offload_rendering_server
 
 Encodes and transmits frames to one of the offload_rendering_clients. 
@@ -492,7 +479,6 @@ See [Getting Started][I11] for more information on adding plugins to a [_profile
 
 [P22]:  plugin_README/README_offload_rendering_client.md
 
-[P23]:  plugin_README/README_offload_rendering_client_jetson.md
 
 [P24]:  plugin_README/README_record_imu_cam.md
 
@@ -555,8 +541,6 @@ See [Getting Started][I11] for more information on adding plugins to a [_profile
 [C13]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/offload_data
 
 [C14]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/offload_rendering_client
-
-[C15]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/offload_rendering_client_jetson
 
 [C16]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/offload_rendering_server
 

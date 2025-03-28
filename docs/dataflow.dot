@@ -28,7 +28,6 @@ strict digraph {
   "pl_hand_tracking.viewer" [label="hand_tracking.viewer", shape="rect", color="blue3", fillcolor="blue3", style="filled", fontcolor="white"];
   "pl_zed" [label="zed", shape="rect", color="blue3", fillcolor="blue3", style="filled", fontcolor="white"];
   "pl_zed.data_injection" [label="zed.data_injection", shape="rect", color="blue3", fillcolor="blue3", style="filled", fontcolor="white"];
-  "pl_offload_rendering_client_jetson" [label="offload_rendering_client_jetson", shape="rect", color="blue3", fillcolor="blue3", style="filled", fontcolor="white"];
   "pl_offload_vio.server_tx" [label="offload_vio.server_tx", shape="rect", color="blue3", fillcolor="blue3", style="filled", fontcolor="white"];
   "pl_offload_vio.device_rx" [label="offload_vio.device_rx", shape="rect", color="blue3", fillcolor="blue3", style="filled", fontcolor="white"];
   "pl_offload_vio.server_rx" [label="offload_vio.server_rx", shape="rect", color="blue3", fillcolor="blue3", style="filled", fontcolor="white"];
@@ -91,8 +90,6 @@ strict digraph {
   "t_texture_pose_<texture_pose>" -> "pl_offload_data" [style="dotted"];
   "t_pose_prediction" -> "pl_offload_rendering_client" [style="dashed"];
   "t_compressed_frames_<compressed_frame>" -> "pl_offload_rendering_client" [style="dashed"];
-  "t_pose_prediction" -> "pl_offload_rendering_client_jetson" [style="dashed"];
-  "t_compressed_frames_<compressed_frame>" -> "pl_offload_rendering_client_jetson" [style="dashed"];
   "t_render_pose__<fast_pose_type>" -> "pl_offload_rendering_server" [style="dashed"];
   "t_cam_<binocular_cam_type>" -> "pl_offload_vio.device_tx" [style="dashed"];
   "t_imu_<imu_type>" -> "pl_offload_vio.device_tx" [style="dotted"];

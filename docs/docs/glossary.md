@@ -11,7 +11,7 @@ The processing of rendered video for motion interpolation.
 Asynchronous reprojection improves the perception of the rendered video to the [_HMD_][G16]
 when rendering misses it target [_frame rate_][G17].
 
-Asynchronous reprojection is implemented in the [`timewarpgl` ILLIXR plugin][P18].
+Asynchronous reprojection is implemented in the [`timewarpgl`][P18].
 
 See the [Wikipedia article][E23].
 
@@ -96,7 +96,7 @@ For more information, see the [Wikipedia article][E26].
 A device that reports its orientation in space and any forces applied it.
 Also known as an _IMU_.
 
-An IMU is implemented in the [`offline_imu` ILLIXR plugin][P18].
+An IMU is implemented in the [`offline_imu`][P18].
 
 For more information, see the [Wikipedia article][E24].
 
@@ -140,22 +140,19 @@ ILLIXR applications make use of poses to track the [user's HMD][G16] within the 
 Internally, ILLIXR has multiple classifications of poses which are used for various purposes.
 
 - ***Slow Pose***:
-  A _slow pose_ is a ... ***TODO***
+  A _slow pose_ is a visual-inertial based pose estimate at low frequency (e.g. 30 Hz). It can be from OpenVINS or ORB_SLAM3.
 
 - ***Fast Pose***:
-  A _fast pose_ is a ... ***TODO***
+  A _fast pose_ is a pose estimate from IMU integration at high frequency (e.g. hundreds of Hz), but with limited accuracy.
 
 - ***True Pose***:
-  A _true pose_ is a ... ***TODO***
-  _Deprecated_ starting ILLIXR release `v2.X.X`.
+  A _true pose_ is a ground truth pose, usually from datasets.
 
 - ***Pose Prediction***:
-  To improve the user's perception latency experience the time between, _pose prediction_
-  uses history and current system information to pre-compute the user's next pose
-  Pre-computing the next pose allows for components downstream from the pose output
-  in the event stream dataflow graph to begin computation.
+  To improve the user's perceived latency, pose prediction leverages historical and current system information such as poses and sensor inputs to pre-compute the user's future pose.
+  This pre-computation enables downstream components to begin processing earlier, reducing end-to-end latency.
 
-Pose Prediction is implemented in the [`pose_prediction` ILLIXR plugin][P18].
+Pose Prediction is implemented in [`pose_prediction`][P18].
 
 For more information, see the [Wikipedia article][E28].
 

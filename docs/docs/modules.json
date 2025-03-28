@@ -452,7 +452,7 @@
           "Ubuntu": {
             "pkg": "",
             "postnotes": "",
-            "notes": "DeepStream is not available from a repo. Pleas see <a href=\"https://docs.nvidia.com/metropolis/deepstream/dev-guide/text/DS_Installation.html#dgpu-setup-for-ubuntu\">here</a> for details."
+            "notes": "DeepStream is not available from a repo. Please see <a href=\"https://docs.nvidia.com/metropolis/deepstream/dev-guide/text/DS_Installation.html#dgpu-setup-for-ubuntu\">here</a> for details."
           },
           "Fedora": {
             "pkg": "",

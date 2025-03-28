@@ -1,7 +1,7 @@
 # ILLIXR v4.0 (2025-03-28)
 
 - Release Notes
-  This release of ILLIXR brings many new features and capabilities. A good potion of the code base has been refactored/reorganized to both standardize the code and group similar parts together. There were a total of 16 pull requests merged which introduced 10 new plugins, overhauled several others, and addressed 13 issues. The new plugins include remote rendering, hand tracking, and ORB_SLAM. Vulkan is not the default display back-end, and due to this, some of the OpenGL based plugins may not work on every system. See below for more detailed notes on the changes.
+  This release of ILLIXR brings many new features and capabilities. A good potion of the code base has been refactored/reorganized to both standardize the code and group similar parts together. There were a total of 16 pull requests merged which introduced 10 new plugins, overhauled several others, and addressed 13 issues. The new plugins include remote rendering, hand tracking, and ORB_SLAM. Vulkan is now the default display back-end, and due to this, some of the OpenGL based plugins may not work on every system. See below for more detailed notes on the changes.
 - Plugins
   - Introduces a new ORB_SLAM3 based plugin. By [@hungdche](https://github.com/hungdche) in PR [#407](https://github.com/ILLIXR/ILLIXR/pull/407)
   - Deployed four new plugins: hand_tracking, webcam, hand_tracking.viewer, and zed.data_injection, reworked the zed plugin, and a zed_capture executable.

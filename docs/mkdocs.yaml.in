@@ -87,8 +87,7 @@ nav:
           - 'Monado Overview': plugin_README/monado_illixr_runtime_overview.md
           - 'Monado Dataflow': plugin_README/monado_integration_dataflow.md
           - 'Native Renderer': plugin_README/README_native_renderer.md
-          - 'Offload Rendering Client': plugin_README/README_offload_rendering_client_jetson.md
-          - 'Offload Rendering Client Jetson': plugin_README/README_offload_rendering_client.md
+          - 'Offload Rendering Client': plugin_README/README_offload_rendering_client.md
           - 'Offload Rendering Server': plugin_README/README_offload_rendering_server.md
           - 'Offload VIO': plugin_README/README_offload_vio.md
           - 'OpenNI': plugin_README/README_openni.md
@@ -107,8 +106,8 @@ nav:
           - 'Writing a Plugin':
               - working_with/writing_your_plugin.md
               - 'Modules': working_with/modules.md
-          - 'Mediapipe based plugins': working_with/adding_mediapipe.md
-          - 'Display Back Ends': working_with/display_backend.md
+          - 'Mediapipe Based Plugins': working_with/adding_mediapipe.md
+          - 'Display Backends': working_with/display_backend.md
           - 'Logging and Metrics': working_with/logging_and_metrics.md
           - 'Updating Tags and Documentation': working_with/updating_tags_and_docs.md
           - 'Using Switchboard and Phonebook Externally': working_with/external_switchboard_and_phonebook.md
