@@ -58,7 +58,7 @@ Topic details:
 ## ground_truth_slam
 
 Reads the [_ground truth_][34] from the same dataset as the `offline_imu` plugin.
-Ground truth data can be compared against the measurements from `offline_imu` for accuracy.
+Ground truth data can be compared against the head tracking results (e.g. from VIO, IMU integrator, or pose predictor) for accuracy.
 Timing information is taken from the `offline_imu` measurements/data.
 
 Topic details:
