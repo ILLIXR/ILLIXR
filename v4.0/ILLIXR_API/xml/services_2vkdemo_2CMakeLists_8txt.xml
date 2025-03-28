@@ -1,0 +1,95 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="services_2vkdemo_2CMakeLists_8txt" kind="file" language="C++">
+    <compoundname>CMakeLists.txt</compoundname>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="services_2vkdemo_2CMakeLists_8txt_1a8578c48b76f5cd08706f5289cce91775" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>cmake_minimum_required</definition>
+        <argsstring>(VERSION 3.22) project(vkdemo) set(PLUGIN_NAME plugin.vkdemo$</argsstring>
+        <name>cmake_minimum_required</name>
+        <param>
+          <type>VERSION 3.</type>
+          <declname>22</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/vkdemo/CMakeLists.txt" line="1" column="1" bodyfile="/home/friedel/devel/ILLIXR/services/vkdemo/CMakeLists.txt" bodystart="1" bodyend="5"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="normal">cmake_minimum_required(VERSION<sp/>3.22)</highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal">project(vkdemo)</highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal">set(PLUGIN_NAME<sp/>plugin.vkdemo${ILLIXR_BUILD_SUFFIX})</highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal">set(CMAKE_CXX_STANDARD<sp/>17)</highlight></codeline>
+<codeline lineno="8"><highlight class="normal">set(CMAKE_CXX_STANDARD_REQUIRED<sp/>ON)</highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal">file(GLOB_RECURSE<sp/>GLSL_SOURCE_FILES</highlight></codeline>
+<codeline lineno="12"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;shaders/*.frag&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;shaders/*.vert&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>)</highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal">set(VKDEMO_DEP_STR<sp/></highlight><highlight class="stringliteral">&quot;&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(Vulkan_EXTERNAL)</highlight></codeline>
+<codeline lineno="18"><highlight class="normal"><sp/><sp/><sp/><sp/>set(VKDEMO_DEP_STR<sp/>${Vulkan_DEP_STR})</highlight></codeline>
+<codeline lineno="19"><highlight class="normal">endif()</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal">foreach<sp/>(GLSL<sp/>${GLSL_SOURCE_FILES})</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"><sp/><sp/><sp/><sp/>get_filename_component(FILE_NAME<sp/>${GLSL}<sp/>NAME)</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/>set(SPIRV<sp/></highlight><highlight class="stringliteral">&quot;${PROJECT_BINARY_DIR}/shaders/${FILE_NAME}.spv&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/>add_custom_command(</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>OUTPUT<sp/>${SPIRV}</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>COMMAND<sp/>${CMAKE_COMMAND}<sp/>-E<sp/>make_directory<sp/></highlight><highlight class="stringliteral">&quot;${PROJECT_BINARY_DIR}/shaders/&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>COMMAND<sp/>${Vulkan_GLSLANG_VALIDATOR_EXECUTABLE}<sp/>${GLSL}<sp/>-V<sp/>-o<sp/>${SPIRV}</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>DEPENDS<sp/>${GLSL}<sp/>${VKDEMO_DEP_STR})</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/>list(APPEND<sp/>SPIRV_BINARY_FILES<sp/>${SPIRV})</highlight></codeline>
+<codeline lineno="30"><highlight class="normal">endforeach<sp/>(GLSL)</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal">add_custom_target(</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Vkdemo_Shaders</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>DEPENDS<sp/>${SPIRV_BINARY_FILES}</highlight></codeline>
+<codeline lineno="35"><highlight class="normal">)</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal">add_library(${PLUGIN_NAME}<sp/>SHARED<sp/>service.cpp</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>service.hpp</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/global_module_defs.hpp</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/math_util.hpp</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/data_format/pose_prediction.hpp</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/phonebook.hpp</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/threadloop.hpp</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/vk/display_provider.hpp</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/vk/render_pass.hpp</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/vk/vulkan_utils.hpp</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/gl_util/lib/tiny_obj_loader.h</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/gl_util/lib/stb_image.h</highlight></codeline>
+<codeline lineno="50"><highlight class="normal">)</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(Vulkan_EXTERNAL)</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/>add_dependencies(${PLUGIN_NAME}<sp/>${Vulkan_DEP_STR})</highlight></codeline>
+<codeline lineno="53"><highlight class="normal">endif()</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"></highlight></codeline>
+<codeline lineno="55"><highlight class="normal">add_dependencies(${PLUGIN_NAME}<sp/>Vkdemo_Shaders)</highlight></codeline>
+<codeline lineno="56"><highlight class="normal">set_target_properties(${PLUGIN_NAME}<sp/>PROPERTIES<sp/>OUTPUT_NAME<sp/>${PLUGIN_NAME})</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"></highlight></codeline>
+<codeline lineno="58"><highlight class="normal">target_link_libraries(${PLUGIN_NAME}<sp/>${Vulkan_LIBRARIES}<sp/>spdlog::spdlog)</highlight></codeline>
+<codeline lineno="59"><highlight class="normal">target_include_directories(${PLUGIN_NAME}<sp/>PUBLIC<sp/>${Vulkan_INCLUDE_DIRS}<sp/>${ILLIXR_SOURCE_DIR}/include)</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"></highlight></codeline>
+<codeline lineno="61"><highlight class="normal">install_shaders(SPIRV_BINARY_FILES<sp/>vkdemo<sp/>${PLUGIN_NAME})</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"></highlight></codeline>
+<codeline lineno="63"><highlight class="normal">install(TARGETS<sp/>${PLUGIN_NAME}<sp/>DESTINATION<sp/>lib)</highlight></codeline>
+    </programlisting>
+    <location file="/home/friedel/devel/ILLIXR/services/vkdemo/CMakeLists.txt"/>
+  </compounddef>
+</doxygen>

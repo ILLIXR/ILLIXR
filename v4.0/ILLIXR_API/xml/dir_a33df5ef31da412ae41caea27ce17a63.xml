@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_a33df5ef31da412ae41caea27ce17a63" kind="dir">
+    <compoundname>/home/friedel/devel/ILLIXR/plugins/ground_truth_slam</compoundname>
+    <innerfile refid="plugins_2ground__truth__slam_2plugin_8cpp">plugin.cpp</innerfile>
+    <innerfile refid="plugins_2ground__truth__slam_2plugin_8hpp">plugin.hpp</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/plugins/ground_truth_slam/"/>
+  </compounddef>
+</doxygen>

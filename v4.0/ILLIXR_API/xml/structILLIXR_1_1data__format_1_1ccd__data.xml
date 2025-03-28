@@ -1,0 +1,163 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structILLIXR_1_1data__format_1_1ccd__data" kind="struct" language="C++" prot="public">
+    <compoundname>ILLIXR::data_format::ccd_data</compoundname>
+    <includes refid="camera__data_8hpp" local="no">camera_data.hpp</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1ccd__data_1aa3b99b3c6c18d7ac9234323e1138dbee" prot="public" static="no" mutable="no">
+        <type>const float</type>
+        <definition>const float ILLIXR::data_format::ccd_data::center_x</definition>
+        <argsstring></argsstring>
+        <name>center_x</name>
+        <qualifiedname>ILLIXR::data_format::ccd_data::center_x</qualifiedname>
+        <briefdescription>
+<para>center pixel along x axis </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/camera_data.hpp" line="23" column="18" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/camera_data.hpp" bodystart="23" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1ccd__data_1a17a1826206b9891d8971fd59dbb127e8" prot="public" static="no" mutable="no">
+        <type>const float</type>
+        <definition>const float ILLIXR::data_format::ccd_data::center_y</definition>
+        <argsstring></argsstring>
+        <name>center_y</name>
+        <qualifiedname>ILLIXR::data_format::ccd_data::center_y</qualifiedname>
+        <briefdescription>
+<para>center pixel along y axis </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/camera_data.hpp" line="24" column="18" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/camera_data.hpp" bodystart="24" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1ccd__data_1a825af13bf1c9324220334869923a42e4" prot="public" static="no" mutable="no">
+        <type>const double</type>
+        <definition>const double ILLIXR::data_format::ccd_data::vertical_fov</definition>
+        <argsstring></argsstring>
+        <name>vertical_fov</name>
+        <qualifiedname>ILLIXR::data_format::ccd_data::vertical_fov</qualifiedname>
+        <briefdescription>
+<para>vertical field of view, in radians </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/camera_data.hpp" line="25" column="18" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/camera_data.hpp" bodystart="25" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1ccd__data_1ac33b160145dbdd9486aa94cc47035372" prot="public" static="no" mutable="no">
+        <type>const double</type>
+        <definition>const double ILLIXR::data_format::ccd_data::horizontal_fov</definition>
+        <argsstring></argsstring>
+        <name>horizontal_fov</name>
+        <qualifiedname>ILLIXR::data_format::ccd_data::horizontal_fov</qualifiedname>
+        <briefdescription>
+<para>horizontal field of view in radians </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/camera_data.hpp" line="26" column="18" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/camera_data.hpp" bodystart="26" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1ccd__data_1ab2d150aaa3b6b47e3388aa35ac997318" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::ccd_data::ccd_data</definition>
+        <argsstring>()=delete</argsstring>
+        <name>ccd_data</name>
+        <qualifiedname>ILLIXR::data_format::ccd_data::ccd_data</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/camera_data.hpp" line="28" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1ccd__data_1ab110012620de1d5a0255475400a25c4a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::ccd_data::ccd_data</definition>
+        <argsstring>(const float cx, const float cy, const double vf, const double hf)</argsstring>
+        <name>ccd_data</name>
+        <qualifiedname>ILLIXR::data_format::ccd_data::ccd_data</qualifiedname>
+        <param>
+          <type>const float</type>
+          <declname>cx</declname>
+        </param>
+        <param>
+          <type>const float</type>
+          <declname>cy</declname>
+        </param>
+        <param>
+          <type>const double</type>
+          <declname>vf</declname>
+        </param>
+        <param>
+          <type>const double</type>
+          <declname>hf</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Constructor <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>cx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>center pixel along x axis </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>cy</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>center pixel along y axis </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>vf</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>vertical field of view, should be in radians, but will auto-convert </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>hf</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>vertical field of view, should be in radians, but will auto-convert </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/camera_data.hpp" line="37" column="5" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/camera_data.hpp" bodystart="37" bodyend="42"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A data structure to hold relevant camera information. This information is constant (per camera) </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/camera_data.hpp" line="22" column="1" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/camera_data.hpp" bodystart="22" bodyend="43"/>
+    <listofallmembers>
+      <member refid="structILLIXR_1_1data__format_1_1ccd__data_1ab2d150aaa3b6b47e3388aa35ac997318" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::ccd_data</scope><name>ccd_data</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1ccd__data_1ab110012620de1d5a0255475400a25c4a" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::ccd_data</scope><name>ccd_data</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1ccd__data_1aa3b99b3c6c18d7ac9234323e1138dbee" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::ccd_data</scope><name>center_x</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1ccd__data_1a17a1826206b9891d8971fd59dbb127e8" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::ccd_data</scope><name>center_y</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1ccd__data_1ac33b160145dbdd9486aa94cc47035372" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::ccd_data</scope><name>horizontal_fov</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1ccd__data_1a825af13bf1c9324220334869923a42e4" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::ccd_data</scope><name>vertical_fov</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,3940 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://illixr.github.io/ILLIXR/latest/">
+      
+      
+      
+        <link rel="next" href="getting_started/">
+      
+      
+      <link rel="icon" href="assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.7">
+    
+    
+      
+        <title>ILLIXR - ILLIXR Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="assets/stylesheets/main.8608ea7d.min.css">
+      
+        
+        <link rel="stylesheet" href="assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="css/mkd-extra.css">
+    
+      <link rel="stylesheet" href="css/code-box-copy.css">
+    
+    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+   <link href="assets/stylesheets/glightbox.min.css" rel="stylesheet"/><style>
+    html.glightbox-open { overflow: initial; height: 100%; }
+    .gslide-title { margin-top: 0px; user-select: text; }
+    .gslide-desc { color: #666; user-select: text; }
+    .gslide-image img { background: none; }
+    .glightbox-clean .gslide-media {
+        -webkit-box-shadow: none;
+        box-shadow: none;
+    }
+    .gscrollbar-fixer { padding-right: 15px; }
+    .gdesc-inner { font-size: 0.75rem; }
+    body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color);}
+    body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color);}
+    body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color);}</style> <script src="assets/javascripts/glightbox.min.js"></script></head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#overview" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+          <aside class="md-banner md-banner--warning">
+            <div class="md-banner__inner md-grid md-typeset">
+              
+You're not viewing the latest version.
+<a href="../.">
+    <strong>Click here to go to latest.</strong>
+</a>
+
+            </div>
+            <script>var el=document.querySelector("[data-md-component=outdated]"),base=new URL("."),outdated=__md_get("__outdated",sessionStorage,base);!0===outdated&&el&&(el.hidden=!1)</script>
+          </aside>
+        
+      </div>
+    
+    
+      
+
+
+
+<header class="md-header md-header--shadow" data-md-component="header" style="background-color: #11284b">
+    <nav class="md-header__inner md-grid" aria-label="Header">
+        <a href="." title="ILLIXR Documentation" class="md-header__button md-logo" aria-label="ILLIXR Documentation" data-md-component="logo">
+            <img src="./images/icon.png" alt="logo">
+        </a>
+        <label class="md-header__button md-icon" for="__drawer">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+        </label>
+        <div class="md-header__title" data-md-component="header-title">
+            <div class="md-header__ellipsis">
+                <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ILLIXR Documentation
+          </span>
+                </div>
+                <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              ILLIXR
+            
+          </span>
+                </div>
+            </div>
+        </div>
+        
+        
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+        
+        
+        
+        <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+        
+        
+        
+        <label class="md-header__button md-icon" for="__search">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+        
+        
+    </nav>
+    
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+    <label class="md-nav__title" for="__drawer" style="background-color:var(--md-nav-hdr-color);color:var(--md-nav-hdr-fg-color);">
+        <a href="." title="ILLIXR Documentation" class="md-nav__button md-logo" aria-label="ILLIXR Documentation" data-md-component="logo">
+            <img src="./images/icon.png" alt="logo">
+        </a>
+        ILLIXR Documentation
+    </label>
+    
+    <ul class="md-nav__list" data-md-scrollfix style="background-color:var(--md-nav-list-color)">
+        
+        
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li class="md-nav__item md-nav__item--active md-nav__item--nested">
+
+
+    
+    
+    
+    <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" checked>
+    
+    
+    
+    <div class="md-nav__link md-nav__container" style="color:black;">
+        <a href="." class="md-nav__link md-nav__link--active">
+            
+
+<span class="md-ellipsis">
+    Latest Documentation
+    
+  </span>
+
+
+        </a>
+        
+        
+        <label class="md-nav__link md-nav__link--active" for="__nav_1" id="__nav_1_label" tabindex="0">
+            <span class="md-nav__icon md-icon"></span>
+        </label>
+        
+    </div>
+    
+    <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="true">
+        <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            Latest Documentation
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+            
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="getting_started/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    Getting Started
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="illixr_plugins/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    Plugin Overview
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="illixr_services/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    Services Overview
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li class="md-nav__item md-nav__item--nested">
+
+
+    
+    
+    
+    <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_5" >
+    
+    
+    <label class="md-nav__link" for="__nav_1_5" id="__nav_1_5_label" tabindex="0" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    Plugin/Service Details
+    
+  </span>
+
+
+        <span class="md-nav__icon md-icon"></span>
+    </label>
+    
+    <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_1_5_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_1_5">
+            <span class="md-nav__icon md-icon"></span>
+            Plugin/Service Details
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="plugin_README/README_debugview/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    Debugview
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="plugin_README/README_fauxpose/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    Fauxpose
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="plugin_README/README_gldemo/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    Gldemo
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="plugin_README/README_hand_tracking/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    Hand Tracking
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="plugin_README/README_lighthouse/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    Lighthouse
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="plugin_README/monado_illixr_runtime_overview/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    Monado Overview
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="plugin_README/monado_integration_dataflow/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    Monado Dataflow
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="plugin_README/README_native_renderer/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    Native Renderer
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="plugin_README/README_offload_rendering_client/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    Offload Rendering Client
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="plugin_README/README_offload_rendering_server/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    Offload Rendering Server
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="plugin_README/README_offload_vio/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    Offload VIO
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="plugin_README/README_openni/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    OpenNI
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="plugin_README/README_openwarp_vk/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    Openwarp
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="plugin_README/README_orb_slam3/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    ORM_SLAM3
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="plugin_README/README_record_imu_cam/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    Record_imu_cam
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="plugin_README/README_timewarp_gl/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    Timewarp_gl
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="plugin_README/README_timewarp_vk/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    Timewarp_VK
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="plugin_README/README_vkdemo/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    Vkdemo
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="plugin_README/README_webcam/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    Webcam
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="plugin_README/README_zed/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    Zed
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="plugin_README/README_zed_data_injection/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    Zed Data Injection
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="plugin_README/zed_capture/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    Zed Data Capture
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+        </ul>
+    </nav>
+    
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li class="md-nav__item md-nav__item--nested">
+
+
+    
+    
+    
+    <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_6" >
+    
+    
+    <label class="md-nav__link" for="__nav_1_6" id="__nav_1_6_label" tabindex="0" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    Working with ILLIXR
+    
+  </span>
+
+
+        <span class="md-nav__icon md-icon"></span>
+    </label>
+    
+    <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_1_6_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_1_6">
+            <span class="md-nav__icon md-icon"></span>
+            Working with ILLIXR
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="working_with/modifying_a_plugin/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    Modifying a Plugin
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li class="md-nav__item md-nav__item--nested">
+
+
+    
+    
+    
+    <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_6_2" >
+    
+    
+    <label class="md-nav__link" for="__nav_1_6_2" id="__nav_1_6_2_label" tabindex="0" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    Writing a Plugin
+    
+  </span>
+
+
+        <span class="md-nav__icon md-icon"></span>
+    </label>
+    
+    <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_1_6_2_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_1_6_2">
+            <span class="md-nav__icon md-icon"></span>
+            Writing a Plugin
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="working_with/writing_your_plugin/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    Writing Your Plugin
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="working_with/modules/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    Modules
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+        </ul>
+    </nav>
+    
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="working_with/adding_mediapipe/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    Mediapipe Based Plugins
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="working_with/display_backend/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    Display Backends
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="working_with/logging_and_metrics/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    Logging and Metrics
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="working_with/updating_tags_and_docs/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    Updating Tags and Documentation
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="working_with/external_switchboard_and_phonebook/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    Using Switchboard and Phonebook Externally
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="working_with/virtualization/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    ILLIXR Under Virtualization
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="working_with/using_cameras/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    Using ILLIXR with Cameras
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="working_with/debugging_illixr/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    Debugging Tips
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+        </ul>
+    </nav>
+    
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li class="md-nav__item md-nav__item--nested">
+
+
+    
+    
+    
+    <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_7" >
+    
+    
+    
+    <div class="md-nav__link md-nav__container" style="color:black;">
+        <a href="contributing/" class="md-nav__link ">
+            
+
+<span class="md-ellipsis">
+    Contributing to ILLIXR
+    
+  </span>
+
+
+        </a>
+        
+        
+        <label class="md-nav__link " for="__nav_1_7" id="__nav_1_7_label" tabindex="0">
+            <span class="md-nav__icon md-icon"></span>
+        </label>
+        
+    </div>
+    
+    <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_1_7_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_1_7">
+            <span class="md-nav__icon md-icon"></span>
+            Contributing to ILLIXR
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+            
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="contributing/code_of_conduct/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    Code of Conduct
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="contributing/asking_questions/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    Asking Questions
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="contributing/opening_an_issue/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    Reporting a Bug
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="contributing/feature_request/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    Suggesting a Feature/Improvement
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="contributing/style_guide/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    Programming Style Guide
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="contributing/third_party/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    Using 3rd Party Code/Libraries
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="contributing/licenses/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    Licenses
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="contributing/pull_request/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    Creating a Pull Request
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="contributing/code_review/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    Code Review Guidelines
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+        </ul>
+    </nav>
+    
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="glossary/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    Glossary
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li class="md-nav__item md-nav__item--nested">
+
+
+    
+    
+    
+    <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_9" >
+    
+    
+    <label class="md-nav__link" for="__nav_1_9" id="__nav_1_9_label" tabindex="0" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    API
+    
+  </span>
+
+
+        <span class="md-nav__icon md-icon"></span>
+    </label>
+    
+    <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_1_9_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_1_9">
+            <span class="md-nav__icon md-icon"></span>
+            API
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+            
+            
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li class="md-nav__item md-nav__item--nested">
+
+
+    
+    
+    
+    <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_9_1" >
+    
+    
+    <label class="md-nav__link" for="__nav_1_9_1" id="__nav_1_9_1_label" tabindex="0" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    Classes
+    
+  </span>
+
+
+        <span class="md-nav__icon md-icon"></span>
+    </label>
+    
+    <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_1_9_1_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_1_9_1">
+            <span class="md-nav__icon md-icon"></span>
+            Classes
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="api/classes/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    Class Index
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li class="md-nav__item md-nav__item--nested">
+
+
+    
+    
+    
+    <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_9_1_2" >
+    
+    
+    <label class="md-nav__link" for="__nav_1_9_1_2" id="__nav_1_9_1_2_label" tabindex="0" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    System
+    
+  </span>
+
+
+        <span class="md-nav__icon md-icon"></span>
+    </label>
+    
+    <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_1_9_1_2_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_1_9_1_2">
+            <span class="md-nav__icon md-icon"></span>
+            System
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="api/classILLIXR_1_1phonebook/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    phonebook
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="api/classILLIXR_1_1switchboard/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    switchboard
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="api/classILLIXR_1_1relative__clock/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    relative_clock
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="api/classILLIXR_1_1plugin/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    plugin
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="api/classILLIXR_1_1threadloop/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    threadloop
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="api/classILLIXR_1_1event/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    even
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="api/classILLIXR_1_1data__format_1_1pose__prediction/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    pose_prediction
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+        </ul>
+    </nav>
+    
+</li>
+
+
+            
+            
+        </ul>
+    </nav>
+    
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li class="md-nav__item md-nav__item--nested">
+
+
+    
+    
+    
+    <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_9_2" >
+    
+    
+    <label class="md-nav__link" for="__nav_1_9_2" id="__nav_1_9_2_label" tabindex="0" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    Data Structures
+    
+  </span>
+
+
+        <span class="md-nav__icon md-icon"></span>
+    </label>
+    
+    <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_1_9_2_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_1_9_2">
+            <span class="md-nav__icon md-icon"></span>
+            Data Structures
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+            
+            
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li class="md-nav__item md-nav__item--nested">
+
+
+    
+    
+    
+    <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_9_2_1" >
+    
+    
+    <label class="md-nav__link" for="__nav_1_9_2_1" id="__nav_1_9_2_1_label" tabindex="0" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    Points
+    
+  </span>
+
+
+        <span class="md-nav__icon md-icon"></span>
+    </label>
+    
+    <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_1_9_2_1_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_1_9_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            Points
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="api/structILLIXR_1_1data__format_1_1point/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    point
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="api/structILLIXR_1_1data__format_1_1point__with__validity/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    point_with_validity
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="api/structILLIXR_1_1data__format_1_1point__with__units/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    point_with_units
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="api/structILLIXR_1_1data__format_1_1points__with__units/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    points_with_units
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="api/structILLIXR_1_1data__format_1_1raw__point/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    raw_point
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+        </ul>
+    </nav>
+    
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li class="md-nav__item md-nav__item--nested">
+
+
+    
+    
+    
+    <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_9_2_2" >
+    
+    
+    <label class="md-nav__link" for="__nav_1_9_2_2" id="__nav_1_9_2_2_label" tabindex="0" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    Camera
+    
+  </span>
+
+
+        <span class="md-nav__icon md-icon"></span>
+    </label>
+    
+    <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_1_9_2_2_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_1_9_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            Camera
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="api/structILLIXR_1_1data__format_1_1cam__base__type/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    cam_base_type
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="api/structILLIXR_1_1data__format_1_1monocular__cam__type/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    monocular_cam_type
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="api/structILLIXR_1_1data__format_1_1binocular__cam__type/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    binocular_cam_type
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="api/structILLIXR_1_1data__format_1_1rgb__depth__type/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    rdb_depth_type
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="api/structILLIXR_1_1data__format_1_1cam__type__zed/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    cam_type_zed
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="api/structILLIXR_1_1data__format_1_1ccd__data/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    ccd_data
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="api/structILLIXR_1_1data__format_1_1camera__data/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    camera_data
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+        </ul>
+    </nav>
+    
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li class="md-nav__item md-nav__item--nested">
+
+
+    
+    
+    
+    <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_9_2_3" >
+    
+    
+    <label class="md-nav__link" for="__nav_1_9_2_3" id="__nav_1_9_2_3_label" tabindex="0" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    Pose
+    
+  </span>
+
+
+        <span class="md-nav__icon md-icon"></span>
+    </label>
+    
+    <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_1_9_2_3_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_1_9_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            Pose
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="api/structILLIXR_1_1data__format_1_1pose__data/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    pose_data
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="api/structILLIXR_1_1data__format_1_1pose__type/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    pose_type
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="api/structILLIXR_1_1data__format_1_1fast__pose__type/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    fast_pose_type
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="api/structILLIXR_1_1data__format_1_1raw__pose/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    raw_pose
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="api/structILLIXR_1_1data__format_1_1texture__pose/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    texture_pose
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+        </ul>
+    </nav>
+    
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li class="md-nav__item md-nav__item--nested">
+
+
+    
+    
+    
+    <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_9_2_4" >
+    
+    
+    <label class="md-nav__link" for="__nav_1_9_2_4" id="__nav_1_9_2_4_label" tabindex="0" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    IMU
+    
+  </span>
+
+
+        <span class="md-nav__icon md-icon"></span>
+    </label>
+    
+    <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_1_9_2_4_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_1_9_2_4">
+            <span class="md-nav__icon md-icon"></span>
+            IMU
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="api/structILLIXR_1_1data__format_1_1imu__params/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    imu_params
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="api/structILLIXR_1_1data__format_1_1imu__type/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    imu_type
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="api/structILLIXR_1_1data__format_1_1imu__integrator__input/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    imu_integrator_input
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="api/structILLIXR_1_1data__format_1_1imu__raw__type/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    imu_raw_type
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+        </ul>
+    </nav>
+    
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li class="md-nav__item md-nav__item--nested">
+
+
+    
+    
+    
+    <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_9_2_5" >
+    
+    
+    <label class="md-nav__link" for="__nav_1_9_2_5" id="__nav_1_9_2_5_label" tabindex="0" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    Hands
+    
+  </span>
+
+
+        <span class="md-nav__icon md-icon"></span>
+    </label>
+    
+    <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_1_9_2_5_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_1_9_2_5">
+            <span class="md-nav__icon md-icon"></span>
+            Hands
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="api/structILLIXR_1_1data__format_1_1ht_1_1hand__points/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    hand_points
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="api/structILLIXR_1_1data__format_1_1ht_1_1ht__detection/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    ht_detection
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="api/structILLIXR_1_1data__format_1_1ht_1_1position/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    position
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="api/structILLIXR_1_1data__format_1_1ht_1_1velocity/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    velocity
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="api/structILLIXR_1_1data__format_1_1ht_1_1ht__frame/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    ht_frame
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="api/structILLIXR_1_1data__format_1_1ht_1_1raw__ht__data/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    raw_ht_data
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+        </ul>
+    </nav>
+    
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="api/structILLIXR_1_1data__format_1_1compressed__frame/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    compressed_frame
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="api/structILLIXR_1_1data__format_1_1connection__signal/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    connection_signal
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="api/structILLIXR_1_1data__format_1_1depth__type/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    depth_type
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="api/structILLIXR_1_1data__format_1_1hmd__physical__info/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    hmd_physical_info
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="api/structILLIXR_1_1data__format_1_1hologram__input/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    hologram_input
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="api/structILLIXR_1_1data__format_1_1image__handle/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    image_handle
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="api/classILLIXR_1_1data__format_1_1proper__quaternion/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    proper_quaternion
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="api/structILLIXR_1_1data__format_1_1rect/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    rect
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="api/structILLIXR_1_1data__format_1_1rendered__frame/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    rendered_frame
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="api/structILLIXR_1_1data__format_1_1signal__to__quad/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    signal_to_quad
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="api/structILLIXR_1_1data__format_1_1vk__image__handle/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    vk_image_handle
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+        </ul>
+    </nav>
+    
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="api/namespaces/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    Namespaces
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+        </ul>
+    </nav>
+    
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="LICENSE/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    License
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+            
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li class="md-nav__item md-nav__item--nested">
+
+
+    
+    
+    
+    <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_11" >
+    
+    
+    <label class="md-nav__link" for="__nav_1_11" id="__nav_1_11_label" tabindex="0" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    Policies
+    
+  </span>
+
+
+        <span class="md-nav__icon md-icon"></span>
+    </label>
+    
+    <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_1_11_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_1_11">
+            <span class="md-nav__icon md-icon"></span>
+            Policies
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+            
+            
+            
+
+
+
+
+<li class="md-nav__item">
+    <a href="policies/branch_retention/" class="md-nav__link" style="color:black;">
+        
+
+<span class="md-ellipsis">
+    Branch Retention
+    
+  </span>
+
+
+    </a>
+</li>
+
+
+            
+            
+        </ul>
+    </nav>
+    
+</li>
+
+
+            
+            
+        </ul>
+    </nav>
+    
+</li>
+
+
+        
+    </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+    
+    
+    
+    
+    
+    
+    <label class="md-nav__title" for="__toc" style="background-color:var(--md-nav-hdr-color);color:var(--md-nav-hdr-fg-color);">
+        <span class="md-nav__icon md-icon"></span>
+        Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix  style="background-color:var(--md-nav-list-color)">
+        
+        <li class="md-nav__item">
+    <a href="#current-plugins-and-services" class="md-nav__link">
+    <span class="md-ellipsis" style="color:black;">
+      Current Plugins and Services
+    </span>
+    </a>
+    
+    <nav class="md-nav" aria-label="Current Plugins and Services">
+        <ul class="md-nav__list">
+            
+            <li class="md-nav__item">
+    <a href="#perception" class="md-nav__link">
+    <span class="md-ellipsis" style="color:black;">
+      Perception
+    </span>
+    </a>
+    
+</li>
+            
+            <li class="md-nav__item">
+    <a href="#visual" class="md-nav__link">
+    <span class="md-ellipsis" style="color:black;">
+      Visual
+    </span>
+    </a>
+    
+</li>
+            
+            <li class="md-nav__item">
+    <a href="#aural" class="md-nav__link">
+    <span class="md-ellipsis" style="color:black;">
+      Aural
+    </span>
+    </a>
+    
+</li>
+            
+            <li class="md-nav__item">
+    <a href="#data-recording" class="md-nav__link">
+    <span class="md-ellipsis" style="color:black;">
+      Data Recording
+    </span>
+    </a>
+    
+</li>
+            
+            <li class="md-nav__item">
+    <a href="#data-readinginjection" class="md-nav__link">
+    <span class="md-ellipsis" style="color:black;">
+      Data Reading/Injection
+    </span>
+    </a>
+    
+</li>
+            
+            <li class="md-nav__item">
+    <a href="#visualization" class="md-nav__link">
+    <span class="md-ellipsis" style="color:black;">
+      Visualization
+    </span>
+    </a>
+    
+</li>
+            
+            <li class="md-nav__item">
+    <a href="#offloadingremote-work" class="md-nav__link">
+    <span class="md-ellipsis" style="color:black;">
+      Offloading/Remote Work
+    </span>
+    </a>
+    
+</li>
+            
+        </ul>
+    </nav>
+    
+</li>
+        
+    </ul>
+    
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<p><img alt="ILLIXR logo" src="images/LogoWithHeader.png" /></p>
+<p><a href="LICENSE/"><img alt="NCSA licensed" src="https://img.shields.io/badge/license-NCSA-blue.svg" /></a>
+<a href="https://github.com/ILLIXR/ILLIXR/actions/workflows/ci.yaml"><img alt="ILLIXR CI" src="https://github.com/ILLIXR/ILLIXR/actions/workflows/ci.yaml/badge.svg" /></a>
+<a href="https://discord.gg/upkvy7x3W4"><img alt="Discord" src="https://img.shields.io/discord/830812443189444698?logo=discord&amp;logoColor=white&amp;label=Discord" /></a></p>
+<iframe width="400" height="225" src="https://www.youtube.com/embed/VyOShOfHt48" title="Demo of ILLIXR running locally" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+<h1 id="overview">Overview</h1>
+<p>Illinois Extended Reality testbed or ILLIXR (pronounced like elixir) is a fully open-source Extended Reality (XR)
+system and testbed. The modular, extensible, and OpenXR-compatible ILLIXR runtime integrates state-of-the-art XR
+components into a complete XR system.</p>
+<p>The current ILLIXR release is v4.0. Source code is available from our GitHub repository, which also contains
+instructions for building fully contained Docker images. Docker images can also be downloaded from a hub (see here for
+instructions.)</p>
+<p>ILLIXR provides its components in standalone configurations to enable architects and system designers to research each
+component in isolation. The standalone components are packaged together as of the v3.1.0 release of ILLIXR.</p>
+<p>ILLIXR's modular and extensible runtime allows adding new components and swapping different implementations of a given
+component. ILLIXR currently contains the following <a href="illixr_plugins/">plugins</a> and <a href="illixr_services/">services</a>:</p>
+<h2 id="current-plugins-and-services">Current Plugins and Services</h2>
+<h3 id="perception">Perception</h3>
+<ul>
+<li>Filter-based visual-inertial estimator<ul>
+<li><a href="illixr_plugins/#openni">OpenVINS</a><sup id="fnref4:1"><a class="footnote-ref" href="#fn:1">1</a></sup></li>
+</ul>
+</li>
+<li>Tracking<ul>
+<li>Head tracking: <a href="illixr_plugins/#orb_slam3">ORB_SLAM3</a><sup id="fnref2:1"><a class="footnote-ref" href="#fn:1">1</a></sup> and <a href="illixr_plugins/#lighthouse">lighthouse</a></li>
+<li><a href="illixr_plugins/#hand_tracking">Hand tracking</a><sup id="fnref3:1"><a class="footnote-ref" href="#fn:1">1</a></sup></li>
+<li><a href="illixr_plugins/#openni">openni</a></li>
+<li><a href="illixr_plugins/#depthai">depthai</a></li>
+</ul>
+</li>
+<li>IMU integrators<ul>
+<li><a href="illixr_plugins/#gtsam_integrator">gtsam_integrator</a></li>
+<li><a href="illixr_plugins/#passthrough_integrator">passthrough_integrator</a></li>
+<li><a href="illixr_plugins/#rk4_integrator">rk4_integrator</a></li>
+</ul>
+</li>
+<li>Pose Related Service<ul>
+<li><a href="illixr_services/#fauxpose">fauxpose</a></li>
+<li><a href="illixr_services/#pose_prediction">pose_prediction</a></li>
+<li><a href="illixr_services/#pose_lookup">pose_lookup</a></li>
+</ul>
+</li>
+<li>Cameras<ul>
+<li><a href="illixr_plugins/#zed">zed</a> supporting <a href="https://www.stereolabs.com/zed-mini/">ZED Mini</a></li>
+<li><a href="illixr_plugins/#realsense">realsense</a> supporting <a href="https://www.intelrealsense.com/">Intel RealSense</a></li>
+<li><a href="illixr_plugins/#webcam">webcam</a></li>
+</ul>
+</li>
+</ul>
+<h3 id="visual">Visual</h3>
+<ul>
+<li>Asynchronous reprojection:<ul>
+<li><a href="illixr_plugins/#timewarp_gl">timewarp_gl</a>, <a href="https://www.opengl.org/">OpenGL</a> based</li>
+<li><a href="illixr_plugins/#timewarp_vk">timewarp_vk</a>, <a href="https://www.vulkan.org/">Vulkan</a> based</li>
+</ul>
+</li>
+<li>Asynchronous 6-degree reprojection <a href="illixr_plugins/#openwarp_vk">openwarp</a></li>
+<li><a href="illixr_services/#vkdemo">vkdemo</a> - toy application, with native ILLIXR rendering interface gldemo</li>
+<li><a href="illixr_plugins/#native_renderer">native_renderer</a> - render management</li>
+<li><a href="illixr_plugins/#gldemo">gldemo</a> - stand-in application when ILLIXR is run as a standalone application without an actual OpenXR application</li>
+</ul>
+<h3 id="aural">Aural</h3>
+<ul>
+<li><a href="illixr_plugins/#audio_pipeline">spatial audio encoding/playback</a><sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></li>
+</ul>
+<h3 id="data-recording">Data Recording</h3>
+<ul>
+<li><a href="illixr_plugins/#offload_data">offload_data</a></li>
+<li><a href="illixr_plugins/#record_imu_cam">record_imu_cam</a></li>
+<li><a href="illixr_plugins/#record_rgb_depth">record_rgb_depth</a></li>
+<li><a href="https://illixr.github.io/ILLIXR/plugin_README/zed_capture/">zed_capture</a> (standalone executable)</li>
+</ul>
+<h3 id="data-readinginjection">Data Reading/Injection</h3>
+<ul>
+<li><a href="illixr_plugins/#offline_cam">offline_cam</a></li>
+<li><a href="illixr_plugins/#offline_imu">offline_imu</a></li>
+<li><a href="illixr_plugins/#zeddata_injection">zed.data_injection</a></li>
+<li><a href="illixr_plugins/#ground_truth_slam">ground_truth_slam</a></li>
+</ul>
+<h3 id="visualization">Visualization</h3>
+<ul>
+<li><a href="illixr_plugins/#debugview">debugview</a></li>
+<li><a href="illixr_plugins/#hand_trackingviewer">hand_tracking.viewer</a></li>
+</ul>
+<h3 id="offloadingremote-work">Offloading/Remote Work</h3>
+<ul>
+<li><a href="illixr_plugins/#offload_vio">offload_vio</a></li>
+<li><a href="illixr_plugins/#offload_rendering_client">offload_rendering_client</a></li>
+<li><a href="illixr_plugins/#offload_rendering_server">offload_rendering_server</a></li>
+<li><a href="illixr_plugins/#tcp_network_backend">tcp_network_backend</a></li>
+</ul>
+<p>Some components, such as eye tracking and reconstruction are available as standalone components and are in the process
+of being integrated.</p>
+<p>We continue to refine and add new components and implementations. Many of the current components of ILLIXR were
+developed by domain experts and obtained from publicly available repositories. They were modified for one or more of the
+following reasons: fixing compilation, adding features, or removing extraneous code or dependencies. Each component not
+developed by us is available as a forked GitHub repository for proper attribution to its authors.</p>
+<h1 id="papers-talks-demos-consortium">Papers, talks, demos, consortium</h1>
+<p>A <a href="https://ieeexplore.ieee.org/abstract/document/9741292">paper</a> with details on ILLIXR, including its components, runtime, telemetry support, and a comprehensive analysis
+of performance, power, and quality on desktop and embedded systems.</p>
+<p>A <a href="https://www.stereolabs.com/zed-mini/">talk presented at NVIDIA GTC'21</a> describing ILLIXR and announcing the ILLIXR consortium:
+<a href="https://youtu.be/ZY98lWksnpM">Video</a>.
+<a href="https://ws.engr.illinois.edu/sitemanager/getfile.asp?id=2971">Slides</a>.</p>
+<p>A <a href="https://youtu.be/GVcCW8WgEDY">demo</a> of an OpenXR application running with ILLIXR.</p>
+<p>The <a href="http://illixr.org">ILLIXR consortium</a> is an industry-supported community effort to democratize XR systems research, development,
+and benchmarking. Visit our <a href="http://illixr.org">website</a> for more information. For news and papers go to <a href="http://illixr.org">illixr.org</a>, for talks
+see our <a href="https://www.youtube.com/@sadve-group">YouTube</a> channel, and join our <a href="https://discord.gg/upkvy7x3W4">Discord</a> for announcements.</p>
+<h2 id="demo-videos">Demo Videos</h2>
+<p>All of our demo videos can be seen on our <a href="https://www.youtube.com/@sadve-group">YouTube</a> channel. Here are some highlights:</p>
+<table>
+<thead>
+<tr>
+<th>Running Locally</th>
+<th>Head Tracking (VIO) Offloaded</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><iframe width="400" height="225" src="https://www.youtube.com/embed/XEiqujGuRyE" title="Demo of ILLIXR running locally" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe><br><a href="https://youtu.be/XEiqujGuRyE">Video Link</a></td>
+<td><iframe width="400" height="225" src="https://www.youtube.com/embed/675L1etdTMg" title="Demo of ILLIXR with head tracking (VIO) offloaded" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe><br><a href="https://youtu.be/675L1etdTMg">Video Link</a></td>
+</tr>
+<tr>
+<td><iframe width="400" height="225" src="https://www.youtube.com/embed/VyOShOfHt48" title="Demo of ILLIXR running locally" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe><br><a href="https://youtu.be/VyOShOfHt48">Video Link</a></td>
+<td><iframe width="400" height="225" src="https://www.youtube.com/embed/2z6eufVJrJE" title="Demo of ILLIXR with head tracking (VIO) offloaded" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe><br><a href="https://youtu.be/2z6eufVJrJE">Video Link</a></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Rendering Offloaded</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><iframe width="400" height="225" src="https://www.youtube.com/embed/oGBYZIPj6Zc" title="Demo of ILLIXR with rendering offloaded" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe><br><a href="https://youtu.be/oGBYZIPj6Zc">Video Link</a></td>
+</tr>
+</tbody>
+</table>
+<h1 id="citation">Citation</h1>
+<p>We request that you cite our following <a href="https://ieeexplore.ieee.org/abstract/document/9741292">paper</a> when you use ILLIXR for a publication. We would also appreciate it if
+you send us a citation once your work has been published.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1">@inproceedings{huzaifa2021illixr,
+</span><span id="__span-0-2">  title={ILLIXR: Enabling end-to-end extended reality research},
+</span><span id="__span-0-3">  author={Huzaifa, Muhammad and Desai, Rishi and Grayson, Samuel and Jiang, Xutao and Jing, Ying and Lee, Jae and Lu, Fang and Pang, Yihan and Ravichandran, Joseph and Sinclair, Finn and Tian, Boyuan and Yuan, Hengzhi and Zhang, Jeffrey and Adve, Sarita V.},
+</span><span id="__span-0-4">  booktitle={2021 IEEE International Symposium on Workload Characterization (IISWC)},
+</span><span id="__span-0-5">  pages={24--38},
+</span><span id="__span-0-6">  year={2021},
+</span><span id="__span-0-7">  organization={IEEE}
+</span><span id="__span-0-8">}
+</span></code></pre></div>
+<p>Once your work is published, please send the citation to us at <a href="mailto:illixr@cs.illinois.edu">illixr@cs.illinois.edu</a>.</p>
+<h2 id="contributing-and-documentation">Contributing and Documentation</h2>
+<p>We welcome anyone to contribute to ILLIXR. If you wish to contribute, please see out contribution <a href="https://illixr.github.io/ILLIXR/contributing/contributing/index.html">guide</a>. Full
+documentation, including API specifications, can be found at our <a href="https://illixr.github.io/ILLIXR/getting_started/">Getting Started page</a>.</p>
+<h2 id="acknowledgements">Acknowledgements</h2>
+<p>The ILLIXR project started in <a href="http://rsim.cs.illinois.edu">Sarita Adve’s research group</a>,
+co-led by PhD candidate Muhammad Huzaifa, at the University of Illinois at Urbana-Champaign.
+Other major contributors include
+Rishi Desai,
+Douglas Friedel,
+Steven Gao,
+Samuel Grayson,
+Qinjun Jiang,
+Xutao Jiang,
+Ying Jing,
+Jae Lee,
+Jeffrey Liu,
+Fang Lu,
+Yihan Pang,
+Joseph Ravichandran,
+Giordano Salvador,
+Rahul Singh,
+Finn Sinclair,
+Boyuan Tian,
+Henghzhi Yuan,
+and
+Jeffrey Zhang.</p>
+<p>ILLIXR came together after many consultations with researchers and practitioners in many domains:
+audio,
+graphics,
+optics,
+robotics,
+signal processing,
+and
+extended reality systems.
+We are deeply grateful for all of these discussions and specifically to the following:
+Wei Cu,
+Aleksandra Faust,
+Liang Gao,
+Matt Horsnell,
+Amit Jindal,
+Steve LaValle,
+Steve Lovegrove,
+Andrew Maimone,
+Vegard &#216;ye,
+Martin Persson,
+Archontis Politis,
+Eric Shaffer,
+Paris Smaragdis,
+Sachin Talathi,
+and
+Chris Widdowson.</p>
+<p>Our OpenXR implementation is derived from <a href="https://monado.dev">Monado</a>. We are particularly thankful to Jakob Bornecrantz and Ryan
+Pavlik.</p>
+<p>The development of ILLIXR was supported by the Applications Driving Architectures (ADA) Research Center (a JUMP Center
+co-sponsored by SRC and DARPA), the Center for Future Architectures Research (C-FAR, a STARnet research center), a
+Semiconductor Research Corporation program sponsored by MARCO and DARPA, National Science Foundation grants 2120464 and
+2217144 and by a Google Faculty Research Award. The development of ILLIXR was also aided by generous hardware and
+software donations from ARM and NVIDIA. Facebook Reality Labs provided the <a href="https://research.fb.com/programs/openeds-challenge">OpenEDS Semantic Segmentation Dataset</a>.</p>
+<p>Wesley Darvin came up with the name for ILLIXR.</p>
+<h2 id="licensing-structure">Licensing Structure</h2>
+<p>ILLIXR is available as open-source software under the permissive <a href="https://illixr.github.io/ILLIXR/LICENSE/">University of Illinois/NCSA Open Source License</a>.
+As mentioned above, ILLIXR largely consists of components developed by domain experts and modified for the purposes of
+inclusion in ILLIXR. However, ILLIXR does contain software developed solely by us. <strong>The NCSA license is limited to only
+this software</strong>. The external libraries and software included in ILLIXR each have their own licenses and must be used
+according to those licenses:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Package</th>
+<th style="text-align: left;">License<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><a href="https://github.com/abseil/abseil-cpp">abseil-cpp</a></td>
+<td style="text-align: left;"><a href="https://github.com/abseil/abseil-cpp/blob/master/LICENSE">Apache v2</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://github.com/intel/ARM_NEON_2_x86_SSE">ARM NEON 2 x86 SSE</a></td>
+<td style="text-align: left;"><a href="https://github.com/intel/ARM_NEON_2_x86_SSE/blob/master/LICENSE">BSD-2 clause</a><sup id="fnref4:3"><a class="footnote-ref" href="#fn:3">3</a></sup></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://github.com/cameron314/concurrentqueue">concurrentqueue</a></td>
+<td style="text-align: left;"><a href="https://github.com/cameron314/concurrentqueue/blob/master/LICENSE.md">BSD-2 clause</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://github.com/jarro2783/cxxopts">cxxopts</a></td>
+<td style="text-align: left;"><a href="https://github.com/jarro2783/cxxopts/blob/master/LICENSE">MIT</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://github.com/luxonis/depthai-core">Depthai Core</a></td>
+<td style="text-align: left;"><a href="https://github.com/luxonis/depthai-core/blob/main/LICENSE">MIT</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://github.com/KhronosGroup/EGL-Registry">EGL-Registry</a></td>
+<td style="text-align: left;">None given</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://github.com/google/farmhash">farmhash</a></td>
+<td style="text-align: left;"><a href="https://github.com/google/farmhash?tab=MIT-1-ov-file#readme">MIT</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://github.com/ILLIXR/FFmpeg/">FFmpeg</a></td>
+<td style="text-align: left;"><a href="https://www.gnu.org/licenses/gpl-3.0.html">GNU General Public License v3.0</a><sup id="fnref:4"><a class="footnote-ref" href="#fn:4">4</a></sup></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://github.com/casiez/OneEuroFilter">filter</a></td>
+<td style="text-align: left;"><a href="https://github.com/ILLIXR/ILLIXR/blob/master/plugins/gtsam_integrator/third_party/filter.h">MIT</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://github.com/google/flatbuffers">flatbuffers</a></td>
+<td style="text-align: left;"><a href="https://github.com/google/flatbuffers/blob/master/LICENSE">Apache v2</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://github.com/google/gemmlowp">gemmlowp</a></td>
+<td style="text-align: left;"><a href="https://github.com/google/gemmlowp/blob/master/LICENSE">Apache v2</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://github.com/KhronosGroup/glslang">glslang</a></td>
+<td style="text-align: left;"><a href="https://github.com/KhronosGroup/glslang/blob/main/LICENSE.txt">BSD-3 clause</a><sup id="fnref:5"><a class="footnote-ref" href="#fn:5">5</a></sup></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://github.com/borglab/gtsam">Gtsam</a></td>
+<td style="text-align: left;"><a href="https://github.com/borglab/gtsam/blob/develop/LICENSE">BSD-2 clause</a><sup id="fnref3:3"><a class="footnote-ref" href="#fn:3">3</a></sup></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://github.com/ocornut/imgui">imgui</a></td>
+<td style="text-align: left;"><a href="https://github.com/ocornut/imgui/blob/master/LICENSE.txt">MIT</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://github.com/google-ai-edge/mediapipe">mediapipe</a></td>
+<td style="text-align: left;"><a href="https://github.com/google-ai-edge/mediapipe/blob/master/LICENSE">Apache v2</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://gitlab.freedesktop.org/monado/monado">Monado</a></td>
+<td style="text-align: left;"><a href="https://gitlab.freedesktop.org/monado/monado/-/blob/main/LICENSES/LicenseRef-Khronos-Free-Use-License-for-Software-and-Documentation.txt">MIT</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://github.com/ILLIXR/monado_integration">Monado integration</a></td>
+<td style="text-align: left;"><a href="https://github.com/ILLIXR/monado_integration/blob/master/LICENSE">Boost v1</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://github.com/ILLIXR/monado_vulkan_integration">Monado Vulkan Integration</a></td>
+<td style="text-align: left;"><a href="https://github.com/ILLIXR/monado_vulkan_integration/blob/main/LICENSE">Boost v1</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://github.com/cameron314/concurrentqueue">moodycamel::ConcurrentQueue</a></td>
+<td style="text-align: left;"><a href="https://github.com/cameron314/concurrentqueue/blob/master/LICENSE.md">BSD-2 clause</a><sup id="fnref2:3"><a class="footnote-ref" href="#fn:3">3</a></sup></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://github.com/petewarden/OouraFFT">OouraFFT</a></td>
+<td style="text-align: left;"><a href="https://github.com/petewarden/OouraFFT?tab=readme-ov-file">MIT-like</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://github.com/rpng/open_vins">Open-VINS</a></td>
+<td style="text-align: left;"><a href="https://www.gnu.org/licenses/gpl-3.0.html">GNU General Public License v3.0</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://github.com/ILLIXR/Monado_OpenXR_Simple_Example">OpenXR</a></td>
+<td style="text-align: left;"><a href="https://github.com/ILLIXR/Monado_OpenXR_Simple_Example/blob/master/LICENSE">Boost v1</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://github.com/ILLIXR/ORB_SLAM3">ORB_SLAM3</a></td>
+<td style="text-align: left;"><a href="https://github.com/ILLIXR/ORB_SLAM3/blob/master/LICENSE">GNU General Public License v3.0</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://github.com/protocolbuffers/protobuf/blob/main/LICENSE">protobuf</a></td>
+<td style="text-align: left;"><a href="https://github.com/protocolbuffers/protobuf/blob/main/LICENSE">BSD-3 clause</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://github.com/Maratyszcza/pthreadpool">pthreadpool</a></td>
+<td style="text-align: left;"><a href="https://github.com/Maratyszcza/pthreadpool/blob/master/LICENSE">BSD-2 clause</a><sup id="fnref:3"><a class="footnote-ref" href="#fn:3">3</a></sup></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://github.com/martinus/robin-hood-hashing">robin-hood-hashing</a></td>
+<td style="text-align: left;"><a href="https://github.com/martinus/robin-hood-hashing/blob/master/LICENSE">MIT</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://github.com/ILLIXR/ruy">ruy</a></td>
+<td style="text-align: left;"><a href="https://github.com/ILLIXR/ruy">Apache v2</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://github.com/KhronosGroup/SPIRV-Headers">SPIRV Headers</a></td>
+<td style="text-align: left;"><a href="https://github.com/KhronosGroup/SPIRV-Headers/blob/main/LICENSE">MIT</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://github.com/KhronosGroup/SPIRV-Tools">SPIRV Tools</a></td>
+<td style="text-align: left;"><a href="https://github.com/KhronosGroup/SPIRV-Tools/blob/main/LICENSE">Apache v2</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://github.com/iwongu/sqlite3pp">SqliteCPP</a></td>
+<td style="text-align: left;"><a href="https://github.com/iwongu/sqlite3pp/blob/master/LICENSE">MIT</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://github.com/nothings/stb">stb</a></td>
+<td style="text-align: left;"><a href="https://github.com/nothings/stb/blob/master/LICENSE">MIT</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://github.com/ILLIXR/tensorflow-lite">tensorflow-lite</a></td>
+<td style="text-align: left;"><a href="https://github.com/ILLIXR/tensorflow-lite/blob/main/LICENSE">Apache v2</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://github.com/tinyobjloader/tinyobjloader">tinyobjloader</a></td>
+<td style="text-align: left;"><a href="https://github.com/tinyobjloader/tinyobjloader/blob/release/LICENSE">MIT</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://github.com/KhronosGroup/Vulkan-Headers">Vulkan Headers</a></td>
+<td style="text-align: left;"><a href="https://github.com/KhronosGroup/Vulkan-Headers/blob/main/LICENSE.md">Apache v2</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://github.com/KhronosGroup/Vulkan-Loader">Vulkan Loader</a></td>
+<td style="text-align: left;"><a href="https://github.com/KhronosGroup/Vulkan-Loader/blob/main/LICENSE.txt">Apache v2</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://github.com/KhronosGroup/Vulkan-Utility-Libraries">Vulkan Utility Libraries</a></td>
+<td style="text-align: left;"><a href="https://github.com/KhronosGroup/Vulkan-Utility-Libraries/blob/main/LICENSE.md">Apache v2</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://github.com/KhronosGroup/Vulkan-ValidationLayers">Vulkan Validation Layers</a></td>
+<td style="text-align: left;"><a href="https://github.com/KhronosGroup/Vulkan-ValidationLayers/blob/main/LICENSE.txt">Apache v2</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator/blob/master/include/vk_mem_alloc.h">VulkanMemoryAllocator</a></td>
+<td style="text-align: left;"><a href="https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator/blob/master/LICENSE.txt">MIT</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://github.com/ILLIXR/XNNPACK">XNNPACK</a></td>
+<td style="text-align: left;"><a href="https://github.com/ILLIXR/XNNPACK/blob/master/LICENSE">BSD-3 clause</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://github.com/jbeder/yaml-cpp">yaml-cpp</a></td>
+<td style="text-align: left;"><a href="https://github.com/jbeder/yaml-cpp/blob/master/LICENSE">MIT</a></td>
+</tr>
+<tr>
+<td style="text-align: left;">zed_opencv (Sterolabs)</td>
+<td style="text-align: left;"><a href="https://github.com/ILLIXR/ILLIXR/blob/master/plugins/zed/include/LICENSE">MIT</a></td>
+</tr>
+</tbody>
+</table>
+<p>Any LGPL or GPL licensed code are contained in optional components. ILLIXR's extensibility allows the source to be
+configured and compiled using only permissively licensed software, if desired. See out <a href="https://illixr.github.io/ILLIXR/getting_started/">Getting Started</a> page for
+instructions.</p>
+<h2 id="get-in-touch">Get in Touch</h2>
+<p>Whether you are a computer architect, a compiler writer, a systems person, work on XR related algorithms or
+applications, or just anyone interested in XR research, development, or products, we would love to hear from you and
+hope you will contribute! You can join our <a href="https://discord.gg/upkvy7x3W4">Discord</a>, <a href="mailto:lists@lists.cs.illinois.edu?subject=sub%20illixr-community">mailing list</a>, <a href="mailto:illixr@cs.illinois.edu">email</a> us, or just send a pull
+request!</p>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:1">
+<p>Source is hosted in an external repository under the <a href="https://github.com/ILLIXR">ILLIXR project</a>.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref3:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref4:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:2">
+<p>Current as of March 5, 2025.&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+<li id="fn:3">
+<p>Also known as the Simplified BSD License.&#160;<a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:3" title="Jump back to footnote 3 in the text">&#8617;</a><a class="footnote-backref" href="#fnref3:3" title="Jump back to footnote 3 in the text">&#8617;</a><a class="footnote-backref" href="#fnref4:3" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+</li>
+<li id="fn:4">
+<p>ILLIXR uses a customized version of FFmpeg, compiled with x264 and x265 encoding support, thus it is licensed under GPL v3.0&#160;<a class="footnote-backref" href="#fnref:4" title="Jump back to footnote 4 in the text">&#8617;</a></p>
+</li>
+<li id="fn:5">
+<p>This software is covered by multiple open source licenses, see the link for details.&#160;<a class="footnote-backref" href="#fnref:5" title="Jump back to footnote 5 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": ".", "features": ["search.suggest", "content.code.annotate", "content.footnote.tooltips", "navigation.indexes"], "search": "assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="assets/javascripts/bundle.c8b220af.min.js"></script>
+      
+        <script src="js/jquery.min.js"></script>
+      
+        <script src="js/clipboard.min.js"></script>
+      
+        <script src="js/code-box-copy.js"></script>
+      
+    
+  <script id="init-glightbox">const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": false, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "zoom"});
+document$.subscribe(() => { lightbox.reload() });
+</script></body>
+</html>

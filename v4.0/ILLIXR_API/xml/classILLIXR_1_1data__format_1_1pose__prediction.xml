@@ -1,0 +1,242 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classILLIXR_1_1data__format_1_1pose__prediction" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>ILLIXR::data_format::pose_prediction</compoundname>
+    <basecompoundref refid="classILLIXR_1_1phonebook_1_1service" prot="public" virt="non-virtual">ILLIXR::phonebook::service</basecompoundref>
+    <derivedcompoundref refid="classILLIXR_1_1fauxpose__impl" prot="public" virt="non-virtual">ILLIXR::fauxpose_impl</derivedcompoundref>
+    <derivedcompoundref refid="classILLIXR_1_1offload__rendering__server" prot="public" virt="non-virtual">ILLIXR::offload_rendering_server</derivedcompoundref>
+    <derivedcompoundref refid="classILLIXR_1_1pose__lookup__impl" prot="public" virt="non-virtual">ILLIXR::pose_lookup_impl</derivedcompoundref>
+    <derivedcompoundref refid="classILLIXR_1_1pose__prediction__impl" prot="public" virt="non-virtual">ILLIXR::pose_prediction_impl</derivedcompoundref>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classILLIXR_1_1data__format_1_1pose__prediction_1a07b952f5a20736c44ab727bc2039c237" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type><ref refid="structILLIXR_1_1data__format_1_1fast__pose__type" kindref="compound">fast_pose_type</ref></type>
+        <definition>virtual fast_pose_type ILLIXR::data_format::pose_prediction::get_fast_pose</definition>
+        <argsstring>() const =0</argsstring>
+        <name>get_fast_pose</name>
+        <qualifiedname>ILLIXR::data_format::pose_prediction::get_fast_pose</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/pose_prediction.hpp" line="13" column="50"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1data__format_1_1pose__prediction_1ab1a9fac1ffd5339903eea29002759458" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type><ref refid="structILLIXR_1_1data__format_1_1pose__type" kindref="compound">pose_type</ref></type>
+        <definition>virtual pose_type ILLIXR::data_format::pose_prediction::get_true_pose</definition>
+        <argsstring>() const =0</argsstring>
+        <name>get_true_pose</name>
+        <qualifiedname>ILLIXR::data_format::pose_prediction::get_true_pose</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/pose_prediction.hpp" line="14" column="50"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1data__format_1_1pose__prediction_1a9a5df05d70296dde0347f1e75acba1ba" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type><ref refid="structILLIXR_1_1data__format_1_1fast__pose__type" kindref="compound">fast_pose_type</ref></type>
+        <definition>virtual fast_pose_type ILLIXR::data_format::pose_prediction::get_fast_pose</definition>
+        <argsstring>(time_point future_time) const =0</argsstring>
+        <name>get_fast_pose</name>
+        <qualifiedname>ILLIXR::data_format::pose_prediction::get_fast_pose</qualifiedname>
+        <param>
+          <type>time_point</type>
+          <declname>future_time</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/pose_prediction.hpp" line="15" column="50"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1data__format_1_1pose__prediction_1aba9e6e17c030f977147fdec718654f8b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>bool</type>
+        <definition>virtual bool ILLIXR::data_format::pose_prediction::fast_pose_reliable</definition>
+        <argsstring>() const =0</argsstring>
+        <name>fast_pose_reliable</name>
+        <qualifiedname>ILLIXR::data_format::pose_prediction::fast_pose_reliable</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/pose_prediction.hpp" line="16" column="50"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1data__format_1_1pose__prediction_1a982c0c2f406015727f83fa7a73e4a0bb" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>bool</type>
+        <definition>virtual bool ILLIXR::data_format::pose_prediction::true_pose_reliable</definition>
+        <argsstring>() const =0</argsstring>
+        <name>true_pose_reliable</name>
+        <qualifiedname>ILLIXR::data_format::pose_prediction::true_pose_reliable</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/pose_prediction.hpp" line="17" column="50"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1data__format_1_1pose__prediction_1acfe6269431c3696e3e2d99e3a73d3399" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>void</type>
+        <definition>virtual void ILLIXR::data_format::pose_prediction::set_offset</definition>
+        <argsstring>(const Eigen::Quaternionf &amp;orientation)=0</argsstring>
+        <name>set_offset</name>
+        <qualifiedname>ILLIXR::data_format::pose_prediction::set_offset</qualifiedname>
+        <param>
+          <type>const Eigen::Quaternionf &amp;</type>
+          <declname>orientation</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/pose_prediction.hpp" line="18" column="63"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1data__format_1_1pose__prediction_1a0b7dc0a659ef0241dfcbe9b46839b752" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>Eigen::Quaternionf</type>
+        <definition>virtual Eigen::Quaternionf ILLIXR::data_format::pose_prediction::get_offset</definition>
+        <argsstring>()=0</argsstring>
+        <name>get_offset</name>
+        <qualifiedname>ILLIXR::data_format::pose_prediction::get_offset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/pose_prediction.hpp" line="19" column="34"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1data__format_1_1pose__prediction_1a2dde985ed140cbee8ce8dcfa62decb66" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type><ref refid="structILLIXR_1_1data__format_1_1pose__type" kindref="compound">pose_type</ref></type>
+        <definition>virtual pose_type ILLIXR::data_format::pose_prediction::correct_pose</definition>
+        <argsstring>(const pose_type &amp;pose) const =0</argsstring>
+        <name>correct_pose</name>
+        <qualifiedname>ILLIXR::data_format::pose_prediction::correct_pose</qualifiedname>
+        <param>
+          <type>const <ref refid="structILLIXR_1_1data__format_1_1pose__type" kindref="compound">pose_type</ref> &amp;</type>
+          <declname>pose</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/pose_prediction.hpp" line="20" column="50"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1data__format_1_1pose__prediction_1acea6d7b4f9b4d15cda0289398b67892f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::pose_prediction::~pose_prediction</definition>
+        <argsstring>() override=default</argsstring>
+        <name>~pose_prediction</name>
+        <qualifiedname>ILLIXR::data_format::pose_prediction::~pose_prediction</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/pose_prediction.hpp" line="22" column="5"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classILLIXR_1_1data__format_1_1pose__prediction_1a071229a53e9c710cffd58e0164297394" prot="protected" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structILLIXR_1_1data__format_1_1pose__type" kindref="compound">pose_type</ref></type>
+        <definition>pose_type ILLIXR::data_format::pose_prediction::_correct_pose</definition>
+        <argsstring>(const pose_type &amp;pose) const</argsstring>
+        <name>_correct_pose</name>
+        <qualifiedname>ILLIXR::data_format::pose_prediction::_correct_pose</qualifiedname>
+        <param>
+          <type>const <ref refid="structILLIXR_1_1data__format_1_1pose__type" kindref="compound">pose_type</ref> &amp;</type>
+          <declname>pose</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/pose_prediction.hpp" line="25" column="16" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/pose_prediction.hpp" bodystart="25" bodyend="27"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1data__format_1_1pose__prediction_1a8d55392ab96fa14ce9131dff2982676a" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void ILLIXR::data_format::pose_prediction::_set_offset</definition>
+        <argsstring>(const Eigen::Quaternionf &amp;orientation)</argsstring>
+        <name>_set_offset</name>
+        <qualifiedname>ILLIXR::data_format::pose_prediction::_set_offset</qualifiedname>
+        <param>
+          <type>const Eigen::Quaternionf &amp;</type>
+          <declname>orientation</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/pose_prediction.hpp" line="29" column="10" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/pose_prediction.hpp" bodystart="29" bodyend="31"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>ILLIXR::data_format::pose_prediction</label>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>ILLIXR::fauxpose_impl</label>
+        <link refid="classILLIXR_1_1fauxpose__impl"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>ILLIXR::offload_rendering_server</label>
+        <link refid="classILLIXR_1_1offload__rendering__server"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ILLIXR::phonebook::service</label>
+        <link refid="classILLIXR_1_1phonebook_1_1service"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>ILLIXR::data_format::pose_prediction</label>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ILLIXR::phonebook::service</label>
+        <link refid="classILLIXR_1_1phonebook_1_1service"/>
+      </node>
+    </collaborationgraph>
+    <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/pose_prediction.hpp" line="11" column="1" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/pose_prediction.hpp" bodystart="11" bodyend="32"/>
+    <listofallmembers>
+      <member refid="classILLIXR_1_1data__format_1_1pose__prediction_1a071229a53e9c710cffd58e0164297394" prot="protected" virt="non-virtual"><scope>ILLIXR::data_format::pose_prediction</scope><name>_correct_pose</name></member>
+      <member refid="classILLIXR_1_1data__format_1_1pose__prediction_1a8d55392ab96fa14ce9131dff2982676a" prot="protected" virt="non-virtual"><scope>ILLIXR::data_format::pose_prediction</scope><name>_set_offset</name></member>
+      <member refid="classILLIXR_1_1data__format_1_1pose__prediction_1a2dde985ed140cbee8ce8dcfa62decb66" prot="public" virt="pure-virtual"><scope>ILLIXR::data_format::pose_prediction</scope><name>correct_pose</name></member>
+      <member refid="classILLIXR_1_1data__format_1_1pose__prediction_1aba9e6e17c030f977147fdec718654f8b" prot="public" virt="pure-virtual"><scope>ILLIXR::data_format::pose_prediction</scope><name>fast_pose_reliable</name></member>
+      <member refid="classILLIXR_1_1data__format_1_1pose__prediction_1a07b952f5a20736c44ab727bc2039c237" prot="public" virt="pure-virtual"><scope>ILLIXR::data_format::pose_prediction</scope><name>get_fast_pose</name></member>
+      <member refid="classILLIXR_1_1data__format_1_1pose__prediction_1a9a5df05d70296dde0347f1e75acba1ba" prot="public" virt="pure-virtual"><scope>ILLIXR::data_format::pose_prediction</scope><name>get_fast_pose</name></member>
+      <member refid="classILLIXR_1_1data__format_1_1pose__prediction_1a0b7dc0a659ef0241dfcbe9b46839b752" prot="public" virt="pure-virtual"><scope>ILLIXR::data_format::pose_prediction</scope><name>get_offset</name></member>
+      <member refid="classILLIXR_1_1data__format_1_1pose__prediction_1ab1a9fac1ffd5339903eea29002759458" prot="public" virt="pure-virtual"><scope>ILLIXR::data_format::pose_prediction</scope><name>get_true_pose</name></member>
+      <member refid="classILLIXR_1_1data__format_1_1pose__prediction_1acfe6269431c3696e3e2d99e3a73d3399" prot="public" virt="pure-virtual"><scope>ILLIXR::data_format::pose_prediction</scope><name>set_offset</name></member>
+      <member refid="classILLIXR_1_1data__format_1_1pose__prediction_1a982c0c2f406015727f83fa7a73e4a0bb" prot="public" virt="pure-virtual"><scope>ILLIXR::data_format::pose_prediction</scope><name>true_pose_reliable</name></member>
+      <member refid="classILLIXR_1_1data__format_1_1pose__prediction_1acea6d7b4f9b4d15cda0289398b67892f" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::pose_prediction</scope><name>~pose_prediction</name></member>
+      <member refid="classILLIXR_1_1phonebook_1_1service_1a6bc6e64a0d9b70223989fc3fb98c2d0d" prot="public" virt="virtual"><scope>ILLIXR::data_format::pose_prediction</scope><name>~service</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

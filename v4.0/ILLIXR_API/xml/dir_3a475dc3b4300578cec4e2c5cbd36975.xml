@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_3a475dc3b4300578cec4e2c5cbd36975" kind="dir">
+    <compoundname>/home/friedel/devel/ILLIXR/plugins/offload_rendering_client</compoundname>
+    <innerfile refid="offload__rendering__client_8cpp">offload_rendering_client.cpp</innerfile>
+    <innerfile refid="offload__rendering__client_8hpp">offload_rendering_client.hpp</innerfile>
+    <innerfile refid="plugins_2offload__rendering__client_2plugin_8cpp">plugin.cpp</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,499 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classILLIXR_1_1realsense" kind="class" language="C++" prot="public">
+    <compoundname>ILLIXR::realsense</compoundname>
+    <basecompoundref refid="classILLIXR_1_1plugin" prot="public" virt="non-virtual">ILLIXR::plugin</basecompoundref>
+    <innerclass refid="structILLIXR_1_1realsense_1_1accel__type" prot="private">ILLIXR::realsense::accel_type</innerclass>
+    <sectiondef kind="private-type">
+      <memberdef kind="enum" id="classILLIXR_1_1realsense_1a22b2d82f6be0f5a2414f2ab11ae2db7d" prot="private" static="no" strong="no">
+        <type></type>
+        <name>cam_enum</name>
+        <qualifiedname>ILLIXR::realsense::cam_enum</qualifiedname>
+        <enumvalue id="classILLIXR_1_1realsense_1a22b2d82f6be0f5a2414f2ab11ae2db7da8171e208f151b3e5e4f9558bdbb39c88" prot="private">
+          <name>UNSUPPORTED</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="classILLIXR_1_1realsense_1a22b2d82f6be0f5a2414f2ab11ae2db7dac04e8d9d819b5688b767b996558b5d75" prot="private">
+          <name>D4XXI</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="classILLIXR_1_1realsense_1a22b2d82f6be0f5a2414f2ab11ae2db7dabe2ab5de0b61e79eeaf425a51919897d" prot="private">
+          <name>T26X</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.hpp" line="22" column="5" bodyfile="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.hpp" bodystart="22" bodyend="22"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1realsense_1aa789af66e7ab0a14aecb3ccd741d8346" prot="private" static="no" mutable="no">
+        <type>const std::shared_ptr&lt; <ref refid="classILLIXR_1_1switchboard" kindref="compound">switchboard</ref> &gt;</type>
+        <definition>const std::shared_ptr&lt;switchboard&gt; ILLIXR::realsense::switchboard_</definition>
+        <argsstring></argsstring>
+        <name>switchboard_</name>
+        <qualifiedname>ILLIXR::realsense::switchboard_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.hpp" line="32" column="45" bodyfile="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.hpp" bodystart="32" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1realsense_1a78c448a62a8c532a4074cbc10bb4945f" prot="private" static="no" mutable="no">
+        <type>const std::shared_ptr&lt; const <ref refid="classILLIXR_1_1relative__clock" kindref="compound">relative_clock</ref> &gt;</type>
+        <definition>const std::shared_ptr&lt;const relative_clock&gt; ILLIXR::realsense::clock_</definition>
+        <argsstring></argsstring>
+        <name>clock_</name>
+        <qualifiedname>ILLIXR::realsense::clock_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.hpp" line="33" column="36" bodyfile="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.hpp" bodystart="33" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1realsense_1af167cc1a685913ce9fff58b28ad99c32" prot="private" static="no" mutable="no">
+        <type><ref refid="classILLIXR_1_1switchboard_1_1writer" kindref="compound">switchboard::writer</ref>&lt; <ref refid="structILLIXR_1_1data__format_1_1imu__type" kindref="compound">data_format::imu_type</ref> &gt;</type>
+        <definition>switchboard::writer&lt;data_format::imu_type&gt; ILLIXR::realsense::imu_</definition>
+        <argsstring></argsstring>
+        <name>imu_</name>
+        <qualifiedname>ILLIXR::realsense::imu_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.hpp" line="34" column="35" bodyfile="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.hpp" bodystart="34" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1realsense_1a195da4899b32bb63bbace477389cbad8" prot="private" static="no" mutable="no">
+        <type><ref refid="classILLIXR_1_1switchboard_1_1writer" kindref="compound">switchboard::writer</ref>&lt; <ref refid="structILLIXR_1_1data__format_1_1binocular__cam__type" kindref="compound">data_format::binocular_cam_type</ref> &gt;</type>
+        <definition>switchboard::writer&lt;data_format::binocular_cam_type&gt; ILLIXR::realsense::cam_</definition>
+        <argsstring></argsstring>
+        <name>cam_</name>
+        <qualifiedname>ILLIXR::realsense::cam_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.hpp" line="35" column="25" bodyfile="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.hpp" bodystart="35" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1realsense_1aea48e33e8183b7201255450b935370cb" prot="private" static="no" mutable="no">
+        <type><ref refid="classILLIXR_1_1switchboard_1_1writer" kindref="compound">switchboard::writer</ref>&lt; <ref refid="structILLIXR_1_1data__format_1_1rgb__depth__type" kindref="compound">data_format::rgb_depth_type</ref> &gt;</type>
+        <definition>switchboard::writer&lt;data_format::rgb_depth_type&gt; ILLIXR::realsense::rgb_depth_</definition>
+        <argsstring></argsstring>
+        <name>rgb_depth_</name>
+        <qualifiedname>ILLIXR::realsense::rgb_depth_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.hpp" line="36" column="29" bodyfile="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.hpp" bodystart="36" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1realsense_1a1e3deb72a214340150f11da8e78cfa6c" prot="private" static="no" mutable="no">
+        <type>std::mutex</type>
+        <definition>std::mutex ILLIXR::realsense::mutex_</definition>
+        <argsstring></argsstring>
+        <name>mutex_</name>
+        <qualifiedname>ILLIXR::realsense::mutex_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.hpp" line="37" column="58" bodyfile="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.hpp" bodystart="37" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1realsense_1a49266a5baab371a39ae80b0c403020fa" prot="private" static="no" mutable="no">
+        <type>rs2::pipeline_profile</type>
+        <definition>rs2::pipeline_profile ILLIXR::realsense::profiles_</definition>
+        <argsstring></argsstring>
+        <name>profiles_</name>
+        <qualifiedname>ILLIXR::realsense::profiles_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.hpp" line="38" column="58" bodyfile="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.hpp" bodystart="38" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1realsense_1afb8e162193a4f53e79979a8aa756a90c" prot="private" static="no" mutable="no">
+        <type>rs2::pipeline</type>
+        <definition>rs2::pipeline ILLIXR::realsense::pipeline_</definition>
+        <argsstring></argsstring>
+        <name>pipeline_</name>
+        <qualifiedname>ILLIXR::realsense::pipeline_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.hpp" line="39" column="58" bodyfile="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.hpp" bodystart="39" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1realsense_1a8d107b1a689d49f1116142e8f8336593" prot="private" static="no" mutable="no">
+        <type>rs2::config</type>
+        <definition>rs2::config ILLIXR::realsense::config_</definition>
+        <argsstring></argsstring>
+        <name>config_</name>
+        <qualifiedname>ILLIXR::realsense::config_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.hpp" line="40" column="58" bodyfile="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.hpp" bodystart="40" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1realsense_1a77004802b5d7256b662d0e68a9aeb61c" prot="private" static="no" mutable="no">
+        <type>cam_enum</type>
+        <definition>cam_enum ILLIXR::realsense::cam_select_</definition>
+        <argsstring></argsstring>
+        <name>cam_select_</name>
+        <qualifiedname>ILLIXR::realsense::cam_select_</qualifiedname>
+        <initializer>{UNSUPPORTED}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.hpp" line="42" column="14" bodyfile="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.hpp" bodystart="42" bodyend="42"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1realsense_1a78a3bf58f125b9e6cc9198fa7067d2c4" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool ILLIXR::realsense::D4XXI_found_</definition>
+        <argsstring></argsstring>
+        <name>D4XXI_found_</name>
+        <qualifiedname>ILLIXR::realsense::D4XXI_found_</qualifiedname>
+        <initializer>{false}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.hpp" line="43" column="14" bodyfile="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.hpp" bodystart="43" bodyend="43"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1realsense_1a2ef5bb1e5432b5446a8db47bcd2d4de8" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool ILLIXR::realsense::T26X_found_</definition>
+        <argsstring></argsstring>
+        <name>T26X_found_</name>
+        <qualifiedname>ILLIXR::realsense::T26X_found_</qualifiedname>
+        <initializer>{false}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.hpp" line="44" column="14" bodyfile="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.hpp" bodystart="44" bodyend="44"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1realsense_1a9620625759d2cb54b7b43e280513bfb3" prot="private" static="no" mutable="no">
+        <type>accel_type</type>
+        <definition>accel_type ILLIXR::realsense::accel_data_</definition>
+        <argsstring></argsstring>
+        <name>accel_data_</name>
+        <qualifiedname>ILLIXR::realsense::accel_data_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.hpp" line="46" column="17" bodyfile="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.hpp" bodystart="46" bodyend="46"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1realsense_1ae764609152daa304757d889f75e7c705" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int ILLIXR::realsense::iteration_accel_</definition>
+        <argsstring></argsstring>
+        <name>iteration_accel_</name>
+        <qualifiedname>ILLIXR::realsense::iteration_accel_</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.hpp" line="47" column="17" bodyfile="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.hpp" bodystart="47" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1realsense_1af33bd4da66abf8eb528e2793ddaff060" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int ILLIXR::realsense::last_iteration_accel_</definition>
+        <argsstring></argsstring>
+        <name>last_iteration_accel_</name>
+        <qualifiedname>ILLIXR::realsense::last_iteration_accel_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.hpp" line="48" column="17" bodyfile="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.hpp" bodystart="48" bodyend="48"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1realsense_1a8237ea36c02cc202d1018230d9423f0e" prot="private" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string ILLIXR::realsense::realsense_cam_</definition>
+        <argsstring></argsstring>
+        <name>realsense_cam_</name>
+        <qualifiedname>ILLIXR::realsense::realsense_cam_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.hpp" line="49" column="17" bodyfile="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.hpp" bodystart="49" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1realsense_1a79a9b41c34d3c8825f23071e7c812fa4" prot="private" static="no" mutable="no">
+        <type>std::optional&lt; ullong &gt;</type>
+        <definition>std::optional&lt;ullong&gt; ILLIXR::realsense::first_imu_time_</definition>
+        <argsstring></argsstring>
+        <name>first_imu_time_</name>
+        <qualifiedname>ILLIXR::realsense::first_imu_time_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.hpp" line="51" column="23" bodyfile="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.hpp" bodystart="51" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1realsense_1a17cac05626df5ea331ba1569333534c0" prot="private" static="no" mutable="no">
+        <type>std::optional&lt; time_point &gt;</type>
+        <definition>std::optional&lt;time_point&gt; ILLIXR::realsense::first_real_time_imu_</definition>
+        <argsstring></argsstring>
+        <name>first_real_time_imu_</name>
+        <qualifiedname>ILLIXR::realsense::first_real_time_imu_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.hpp" line="52" column="19" bodyfile="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.hpp" bodystart="52" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1realsense_1aeb779c762600e49b847a0297e7035453" prot="private" static="no" mutable="no">
+        <type>std::optional&lt; ullong &gt;</type>
+        <definition>std::optional&lt;ullong&gt; ILLIXR::realsense::first_cam_time_</definition>
+        <argsstring></argsstring>
+        <name>first_cam_time_</name>
+        <qualifiedname>ILLIXR::realsense::first_cam_time_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.hpp" line="54" column="23" bodyfile="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.hpp" bodystart="54" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1realsense_1acad62153968d97e6575eb6755b927c52" prot="private" static="no" mutable="no">
+        <type>std::optional&lt; time_point &gt;</type>
+        <definition>std::optional&lt;time_point&gt; ILLIXR::realsense::first_real_time_cam_</definition>
+        <argsstring></argsstring>
+        <name>first_real_time_cam_</name>
+        <qualifiedname>ILLIXR::realsense::first_real_time_cam_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.hpp" line="55" column="19" bodyfile="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.hpp" bodystart="55" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classILLIXR_1_1realsense_1afe2eea6c527a4f5bf94ec298cc96cbd6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>realsense::realsense</definition>
+        <argsstring>(const std::string &amp;name, phonebook *pb)</argsstring>
+        <name>realsense</name>
+        <qualifiedname>ILLIXR::realsense::realsense</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type><ref refid="classILLIXR_1_1phonebook" kindref="compound">phonebook</ref> *</type>
+          <declname>pb</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.hpp" line="17" column="6" bodyfile="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.cpp" bodystart="22" bodyend="34"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1realsense_1a998864abcf618c922a081f913722117f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void realsense::callback</definition>
+        <argsstring>(const rs2::frame &amp;frame)</argsstring>
+        <name>callback</name>
+        <qualifiedname>ILLIXR::realsense::callback</qualifiedname>
+        <param>
+          <type>const rs2::frame &amp;</type>
+          <declname>frame</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.hpp" line="18" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.cpp" bodystart="36" bodyend="122"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1realsense_1abda142ec6c20efd2e2fa0d89a811eb3f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>realsense::~realsense</definition>
+        <argsstring>() override</argsstring>
+        <name>~realsense</name>
+        <qualifiedname>ILLIXR::realsense::~realsense</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.hpp" line="19" column="5" bodyfile="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.cpp" bodystart="124" bodyend="126"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classILLIXR_1_1realsense_1a241367b48b7a76ca12ba7216c81abcfd" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void realsense::find_supported_devices</definition>
+        <argsstring>(const rs2::device_list &amp;devices)</argsstring>
+        <name>find_supported_devices</name>
+        <qualifiedname>ILLIXR::realsense::find_supported_devices</qualifiedname>
+        <param>
+          <type>const rs2::device_list &amp;</type>
+          <declname>devices</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.hpp" line="29" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.cpp" bodystart="128" bodyend="174"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1realsense_1ae88dd9d61ac185c88aa4e8aaa91698af" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void realsense::configure_camera</definition>
+        <argsstring>()</argsstring>
+        <name>configure_camera</name>
+        <qualifiedname>ILLIXR::realsense::configure_camera</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.hpp" line="30" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.cpp" bodystart="176" bodyend="233"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>ILLIXR::plugin</label>
+        <link refid="classILLIXR_1_1plugin"/>
+      </node>
+      <node id="1">
+        <label>ILLIXR::realsense</label>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="3">
+        <label>ILLIXR::phonebook</label>
+        <link refid="classILLIXR_1_1phonebook"/>
+      </node>
+      <node id="2">
+        <label>ILLIXR::plugin</label>
+        <link refid="classILLIXR_1_1plugin"/>
+        <childnode refid="3" relation="usage">
+          <edgelabel>phonebook_</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>ILLIXR::realsense</label>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.hpp" line="15" column="1" bodyfile="/home/friedel/devel/ILLIXR/plugins/realsense/plugin.hpp" bodystart="15" bodyend="56"/>
+    <listofallmembers>
+      <member refid="classILLIXR_1_1realsense_1a9620625759d2cb54b7b43e280513bfb3" prot="private" virt="non-virtual"><scope>ILLIXR::realsense</scope><name>accel_data_</name></member>
+      <member refid="classILLIXR_1_1realsense_1a998864abcf618c922a081f913722117f" prot="public" virt="non-virtual"><scope>ILLIXR::realsense</scope><name>callback</name></member>
+      <member refid="classILLIXR_1_1realsense_1a195da4899b32bb63bbace477389cbad8" prot="private" virt="non-virtual"><scope>ILLIXR::realsense</scope><name>cam_</name></member>
+      <member refid="classILLIXR_1_1realsense_1a22b2d82f6be0f5a2414f2ab11ae2db7d" prot="private" virt="non-virtual"><scope>ILLIXR::realsense</scope><name>cam_enum</name></member>
+      <member refid="classILLIXR_1_1realsense_1a77004802b5d7256b662d0e68a9aeb61c" prot="private" virt="non-virtual"><scope>ILLIXR::realsense</scope><name>cam_select_</name></member>
+      <member refid="classILLIXR_1_1realsense_1a78c448a62a8c532a4074cbc10bb4945f" prot="private" virt="non-virtual"><scope>ILLIXR::realsense</scope><name>clock_</name></member>
+      <member refid="classILLIXR_1_1realsense_1a8d107b1a689d49f1116142e8f8336593" prot="private" virt="non-virtual"><scope>ILLIXR::realsense</scope><name>config_</name></member>
+      <member refid="classILLIXR_1_1realsense_1ae88dd9d61ac185c88aa4e8aaa91698af" prot="private" virt="non-virtual"><scope>ILLIXR::realsense</scope><name>configure_camera</name></member>
+      <member refid="classILLIXR_1_1realsense_1a22b2d82f6be0f5a2414f2ab11ae2db7dac04e8d9d819b5688b767b996558b5d75" prot="private" virt="non-virtual"><scope>ILLIXR::realsense</scope><name>D4XXI</name></member>
+      <member refid="classILLIXR_1_1realsense_1a78a3bf58f125b9e6cc9198fa7067d2c4" prot="private" virt="non-virtual"><scope>ILLIXR::realsense</scope><name>D4XXI_found_</name></member>
+      <member refid="classILLIXR_1_1realsense_1a241367b48b7a76ca12ba7216c81abcfd" prot="private" virt="non-virtual"><scope>ILLIXR::realsense</scope><name>find_supported_devices</name></member>
+      <member refid="classILLIXR_1_1realsense_1aeb779c762600e49b847a0297e7035453" prot="private" virt="non-virtual"><scope>ILLIXR::realsense</scope><name>first_cam_time_</name></member>
+      <member refid="classILLIXR_1_1realsense_1a79a9b41c34d3c8825f23071e7c812fa4" prot="private" virt="non-virtual"><scope>ILLIXR::realsense</scope><name>first_imu_time_</name></member>
+      <member refid="classILLIXR_1_1realsense_1acad62153968d97e6575eb6755b927c52" prot="private" virt="non-virtual"><scope>ILLIXR::realsense</scope><name>first_real_time_cam_</name></member>
+      <member refid="classILLIXR_1_1realsense_1a17cac05626df5ea331ba1569333534c0" prot="private" virt="non-virtual"><scope>ILLIXR::realsense</scope><name>first_real_time_imu_</name></member>
+      <member refid="classILLIXR_1_1plugin_1afe52734e7edc87bd0bf974caf112961b" prot="protected" virt="non-virtual"><scope>ILLIXR::realsense</scope><name>gen_guid_</name></member>
+      <member refid="classILLIXR_1_1plugin_1aebda022998bd35983e83f391dc0e5193" prot="public" virt="non-virtual"><scope>ILLIXR::realsense</scope><name>get_name</name></member>
+      <member refid="classILLIXR_1_1plugin_1aaedb3f9178bdd11e53815e158454aaf3" prot="protected" virt="non-virtual"><scope>ILLIXR::realsense</scope><name>id_</name></member>
+      <member refid="classILLIXR_1_1realsense_1af167cc1a685913ce9fff58b28ad99c32" prot="private" virt="non-virtual"><scope>ILLIXR::realsense</scope><name>imu_</name></member>
+      <member refid="classILLIXR_1_1realsense_1ae764609152daa304757d889f75e7c705" prot="private" virt="non-virtual"><scope>ILLIXR::realsense</scope><name>iteration_accel_</name></member>
+      <member refid="classILLIXR_1_1realsense_1af33bd4da66abf8eb528e2793ddaff060" prot="private" virt="non-virtual"><scope>ILLIXR::realsense</scope><name>last_iteration_accel_</name></member>
+      <member refid="classILLIXR_1_1realsense_1a1e3deb72a214340150f11da8e78cfa6c" prot="private" virt="non-virtual"><scope>ILLIXR::realsense</scope><name>mutex_</name></member>
+      <member refid="classILLIXR_1_1plugin_1aa963c518af83966173840a8558490888" prot="protected" virt="non-virtual"><scope>ILLIXR::realsense</scope><name>name_</name></member>
+      <member refid="classILLIXR_1_1plugin_1a6f7a2a9012350591c00d67a5bc0fd5a6" prot="protected" virt="non-virtual"><scope>ILLIXR::realsense</scope><name>phonebook_</name></member>
+      <member refid="classILLIXR_1_1realsense_1afb8e162193a4f53e79979a8aa756a90c" prot="private" virt="non-virtual"><scope>ILLIXR::realsense</scope><name>pipeline_</name></member>
+      <member refid="classILLIXR_1_1plugin_1abc91c0e5be180a8e0bbeaf114a127f17" prot="public" virt="non-virtual"><scope>ILLIXR::realsense</scope><name>plugin</name></member>
+      <member refid="classILLIXR_1_1plugin_1a8d40c2421cde09079372d12bfe7d45fe" prot="protected" virt="non-virtual"><scope>ILLIXR::realsense</scope><name>plugin_logger_</name></member>
+      <member refid="classILLIXR_1_1realsense_1a49266a5baab371a39ae80b0c403020fa" prot="private" virt="non-virtual"><scope>ILLIXR::realsense</scope><name>profiles_</name></member>
+      <member refid="classILLIXR_1_1realsense_1afe2eea6c527a4f5bf94ec298cc96cbd6" prot="public" virt="non-virtual"><scope>ILLIXR::realsense</scope><name>realsense</name></member>
+      <member refid="classILLIXR_1_1realsense_1a8237ea36c02cc202d1018230d9423f0e" prot="private" virt="non-virtual"><scope>ILLIXR::realsense</scope><name>realsense_cam_</name></member>
+      <member refid="classILLIXR_1_1plugin_1aef671d0cd9b6de45d3ade16dedbf4974" prot="protected" virt="non-virtual"><scope>ILLIXR::realsense</scope><name>record_logger_</name></member>
+      <member refid="classILLIXR_1_1realsense_1aea48e33e8183b7201255450b935370cb" prot="private" virt="non-virtual"><scope>ILLIXR::realsense</scope><name>rgb_depth_</name></member>
+      <member refid="classILLIXR_1_1plugin_1a7c1c7c1a0ec2e43bfa1118586a28932f" prot="public" virt="non-virtual"><scope>ILLIXR::realsense</scope><name>spd_add_file_sink</name></member>
+      <member refid="classILLIXR_1_1plugin_1a569297189ef365cf93f6a95202c76d76" prot="public" virt="non-virtual"><scope>ILLIXR::realsense</scope><name>spdlogger</name></member>
+      <member refid="classILLIXR_1_1plugin_1a30d7294817fc5e8a8216fbfbca233cdc" prot="public" virt="virtual"><scope>ILLIXR::realsense</scope><name>start</name></member>
+      <member refid="classILLIXR_1_1plugin_1a2cefabfb6dd9800b1ebc8b07031661c4" prot="public" virt="virtual"><scope>ILLIXR::realsense</scope><name>stop</name></member>
+      <member refid="classILLIXR_1_1realsense_1aa789af66e7ab0a14aecb3ccd741d8346" prot="private" virt="non-virtual"><scope>ILLIXR::realsense</scope><name>switchboard_</name></member>
+      <member refid="classILLIXR_1_1realsense_1a22b2d82f6be0f5a2414f2ab11ae2db7dabe2ab5de0b61e79eeaf425a51919897d" prot="private" virt="non-virtual"><scope>ILLIXR::realsense</scope><name>T26X</name></member>
+      <member refid="classILLIXR_1_1realsense_1a2ef5bb1e5432b5446a8db47bcd2d4de8" prot="private" virt="non-virtual"><scope>ILLIXR::realsense</scope><name>T26X_found_</name></member>
+      <member refid="classILLIXR_1_1realsense_1a22b2d82f6be0f5a2414f2ab11ae2db7da8171e208f151b3e5e4f9558bdbb39c88" prot="private" virt="non-virtual"><scope>ILLIXR::realsense</scope><name>UNSUPPORTED</name></member>
+      <member refid="classILLIXR_1_1plugin_1a44d7b00c86e227bbc1a0b221da43d454" prot="public" virt="virtual"><scope>ILLIXR::realsense</scope><name>~plugin</name></member>
+      <member refid="classILLIXR_1_1realsense_1abda142ec6c20efd2e2fa0d89a811eb3f" prot="public" virt="non-virtual"><scope>ILLIXR::realsense</scope><name>~realsense</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

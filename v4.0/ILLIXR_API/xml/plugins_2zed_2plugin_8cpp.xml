@@ -1,0 +1,729 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="plugins_2zed_2plugin_8cpp" kind="file" language="C++">
+    <compoundname>plugin.cpp</compoundname>
+    <includes refid="plugins_2zed_2plugin_8hpp" local="yes">plugin.hpp</includes>
+    <includes refid="error__util_8hpp" local="yes">illixr/error_util.hpp</includes>
+    <includes local="no">algorithm</includes>
+    <includes local="no">cassert</includes>
+    <includes local="no">chrono</includes>
+    <includes local="no">cmath</includes>
+    <includes local="no">memory</includes>
+    <includes local="no">opencv2/opencv.hpp</includes>
+    <includes local="no">optional</includes>
+    <includes local="no">string</includes>
+    <incdepgraph>
+      <node id="53">
+        <label>cpu_timer.hpp</label>
+        <link refid="cpu__timer_8hpp_source"/>
+        <childnode refid="54" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="60" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="50">
+        <label>illixr/data_format/camera_data.hpp</label>
+        <link refid="camera__data_8hpp_source"/>
+        <childnode refid="40" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="51" relation="include">
+        </childnode>
+        <childnode refid="41" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="45">
+        <label>illixr/data_format/coordinate.hpp</label>
+        <link refid="coordinate_8hpp_source"/>
+      </node>
+      <node id="3">
+        <label>illixr/data_format/imu.hpp</label>
+        <link refid="imu_8hpp_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="38" relation="include">
+        </childnode>
+      </node>
+      <node id="47">
+        <label>illixr/data_format/misc.hpp</label>
+        <link refid="misc_8hpp_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="48" relation="include">
+        </childnode>
+      </node>
+      <node id="39">
+        <label>illixr/data_format/opencv_data_types.hpp</label>
+        <link refid="opencv__data__types_8hpp_source"/>
+        <childnode refid="40" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="42" relation="include">
+        </childnode>
+        <childnode refid="41" relation="include">
+        </childnode>
+        <childnode refid="43" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="44">
+        <label>illixr/data_format/pose.hpp</label>
+        <link refid="pose_8hpp_source"/>
+        <childnode refid="45" relation="include">
+        </childnode>
+        <childnode refid="40" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="38" relation="include">
+        </childnode>
+      </node>
+      <node id="40">
+        <label>illixr/data_format/unit.hpp</label>
+        <link refid="unit_8hpp_source"/>
+        <childnode refid="41" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+      </node>
+      <node id="49">
+        <label>illixr/data_format/zed_cam.hpp</label>
+        <link refid="zed__cam_8hpp_source"/>
+        <childnode refid="50" relation="include">
+        </childnode>
+        <childnode refid="39" relation="include">
+        </childnode>
+        <childnode refid="44" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="54">
+        <label>error_util.hpp</label>
+        <link refid="error__util_8hpp_source"/>
+        <childnode refid="55" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+      </node>
+      <node id="55">
+        <label>global_module_defs.hpp</label>
+        <link refid="global__module__defs_8hpp_source"/>
+        <childnode refid="56" relation="include">
+        </childnode>
+        <childnode refid="58" relation="include">
+        </childnode>
+        <childnode refid="59" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>managed_thread.hpp</label>
+        <link refid="managed__thread_8hpp_source"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>network/network_backend.hpp</label>
+        <link refid="network__backend_8hpp_source"/>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+      </node>
+      <node id="22">
+        <label>topic_config.hpp</label>
+        <link refid="topic__config_8hpp_source"/>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>illixr/phonebook.hpp</label>
+        <link refid="phonebook_8hpp_source"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+      </node>
+      <node id="61">
+        <label>plugin.hpp</label>
+        <link refid="include_2illixr_2plugin_8hpp_source"/>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="62" relation="include">
+        </childnode>
+        <childnode refid="63" relation="include">
+        </childnode>
+        <childnode refid="64" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="65" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="26">
+        <label>record_logger.hpp</label>
+        <link refid="record__logger_8hpp_source"/>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+      </node>
+      <node id="56">
+        <label>relative_clock.hpp</label>
+        <link refid="relative__clock_8hpp_source"/>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="57" relation="include">
+        </childnode>
+      </node>
+      <node id="66">
+        <label>stoplight.hpp</label>
+        <link refid="stoplight_8hpp_source"/>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="67" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>illixr/switchboard.hpp</label>
+        <link refid="switchboard_8hpp_source"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+      </node>
+      <node id="52">
+        <label>illixr/threadloop.hpp</label>
+        <link refid="threadloop_8hpp_source"/>
+        <childnode refid="53" relation="include">
+        </childnode>
+        <childnode refid="54" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="61" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="66" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>/home/friedel/devel/ILLIXR/plugins/zed/plugin.cpp</label>
+        <link refid="plugins_2zed_2plugin_8cpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="54" relation="include">
+        </childnode>
+        <childnode refid="58" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="59" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="70" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>plugin.hpp</label>
+        <link refid="plugins_2zed_2plugin_8hpp_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="39" relation="include">
+        </childnode>
+        <childnode refid="44" relation="include">
+        </childnode>
+        <childnode refid="46" relation="include">
+        </childnode>
+      </node>
+      <node id="68">
+        <label>zed_camera.hpp</label>
+        <link refid="zed__camera_8hpp_source"/>
+        <childnode refid="50" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="38" relation="include">
+        </childnode>
+        <childnode refid="69" relation="include">
+        </childnode>
+      </node>
+      <node id="46">
+        <label>zed_camera_thread.hpp</label>
+        <link refid="zed__camera__thread_8hpp_source"/>
+        <childnode refid="47" relation="include">
+        </childnode>
+        <childnode refid="49" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="52" relation="include">
+        </childnode>
+        <childnode refid="68" relation="include">
+        </childnode>
+      </node>
+      <node id="48">
+        <label>GL/glu.h</label>
+      </node>
+      <node id="58">
+        <label>algorithm</label>
+      </node>
+      <node id="27">
+        <label>any</label>
+      </node>
+      <node id="7">
+        <label>atomic</label>
+      </node>
+      <node id="33">
+        <label>boost/archive/binary_iarchive.hpp</label>
+      </node>
+      <node id="34">
+        <label>boost/archive/binary_oarchive.hpp</label>
+      </node>
+      <node id="35">
+        <label>boost/iostreams/device/back_inserter.hpp</label>
+      </node>
+      <node id="36">
+        <label>boost/iostreams/stream.hpp</label>
+      </node>
+      <node id="37">
+        <label>boost/serialization/shared_ptr.hpp</label>
+      </node>
+      <node id="8">
+        <label>cassert</label>
+      </node>
+      <node id="23">
+        <label>chrono</label>
+      </node>
+      <node id="59">
+        <label>cmath</label>
+      </node>
+      <node id="5">
+        <label>concurrentqueue/blockingconcurrentqueue.hpp</label>
+      </node>
+      <node id="67">
+        <label>condition_variable</label>
+      </node>
+      <node id="51">
+        <label>cstddef</label>
+      </node>
+      <node id="60">
+        <label>cstring</label>
+      </node>
+      <node id="30">
+        <label>eigen3/Eigen/Core</label>
+      </node>
+      <node id="38">
+        <label>eigen3/Eigen/Dense</label>
+      </node>
+      <node id="31">
+        <label>eigen3/Eigen/Geometry</label>
+      </node>
+      <node id="42">
+        <label>fstream</label>
+      </node>
+      <node id="9">
+        <label>functional</label>
+      </node>
+      <node id="20">
+        <label>iostream</label>
+      </node>
+      <node id="32">
+        <label>list</label>
+      </node>
+      <node id="41">
+        <label>map</label>
+      </node>
+      <node id="15">
+        <label>memory</label>
+      </node>
+      <node id="16">
+        <label>mutex</label>
+      </node>
+      <node id="70">
+        <label>opencv2/opencv.hpp</label>
+      </node>
+      <node id="43">
+        <label>opencv4/opencv2/core/mat.hpp</label>
+      </node>
+      <node id="24">
+        <label>optional</label>
+      </node>
+      <node id="57">
+        <label>ratio</label>
+      </node>
+      <node id="17">
+        <label>shared_mutex</label>
+      </node>
+      <node id="69">
+        <label>sl/Camera.hpp</label>
+      </node>
+      <node id="62">
+        <label>spdlog/common.h</label>
+      </node>
+      <node id="63">
+        <label>spdlog/sinks/basic_file_sink.h</label>
+      </node>
+      <node id="64">
+        <label>spdlog/sinks/stdout_color_sinks.h</label>
+      </node>
+      <node id="21">
+        <label>spdlog/spdlog.h</label>
+      </node>
+      <node id="29">
+        <label>sstream</label>
+      </node>
+      <node id="10">
+        <label>stdexcept</label>
+      </node>
+      <node id="28">
+        <label>string</label>
+      </node>
+      <node id="11">
+        <label>thread</label>
+      </node>
+      <node id="18">
+        <label>typeindex</label>
+      </node>
+      <node id="65">
+        <label>typeinfo</label>
+      </node>
+      <node id="19">
+        <label>unordered_map</label>
+      </node>
+      <node id="12">
+        <label>utility</label>
+      </node>
+      <node id="25">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <sectiondef kind="var">
+      <memberdef kind="variable" id="plugins_2zed_2plugin_8cpp_1a1cafd4117df77c4a276e37e44b4420b3" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr int</type>
+        <definition>constexpr int EXPOSURE_TIME_PERCENT</definition>
+        <argsstring></argsstring>
+        <name>EXPOSURE_TIME_PERCENT</name>
+        <initializer>= 30</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/plugin.cpp" line="17" column="15" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/plugin.cpp" bodystart="17" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="plugins_2zed_2plugin_8cpp_1a6775e3712fbac822c71499b2ef082152" prot="public" static="no" mutable="no">
+        <type>const <ref refid="classILLIXR_1_1record__header" kindref="compound">record_header</ref></type>
+        <definition>const record_header __imu_cam_record</definition>
+        <argsstring></argsstring>
+        <name>__imu_cam_record</name>
+        <initializer>{&quot;imu_cam&quot;,
+                                     {
+                                         {&quot;iteration_no&quot;, typeid(std::size_t)},
+                                         {&quot;has_camera&quot;, typeid(bool)},
+                                     }}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/plugin.cpp" line="19" column="21" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/plugin.cpp" bodystart="19" bodyend="23"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#include<sp/>&quot;plugin.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;illixr/error_util.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;algorithm&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cassert&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;chrono&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cmath&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;memory&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;opencv2/opencv.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;optional&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;string&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceILLIXR" kindref="compound">ILLIXR</ref>;</highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal">ILLIXR::data_format;</highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>EXPOSURE_TIME_PERCENT<sp/>=<sp/>30;</highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1record__header" kindref="compound">record_header</ref><sp/>__imu_cam_record{</highlight><highlight class="stringliteral">&quot;imu_cam&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight><highlight class="stringliteral">&quot;iteration_no&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="keyword">typeid</highlight><highlight class="normal">(std::size_t)},</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight><highlight class="stringliteral">&quot;has_camera&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="keyword">typeid</highlight><highlight class="normal">(bool)},</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}};</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal">std::shared_ptr&lt;zed_camera&gt;<sp/>zed_imu_thread::start_camera()<sp/>{</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_ptr&lt;zed_camera&gt;<sp/>zed_cam<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>std::make_shared&lt;zed_camera&gt;(switchboard_);</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>with_hand_tracking<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/>assert(zed_cam<sp/>!=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal"><sp/>&amp;&amp;<sp/></highlight><highlight class="stringliteral">&quot;Zed<sp/>camera<sp/>should<sp/>be<sp/>initialized&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Cam<sp/>setup</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/>sl::InitParameters<sp/>init_params;</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/>init_params.camera_resolution<sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>(with_hand_tracking)<sp/>?<sp/>sl::RESOLUTION::HD720<sp/>:<sp/>sl::RESOLUTION::VGA;</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/>init_params.coordinate_units<sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>sl::UNIT::UNITS;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>For<sp/>scene<sp/>reconstruction</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/>init_params.coordinate_system<sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>sl::COORDINATE_SYSTEM::RIGHT_HANDED_Y_UP;<sp/></highlight><highlight class="comment">//<sp/>Coordinate<sp/>system<sp/>used<sp/>in<sp/>ROS</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/>init_params.camera_fps<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>30;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>gives<sp/>the<sp/>best<sp/>user<sp/>experience</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/>init_params.depth_mode<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>(with_hand_tracking)<sp/>?<sp/>sl::DEPTH_MODE::QUALITY<sp/>:<sp/>sl::DEPTH_MODE::PERFORMANCE;</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/>init_params.depth_stabilization<sp/><sp/><sp/><sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/>init_params.depth_minimum_distance<sp/>=<sp/>0.3;</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Open<sp/>the<sp/>camera</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/>sl::ERROR_CODE<sp/>err<sp/>=<sp/>zed_cam-&gt;open(init_params);</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(err<sp/>!=<sp/>sl::ERROR_CODE::SUCCESS)<sp/>{</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>spdlog::get(</highlight><highlight class="stringliteral">&quot;illixr&quot;</highlight><highlight class="normal">)-&gt;error(</highlight><highlight class="stringliteral">&quot;[zed]<sp/>{}&quot;</highlight><highlight class="normal">,<sp/>toString(err).c_str());</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal"><sp/>std::runtime_error(</highlight><highlight class="stringliteral">&quot;ZED<sp/>camera<sp/>could<sp/>not<sp/>be<sp/>initialized&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/>zed_cam-&gt;setCameraSettings(sl::VIDEO_SETTINGS::EXPOSURE,<sp/>EXPOSURE_TIME_PERCENT);</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>zed_cam;</highlight></codeline>
+<codeline lineno="48"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"></highlight></codeline>
+<codeline lineno="50"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>zed_imu_thread::stop()<sp/>{</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/>camera_thread_.stop();</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1threadloop_1a7a968606c7ddfbd1ac6b0fb067ecc5a5" kindref="member">threadloop::stop</ref>();</highlight></codeline>
+<codeline lineno="53"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"></highlight></codeline>
+<codeline lineno="55"><highlight class="normal">zed_imu_thread::zed_imu_thread(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>name_,<sp/><ref refid="classILLIXR_1_1phonebook" kindref="compound">phonebook</ref>*<sp/>pb_)</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/>:<sp/><ref refid="classILLIXR_1_1threadloop" kindref="compound">threadloop</ref>{name_,<sp/>pb_}</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/>,<sp/>switchboard_{phonebook_-&gt;lookup_impl&lt;<ref refid="classILLIXR_1_1switchboard" kindref="compound">switchboard</ref>&gt;()}</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/>,<sp/>zed_cam_{start_camera()}</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/>,<sp/>camera_thread_{</highlight><highlight class="stringliteral">&quot;zed_camera_thread&quot;</highlight><highlight class="normal">,<sp/>pb_,<sp/>zed_cam_}</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/>,<sp/>clock_{phonebook_-&gt;lookup_impl&lt;<ref refid="classILLIXR_1_1relative__clock" kindref="compound">relative_clock</ref>&gt;()}</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/>,<sp/>imu_{switchboard_-&gt;get_writer&lt;<ref refid="structILLIXR_1_1data__format_1_1imu__type" kindref="compound">imu_type</ref>&gt;(</highlight><highlight class="stringliteral">&quot;imu&quot;</highlight><highlight class="normal">)}</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/>,<sp/>cam_reader_{switchboard_-&gt;get_reader&lt;<ref refid="structILLIXR_1_1data__format_1_1cam__type__zed" kindref="compound">cam_type_zed</ref>&gt;(</highlight><highlight class="stringliteral">&quot;cam_zed&quot;</highlight><highlight class="normal">)}</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/>,<sp/>cam_publisher_{switchboard_-&gt;get_writer&lt;<ref refid="structILLIXR_1_1data__format_1_1binocular__cam__type" kindref="compound">binocular_cam_type</ref>&gt;(</highlight><highlight class="stringliteral">&quot;cam&quot;</highlight><highlight class="normal">)}</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/>,<sp/>rgb_depth_{switchboard_-&gt;get_writer&lt;<ref refid="structILLIXR_1_1data__format_1_1rgb__depth__type" kindref="compound">rgb_depth_type</ref>&gt;(</highlight><highlight class="stringliteral">&quot;rgb_depth&quot;</highlight><highlight class="normal">)}</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/>,<sp/>cam_conf_pub_{switchboard_-&gt;get_writer&lt;<ref refid="structILLIXR_1_1data__format_1_1camera__data" kindref="compound">camera_data</ref>&gt;(</highlight><highlight class="stringliteral">&quot;cam_data&quot;</highlight><highlight class="normal">)}</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/>,<sp/>it_log_{record_logger_}<sp/>{<sp/>}</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"></highlight></codeline>
+<codeline lineno="68"><highlight class="normal"></highlight><highlight class="comment">//<sp/>destructor</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="69"><highlight class="normal">zed_imu_thread::~zed_imu_thread()<sp/>{</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/>zed_cam_-&gt;close();</highlight></codeline>
+<codeline lineno="71"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"></highlight></codeline>
+<codeline lineno="73"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>zed_imu_thread::start()<sp/>{</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/>camera_thread_.start();</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1threadloop_1af001e97f74595e18f589f66ac0595bfb" kindref="member">threadloop::start</ref>();</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/>cam_conf_pub_.put(cam_conf_pub_.allocate&lt;<ref refid="structILLIXR_1_1data__format_1_1camera__data" kindref="compound">camera_data</ref>&gt;(<ref refid="structILLIXR_1_1data__format_1_1camera__data" kindref="compound">camera_data</ref>{zed_cam_-&gt;get_config()}));</highlight></codeline>
+<codeline lineno="77"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"></highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><ref refid="classILLIXR_1_1threadloop_1a26c08942158dc019cbc78c9880417652" kindref="member">threadloop::skip_option</ref><sp/>zed_imu_thread::_p_should_skip()<sp/>{</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/>zed_cam_-&gt;getSensorsData(sensors_data_,<sp/>sl::TIME_REFERENCE::CURRENT);</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(sensors_data_.imu.timestamp<sp/>&gt;<sp/>last_imu_ts_)<sp/>{</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::this_thread::sleep_for(std::chrono::milliseconds{2});</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>skip_option::run;</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>skip_option::skip_and_yield;</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="87"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"></highlight></codeline>
+<codeline lineno="89"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>zed_imu_thread::_p_one_iteration()<sp/>{</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/>RAC_ERRNO_MSG(</highlight><highlight class="stringliteral">&quot;zed<sp/>at<sp/>start<sp/>of<sp/>_p_one_iteration&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>std::cout<sp/>&lt;&lt;<sp/>&quot;IMU<sp/>Rate:<sp/>&quot;<sp/>&lt;&lt;<sp/>sensors_data.imu.effective_rate<sp/>&lt;&lt;<sp/>&quot;\n&quot;<sp/>&lt;&lt;<sp/>std::endl;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="92"><highlight class="normal"></highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Time<sp/>as<sp/>ullong<sp/>(nanoseconds)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>imu_time<sp/>=<sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="normal">ullong</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(sensors_data_.imu.timestamp.getNanoseconds());</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"></highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Time<sp/>as<sp/>time_point</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!first_imu_time_)<sp/>{</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>first_imu_time_<sp/><sp/>=<sp/>imu_time;</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>first_real_time_<sp/>=<sp/>clock_-&gt;now();</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>_m_first_real_time<sp/>is<sp/>the<sp/>time<sp/>point<sp/>when<sp/>the<sp/>system<sp/>receives<sp/>the<sp/>first<sp/>IMU<sp/>sample</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Timestamp<sp/>for<sp/>later<sp/>IMU<sp/>samples<sp/>is<sp/>its<sp/>dataset<sp/>time<sp/>difference<sp/>from<sp/>the<sp/>first<sp/>sample<sp/>added<sp/>to<sp/>_m_first_real_time</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/>time_point<sp/>imu_time_point{*first_real_time_<sp/>+<sp/>std::chrono::nanoseconds(imu_time<sp/>-<sp/>*first_imu_time_)};</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"></highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Linear<sp/>Acceleration<sp/>and<sp/>Angular<sp/>Velocity<sp/>(av<sp/>converted<sp/>from<sp/>deg/s<sp/>to<sp/>rad/s)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/>Eigen::Vector3f<sp/>la<sp/>=<sp/>{sensors_data_.imu.linear_acceleration_uncalibrated.x,</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>sensors_data_.imu.linear_acceleration_uncalibrated.y,</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>sensors_data_.imu.linear_acceleration_uncalibrated.z};</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/>Eigen::Vector3f<sp/>av<sp/>=<sp/>{</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">float</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(sensors_data_.imu.angular_velocity_uncalibrated.x<sp/>*<sp/>(M_PI<sp/>/<sp/>180)),</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">float</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(sensors_data_.imu.angular_velocity_uncalibrated.y<sp/>*<sp/>(M_PI<sp/>/<sp/>180)),</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">float</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(sensors_data_.imu.angular_velocity_uncalibrated.z<sp/>*<sp/>(M_PI<sp/>/<sp/>180))};</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"></highlight></codeline>
+<codeline lineno="113"><highlight class="normal"><sp/><sp/><sp/><sp/>imu_.put(imu_.allocate&lt;<ref refid="structILLIXR_1_1data__format_1_1imu__type" kindref="compound">imu_type</ref>&gt;({imu_time_point,<sp/>av.cast&lt;</highlight><highlight class="keywordtype">double</highlight><highlight class="normal">&gt;(),<sp/>la.cast&lt;</highlight><highlight class="keywordtype">double</highlight><highlight class="normal">&gt;()}));</highlight></codeline>
+<codeline lineno="114"><highlight class="normal"></highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1switchboard_1af91c1b9436918512e95e5fa8553846a7" kindref="member">switchboard::ptr&lt;const cam_type_zed&gt;</ref><sp/>c<sp/>=<sp/>cam_reader_.get_ro_nullable();</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(c<sp/>&amp;&amp;<sp/>c-&gt;serial_no<sp/>!=<sp/>last_serial_no_)<sp/>{</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cv::Mat<sp/>left_gray,<sp/>right_gray;</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cv::cvtColor(c-&gt;at(image::LEFT_EYE),<sp/>left_gray,<sp/>cv::COLOR_RGB2GRAY);</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cv::cvtColor(c-&gt;at(image::RIGHT_EYE),<sp/>right_gray,<sp/>cv::COLOR_RGB2GRAY);</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cam_publisher_.put(</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cam_publisher_.allocate&lt;<ref refid="structILLIXR_1_1data__format_1_1binocular__cam__type" kindref="compound">binocular_cam_type</ref>&gt;({imu_time_point,<sp/>cv::Mat{left_gray},<sp/>cv::Mat{right_gray}}));</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>rgb_depth_.put(</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>rgb_depth_.allocate&lt;<ref refid="structILLIXR_1_1data__format_1_1rgb__depth__type" kindref="compound">rgb_depth_type</ref>&gt;({imu_time_point,<sp/>cv::Mat{c-&gt;at(image::RGB)},<sp/>cv::Mat{c-&gt;at(image::DEPTH)}}));</highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>last_serial_no_<sp/>=<sp/>c-&gt;serial_no;</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"></highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/>last_imu_ts_.setNanoseconds(sensors_data_.imu.timestamp.getNanoseconds());</highlight></codeline>
+<codeline lineno="128"><highlight class="normal"></highlight></codeline>
+<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/>RAC_ERRNO_MSG(</highlight><highlight class="stringliteral">&quot;zed_imu<sp/>at<sp/>end<sp/>of<sp/>_p_one_iteration&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="130"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"></highlight></codeline>
+<codeline lineno="132"><highlight class="normal"></highlight><highlight class="comment">//<sp/>This<sp/>line<sp/>makes<sp/>the<sp/>plugin<sp/>importable<sp/>by<sp/>Spindle</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="133"><highlight class="normal">PLUGIN_MAIN(zed_imu_thread)</highlight></codeline>
+    </programlisting>
+    <location file="/home/friedel/devel/ILLIXR/plugins/zed/plugin.cpp"/>
+  </compounddef>
+</doxygen>

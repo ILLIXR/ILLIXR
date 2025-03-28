@@ -1,0 +1,143 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classILLIXR_1_1sqlite__record__logger" kind="class" language="C++" prot="public">
+    <compoundname>ILLIXR::sqlite_record_logger</compoundname>
+    <basecompoundref refid="classILLIXR_1_1record__logger" prot="public" virt="non-virtual">ILLIXR::record_logger</basecompoundref>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1sqlite__record__logger_1a0c07a11ad20e74837339366685b18857" prot="private" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::size_t, sqlite_thread &gt;</type>
+        <definition>std::unordered_map&lt;std::size_t, sqlite_thread&gt; ILLIXR::sqlite_record_logger::registered_tables_</definition>
+        <argsstring></argsstring>
+        <name>registered_tables_</name>
+        <qualifiedname>ILLIXR::sqlite_record_logger::registered_tables_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/sqlite_record_logger.hpp" line="229" column="24" bodyfile="/home/friedel/devel/ILLIXR/src/sqlite_record_logger.hpp" bodystart="229" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1sqlite__record__logger_1a6d3d36ad5804cfe46ab7aa790424bf55" prot="private" static="no" mutable="no">
+        <type>std::shared_mutex</type>
+        <definition>std::shared_mutex ILLIXR::sqlite_record_logger::registry_lock_</definition>
+        <argsstring></argsstring>
+        <name>registry_lock_</name>
+        <qualifiedname>ILLIXR::sqlite_record_logger::registry_lock_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/sqlite_record_logger.hpp" line="230" column="52" bodyfile="/home/friedel/devel/ILLIXR/src/sqlite_record_logger.hpp" bodystart="230" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classILLIXR_1_1sqlite__record__logger_1a2181770f84c424c6393f68cb7122bcb0" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void ILLIXR::sqlite_record_logger::log</definition>
+        <argsstring>(const std::vector&lt; record &gt; &amp;r) override</argsstring>
+        <name>log</name>
+        <qualifiedname>ILLIXR::sqlite_record_logger::log</qualifiedname>
+        <param>
+          <type>const std::vector&lt; <ref refid="classILLIXR_1_1record" kindref="compound">record</ref> &gt; &amp;</type>
+          <declname>r</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/sqlite_record_logger.hpp" line="204" column="10" bodyfile="/home/friedel/devel/ILLIXR/src/sqlite_record_logger.hpp" bodystart="204" bodyend="208"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1sqlite__record__logger_1a662a202ccd80ede0bf1a53f5b2b4dac5" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void ILLIXR::sqlite_record_logger::log</definition>
+        <argsstring>(const record &amp;r) override</argsstring>
+        <name>log</name>
+        <qualifiedname>ILLIXR::sqlite_record_logger::log</qualifiedname>
+        <param>
+          <type>const <ref refid="classILLIXR_1_1record" kindref="compound">record</ref> &amp;</type>
+          <declname>r</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/sqlite_record_logger.hpp" line="210" column="10" bodyfile="/home/friedel/devel/ILLIXR/src/sqlite_record_logger.hpp" bodystart="210" bodyend="212"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classILLIXR_1_1sqlite__record__logger_1aab2c119d4417db02eb7df01cd52e9bcf" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>sqlite_thread &amp;</type>
+        <definition>sqlite_thread &amp; ILLIXR::sqlite_record_logger::get_sqlite_thread</definition>
+        <argsstring>(const record &amp;r)</argsstring>
+        <name>get_sqlite_thread</name>
+        <qualifiedname>ILLIXR::sqlite_record_logger::get_sqlite_thread</qualifiedname>
+        <param>
+          <type>const <ref refid="classILLIXR_1_1record" kindref="compound">record</ref> &amp;</type>
+          <declname>r</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/sqlite_record_logger.hpp" line="215" column="19" bodyfile="/home/friedel/devel/ILLIXR/src/sqlite_record_logger.hpp" bodystart="215" bodyend="227"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="3">
+        <label>ILLIXR::phonebook::service</label>
+        <link refid="classILLIXR_1_1phonebook_1_1service"/>
+      </node>
+      <node id="2">
+        <label>ILLIXR::record_logger</label>
+        <link refid="classILLIXR_1_1record__logger"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>ILLIXR::sqlite_record_logger</label>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="3">
+        <label>ILLIXR::phonebook::service</label>
+        <link refid="classILLIXR_1_1phonebook_1_1service"/>
+      </node>
+      <node id="2">
+        <label>ILLIXR::record_logger</label>
+        <link refid="classILLIXR_1_1record__logger"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>ILLIXR::sqlite_record_logger</label>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/home/friedel/devel/ILLIXR/src/sqlite_record_logger.hpp" line="202" column="1" bodyfile="/home/friedel/devel/ILLIXR/src/sqlite_record_logger.hpp" bodystart="202" bodyend="231"/>
+    <listofallmembers>
+      <member refid="classILLIXR_1_1sqlite__record__logger_1aab2c119d4417db02eb7df01cd52e9bcf" prot="private" virt="non-virtual"><scope>ILLIXR::sqlite_record_logger</scope><name>get_sqlite_thread</name></member>
+      <member refid="classILLIXR_1_1sqlite__record__logger_1a2181770f84c424c6393f68cb7122bcb0" prot="protected" virt="non-virtual"><scope>ILLIXR::sqlite_record_logger</scope><name>log</name></member>
+      <member refid="classILLIXR_1_1sqlite__record__logger_1a662a202ccd80ede0bf1a53f5b2b4dac5" prot="protected" virt="non-virtual"><scope>ILLIXR::sqlite_record_logger</scope><name>log</name></member>
+      <member refid="classILLIXR_1_1sqlite__record__logger_1a0c07a11ad20e74837339366685b18857" prot="private" virt="non-virtual"><scope>ILLIXR::sqlite_record_logger</scope><name>registered_tables_</name></member>
+      <member refid="classILLIXR_1_1sqlite__record__logger_1a6d3d36ad5804cfe46ab7aa790424bf55" prot="private" virt="non-virtual"><scope>ILLIXR::sqlite_record_logger</scope><name>registry_lock_</name></member>
+      <member refid="classILLIXR_1_1record__logger_1ad63ffa427ce9ff395221f983766f1f0e" prot="public" virt="non-virtual"><scope>ILLIXR::sqlite_record_logger</scope><name>~record_logger</name></member>
+      <member refid="classILLIXR_1_1phonebook_1_1service_1a6bc6e64a0d9b70223989fc3fb98c2d0d" prot="public" virt="virtual"><scope>ILLIXR::sqlite_record_logger</scope><name>~service</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

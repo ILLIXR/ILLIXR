@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structmodel__push__constant" kind="struct" language="C++" prot="public">
+    <compoundname>model_push_constant</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structmodel__push__constant_1a6c7501891a33876661f8945c18427700" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int model_push_constant::texture_index</definition>
+        <argsstring></argsstring>
+        <name>texture_index</name>
+        <qualifiedname>model_push_constant::texture_index</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/vkdemo/service.cpp" line="28" column="10" bodyfile="/home/friedel/devel/ILLIXR/services/vkdemo/service.cpp" bodystart="28" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/services/vkdemo/service.cpp" line="27" column="1" bodyfile="/home/friedel/devel/ILLIXR/services/vkdemo/service.cpp" bodystart="27" bodyend="29"/>
+    <listofallmembers>
+      <member refid="structmodel__push__constant_1a6c7501891a33876661f8945c18427700" prot="public" virt="non-virtual"><scope>model_push_constant</scope><name>texture_index</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,599 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structILLIXR_1_1data__format_1_1points__with__units" kind="struct" language="C++" prot="public">
+    <compoundname>ILLIXR::data_format::points_with_units</compoundname>
+    <derivedcompoundref refid="structILLIXR_1_1data__format_1_1ht_1_1hand__points" prot="public" virt="non-virtual">ILLIXR::data_format::ht::hand_points</derivedcompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1points__with__units_1afdd080d0486f3363c05980abae9ae9a3" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; point_with_units &gt;</type>
+        <definition>std::vector&lt;point_with_units&gt; ILLIXR::data_format::points_with_units::points</definition>
+        <argsstring></argsstring>
+        <name>points</name>
+        <qualifiedname>ILLIXR::data_format::points_with_units::points</qualifiedname>
+        <briefdescription>
+<para>The points. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" line="344" column="17" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" bodystart="344" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1points__with__units_1a400a6ad86aa7abb0c87956f3cb6e3e71" prot="public" static="no" mutable="no">
+        <type>units::measurement_unit</type>
+        <definition>units::measurement_unit ILLIXR::data_format::points_with_units::unit</definition>
+        <argsstring></argsstring>
+        <name>unit</name>
+        <qualifiedname>ILLIXR::data_format::points_with_units::unit</qualifiedname>
+        <briefdescription>
+<para>The unit of all points. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" line="345" column="35" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" bodystart="345" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1points__with__units_1a183794076fbc9316fda9c47cf318eaa0" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool ILLIXR::data_format::points_with_units::valid</definition>
+        <argsstring></argsstring>
+        <name>valid</name>
+        <qualifiedname>ILLIXR::data_format::points_with_units::valid</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Indicates the validity of all points, will be true if any point is valid, false indicates no points are valid </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" line="346" column="10" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" bodystart="346" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1points__with__units_1a75d7eddbe4b12770f68f725b3caa83b3" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool ILLIXR::data_format::points_with_units::fixed</definition>
+        <argsstring></argsstring>
+        <name>fixed</name>
+        <qualifiedname>ILLIXR::data_format::points_with_units::fixed</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+<para>indicates whther the size of the vector has been set </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" line="348" column="10" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" bodystart="348" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1points__with__units_1a3721740afb14a71a0eb2a1f028e6a750" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::points_with_units::points_with_units</definition>
+        <argsstring>(units::measurement_unit unit_=units::UNSET)</argsstring>
+        <name>points_with_units</name>
+        <qualifiedname>ILLIXR::data_format::points_with_units::points_with_units</qualifiedname>
+        <param>
+          <type>units::measurement_unit</type>
+          <declname>unit_</declname>
+          <defval>units::UNSET</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Construct a points_with_units with an empty list <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>unit_</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The units for the points, default is UNSET </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" line="354" column="14" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" bodystart="354" bodyend="357"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1points__with__units_1af669acdae2c86e74b214051684075f4c" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::points_with_units::points_with_units</definition>
+        <argsstring>(const int size, units::measurement_unit unit_=units::UNSET)</argsstring>
+        <name>points_with_units</name>
+        <qualifiedname>ILLIXR::data_format::points_with_units::points_with_units</qualifiedname>
+        <param>
+          <type>const int</type>
+          <declname>size</declname>
+        </param>
+        <param>
+          <type>units::measurement_unit</type>
+          <declname>unit_</declname>
+          <defval>units::UNSET</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Construct a points_with_units with a list of points with the given size <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>size</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The number of points to initialize </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>unit_</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The units for the points, default is UNSET </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" line="364" column="14" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" bodystart="364" bodyend="368"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1points__with__units_1a98639c00e5876a681c379f14badd90f9" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::points_with_units::points_with_units</definition>
+        <argsstring>(std::vector&lt; point_with_units &gt; points_)</argsstring>
+        <name>points_with_units</name>
+        <qualifiedname>ILLIXR::data_format::points_with_units::points_with_units</qualifiedname>
+        <param>
+          <type>std::vector&lt; point_with_units &gt;</type>
+          <declname>points_</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Construct a points_with_units from a vector of point_with_units objects, units are determined from the points, as is validity <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>points_</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The points to move into this object </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" line="375" column="14" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" bodystart="375" bodyend="382"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1points__with__units_1a31e858a961eb5867acb85479eb0c258e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::points_with_units::points_with_units</definition>
+        <argsstring>(const points_with_units &amp;points_)</argsstring>
+        <name>points_with_units</name>
+        <qualifiedname>ILLIXR::data_format::points_with_units::points_with_units</qualifiedname>
+        <param>
+          <type>const points_with_units &amp;</type>
+          <declname>points_</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Copy constructor <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>points_</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" line="388" column="5" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" bodystart="388" bodyend="389"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1points__with__units_1a84a1f81ecda8afb0c6cae17ce2f38b4c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>points_with_units &amp;</type>
+        <definition>points_with_units &amp; ILLIXR::data_format::points_with_units::operator=</definition>
+        <argsstring>(const points_with_units &amp;other)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>ILLIXR::data_format::points_with_units::operator=</qualifiedname>
+        <param>
+          <type>const points_with_units &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Copy operator <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>other</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The object to copy into this one </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A reference to the updated points_with_units </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" line="396" column="23" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" bodystart="396" bodyend="406"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1points__with__units_1acd5160625073c86c4d1c6021f5db9365" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::points_with_units::points_with_units</definition>
+        <argsstring>(std::vector&lt; point_with_validity &gt; &amp;points_, units::measurement_unit unit_=units::UNSET)</argsstring>
+        <name>points_with_units</name>
+        <qualifiedname>ILLIXR::data_format::points_with_units::points_with_units</qualifiedname>
+        <param>
+          <type>std::vector&lt; point_with_validity &gt; &amp;</type>
+          <declname>points_</declname>
+        </param>
+        <param>
+          <type>units::measurement_unit</type>
+          <declname>unit_</declname>
+          <defval>units::UNSET</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Construct a points_with_units from a vector of point_with_validity objects, validity is determined from the points <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>points_</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The points to move into this object </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>unit_</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The units for the points, default is UNSET </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" line="413" column="14" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" bodystart="413" bodyend="421"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1points__with__units_1aab42e7c0194b48e5f292356db2977e2d" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::points_with_units::points_with_units</definition>
+        <argsstring>(std::vector&lt; point &gt; &amp;points_, units::measurement_unit unit_=units::UNSET, bool valid_=true)</argsstring>
+        <name>points_with_units</name>
+        <qualifiedname>ILLIXR::data_format::points_with_units::points_with_units</qualifiedname>
+        <param>
+          <type>std::vector&lt; point &gt; &amp;</type>
+          <declname>points_</declname>
+        </param>
+        <param>
+          <type>units::measurement_unit</type>
+          <declname>unit_</declname>
+          <defval>units::UNSET</defval>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>valid_</declname>
+          <defval>true</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Construct a points_with_units from a vector of point objects <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>points_</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The points to move into this object </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>unit_</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The units for the points, default is UNSET </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>valid_</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The validity of all points, default is true </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" line="429" column="14" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" bodystart="429" bodyend="435"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1points__with__units_1a26fd39b64329a16ba5d82abd7aff27e4" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>point_with_units &amp;</type>
+        <definition>point_with_units &amp; ILLIXR::data_format::points_with_units::operator[]</definition>
+        <argsstring>(const size_t idx)</argsstring>
+        <name>operator[]</name>
+        <qualifiedname>ILLIXR::data_format::points_with_units::operator[]</qualifiedname>
+        <param>
+          <type>const size_t</type>
+          <declname>idx</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Indexing operator to get a specific point_with_units based on index <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>idx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The index of the requested point_with_units </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A reference to requested point_with_units </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" line="442" column="22" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" bodystart="442" bodyend="446"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1points__with__units_1a919e740e87b3b913cc6bb333e03f6db5" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>point_with_units &amp;</type>
+        <definition>point_with_units &amp; ILLIXR::data_format::points_with_units::at</definition>
+        <argsstring>(const size_t idx)</argsstring>
+        <name>at</name>
+        <qualifiedname>ILLIXR::data_format::points_with_units::at</qualifiedname>
+        <param>
+          <type>const size_t</type>
+          <declname>idx</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Get the point_with_unit at the given index <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>idx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The index of the requested point_with_units </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A reference to requested point_with_units </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" line="453" column="22" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" bodystart="453" bodyend="455"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1points__with__units_1a3868bcf2cd46ca08a42177e8d33fdffe" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const point_with_units &amp;</type>
+        <definition>const point_with_units &amp; ILLIXR::data_format::points_with_units::at</definition>
+        <argsstring>(const size_t idx) const</argsstring>
+        <name>at</name>
+        <qualifiedname>ILLIXR::data_format::points_with_units::at</qualifiedname>
+        <param>
+          <type>const size_t</type>
+          <declname>idx</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Get a const version of the point_with_unit at the given index <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>idx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The index of the requested point_with_units </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A const reference to requested point_with_units </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" line="462" column="29" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" bodystart="462" bodyend="464"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1points__with__units_1a15d4b4b8ca3b4036e1db603f7e125a75" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t ILLIXR::data_format::points_with_units::size</definition>
+        <argsstring>() const</argsstring>
+        <name>size</name>
+        <qualifiedname>ILLIXR::data_format::points_with_units::size</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Get the size of the internal vector <simplesect kind="return"><para>The number of points stored </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" line="470" column="13" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" bodystart="470" bodyend="472"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1points__with__units_1ac9e5b4f45855ecc24f373260b0a6ecd0" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void ILLIXR::data_format::points_with_units::mult</definition>
+        <argsstring>(const Eigen::Matrix3f &amp;ref_frm)</argsstring>
+        <name>mult</name>
+        <qualifiedname>ILLIXR::data_format::points_with_units::mult</qualifiedname>
+        <param>
+          <type>const Eigen::Matrix3f &amp;</type>
+          <declname>ref_frm</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Multiply all points by a matrix <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ref_frm</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The matrix to multiply all points by </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" line="478" column="11" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" bodystart="478" bodyend="481"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1points__with__units_1a412e7e5e8da9a636a77178b0a206121a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void ILLIXR::data_format::points_with_units::transform</definition>
+        <argsstring>(const pose_data &amp;pose)</argsstring>
+        <name>transform</name>
+        <qualifiedname>ILLIXR::data_format::points_with_units::transform</qualifiedname>
+        <param>
+          <type>const <ref refid="structILLIXR_1_1data__format_1_1pose__data" kindref="compound">pose_data</ref> &amp;</type>
+          <declname>pose</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Transform (move) all points by the given pose <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>pose</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The pose to apply to the points </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" line="487" column="10" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" bodystart="487" bodyend="490"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1points__with__units_1a2e15aed778e87afe3871a116b46d7adf" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void ILLIXR::data_format::points_with_units::enforce_bounds</definition>
+        <argsstring>(const float x_lim=-1., const float y_lim=-1, const float z_lim=-1)</argsstring>
+        <name>enforce_bounds</name>
+        <qualifiedname>ILLIXR::data_format::points_with_units::enforce_bounds</qualifiedname>
+        <param>
+          <type>const float</type>
+          <declname>x_lim</declname>
+          <defval>-1.</defval>
+        </param>
+        <param>
+          <type>const float</type>
+          <declname>y_lim</declname>
+          <defval>-1</defval>
+        </param>
+        <param>
+          <type>const float</type>
+          <declname>z_lim</declname>
+          <defval>-1</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Enforce point bounds to be valid for an image (e.g. no negative values <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>x_lim</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>upper limit of x values </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>y_lim</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>upper limit of y values </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>z_lim</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>upper limit of z values </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" line="498" column="11" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" bodystart="498" bodyend="521"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1points__with__units_1a23b73236d5b9a640a4acd15ba22961a2" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void ILLIXR::data_format::points_with_units::check_validity</definition>
+        <argsstring>()</argsstring>
+        <name>check_validity</name>
+        <qualifiedname>ILLIXR::data_format::points_with_units::check_validity</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Update the struct validity flag based on the point&apos;s flags </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" line="526" column="11" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" bodystart="526" bodyend="534"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>ILLIXR::data_format::ht::hand_points</label>
+        <link refid="structILLIXR_1_1data__format_1_1ht_1_1hand__points"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>ILLIXR::data_format::ht::velocity</label>
+        <link refid="structILLIXR_1_1data__format_1_1ht_1_1velocity"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>ILLIXR::data_format::points_with_units</label>
+      </node>
+    </inheritancegraph>
+    <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" line="343" column="1" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/point.hpp" bodystart="343" bodyend="535"/>
+    <listofallmembers>
+      <member refid="structILLIXR_1_1data__format_1_1points__with__units_1a919e740e87b3b913cc6bb333e03f6db5" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::points_with_units</scope><name>at</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1points__with__units_1a3868bcf2cd46ca08a42177e8d33fdffe" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::points_with_units</scope><name>at</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1points__with__units_1a23b73236d5b9a640a4acd15ba22961a2" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::points_with_units</scope><name>check_validity</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1points__with__units_1a2e15aed778e87afe3871a116b46d7adf" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::points_with_units</scope><name>enforce_bounds</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1points__with__units_1a75d7eddbe4b12770f68f725b3caa83b3" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::points_with_units</scope><name>fixed</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1points__with__units_1ac9e5b4f45855ecc24f373260b0a6ecd0" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::points_with_units</scope><name>mult</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1points__with__units_1a84a1f81ecda8afb0c6cae17ce2f38b4c" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::points_with_units</scope><name>operator=</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1points__with__units_1a26fd39b64329a16ba5d82abd7aff27e4" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::points_with_units</scope><name>operator[]</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1points__with__units_1afdd080d0486f3363c05980abae9ae9a3" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::points_with_units</scope><name>points</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1points__with__units_1a3721740afb14a71a0eb2a1f028e6a750" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::points_with_units</scope><name>points_with_units</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1points__with__units_1af669acdae2c86e74b214051684075f4c" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::points_with_units</scope><name>points_with_units</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1points__with__units_1a98639c00e5876a681c379f14badd90f9" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::points_with_units</scope><name>points_with_units</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1points__with__units_1a31e858a961eb5867acb85479eb0c258e" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::points_with_units</scope><name>points_with_units</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1points__with__units_1acd5160625073c86c4d1c6021f5db9365" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::points_with_units</scope><name>points_with_units</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1points__with__units_1aab42e7c0194b48e5f292356db2977e2d" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::points_with_units</scope><name>points_with_units</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1points__with__units_1a15d4b4b8ca3b4036e1db603f7e125a75" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::points_with_units</scope><name>size</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1points__with__units_1a412e7e5e8da9a636a77178b0a206121a" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::points_with_units</scope><name>transform</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1points__with__units_1a400a6ad86aa7abb0c87956f3cb6e3e71" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::points_with_units</scope><name>unit</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1points__with__units_1a183794076fbc9316fda9c47cf318eaa0" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::points_with_units</scope><name>valid</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

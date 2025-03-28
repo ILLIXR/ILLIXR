@@ -1,0 +1,61 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structILLIXR_1_1vulkan_1_1swapchain__details" kind="struct" language="C++" prot="public">
+    <compoundname>ILLIXR::vulkan::swapchain_details</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structILLIXR_1_1vulkan_1_1swapchain__details_1a21036df06d927a364fcff883f4e1147a" prot="public" static="no" mutable="no">
+        <type>VkSurfaceCapabilitiesKHR</type>
+        <definition>VkSurfaceCapabilitiesKHR ILLIXR::vulkan::swapchain_details::capabilities</definition>
+        <argsstring></argsstring>
+        <name>capabilities</name>
+        <qualifiedname>ILLIXR::vulkan::swapchain_details::capabilities</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" line="61" column="37" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" bodystart="61" bodyend="61"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1vulkan_1_1swapchain__details_1ab733c7d61e95f198212ea7528c8786ed" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; VkSurfaceFormatKHR &gt;</type>
+        <definition>std::vector&lt; VkSurfaceFormatKHR &gt; ILLIXR::vulkan::swapchain_details::formats</definition>
+        <argsstring></argsstring>
+        <name>formats</name>
+        <qualifiedname>ILLIXR::vulkan::swapchain_details::formats</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" line="62" column="17" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" bodystart="62" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1vulkan_1_1swapchain__details_1a5b41baeaaf4b69b557092cd1e9a352b4" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; VkPresentModeKHR &gt;</type>
+        <definition>std::vector&lt; VkPresentModeKHR &gt; ILLIXR::vulkan::swapchain_details::present_modes</definition>
+        <argsstring></argsstring>
+        <name>present_modes</name>
+        <qualifiedname>ILLIXR::vulkan::swapchain_details::present_modes</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" line="63" column="19" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" bodystart="63" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" line="60" column="1" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/vk/vulkan_utils.hpp" bodystart="60" bodyend="64"/>
+    <listofallmembers>
+      <member refid="structILLIXR_1_1vulkan_1_1swapchain__details_1a21036df06d927a364fcff883f4e1147a" prot="public" virt="non-virtual"><scope>ILLIXR::vulkan::swapchain_details</scope><name>capabilities</name></member>
+      <member refid="structILLIXR_1_1vulkan_1_1swapchain__details_1ab733c7d61e95f198212ea7528c8786ed" prot="public" virt="non-virtual"><scope>ILLIXR::vulkan::swapchain_details</scope><name>formats</name></member>
+      <member refid="structILLIXR_1_1vulkan_1_1swapchain__details_1a5b41baeaaf4b69b557092cd1e9a352b4" prot="public" virt="non-virtual"><scope>ILLIXR::vulkan::swapchain_details</scope><name>present_modes</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

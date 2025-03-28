@@ -1,0 +1,61 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespaceILLIXR_1_1data__format_1_1camera" kind="namespace" language="C++">
+    <compoundname>ILLIXR::data_format::camera</compoundname>
+    <sectiondef kind="enum">
+      <memberdef kind="enum" id="namespaceILLIXR_1_1data__format_1_1camera_1a18a380b68da2691d25b2655dbedf8e27" prot="public" static="no" strong="no">
+        <type></type>
+        <name>cam_type</name>
+        <qualifiedname>ILLIXR::data_format::camera::cam_type</qualifiedname>
+        <enumvalue id="namespaceILLIXR_1_1data__format_1_1camera_1a18a380b68da2691d25b2655dbedf8e27aaae99f5bc653eee363c72181bcb9920a" prot="public">
+          <name>BINOCULAR</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespaceILLIXR_1_1data__format_1_1camera_1a18a380b68da2691d25b2655dbedf8e27ac7c3c90c494e03eb195a800ea778bb22" prot="public">
+          <name>MONOCULAR</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespaceILLIXR_1_1data__format_1_1camera_1a18a380b68da2691d25b2655dbedf8e27a3fafa0447007235aa5130ca509e89e00" prot="public">
+          <name>RGB_DEPTH</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespaceILLIXR_1_1data__format_1_1camera_1a18a380b68da2691d25b2655dbedf8e27abd8c20170cb0b60ff1b57127d17b3470" prot="public">
+          <name>DEPTH</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespaceILLIXR_1_1data__format_1_1camera_1a18a380b68da2691d25b2655dbedf8e27ad0ebc0b4724c5ce75a60ed74d4ec9e3c" prot="public">
+          <name>ZED</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/opencv_data_types.hpp" line="35" column="5" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/opencv_data_types.hpp" bodystart="35" bodyend="35"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Enumeration of camera types </para>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/opencv_data_types.hpp" line="34" column="1"/>
+  </compounddef>
+</doxygen>

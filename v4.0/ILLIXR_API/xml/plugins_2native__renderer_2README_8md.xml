@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="plugins_2native__renderer_2README_8md" kind="file" language="Markdown">
+    <compoundname>README.md</compoundname>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline><highlight class="normal">#<sp/>native_renderer</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Summary</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">`native_renderer`<sp/>utilizes<sp/>[`vkdemo`][P10]<sp/>and<sp/>[`timewarp_vk`][P11]<sp/>to<sp/>construct<sp/>a<sp/>full<sp/>rendering<sp/>pipeline.<sp/>[</highlight></codeline>
+<codeline><highlight class="normal">`vkdemo`][P10]<sp/>is<sp/>used<sp/>to<sp/>render<sp/>the<sp/>scene,<sp/>and<sp/>[`timewarp_vk`][P11]<sp/>is<sp/>used<sp/>to<sp/>perform<sp/>rotational<sp/>reprojection.<sp/>This</highlight></codeline>
+<codeline><highlight class="normal">plugin<sp/>creates<sp/>the<sp/>necessary<sp/>Vulkan<sp/>resources<sp/>and<sp/>targets<sp/>for<sp/>[`vkdemo`][P10]<sp/>and<sp/>[`timewarp_vk`][P11]<sp/>to<sp/>render<sp/>to,<sp/>and</highlight></codeline>
+<codeline><highlight class="normal">then<sp/>composites<sp/>the<sp/>results<sp/>into<sp/>a<sp/>single<sp/>image.<sp/>The<sp/>resulting<sp/>image<sp/>is<sp/>presented<sp/>using<sp/>the<sp/>Vulkan<sp/>swapchain<sp/>provided<sp/>by</highlight></codeline>
+<codeline><highlight class="normal">`display_vk`.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Environment<sp/>Variables</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">**NATIVE_RENDERER_LOG_LEVEL**:<sp/>logging<sp/>level<sp/>for<sp/>this<sp/>plugin,<sp/>values<sp/>can<sp/>be<sp/>&quot;trace&quot;,<sp/>&quot;debug&quot;,<sp/>&quot;info&quot;,<sp/>&quot;warning&quot;,<sp/>&quot;</highlight></codeline>
+<codeline><highlight class="normal">error&quot;,<sp/>&quot;critical&quot;,<sp/>or<sp/>&quot;off&quot;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">[//]:<sp/>#<sp/>(-<sp/>plugins<sp/>-)</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">[P10]:<sp/><sp/>../illixr_services.md#vkdemo</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">[P11]:<sp/><sp/>../illixr_plugins.md#timewarp_vk</highlight></codeline>
+    </programlisting>
+    <location file="/home/friedel/devel/ILLIXR/plugins/native_renderer/README.md"/>
+  </compounddef>
+</doxygen>

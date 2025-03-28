@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_513c1e104d4fed82bb3eedf56c3611bf" kind="dir">
+    <compoundname>/home/friedel/devel/ILLIXR/services/pose_lookup</compoundname>
+    <innerfile refid="pose__lookup_2service_8cpp">service.cpp</innerfile>
+    <innerfile refid="pose__lookup_2service_8hpp">service.hpp</innerfile>
+    <innerfile refid="utils_8hpp">utils.hpp</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/services/pose_lookup/"/>
+  </compounddef>
+</doxygen>

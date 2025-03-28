@@ -1,0 +1,541 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="illixr_8hpp" kind="file" language="C++">
+    <compoundname>illixr.hpp</compoundname>
+    <includes refid="src_2cxxopts_8hpp" local="yes">cxxopts.hpp</includes>
+    <includes refid="runtime_8hpp" local="yes">illixr/runtime.hpp</includes>
+    <includes local="no">atomic</includes>
+    <includes local="no">chrono</includes>
+    <includes local="no">string</includes>
+    <includes local="no">thread</includes>
+    <includes local="no">vector</includes>
+    <includedby refid="main_8cpp" local="yes">/home/friedel/devel/ILLIXR/src/main.cpp</includedby>
+    <includedby refid="src_2plugin_8cpp" local="yes">/home/friedel/devel/ILLIXR/src/plugin.cpp</includedby>
+    <incdepgraph>
+      <node id="29">
+        <label>managed_thread.hpp</label>
+        <link refid="managed__thread_8hpp_source"/>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+      </node>
+      <node id="33">
+        <label>network/network_backend.hpp</label>
+        <link refid="network__backend_8hpp_source"/>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+      </node>
+      <node id="34">
+        <label>topic_config.hpp</label>
+        <link refid="topic__config_8hpp_source"/>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+      </node>
+      <node id="19">
+        <label>illixr/phonebook.hpp</label>
+        <link refid="phonebook_8hpp_source"/>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+      </node>
+      <node id="37">
+        <label>record_logger.hpp</label>
+        <link refid="record__logger_8hpp_source"/>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="38" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="18">
+        <label>illixr/runtime.hpp</label>
+        <link refid="runtime_8hpp_source"/>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+      </node>
+      <node id="27">
+        <label>illixr/switchboard.hpp</label>
+        <link refid="switchboard_8hpp_source"/>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+        <childnode refid="39" relation="include">
+        </childnode>
+        <childnode refid="40" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="41" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="42" relation="include">
+        </childnode>
+        <childnode refid="43" relation="include">
+        </childnode>
+        <childnode refid="44" relation="include">
+        </childnode>
+        <childnode refid="45" relation="include">
+        </childnode>
+        <childnode refid="46" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>cxxopts.hpp</label>
+        <link refid="src_2cxxopts_8hpp_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>/home/friedel/devel/ILLIXR/src/illixr.hpp</label>
+        <link refid="illixr_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>algorithm</label>
+      </node>
+      <node id="38">
+        <label>any</label>
+      </node>
+      <node id="30">
+        <label>atomic</label>
+      </node>
+      <node id="42">
+        <label>boost/archive/binary_iarchive.hpp</label>
+      </node>
+      <node id="43">
+        <label>boost/archive/binary_oarchive.hpp</label>
+      </node>
+      <node id="44">
+        <label>boost/iostreams/device/back_inserter.hpp</label>
+      </node>
+      <node id="45">
+        <label>boost/iostreams/stream.hpp</label>
+      </node>
+      <node id="46">
+        <label>boost/serialization/shared_ptr.hpp</label>
+      </node>
+      <node id="20">
+        <label>cassert</label>
+      </node>
+      <node id="35">
+        <label>chrono</label>
+      </node>
+      <node id="28">
+        <label>concurrentqueue/blockingconcurrentqueue.hpp</label>
+      </node>
+      <node id="4">
+        <label>cstring</label>
+      </node>
+      <node id="39">
+        <label>eigen3/Eigen/Core</label>
+      </node>
+      <node id="40">
+        <label>eigen3/Eigen/Geometry</label>
+      </node>
+      <node id="5">
+        <label>exception</label>
+      </node>
+      <node id="31">
+        <label>functional</label>
+      </node>
+      <node id="6">
+        <label>initializer_list</label>
+      </node>
+      <node id="25">
+        <label>iostream</label>
+      </node>
+      <node id="7">
+        <label>limits</label>
+      </node>
+      <node id="41">
+        <label>list</label>
+      </node>
+      <node id="8">
+        <label>locale</label>
+      </node>
+      <node id="9">
+        <label>map</label>
+      </node>
+      <node id="10">
+        <label>memory</label>
+      </node>
+      <node id="21">
+        <label>mutex</label>
+      </node>
+      <node id="36">
+        <label>optional</label>
+      </node>
+      <node id="17">
+        <label>regex</label>
+      </node>
+      <node id="22">
+        <label>shared_mutex</label>
+      </node>
+      <node id="26">
+        <label>spdlog/spdlog.h</label>
+      </node>
+      <node id="11">
+        <label>sstream</label>
+      </node>
+      <node id="23">
+        <label>stdexcept</label>
+      </node>
+      <node id="12">
+        <label>string</label>
+      </node>
+      <node id="32">
+        <label>thread</label>
+      </node>
+      <node id="24">
+        <label>typeindex</label>
+      </node>
+      <node id="13">
+        <label>unordered_map</label>
+      </node>
+      <node id="14">
+        <label>unordered_set</label>
+      </node>
+      <node id="15">
+        <label>utility</label>
+      </node>
+      <node id="16">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <innerclass refid="classILLIXR_1_1cancellable__sleep" prot="public">ILLIXR::cancellable_sleep</innerclass>
+    <innernamespace refid="namespaceILLIXR">ILLIXR</innernamespace>
+    <sectiondef kind="define">
+      <memberdef kind="define" id="illixr_8hpp_1a656b4eaf5dd2f43497ea9f8d9f5879e9" prot="public" static="no">
+        <name>GET_STRING</name>
+        <param><defname>NAME</defname></param>
+        <param><defname>ENV</defname></param>
+        <initializer>    if (options.count(#NAME)) {                                                   \
+        switchboard_-&gt;set_env(#ENV, options[#NAME].as&lt;std::string&gt;());            \
+    } else if (config[&quot;env_vars&quot;][#NAME]) {                                       \
+        switchboard_-&gt;set_env(#ENV, config[&quot;env_vars&quot;][#NAME].as&lt;std::string&gt;()); \
+    }</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/illixr.hpp" line="12" column="9" bodyfile="/home/friedel/devel/ILLIXR/src/illixr.hpp" bodystart="12" bodyend="17"/>
+      </memberdef>
+      <memberdef kind="define" id="illixr_8hpp_1a6458a0620714eb0ff43e571e61c27dad" prot="public" static="no">
+        <name>GET_BOOL</name>
+        <param><defname>NAME</defname></param>
+        <param><defname>ENV</defname></param>
+        <initializer>    if (options.count(#NAME) || config[#NAME]) {        \
+        bool val;                                       \
+        if (options.count(#NAME)) {                     \
+            val = options[#NAME].as&lt;bool&gt;();            \
+        } else {                                        \
+            val = config[&quot;env_vars&quot;][#NAME].as&lt;bool&gt;(); \
+        }                                               \
+        if (val) {                                      \
+            switchboard_-&gt;set_env(#ENV, &quot;True&quot;);        \
+        } else {                                        \
+            switchboard_-&gt;set_env(#ENV, &quot;False&quot;);       \
+        }                                               \
+    }</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/illixr.hpp" line="19" column="9" bodyfile="/home/friedel/devel/ILLIXR/src/illixr.hpp" bodystart="19" bodyend="32"/>
+      </memberdef>
+      <memberdef kind="define" id="illixr_8hpp_1a8a2c4984a8cd3773ca67a3f58b525b04" prot="public" static="no">
+        <name>_STR</name>
+        <param><defname>y</defname></param>
+        <initializer>#y</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/illixr.hpp" line="33" column="9" bodyfile="/home/friedel/devel/ILLIXR/src/illixr.hpp" bodystart="33" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="illixr_8hpp_1a3428692efe6051ef30016ffde1a9f7bb" prot="public" static="no">
+        <name>STRINGIZE</name>
+        <param><defname>x</defname></param>
+        <initializer>_STR(x)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/illixr.hpp" line="34" column="9" bodyfile="/home/friedel/devel/ILLIXR/src/illixr.hpp" bodystart="34" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="var">
+      <memberdef kind="variable" id="illixr_8hpp_1a03a78b645149a408a4fb4f4a0d3840ad" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr std::chrono::seconds</type>
+        <definition>constexpr std::chrono::seconds ILLIXR_RUN_DURATION_DEFAULT</definition>
+        <argsstring></argsstring>
+        <name>ILLIXR_RUN_DURATION_DEFAULT</name>
+        <initializer>{60}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/illixr.hpp" line="36" column="41" bodyfile="/home/friedel/devel/ILLIXR/src/illixr.hpp" bodystart="36" bodyend="36"/>
+      </memberdef>
+      <memberdef kind="variable" id="illixr_8hpp_1a1426d4f44f6b683845d0bdff8ec916ad" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr unsigned int</type>
+        <definition>constexpr unsigned int ILLIXR_PRE_SLEEP_DURATION</definition>
+        <argsstring></argsstring>
+        <name>ILLIXR_PRE_SLEEP_DURATION</name>
+        <initializer>{10}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/illixr.hpp" line="37" column="25" bodyfile="/home/friedel/devel/ILLIXR/src/illixr.hpp" bodystart="37" bodyend="37"/>
+      </memberdef>
+      <memberdef kind="variable" id="illixr_8hpp_1afa6574e6ffa3f73c8222ba80a9559c35" prot="public" static="no" extern="yes" mutable="no">
+        <type>ILLIXR::runtime *</type>
+        <definition>ILLIXR::runtime* runtime_</definition>
+        <argsstring></argsstring>
+        <name>runtime_</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/illixr.hpp" line="46" column="24" bodyfile="/home/friedel/devel/ILLIXR/src/plugin.cpp" bodystart="76" bodyend="-1" declfile="/home/friedel/devel/ILLIXR/src/illixr.hpp" declline="46" declcolumn="24"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="illixr_8hpp_1a176a4760cba927ea29959bc6dae5f4e0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>std::vector&lt; T &gt;</type>
+        <definition>std::vector&lt; T &gt; operator+</definition>
+        <argsstring>(const std::vector&lt; T &gt; &amp;a, const std::vector&lt; T &gt; &amp;b)</argsstring>
+        <name>operator+</name>
+        <param>
+          <type>const std::vector&lt; T &gt; &amp;</type>
+          <declname>a</declname>
+        </param>
+        <param>
+          <type>const std::vector&lt; T &gt; &amp;</type>
+          <declname>b</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/illixr.hpp" line="40" column="13" bodyfile="/home/friedel/devel/ILLIXR/src/illixr.hpp" bodystart="40" bodyend="44"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;cxxopts.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;illixr/runtime.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;atomic&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;chrono&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;string&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;thread&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vector&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>GET_STRING(NAME,<sp/>ENV)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="13"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>if<sp/>(options.count(#NAME))<sp/>{<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="14"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>switchboard_-&gt;set_env(#ENV,<sp/>options[#NAME].as&lt;std::string&gt;());<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="15"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>}<sp/>else<sp/>if<sp/>(config[&quot;env_vars&quot;][#NAME])<sp/>{<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="16"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>switchboard_-&gt;set_env(#ENV,<sp/>config[&quot;env_vars&quot;][#NAME].as&lt;std::string&gt;());<sp/>\</highlight></codeline>
+<codeline lineno="17"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>}</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>GET_BOOL(NAME,<sp/>ENV)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="20"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>if<sp/>(options.count(#NAME)<sp/>||<sp/>config[#NAME])<sp/>{<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="21"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>val;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="22"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(options.count(#NAME))<sp/>{<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="23"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>val<sp/>=<sp/>options[#NAME].as&lt;bool&gt;();<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="24"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/>else<sp/>{<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="25"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>val<sp/>=<sp/>config[&quot;env_vars&quot;][#NAME].as&lt;bool&gt;();<sp/>\</highlight></codeline>
+<codeline lineno="26"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="27"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(val)<sp/>{<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="28"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>switchboard_-&gt;set_env(#ENV,<sp/>&quot;True&quot;);<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="29"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/>else<sp/>{<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="30"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>switchboard_-&gt;set_env(#ENV,<sp/>&quot;False&quot;);<sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="31"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="32"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>}</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>_STR(y)<sp/><sp/><sp/><sp/><sp/><sp/>#y</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>STRINGIZE(x)<sp/>_STR(x)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>std::chrono::seconds<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ILLIXR_RUN_DURATION_DEFAULT{60};</highlight></codeline>
+<codeline lineno="37"><highlight class="normal">[[maybe_unused]]<sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>ILLIXR_PRE_SLEEP_DURATION{10};</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T&gt;</highlight></codeline>
+<codeline lineno="40"><highlight class="normal">std::vector&lt;T&gt;<sp/>operator+(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::vector&lt;T&gt;&amp;<sp/>a,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::vector&lt;T&gt;&amp;<sp/>b)<sp/>{</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;T&gt;<sp/>c<sp/>=<sp/>a;</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/>c.insert(c.end(),<sp/>b.begin(),<sp/>b.end());</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>c;</highlight></codeline>
+<codeline lineno="44"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"></highlight></codeline>
+<codeline lineno="46"><highlight class="normal"></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/>ILLIXR::runtime*<sp/>runtime_;</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"></highlight></codeline>
+<codeline lineno="48"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceILLIXR" kindref="compound">ILLIXR</ref><sp/>{</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a2af9a564922083dabfca03e0522b4a9d" kindref="member">run</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>cxxopts::ParseResult&amp;<sp/>options);</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"></highlight></codeline>
+<codeline lineno="51"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal">cancellable_sleep<sp/>{</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T,<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>R&gt;</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>sleep(std::chrono::duration&lt;T,<sp/>R&gt;<sp/>duration)<sp/>{</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>wake_up_time<sp/>=<sp/>std::chrono::system_clock::now()<sp/>+<sp/>duration;</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">while</highlight><highlight class="normal"><sp/>(!terminate_.load()<sp/>&amp;&amp;<sp/>std::chrono::system_clock::now()<sp/>&lt;<sp/>wake_up_time)<sp/>{</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::this_thread::sleep_for(std::chrono::milliseconds{100});</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>terminate_.load();</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"></highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>cancel()<sp/>{</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>terminate_.store(</highlight><highlight class="keyword">true</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"></highlight></codeline>
+<codeline lineno="66"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/>std::atomic&lt;bool&gt;<sp/>terminate_{</highlight><highlight class="keyword">false</highlight><highlight class="normal">};</highlight></codeline>
+<codeline lineno="68"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="69"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>ILLIXR</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="/home/friedel/devel/ILLIXR/src/illixr.hpp"/>
+  </compounddef>
+</doxygen>

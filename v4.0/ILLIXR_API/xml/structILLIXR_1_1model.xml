@@ -1,0 +1,75 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structILLIXR_1_1model" kind="struct" language="C++" prot="public">
+    <compoundname>ILLIXR::model</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structILLIXR_1_1model_1a379e5b3700c5772cad8ec376ab74c39b" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int ILLIXR::model::texture_index</definition>
+        <argsstring></argsstring>
+        <name>texture_index</name>
+        <qualifiedname>ILLIXR::model::texture_index</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" line="58" column="31" bodyfile="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" bodystart="58" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1model_1af0602a8cbd200a44c472fadf777c1caf" prot="public" static="no" mutable="no">
+        <type>uint32_t</type>
+        <definition>uint32_t ILLIXR::model::vertex_offset</definition>
+        <argsstring></argsstring>
+        <name>vertex_offset</name>
+        <qualifiedname>ILLIXR::model::vertex_offset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" line="59" column="15" bodyfile="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" bodystart="59" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1model_1a04013c9632a4cc721b5024fe903b3bc7" prot="public" static="no" mutable="no">
+        <type>uint32_t</type>
+        <definition>uint32_t ILLIXR::model::index_offset</definition>
+        <argsstring></argsstring>
+        <name>index_offset</name>
+        <qualifiedname>ILLIXR::model::index_offset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" line="60" column="31" bodyfile="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" bodystart="60" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1model_1a56425f28c694626f4ba6d19ede17ce2a" prot="public" static="no" mutable="no">
+        <type>uint32_t</type>
+        <definition>uint32_t ILLIXR::model::index_count</definition>
+        <argsstring></argsstring>
+        <name>index_count</name>
+        <qualifiedname>ILLIXR::model::index_count</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" line="61" column="31" bodyfile="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" bodystart="61" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" line="57" column="1" bodyfile="/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp" bodystart="57" bodyend="62"/>
+    <listofallmembers>
+      <member refid="structILLIXR_1_1model_1a56425f28c694626f4ba6d19ede17ce2a" prot="public" virt="non-virtual"><scope>ILLIXR::model</scope><name>index_count</name></member>
+      <member refid="structILLIXR_1_1model_1a04013c9632a4cc721b5024fe903b3bc7" prot="public" virt="non-virtual"><scope>ILLIXR::model</scope><name>index_offset</name></member>
+      <member refid="structILLIXR_1_1model_1a379e5b3700c5772cad8ec376ab74c39b" prot="public" virt="non-virtual"><scope>ILLIXR::model</scope><name>texture_index</name></member>
+      <member refid="structILLIXR_1_1model_1af0602a8cbd200a44c472fadf777c1caf" prot="public" virt="non-virtual"><scope>ILLIXR::model</scope><name>vertex_offset</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

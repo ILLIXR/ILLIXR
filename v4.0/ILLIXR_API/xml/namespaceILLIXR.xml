@@ -1,0 +1,1272 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespaceILLIXR" kind="namespace" language="C++">
+    <compoundname>ILLIXR</compoundname>
+    <innerclass refid="classILLIXR_1_1cancellable__sleep" prot="public">ILLIXR::cancellable_sleep</innerclass>
+    <innerclass refid="classILLIXR_1_1data__injection" prot="public">ILLIXR::data_injection</innerclass>
+    <innerclass refid="classILLIXR_1_1data__use__indicator" prot="public">ILLIXR::data_use_indicator</innerclass>
+    <innerclass refid="classILLIXR_1_1debugview" prot="public">ILLIXR::debugview</innerclass>
+    <innerclass refid="structILLIXR_1_1Dependency" prot="public">ILLIXR::Dependency</innerclass>
+    <innerclass refid="classILLIXR_1_1depthai" prot="public">ILLIXR::depthai</innerclass>
+    <innerclass refid="structILLIXR_1_1display__params" prot="public">ILLIXR::display_params</innerclass>
+    <innerclass refid="structILLIXR_1_1DistortionCorrectionVertex" prot="public">ILLIXR::DistortionCorrectionVertex</innerclass>
+    <innerclass refid="structILLIXR_1_1DistortionMatrix" prot="public">ILLIXR::DistortionMatrix</innerclass>
+    <innerclass refid="classILLIXR_1_1dynamic__lib" prot="public">ILLIXR::dynamic_lib</innerclass>
+    <innerclass refid="classILLIXR_1_1event" prot="public">ILLIXR::event</innerclass>
+    <innerclass refid="classILLIXR_1_1fauxpose" prot="public">ILLIXR::fauxpose</innerclass>
+    <innerclass refid="classILLIXR_1_1fauxpose__impl" prot="public">ILLIXR::fauxpose_impl</innerclass>
+    <innerclass refid="classILLIXR_1_1gen__guid" prot="public">ILLIXR::gen_guid</innerclass>
+    <innerclass refid="classILLIXR_1_1gldemo" prot="public">ILLIXR::gldemo</innerclass>
+    <innerclass refid="classILLIXR_1_1ground__truth__slam" prot="public">ILLIXR::ground_truth_slam</innerclass>
+    <innerclass refid="classILLIXR_1_1gtsam__integrator" prot="public">ILLIXR::gtsam_integrator</innerclass>
+    <innerclass refid="structILLIXR_1_1index__params" prot="public">ILLIXR::index_params</innerclass>
+    <innerclass refid="classILLIXR_1_1lazy__load__image" prot="public">ILLIXR::lazy_load_image</innerclass>
+    <innerclass refid="classILLIXR_1_1lighthouse" prot="public">ILLIXR::lighthouse</innerclass>
+    <innerclass refid="classILLIXR_1_1managed__thread" prot="public">ILLIXR::managed_thread</innerclass>
+    <innerclass refid="structILLIXR_1_1model" prot="public">ILLIXR::model</innerclass>
+    <innerclass refid="classILLIXR_1_1native__renderer" prot="public">ILLIXR::native_renderer</innerclass>
+    <innerclass refid="classILLIXR_1_1offline__cam" prot="public">ILLIXR::offline_cam</innerclass>
+    <innerclass refid="classILLIXR_1_1offline__imu" prot="public">ILLIXR::offline_imu</innerclass>
+    <innerclass refid="classILLIXR_1_1offload__data" prot="public">ILLIXR::offload_data</innerclass>
+    <innerclass refid="classILLIXR_1_1offload__reader" prot="public">ILLIXR::offload_reader</innerclass>
+    <innerclass refid="classILLIXR_1_1offload__rendering__client" prot="public">ILLIXR::offload_rendering_client</innerclass>
+    <innerclass refid="classILLIXR_1_1offload__rendering__server" prot="public">ILLIXR::offload_rendering_server</innerclass>
+    <innerclass refid="classILLIXR_1_1offload__rendering__server__loader" prot="public">ILLIXR::offload_rendering_server_loader</innerclass>
+    <innerclass refid="classILLIXR_1_1offload__writer" prot="public">ILLIXR::offload_writer</innerclass>
+    <innerclass refid="classILLIXR_1_1openni__plugin" prot="public">ILLIXR::openni_plugin</innerclass>
+    <innerclass refid="classILLIXR_1_1openwarp__vk" prot="public">ILLIXR::openwarp_vk</innerclass>
+    <innerclass refid="classILLIXR_1_1openwarp__vk__plugin" prot="public">ILLIXR::openwarp_vk_plugin</innerclass>
+    <innerclass refid="structILLIXR_1_1OpenWarpVertex" prot="public">ILLIXR::OpenWarpVertex</innerclass>
+    <innerclass refid="classILLIXR_1_1passthrough__integrator" prot="public">ILLIXR::passthrough_integrator</innerclass>
+    <innerclass refid="classILLIXR_1_1phonebook" prot="public">ILLIXR::phonebook</innerclass>
+    <innerclass refid="classILLIXR_1_1plugin" prot="public">ILLIXR::plugin</innerclass>
+    <innerclass refid="classILLIXR_1_1pose__lookup__impl" prot="public">ILLIXR::pose_lookup_impl</innerclass>
+    <innerclass refid="classILLIXR_1_1pose__prediction__impl" prot="public">ILLIXR::pose_prediction_impl</innerclass>
+    <innerclass refid="structILLIXR_1_1raw__imu__type" prot="public">ILLIXR::raw_imu_type</innerclass>
+    <innerclass refid="classILLIXR_1_1realsense" prot="public">ILLIXR::realsense</innerclass>
+    <innerclass refid="classILLIXR_1_1record" prot="public">ILLIXR::record</innerclass>
+    <innerclass refid="classILLIXR_1_1record__coalescer" prot="public">ILLIXR::record_coalescer</innerclass>
+    <innerclass refid="classILLIXR_1_1record__header" prot="public">ILLIXR::record_header</innerclass>
+    <innerclass refid="classILLIXR_1_1record__imu__cam" prot="public">ILLIXR::record_imu_cam</innerclass>
+    <innerclass refid="classILLIXR_1_1record__logger" prot="public">ILLIXR::record_logger</innerclass>
+    <innerclass refid="classILLIXR_1_1record__rgb__depth" prot="public">ILLIXR::record_rgb_depth</innerclass>
+    <innerclass refid="classILLIXR_1_1relative__clock" prot="public">ILLIXR::relative_clock</innerclass>
+    <innerclass refid="structILLIXR_1_1rendering__params" prot="public">ILLIXR::rendering_params</innerclass>
+    <innerclass refid="classILLIXR_1_1rk4__integrator" prot="public">ILLIXR::rk4_integrator</innerclass>
+    <innerclass refid="classILLIXR_1_1runtime" prot="public">ILLIXR::runtime</innerclass>
+    <innerclass refid="structILLIXR_1_1sensor__types" prot="public">ILLIXR::sensor_types</innerclass>
+    <innerclass refid="structILLIXR_1_1server__params" prot="public">ILLIXR::server_params</innerclass>
+    <innerclass refid="classILLIXR_1_1server__reader" prot="public">ILLIXR::server_reader</innerclass>
+    <innerclass refid="classILLIXR_1_1server__writer" prot="public">ILLIXR::server_writer</innerclass>
+    <innerclass refid="classILLIXR_1_1sqlite__record__logger" prot="public">ILLIXR::sqlite_record_logger</innerclass>
+    <innerclass refid="classILLIXR_1_1sqlite__thread" prot="public">ILLIXR::sqlite_thread</innerclass>
+    <innerclass refid="structILLIXR_1_1state__plus" prot="public">ILLIXR::state_plus</innerclass>
+    <innerclass refid="classILLIXR_1_1stdout__record__logger" prot="public">ILLIXR::stdout_record_logger</innerclass>
+    <innerclass refid="classILLIXR_1_1stoplight" prot="public">ILLIXR::stoplight</innerclass>
+    <innerclass refid="classILLIXR_1_1switchboard" prot="public">ILLIXR::switchboard</innerclass>
+    <innerclass refid="classILLIXR_1_1tcp__network__backend" prot="public">ILLIXR::tcp_network_backend</innerclass>
+    <innerclass refid="structILLIXR_1_1texture" prot="public">ILLIXR::texture</innerclass>
+    <innerclass refid="classILLIXR_1_1threadloop" prot="public">ILLIXR::threadloop</innerclass>
+    <innerclass refid="classILLIXR_1_1time__point" prot="public">ILLIXR::time_point</innerclass>
+    <innerclass refid="classILLIXR_1_1timewarp__gl" prot="public">ILLIXR::timewarp_gl</innerclass>
+    <innerclass refid="classILLIXR_1_1timewarp__vk" prot="public">ILLIXR::timewarp_vk</innerclass>
+    <innerclass refid="classILLIXR_1_1timewarp__vk__plugin" prot="public">ILLIXR::timewarp_vk_plugin</innerclass>
+    <innerclass refid="structILLIXR_1_1vertex" prot="public">ILLIXR::vertex</innerclass>
+    <innerclass refid="classILLIXR_1_1video__decoder" prot="public">ILLIXR::video_decoder</innerclass>
+    <innerclass refid="classILLIXR_1_1video__encoder" prot="public">ILLIXR::video_encoder</innerclass>
+    <innerclass refid="classILLIXR_1_1viewer" prot="public">ILLIXR::viewer</innerclass>
+    <innerclass refid="classILLIXR_1_1vkdemo" prot="public">ILLIXR::vkdemo</innerclass>
+    <innerclass refid="classILLIXR_1_1vkdemo__plugin" prot="public">ILLIXR::vkdemo_plugin</innerclass>
+    <innerclass refid="structILLIXR_1_1WarpMatrices" prot="public">ILLIXR::WarpMatrices</innerclass>
+    <innerclass refid="classILLIXR_1_1webcam" prot="public">ILLIXR::webcam</innerclass>
+    <innerclass refid="classILLIXR_1_1xlib__gl__extended__window" prot="public">ILLIXR::xlib_gl_extended_window</innerclass>
+    <innerclass refid="classILLIXR_1_1zed__camera" prot="public">ILLIXR::zed_camera</innerclass>
+    <innerclass refid="classILLIXR_1_1zed__camera__thread" prot="public">ILLIXR::zed_camera_thread</innerclass>
+    <innerclass refid="classILLIXR_1_1zed__imu__thread" prot="public">ILLIXR::zed_imu_thread</innerclass>
+    <innernamespace refid="namespaceILLIXR_1_1data__format">ILLIXR::data_format</innernamespace>
+    <innernamespace refid="namespaceILLIXR_1_1display">ILLIXR::display</innernamespace>
+    <innernamespace refid="namespaceILLIXR_1_1math__util">ILLIXR::math_util</innernamespace>
+    <innernamespace refid="namespaceILLIXR_1_1network">ILLIXR::network</innernamespace>
+    <innernamespace refid="namespaceILLIXR_1_1vulkan">ILLIXR::vulkan</innernamespace>
+    <innernamespace refid="namespaceILLIXR_1_1zed__capture">ILLIXR::zed_capture</innernamespace>
+    <sectiondef kind="typedef">
+      <memberdef kind="typedef" id="namespaceILLIXR_1a2947c02ad28d8cf173856c9fd1b04e04" prot="public" static="no">
+        <type>std::unique_ptr&lt; void, std::function&lt; void(void *)&gt; &gt;</type>
+        <definition>using ILLIXR::void_ptr = typedef std::unique_ptr&lt;void, std::function&lt;void(void*)&gt; &gt;</definition>
+        <argsstring></argsstring>
+        <name>void_ptr</name>
+        <qualifiedname>ILLIXR::void_ptr</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/dynamic_lib.hpp" line="15" column="1" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/dynamic_lib.hpp" bodystart="15" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="namespaceILLIXR_1a47e54164b99d8091f8d6fe5e8c143189" prot="public" static="no">
+        <type>std::size_t</type>
+        <definition>typedef std::size_t ILLIXR::plugin_id_t</definition>
+        <argsstring></argsstring>
+        <name>plugin_id_t</name>
+        <qualifiedname>ILLIXR::plugin_id_t</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/plugin.hpp" line="29" column="1" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/plugin.hpp" bodystart="29" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="namespaceILLIXR_1a72eb5ebe7daf68b655e29826f2984257" prot="public" static="no">
+        <type>long</type>
+        <definition>using ILLIXR::clock_rep_ = typedef long</definition>
+        <argsstring></argsstring>
+        <name>clock_rep_</name>
+        <qualifiedname>ILLIXR::clock_rep_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Mimic of <computeroutput>std::chrono::time_point&lt;Clock, Rep&gt;</computeroutput> <ulink url="https://en.cppreference.com/w/cpp/chrono/time_point">1</ulink>.</para>
+<para>Can&apos;t use <computeroutput>std::chrono::time_point&lt;Clock, Rep&gt;</computeroutput>, because the <computeroutput>Clock</computeroutput> must satisfy the Clock interface <ulink url="https://en.cppreference.com/w/cpp/named_req/Clock">2</ulink>, but <computeroutput><ref refid="classILLIXR_1_1relative__clock" kindref="compound">relative_clock</ref></computeroutput> cannot satisfy this interface because <computeroutput>relative_clock::now()</computeroutput> is a stateful (instance method) not pure (class method). Instead, we will mimic the interface of <ulink url="https://en.cppreference.com/w/cpp/chrono/time_point">1</ulink> here. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/relative_clock.hpp" line="22" column="1" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/relative_clock.hpp" bodystart="22" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="namespaceILLIXR_1a98d1ebaf83743e54d41553668fdd6d54" prot="public" static="no">
+        <type>std::nano</type>
+        <definition>using ILLIXR::clock_period_ = typedef std::nano</definition>
+        <argsstring></argsstring>
+        <name>clock_period_</name>
+        <qualifiedname>ILLIXR::clock_period_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/relative_clock.hpp" line="23" column="1" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/relative_clock.hpp" bodystart="23" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="namespaceILLIXR_1af663e0fe60cf9b6377a18450f400d202" prot="public" static="no">
+        <type>std::chrono::duration&lt; <ref refid="namespaceILLIXR_1a72eb5ebe7daf68b655e29826f2984257" kindref="member">clock_rep_</ref>, clock_period_ &gt;</type>
+        <definition>using ILLIXR::clock_duration_ = typedef std::chrono::duration&lt;clock_rep_, clock_period_&gt;</definition>
+        <argsstring></argsstring>
+        <name>clock_duration_</name>
+        <qualifiedname>ILLIXR::clock_duration_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/relative_clock.hpp" line="24" column="1" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/relative_clock.hpp" bodystart="24" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="namespaceILLIXR_1a43c3235ba9e3c6d60b541f692ea18ec6" prot="public" static="no">
+        <type>relative_clock::duration</type>
+        <definition>using ILLIXR::duration = typedef relative_clock::duration</definition>
+        <argsstring></argsstring>
+        <name>duration</name>
+        <qualifiedname>ILLIXR::duration</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/relative_clock.hpp" line="141" column="1" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/relative_clock.hpp" bodystart="141" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="namespaceILLIXR_1ab8e7220c3b89707d40fd7f24cd20780f" prot="public" static="no">
+        <type><ref refid="classILLIXR_1_1plugin" kindref="compound">plugin</ref> *(*</type>
+        <definition>typedef plugin *(* ILLIXR::plugin_factory) (phonebook *)</definition>
+        <argsstring>)(phonebook *)</argsstring>
+        <name>plugin_factory</name>
+        <qualifiedname>ILLIXR::plugin_factory</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/runtime.hpp" line="12" column="9" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/runtime.hpp" bodystart="12" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="namespaceILLIXR_1a9cf6039c52330ae608133016365294ce" prot="public" static="no">
+        <type><ref refid="structILLIXR_1_1data__format_1_1pose__type" kindref="compound">data_format::pose_type</ref></type>
+        <definition>typedef data_format::pose_type ILLIXR::sensor_types</definition>
+        <argsstring></argsstring>
+        <name>sensor_types</name>
+        <qualifiedname>ILLIXR::sensor_types</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/ground_truth_slam/plugin.hpp" line="19" column="32" bodyfile="/home/friedel/devel/ILLIXR/plugins/ground_truth_slam/plugin.hpp" bodystart="19" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="namespaceILLIXR_1a271fef1724f7f36989586c7a69879235" prot="public" static="no">
+        <type><ref refid="classILLIXR_1_1threadloop" kindref="compound">threadloop</ref></type>
+        <definition>typedef threadloop ILLIXR::timewarp_type</definition>
+        <argsstring></argsstring>
+        <name>timewarp_type</name>
+        <qualifiedname>ILLIXR::timewarp_type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_gl/plugin.hpp" line="20" column="20" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_gl/plugin.hpp" bodystart="20" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="var">
+      <memberdef kind="variable" id="namespaceILLIXR_1a3b86b0754815a723b74adaf365f567f2" prot="public" static="yes" mutable="no">
+        <type>const bool</type>
+        <definition>const bool ILLIXR::ENABLE_VERBOSE_ERRORS</definition>
+        <argsstring></argsstring>
+        <name>ENABLE_VERBOSE_ERRORS</name>
+        <qualifiedname>ILLIXR::ENABLE_VERBOSE_ERRORS</qualifiedname>
+        <initializer>{getenv(&quot;ILLIXR_ENABLE_VERBOSE_ERRORS&quot;) != nullptr &amp;&amp;
+                                        <ref refid="namespaceILLIXR_1a6a413eeed5a6a30c4b09dbbb4717fcb4" kindref="member">ILLIXR::str_to_bool</ref>(getenv(&quot;ILLIXR_ENABLE_VERBOSE_ERRORS&quot;))}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/error_util.hpp" line="31" column="19" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/error_util.hpp" bodystart="31" bodyend="32"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceILLIXR_1a0cdb3991313b94ca0596893566d3dba4" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr float</type>
+        <definition>constexpr float ILLIXR::server_fov</definition>
+        <argsstring></argsstring>
+        <name>server_fov</name>
+        <qualifiedname>ILLIXR::server_fov</qualifiedname>
+        <initializer>= 0.99</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/global_module_defs.hpp" line="67" column="17" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/global_module_defs.hpp" bodystart="67" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceILLIXR_1a6560d560ad35875833f9b6e68be8420e" prot="public" static="no" mutable="no">
+        <type>const <ref refid="classILLIXR_1_1record__header" kindref="compound">record_header</ref></type>
+        <definition>const record_header ILLIXR::_plugin_start_header</definition>
+        <argsstring></argsstring>
+        <name>_plugin_start_header</name>
+        <qualifiedname>ILLIXR::_plugin_start_header</qualifiedname>
+        <initializer>{
+    &quot;plugin_name&quot;,
+    {
+        {&quot;plugin_id&quot;, typeid(plugin_id_t)},
+        {&quot;plugin_name&quot;, typeid(std::string)},
+    },
+}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/plugin.hpp" line="34" column="21" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/plugin.hpp" bodystart="34" bodyend="40"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceILLIXR_1a3a5a119057328eab7ea12572c9670e61" prot="public" static="yes" mutable="no">
+        <type>std::chrono::milliseconds</type>
+        <definition>std::chrono::milliseconds ILLIXR::LOG_BUFFER_DELAY</definition>
+        <argsstring></argsstring>
+        <name>LOG_BUFFER_DELAY</name>
+        <qualifiedname>ILLIXR::LOG_BUFFER_DELAY</qualifiedname>
+        <initializer>{1000}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/record_logger.hpp" line="280" column="34" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/record_logger.hpp" bodystart="280" bodyend="280"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceILLIXR_1a964eaf7305313dbefec5f9277ed4104d" prot="public" static="no" mutable="no">
+        <type>const <ref refid="classILLIXR_1_1data__format_1_1proper__quaternion" kindref="compound">data_format::proper_quaterniond</ref></type>
+        <definition>const data_format::proper_quaterniond ILLIXR::dq_0(1., 0., 0., 0.)</definition>
+        <argsstring>(1., 0., 0., 0.)</argsstring>
+        <name>dq_0</name>
+        <qualifiedname>ILLIXR::dq_0</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/runge-kutta.hpp" line="9" column="39"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceILLIXR_1a2593aa285d9ea7b5679dfae88dffba85" prot="public" static="no" mutable="no">
+        <type>const std::vector&lt; std::string &gt;</type>
+        <definition>const std::vector&lt;std::string&gt; ILLIXR::ignore_vars</definition>
+        <argsstring></argsstring>
+        <name>ignore_vars</name>
+        <qualifiedname>ILLIXR::ignore_vars</qualifiedname>
+        <initializer>= {&quot;plugins&quot;}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="44" column="19" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="44" bodyend="44"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceILLIXR_1ae0c2800ed658a27b98927f3b869f0a7a" prot="public" static="no" mutable="no">
+        <type>const std::vector&lt; std::string &gt;</type>
+        <definition>const std::vector&lt;std::string&gt; ILLIXR::ENV_VARS</definition>
+        <argsstring></argsstring>
+        <name>ENV_VARS</name>
+        <qualifiedname>ILLIXR::ENV_VARS</qualifiedname>
+        <initializer>= {
+    &quot;ILLIXR_ENABLE_PRE_SLEEP&quot;,
+    &quot;ILLIXR_LOG_LEVEL&quot;,
+    &quot;ILLIXR_RUN_DURATION&quot;,
+}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="45" column="19" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="45" bodyend="49"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceILLIXR_1aa1ef64d8e133c6f00cad4193b503c3dc" prot="public" static="no" mutable="no">
+        <type>const <ref refid="classILLIXR_1_1record__header" kindref="compound">record_header</ref></type>
+        <definition>const record_header ILLIXR::_switchboard_callback_header</definition>
+        <argsstring></argsstring>
+        <name>_switchboard_callback_header</name>
+        <qualifiedname>ILLIXR::_switchboard_callback_header</qualifiedname>
+        <initializer>{
+    &quot;switchboard_callback&quot;,
+    {
+        {&quot;plugin_id&quot;, typeid(plugin_id_t)},
+        {&quot;topic_name&quot;, typeid(std::string)},
+        {&quot;iteration_no&quot;, typeid(std::size_t)},
+        {&quot;cpu_time_start&quot;, typeid(std::chrono::nanoseconds)},
+        {&quot;cpu_time_stop&quot;, typeid(std::chrono::nanoseconds)},
+        {&quot;wall_time_start&quot;, typeid(std::chrono::high_resolution_clock::time_point)},
+        {&quot;wall_time_stop&quot;, typeid(std::chrono::high_resolution_clock::time_point)},
+    }}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>@Should be private to Switchboard. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="53" column="21" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="53" bodyend="63"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceILLIXR_1ae8328ceaee2002a313293dafad11c3a8" prot="public" static="no" mutable="no">
+        <type>const <ref refid="classILLIXR_1_1record__header" kindref="compound">record_header</ref></type>
+        <definition>const record_header ILLIXR::_switchboard_topic_stop_header</definition>
+        <argsstring></argsstring>
+        <name>_switchboard_topic_stop_header</name>
+        <qualifiedname>ILLIXR::_switchboard_topic_stop_header</qualifiedname>
+        <initializer>{&quot;switchboard_topic_stop&quot;,
+                                                   {
+                                                       {&quot;plugin_id&quot;, typeid(plugin_id_t)},
+                                                       {&quot;topic_name&quot;, typeid(std::string)},
+                                                       {&quot;enqueued&quot;, typeid(std::size_t)},
+                                                       {&quot;dequeued&quot;, typeid(std::size_t)},
+                                                       {&quot;idle_cycles&quot;, typeid(std::size_t)},
+                                                   }}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>@Should be private to Switchboard. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="68" column="21" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="68" bodyend="75"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceILLIXR_1a1c2af3d638b51de49c674287c2716548" prot="public" static="no" mutable="no">
+        <type>const <ref refid="classILLIXR_1_1record__header" kindref="compound">record_header</ref></type>
+        <definition>const record_header ILLIXR::_threadloop_iteration_header</definition>
+        <argsstring></argsstring>
+        <name>_threadloop_iteration_header</name>
+        <qualifiedname>ILLIXR::_threadloop_iteration_header</qualifiedname>
+        <initializer>{
+    &quot;threadloop_iteration&quot;,
+    {
+        {&quot;plugin_id&quot;, typeid(std::size_t)},
+        {&quot;iteration_no&quot;, typeid(std::size_t)},
+        {&quot;skips&quot;, typeid(std::size_t)},
+        {&quot;cpu_time_start&quot;, typeid(std::chrono::nanoseconds)},
+        {&quot;cpu_time_stop&quot;, typeid(std::chrono::nanoseconds)},
+        {&quot;wall_time_start&quot;, typeid(std::chrono::high_resolution_clock::time_point)},
+        {&quot;wall_time_stop&quot;, typeid(std::chrono::high_resolution_clock::time_point)},
+    }}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/threadloop.hpp" line="20" column="21" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/threadloop.hpp" bodystart="20" bodyend="30"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceILLIXR_1af1f1dc28bcc5464e7445a4a0d4e2c980" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t ILLIXR::log_count_</definition>
+        <argsstring></argsstring>
+        <name>log_count_</name>
+        <qualifiedname>ILLIXR::log_count_</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/gldemo/plugin.hpp" line="17" column="14" bodyfile="/home/friedel/devel/ILLIXR/plugins/gldemo/plugin.hpp" bodystart="17" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceILLIXR_1a2e256a5c050d931c270c42634f948dd4" prot="public" static="no" mutable="no">
+        <type>const size_t</type>
+        <definition>const size_t ILLIXR::LOG_PERIOD</definition>
+        <argsstring></argsstring>
+        <name>LOG_PERIOD</name>
+        <qualifiedname>ILLIXR::LOG_PERIOD</qualifiedname>
+        <initializer>= 20</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/gldemo/plugin.hpp" line="18" column="14" bodyfile="/home/friedel/devel/ILLIXR/plugins/gldemo/plugin.hpp" bodystart="18" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="namespaceILLIXR_1ad26c997bbb58ee34724c1d1645ca3cf3" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void ILLIXR::report_and_clear_errno</definition>
+        <argsstring>(const std::string &amp;file, const int &amp;line, const std::string &amp;function, const std::string &amp;msg=&quot;&quot;)</argsstring>
+        <name>report_and_clear_errno</name>
+        <qualifiedname>ILLIXR::report_and_clear_errno</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>file</declname>
+        </param>
+        <param>
+          <type>const int &amp;</type>
+          <declname>line</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>function</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>msg</declname>
+          <defval>&quot;&quot;</defval>
+        </param>
+        <briefdescription>
+<para>Support function to report errno values when debugging (NDEBUG). </para>
+        </briefdescription>
+        <detaileddescription>
+<para>If errno is set, this function will report errno&apos;s value and the calling context. It will subsequently clear errno (reset value to 0). Otherwise, this function does nothing. </para>
+        </detaileddescription>
+        <inbodydescription>
+<para>NDEBUG</para>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/error_util.hpp" line="41" column="13" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/error_util.hpp" bodystart="41" bodyend="54"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceILLIXR_1a0f43f628688a8968a09a358bfa012a22" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void ILLIXR::abort</definition>
+        <argsstring>(const std::string &amp;msg=&quot;&quot;, const int error_val=1)</argsstring>
+        <name>abort</name>
+        <qualifiedname>ILLIXR::abort</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>msg</declname>
+          <defval>&quot;&quot;</defval>
+        </param>
+        <param>
+          <type>const int</type>
+          <declname>error_val</declname>
+          <defval>1</defval>
+        </param>
+        <briefdescription>
+<para>Exits the application during a fatal error. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Switches to using abort during debugging over std::exit so that we can capture SIGABRT for debugging. </para>
+        </detaileddescription>
+        <inbodydescription>
+<para>NDEBUG</para>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/error_util.hpp" line="62" column="13" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/error_util.hpp" bodystart="62" bodyend="69"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceILLIXR_1a6a413eeed5a6a30c4b09dbbb4717fcb4" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool ILLIXR::str_to_bool</definition>
+        <argsstring>(const std::string &amp;var)</argsstring>
+        <name>str_to_bool</name>
+        <qualifiedname>ILLIXR::str_to_bool</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>var</declname>
+        </param>
+        <briefdescription>
+<para>Convert a string containing a (python) boolean to the bool type. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/global_module_defs.hpp" line="97" column="13" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/global_module_defs.hpp" bodystart="97" bodyend="105"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceILLIXR_1ad6e83d83a0e7b1ad0f72c712ac2ce43c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>time_point::duration</type>
+        <definition>time_point::duration ILLIXR::operator-</definition>
+        <argsstring>(const time_point &amp;lhs, const time_point &amp;rhs)</argsstring>
+        <name>operator-</name>
+        <qualifiedname>ILLIXR::operator-</qualifiedname>
+        <param>
+          <type>const time_point &amp;</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>const time_point &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/relative_clock.hpp" line="52" column="29" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/relative_clock.hpp" bodystart="52" bodyend="54"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceILLIXR_1aa33c1cd42b2262254e670145e895f4aa" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>time_point</type>
+        <definition>time_point ILLIXR::operator+</definition>
+        <argsstring>(const time_point &amp;pt, const time_point::duration &amp;d)</argsstring>
+        <name>operator+</name>
+        <qualifiedname>ILLIXR::operator+</qualifiedname>
+        <param>
+          <type>const time_point &amp;</type>
+          <declname>pt</declname>
+        </param>
+        <param>
+          <type>const time_point::duration &amp;</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/relative_clock.hpp" line="56" column="19" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/relative_clock.hpp" bodystart="56" bodyend="58"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceILLIXR_1ad5b85ebe4828425191c98f316b2626dc" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>time_point</type>
+        <definition>time_point ILLIXR::operator+</definition>
+        <argsstring>(const time_point::duration &amp;d, const time_point &amp;pt)</argsstring>
+        <name>operator+</name>
+        <qualifiedname>ILLIXR::operator+</qualifiedname>
+        <param>
+          <type>const time_point::duration &amp;</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>const time_point &amp;</type>
+          <declname>pt</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/relative_clock.hpp" line="60" column="19" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/relative_clock.hpp" bodystart="60" bodyend="62"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceILLIXR_1a2836f0d61f4aa70b7be57ca2279eb0c3" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool ILLIXR::operator&lt;</definition>
+        <argsstring>(const time_point &amp;lhs, const time_point &amp;rhs)</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>ILLIXR::operator&lt;</qualifiedname>
+        <param>
+          <type>const time_point &amp;</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>const time_point &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/relative_clock.hpp" line="64" column="8" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/relative_clock.hpp" bodystart="64" bodyend="66"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceILLIXR_1a29d15810487d836d92f754a8169306a9" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool ILLIXR::operator&gt;</definition>
+        <argsstring>(const time_point &amp;lhs, const time_point &amp;rhs)</argsstring>
+        <name>operator&gt;</name>
+        <qualifiedname>ILLIXR::operator&gt;</qualifiedname>
+        <param>
+          <type>const time_point &amp;</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>const time_point &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/relative_clock.hpp" line="68" column="13" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/relative_clock.hpp" bodystart="68" bodyend="70"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceILLIXR_1a5316d70c2e4cb96ab72a9ec42849e52d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool ILLIXR::operator&lt;=</definition>
+        <argsstring>(const time_point &amp;lhs, const time_point &amp;rhs)</argsstring>
+        <name>operator&lt;=</name>
+        <qualifiedname>ILLIXR::operator&lt;=</qualifiedname>
+        <param>
+          <type>const time_point &amp;</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>const time_point &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/relative_clock.hpp" line="72" column="8" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/relative_clock.hpp" bodystart="72" bodyend="74"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceILLIXR_1a52d492855ee7acc5e1732b79ccb153ca" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool ILLIXR::operator&gt;=</definition>
+        <argsstring>(const time_point &amp;lhs, const time_point &amp;rhs)</argsstring>
+        <name>operator&gt;=</name>
+        <qualifiedname>ILLIXR::operator&gt;=</qualifiedname>
+        <param>
+          <type>const time_point &amp;</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>const time_point &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/relative_clock.hpp" line="76" column="13" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/relative_clock.hpp" bodystart="76" bodyend="78"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceILLIXR_1a3335232b39d63254c35b3e79f1861569" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool ILLIXR::operator==</definition>
+        <argsstring>(const time_point &amp;lhs, const time_point &amp;rhs)</argsstring>
+        <name>operator==</name>
+        <qualifiedname>ILLIXR::operator==</qualifiedname>
+        <param>
+          <type>const time_point &amp;</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>const time_point &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/relative_clock.hpp" line="80" column="13" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/relative_clock.hpp" bodystart="80" bodyend="82"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceILLIXR_1acec1bd094f680072a9b7d960e3142d17" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool ILLIXR::operator!=</definition>
+        <argsstring>(const time_point &amp;lhs, const time_point &amp;rhs)</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>ILLIXR::operator!=</qualifiedname>
+        <param>
+          <type>const time_point &amp;</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>const time_point &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/relative_clock.hpp" line="84" column="13" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/relative_clock.hpp" bodystart="84" bodyend="86"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceILLIXR_1ab9eee51bf9fb91254d2f9b243fdd566e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename Unit</type>
+            <defval>std::ratio&lt;1&gt;</defval>
+          </param>
+        </templateparamlist>
+        <type>double</type>
+        <definition>double ILLIXR::duration_to_double</definition>
+        <argsstring>(duration dur)</argsstring>
+        <name>duration_to_double</name>
+        <qualifiedname>ILLIXR::duration_to_double</qualifiedname>
+        <param>
+          <type>duration</type>
+          <declname>dur</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/relative_clock.hpp" line="144" column="8" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/relative_clock.hpp" bodystart="144" bodyend="146"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceILLIXR_1af7d1ea3d78aa132b22dae202a5d73458" prot="public" static="no" constexpr="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>constexpr duration</type>
+        <definition>constexpr duration ILLIXR::freq_to_period</definition>
+        <argsstring>(double fps)</argsstring>
+        <name>freq_to_period</name>
+        <qualifiedname>ILLIXR::freq_to_period</qualifiedname>
+        <param>
+          <type>double</type>
+          <declname>fps</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/relative_clock.hpp" line="148" column="20" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/relative_clock.hpp" bodystart="148" bodyend="150"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceILLIXR_1aec11e8f2ff03d257d7c2afae3cb2f4dd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const Eigen::Vector3d</type>
+        <definition>const Eigen::Vector3d ILLIXR::Gravity</definition>
+        <argsstring>(0.0, 0.0, 9.81)</argsstring>
+        <name>Gravity</name>
+        <qualifiedname>ILLIXR::Gravity</qualifiedname>
+        <param>
+          <type>0.</type>
+          <declname>0</declname>
+        </param>
+        <param>
+          <type>0.</type>
+          <declname>0</declname>
+        </param>
+        <param>
+          <type>9.</type>
+          <declname>81</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Initial quaternion </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/runge-kutta.hpp" line="10" column="39" declfile="/home/friedel/devel/ILLIXR/include/illixr/runge-kutta.hpp" declline="10" declcolumn="39"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceILLIXR_1a5bd8d81cfe65b937340c67e9a589019b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Eigen::Matrix3d</type>
+        <definition>Eigen::Matrix3d ILLIXR::symmetric_skew</definition>
+        <argsstring>(const Eigen::Vector3d &amp;vec)</argsstring>
+        <name>symmetric_skew</name>
+        <qualifiedname>ILLIXR::symmetric_skew</qualifiedname>
+        <param>
+          <type>const Eigen::Vector3d &amp;</type>
+          <declname>vec</declname>
+        </param>
+        <briefdescription>
+<para>Generates a skew-symmetric matrix from the given 3-element vector. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Gravitational acceleration, at sea level, on Earth </para>
+<para>Based on equation 6 from <ulink url="http://mars.cs.umn.edu/tr/reports/Trawny05b.pdf">http://mars.cs.umn.edu/tr/reports/Trawny05b.pdf</ulink> </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/runge-kutta.hpp" line="17" column="24" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/runge-kutta.hpp" bodystart="17" bodyend="21"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceILLIXR_1a8c301a452ca3632a038471cd4a8971d0" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Eigen::Matrix4d</type>
+        <definition>Eigen::Matrix4d ILLIXR::makeOmega</definition>
+        <argsstring>(const Eigen::Vector3d &amp;w)</argsstring>
+        <name>makeOmega</name>
+        <qualifiedname>ILLIXR::makeOmega</qualifiedname>
+        <param>
+          <type>const Eigen::Vector3d &amp;</type>
+          <declname>w</declname>
+        </param>
+        <briefdescription>
+<para>Generate the Omega matrix from the input 3-element vector. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Based on equation 48 of <ulink url="http://mars.cs.umn.edu/tr/reports/Trawny05b.pdf">http://mars.cs.umn.edu/tr/reports/Trawny05b.pdf</ulink> </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/runge-kutta.hpp" line="28" column="24" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/runge-kutta.hpp" bodystart="28" bodyend="34"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceILLIXR_1a148f0178da2163d9502c8baa98b80e25" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classILLIXR_1_1data__format_1_1proper__quaternion" kindref="compound">data_format::proper_quaterniond</ref></type>
+        <definition>data_format::proper_quaterniond ILLIXR::delta_q</definition>
+        <argsstring>(const data_format::proper_quaterniond &amp;k_n)</argsstring>
+        <name>delta_q</name>
+        <qualifiedname>ILLIXR::delta_q</qualifiedname>
+        <param>
+          <type>const <ref refid="classILLIXR_1_1data__format_1_1proper__quaternion" kindref="compound">data_format::proper_quaterniond</ref> &amp;</type>
+          <declname>k_n</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Calculate the change in orientation based on the input Quaternion <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>k_n</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The input Quaternion </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The change in orientation </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/runge-kutta.hpp" line="41" column="40" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/runge-kutta.hpp" bodystart="41" bodyend="45"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceILLIXR_1a2ed3180c01ca68739457d9e6e1bb345b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classILLIXR_1_1data__format_1_1proper__quaternion" kindref="compound">data_format::proper_quaterniond</ref></type>
+        <definition>data_format::proper_quaterniond ILLIXR::q_dot</definition>
+        <argsstring>(const Eigen::Vector3d &amp;av, const data_format::proper_quaterniond &amp;dq)</argsstring>
+        <name>q_dot</name>
+        <qualifiedname>ILLIXR::q_dot</qualifiedname>
+        <param>
+          <type>const Eigen::Vector3d &amp;</type>
+          <declname>av</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classILLIXR_1_1data__format_1_1proper__quaternion" kindref="compound">data_format::proper_quaterniond</ref> &amp;</type>
+          <declname>dq</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>f(x) for the orientation quaternion <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>av</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Vector representing the angular velocity </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>dq</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The current orientation represented by a quaternion </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The updated quaternion as a new instance </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/runge-kutta.hpp" line="53" column="40" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/runge-kutta.hpp" bodystart="53" bodyend="55"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceILLIXR_1ab37b29077ea259ad97e7a7a6eda126ba" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Eigen::Vector3d</type>
+        <definition>Eigen::Vector3d ILLIXR::p_dot</definition>
+        <argsstring>(const Eigen::Vector3d &amp;iv, const Eigen::Vector3d &amp;k_n)</argsstring>
+        <name>p_dot</name>
+        <qualifiedname>ILLIXR::p_dot</qualifiedname>
+        <param>
+          <type>const Eigen::Vector3d &amp;</type>
+          <declname>iv</declname>
+        </param>
+        <param>
+          <type>const Eigen::Vector3d &amp;</type>
+          <declname>k_n</declname>
+        </param>
+        <briefdescription>
+<para>f(x) for the position Calculate the new position based on the initial velocity and change in velocity </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>iv</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The initial velocity as a vector </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>k_n</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The change in velocity as a vector </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The updated position </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/runge-kutta.hpp" line="64" column="24" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/runge-kutta.hpp" bodystart="64" bodyend="66"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceILLIXR_1a262e769f9eff33421412d36cd4c20767" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Eigen::Vector3d</type>
+        <definition>Eigen::Vector3d ILLIXR::v_dot</definition>
+        <argsstring>(const data_format::proper_quaterniond &amp;dq, const data_format::proper_quaterniond &amp;q, const Eigen::Vector3d &amp;l_acc)</argsstring>
+        <name>v_dot</name>
+        <qualifiedname>ILLIXR::v_dot</qualifiedname>
+        <param>
+          <type>const <ref refid="classILLIXR_1_1data__format_1_1proper__quaternion" kindref="compound">data_format::proper_quaterniond</ref> &amp;</type>
+          <declname>dq</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classILLIXR_1_1data__format_1_1proper__quaternion" kindref="compound">data_format::proper_quaterniond</ref> &amp;</type>
+          <declname>q</declname>
+        </param>
+        <param>
+          <type>const Eigen::Vector3d &amp;</type>
+          <declname>l_acc</declname>
+        </param>
+        <briefdescription>
+<para>f(x) for the velocity Calculate the updated velocity from the acceleration and initial and delta quaternions </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>dq</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The delta quaternion (change) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>q</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The initial quaternion </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>l_acc</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The acceleration as a vector </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The calculated velocity as a vector </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/runge-kutta.hpp" line="76" column="24" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/runge-kutta.hpp" bodystart="76" bodyend="81"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceILLIXR_1a336855893ddf44edcfa95f29f59de96b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>T</type>
+        <definition>T ILLIXR::solve</definition>
+        <argsstring>(const T &amp;yn, const T &amp;k1, const T &amp;k2, const T &amp;k3, const T &amp;k4)</argsstring>
+        <name>solve</name>
+        <qualifiedname>ILLIXR::solve</qualifiedname>
+        <param>
+          <type>const T &amp;</type>
+          <declname>yn</declname>
+        </param>
+        <param>
+          <type>const T &amp;</type>
+          <declname>k1</declname>
+        </param>
+        <param>
+          <type>const T &amp;</type>
+          <declname>k2</declname>
+        </param>
+        <param>
+          <type>const T &amp;</type>
+          <declname>k3</declname>
+        </param>
+        <param>
+          <type>const T &amp;</type>
+          <declname>k4</declname>
+        </param>
+        <briefdescription>
+<para>Solve for the Runge-Kutta 4th order approximation. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="templateparam"><parameteritem>
+<parameternamelist>
+<parametername>T</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The data type </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>yn</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The value at the last time step </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>k1</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Runge-Kutta first order </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>k2</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Runge-Kutta second order </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>k3</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Runge-Kutta third order </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>k4</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Runge-Kutta fourth order </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The approximated value </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/runge-kutta.hpp" line="94" column="10" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/runge-kutta.hpp" bodystart="94" bodyend="96"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceILLIXR_1a2799a40ef7c819000b0c30b0fe7d9ebd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::ostream &amp;</type>
+        <definition>std::ostream &amp; ILLIXR::operator&lt;&lt;</definition>
+        <argsstring>(std::ostream &amp;os, const state_plus &amp;sp)</argsstring>
+        <name>operator&lt;&lt;</name>
+        <qualifiedname>ILLIXR::operator&lt;&lt;</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>os</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structILLIXR_1_1state__plus" kindref="compound">state_plus</ref> &amp;</type>
+          <declname>sp</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/runge-kutta.hpp" line="120" column="1" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/runge-kutta.hpp" bodystart="120" bodyend="125"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceILLIXR_1a2877edb6b96154ae5d478c6d98a0b7c0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structILLIXR_1_1state__plus" kindref="compound">state_plus</ref></type>
+        <definition>state_plus ILLIXR::predict_mean_rk4</definition>
+        <argsstring>(double dt, const state_plus &amp;sp, const Eigen::Vector3d &amp;ang_vel, const Eigen::Vector3d &amp;linear_acc, const Eigen::Vector3d &amp;ang_vel2, const Eigen::Vector3d &amp;linear_acc2)</argsstring>
+        <name>predict_mean_rk4</name>
+        <qualifiedname>ILLIXR::predict_mean_rk4</qualifiedname>
+        <param>
+          <type>double</type>
+          <declname>dt</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structILLIXR_1_1state__plus" kindref="compound">state_plus</ref> &amp;</type>
+          <declname>sp</declname>
+        </param>
+        <param>
+          <type>const Eigen::Vector3d &amp;</type>
+          <declname>ang_vel</declname>
+        </param>
+        <param>
+          <type>const Eigen::Vector3d &amp;</type>
+          <declname>linear_acc</declname>
+        </param>
+        <param>
+          <type>const Eigen::Vector3d &amp;</type>
+          <declname>ang_vel2</declname>
+        </param>
+        <param>
+          <type>const Eigen::Vector3d &amp;</type>
+          <declname>linear_acc2</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Calculate the updated state (orientation, position, and velocity) based on the initial and final velocities and accelerations <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>dt</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The time between initial and final states (time step) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>sp</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The initial state </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>ang_vel</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The initial angular velocity </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>linear_acc</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The initial linear acceleration </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>ang_vel2</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The final angular velocity </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>linear_acc2</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The final angular acceleration </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The final state </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/runge-kutta.hpp" line="138" column="12" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/runge-kutta.hpp" bodystart="138" bodyend="197"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceILLIXR_1aeed593055084a9168eb16a5ff1ac0235" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>runtime *</type>
+        <definition>runtime * ILLIXR::runtime_factory</definition>
+        <argsstring>()</argsstring>
+        <name>runtime_factory</name>
+        <qualifiedname>ILLIXR::runtime_factory</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/runtime.hpp" line="46" column="20" declfile="/home/friedel/devel/ILLIXR/include/illixr/runtime.hpp" declline="46" declcolumn="20"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceILLIXR_1a2af9a564922083dabfca03e0522b4a9d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int ILLIXR::run</definition>
+        <argsstring>(const cxxopts::ParseResult &amp;options)</argsstring>
+        <name>run</name>
+        <qualifiedname>ILLIXR::run</qualifiedname>
+        <param>
+          <type>const cxxopts::ParseResult &amp;</type>
+          <declname>options</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+<para>Activate sleeping at application start for attaching gdb. Disables &apos;catchsegv&apos;. Enable using the ILLIXR_ENABLE_PRE_SLEEP environment variable (see &apos;runner/runner/main.py:load_tests&apos;)</para>
+<para>NDEBUG</para>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/illixr.hpp" line="49" column="5" bodyfile="/home/friedel/devel/ILLIXR/src/plugin.cpp" bodystart="152" bodyend="338" declfile="/home/friedel/devel/ILLIXR/src/illixr.hpp" declline="49" declcolumn="5"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceILLIXR_1af80f34fae25e19de7d0a8e4186f40388" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>GstFlowReturn</type>
+        <definition>GstFlowReturn ILLIXR::cb_new_sample</definition>
+        <argsstring>(GstElement *appsink, gpointer *user_data)</argsstring>
+        <name>cb_new_sample</name>
+        <qualifiedname>ILLIXR::cb_new_sample</qualifiedname>
+        <param>
+          <type>GstElement *</type>
+          <declname>appsink</declname>
+        </param>
+        <param>
+          <type>gpointer *</type>
+          <declname>user_data</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_vio/device_tx/video_encoder.cpp" line="31" column="15" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_vio/device_tx/video_encoder.cpp" bodystart="31" bodyend="33"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>RAC_ERRNO_MSG. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>There are many SQLite3 wrapper libraries. <ulink url="http://srombauts.github.io/SQLiteCpp/#see-also---some-other-simple-c-sqlite-wrappers">List source</ulink> TODO: this </para>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/include/illixr/dynamic_lib.hpp" line="13" column="1"/>
+  </compounddef>
+</doxygen>

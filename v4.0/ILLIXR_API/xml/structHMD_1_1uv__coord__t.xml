@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structHMD_1_1uv__coord__t" kind="struct" language="C++" prot="public">
+    <compoundname>HMD::uv_coord_t</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structHMD_1_1uv__coord__t_1af6b505a22178d4a99ee3794d2007d185" prot="public" static="no" mutable="no">
+        <type>FLOAT</type>
+        <definition>FLOAT HMD::uv_coord_t::u</definition>
+        <argsstring></argsstring>
+        <name>u</name>
+        <qualifiedname>HMD::uv_coord_t::u</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/hmd.hpp" line="31" column="15" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/hmd.hpp" bodystart="31" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structHMD_1_1uv__coord__t_1a624b9d1218bde1f80e4a32bbbff26fca" prot="public" static="no" mutable="no">
+        <type>FLOAT</type>
+        <definition>FLOAT HMD::uv_coord_t::v</definition>
+        <argsstring></argsstring>
+        <name>v</name>
+        <qualifiedname>HMD::uv_coord_t::v</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/hmd.hpp" line="32" column="15" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/hmd.hpp" bodystart="32" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/include/illixr/hmd.hpp" line="30" column="5" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/hmd.hpp" bodystart="30" bodyend="33"/>
+    <listofallmembers>
+      <member refid="structHMD_1_1uv__coord__t_1af6b505a22178d4a99ee3794d2007d185" prot="public" virt="non-virtual"><scope>HMD::uv_coord_t</scope><name>u</name></member>
+      <member refid="structHMD_1_1uv__coord__t_1a624b9d1218bde1f80e4a32bbbff26fca" prot="public" virt="non-virtual"><scope>HMD::uv_coord_t</scope><name>v</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

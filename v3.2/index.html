@@ -1,0 +1,1290 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://illixr.github.io/testing/latest/">
+      
+      
+      
+        <link rel="next" href="getting_started/">
+      
+      
+      <link rel="icon" href="assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.7">
+    
+    
+      
+        <title>ILLIXR - ILLIXR Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="assets/stylesheets/main.8608ea7d.min.css">
+      
+        
+        <link rel="stylesheet" href="assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#illixr" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="." title="ILLIXR Documentation" class="md-header__button md-logo" aria-label="ILLIXR Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ILLIXR Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              ILLIXR
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="." title="ILLIXR Documentation" class="md-nav__button md-logo" aria-label="ILLIXR Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    ILLIXR Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" checked>
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="." class="md-nav__link md-nav__link--active">
+              
+  
+  <span class="md-ellipsis">
+    Latest Documentation
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link md-nav__link--active" for="__nav_1" id="__nav_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            Latest Documentation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="getting_started/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Getting Started
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="using_cameras/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Using ILLIXR with Cameras
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="debugging_illixr/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ILLIXR Debugging Tips
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="virtualization/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ILLIXR Under Virtualization
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="illixr_plugins/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ILLIXR Plugin Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modifying_a_plugin/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Modifying a Plugin
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="writing_your_plugin/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Writing Your Plugin
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_1_9" id="__nav_1_9_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Plugin Details
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_1_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1_9">
+            <span class="md-nav__icon md-icon"></span>
+            Plugin Details
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="plugin_README/README_debugview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Debugview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="plugin_README/README_display_vk/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Display_VK
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="plugin_README/README_fauxpose/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Fauxpose
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="plugin_README/README_gldemo/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Gldemo
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="plugin_README/monado_illixr_runtime_overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Monado Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="plugin_README/monado_integration_dataflow/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Monado Dataflow
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="plugin_README/README_native_renderer/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Native Renderer
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="plugin_README/offload_vio/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Offload VIO
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="plugin_README/README_openni/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    OpenNI
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="plugin_README/README_record_imu_cam/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Record_imu_cam
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="plugin_README/README_timewarp_gl/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Timewarp_gl
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="plugin_README/README_timewarp_vk/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Timewarp_VK
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="plugin_README/README_vkdemo/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Vkdemo
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="plugin_README/README_zed/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Zed
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="logging_and_metrics/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Logging and Metrics
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="glossary/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ILLIXR Glossary
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/annotated/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ILLIXR API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="LICENSE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ILLIXR License
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="CONTRIBUTING/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contributing Guidelines
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="updating_tags_and_docs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Updating Tags and Documentation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="external_switchboard_and_phonebook/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Using Switchboard and Phonebook Externally
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="illixr">ILLIXR</h1>
+<p><a href="LICENSE/"><img alt="NCSA licensed" src="https://img.shields.io/badge/license-NCSA-blue.svg" /></a>
+<a href="https://github.com/ILLIXR/ILLIXR/actions"><img alt="CI" src="https://github.com/ILLIXR/ILLIXR/workflows/illixr-tests-master/badge.svg" /></a>
+<a href="https://discord.gg/upkvy7x3W4"><img alt="Discord" src="https://img.shields.io/discord/830812443189444698?logo=discord&amp;logoColor=white&amp;label=Discord" /></a></p>
+<p><a href="https://youtu.be/GVcCW8WgEDY">
+    <img
+        alt="ILLIXR Simple Demo"
+        src="https://img.youtube.com/vi/GVcCW8WgEDY/0.jpg"
+        style="width: 320px"
+        class="center"
+    >
+</a></p>
+<p>Illinois Extended Reality testbed or ILLIXR (pronounced like elixir) is
+    the first fully open-source Extended Reality (XR) system and testbed.
+The modular, extensible, and <a href="https://www.khronos.org/openxr">OpenXR</a>-compatible ILLIXR runtime
+    integrates state-of-the-art XR components into a complete XR system.
+The testbed is part of the broader <a href="http://illixr.org">ILLIXR consortium</a>,
+    an industry-supported community effort to democratize XR systems
+    research, development, and benchmarking.</p>
+<p>You can find the complete ILLIXR system <a href="https://github.com/ILLIXR/ILLIXR">here</a>.</p>
+<p>ILLIXR also provides its components in standalone configurations to enable architects and
+    system designers to research each component in isolation.
+The standalone components are packaged together in the as of the <a href="https://github.com/ILLIXR/ILLIXR/releases/tag/v3.1.0">v3.1.0 release</a> of ILLIXR. </p>
+<p>ILLIXR's modular and extensible runtime allows adding new components and swapping different
+    implementations of a given component.
+ILLIXR currently contains the following components: </p>
+<ul>
+<li>
+<p><em>Perception</em></p>
+<ul>
+<li>Eye Tracking<ol>
+<li><a href="https://github.com/ILLIXR/RITnet">RITNet</a> **</li>
+</ol>
+</li>
+<li>Scene Reconstruction<ol>
+<li><a href="https://github.com/ILLIXR/ElasticFusion">ElasticFusion</a> **</li>
+<li><a href="https://github.com/ILLIXR/KinectFusionApp/tree/illixr-integration">KinectFusion</a> **</li>
+</ol>
+</li>
+<li>Simultaneous Localization and Mapping<ol>
+<li><a href="https://github.com/ILLIXR/open_vins">OpenVINS</a> **</li>
+</ol>
+</li>
+<li>Cameras and IMUs<ol>
+<li><a href="https://www.stereolabs.com/zed-mini/">ZED Mini</a></li>
+<li><a href="https://github.com/ILLIXR/ILLIXR/tree/master/realsense">Intel RealSense</a></li>
+</ol>
+</li>
+</ul>
+</li>
+<li>
+<p><em>Visual</em></p>
+<ul>
+<li><a href="https://github.com/ILLIXR/visual_postprocessing">Chromatic aberration correction</a></li>
+<li><a href="https://github.com/ILLIXR/HOTlab">Computational holography for adaptive multi-focal displays</a> **</li>
+<li><a href="https://github.com/ILLIXR/visual_postprocessing">Lens distortion correction</a></li>
+<li><a href="https://github.com/ILLIXR/visual_postprocessing">Asynchronous Reprojection (TimeWarp)</a></li>
+</ul>
+</li>
+<li>
+<p><em>Aural</em></p>
+<ul>
+<li><a href="https://github.com/ILLIXR/audio_pipeline">Audio encoding</a> **</li>
+<li><a href="https://github.com/ILLIXR/audio_pipeline">Audio playback</a> **</li>
+</ul>
+</li>
+</ul>
+<p>(** Source is hosted in an external repository under the <a href="https://github.com/ILLIXR">ILLIXR project</a>.)</p>
+<p>We continue to add more components (new components and new implementations). </p>
+<p>Many of the current components of ILLIXR were developed by domain experts and obtained from
+    publicly available repositories.
+They were modified for one or more of the following reasons: fixing compilation, adding features,
+    or removing extraneous code or dependencies.
+Each component not developed by us is available as a forked github repository for
+    proper attribution to its authors.</p>
+<h1 id="papers-talks-demos-consortium">Papers, talks, demos, consortium</h1>
+<p>A <a href="https://ieeexplore.ieee.org/abstract/document/9668280">paper</a> with details on ILLIXR, including its components, runtime, telemetry support,
+    and a comprehensive analysis of performance, power, and quality on desktop and embedded systems.</p>
+<p>A <a href="https://www.stereolabs.com/zed-mini/">talk presented at NVIDIA GTC'21</a> describing ILLIXR and announcing the ILLIXR consortium:
+    <a href="https://youtu.be/ZY98lWksnpM">Video</a>.
+    <a href="https://ws.engr.illinois.edu/sitemanager/getfile.asp?id=2971">Slides</a>. </p>
+<p>A <a href="https://youtu.be/GVcCW8WgEDY">demo</a> of an OpenXR application running with ILLIXR.</p>
+<p>For more up-to-date list of related papers, demos, and talks, please visit <a href="http://illixr.org">illixr.org</a>.</p>
+<p>The <a href="http://illixr.org">ILLIXR consortium</a> is an industry-supported community effort to democratize
+    XR systems research, development, and benchmarking.
+Visit our <a href="http://illixr.org">web site</a> for more information.</p>
+<p>The ILLIXR consortium is also holding a biweekly consortium meeting. For past meetings, for more information, past meeting recordings, and request for presenting, please visit <a href="https://illixr.org/open_meetings">here</a>. Please join our <a href="https://discord.gg/upkvy7x3W4">Discord</a> for announcement. </p>
+<h1 id="citation">Citation</h1>
+<p>We request that you cite our following <a href="https://ieeexplore.ieee.org/abstract/document/9668280">paper</a> when you use ILLIXR for a publication.
+We would also appreciate it if you send us a citation once your work has been published.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1">@inproceedings{HuzaifaDesai2021,
+</span><span id="__span-0-2">  author={Huzaifa, Muhammad and Desai, Rishi and Grayson, Samuel and Jiang, Xutao and Jing, Ying and Lee, Jae and Lu, Fang and Pang, Yihan and Ravichandran, Joseph and Sinclair, Finn and Tian, Boyuan and Yuan, Hengzhi and Zhang, Jeffrey and Adve, Sarita V.},
+</span><span id="__span-0-3">  booktitle={2021 IEEE International Symposium on Workload Characterization (IISWC)}, 
+</span><span id="__span-0-4">  title={ILLIXR: Enabling End-to-End Extended Reality Research}, 
+</span><span id="__span-0-5">  year={2021},
+</span><span id="__span-0-6">  volume={},
+</span><span id="__span-0-7">  number={},
+</span><span id="__span-0-8">  pages={24-38},
+</span><span id="__span-0-9">  doi={10.1109/IISWC53511.2021.00014}
+</span><span id="__span-0-10">}
+</span></code></pre></div>
+<h2 id="getting-started-and-documentation">Getting Started and Documentation</h2>
+<p>For more information, see our <a href="https://illixr.github.io/ILLIXR/getting_started/">Getting Started page</a>.</p>
+<h2 id="acknowledgements">Acknowledgements</h2>
+<p>The ILLIXR project started in <a href="http://rsim.cs.illinois.edu">Sarita Adve’s research group</a>,
+    co-led by PhD candidate Muhammad Huzaifa, at the University of Illinois at Urbana-Champaign.
+Other major contributors include
+    Rishi Desai,
+    Samuel Grayson,
+    Xutao Jiang,
+    Ying Jing,
+    Jae Lee,
+    Fang Lu,
+    Yihan Pang,
+    Joseph Ravichandran,
+    Giordano Salvador,
+    Finn Sinclair,
+    Boyuan Tian,
+    Henghzhi Yuan,
+    and
+    Jeffrey Zhang.</p>
+<p>ILLIXR came together after many consultations with researchers and practitioners in many domains:
+    audio,
+    graphics,
+    optics,
+    robotics,
+    signal processing,
+    and
+    extended reality systems.
+We are deeply grateful for all of these discussions and specifically to the following:
+    Wei Cu,
+    Aleksandra Faust,
+    Liang Gao,
+    Matt Horsnell,
+    Amit Jindal,
+    Steve LaValle,
+    Steve Lovegrove,
+    Andrew Maimone,
+    Vegard &#216;ye,
+    Martin Persson,
+    Archontis Politis,
+    Eric Shaffer,
+    Paris Smaragdis,
+    Sachin Talathi,
+    and
+    Chris Widdowson.</p>
+<p>Our OpenXR implementation is derived from <a href="https://monado.dev">Monado</a>.
+We are particularly thankful to Jakob Bornecrantz and Ryan Pavlik.</p>
+<p>The development of ILLIXR was supported by
+    the Applications Driving Architectures (ADA) Research Center
+        (a JUMP Center co-sponsored by SRC and DARPA),
+    the Center for Future Architectures Research (C-FAR, a STARnet research center),
+    a Semiconductor Research Corporation program sponsored by MARCO and DARPA,
+    and
+    by a Google Faculty Research Award.
+The development of ILLIXR was also aided by generous hardware and software donations
+    from ARM and NVIDIA.
+Facebook Reality Labs provided the <a href="https://research.fb.com/programs/openeds-challenge">OpenEDS Semantic Segmentation Dataset</a>.</p>
+<p>Wesley Darvin came up with the name for ILLIXR.</p>
+<h2 id="licensing-structure">Licensing Structure</h2>
+<p>ILLIXR is available as open-source software under the permissive
+    <a href="https://illixr.github.io/ILLIXR/LICENSE/">University of Illinois/NCSA Open Source License</a>.
+As mentioned above, ILLIXR largely consists of components developed by domain experts and
+    modified for the purposes of inclusion in ILLIXR.
+However, ILLIXR does contain software developed solely by us.
+<strong>The NCSA license is limited to only this software</strong>.
+The external libraries and softwares included in ILLIXR each have their own licenses and
+    must be used according to those licenses:</p>
+<ul>
+<li>
+<p><a href="https://github.com/mp3guy/ElasticFusion">ElasticFusion</a> \ <a href="https://github.com/mp3guy/ElasticFusion/blob/master/LICENSE.txt">ElasticFusion license</a></p>
+</li>
+<li>
+<p><a href="https://github.com/ILLIXR/KinectFusionApp/tree/illixr-integration">KinectFusion</a> \ <a href="https://github.com/chrdiller/KinectFusionApp/blob/master/LICENSE.txt">MIT License</a></p>
+</li>
+<li>
+<p><a href="https://github.com/ILLIXR/gtsam">GTSAM</a> \ <a href="https://github.com/borglab/gtsam/blob/develop/LICENSE.BSD">Simplified BSD License</a></p>
+</li>
+<li>
+<p><a href="https://github.com/MartinPersson/HOTlab">HOTlab</a> \ <a href="https://www.gnu.org/licenses/lgpl-3.0.html">GNU Lesser General Public License v3.0</a></p>
+</li>
+<li>
+<p><a href="https://github.com/videolabs/libspatialaudio">libspatialaudio</a> \ <a href="https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html">GNU Lesser General Public License v2.1</a></p>
+</li>
+<li>
+<p><a href="https://gitlab.freedesktop.org/monado/monado">Monado</a> \ <a href="https://choosealicense.com/licenses/bsl-1.0">Boost Software License 1.0</a></p>
+</li>
+<li>
+<p><a href="https://github.com/cameron314/concurrentqueue">moodycamel::ConcurrentQueue</a> \ <a href="https://github.com/cameron314/concurrentqueue/blob/master/LICENSE.md">Simplified BSD License</a></p>
+</li>
+<li>
+<p><a href="https://github.com/rpng/open_vins">Open-VINS</a> \ <a href="https://www.gnu.org/licenses/gpl-3.0.html">GNU General Public License v3.0</a></p>
+</li>
+<li>
+<p><a href="https://github.com/AayushKrChaudhary/RITnet">RITnet</a> \ <a href="https://github.com/AayushKrChaudhary/RITnet/blob/master/License.md">MIT License</a></p>
+</li>
+</ul>
+<p>Note that ILLIXR's extensibility allows the source to be configured and compiled using only
+    permissively licensed software.</p>
+<h2 id="get-in-touch">Get in Touch</h2>
+<p>Whether you are a computer architect, a compiler writer, a systems person, work on XR related algorithms
+    or applications, or just anyone interested in XR research, development, or products,
+    we would love to hear from you and hope you will contribute!
+You can join
+    the <a href="http://illixr.org">ILLIXR consortium</a>,
+    <a href="https://discord.gg/upkvy7x3W4">Discord</a>,
+    or <a href="mailto:lists@lists.cs.illinois.edu?subject=sub%20illixr-community">mailing list</a>,
+    or send us an <a href="mailto:illixr@cs.illinois.edu">email</a>,
+    or just send us a pull request!</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": ".", "features": ["search.suggest", "content.code.annotate", "content.footnote.tooltips", "navigation.indexes", "toc.integrate"], "search": "assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": "latest", "provider": "mike"}}</script>
+    
+    
+      <script src="assets/javascripts/bundle.c8b220af.min.js"></script>
+      
+    
+  </body>
+</html>

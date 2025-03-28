@@ -1,0 +1,331 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classILLIXR_1_1video__decoder" kind="class" language="C++" prot="public">
+    <compoundname>ILLIXR::video_decoder</compoundname>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1video__decoder_1a63357c32a8ddb089544427861ca900a4" prot="private" static="no" mutable="no">
+        <type>unsigned int</type>
+        <definition>unsigned int ILLIXR::video_decoder::num_samples_</definition>
+        <argsstring></argsstring>
+        <name>num_samples_</name>
+        <qualifiedname>ILLIXR::video_decoder::num_samples_</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_vio/server_rx/video_decoder.hpp" line="26" column="47" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_vio/server_rx/video_decoder.hpp" bodystart="26" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1video__decoder_1aa8316b794c9173156d1079a68255ac9a" prot="private" static="no" mutable="no">
+        <type>std::function&lt; void(cv::Mat &amp;&amp;, cv::Mat &amp;&amp;)&gt;</type>
+        <definition>std::function&lt;void(cv::Mat&amp;&amp;, cv::Mat&amp;&amp;)&gt; ILLIXR::video_decoder::callback_</definition>
+        <argsstring></argsstring>
+        <name>callback_</name>
+        <qualifiedname>ILLIXR::video_decoder::callback_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_vio/server_rx/video_decoder.hpp" line="27" column="19" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_vio/server_rx/video_decoder.hpp" bodystart="27" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1video__decoder_1aa80868f8f9a9adcd36256ef34098e1ec" prot="private" static="no" mutable="no">
+        <type>GstElement *</type>
+        <definition>GstElement* ILLIXR::video_decoder::pipeline_img0_</definition>
+        <argsstring></argsstring>
+        <name>pipeline_img0_</name>
+        <qualifiedname>ILLIXR::video_decoder::pipeline_img0_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_vio/server_rx/video_decoder.hpp" line="28" column="46" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_vio/server_rx/video_decoder.hpp" bodystart="28" bodyend="28"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1video__decoder_1a5ddbbafa163d38e7e4984b0c50965c53" prot="private" static="no" mutable="no">
+        <type>GstElement *</type>
+        <definition>GstElement* ILLIXR::video_decoder::pipeline_img1_</definition>
+        <argsstring></argsstring>
+        <name>pipeline_img1_</name>
+        <qualifiedname>ILLIXR::video_decoder::pipeline_img1_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_vio/server_rx/video_decoder.hpp" line="29" column="46" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_vio/server_rx/video_decoder.hpp" bodystart="29" bodyend="29"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1video__decoder_1a704523b8638b5bf630cc1bd81dc3b555" prot="private" static="no" mutable="no">
+        <type>GstElement *</type>
+        <definition>GstElement* ILLIXR::video_decoder::appsrc_img0_</definition>
+        <argsstring></argsstring>
+        <name>appsrc_img0_</name>
+        <qualifiedname>ILLIXR::video_decoder::appsrc_img0_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_vio/server_rx/video_decoder.hpp" line="30" column="46" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_vio/server_rx/video_decoder.hpp" bodystart="30" bodyend="30"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1video__decoder_1a3b0a6aafddc9ec9e48bbc54c47ba58f0" prot="private" static="no" mutable="no">
+        <type>GstElement *</type>
+        <definition>GstElement* ILLIXR::video_decoder::appsrc_img1_</definition>
+        <argsstring></argsstring>
+        <name>appsrc_img1_</name>
+        <qualifiedname>ILLIXR::video_decoder::appsrc_img1_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_vio/server_rx/video_decoder.hpp" line="31" column="46" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_vio/server_rx/video_decoder.hpp" bodystart="31" bodyend="31"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1video__decoder_1a00f76ff2901382a175b2262ffbfe16a7" prot="private" static="no" mutable="no">
+        <type>GstElement *</type>
+        <definition>GstElement* ILLIXR::video_decoder::appsink_img0_</definition>
+        <argsstring></argsstring>
+        <name>appsink_img0_</name>
+        <qualifiedname>ILLIXR::video_decoder::appsink_img0_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_vio/server_rx/video_decoder.hpp" line="32" column="46" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_vio/server_rx/video_decoder.hpp" bodystart="32" bodyend="32"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1video__decoder_1afbca36ea219fbc6e41872be21b7bc394" prot="private" static="no" mutable="no">
+        <type>GstElement *</type>
+        <definition>GstElement* ILLIXR::video_decoder::appsink_img1_</definition>
+        <argsstring></argsstring>
+        <name>appsink_img1_</name>
+        <qualifiedname>ILLIXR::video_decoder::appsink_img1_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_vio/server_rx/video_decoder.hpp" line="33" column="46" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_vio/server_rx/video_decoder.hpp" bodystart="33" bodyend="33"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1video__decoder_1ad8724910ab3e7231c34d2adc327004f6" prot="private" static="no" mutable="no">
+        <type>std::condition_variable</type>
+        <definition>std::condition_variable ILLIXR::video_decoder::pipeline_sync_</definition>
+        <argsstring></argsstring>
+        <name>pipeline_sync_</name>
+        <qualifiedname>ILLIXR::video_decoder::pipeline_sync_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_vio/server_rx/video_decoder.hpp" line="35" column="29" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_vio/server_rx/video_decoder.hpp" bodystart="35" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1video__decoder_1ace1f0a33edd8c2e4289a11d4d704e603" prot="private" static="no" mutable="no">
+        <type>std::mutex</type>
+        <definition>std::mutex ILLIXR::video_decoder::pipeline_sync_mutex_</definition>
+        <argsstring></argsstring>
+        <name>pipeline_sync_mutex_</name>
+        <qualifiedname>ILLIXR::video_decoder::pipeline_sync_mutex_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_vio/server_rx/video_decoder.hpp" line="36" column="29" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_vio/server_rx/video_decoder.hpp" bodystart="36" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1video__decoder_1a3177a66c9381d02ec2096c14b152af0c" prot="private" static="no" mutable="no">
+        <type>GstMapInfo</type>
+        <definition>GstMapInfo ILLIXR::video_decoder::img0_map_</definition>
+        <argsstring></argsstring>
+        <name>img0_map_</name>
+        <qualifiedname>ILLIXR::video_decoder::img0_map_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_vio/server_rx/video_decoder.hpp" line="37" column="29" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_vio/server_rx/video_decoder.hpp" bodystart="37" bodyend="37"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1video__decoder_1a4fa32b862d9e15fcb945d32627a773dd" prot="private" static="no" mutable="no">
+        <type>GstMapInfo</type>
+        <definition>GstMapInfo ILLIXR::video_decoder::img1_map_</definition>
+        <argsstring></argsstring>
+        <name>img1_map_</name>
+        <qualifiedname>ILLIXR::video_decoder::img1_map_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_vio/server_rx/video_decoder.hpp" line="38" column="29" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_vio/server_rx/video_decoder.hpp" bodystart="38" bodyend="38"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1video__decoder_1a395433dd0e2ba9e7cd012dcb6e1cd6ea" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool ILLIXR::video_decoder::img0_ready_</definition>
+        <argsstring></argsstring>
+        <name>img0_ready_</name>
+        <qualifiedname>ILLIXR::video_decoder::img0_ready_</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_vio/server_rx/video_decoder.hpp" line="39" column="29" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_vio/server_rx/video_decoder.hpp" bodystart="39" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1video__decoder_1ab324a2c10eaea92ca6643da6ababf47c" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool ILLIXR::video_decoder::img1_ready_</definition>
+        <argsstring></argsstring>
+        <name>img1_ready_</name>
+        <qualifiedname>ILLIXR::video_decoder::img1_ready_</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_vio/server_rx/video_decoder.hpp" line="40" column="29" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_vio/server_rx/video_decoder.hpp" bodystart="40" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classILLIXR_1_1video__decoder_1a83eb8074bc7fe134f42af410f39e7c7e" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::video_decoder::video_decoder</definition>
+        <argsstring>(std::function&lt; void(cv::Mat &amp;&amp;, cv::Mat &amp;&amp;)&gt; callback)</argsstring>
+        <name>video_decoder</name>
+        <qualifiedname>ILLIXR::video_decoder::video_decoder</qualifiedname>
+        <param>
+          <type>std::function&lt; void(cv::Mat &amp;&amp;, cv::Mat &amp;&amp;)&gt;</type>
+          <declname>callback</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_vio/server_rx/video_decoder.hpp" line="15" column="14" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_vio/server_rx/video_decoder.cpp" bodystart="84" bodyend="85"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1video__decoder_1a1ad99b28ba310fd4e86e4359239ecb89" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void ILLIXR::video_decoder::init</definition>
+        <argsstring>()</argsstring>
+        <name>init</name>
+        <qualifiedname>ILLIXR::video_decoder::init</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_vio/server_rx/video_decoder.hpp" line="17" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_vio/server_rx/video_decoder.cpp" bodystart="87" bodyend="89"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1video__decoder_1a3107d57e9ae0e122b866eea547ad5cc7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void ILLIXR::video_decoder::enqueue</definition>
+        <argsstring>(std::string &amp;img0, std::string &amp;img1)</argsstring>
+        <name>enqueue</name>
+        <qualifiedname>ILLIXR::video_decoder::enqueue</qualifiedname>
+        <param>
+          <type>std::string &amp;</type>
+          <declname>img0</declname>
+        </param>
+        <param>
+          <type>std::string &amp;</type>
+          <declname>img1</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_vio/server_rx/video_decoder.hpp" line="19" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_vio/server_rx/video_decoder.cpp" bodystart="91" bodyend="108"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1video__decoder_1aeb55e7653921cc00c12398f09fb05422" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>GstFlowReturn</type>
+        <definition>GstFlowReturn ILLIXR::video_decoder::cb_appsink</definition>
+        <argsstring>(GstElement *sink)</argsstring>
+        <name>cb_appsink</name>
+        <qualifiedname>ILLIXR::video_decoder::cb_appsink</qualifiedname>
+        <param>
+          <type>GstElement *</type>
+          <declname>sink</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_vio/server_rx/video_decoder.hpp" line="21" column="19" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_vio/server_rx/video_decoder.cpp" bodystart="110" bodyend="148"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classILLIXR_1_1video__decoder_1a42f16531aca6667ff5fce8fd831761fd" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void ILLIXR::video_decoder::create_pipelines</definition>
+        <argsstring>()</argsstring>
+        <name>create_pipelines</name>
+        <qualifiedname>ILLIXR::video_decoder::create_pipelines</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/offload_vio/server_rx/video_decoder.hpp" line="24" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_vio/server_rx/video_decoder.cpp" bodystart="27" bodyend="82"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/plugins/offload_vio/server_rx/video_decoder.hpp" line="13" column="1" bodyfile="/home/friedel/devel/ILLIXR/plugins/offload_vio/server_rx/video_decoder.hpp" bodystart="13" bodyend="41"/>
+    <listofallmembers>
+      <member refid="classILLIXR_1_1video__decoder_1a00f76ff2901382a175b2262ffbfe16a7" prot="private" virt="non-virtual"><scope>ILLIXR::video_decoder</scope><name>appsink_img0_</name></member>
+      <member refid="classILLIXR_1_1video__decoder_1afbca36ea219fbc6e41872be21b7bc394" prot="private" virt="non-virtual"><scope>ILLIXR::video_decoder</scope><name>appsink_img1_</name></member>
+      <member refid="classILLIXR_1_1video__decoder_1a704523b8638b5bf630cc1bd81dc3b555" prot="private" virt="non-virtual"><scope>ILLIXR::video_decoder</scope><name>appsrc_img0_</name></member>
+      <member refid="classILLIXR_1_1video__decoder_1a3b0a6aafddc9ec9e48bbc54c47ba58f0" prot="private" virt="non-virtual"><scope>ILLIXR::video_decoder</scope><name>appsrc_img1_</name></member>
+      <member refid="classILLIXR_1_1video__decoder_1aa8316b794c9173156d1079a68255ac9a" prot="private" virt="non-virtual"><scope>ILLIXR::video_decoder</scope><name>callback_</name></member>
+      <member refid="classILLIXR_1_1video__decoder_1aeb55e7653921cc00c12398f09fb05422" prot="public" virt="non-virtual"><scope>ILLIXR::video_decoder</scope><name>cb_appsink</name></member>
+      <member refid="classILLIXR_1_1video__decoder_1a42f16531aca6667ff5fce8fd831761fd" prot="private" virt="non-virtual"><scope>ILLIXR::video_decoder</scope><name>create_pipelines</name></member>
+      <member refid="classILLIXR_1_1video__decoder_1a3107d57e9ae0e122b866eea547ad5cc7" prot="public" virt="non-virtual"><scope>ILLIXR::video_decoder</scope><name>enqueue</name></member>
+      <member refid="classILLIXR_1_1video__decoder_1a3177a66c9381d02ec2096c14b152af0c" prot="private" virt="non-virtual"><scope>ILLIXR::video_decoder</scope><name>img0_map_</name></member>
+      <member refid="classILLIXR_1_1video__decoder_1a395433dd0e2ba9e7cd012dcb6e1cd6ea" prot="private" virt="non-virtual"><scope>ILLIXR::video_decoder</scope><name>img0_ready_</name></member>
+      <member refid="classILLIXR_1_1video__decoder_1a4fa32b862d9e15fcb945d32627a773dd" prot="private" virt="non-virtual"><scope>ILLIXR::video_decoder</scope><name>img1_map_</name></member>
+      <member refid="classILLIXR_1_1video__decoder_1ab324a2c10eaea92ca6643da6ababf47c" prot="private" virt="non-virtual"><scope>ILLIXR::video_decoder</scope><name>img1_ready_</name></member>
+      <member refid="classILLIXR_1_1video__decoder_1a1ad99b28ba310fd4e86e4359239ecb89" prot="public" virt="non-virtual"><scope>ILLIXR::video_decoder</scope><name>init</name></member>
+      <member refid="classILLIXR_1_1video__decoder_1a63357c32a8ddb089544427861ca900a4" prot="private" virt="non-virtual"><scope>ILLIXR::video_decoder</scope><name>num_samples_</name></member>
+      <member refid="classILLIXR_1_1video__decoder_1aa80868f8f9a9adcd36256ef34098e1ec" prot="private" virt="non-virtual"><scope>ILLIXR::video_decoder</scope><name>pipeline_img0_</name></member>
+      <member refid="classILLIXR_1_1video__decoder_1a5ddbbafa163d38e7e4984b0c50965c53" prot="private" virt="non-virtual"><scope>ILLIXR::video_decoder</scope><name>pipeline_img1_</name></member>
+      <member refid="classILLIXR_1_1video__decoder_1ad8724910ab3e7231c34d2adc327004f6" prot="private" virt="non-virtual"><scope>ILLIXR::video_decoder</scope><name>pipeline_sync_</name></member>
+      <member refid="classILLIXR_1_1video__decoder_1ace1f0a33edd8c2e4289a11d4d704e603" prot="private" virt="non-virtual"><scope>ILLIXR::video_decoder</scope><name>pipeline_sync_mutex_</name></member>
+      <member refid="classILLIXR_1_1video__decoder_1a83eb8074bc7fe134f42af410f39e7c7e" prot="public" virt="non-virtual"><scope>ILLIXR::video_decoder</scope><name>video_decoder</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

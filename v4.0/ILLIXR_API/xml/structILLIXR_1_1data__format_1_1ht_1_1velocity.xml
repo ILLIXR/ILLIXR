@@ -1,0 +1,165 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structILLIXR_1_1data__format_1_1ht_1_1velocity" kind="struct" language="C++" prot="public">
+    <compoundname>ILLIXR::data_format::ht::velocity</compoundname>
+    <basecompoundref refid="structILLIXR_1_1data__format_1_1ht_1_1hand__points" prot="public" virt="non-virtual">ILLIXR::data_format::ht::hand_points</basecompoundref>
+    <includes refid="hand__tracking__data_8hpp" local="no">hand_tracking_data.hpp</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1ht_1_1velocity_1a64fb1b91de2a33d7fe97f56479e403f7" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::ht::velocity::velocity</definition>
+        <argsstring>()</argsstring>
+        <name>velocity</name>
+        <qualifiedname>ILLIXR::data_format::ht::velocity::velocity</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Constructor, creates list of 21 empty points </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/hand_tracking_data.hpp" line="187" column="9" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/hand_tracking_data.hpp" bodystart="187" bodyend="188"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1ht_1_1velocity_1a07c735f8308b406b35c76e7e2810a356" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::ht::velocity::velocity</definition>
+        <argsstring>(units::measurement_unit unit)</argsstring>
+        <name>velocity</name>
+        <qualifiedname>ILLIXR::data_format::ht::velocity::velocity</qualifiedname>
+        <param>
+          <type>units::measurement_unit</type>
+          <declname>unit</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Constructor, creates list of 21 empty points <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>unit</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The unit of the points, default is UNSET </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/hand_tracking_data.hpp" line="194" column="18" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/hand_tracking_data.hpp" bodystart="194" bodyend="195"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1ht_1_1velocity_1a95d995d300391e72ab911b6a116124fd" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::ht::velocity::velocity</definition>
+        <argsstring>(const hand_points &amp;h1, const hand_points &amp;h2, const float time)</argsstring>
+        <name>velocity</name>
+        <qualifiedname>ILLIXR::data_format::ht::velocity::velocity</qualifiedname>
+        <param>
+          <type>const <ref refid="structILLIXR_1_1data__format_1_1ht_1_1hand__points" kindref="compound">hand_points</ref> &amp;</type>
+          <declname>h1</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structILLIXR_1_1data__format_1_1ht_1_1hand__points" kindref="compound">hand_points</ref> &amp;</type>
+          <declname>h2</declname>
+        </param>
+        <param>
+          <type>const float</type>
+          <declname>time</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Constructor, calculates the velocities from the given points. Both sets of points must be the same size and have the same units. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>h1</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The initial position of the points </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>h2</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The final position of the points </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>time</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The time difference between <computeroutput>h1</computeroutput> and <computeroutput>h2</computeroutput> in seconds </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/hand_tracking_data.hpp" line="204" column="9" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/hand_tracking_data.hpp" bodystart="204" bodyend="216"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Representation of current velocity of head hand point. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>ILLIXR::data_format::ht::hand_points</label>
+        <link refid="structILLIXR_1_1data__format_1_1ht_1_1hand__points"/>
+      </node>
+      <node id="1">
+        <label>ILLIXR::data_format::ht::velocity</label>
+        <link refid="structILLIXR_1_1data__format_1_1ht_1_1velocity"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>ILLIXR::data_format::ht::hand_points</label>
+        <link refid="structILLIXR_1_1data__format_1_1ht_1_1hand__points"/>
+      </node>
+      <node id="1">
+        <label>ILLIXR::data_format::ht::velocity</label>
+        <link refid="structILLIXR_1_1data__format_1_1ht_1_1velocity"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/hand_tracking_data.hpp" line="183" column="5" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/hand_tracking_data.hpp" bodystart="183" bodyend="217"/>
+    <listofallmembers>
+      <member refid="structILLIXR_1_1data__format_1_1points__with__units_1a919e740e87b3b913cc6bb333e03f6db5" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::ht::velocity</scope><name>at</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1points__with__units_1a3868bcf2cd46ca08a42177e8d33fdffe" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::ht::velocity</scope><name>at</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1ht_1_1hand__points_1a857fc6b0cae6f605450dc3d75c615904" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::ht::velocity</scope><name>check</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1points__with__units_1a23b73236d5b9a640a4acd15ba22961a2" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::ht::velocity</scope><name>check_validity</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1ht_1_1hand__points_1a879f14fa5c9278599851dec3120c4272" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::ht::velocity</scope><name>clear</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1points__with__units_1a2e15aed778e87afe3871a116b46d7adf" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::ht::velocity</scope><name>enforce_bounds</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1points__with__units_1a75d7eddbe4b12770f68f725b3caa83b3" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::ht::velocity</scope><name>fixed</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1ht_1_1hand__points_1a763496a17cc58068dd7a30d7ecc27359" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::ht::velocity</scope><name>flip_y</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1ht_1_1hand__points_1a1b39bb019260ea44e0bdc2ffd1b30924" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::ht::velocity</scope><name>hand_points</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1ht_1_1hand__points_1a21a177054d47511a40c0d30466c85f71" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::ht::velocity</scope><name>hand_points</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1ht_1_1hand__points_1a304de31465d73e764b30e5e13be78bd3" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::ht::velocity</scope><name>hand_points</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1points__with__units_1ac9e5b4f45855ecc24f373260b0a6ecd0" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::ht::velocity</scope><name>mult</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1points__with__units_1a84a1f81ecda8afb0c6cae17ce2f38b4c" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::ht::velocity</scope><name>operator=</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1points__with__units_1a26fd39b64329a16ba5d82abd7aff27e4" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::ht::velocity</scope><name>operator[]</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1points__with__units_1afdd080d0486f3363c05980abae9ae9a3" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::ht::velocity</scope><name>points</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1points__with__units_1a3721740afb14a71a0eb2a1f028e6a750" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::ht::velocity</scope><name>points_with_units</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1points__with__units_1af669acdae2c86e74b214051684075f4c" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::ht::velocity</scope><name>points_with_units</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1points__with__units_1a98639c00e5876a681c379f14badd90f9" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::ht::velocity</scope><name>points_with_units</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1points__with__units_1a31e858a961eb5867acb85479eb0c258e" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::ht::velocity</scope><name>points_with_units</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1points__with__units_1acd5160625073c86c4d1c6021f5db9365" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::ht::velocity</scope><name>points_with_units</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1points__with__units_1aab42e7c0194b48e5f292356db2977e2d" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::ht::velocity</scope><name>points_with_units</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1points__with__units_1a15d4b4b8ca3b4036e1db603f7e125a75" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::ht::velocity</scope><name>size</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1points__with__units_1a412e7e5e8da9a636a77178b0a206121a" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::ht::velocity</scope><name>transform</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1points__with__units_1a400a6ad86aa7abb0c87956f3cb6e3e71" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::ht::velocity</scope><name>unit</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1points__with__units_1a183794076fbc9316fda9c47cf318eaa0" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::ht::velocity</scope><name>valid</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1ht_1_1velocity_1a64fb1b91de2a33d7fe97f56479e403f7" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::ht::velocity</scope><name>velocity</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1ht_1_1velocity_1a07c735f8308b406b35c76e7e2810a356" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::ht::velocity</scope><name>velocity</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1ht_1_1velocity_1a95d995d300391e72ab911b6a116124fd" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::ht::velocity</scope><name>velocity</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

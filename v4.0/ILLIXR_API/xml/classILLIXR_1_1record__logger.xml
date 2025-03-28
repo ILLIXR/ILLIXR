@@ -1,0 +1,102 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classILLIXR_1_1record__logger" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>ILLIXR::record_logger</compoundname>
+    <basecompoundref refid="classILLIXR_1_1phonebook_1_1service" prot="public" virt="non-virtual">ILLIXR::phonebook::service</basecompoundref>
+    <derivedcompoundref refid="classILLIXR_1_1sqlite__record__logger" prot="public" virt="non-virtual">ILLIXR::sqlite_record_logger</derivedcompoundref>
+    <derivedcompoundref refid="classILLIXR_1_1stdout__record__logger" prot="public" virt="non-virtual">ILLIXR::stdout_record_logger</derivedcompoundref>
+    <includes refid="record__logger_8hpp" local="no">record_logger.hpp</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classILLIXR_1_1record__logger_1ad63ffa427ce9ff395221f983766f1f0e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::record_logger::~record_logger</definition>
+        <argsstring>() override=default</argsstring>
+        <name>~record_logger</name>
+        <qualifiedname>ILLIXR::record_logger::~record_logger</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/record_logger.hpp" line="229" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1record__logger_1ab0fde919d135530dda23b3b83fb9f902" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>void</type>
+        <definition>virtual void ILLIXR::record_logger::log</definition>
+        <argsstring>(const record &amp;r)=0</argsstring>
+        <name>log</name>
+        <qualifiedname>ILLIXR::record_logger::log</qualifiedname>
+        <param>
+          <type>const <ref refid="classILLIXR_1_1record" kindref="compound">record</ref> &amp;</type>
+          <declname>r</declname>
+        </param>
+        <briefdescription>
+<para>Writes one log record. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/record_logger.hpp" line="234" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1record__logger_1acff60d0b0aa2760b5648385edc7d8c06" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>void</type>
+        <definition>virtual void ILLIXR::record_logger::log</definition>
+        <argsstring>(const std::vector&lt; record &gt; &amp;rs)</argsstring>
+        <name>log</name>
+        <qualifiedname>ILLIXR::record_logger::log</qualifiedname>
+        <param>
+          <type>const std::vector&lt; <ref refid="classILLIXR_1_1record" kindref="compound">record</ref> &gt; &amp;</type>
+          <declname>rs</declname>
+        </param>
+        <briefdescription>
+<para>Writes many of the same type of log record. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This is more efficient than calling log many times. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/record_logger.hpp" line="241" column="18" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/record_logger.hpp" bodystart="241" bodyend="245"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>The <ref refid="namespaceILLIXR" kindref="compound">ILLIXR</ref> logging service for structured records. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>This has two advantages over printf logging. It has lower overhead (because it goes into a database), won&apos;t result in spliced messages (no stdout race-conditions), and is used uniformly by <ref refid="namespaceILLIXR" kindref="compound">ILLIXR</ref> components. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>ILLIXR::phonebook::service</label>
+        <link refid="classILLIXR_1_1phonebook_1_1service"/>
+      </node>
+      <node id="1">
+        <label>ILLIXR::record_logger</label>
+        <link refid="classILLIXR_1_1record__logger"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>ILLIXR::phonebook::service</label>
+        <link refid="classILLIXR_1_1phonebook_1_1service"/>
+      </node>
+      <node id="1">
+        <label>ILLIXR::record_logger</label>
+        <link refid="classILLIXR_1_1record__logger"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/home/friedel/devel/ILLIXR/include/illixr/record_logger.hpp" line="227" column="1" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/record_logger.hpp" bodystart="227" bodyend="246"/>
+    <listofallmembers>
+      <member refid="classILLIXR_1_1record__logger_1ab0fde919d135530dda23b3b83fb9f902" prot="public" virt="pure-virtual"><scope>ILLIXR::record_logger</scope><name>log</name></member>
+      <member refid="classILLIXR_1_1record__logger_1acff60d0b0aa2760b5648385edc7d8c06" prot="public" virt="virtual"><scope>ILLIXR::record_logger</scope><name>log</name></member>
+      <member refid="classILLIXR_1_1record__logger_1ad63ffa427ce9ff395221f983766f1f0e" prot="public" virt="non-virtual"><scope>ILLIXR::record_logger</scope><name>~record_logger</name></member>
+      <member refid="classILLIXR_1_1phonebook_1_1service_1a6bc6e64a0d9b70223989fc3fb98c2d0d" prot="public" virt="virtual"><scope>ILLIXR::record_logger</scope><name>~service</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

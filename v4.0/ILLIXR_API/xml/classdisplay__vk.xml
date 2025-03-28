@@ -1,0 +1,448 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classdisplay__vk" kind="class" language="C++" prot="public">
+    <compoundname>display_vk</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">vulkan::display_provider</basecompoundref>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classdisplay__vk_1a88a7e812c0dd7e6b891a1bef053f5205" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; const char * &gt;</type>
+        <definition>std::vector&lt;const char*&gt; display_vk::required_device_extensions_</definition>
+        <argsstring></argsstring>
+        <name>required_device_extensions_</name>
+        <qualifiedname>display_vk::required_device_extensions_</qualifiedname>
+        <initializer>= {VK_KHR_SYNCHRONIZATION_2_EXTENSION_NAME}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/vulkan_display.hpp" line="566" column="17" bodyfile="/home/friedel/devel/ILLIXR/src/vulkan_display.hpp" bodystart="566" bodyend="566"/>
+      </memberdef>
+      <memberdef kind="variable" id="classdisplay__vk_1a0be0dc09a1dfedf854ae8791ce9e3d5d" prot="private" static="no" mutable="no">
+        <type>std::thread</type>
+        <definition>std::thread display_vk::main_thread_</definition>
+        <argsstring></argsstring>
+        <name>main_thread_</name>
+        <qualifiedname>display_vk::main_thread_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/vulkan_display.hpp" line="568" column="23" bodyfile="/home/friedel/devel/ILLIXR/src/vulkan_display.hpp" bodystart="568" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classdisplay__vk_1a4f55c41f110ac4e2e02c27c8e9aa6b87" prot="private" static="no" mutable="no">
+        <type>std::atomic&lt; bool &gt;</type>
+        <definition>std::atomic&lt;bool&gt; display_vk::ready_</definition>
+        <argsstring></argsstring>
+        <name>ready_</name>
+        <qualifiedname>display_vk::ready_</qualifiedname>
+        <initializer>{false}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/vulkan_display.hpp" line="569" column="17" bodyfile="/home/friedel/devel/ILLIXR/src/vulkan_display.hpp" bodystart="569" bodyend="569"/>
+      </memberdef>
+      <memberdef kind="variable" id="classdisplay__vk_1acac0407d9ec07f112417a99a11028a72" prot="private" static="no" mutable="no">
+        <type>std::atomic&lt; bool &gt;</type>
+        <definition>std::atomic&lt;bool&gt; display_vk::running_</definition>
+        <argsstring></argsstring>
+        <name>running_</name>
+        <qualifiedname>display_vk::running_</qualifiedname>
+        <initializer>{true}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/vulkan_display.hpp" line="570" column="17" bodyfile="/home/friedel/devel/ILLIXR/src/vulkan_display.hpp" bodystart="570" bodyend="570"/>
+      </memberdef>
+      <memberdef kind="variable" id="classdisplay__vk_1ae4c5e0d88ad799027d10bba66de2d3a0" prot="private" static="no" mutable="no">
+        <type>display::display_backend::display_backend_type</type>
+        <definition>display::display_backend::display_backend_type display_vk::backend_type_</definition>
+        <argsstring></argsstring>
+        <name>backend_type_</name>
+        <qualifiedname>display_vk::backend_type_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/vulkan_display.hpp" line="572" column="52" bodyfile="/home/friedel/devel/ILLIXR/src/vulkan_display.hpp" bodystart="572" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classdisplay__vk_1a5aab3226bc89e804f0816bd7cb779f09" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool display_vk::direct_mode_</definition>
+        <argsstring></argsstring>
+        <name>direct_mode_</name>
+        <qualifiedname>display_vk::direct_mode_</qualifiedname>
+        <initializer>{false}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/vulkan_display.hpp" line="573" column="52" bodyfile="/home/friedel/devel/ILLIXR/src/vulkan_display.hpp" bodystart="573" bodyend="573"/>
+      </memberdef>
+      <memberdef kind="variable" id="classdisplay__vk_1a31df97d7f784ce15f4eebf3a0c8cb714" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int display_vk::selected_gpu_</definition>
+        <argsstring></argsstring>
+        <name>selected_gpu_</name>
+        <qualifiedname>display_vk::selected_gpu_</qualifiedname>
+        <initializer>{-1}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/vulkan_display.hpp" line="574" column="52" bodyfile="/home/friedel/devel/ILLIXR/src/vulkan_display.hpp" bodystart="574" bodyend="574"/>
+      </memberdef>
+      <memberdef kind="variable" id="classdisplay__vk_1aa8e7099c2cfaea5feac145d147271568" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; display::display_backend &gt;</type>
+        <definition>std::shared_ptr&lt;display::display_backend&gt; display_vk::backend_</definition>
+        <argsstring></argsstring>
+        <name>backend_</name>
+        <qualifiedname>display_vk::backend_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/vulkan_display.hpp" line="576" column="21" bodyfile="/home/friedel/devel/ILLIXR/src/vulkan_display.hpp" bodystart="576" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classdisplay__vk_1a501c7d8b88c56c697698f7e96aa419d3" prot="private" static="no" mutable="no">
+        <type>const std::shared_ptr&lt; <ref refid="classILLIXR_1_1switchboard" kindref="compound">switchboard</ref> &gt;</type>
+        <definition>const std::shared_ptr&lt;switchboard&gt; display_vk::switchboard_</definition>
+        <argsstring></argsstring>
+        <name>switchboard_</name>
+        <qualifiedname>display_vk::switchboard_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/vulkan_display.hpp" line="578" column="27" bodyfile="/home/friedel/devel/ILLIXR/src/vulkan_display.hpp" bodystart="578" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classdisplay__vk_1afc5eeb5bb1b85f1461cf1f68f48575a5" prot="private" static="no" mutable="no">
+        <type>std::atomic&lt; bool &gt;</type>
+        <definition>std::atomic&lt;bool&gt; display_vk::should_poll_</definition>
+        <argsstring></argsstring>
+        <name>should_poll_</name>
+        <qualifiedname>display_vk::should_poll_</qualifiedname>
+        <initializer>{true}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/vulkan_display.hpp" line="580" column="17" bodyfile="/home/friedel/devel/ILLIXR/src/vulkan_display.hpp" bodystart="580" bodyend="580"/>
+      </memberdef>
+      <memberdef kind="variable" id="classdisplay__vk_1a29ae2c001a5e15f28dd23061efa711bb" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classILLIXR_1_1relative__clock" kindref="compound">relative_clock</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;relative_clock&gt; display_vk::clock_</definition>
+        <argsstring></argsstring>
+        <name>clock_</name>
+        <qualifiedname>display_vk::clock_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/vulkan_display.hpp" line="582" column="21" bodyfile="/home/friedel/devel/ILLIXR/src/vulkan_display.hpp" bodystart="582" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classdisplay__vk_1adb90572bb39f0656185683bc5bb9fb58" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>display_vk::display_vk</definition>
+        <argsstring>(const phonebook *const pb)</argsstring>
+        <name>display_vk</name>
+        <qualifiedname>display_vk::display_vk</qualifiedname>
+        <param>
+          <type>const <ref refid="classILLIXR_1_1phonebook" kindref="compound">phonebook</ref> *const</type>
+          <declname>pb</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/vulkan_display.hpp" line="20" column="14" bodyfile="/home/friedel/devel/ILLIXR/src/vulkan_display.hpp" bodystart="20" bodyend="22"/>
+      </memberdef>
+      <memberdef kind="function" id="classdisplay__vk_1a4a3f0295c4c6d3f5ffed7a0c7279c177" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>display_vk::~display_vk</definition>
+        <argsstring>() override</argsstring>
+        <name>~display_vk</name>
+        <qualifiedname>display_vk::~display_vk</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/vulkan_display.hpp" line="24" column="5" bodyfile="/home/friedel/devel/ILLIXR/src/vulkan_display.hpp" bodystart="24" bodyend="30"/>
+      </memberdef>
+      <memberdef kind="function" id="classdisplay__vk_1a1011ec7b1a0ea47abccc2f1c051968be" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void display_vk::start</definition>
+        <argsstring>(std::set&lt; const char * &gt; instance_extensions, std::set&lt; const char * &gt; device_extensions)</argsstring>
+        <name>start</name>
+        <qualifiedname>display_vk::start</qualifiedname>
+        <param>
+          <type>std::set&lt; const char * &gt;</type>
+          <declname>instance_extensions</declname>
+        </param>
+        <param>
+          <type>std::set&lt; const char * &gt;</type>
+          <declname>device_extensions</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/vulkan_display.hpp" line="32" column="10" bodyfile="/home/friedel/devel/ILLIXR/src/vulkan_display.hpp" bodystart="32" bodyend="61"/>
+      </memberdef>
+      <memberdef kind="function" id="classdisplay__vk_1a660fb656118b4b6d86be3feabd4438e2" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void display_vk::setup</definition>
+        <argsstring>(std::set&lt; const char * &gt; instance_extensions, std::set&lt; const char * &gt; device_extensions)</argsstring>
+        <name>setup</name>
+        <qualifiedname>display_vk::setup</qualifiedname>
+        <param>
+          <type>std::set&lt; const char * &gt;</type>
+          <declname>instance_extensions</declname>
+        </param>
+        <param>
+          <type>std::set&lt; const char * &gt;</type>
+          <declname>device_extensions</declname>
+        </param>
+        <briefdescription>
+<para>This function sets up the GLFW and Vulkan environments. See display_provider::setup(). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/vulkan_display.hpp" line="66" column="10" bodyfile="/home/friedel/devel/ILLIXR/src/vulkan_display.hpp" bodystart="66" bodyend="98"/>
+      </memberdef>
+      <memberdef kind="function" id="classdisplay__vk_1a71625f9fb18a1856cfb8a4809e4cbd09" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void display_vk::recreate_swapchain</definition>
+        <argsstring>() override</argsstring>
+        <name>recreate_swapchain</name>
+        <qualifiedname>display_vk::recreate_swapchain</qualifiedname>
+        <briefdescription>
+<para>This function recreates the Vulkan swapchain. See display_provider::recreate_swapchain(). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/vulkan_display.hpp" line="103" column="10" bodyfile="/home/friedel/devel/ILLIXR/src/vulkan_display.hpp" bodystart="103" bodyend="113"/>
+      </memberdef>
+      <memberdef kind="function" id="classdisplay__vk_1acda84e4e114e4058df1eaea874da8e03" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void display_vk::poll_window_events</definition>
+        <argsstring>() override</argsstring>
+        <name>poll_window_events</name>
+        <qualifiedname>display_vk::poll_window_events</qualifiedname>
+        <briefdescription>
+<para>This function polls GLFW events. See display_provider::poll_window_events(). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/vulkan_display.hpp" line="118" column="10" bodyfile="/home/friedel/devel/ILLIXR/src/vulkan_display.hpp" bodystart="118" bodyend="120"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classdisplay__vk_1ac8fa484c2e7a60f5f9c4c3a901134f06" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void display_vk::create_vk_instance</definition>
+        <argsstring>(const std::set&lt; const char * &gt; &amp;instance_extensions)</argsstring>
+        <name>create_vk_instance</name>
+        <qualifiedname>display_vk::create_vk_instance</qualifiedname>
+        <param>
+          <type>const std::set&lt; const char * &gt; &amp;</type>
+          <declname>instance_extensions</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/vulkan_display.hpp" line="123" column="10" bodyfile="/home/friedel/devel/ILLIXR/src/vulkan_display.hpp" bodystart="123" bodyend="211"/>
+      </memberdef>
+      <memberdef kind="function" id="classdisplay__vk_1a767177630d61a70f6fea2dc28f5ed510" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool display_vk::is_physical_device_suitable</definition>
+        <argsstring>(VkPhysicalDevice const &amp;physical_device)</argsstring>
+        <name>is_physical_device_suitable</name>
+        <qualifiedname>display_vk::is_physical_device_suitable</qualifiedname>
+        <param>
+          <type>VkPhysicalDevice const &amp;</type>
+          <declname>physical_device</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/vulkan_display.hpp" line="213" column="10" bodyfile="/home/friedel/devel/ILLIXR/src/vulkan_display.hpp" bodystart="213" bodyend="245"/>
+      </memberdef>
+      <memberdef kind="function" id="classdisplay__vk_1a558ec6fdbd8cd322d40527d32494cf4a" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void display_vk::select_physical_device</definition>
+        <argsstring>()</argsstring>
+        <name>select_physical_device</name>
+        <qualifiedname>display_vk::select_physical_device</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/vulkan_display.hpp" line="247" column="10" bodyfile="/home/friedel/devel/ILLIXR/src/vulkan_display.hpp" bodystart="247" bodyend="296"/>
+      </memberdef>
+      <memberdef kind="function" id="classdisplay__vk_1a51df05841b0038748177d6c91edb91c7" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void display_vk::create_logical_device</definition>
+        <argsstring>(const std::set&lt; const char * &gt; &amp;device_extensions)</argsstring>
+        <name>create_logical_device</name>
+        <qualifiedname>display_vk::create_logical_device</qualifiedname>
+        <param>
+          <type>const std::set&lt; const char * &gt; &amp;</type>
+          <declname>device_extensions</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/vulkan_display.hpp" line="298" column="10" bodyfile="/home/friedel/devel/ILLIXR/src/vulkan_display.hpp" bodystart="298" bodyend="419"/>
+      </memberdef>
+      <memberdef kind="function" id="classdisplay__vk_1a6fda3160b588ee960f585ed79474547d" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void display_vk::create_swapchain</definition>
+        <argsstring>()</argsstring>
+        <name>create_swapchain</name>
+        <qualifiedname>display_vk::create_swapchain</qualifiedname>
+        <briefdescription>
+<para>Sets up the Vulkan environment. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This function initializes the Vulkan instance, selects the physical device, creates the Vulkan device, gets the graphics and present queues_, creates the swapchain, and sets up the VMA allocator.</para>
+<para><parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername>runtime_error</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>If any of the Vulkan setup steps fail. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/vulkan_display.hpp" line="429" column="10" bodyfile="/home/friedel/devel/ILLIXR/src/vulkan_display.hpp" bodystart="429" bodyend="519"/>
+      </memberdef>
+      <memberdef kind="function" id="classdisplay__vk_1a3620697456c276a5e3fe34ec083063ab" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void display_vk::destroy_swapchain</definition>
+        <argsstring>()</argsstring>
+        <name>destroy_swapchain</name>
+        <qualifiedname>display_vk::destroy_swapchain</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/vulkan_display.hpp" line="521" column="10" bodyfile="/home/friedel/devel/ILLIXR/src/vulkan_display.hpp" bodystart="521" bodyend="526"/>
+      </memberdef>
+      <memberdef kind="function" id="classdisplay__vk_1a708837f65fd9f47744046a3eebe323a3" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void display_vk::cleanup</definition>
+        <argsstring>()</argsstring>
+        <name>cleanup</name>
+        <qualifiedname>display_vk::cleanup</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/vulkan_display.hpp" line="528" column="10" bodyfile="/home/friedel/devel/ILLIXR/src/vulkan_display.hpp" bodystart="528" bodyend="543"/>
+      </memberdef>
+      <memberdef kind="function" id="classdisplay__vk_1a209df648d31e07c54a4110f91bd275f4" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void display_vk::main_loop</definition>
+        <argsstring>()</argsstring>
+        <name>main_loop</name>
+        <qualifiedname>display_vk::main_loop</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/src/vulkan_display.hpp" line="545" column="10" bodyfile="/home/friedel/devel/ILLIXR/src/vulkan_display.hpp" bodystart="545" bodyend="563"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/src/vulkan_display.hpp" line="18" column="1" bodyfile="/home/friedel/devel/ILLIXR/src/vulkan_display.hpp" bodystart="18" bodyend="583"/>
+    <listofallmembers>
+      <member refid="classdisplay__vk_1aa8e7099c2cfaea5feac145d147271568" prot="private" virt="non-virtual"><scope>display_vk</scope><name>backend_</name></member>
+      <member refid="classdisplay__vk_1ae4c5e0d88ad799027d10bba66de2d3a0" prot="private" virt="non-virtual"><scope>display_vk</scope><name>backend_type_</name></member>
+      <member refid="classdisplay__vk_1a708837f65fd9f47744046a3eebe323a3" prot="private" virt="non-virtual"><scope>display_vk</scope><name>cleanup</name></member>
+      <member refid="classdisplay__vk_1a29ae2c001a5e15f28dd23061efa711bb" prot="private" virt="non-virtual"><scope>display_vk</scope><name>clock_</name></member>
+      <member refid="classdisplay__vk_1a51df05841b0038748177d6c91edb91c7" prot="private" virt="non-virtual"><scope>display_vk</scope><name>create_logical_device</name></member>
+      <member refid="classdisplay__vk_1a6fda3160b588ee960f585ed79474547d" prot="private" virt="non-virtual"><scope>display_vk</scope><name>create_swapchain</name></member>
+      <member refid="classdisplay__vk_1ac8fa484c2e7a60f5f9c4c3a901134f06" prot="private" virt="non-virtual"><scope>display_vk</scope><name>create_vk_instance</name></member>
+      <member refid="classdisplay__vk_1a3620697456c276a5e3fe34ec083063ab" prot="private" virt="non-virtual"><scope>display_vk</scope><name>destroy_swapchain</name></member>
+      <member refid="classdisplay__vk_1a5aab3226bc89e804f0816bd7cb779f09" prot="private" virt="non-virtual"><scope>display_vk</scope><name>direct_mode_</name></member>
+      <member refid="classdisplay__vk_1adb90572bb39f0656185683bc5bb9fb58" prot="public" virt="non-virtual"><scope>display_vk</scope><name>display_vk</name></member>
+      <member refid="classdisplay__vk_1a767177630d61a70f6fea2dc28f5ed510" prot="private" virt="non-virtual"><scope>display_vk</scope><name>is_physical_device_suitable</name></member>
+      <member refid="classdisplay__vk_1a209df648d31e07c54a4110f91bd275f4" prot="private" virt="non-virtual"><scope>display_vk</scope><name>main_loop</name></member>
+      <member refid="classdisplay__vk_1a0be0dc09a1dfedf854ae8791ce9e3d5d" prot="private" virt="non-virtual"><scope>display_vk</scope><name>main_thread_</name></member>
+      <member refid="classdisplay__vk_1acda84e4e114e4058df1eaea874da8e03" prot="public" virt="non-virtual"><scope>display_vk</scope><name>poll_window_events</name></member>
+      <member refid="classdisplay__vk_1a4f55c41f110ac4e2e02c27c8e9aa6b87" prot="private" virt="non-virtual"><scope>display_vk</scope><name>ready_</name></member>
+      <member refid="classdisplay__vk_1a71625f9fb18a1856cfb8a4809e4cbd09" prot="public" virt="non-virtual"><scope>display_vk</scope><name>recreate_swapchain</name></member>
+      <member refid="classdisplay__vk_1a88a7e812c0dd7e6b891a1bef053f5205" prot="private" virt="non-virtual"><scope>display_vk</scope><name>required_device_extensions_</name></member>
+      <member refid="classdisplay__vk_1acac0407d9ec07f112417a99a11028a72" prot="private" virt="non-virtual"><scope>display_vk</scope><name>running_</name></member>
+      <member refid="classdisplay__vk_1a558ec6fdbd8cd322d40527d32494cf4a" prot="private" virt="non-virtual"><scope>display_vk</scope><name>select_physical_device</name></member>
+      <member refid="classdisplay__vk_1a31df97d7f784ce15f4eebf3a0c8cb714" prot="private" virt="non-virtual"><scope>display_vk</scope><name>selected_gpu_</name></member>
+      <member refid="classdisplay__vk_1a660fb656118b4b6d86be3feabd4438e2" prot="public" virt="non-virtual"><scope>display_vk</scope><name>setup</name></member>
+      <member refid="classdisplay__vk_1afc5eeb5bb1b85f1461cf1f68f48575a5" prot="private" virt="non-virtual"><scope>display_vk</scope><name>should_poll_</name></member>
+      <member refid="classdisplay__vk_1a1011ec7b1a0ea47abccc2f1c051968be" prot="public" virt="non-virtual"><scope>display_vk</scope><name>start</name></member>
+      <member refid="classdisplay__vk_1a501c7d8b88c56c697698f7e96aa419d3" prot="private" virt="non-virtual"><scope>display_vk</scope><name>switchboard_</name></member>
+      <member refid="classdisplay__vk_1a4a3f0295c4c6d3f5ffed7a0c7279c177" prot="public" virt="non-virtual"><scope>display_vk</scope><name>~display_vk</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,167 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classILLIXR_1_1switchboard_1_1event" kind="class" language="C++" prot="public">
+    <compoundname>ILLIXR::switchboard::event</compoundname>
+    <derivedcompoundref refid="structILLIXR_1_1data__format_1_1cam__base__type" prot="public" virt="non-virtual">ILLIXR::data_format::cam_base_type</derivedcompoundref>
+    <derivedcompoundref refid="structILLIXR_1_1data__format_1_1camera__data" prot="public" virt="non-virtual">ILLIXR::data_format::camera_data</derivedcompoundref>
+    <derivedcompoundref refid="structILLIXR_1_1data__format_1_1compressed__frame" prot="public" virt="non-virtual">ILLIXR::data_format::compressed_frame</derivedcompoundref>
+    <derivedcompoundref refid="structILLIXR_1_1data__format_1_1connection__signal" prot="public" virt="non-virtual">ILLIXR::data_format::connection_signal</derivedcompoundref>
+    <derivedcompoundref refid="structILLIXR_1_1data__format_1_1fast__pose__type" prot="public" virt="non-virtual">ILLIXR::data_format::fast_pose_type</derivedcompoundref>
+    <derivedcompoundref refid="structILLIXR_1_1data__format_1_1hologram__input" prot="public" virt="non-virtual">ILLIXR::data_format::hologram_input</derivedcompoundref>
+    <derivedcompoundref refid="structILLIXR_1_1data__format_1_1image__handle" prot="public" virt="non-virtual">ILLIXR::data_format::image_handle</derivedcompoundref>
+    <derivedcompoundref refid="structILLIXR_1_1data__format_1_1imu__integrator__input" prot="public" virt="non-virtual">ILLIXR::data_format::imu_integrator_input</derivedcompoundref>
+    <derivedcompoundref refid="structILLIXR_1_1data__format_1_1imu__raw__type" prot="public" virt="non-virtual">ILLIXR::data_format::imu_raw_type</derivedcompoundref>
+    <derivedcompoundref refid="structILLIXR_1_1data__format_1_1imu__type" prot="public" virt="non-virtual">ILLIXR::data_format::imu_type</derivedcompoundref>
+    <derivedcompoundref refid="structILLIXR_1_1data__format_1_1pose__type" prot="public" virt="non-virtual">ILLIXR::data_format::pose_type</derivedcompoundref>
+    <derivedcompoundref refid="structILLIXR_1_1data__format_1_1rendered__frame" prot="public" virt="non-virtual">ILLIXR::data_format::rendered_frame</derivedcompoundref>
+    <derivedcompoundref refid="structILLIXR_1_1data__format_1_1signal__to__quad" prot="public" virt="non-virtual">ILLIXR::data_format::signal_to_quad</derivedcompoundref>
+    <derivedcompoundref refid="structILLIXR_1_1data__format_1_1texture__pose" prot="public" virt="non-virtual">ILLIXR::data_format::texture_pose</derivedcompoundref>
+    <derivedcompoundref refid="classILLIXR_1_1switchboard_1_1event__wrapper" prot="public" virt="non-virtual">ILLIXR::switchboard::event_wrapper&lt; Underlying_type &gt;</derivedcompoundref>
+    <includes refid="switchboard_8hpp" local="no">switchboard.hpp</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classILLIXR_1_1switchboard_1_1event_1a55399aaf47bc0d3943fd89d7afb55624" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename Archive</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void ILLIXR::switchboard::event::serialize</definition>
+        <argsstring>(Archive &amp;ar, const unsigned int version)</argsstring>
+        <name>serialize</name>
+        <qualifiedname>ILLIXR::switchboard::event::serialize</qualifiedname>
+        <param>
+          <type>Archive &amp;</type>
+          <declname>ar</declname>
+        </param>
+        <param>
+          <type>const unsigned int</type>
+          <declname>version</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="143" column="15" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="143" bodyend="146"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1switchboard_1_1event_1a01fb51a03e9025d71087de76823e449e" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>virtual ILLIXR::switchboard::event::~event</definition>
+        <argsstring>()=default</argsstring>
+        <name>~event</name>
+        <qualifiedname>ILLIXR::switchboard::event::~event</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="148" column="17"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Virtual class for event types. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Minimum requirement: Events must be destructible. Casting events from various sources to void* (aka type-punning) breaks [strict-aliasing][1] and is undefined behavior in modern C++. Therefore, we require a common supertype for all events. We will cast them to this common supertype, event* instead.</para>
+<para>[1] <ulink url="https://cellperformance.beyond3d.com/articles/2006/06/understanding-strict-aliasing.html">https://cellperformance.beyond3d.com/articles/2006/06/understanding-strict-aliasing.html</ulink> </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="3">
+        <label>ILLIXR::data_format::binocular_cam_type</label>
+        <link refid="structILLIXR_1_1data__format_1_1binocular__cam__type"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ILLIXR::data_format::cam_base_type</label>
+        <link refid="structILLIXR_1_1data__format_1_1cam__base__type"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>ILLIXR::data_format::cam_type_zed</label>
+        <link refid="structILLIXR_1_1data__format_1_1cam__type__zed"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>ILLIXR::data_format::camera_data</label>
+        <link refid="structILLIXR_1_1data__format_1_1camera__data"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>ILLIXR::data_format::depth_type</label>
+        <link refid="structILLIXR_1_1data__format_1_1depth__type"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>ILLIXR::data_format::fast_pose_type</label>
+        <link refid="structILLIXR_1_1data__format_1_1fast__pose__type"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>ILLIXR::data_format::ht::ht_frame</label>
+        <link refid="structILLIXR_1_1data__format_1_1ht_1_1ht__frame"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>ILLIXR::data_format::imu_integrator_input</label>
+        <link refid="structILLIXR_1_1data__format_1_1imu__integrator__input"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>ILLIXR::data_format::imu_raw_type</label>
+        <link refid="structILLIXR_1_1data__format_1_1imu__raw__type"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>ILLIXR::data_format::imu_type</label>
+        <link refid="structILLIXR_1_1data__format_1_1imu__type"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>ILLIXR::data_format::monocular_cam_type</label>
+        <link refid="structILLIXR_1_1data__format_1_1monocular__cam__type"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>ILLIXR::data_format::pose_type</label>
+        <link refid="structILLIXR_1_1data__format_1_1pose__type"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>ILLIXR::data_format::rgb_depth_type</label>
+        <link refid="structILLIXR_1_1data__format_1_1rgb__depth__type"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>ILLIXR::switchboard::event</label>
+        <link refid="classILLIXR_1_1switchboard_1_1event"/>
+      </node>
+      <node id="15">
+        <label>ILLIXR::switchboard::event_wrapper&lt; Underlying_type &gt;</label>
+        <link refid="classILLIXR_1_1switchboard_1_1event__wrapper"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <location file="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" line="140" column="5" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/switchboard.hpp" bodystart="140" bodyend="149"/>
+    <listofallmembers>
+      <member refid="classILLIXR_1_1switchboard_1_1event_1a55399aaf47bc0d3943fd89d7afb55624" prot="public" virt="non-virtual"><scope>ILLIXR::switchboard::event</scope><name>serialize</name></member>
+      <member refid="classILLIXR_1_1switchboard_1_1event_1a01fb51a03e9025d71087de76823e449e" prot="public" virt="virtual"><scope>ILLIXR::switchboard::event</scope><name>~event</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

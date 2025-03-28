@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespaceILLIXR_1_1display" kind="namespace" language="C++">
+    <compoundname>ILLIXR::display</compoundname>
+    <innerclass refid="classILLIXR_1_1display_1_1display__backend" prot="public">ILLIXR::display::display_backend</innerclass>
+    <innerclass refid="classILLIXR_1_1display_1_1glfw__extended" prot="public">ILLIXR::display::glfw_extended</innerclass>
+    <innerclass refid="classILLIXR_1_1display_1_1headless" prot="public">ILLIXR::display::headless</innerclass>
+    <innerclass refid="classILLIXR_1_1display_1_1x11__direct" prot="public">ILLIXR::display::x11_direct</innerclass>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/src/display/display_backend.hpp" line="6" column="1"/>
+  </compounddef>
+</doxygen>

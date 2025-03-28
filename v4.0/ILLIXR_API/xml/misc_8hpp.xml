@@ -1,0 +1,572 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="misc_8hpp" kind="file" language="C++">
+    <compoundname>misc.hpp</compoundname>
+    <includes refid="switchboard_8hpp" local="yes">illixr/switchboard.hpp</includes>
+    <includes local="no">GL/glu.h</includes>
+    <includedby refid="data__loading_8hpp" local="yes">/home/friedel/devel/ILLIXR/include/illixr/data_loading.hpp</includedby>
+    <includedby refid="render__pass_8hpp" local="yes">/home/friedel/devel/ILLIXR/include/illixr/vk/render_pass.hpp</includedby>
+    <includedby refid="plugins_2depthai_2plugin_8hpp" local="yes">/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp</includedby>
+    <includedby refid="plugins_2gldemo_2plugin_8hpp" local="yes">/home/friedel/devel/ILLIXR/plugins/gldemo/plugin.hpp</includedby>
+    <includedby refid="plugins_2offline__imu_2plugin_8hpp" local="yes">/home/friedel/devel/ILLIXR/plugins/offline_imu/plugin.hpp</includedby>
+    <includedby refid="plugins_2offload__vio_2server__rx_2plugin_8hpp" local="yes">/home/friedel/devel/ILLIXR/plugins/offload_vio/server_rx/plugin.hpp</includedby>
+    <includedby refid="plugins_2offload__vio_2server__tx_2plugin_8hpp" local="yes">/home/friedel/devel/ILLIXR/plugins/offload_vio/server_tx/plugin.hpp</includedby>
+    <includedby refid="plugins_2realsense_2plugin_8hpp" local="yes">/home/friedel/devel/ILLIXR/plugins/realsense/plugin.hpp</includedby>
+    <includedby refid="plugins_2timewarp__gl_2plugin_8hpp" local="yes">/home/friedel/devel/ILLIXR/plugins/timewarp_gl/plugin.hpp</includedby>
+    <includedby refid="zed__camera__thread_8hpp" local="yes">/home/friedel/devel/ILLIXR/plugins/zed/zed_camera_thread.hpp</includedby>
+    <includedby refid="stdout__record__logger_8hpp" local="yes">/home/friedel/devel/ILLIXR/src/stdout_record_logger.hpp</includedby>
+    <incdepgraph>
+      <node id="1">
+        <label>/home/friedel/devel/ILLIXR/include/illixr/data_format/misc.hpp</label>
+        <link refid="misc_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>managed_thread.hpp</label>
+        <link refid="managed__thread_8hpp_source"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>network/network_backend.hpp</label>
+        <link refid="network__backend_8hpp_source"/>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+      </node>
+      <node id="20">
+        <label>topic_config.hpp</label>
+        <link refid="topic__config_8hpp_source"/>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>illixr/phonebook.hpp</label>
+        <link refid="phonebook_8hpp_source"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+      </node>
+      <node id="24">
+        <label>record_logger.hpp</label>
+        <link refid="record__logger_8hpp_source"/>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>illixr/switchboard.hpp</label>
+        <link refid="switchboard_8hpp_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+      </node>
+      <node id="36">
+        <label>GL/glu.h</label>
+      </node>
+      <node id="25">
+        <label>any</label>
+      </node>
+      <node id="5">
+        <label>atomic</label>
+      </node>
+      <node id="31">
+        <label>boost/archive/binary_iarchive.hpp</label>
+      </node>
+      <node id="32">
+        <label>boost/archive/binary_oarchive.hpp</label>
+      </node>
+      <node id="33">
+        <label>boost/iostreams/device/back_inserter.hpp</label>
+      </node>
+      <node id="34">
+        <label>boost/iostreams/stream.hpp</label>
+      </node>
+      <node id="35">
+        <label>boost/serialization/shared_ptr.hpp</label>
+      </node>
+      <node id="6">
+        <label>cassert</label>
+      </node>
+      <node id="21">
+        <label>chrono</label>
+      </node>
+      <node id="3">
+        <label>concurrentqueue/blockingconcurrentqueue.hpp</label>
+      </node>
+      <node id="28">
+        <label>eigen3/Eigen/Core</label>
+      </node>
+      <node id="29">
+        <label>eigen3/Eigen/Geometry</label>
+      </node>
+      <node id="7">
+        <label>functional</label>
+      </node>
+      <node id="18">
+        <label>iostream</label>
+      </node>
+      <node id="30">
+        <label>list</label>
+      </node>
+      <node id="13">
+        <label>memory</label>
+      </node>
+      <node id="14">
+        <label>mutex</label>
+      </node>
+      <node id="22">
+        <label>optional</label>
+      </node>
+      <node id="15">
+        <label>shared_mutex</label>
+      </node>
+      <node id="19">
+        <label>spdlog/spdlog.h</label>
+      </node>
+      <node id="27">
+        <label>sstream</label>
+      </node>
+      <node id="8">
+        <label>stdexcept</label>
+      </node>
+      <node id="26">
+        <label>string</label>
+      </node>
+      <node id="9">
+        <label>thread</label>
+      </node>
+      <node id="16">
+        <label>typeindex</label>
+      </node>
+      <node id="17">
+        <label>unordered_map</label>
+      </node>
+      <node id="10">
+        <label>utility</label>
+      </node>
+      <node id="23">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="1">
+        <label>/home/friedel/devel/ILLIXR/include/illixr/data_format/misc.hpp</label>
+        <link refid="misc_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>/home/friedel/devel/ILLIXR/include/illixr/data_loading.hpp</label>
+        <link refid="data__loading_8hpp_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>/home/friedel/devel/ILLIXR/include/illixr/vk/render_pass.hpp</label>
+        <link refid="render__pass_8hpp_source"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+      </node>
+      <node id="18">
+        <label>/home/friedel/devel/ILLIXR/plugins/depthai/plugin.hpp</label>
+        <link refid="plugins_2depthai_2plugin_8hpp_source"/>
+      </node>
+      <node id="19">
+        <label>/home/friedel/devel/ILLIXR/plugins/gldemo/plugin.hpp</label>
+        <link refid="plugins_2gldemo_2plugin_8hpp_source"/>
+      </node>
+      <node id="3">
+        <label>/home/friedel/devel/ILLIXR/plugins/ground_truth_slam/plugin.hpp</label>
+        <link refid="plugins_2ground__truth__slam_2plugin_8hpp_source"/>
+      </node>
+      <node id="7">
+        <label>/home/friedel/devel/ILLIXR/plugins/native_renderer/plugin.hpp</label>
+        <link refid="plugins_2native__renderer_2plugin_8hpp_source"/>
+      </node>
+      <node id="4">
+        <label>/home/friedel/devel/ILLIXR/plugins/offline_cam/plugin.hpp</label>
+        <link refid="plugins_2offline__cam_2plugin_8hpp_source"/>
+      </node>
+      <node id="20">
+        <label>/home/friedel/devel/ILLIXR/plugins/offline_imu/plugin.hpp</label>
+        <link refid="plugins_2offline__imu_2plugin_8hpp_source"/>
+      </node>
+      <node id="8">
+        <label>/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/offload_rendering_client.hpp</label>
+        <link refid="offload__rendering__client_8hpp_source"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>/home/friedel/devel/ILLIXR/plugins/offload_rendering_client/plugin.cpp</label>
+        <link refid="plugins_2offload__rendering__client_2plugin_8cpp"/>
+      </node>
+      <node id="10">
+        <label>/home/friedel/devel/ILLIXR/plugins/offload_rendering_server/offload_rendering_server.hpp</label>
+        <link refid="offload__rendering__server_8hpp_source"/>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>/home/friedel/devel/ILLIXR/plugins/offload_rendering_server/plugin.cpp</label>
+        <link refid="plugins_2offload__rendering__server_2plugin_8cpp"/>
+      </node>
+      <node id="11">
+        <label>/home/friedel/devel/ILLIXR/plugins/offload_rendering_server/plugin.hpp</label>
+        <link refid="plugins_2offload__rendering__server_2plugin_8hpp_source"/>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="21">
+        <label>/home/friedel/devel/ILLIXR/plugins/offload_vio/server_rx/plugin.hpp</label>
+        <link refid="plugins_2offload__vio_2server__rx_2plugin_8hpp_source"/>
+      </node>
+      <node id="22">
+        <label>/home/friedel/devel/ILLIXR/plugins/offload_vio/server_tx/plugin.hpp</label>
+        <link refid="plugins_2offload__vio_2server__tx_2plugin_8hpp_source"/>
+      </node>
+      <node id="13">
+        <label>/home/friedel/devel/ILLIXR/plugins/openwarp_vk/openwarp_vk.hpp</label>
+        <link refid="openwarp__vk_8hpp_source"/>
+        <childnode refid="14" relation="include">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>/home/friedel/devel/ILLIXR/plugins/openwarp_vk/plugin.hpp</label>
+        <link refid="plugins_2openwarp__vk_2plugin_8hpp_source"/>
+      </node>
+      <node id="23">
+        <label>/home/friedel/devel/ILLIXR/plugins/realsense/plugin.hpp</label>
+        <link refid="plugins_2realsense_2plugin_8hpp_source"/>
+      </node>
+      <node id="24">
+        <label>/home/friedel/devel/ILLIXR/plugins/timewarp_gl/plugin.hpp</label>
+        <link refid="plugins_2timewarp__gl_2plugin_8hpp_source"/>
+      </node>
+      <node id="16">
+        <label>/home/friedel/devel/ILLIXR/plugins/timewarp_vk/plugin.hpp</label>
+        <link refid="plugins_2timewarp__vk_2plugin_8hpp_source"/>
+      </node>
+      <node id="15">
+        <label>/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp</label>
+        <link refid="timewarp__vk_8hpp_source"/>
+        <childnode refid="16" relation="include">
+        </childnode>
+      </node>
+      <node id="26">
+        <label>/home/friedel/devel/ILLIXR/plugins/zed/plugin.hpp</label>
+        <link refid="plugins_2zed_2plugin_8hpp_source"/>
+      </node>
+      <node id="25">
+        <label>/home/friedel/devel/ILLIXR/plugins/zed/zed_camera_thread.hpp</label>
+        <link refid="zed__camera__thread_8hpp_source"/>
+        <childnode refid="26" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>/home/friedel/devel/ILLIXR/services/pose_lookup/service.hpp</label>
+        <link refid="pose__lookup_2service_8hpp_source"/>
+      </node>
+      <node id="17">
+        <label>/home/friedel/devel/ILLIXR/services/vkdemo/service.hpp</label>
+        <link refid="vkdemo_2service_8hpp_source"/>
+      </node>
+      <node id="27">
+        <label>/home/friedel/devel/ILLIXR/src/stdout_record_logger.hpp</label>
+        <link refid="stdout__record__logger_8hpp_source"/>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="structILLIXR_1_1data__format_1_1connection__signal" prot="public">ILLIXR::data_format::connection_signal</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1vk__image__handle" prot="public">ILLIXR::data_format::vk_image_handle</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1image__handle" prot="public">ILLIXR::data_format::image_handle</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1hologram__input" prot="public">ILLIXR::data_format::hologram_input</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1signal__to__quad" prot="public">ILLIXR::data_format::signal_to_quad</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1hmd__physical__info" prot="public">ILLIXR::data_format::hmd_physical_info</innerclass>
+    <innernamespace refid="namespaceILLIXR">ILLIXR</innernamespace>
+    <innernamespace refid="namespaceILLIXR_1_1data__format">ILLIXR::data_format</innernamespace>
+    <sectiondef kind="define">
+      <memberdef kind="define" id="misc_8hpp_1af00caacf1235b8ca6946aa5bce9548e3" prot="public" static="no">
+        <name>USE_ALT_EYE_FORMAT</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/misc.hpp" line="8" column="9" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/misc.hpp" bodystart="8" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="typedef">
+      <memberdef kind="typedef" id="misc_8hpp_1a389d2ab33cbce94847a01e0b75f29627" prot="public" static="no">
+        <type>unsigned long long</type>
+        <definition>using ullong =  unsigned long long</definition>
+        <argsstring></argsstring>
+        <name>ullong</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/misc.hpp" line="10" column="1" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/misc.hpp" bodystart="10" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;illixr/switchboard.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;GL/glu.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Tell<sp/>gldemo<sp/>and<sp/>timewarp_gl<sp/>to<sp/>use<sp/>two<sp/>texture<sp/>handle<sp/>for<sp/>left<sp/>and<sp/>right<sp/>eye</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>USE_ALT_EYE_FORMAT</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">ullong<sp/>=<sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/>long;</highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">ILLIXR::data_format<sp/>{</highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">[[maybe_unused]]<sp/>connection_signal<sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/>switchboard::event<sp/>{</highlight></codeline>
+<codeline lineno="15"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>start;</highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/>connection_signal(</highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>start_)</highlight></codeline>
+<codeline lineno="18"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>start{start_}<sp/>{<sp/>}</highlight></codeline>
+<codeline lineno="19"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Used<sp/>to<sp/>identify<sp/>which<sp/>graphics<sp/>API<sp/>is<sp/>being<sp/>used<sp/>(for<sp/>swapchain<sp/>construction)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="keyword">enum<sp/>class</highlight><highlight class="normal"><sp/>graphics_api<sp/>{<sp/>OPENGL,<sp/>VULKAN,<sp/>TBD<sp/>};</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Used<sp/>to<sp/>distinguish<sp/>between<sp/>different<sp/>image<sp/>handles</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight><highlight class="keyword">enum<sp/>class</highlight><highlight class="normal"><sp/>swapchain_usage<sp/>{<sp/>LEFT_SWAPCHAIN,<sp/>RIGHT_SWAPCHAIN,<sp/>LEFT_RENDER,<sp/>RIGHT_RENDER,<sp/>NA<sp/>};</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">vk_image_handle<sp/>{</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>file_descriptor;</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/>int64_t<sp/><sp/>format;</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><sp/><sp/>allocation_size;</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/>uint32_t<sp/>width;</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/>uint32_t<sp/>height;</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/>vk_image_handle(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>fd_,<sp/>int64_t<sp/>format_,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>alloc_size,<sp/>uint32_t<sp/>width_,<sp/>uint32_t<sp/>height_)</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>file_descriptor{fd_}</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/>format{format_}</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/>allocation_size{alloc_size}</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/>width{width_}</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/>height{height_}<sp/>{<sp/>}</highlight></codeline>
+<codeline lineno="40"><highlight class="normal">}<sp/>vk_image_handle;</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight></codeline>
+<codeline lineno="42"><highlight class="normal"></highlight><highlight class="comment">//<sp/>This<sp/>is<sp/>used<sp/>to<sp/>share<sp/>swapchain<sp/>images<sp/>between<sp/>ILLIXR<sp/>and<sp/>Monado.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="43"><highlight class="normal"></highlight><highlight class="comment">//<sp/>When<sp/>Monado<sp/>uses<sp/>its<sp/>GL<sp/>pipeline,<sp/>it&apos;s<sp/>enough<sp/>to<sp/>just<sp/>share<sp/>a<sp/>context<sp/>during<sp/>creation.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="44"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Otherwise,<sp/>file<sp/>descriptors<sp/>are<sp/>needed<sp/>to<sp/>share<sp/>the<sp/>images.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="45"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">[[maybe_unused]]<sp/>image_handle<sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/>switchboard::event<sp/>{</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/>graphics_api<sp/>type;</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"></highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">union<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>GLuint<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>gl_handle{};</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vk_image_handle<sp/>vk_handle;</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"></highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/>uint32_t<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>num_images;</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/>swapchain_usage<sp/>usage;</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"></highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/>image_handle()</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>type{graphics_api::TBD}</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/>gl_handle{0}</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/>num_images{0}</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/>usage{swapchain_usage::NA}<sp/>{<sp/>}</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"></highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/>image_handle(GLuint<sp/>gl_handle_,<sp/>uint32_t<sp/>num_images_,<sp/>swapchain_usage<sp/>usage_)</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>type{graphics_api::OPENGL}</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/>gl_handle{gl_handle_}</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/>num_images{num_images_}</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/>usage{usage_}<sp/>{<sp/>}</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"></highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/>image_handle(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>vk_fd_,<sp/>int64_t<sp/>format,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>alloc_size,<sp/>uint32_t<sp/>width_,<sp/>uint32_t<sp/>height_,<sp/>uint32_t<sp/>num_images_,</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>swapchain_usage<sp/>usage_)</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>type{graphics_api::VULKAN}</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/>vk_handle{vk_fd_,<sp/>format,<sp/>alloc_size,<sp/>width_,<sp/>height_}</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/>num_images{num_images_}</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/>usage{usage_}<sp/>{<sp/>}</highlight></codeline>
+<codeline lineno="74"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"></highlight></codeline>
+<codeline lineno="76"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">[[maybe_unused]]<sp/>hologram_input<sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/>switchboard::event<sp/>{</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/>uint<sp/>seq{};</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"></highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/>hologram_input()<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"></highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/>hologram_input(uint<sp/>seq_)</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>seq{seq_}<sp/>{<sp/>}</highlight></codeline>
+<codeline lineno="83"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"></highlight></codeline>
+<codeline lineno="85"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">[[maybe_unused]]<sp/>signal_to_quad<sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/>switchboard::event<sp/>{</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/>ullong<sp/>seq;</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"></highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/>signal_to_quad(ullong<sp/>seq_)</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>seq{seq_}<sp/>{<sp/>}</highlight></codeline>
+<codeline lineno="90"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"></highlight></codeline>
+<codeline lineno="92"><highlight class="normal"></highlight><highlight class="comment">//<sp/>High-level<sp/>HMD<sp/>specification,<sp/>timewarp<sp/>plugin</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="93"><highlight class="normal"></highlight><highlight class="comment">//<sp/>may/will<sp/>calculate<sp/>additional<sp/>HMD<sp/>info<sp/>based<sp/>on<sp/>these<sp/>specifications</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="94"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">[[maybe_unused]]<sp/>hmd_physical_info<sp/>{</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>ipd;</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><sp/><sp/>displayPixelsWide;</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><sp/><sp/>displayPixelsHigh;</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>chromaticAberration[4];</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>K[11];</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><sp/><sp/>visiblePixelsWide;</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><sp/><sp/>visiblePixelsHigh;</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>visibleMetersWide;</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>visibleMetersHigh;</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>lensSeparationInMeters;</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>metersPerTanAngleAtCenter;</highlight></codeline>
+<codeline lineno="106"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"></highlight></codeline>
+<codeline lineno="108"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>compare(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>input,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>val)<sp/>{</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/>v1<sp/>=<sp/>input;</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/>v2<sp/>=<sp/>val;</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/>std::transform(v1.begin(),<sp/>v1.end(),<sp/>v1.begin(),<sp/>::tolower);</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/><sp/><sp/>std::transform(v2.begin(),<sp/>v2.end(),<sp/>v2.begin(),<sp/>::tolower);</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>v1<sp/>==<sp/>v2;</highlight></codeline>
+<codeline lineno="114"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"></highlight></codeline>
+<codeline lineno="116"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>ILLIXR::data_format</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/misc.hpp"/>
+  </compounddef>
+</doxygen>

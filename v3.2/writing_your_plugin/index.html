@@ -1,0 +1,1618 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://illixr.github.io/testing/latest/writing_your_plugin/">
+      
+      
+        <link rel="prev" href="../modifying_a_plugin/">
+      
+      
+        <link rel="next" href="../plugin_README/README_debugview/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.7">
+    
+    
+      
+        <title>Writing Your Plugin - ILLIXR Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.8608ea7d.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#writing-your-plugin" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="ILLIXR Documentation" class="md-header__button md-logo" aria-label="ILLIXR Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ILLIXR Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Writing Your Plugin
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="ILLIXR Documentation" class="md-nav__button md-logo" aria-label="ILLIXR Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    ILLIXR Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" checked>
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href=".." class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Latest Documentation
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_1" id="__nav_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            Latest Documentation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting_started/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Getting Started
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../using_cameras/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Using ILLIXR with Cameras
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../debugging_illixr/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ILLIXR Debugging Tips
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../virtualization/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ILLIXR Under Virtualization
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../illixr_plugins/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ILLIXR Plugin Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modifying_a_plugin/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Modifying a Plugin
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Writing Your Plugin
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Writing Your Plugin
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#adding-a-new-plugin" class="md-nav__link">
+    <span class="md-ellipsis">
+      Adding a New Plugin
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Adding a New Plugin">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#simple-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      Simple Example
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#more-complex-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      More Complex Example
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#very-complex-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      Very Complex Example
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#external-plugins" class="md-nav__link">
+    <span class="md-ellipsis">
+      External Plugins
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tutorial" class="md-nav__link">
+    <span class="md-ellipsis">
+      Tutorial
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_1_9" id="__nav_1_9_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Plugin Details
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_1_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1_9">
+            <span class="md-nav__icon md-icon"></span>
+            Plugin Details
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../plugin_README/README_debugview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Debugview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../plugin_README/README_display_vk/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Display_VK
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../plugin_README/README_fauxpose/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Fauxpose
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../plugin_README/README_gldemo/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Gldemo
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../plugin_README/monado_illixr_runtime_overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Monado Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../plugin_README/monado_integration_dataflow/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Monado Dataflow
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../plugin_README/README_native_renderer/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Native Renderer
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../plugin_README/offload_vio/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Offload VIO
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../plugin_README/README_openni/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    OpenNI
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../plugin_README/README_record_imu_cam/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Record_imu_cam
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../plugin_README/README_timewarp_gl/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Timewarp_gl
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../plugin_README/README_timewarp_vk/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Timewarp_VK
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../plugin_README/README_vkdemo/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Vkdemo
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../plugin_README/README_zed/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Zed
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../logging_and_metrics/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Logging and Metrics
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../glossary/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ILLIXR Glossary
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/annotated/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ILLIXR API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LICENSE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ILLIXR License
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contributing Guidelines
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../updating_tags_and_docs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Updating Tags and Documentation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../external_switchboard_and_phonebook/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Using Switchboard and Phonebook Externally
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="writing-your-plugin">Writing Your Plugin</h1>
+<h2 id="adding-a-new-plugin">Adding a New Plugin</h2>
+<p>To add a new plugin</p>
+<ol>
+<li>create a new subdirectory in the <code>plugins</code> directory named for your plugin (no spaces)</li>
+<li>put your code in this new subdirectory (additional subdirectories containing parts of your code are allowed)</li>
+<li>create a CMakeLists.txt file in this new subdirectory. See the template below</li>
+<li>add the plugin to the <code>profiles/plugins.yaml</code> file, the name must match the subdirectory you created; it should go in the <code>internal_plugins</code> entry</li>
+</ol>
+<p>For the examples below is for a plugin called tracker, so just replace any instance of tracker with
+the name of your plugin.</p>
+<h3 id="simple-example">Simple Example</h3>
+<div class="language-cmake highlight"><pre><span></span><code><span id="__span-0-1"><span class="err">1</span><span class="w">   </span><span class="nb">set</span><span class="p">(</span><span class="s">TRACKER_SOURCES</span><span class="w"> </span><span class="s">plugin.cpp</span>
+</span><span id="__span-0-2"><span class="s">2</span><span class="w">                       </span><span class="s">src/tracker.cpp</span>
+</span><span id="__span-0-3"><span class="s">3</span><span class="w">                       </span><span class="s">src/tracker.hpp</span><span class="p">)</span>
+</span><span id="__span-0-4"><span class="err">4</span>
+</span><span id="__span-0-5"><span class="err">5</span><span class="w">   </span><span class="nb">set</span><span class="p">(</span><span class="s">PLUGIN_NAME</span><span class="w"> </span><span class="s">plugin.tracker</span><span class="o">${</span><span class="nv">ILLIXR_BUILD_SUFFIX</span><span class="o">}</span><span class="p">)</span>
+</span><span id="__span-0-6"><span class="err">6</span>
+</span><span id="__span-0-7"><span class="err">7</span><span class="w">   </span><span class="nb">add_library</span><span class="p">(</span><span class="o">${</span><span class="nv">PLUGIN_NAME</span><span class="o">}</span><span class="w"> </span><span class="s">SHARED</span><span class="w"> </span><span class="o">${</span><span class="nv">TRACKER_SOURCES</span><span class="o">}</span><span class="p">)</span>
+</span><span id="__span-0-8"><span class="err">8</span>
+</span><span id="__span-0-9"><span class="err">9</span><span class="w">   </span><span class="nb">target_include_directories</span><span class="p">(</span><span class="o">${</span><span class="nv">PLUGIN_NAME</span><span class="o">}</span><span class="w"> </span><span class="s">PRIVATE</span><span class="w"> </span><span class="o">${</span><span class="nv">ILLIXR_SOURCE_DIR</span><span class="o">}</span><span class="s">/include</span><span class="p">)</span>
+</span><span id="__span-0-10"><span class="err">10</span>
+</span><span id="__span-0-11"><span class="err">11</span><span class="w">  </span><span class="nb">target_compile_features</span><span class="p">(</span><span class="o">${</span><span class="nv">PLUGIN_NAME</span><span class="o">}</span><span class="w"> </span><span class="s">PRIVATE</span><span class="w"> </span><span class="s">cxx_std_17</span><span class="p">)</span>
+</span><span id="__span-0-12"><span class="err">12</span>
+</span><span id="__span-0-13"><span class="err">13</span><span class="w">  </span><span class="nb">install</span><span class="p">(</span><span class="s">TARGETS</span><span class="w"> </span><span class="o">${</span><span class="nv">PLUGIN_NAME</span><span class="o">}</span><span class="w"> </span><span class="s">DESTINATION</span><span class="w"> </span><span class="s">lib</span><span class="p">)</span>
+</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Line #</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1-3</td>
+<td>Specify the source code files individually, we discourage using  <code>GLOB</code>  or  <code>GLOB_RECURSE</code> to generate a list of files as these functions do not always notice when files change.</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Put the plugin name into a variable (will also be the name of the library).</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Tell the system we are building a shared library with the name  <code>PLUGIN_NAME</code> from the specified source files.</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Tell the system about any non-standard include paths the compiler needs to be aware of. Always include <code>ILLIXR_SOURCE_DIR/include</code> in this, as this is where plugin.hpp and other ILLIXR common headers are.</td>
+</tr>
+<tr>
+<td>11</td>
+<td>Any compile options specific to this plugin. Usually this will be left as is.</td>
+</tr>
+<tr>
+<td>13</td>
+<td>Add the install directive. This should not need to change.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="more-complex-example">More Complex Example</h3>
+<p>In this example the plugin has external dependencies provided by OS repos, specifically glfw3, x11, glew, glu, opencv, and eigen3.
+<div class="language-cmake highlight"><pre><span></span><code><span id="__span-1-1"><span class="err">1</span><span class="w">   </span><span class="nb">set</span><span class="p">(</span><span class="s">TRACKER_SOURCES</span><span class="w"> </span><span class="s">plugin.cpp</span>
+</span><span id="__span-1-2"><span class="s">2</span><span class="w">                       </span><span class="s">src/tracker.cpp</span>
+</span><span id="__span-1-3"><span class="s">3</span><span class="w">                       </span><span class="s">src/tracker.hpp</span><span class="p">)</span>
+</span><span id="__span-1-4"><span class="err">4</span>
+</span><span id="__span-1-5"><span class="err">5</span><span class="w">   </span><span class="nb">set</span><span class="p">(</span><span class="s">PLUGIN_NAME</span><span class="w"> </span><span class="s">plugin.tracker</span><span class="o">${</span><span class="nv">ILLIXR_BUILD_SUFFIX</span><span class="o">}</span><span class="p">)</span>
+</span><span id="__span-1-6"><span class="err">6</span>
+</span><span id="__span-1-7"><span class="err">7</span><span class="w">   </span><span class="nb">find_package</span><span class="p">(</span><span class="s">glfw3</span><span class="w"> </span><span class="s">REQUIRED</span><span class="p">)</span>
+</span><span id="__span-1-8"><span class="err">8</span>
+</span><span id="__span-1-9"><span class="err">9</span><span class="w">   </span><span class="nb">add_library</span><span class="p">(</span><span class="o">${</span><span class="nv">PLUGIN_NAME</span><span class="o">}</span><span class="w"> </span><span class="s">SHARED</span><span class="w"> </span><span class="o">${</span><span class="nv">TRACKER_SOURCES</span><span class="o">}</span><span class="p">)</span>
+</span><span id="__span-1-10"><span class="err">10</span>
+</span><span id="__span-1-11"><span class="err">11</span><span class="w">  </span><span class="nb">if</span><span class="p">(</span><span class="s">BUILD_OPENCV</span><span class="p">)</span>
+</span><span id="__span-1-12"><span class="err">12</span><span class="w">      </span><span class="nb">add_dependencies</span><span class="p">(</span><span class="o">${</span><span class="nv">PLUGIN_NAME</span><span class="o">}</span><span class="w"> </span><span class="s">OpenCV_Viz</span><span class="p">)</span>
+</span><span id="__span-1-13"><span class="err">13</span><span class="w">  </span><span class="nb">endif</span><span class="p">()</span>
+</span><span id="__span-1-14"><span class="err">14</span>
+</span><span id="__span-1-15"><span class="err">15</span><span class="w">  </span><span class="nb">target_include_directories</span><span class="p">(</span><span class="o">${</span><span class="nv">PLUGIN_NAME</span><span class="o">}</span><span class="w"> </span><span class="s">PRIVATE</span><span class="w"> </span><span class="o">${</span><span class="nv">X11_INCLUDE_DIR</span><span class="o">}</span><span class="w"> </span><span class="o">${</span><span class="nv">GLEW_INCLUDE_DIR</span><span class="o">}</span><span class="w"> </span><span class="o">${</span><span class="nv">GLU_INCLUDE_DIR</span><span class="o">}</span><span class="w"> </span><span class="o">${</span><span class="nv">OpenCV_INCLUDE_DIRS</span><span class="o">}</span><span class="w"> </span><span class="o">${</span><span class="nv">glfw3_INCLUDE_DIRS</span><span class="o">}</span><span class="w"> </span><span class="o">${</span><span class="nv">gl_INCLUDE_DIRS</span><span class="o">}</span><span class="w"> </span><span class="o">${</span><span class="nv">ILLIXR_SOURCE_DIR</span><span class="o">}</span><span class="s">/include</span><span class="w"> </span><span class="o">${</span><span class="nv">Eigen3_INCLUDE_DIRS</span><span class="o">}</span><span class="p">)</span>
+</span><span id="__span-1-16"><span class="err">16</span><span class="w">  </span><span class="nb">target_link_libraries</span><span class="p">(</span><span class="o">${</span><span class="nv">PLUGIN_NAME</span><span class="o">}</span><span class="w"> </span><span class="o">${</span><span class="nv">X11_LIBRARIES</span><span class="o">}</span><span class="w"> </span><span class="o">${</span><span class="nv">GLEW_LIBRARIES</span><span class="o">}</span><span class="w"> </span><span class="o">${</span><span class="nv">glu_LDFLAGS</span><span class="o">}</span><span class="w"> </span><span class="o">${</span><span class="nv">OpenCV_LIBRARIES</span><span class="o">}</span><span class="w"> </span><span class="o">${</span><span class="nv">glfw3_LIBRARIES</span><span class="o">}</span><span class="w"> </span><span class="o">${</span><span class="nv">gl_LIBRARIES</span><span class="o">}</span><span class="w"> </span><span class="o">${</span><span class="nv">Eigen3_LIBRARIES</span><span class="o">}</span><span class="w"> </span><span class="s">dl</span><span class="w"> </span><span class="s">pthread</span><span class="p">)</span>
+</span><span id="__span-1-17"><span class="err">17</span><span class="w">  </span><span class="nb">target_compile_features</span><span class="p">(</span><span class="o">${</span><span class="nv">PLUGIN_NAME</span><span class="o">}</span><span class="w"> </span><span class="s">PRIVATE</span><span class="w"> </span><span class="s">cxx_std_17</span><span class="p">)</span>
+</span><span id="__span-1-18"><span class="err">18</span>
+</span><span id="__span-1-19"><span class="err">19</span><span class="w">  </span><span class="nb">install</span><span class="p">(</span><span class="s">TARGETS</span><span class="w"> </span><span class="o">${</span><span class="nv">PLUGIN_NAME</span><span class="o">}</span><span class="w"> </span><span class="s">DESTINATION</span><span class="w"> </span><span class="s">lib</span><span class="p">)</span>
+</span></code></pre></div></p>
+<table>
+<thead>
+<tr>
+<th>Line#</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1-3</td>
+<td>Specify the source code files individually, we discourage using  <code>GLOB</code>  or  <code>GLOB_RECURSE</code> to generate a list of files as these functions do not always notice when files change.</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Put the plugin name into a variable (will also be the name of the library).</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Use the <code>find_package</code> directive to locate any required dependencies. This will automatically populate variables containing header path and library names associated with the dependency. <code>find_package</code> assumes that there is an appropriate .cmake config file for the dependency on your system. If not the <code>pkg_check_module</code> function will perform the same task, but for dependencies which have associated .pc files on your system.</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Tell the system we are building a shared library with the name   <code>PLUGIN_NAME</code>  from the specified source files.</td>
+</tr>
+<tr>
+<td>11-13</td>
+<td>OpenCV is a special case for a dependency. If your plugin requires OpenCV add these lines to your CMakeLists.txt file and do not use <code>find_package(OpenCV)</code>.</td>
+</tr>
+<tr>
+<td>15</td>
+<td>Tell the system about any non-standard include paths the compiler needs to be aware of. Always include <code>ILLIXR _SOURCE_DIR</code> in this, as this is where plugin.hpp and other ILLIXR common headers are.</td>
+</tr>
+<tr>
+<td>16</td>
+<td>Tell the system about any libraries this plugin needs to link against (usually those associated with dependencies).</td>
+</tr>
+<tr>
+<td>17</td>
+<td>Any compile options specific to this plugin. Usually this will be left as is.</td>
+</tr>
+<tr>
+<td>19</td>
+<td>Add the install directive. This should not need to change.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Note:</strong> Not all the dependencies were searched for by <code>find_package</code> in this example. This is because there is a set
+of dependencies which are very common to many plugins and their <code>find_package</code> calls are in the main ILLIXR CMakeLists.txt
+file and do not need to be searched for again. These packages are</p>
+<ul>
+<li>Glew</li>
+<li>Glu</li>
+<li>SQLite3</li>
+<li>X11</li>
+<li>Eigen3</li>
+</ul>
+<h3 id="very-complex-example">Very Complex Example</h3>
+<p>In this example the plugin has dependencies provided by OS repos, and a third party dependency provided by a git repo.
+<div class="language-cmake highlight"><pre><span></span><code><span id="__span-2-1"><span class="err">1</span><span class="w">   </span><span class="nb">set</span><span class="p">(</span><span class="s">TRACKER_SOURCES</span><span class="w"> </span><span class="s">plugin.cpp</span>
+</span><span id="__span-2-2"><span class="s">2</span><span class="w">                       </span><span class="s">src/tracker.cpp</span>
+</span><span id="__span-2-3"><span class="s">3</span><span class="w">                       </span><span class="s">src/tracker.hpp</span><span class="p">)</span>
+</span><span id="__span-2-4"><span class="err">4</span>
+</span><span id="__span-2-5"><span class="err">5</span><span class="w">   </span><span class="nb">set</span><span class="p">(</span><span class="s">PLUGIN_NAME</span><span class="w"> </span><span class="s">plugin.tracker</span><span class="o">${</span><span class="nv">ILLIXR_BUILD_SUFFIX</span><span class="o">}</span><span class="p">)</span>
+</span><span id="__span-2-6"><span class="err">6</span>
+</span><span id="__span-2-7"><span class="err">7</span><span class="w">   </span><span class="nb">find_package</span><span class="p">(</span><span class="s">glfw3</span><span class="w"> </span><span class="s">REQUIRED</span><span class="p">)</span>
+</span><span id="__span-2-8"><span class="err">8</span>
+</span><span id="__span-2-9"><span class="err">9</span><span class="w">   </span><span class="nb">add_library</span><span class="p">(</span><span class="o">${</span><span class="nv">PLUGIN_NAME</span><span class="o">}</span><span class="w"> </span><span class="s">SHARED</span><span class="w"> </span><span class="o">${</span><span class="nv">TRACKER_SOURCES</span><span class="o">}</span><span class="p">)</span>
+</span><span id="__span-2-10"><span class="err">10</span>
+</span><span id="__span-2-11"><span class="err">11</span><span class="w">  </span><span class="nb">get_external</span><span class="p">(</span><span class="s">Plotter</span><span class="p">)</span>
+</span><span id="__span-2-12"><span class="err">12</span>
+</span><span id="__span-2-13"><span class="err">13</span><span class="w">  </span><span class="nb">add_dependencies</span><span class="p">(</span><span class="o">${</span><span class="nv">PLUGIN_NAME</span><span class="o">}</span><span class="w"> </span><span class="s">Plotter</span><span class="p">)</span>
+</span><span id="__span-2-14"><span class="err">14</span>
+</span><span id="__span-2-15"><span class="err">15</span><span class="w">  </span><span class="nb">if</span><span class="p">(</span><span class="s">BUILD_OPENCV</span><span class="p">)</span>
+</span><span id="__span-2-16"><span class="err">16</span><span class="w">      </span><span class="nb">add_dependencies</span><span class="p">(</span><span class="o">${</span><span class="nv">PLUGIN_NAME</span><span class="o">}</span><span class="w"> </span><span class="s">OpenCV_Viz</span><span class="p">)</span>
+</span><span id="__span-2-17"><span class="err">17</span><span class="w">  </span><span class="nb">endif</span><span class="p">()</span>
+</span><span id="__span-2-18"><span class="err">18</span>
+</span><span id="__span-2-19"><span class="err">19</span><span class="w">  </span><span class="nb">target_include_directories</span><span class="p">(</span><span class="o">${</span><span class="nv">PLUGIN_NAME</span><span class="o">}</span><span class="w"> </span><span class="s">PRIVATE</span><span class="w"> </span><span class="o">${</span><span class="nv">X11_INCLUDE_DIR</span><span class="o">}</span><span class="w"> </span><span class="o">${</span><span class="nv">GLEW_INCLUDE_DIR</span><span class="o">}</span><span class="w"> </span><span class="o">${</span><span class="nv">GLU_INCLUDE_DIR</span><span class="o">}</span><span class="w"> </span><span class="o">${</span><span class="nv">OpenCV_INCLUDE_DIRS</span><span class="o">}</span><span class="w"> </span><span class="o">${</span><span class="nv">glfw3_INCLUDE_DIRS</span><span class="o">}</span><span class="w"> </span><span class="o">${</span><span class="nv">gl_INCLUDE_DIRS</span><span class="o">}</span><span class="w"> </span><span class="o">${</span><span class="nv">ILLIXR_SOURCE_DIR</span><span class="o">}</span><span class="s">/include</span><span class="w"> </span><span class="o">${</span><span class="nv">Eigen3_INCLUDE_DIRS</span><span class="o">}</span><span class="w"> </span><span class="o">${</span><span class="nv">Plotter_INCLUDE_DIRS</span><span class="o">}</span><span class="p">)</span>
+</span><span id="__span-2-20"><span class="err">20</span><span class="w">  </span><span class="nb">target_link_libraries</span><span class="p">(</span><span class="o">${</span><span class="nv">PLUGIN_NAME</span><span class="o">}</span><span class="w"> </span><span class="o">${</span><span class="nv">X11_LIBRARIES</span><span class="o">}</span><span class="w"> </span><span class="o">${</span><span class="nv">GLEW_LIBRARIES</span><span class="o">}</span><span class="w"> </span><span class="o">${</span><span class="nv">glu_LDFLAGS</span><span class="o">}</span><span class="w"> </span><span class="o">${</span><span class="nv">OpenCV_LIBRARIES</span><span class="o">}</span><span class="w"> </span><span class="o">${</span><span class="nv">glfw3_LIBRARIES</span><span class="o">}</span><span class="w"> </span><span class="o">${</span><span class="nv">gl_LIBRARIES</span><span class="o">}</span><span class="w"> </span><span class="o">${</span><span class="nv">Eigen3_LIBRARIES</span><span class="o">}</span><span class="w"> </span><span class="o">${</span><span class="nv">Plotter_LIBRARIES</span><span class="o">}</span><span class="w"> </span><span class="s">dl</span><span class="w"> </span><span class="s">pthread</span><span class="p">)</span>
+</span><span id="__span-2-21"><span class="err">21</span><span class="w">  </span><span class="nb">target_compile_features</span><span class="p">(</span><span class="o">${</span><span class="nv">PLUGIN_NAME</span><span class="o">}</span><span class="w"> </span><span class="s">PRIVATE</span><span class="w"> </span><span class="s">cxx_std_17</span><span class="p">)</span>
+</span><span id="__span-2-22"><span class="err">22</span>
+</span><span id="__span-2-23"><span class="err">23</span><span class="w">  </span><span class="nb">install</span><span class="p">(</span><span class="s">TARGETS</span><span class="w"> </span><span class="o">${</span><span class="nv">PLUGIN_NAME</span><span class="o">}</span><span class="w"> </span><span class="s">DESTINATION</span><span class="w"> </span><span class="s">lib</span><span class="p">)</span>
+</span></code></pre></div></p>
+<table>
+<thead>
+<tr>
+<th>Line#</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1-3</td>
+<td>Specify the source code files individually, we discourage using  <code>GLOB</code>  or  <code>GLOB_RECURSE</code> to generate a list of files as these functions do not always notice when files change.</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Put the plugin name into a variable (will also be the name of the library).</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Use the <code>find_package</code> directive to locate any required dependencies. This will automatically populate variables containing header path and library names associated with the dependency. <code>find_package</code> assumes that there is an appropriate .cmake config file for the dependency on your system. If not the <code>pkg_check_module</code> function will perform the same task, but for dependencies which have associated .pc files on your system.</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Tell the system we are building a shared library with the name   <code>PLUGIN_NAME</code>  from the specified source files.</td>
+</tr>
+<tr>
+<td>11</td>
+<td>Get the external project called Plotter.</td>
+</tr>
+<tr>
+<td>13</td>
+<td>Add the external package as a build dependency, this ensures that this plugin won't be built until after the dependency is.</td>
+</tr>
+<tr>
+<td>15-17</td>
+<td>OpenCV is a special case for a dependency. If your plugin requires OpenCV add these lines to your CMakeLists.txt file and do not use   <code>find_package(OpenCV)</code> .</td>
+</tr>
+<tr>
+<td>19</td>
+<td>Tell the system about any non-standard include paths the compiler needs to be aware of. Always include <code>ILLIXR _SOURCE_DIR</code> in this, as this is where plugin.hpp and other ILLIXR common headers are.</td>
+</tr>
+<tr>
+<td>20</td>
+<td>Tell the system about any libraries this plugin needs to link against (usually those associated with dependencies).</td>
+</tr>
+<tr>
+<td>21</td>
+<td>Any compile options specific to this plugin. Usually this will be left as is.</td>
+</tr>
+<tr>
+<td>23</td>
+<td>Add the install directive. This should not need to change.</td>
+</tr>
+</tbody>
+</table>
+<p>Additionally, to build and install the Plotter dependency you will need to create a cmake file in the <code>cmake</code> directory
+named <code>GetPlotter.cmake</code> (case matters, it must match the call to <code>get_external</code>) with the following content.
+<div class="language-cmake highlight"><pre><span></span><code><span id="__span-3-1"><span class="err">1</span><span class="w">   </span><span class="nb">find_package</span><span class="p">(</span><span class="s">Plotter</span><span class="w"> </span><span class="s">QUIET</span><span class="p">)</span>
+</span><span id="__span-3-2"><span class="err">2</span>
+</span><span id="__span-3-3"><span class="err">3</span><span class="w">   </span><span class="nb">if</span><span class="p">(</span><span class="s">Plotter_FOUND</span><span class="p">)</span>
+</span><span id="__span-3-4"><span class="err">4</span><span class="w">       </span><span class="nb">set</span><span class="p">(</span><span class="s">Plotter_VERSION</span><span class="w"> </span><span class="s2">&quot;${Plotter_VERSION_MAJOR}&quot;</span><span class="p">)</span>
+</span><span id="__span-3-5"><span class="err">5</span><span class="w">   </span><span class="nb">else</span><span class="p">()</span>
+</span><span id="__span-3-6"><span class="err">6</span><span class="w">       </span><span class="nb">EXTERNALPROJECT_ADD</span><span class="p">(</span><span class="s">Plotter</span>
+</span><span id="__span-3-7"><span class="s">7</span><span class="w">               </span><span class="s">GIT_REPOSITORY</span><span class="w"> </span><span class="s">https://github.com/mygit/Plotter.git</span>
+</span><span id="__span-3-8"><span class="s">8</span><span class="w">               </span><span class="s">GIT_TAG</span><span class="w"> </span><span class="s">4ff860838726a5e8ac0cbe59128c58a8f6143c6c</span>
+</span><span id="__span-3-9"><span class="s">9</span><span class="w">               </span><span class="s">PREFIX</span><span class="w"> </span><span class="o">${</span><span class="nv">CMAKE_BINARY_DIR</span><span class="o">}</span><span class="s">/_deps/plotter</span>
+</span><span id="__span-3-10"><span class="s">10</span><span class="w">              </span><span class="s">CMAKE_ARGS</span><span class="w"> </span><span class="s">-DCMAKE_INSTALL_PREFIX=</span><span class="o">${</span><span class="nv">CMAKE_INSTALL_PREFIX</span><span class="o">}</span><span class="w"> </span><span class="s">-DCMAKE_BUILD_TYPE=Release</span>
+</span><span id="__span-3-11"><span class="s">11</span><span class="w">              </span><span class="p">)</span>
+</span><span id="__span-3-12"><span class="err">12</span><span class="w">      </span><span class="nb">set</span><span class="p">(</span><span class="s">Plotter_EXTERNAL</span><span class="w"> </span><span class="s">Yes</span><span class="p">)</span>
+</span><span id="__span-3-13"><span class="err">13</span><span class="w">      </span><span class="nb">set</span><span class="p">(</span><span class="s">Plotter_INCLUDE_DIRS</span><span class="w"> </span><span class="o">${</span><span class="nv">CMAKE_INSTALL_PREFIX</span><span class="o">}</span><span class="s">/include</span><span class="p">)</span>
+</span><span id="__span-3-14"><span class="err">14</span><span class="w">      </span><span class="nb">set</span><span class="p">(</span><span class="s">Plotter_LIBRARIES</span><span class="w"> </span><span class="s">plotter;alt_plotter</span><span class="p">)</span>
+</span><span id="__span-3-15"><span class="nb">15endif</span><span class="p">()</span>
+</span></code></pre></div>
+| Line # | Notes                                                                                                                          |
+|--------|--------------------------------------------------------------------------------------------------------------------------------|
+| 1      | See if the package has been previously installed, quietly fail if not.                                                         |
+| 4      | If it was found, just record the installed version for reporting.                                                              |
+| 6-11   | Add the Plotter package as a project called <code>Plotter</code> (also case sensitive)                                                    |
+| 7      | The git repo where the Plotter package is located.                                                                             |
+| 8      | The git tag to use (can be a tag name or sha5 from a commit).                                                                  |
+| 9      | The build directory for the package.                                                                                           |
+| 10     | Any camke arguments to pass to the Plotter build. The ones specified here are required, but any others can be added.           |
+| 12     | Denote that this is an external package (this is used for internal tracking).                                                  |
+| 13     | Set where the Plotter include files will land. Usually this will not need to change.                                           |
+| 14     | Set which libraries are built by the Plotter package. In this example <code>libplotter.so</code> and <code>libalt_plotter.so</code> are being built. |</p>
+<h3 id="external-plugins">External Plugins</h3>
+<p>For plugins that are external packages (e.g. Audio_Pipeline) you need only create a <code>GetX.cmake</code> file as above and add the
+plugin name to the <code>external_plugins</code> list in <code>profiles/plugins.yaml</code>.</p>
+<p>External plugins with external dependencies are a bit more work, but are straight forward. See how Audio Pipeline is handled.</p>
+<h2 id="tutorial">Tutorial</h2>
+<p>You can extend ILLIXR for your own purposes.
+To add your own functionality via the plugin interface:</p>
+<ol>
+<li>
+<p>Create a new directory for your plugin in one of these ways </p>
+<ol>
+<li>in the plugins directory of the main ILLIXR tree, then follow <a href="#adding-a-new-plugin">these instructions</a></li>
+<li>anywhere for your new plugin so it can be pushed as a git repository, the follow <a href="#adding-a-new-plugin">these instructions</a> focussing on <a href="#external-plugins">external plugins</a></li>
+</ol>
+</li>
+<li>
+<p>You must decide if your plugin should inherit the standardized <a href="../api/classILLIXR_1_1threadloop/"><code>threadloop</code></a>
+        or <a href="../api/classILLIXR_1_1plugin/"><code>plugin</code></a>.</p>
+<ul>
+<li>
+<p>If your plugin just needs to run one computation repeatedly, then your
+        plugin class should extend <a href="../api/classILLIXR_1_1threadloop/"><code>threadloop</code></a>. Your code goes in
+        <code>_p_one_iteration</code>, which gets called in a hot loop. <code>threadloop</code>
+        inherits from plugin, but adds threading functionality. If you don't
+        use <code>_p_one_iteration</code>, inheriting from <code>threadloop</code> is superfluous;
+        Inherit from plugin directly instead.</p>
+</li>
+<li>
+<p>If you need custom concurrency (more complicated than a loop), triggered
+        concurrency (by events fired in other plugins), or no concurrency
+        then your plugin class should extend <a href="../api/classILLIXR_1_1plugin/"><code>plugin</code></a>. Your code goes
+        in the <code>start</code> method.</p>
+</li>
+<li>
+<p>If you want to schedule data-driven work in either case, call
+  <a href="../api/classILLIXR_1_1switchboard/"><code>sb-&gt;schedule(...)</code></a>.</p>
+</li>
+<li>
+<p>If you spin your own threads, they <strong>must</strong> wait for
+      <code>pb-&gt;lookup_impl&lt;Stoplight&gt;()-&gt;wait_for_ready()</code> the first time they
+      run. This allows the start of all threads in ILLIXR to be
+      synchronized.</p>
+</li>
+<li>
+<p>They <strong>must</strong> be joined-or-disowned at-or-before
+      <code>plugin::stop()</code>. This allows ILLIXR to shutdown cleanly.</p>
+</li>
+</ul>
+</li>
+<li>
+<p>Write a file called <code>plugin.cpp</code> with this body, replacing every instance of <code>plugin_name</code>:</p>
+<!--- language: lang-cpp -->
+<div class="language-text highlight"><pre><span></span><code>/// A minimal/no-op ILLIXR plugin
+
+#include &quot;illixr/phonebook.hpp&quot;
+#include &quot;illixr/plugin.hpp&quot;
+#include &quot;illixr/threadloop.hpp&quot;
+#include &lt;chrono&gt;
+#include &lt;thread&gt;
+
+using namespace ILLIXR;
+
+/// Inherit from plugin if you don&#39;t need the threadloop
+/// Inherit from threadloop to provide a new thread to perform the task
+class basic_plugin : public threadloop {
+public:
+    basic_plugin(std::string name_, phonebook* pb_)
+        : threadloop{name_, pb_}
+    {
+        std::cout &lt;&lt; &quot;Constructing basic_plugin.&quot; &lt;&lt; std::endl;
+    }
+
+    /// Note the virtual.
+    virtual ~basic_plugin() override {
+        std::cout &lt;&lt; &quot;Deconstructing basic_plugin.&quot; &lt;&lt; std::endl;
+    }
+
+    /// For `threadloop` style plugins, do not override the start() method unless you know what you&#39;re doing!
+    /// _p_one_iteration() is called in a thread created by threadloop::start()
+    void _p_one_iteration() override {
+        std::cout &lt;&lt; &quot;This goes to the log when `log` is set in the config.&quot; &lt;&lt; std::endl;
+        std::cerr &lt;&lt; &quot;This goes to the console.&quot; &lt;&lt; std::endl;
+        std::this_thread::sleep_for(std::chrono::milliseconds{100});
+    }
+
+};
+
+/// This line makes the plugin importable by Spindle
+PLUGIN_MAIN(basic_plugin);
+</code></pre></div>
+</li>
+<li>
+<p>At this point, you should be able to build your plugin with ILLIXR using -DUSE<YOUR_PLUGIN_NAME>=ON as a command line argument to cmake.
+     See <a href="../getting_started/">Getting Started</a> for more details.</p>
+</li>
+<li>
+<p>Finally, run ILLIXR with your new plugin following the instructions in <a href="../getting_started/">Getting Started</a>:</p>
+</li>
+<li>
+<p>This is all that is required to be a plugin which can be loaded by Spindle in
+        the ILLIXR runtime.
+    Reading and writing from Phonebook and Switchboard is optional,
+        but nearly every plugin does it.
+    See <code>default_plugins.md</code> for more details.</p>
+<p>First, we can query the <a href="../api/classILLIXR_1_1phonebook/"><code>phonebook</code></a> to get various services
+    including <a href="../api/classILLIXR_1_1switchboard/"><code>switchboard</code></a>.
+Then we query <a href="../api/classILLIXR_1_1switchboard/"><code>switchboard</code></a> for event-streams (topics).
+We will read <code>topic1</code>, write to <code>topic2</code>, and schedule computation on <code>topic 3</code>.
+See the API documentation for <code>phonebook</code> and <code>switchboard</code> for more details.</p>
+<!--- language: lang-cpp -->
+<div class="language-text highlight"><pre><span></span><code>#include &quot;illixr/phonebook.hpp&quot;
+#include &quot;illixr/plugin.hpp&quot;
+#include &quot;illixr/threadloop.hpp&quot;
+
+/* When datatypes have to be common across plugins
+ *     (e.g. a phonebook service or switchboard topic),
+ *      they are defined in this header,
+ *      which is accessible to all plugins.
+ */
+#include &quot;common/data_format.hpp&quot;
+
+class plugin_name : public threadloop {
+public:
+    /* After the constructor, C++ permits a list of member-constructors.
+     * We use uniform initialization (curly-braces) [1] instead of parens to
+     *     avoid ambiguity [2].
+     * We put the comma at the start of the line, so that lines can be copied around
+     *     or deleted freely (except for the first).
+     *
+     * [1]: https://en.wikipedia.org/wiki/C%2B%2B11#Uniform_initialization
+     * [2]: https://en.wikipedia.org/wiki/Most_vexing_parse
+     */
+    plugin_name(std::string name_, phonebook* pb_)
+        : threadloop{name_, pb_}
+          /// Find the switchboard in phonebook
+        , sb{pb-&gt;lookup_impl&lt;switchboard&gt;()}
+          /// Create a handle to a topic in switchboard for subscribing
+        , topic1{sb-&gt;get_reader&lt;topic1_type&gt;(&quot;topic1&quot;)}
+          /// Create a handle to a topic in switchboard for publishing
+        , topic2{sb-&gt;get_writer&lt;topic2_type&gt;(&quot;topic2&quot;)}
+    {
+        /// Read topic 1
+        switchboard::ptr&lt;const topic1_type&gt; event1 = topic1.get_ro();
+
+        /// Write to topic 2
+        topic2.put(
+            topic2.allocate&lt;topic2_type&gt;(
+                arg_1, // topic2_type::topic2_type() arg_type_1
+                ...,   // ...
+                arg_k  // topic2_type::topic2_type() arg_type_k
+            )
+        );
+
+        /// Read topic 3 synchronously
+        sb-&gt;schedule&lt;topic3_type&gt;(
+            get_name(),
+            &quot;topic3&quot;,
+            [&amp;](switchboard::ptr&lt;const topic3_type&gt; event3, std::size_t) {
+                /* This is a [lambda expression][1]
+                 *
+                 * [1]: https://en.cppreference.com/w/cpp/language/lambda
+                 */
+                std::cout &lt;&lt; &quot;Got a new event on topic3: &quot; &lt;&lt; event3 &lt;&lt; std::endl;
+                callback(event3);
+            }
+        );
+    }
+
+    virtual void _p_one_iteration override() {
+        std::cout &lt;&lt; &quot;Running&quot; &lt;&lt; std::endl;
+        auto target = std::chrono::system_clock::now()
+                    + std::chrono::milliseconds{10};
+        reliable_sleep(target);
+    }
+
+private:
+    const std::shared_ptr&lt;switchboard&gt; sb;
+    switchboard::reader&lt;topic1_type&gt; topic1;
+    switchboard::writer&lt;topic2&gt; topic2;
+};
+
+/// This line makes the plugin importable by Spindle
+PLUGIN_MAIN(plugin_name);
+</code></pre></div>
+</li>
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["search.suggest", "content.code.annotate", "content.footnote.tooltips", "navigation.indexes", "toc.integrate"], "search": "../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": "latest", "provider": "mike"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.c8b220af.min.js"></script>
+      
+    
+  </body>
+</html>

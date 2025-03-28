@@ -1,0 +1,1025 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classILLIXR_1_1timewarp__vk" kind="class" language="C++" prot="public">
+    <compoundname>ILLIXR::timewarp_vk</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">ILLIXR::vulkan::timewarp</basecompoundref>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1timewarp__vk_1a6520b4f5ea35f060423b6786c1785556" prot="private" static="no" mutable="no">
+        <type>const <ref refid="classILLIXR_1_1phonebook" kindref="compound">phonebook</ref> *const</type>
+        <definition>const phonebook* const ILLIXR::timewarp_vk::phonebook_</definition>
+        <argsstring></argsstring>
+        <name>phonebook_</name>
+        <qualifiedname>ILLIXR::timewarp_vk::phonebook_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="44" column="64" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" bodystart="44" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1timewarp__vk_1a079c6853d2ecf1c08a85e3dabd086b8a" prot="private" static="no" mutable="no">
+        <type>const std::shared_ptr&lt; <ref refid="classILLIXR_1_1switchboard" kindref="compound">switchboard</ref> &gt;</type>
+        <definition>const std::shared_ptr&lt;switchboard&gt; ILLIXR::timewarp_vk::switchboard_</definition>
+        <argsstring></argsstring>
+        <name>switchboard_</name>
+        <qualifiedname>ILLIXR::timewarp_vk::switchboard_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="45" column="52" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" bodystart="45" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1timewarp__vk_1a0215517055f911a6960ee746bad787b3" prot="private" static="no" mutable="no">
+        <type>const std::shared_ptr&lt; data_format::pose_prediction &gt;</type>
+        <definition>const std::shared_ptr&lt;data_format::pose_prediction&gt; ILLIXR::timewarp_vk::pose_prediction_</definition>
+        <argsstring></argsstring>
+        <name>pose_prediction_</name>
+        <qualifiedname>ILLIXR::timewarp_vk::pose_prediction_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="46" column="35" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" bodystart="46" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1timewarp__vk_1a21fa7f74a6a9764dbbce46a740bc7dc2" prot="private" static="no" mutable="no">
+        <type><ref refid="classILLIXR_1_1switchboard_1_1reader" kindref="compound">switchboard::reader</ref>&lt; <ref refid="classILLIXR_1_1switchboard_1_1event__wrapper" kindref="compound">switchboard::event_wrapper</ref>&lt; time_point &gt; &gt;</type>
+        <definition>switchboard::reader&lt;switchboard::event_wrapper&lt;time_point&gt; &gt; ILLIXR::timewarp_vk::vsync_</definition>
+        <argsstring></argsstring>
+        <name>vsync_</name>
+        <qualifiedname>ILLIXR::timewarp_vk::vsync_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="47" column="25" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" bodystart="47" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1timewarp__vk_1aa27554f262102506d18077542568a388" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool ILLIXR::timewarp_vk::disable_warp_</definition>
+        <argsstring></argsstring>
+        <name>disable_warp_</name>
+        <qualifiedname>ILLIXR::timewarp_vk::disable_warp_</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="48" column="65" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" bodystart="48" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1timewarp__vk_1a52b43585ccd36837107fdddf34bf2da5" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classILLIXR_1_1vulkan_1_1display__provider" kindref="compound">vulkan::display_provider</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;vulkan::display_provider&gt; ILLIXR::timewarp_vk::display_provider_</definition>
+        <argsstring></argsstring>
+        <name>display_provider_</name>
+        <qualifiedname>ILLIXR::timewarp_vk::display_provider_</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="49" column="39" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" bodystart="49" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1timewarp__vk_1a0d170d4f154696af91f5ba3888b0d5d4" prot="private" static="no" mutable="no">
+        <type>std::mutex</type>
+        <definition>std::mutex ILLIXR::timewarp_vk::setup_mutex_</definition>
+        <argsstring></argsstring>
+        <name>setup_mutex_</name>
+        <qualifiedname>ILLIXR::timewarp_vk::setup_mutex_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="50" column="65" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" bodystart="50" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1timewarp__vk_1a3532693eb6b11a800d728c7d8e5f4af8" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool ILLIXR::timewarp_vk::initialized_</definition>
+        <argsstring></argsstring>
+        <name>initialized_</name>
+        <qualifiedname>ILLIXR::timewarp_vk::initialized_</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="52" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" bodystart="52" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1timewarp__vk_1a6e9a8e2d6722b546c0578f54bbea705f" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool ILLIXR::timewarp_vk::input_texture_external_</definition>
+        <argsstring></argsstring>
+        <name>input_texture_external_</name>
+        <qualifiedname>ILLIXR::timewarp_vk::input_texture_external_</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="53" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" bodystart="53" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1timewarp__vk_1a516b4e98cb1d5f418aaaba6da95a098d" prot="private" static="no" mutable="no">
+        <type>std::stack&lt; std::function&lt; void()&gt; &gt;</type>
+        <definition>std::stack&lt;std::function&lt;void()&gt; &gt; ILLIXR::timewarp_vk::deletion_queue_</definition>
+        <argsstring></argsstring>
+        <name>deletion_queue_</name>
+        <qualifiedname>ILLIXR::timewarp_vk::deletion_queue_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="56" column="16" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" bodystart="56" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1timewarp__vk_1af1e8bd52b97799539b764871b30c0a4b" prot="private" static="no" mutable="no">
+        <type>VmaAllocator</type>
+        <definition>VmaAllocator ILLIXR::timewarp_vk::vma_allocator_</definition>
+        <argsstring></argsstring>
+        <name>vma_allocator_</name>
+        <qualifiedname>ILLIXR::timewarp_vk::vma_allocator_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="57" column="39" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" bodystart="57" bodyend="57"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1timewarp__vk_1a556c6e9ff3ceb2253f42e9186bd8dfe2" prot="private" static="no" mutable="no">
+        <type>uint64_t</type>
+        <definition>uint64_t ILLIXR::timewarp_vk::frame_count_</definition>
+        <argsstring></argsstring>
+        <name>frame_count_</name>
+        <qualifiedname>ILLIXR::timewarp_vk::frame_count_</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="59" column="14" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" bodystart="59" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1timewarp__vk_1abcff58e95447722282c66359858a5849" prot="private" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t ILLIXR::timewarp_vk::swapchain_width_</definition>
+        <argsstring></argsstring>
+        <name>swapchain_width_</name>
+        <qualifiedname>ILLIXR::timewarp_vk::swapchain_width_</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="61" column="12" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" bodystart="61" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1timewarp__vk_1a3e45604f2819f8b2141e289fbab232e0" prot="private" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t ILLIXR::timewarp_vk::swapchain_height_</definition>
+        <argsstring></argsstring>
+        <name>swapchain_height_</name>
+        <qualifiedname>ILLIXR::timewarp_vk::swapchain_height_</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="62" column="12" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" bodystart="62" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1timewarp__vk_1a6329f24461be3894c491b1260ed639d2" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; vulkan::buffer_pool&lt; <ref refid="structILLIXR_1_1data__format_1_1fast__pose__type" kindref="compound">data_format::fast_pose_type</ref> &gt; &gt;</type>
+        <definition>std::shared_ptr&lt;vulkan::buffer_pool&lt;data_format::fast_pose_type&gt; &gt; ILLIXR::timewarp_vk::buffer_pool_</definition>
+        <argsstring></argsstring>
+        <name>buffer_pool_</name>
+        <qualifiedname>ILLIXR::timewarp_vk::buffer_pool_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="64" column="21" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" bodystart="64" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1timewarp__vk_1a885c190a64d6df3ca3f4648e4b528fc8" prot="private" static="no" mutable="no">
+        <type>VkSampler</type>
+        <definition>VkSampler ILLIXR::timewarp_vk::fb_sampler_</definition>
+        <argsstring></argsstring>
+        <name>fb_sampler_</name>
+        <qualifiedname>ILLIXR::timewarp_vk::fb_sampler_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="66" column="49" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" bodystart="66" bodyend="66"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1timewarp__vk_1aaedd06e6d3074300a3393d17e35ee691" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool ILLIXR::timewarp_vk::clamp_edge_</definition>
+        <argsstring></argsstring>
+        <name>clamp_edge_</name>
+        <qualifiedname>ILLIXR::timewarp_vk::clamp_edge_</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="67" column="49" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" bodystart="67" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1timewarp__vk_1ad9390f175e94c866c3b467e9e96874ba" prot="private" static="no" mutable="no">
+        <type>VkDescriptorPool</type>
+        <definition>VkDescriptorPool ILLIXR::timewarp_vk::descriptor_pool_</definition>
+        <argsstring></argsstring>
+        <name>descriptor_pool_</name>
+        <qualifiedname>ILLIXR::timewarp_vk::descriptor_pool_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="68" column="49" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" bodystart="68" bodyend="68"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1timewarp__vk_1aafbcdab509ca6732dee2456b943b7e57" prot="private" static="no" mutable="no">
+        <type>VkDescriptorSetLayout</type>
+        <definition>VkDescriptorSetLayout ILLIXR::timewarp_vk::descriptor_set_layout_</definition>
+        <argsstring></argsstring>
+        <name>descriptor_set_layout_</name>
+        <qualifiedname>ILLIXR::timewarp_vk::descriptor_set_layout_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="69" column="49" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" bodystart="69" bodyend="69"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1timewarp__vk_1a064bf4f1a0c2b7d07d79d83c951496d4" prot="private" static="no" mutable="no">
+        <type>std::array&lt; std::vector&lt; VkDescriptorSet &gt;, 2 &gt;</type>
+        <definition>std::array&lt;std::vector&lt;VkDescriptorSet&gt;, 2&gt; ILLIXR::timewarp_vk::descriptor_sets_</definition>
+        <argsstring></argsstring>
+        <name>descriptor_sets_</name>
+        <qualifiedname>ILLIXR::timewarp_vk::descriptor_sets_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="70" column="16" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" bodystart="70" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1timewarp__vk_1a061aa4a5add3eae23c5031c0f5d4b155" prot="private" static="no" mutable="no">
+        <type>VkRenderPass</type>
+        <definition>VkRenderPass ILLIXR::timewarp_vk::timewarp_render_pass_</definition>
+        <argsstring></argsstring>
+        <name>timewarp_render_pass_</name>
+        <qualifiedname>ILLIXR::timewarp_vk::timewarp_render_pass_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="72" column="18" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" bodystart="72" bodyend="72"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1timewarp__vk_1acbc11b0f7f14fef42bceb6c052d3cbbe" prot="private" static="no" mutable="no">
+        <type>VkPipelineLayout</type>
+        <definition>VkPipelineLayout ILLIXR::timewarp_vk::pipeline_layout_</definition>
+        <argsstring></argsstring>
+        <name>pipeline_layout_</name>
+        <qualifiedname>ILLIXR::timewarp_vk::pipeline_layout_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="74" column="23" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" bodystart="74" bodyend="74"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1timewarp__vk_1a8e2b6806c0b2dde79c1cb94df7b4c89f" prot="private" static="no" mutable="no">
+        <type>VkBuffer</type>
+        <definition>VkBuffer ILLIXR::timewarp_vk::uniform_buffer_</definition>
+        <argsstring></argsstring>
+        <name>uniform_buffer_</name>
+        <qualifiedname>ILLIXR::timewarp_vk::uniform_buffer_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="75" column="23" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" bodystart="75" bodyend="75"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1timewarp__vk_1ae4025df754ccb0b81d8322d1232c188a" prot="private" static="no" mutable="no">
+        <type>VmaAllocation</type>
+        <definition>VmaAllocation ILLIXR::timewarp_vk::uniform_alloc_</definition>
+        <argsstring></argsstring>
+        <name>uniform_alloc_</name>
+        <qualifiedname>ILLIXR::timewarp_vk::uniform_alloc_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="76" column="23" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" bodystart="76" bodyend="76"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1timewarp__vk_1a712976b8b05d168335f270bdaadc9b62" prot="private" static="no" mutable="no">
+        <type>VmaAllocationInfo</type>
+        <definition>VmaAllocationInfo ILLIXR::timewarp_vk::uniform_alloc_info_</definition>
+        <argsstring></argsstring>
+        <name>uniform_alloc_info_</name>
+        <qualifiedname>ILLIXR::timewarp_vk::uniform_alloc_info_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="77" column="23" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" bodystart="77" bodyend="77"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1timewarp__vk_1a0ea7eb299fff805646bfda258755ff13" prot="private" static="no" mutable="no">
+        <type>VkCommandPool</type>
+        <definition>VkCommandPool ILLIXR::timewarp_vk::command_pool_</definition>
+        <argsstring></argsstring>
+        <name>command_pool_</name>
+        <qualifiedname>ILLIXR::timewarp_vk::command_pool_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="79" column="38" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" bodystart="79" bodyend="79"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1timewarp__vk_1add5100b5bd2faa43eb765fcf0bd54b67" prot="private" static="no" mutable="no">
+        <type>VkCommandBuffer</type>
+        <definition>VkCommandBuffer ILLIXR::timewarp_vk::command_buffer_</definition>
+        <argsstring></argsstring>
+        <name>command_buffer_</name>
+        <qualifiedname>ILLIXR::timewarp_vk::command_buffer_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="80" column="22" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" bodystart="80" bodyend="80"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1timewarp__vk_1af2feb0e915b144ba59489a973223b224" prot="private" static="no" mutable="no">
+        <type>VkBuffer</type>
+        <definition>VkBuffer ILLIXR::timewarp_vk::vertex_buffer_</definition>
+        <argsstring></argsstring>
+        <name>vertex_buffer_</name>
+        <qualifiedname>ILLIXR::timewarp_vk::vertex_buffer_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="82" column="14" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" bodystart="82" bodyend="82"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1timewarp__vk_1abcfb881c94e469f07553b7b6f8b6f076" prot="private" static="no" mutable="no">
+        <type>VkBuffer</type>
+        <definition>VkBuffer ILLIXR::timewarp_vk::index_buffer_</definition>
+        <argsstring></argsstring>
+        <name>index_buffer_</name>
+        <qualifiedname>ILLIXR::timewarp_vk::index_buffer_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="83" column="14" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" bodystart="83" bodyend="83"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1timewarp__vk_1a48b359fc643d51156d9d047b9937ebfb" prot="private" static="no" mutable="no">
+        <type>HMD::hmd_info_t</type>
+        <definition>HMD::hmd_info_t ILLIXR::timewarp_vk::hmd_info_</definition>
+        <argsstring></argsstring>
+        <name>hmd_info_</name>
+        <qualifiedname>ILLIXR::timewarp_vk::hmd_info_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="86" column="21" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" bodystart="86" bodyend="86"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1timewarp__vk_1a1f324552875b21d798013a046c059b10" prot="private" static="no" mutable="no">
+        <type>uint32_t</type>
+        <definition>uint32_t ILLIXR::timewarp_vk::num_distortion_vertices_</definition>
+        <argsstring></argsstring>
+        <name>num_distortion_vertices_</name>
+        <qualifiedname>ILLIXR::timewarp_vk::num_distortion_vertices_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="88" column="38" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" bodystart="88" bodyend="88"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1timewarp__vk_1abc800df36976b577e6a30735a582da5b" prot="private" static="no" mutable="no">
+        <type>uint32_t</type>
+        <definition>uint32_t ILLIXR::timewarp_vk::num_distortion_indices_</definition>
+        <argsstring></argsstring>
+        <name>num_distortion_indices_</name>
+        <qualifiedname>ILLIXR::timewarp_vk::num_distortion_indices_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="89" column="38" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" bodystart="89" bodyend="89"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1timewarp__vk_1a77bf1bf0bc13de7c89aff135f3d66dc4" prot="private" static="no" mutable="no">
+        <type>Eigen::Matrix4f</type>
+        <definition>Eigen::Matrix4f ILLIXR::timewarp_vk::basic_projection_[2]</definition>
+        <argsstring>[2]</argsstring>
+        <name>basic_projection_</name>
+        <qualifiedname>ILLIXR::timewarp_vk::basic_projection_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="90" column="38" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" bodystart="90" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1timewarp__vk_1a73f1007ecaec19b6cbd6b8789176d908" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; HMD::mesh_coord3d_t &gt;</type>
+        <definition>std::vector&lt;HMD::mesh_coord3d_t&gt; ILLIXR::timewarp_vk::distortion_positions_</definition>
+        <argsstring></argsstring>
+        <name>distortion_positions_</name>
+        <qualifiedname>ILLIXR::timewarp_vk::distortion_positions_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="91" column="17" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" bodystart="91" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1timewarp__vk_1a6efee8fec302e2dfe7e510c4639925a8" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; HMD::uv_coord_t &gt;</type>
+        <definition>std::vector&lt;HMD::uv_coord_t&gt; ILLIXR::timewarp_vk::distortion_uv0_</definition>
+        <argsstring></argsstring>
+        <name>distortion_uv0_</name>
+        <qualifiedname>ILLIXR::timewarp_vk::distortion_uv0_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="92" column="21" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" bodystart="92" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1timewarp__vk_1a533cd14363f1c07a4e02c90ac3bf5076" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; HMD::uv_coord_t &gt;</type>
+        <definition>std::vector&lt;HMD::uv_coord_t&gt; ILLIXR::timewarp_vk::distortion_uv1_</definition>
+        <argsstring></argsstring>
+        <name>distortion_uv1_</name>
+        <qualifiedname>ILLIXR::timewarp_vk::distortion_uv1_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="93" column="21" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" bodystart="93" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1timewarp__vk_1ad9f5729488bddd9e900a52f5ad8837bb" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; HMD::uv_coord_t &gt;</type>
+        <definition>std::vector&lt;HMD::uv_coord_t&gt; ILLIXR::timewarp_vk::distortion_uv2_</definition>
+        <argsstring></argsstring>
+        <name>distortion_uv2_</name>
+        <qualifiedname>ILLIXR::timewarp_vk::distortion_uv2_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="94" column="21" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" bodystart="94" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1timewarp__vk_1adfcaa05b07bacae54a23c707923e8fae" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; uint32_t &gt;</type>
+        <definition>std::vector&lt;uint32_t&gt; ILLIXR::timewarp_vk::distortion_indices_</definition>
+        <argsstring></argsstring>
+        <name>distortion_indices_</name>
+        <qualifiedname>ILLIXR::timewarp_vk::distortion_indices_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="96" column="17" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" bodystart="96" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1timewarp__vk_1ad2c5f1f7a14740ec63caa1f3dd3795a1" prot="private" static="no" mutable="no">
+        <type>std::atomic&lt; uint32_t &gt;</type>
+        <definition>std::atomic&lt;uint32_t&gt; ILLIXR::timewarp_vk::num_record_calls_</definition>
+        <argsstring></argsstring>
+        <name>num_record_calls_</name>
+        <qualifiedname>ILLIXR::timewarp_vk::num_record_calls_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="99" column="17" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" bodystart="99" bodyend="99"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1timewarp__vk_1a8a15589c7f8498cfbdc4f318a532165d" prot="private" static="no" mutable="no">
+        <type>std::atomic&lt; uint32_t &gt;</type>
+        <definition>std::atomic&lt;uint32_t&gt; ILLIXR::timewarp_vk::num_update_uniforms_calls_</definition>
+        <argsstring></argsstring>
+        <name>num_update_uniforms_calls_</name>
+        <qualifiedname>ILLIXR::timewarp_vk::num_update_uniforms_calls_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="100" column="17" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" bodystart="100" bodyend="100"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="friend">
+      <memberdef kind="friend" id="classILLIXR_1_1timewarp__vk_1a54a2d8696381cbeb26eead1c197e0a0e" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>class</type>
+        <definition>friend class timewarp_vk_plugin</definition>
+        <argsstring></argsstring>
+        <name>timewarp_vk_plugin</name>
+        <qualifiedname>ILLIXR::timewarp_vk::timewarp_vk_plugin</qualifiedname>
+        <param>
+          <type>timewarp_vk_plugin</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="102" column="18" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" bodystart="102" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classILLIXR_1_1timewarp__vk_1a5e43945a2b5f1327cf3eaeb9073ab1f2" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>timewarp_vk::timewarp_vk</definition>
+        <argsstring>(const phonebook *pb)</argsstring>
+        <name>timewarp_vk</name>
+        <qualifiedname>ILLIXR::timewarp_vk::timewarp_vk</qualifiedname>
+        <param>
+          <type>const <ref refid="classILLIXR_1_1phonebook" kindref="compound">phonebook</ref> *</type>
+          <declname>pb</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="15" column="14" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.cpp" bodystart="71" bodyend="76"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1timewarp__vk_1a06162c5e10f1987d9bdf23737ae10734" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void timewarp_vk::initialize</definition>
+        <argsstring>()</argsstring>
+        <name>initialize</name>
+        <qualifiedname>ILLIXR::timewarp_vk::initialize</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="16" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.cpp" bodystart="78" bodyend="99"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1timewarp__vk_1a291b03a5923c759064e0b35b73dac723" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void timewarp_vk::setup</definition>
+        <argsstring>(VkRenderPass render_pass, uint32_t subpass, std::shared_ptr&lt; vulkan::buffer_pool&lt; data_format::fast_pose_type &gt; &gt; buffer_pool, bool input_texture_vulkan_coordinates_in) override</argsstring>
+        <name>setup</name>
+        <qualifiedname>ILLIXR::timewarp_vk::setup</qualifiedname>
+        <param>
+          <type>VkRenderPass</type>
+          <declname>render_pass</declname>
+        </param>
+        <param>
+          <type>uint32_t</type>
+          <declname>subpass</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; vulkan::buffer_pool&lt; <ref refid="structILLIXR_1_1data__format_1_1fast__pose__type" kindref="compound">data_format::fast_pose_type</ref> &gt; &gt;</type>
+          <declname>buffer_pool</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>input_texture_vulkan_coordinates_in</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="17" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.cpp" bodystart="101" bodyend="137"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1timewarp__vk_1a5606852c22063504945f19de4ef1143d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void timewarp_vk::partial_destroy</definition>
+        <argsstring>()</argsstring>
+        <name>partial_destroy</name>
+        <qualifiedname>ILLIXR::timewarp_vk::partial_destroy</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="20" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.cpp" bodystart="139" bodyend="148"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1timewarp__vk_1a75352de0ad346619b934d7cf04587c0a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void timewarp_vk::update_uniforms</definition>
+        <argsstring>(const data_format::pose_type &amp;render_pose) override</argsstring>
+        <name>update_uniforms</name>
+        <qualifiedname>ILLIXR::timewarp_vk::update_uniforms</qualifiedname>
+        <param>
+          <type>const <ref refid="structILLIXR_1_1data__format_1_1pose__type" kindref="compound">data_format::pose_type</ref> &amp;</type>
+          <declname>render_pose</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="21" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.cpp" bodystart="150" bodyend="190"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1timewarp__vk_1aed1cdd89089d9af239197566aa783af1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void timewarp_vk::record_command_buffer</definition>
+        <argsstring>(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left) override</argsstring>
+        <name>record_command_buffer</name>
+        <qualifiedname>ILLIXR::timewarp_vk::record_command_buffer</qualifiedname>
+        <param>
+          <type>VkCommandBuffer</type>
+          <declname>commandBuffer</declname>
+        </param>
+        <param>
+          <type>VkFramebuffer</type>
+          <declname>framebuffer</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>buffer_ind</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>left</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="22" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.cpp" bodystart="192" bodyend="243"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1timewarp__vk_1a580fe79600f2c912da9583bd8966edb9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void timewarp_vk::destroy</definition>
+        <argsstring>() override</argsstring>
+        <name>destroy</name>
+        <qualifiedname>ILLIXR::timewarp_vk::destroy</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="23" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.cpp" bodystart="245" bodyend="252"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classILLIXR_1_1timewarp__vk_1aae8256257e0899f60713ec3f3a7c8afa" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void timewarp_vk::create_vertex_buffer</definition>
+        <argsstring>()</argsstring>
+        <name>create_vertex_buffer</name>
+        <qualifiedname>ILLIXR::timewarp_vk::create_vertex_buffer</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="26" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.cpp" bodystart="254" bodyend="322"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1timewarp__vk_1afc9049952272d21d7df641e2383f92ac" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void timewarp_vk::create_index_buffer</definition>
+        <argsstring>()</argsstring>
+        <name>create_index_buffer</name>
+        <qualifiedname>ILLIXR::timewarp_vk::create_index_buffer</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="27" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.cpp" bodystart="324" bodyend="383"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1timewarp__vk_1acb2eb686efa98ed47df69fb966549347" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void timewarp_vk::generate_distortion_data</definition>
+        <argsstring>()</argsstring>
+        <name>generate_distortion_data</name>
+        <qualifiedname>ILLIXR::timewarp_vk::generate_distortion_data</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="28" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.cpp" bodystart="385" bodyend="397"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1timewarp__vk_1a55fc4dd144918b3a2f5ed0407113ec02" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void timewarp_vk::create_texture_sampler</definition>
+        <argsstring>()</argsstring>
+        <name>create_texture_sampler</name>
+        <qualifiedname>ILLIXR::timewarp_vk::create_texture_sampler</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="29" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.cpp" bodystart="399" bodyend="445"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1timewarp__vk_1aade62a819c36627aeae434431aee4901" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void timewarp_vk::create_descriptor_set_layout</definition>
+        <argsstring>()</argsstring>
+        <name>create_descriptor_set_layout</name>
+        <qualifiedname>ILLIXR::timewarp_vk::create_descriptor_set_layout</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="30" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.cpp" bodystart="447" bodyend="471"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1timewarp__vk_1a6d72c4aea3ecfca695fe1184caf1e4a0" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void timewarp_vk::create_uniform_buffer</definition>
+        <argsstring>()</argsstring>
+        <name>create_uniform_buffer</name>
+        <qualifiedname>ILLIXR::timewarp_vk::create_uniform_buffer</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="31" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.cpp" bodystart="473" bodyend="497"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1timewarp__vk_1a61ac3602df6c5a30df5749322aa7f500" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void timewarp_vk::create_descriptor_pool</definition>
+        <argsstring>()</argsstring>
+        <name>create_descriptor_pool</name>
+        <qualifiedname>ILLIXR::timewarp_vk::create_descriptor_pool</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="32" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.cpp" bodystart="499" bodyend="519"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1timewarp__vk_1a9d99a1cac6a2148fed353c68afb20786" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void timewarp_vk::create_descriptor_sets</definition>
+        <argsstring>()</argsstring>
+        <name>create_descriptor_sets</name>
+        <qualifiedname>ILLIXR::timewarp_vk::create_descriptor_sets</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="33" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.cpp" bodystart="521" bodyend="573"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1timewarp__vk_1ad8a640a2884a583155ce38d143a70b83" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool ILLIXR::timewarp_vk::is_external</definition>
+        <argsstring>() override</argsstring>
+        <name>is_external</name>
+        <qualifiedname>ILLIXR::timewarp_vk::is_external</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="35" column="10" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" bodystart="35" bodyend="37"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1timewarp__vk_1aac34bcfd5e79a732c3ec9593b9470721" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>VkPipeline</type>
+        <definition>VkPipeline timewarp_vk::create_pipeline</definition>
+        <argsstring>(VkRenderPass render_pass, uint32_t subpass)</argsstring>
+        <name>create_pipeline</name>
+        <qualifiedname>ILLIXR::timewarp_vk::create_pipeline</qualifiedname>
+        <param>
+          <type>VkRenderPass</type>
+          <declname>render_pass</declname>
+        </param>
+        <param>
+          <type>uint32_t</type>
+          <declname>subpass</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="39" column="17" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.cpp" bodystart="575" bodyend="696"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1timewarp__vk_1a986c0b0611a31eddeb52e1b22f527d80" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void timewarp_vk::build_timewarp</definition>
+        <argsstring>(HMD::hmd_info_t &amp;hmd_info)</argsstring>
+        <name>build_timewarp</name>
+        <qualifiedname>ILLIXR::timewarp_vk::build_timewarp</qualifiedname>
+        <param>
+          <type>HMD::hmd_info_t &amp;</type>
+          <declname>hmd_info</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="40" column="17" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.cpp" bodystart="698" bodyend="771"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-static-func">
+      <memberdef kind="function" id="classILLIXR_1_1timewarp__vk_1a9e40f41caae42b63b55bf04cb851dd49" prot="private" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void timewarp_vk::calculate_timewarp_transform</definition>
+        <argsstring>(Eigen::Matrix4f &amp;transform, const Eigen::Matrix4f &amp;render_projection_matrix, const Eigen::Matrix4f &amp;render_view_matrix, const Eigen::Matrix4f &amp;new_view_matrix)</argsstring>
+        <name>calculate_timewarp_transform</name>
+        <qualifiedname>ILLIXR::timewarp_vk::calculate_timewarp_transform</qualifiedname>
+        <param>
+          <type>Eigen::Matrix4f &amp;</type>
+          <declname>transform</declname>
+        </param>
+        <param>
+          <type>const Eigen::Matrix4f &amp;</type>
+          <declname>render_projection_matrix</declname>
+        </param>
+        <param>
+          <type>const Eigen::Matrix4f &amp;</type>
+          <declname>render_view_matrix</declname>
+        </param>
+        <param>
+          <type>const Eigen::Matrix4f &amp;</type>
+          <declname>new_view_matrix</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="41" column="17" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.cpp" bodystart="774" bodyend="797"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" line="13" column="1" bodyfile="/home/friedel/devel/ILLIXR/plugins/timewarp_vk/timewarp_vk.hpp" bodystart="13" bodyend="103"/>
+    <listofallmembers>
+      <member refid="classILLIXR_1_1timewarp__vk_1a77bf1bf0bc13de7c89aff135f3d66dc4" prot="private" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>basic_projection_</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1a6329f24461be3894c491b1260ed639d2" prot="private" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>buffer_pool_</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1a986c0b0611a31eddeb52e1b22f527d80" prot="private" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>build_timewarp</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1a9e40f41caae42b63b55bf04cb851dd49" prot="private" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>calculate_timewarp_transform</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1aaedd06e6d3074300a3393d17e35ee691" prot="private" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>clamp_edge_</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1add5100b5bd2faa43eb765fcf0bd54b67" prot="private" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>command_buffer_</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1a0ea7eb299fff805646bfda258755ff13" prot="private" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>command_pool_</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1a61ac3602df6c5a30df5749322aa7f500" prot="private" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>create_descriptor_pool</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1aade62a819c36627aeae434431aee4901" prot="private" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>create_descriptor_set_layout</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1a9d99a1cac6a2148fed353c68afb20786" prot="private" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>create_descriptor_sets</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1afc9049952272d21d7df641e2383f92ac" prot="private" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>create_index_buffer</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1aac34bcfd5e79a732c3ec9593b9470721" prot="private" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>create_pipeline</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1a55fc4dd144918b3a2f5ed0407113ec02" prot="private" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>create_texture_sampler</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1a6d72c4aea3ecfca695fe1184caf1e4a0" prot="private" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>create_uniform_buffer</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1aae8256257e0899f60713ec3f3a7c8afa" prot="private" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>create_vertex_buffer</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1a516b4e98cb1d5f418aaaba6da95a098d" prot="private" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>deletion_queue_</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1ad9390f175e94c866c3b467e9e96874ba" prot="private" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>descriptor_pool_</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1aafbcdab509ca6732dee2456b943b7e57" prot="private" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>descriptor_set_layout_</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1a064bf4f1a0c2b7d07d79d83c951496d4" prot="private" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>descriptor_sets_</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1a580fe79600f2c912da9583bd8966edb9" prot="public" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>destroy</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1aa27554f262102506d18077542568a388" prot="private" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>disable_warp_</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1a52b43585ccd36837107fdddf34bf2da5" prot="private" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>display_provider_</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1adfcaa05b07bacae54a23c707923e8fae" prot="private" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>distortion_indices_</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1a73f1007ecaec19b6cbd6b8789176d908" prot="private" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>distortion_positions_</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1a6efee8fec302e2dfe7e510c4639925a8" prot="private" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>distortion_uv0_</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1a533cd14363f1c07a4e02c90ac3bf5076" prot="private" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>distortion_uv1_</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1ad9f5729488bddd9e900a52f5ad8837bb" prot="private" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>distortion_uv2_</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1a885c190a64d6df3ca3f4648e4b528fc8" prot="private" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>fb_sampler_</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1a556c6e9ff3ceb2253f42e9186bd8dfe2" prot="private" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>frame_count_</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1acb2eb686efa98ed47df69fb966549347" prot="private" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>generate_distortion_data</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1a48b359fc643d51156d9d047b9937ebfb" prot="private" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>hmd_info_</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1abcfb881c94e469f07553b7b6f8b6f076" prot="private" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>index_buffer_</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1a06162c5e10f1987d9bdf23737ae10734" prot="public" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>initialize</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1a3532693eb6b11a800d728c7d8e5f4af8" prot="private" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>initialized_</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1a6e9a8e2d6722b546c0578f54bbea705f" prot="private" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>input_texture_external_</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1ad8a640a2884a583155ce38d143a70b83" prot="private" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>is_external</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1abc800df36976b577e6a30735a582da5b" prot="private" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>num_distortion_indices_</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1a1f324552875b21d798013a046c059b10" prot="private" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>num_distortion_vertices_</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1ad2c5f1f7a14740ec63caa1f3dd3795a1" prot="private" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>num_record_calls_</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1a8a15589c7f8498cfbdc4f318a532165d" prot="private" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>num_update_uniforms_calls_</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1a5606852c22063504945f19de4ef1143d" prot="public" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>partial_destroy</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1a6520b4f5ea35f060423b6786c1785556" prot="private" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>phonebook_</name></member>
+      <member refid="classILLIXR_1_1vulkan_1_1render__pass_1a59471ec4496602094f87dcdd740c3fa8" prot="public" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>pipeline_</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1acbc11b0f7f14fef42bceb6c052d3cbbe" prot="private" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>pipeline_layout_</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1a0215517055f911a6960ee746bad787b3" prot="private" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>pose_prediction_</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1aed1cdd89089d9af239197566aa783af1" prot="public" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>record_command_buffer</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1a291b03a5923c759064e0b35b73dac723" prot="public" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>setup</name></member>
+      <member refid="classILLIXR_1_1vulkan_1_1timewarp_1a5f5662cf14f4aa19aed93bf7c217f44a" prot="public" virt="pure-virtual" ambiguityscope="ILLIXR::vulkan::timewarp::"><scope>ILLIXR::timewarp_vk</scope><name>setup</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1a0d170d4f154696af91f5ba3888b0d5d4" prot="private" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>setup_mutex_</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1a3e45604f2819f8b2141e289fbab232e0" prot="private" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>swapchain_height_</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1abcff58e95447722282c66359858a5849" prot="private" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>swapchain_width_</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1a079c6853d2ecf1c08a85e3dabd086b8a" prot="private" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>switchboard_</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1a061aa4a5add3eae23c5031c0f5d4b155" prot="private" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>timewarp_render_pass_</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1a5e43945a2b5f1327cf3eaeb9073ab1f2" prot="public" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>timewarp_vk</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1a54a2d8696381cbeb26eead1c197e0a0e" prot="private" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>timewarp_vk_plugin</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1ae4025df754ccb0b81d8322d1232c188a" prot="private" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>uniform_alloc_</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1a712976b8b05d168335f270bdaadc9b62" prot="private" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>uniform_alloc_info_</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1a8e2b6806c0b2dde79c1cb94df7b4c89f" prot="private" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>uniform_buffer_</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1a75352de0ad346619b934d7cf04587c0a" prot="public" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>update_uniforms</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1af2feb0e915b144ba59489a973223b224" prot="private" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>vertex_buffer_</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1af1e8bd52b97799539b764871b30c0a4b" prot="private" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>vma_allocator_</name></member>
+      <member refid="classILLIXR_1_1timewarp__vk_1a21fa7f74a6a9764dbbce46a740bc7dc2" prot="private" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>vsync_</name></member>
+      <member refid="classILLIXR_1_1vulkan_1_1render__pass_1ae57133967b6196133e8832759f3fc881" prot="public" virt="non-virtual"><scope>ILLIXR::timewarp_vk</scope><name>~render_pass</name></member>
+      <member refid="classILLIXR_1_1phonebook_1_1service_1a6bc6e64a0d9b70223989fc3fb98c2d0d" prot="public" virt="virtual"><scope>ILLIXR::timewarp_vk</scope><name>~service</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

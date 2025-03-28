@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_ae0683f6fe722d9263c55e30effafb44" kind="dir">
+    <compoundname>/home/friedel/devel/ILLIXR/plugins/record_imu_cam</compoundname>
+    <innerfile refid="plugins_2record__imu__cam_2plugin_8cpp">plugin.cpp</innerfile>
+    <innerfile refid="plugins_2record__imu__cam_2plugin_8hpp">plugin.hpp</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/plugins/record_imu_cam/"/>
+  </compounddef>
+</doxygen>

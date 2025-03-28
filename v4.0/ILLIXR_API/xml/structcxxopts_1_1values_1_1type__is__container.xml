@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structcxxopts_1_1values_1_1type__is__container" kind="struct" language="C++" prot="public">
+    <compoundname>cxxopts::values::type_is_container</compoundname>
+    <templateparamlist>
+      <param>
+        <type>typename T</type>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="structcxxopts_1_1values_1_1type__is__container_1a8ff2f0beec0dbe311180f496153d2fec" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr bool</type>
+        <definition>static constexpr bool cxxopts::values::type_is_container&lt; T &gt;::value</definition>
+        <argsstring></argsstring>
+        <name>value</name>
+        <qualifiedname>cxxopts::values::type_is_container::value</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="839" column="31" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" bodystart="839" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="838" column="5" bodyfile="/home/friedel/devel/ILLIXR/plugins/zed/capture/cxxopts.hpp" bodystart="838" bodyend="840"/>
+    <listofallmembers>
+      <member refid="structcxxopts_1_1values_1_1type__is__container_1a8ff2f0beec0dbe311180f496153d2fec" prot="public" virt="non-virtual"><scope>cxxopts::values::type_is_container</scope><name>value</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

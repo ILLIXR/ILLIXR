@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structstd_1_1hash_3_01vertex_01_4" kind="struct" language="C++" prot="public">
+    <compoundname>std::hash&lt; vertex &gt;</compoundname>
+    <templateparamlist>
+    </templateparamlist>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structstd_1_1hash_3_01vertex_01_4_1a7d04736af4810e1dd976408616c280d2" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t std::hash&lt; vertex &gt;::operator()</definition>
+        <argsstring>(vertex const &amp;vertex) const</argsstring>
+        <name>operator()</name>
+        <qualifiedname>std::hash&lt; vertex &gt;::operator()</qualifiedname>
+        <param>
+          <type>vertex const &amp;</type>
+          <declname>vertex</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/services/vkdemo/service.cpp" line="34" column="12" bodyfile="/home/friedel/devel/ILLIXR/services/vkdemo/service.cpp" bodystart="34" bodyend="36"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/services/vkdemo/service.cpp" line="33" column="1" bodyfile="/home/friedel/devel/ILLIXR/services/vkdemo/service.cpp" bodystart="33" bodyend="37"/>
+    <listofallmembers>
+      <member refid="structstd_1_1hash_3_01vertex_01_4_1a7d04736af4810e1dd976408616c280d2" prot="public" virt="non-virtual"><scope>std::hash&lt; vertex &gt;</scope><name>operator()</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

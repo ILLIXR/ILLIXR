@@ -1,0 +1,534 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="plugins_2ground__truth__slam_2plugin_8hpp" kind="file" language="C++">
+    <compoundname>plugin.hpp</compoundname>
+    <includes refid="imu_8hpp" local="yes">illixr/data_format/imu.hpp</includes>
+    <includes refid="pose_8hpp" local="yes">illixr/data_format/pose.hpp</includes>
+    <includes refid="data__loading_8hpp" local="yes">illixr/data_loading.hpp</includes>
+    <includes refid="phonebook_8hpp" local="yes">illixr/phonebook.hpp</includes>
+    <includes refid="include_2illixr_2plugin_8hpp" local="yes">illixr/plugin.hpp</includes>
+    <includes refid="switchboard_8hpp" local="yes">illixr/switchboard.hpp</includes>
+    <includedby refid="plugins_2ground__truth__slam_2plugin_8cpp" local="yes">/home/friedel/devel/ILLIXR/plugins/ground_truth_slam/plugin.cpp</includedby>
+    <incdepgraph>
+      <node id="43">
+        <label>illixr/csv_iterator.hpp</label>
+        <link refid="csv__iterator_8hpp_source"/>
+        <childnode refid="44" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+      </node>
+      <node id="39">
+        <label>illixr/data_format/coordinate.hpp</label>
+        <link refid="coordinate_8hpp_source"/>
+      </node>
+      <node id="2">
+        <label>illixr/data_format/imu.hpp</label>
+        <link refid="imu_8hpp_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+      </node>
+      <node id="45">
+        <label>illixr/data_format/misc.hpp</label>
+        <link refid="misc_8hpp_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="46" relation="include">
+        </childnode>
+      </node>
+      <node id="38">
+        <label>illixr/data_format/pose.hpp</label>
+        <link refid="pose_8hpp_source"/>
+        <childnode refid="39" relation="include">
+        </childnode>
+        <childnode refid="40" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+      </node>
+      <node id="40">
+        <label>illixr/data_format/unit.hpp</label>
+        <link refid="unit_8hpp_source"/>
+        <childnode refid="41" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+      </node>
+      <node id="42">
+        <label>illixr/data_loading.hpp</label>
+        <link refid="data__loading_8hpp_source"/>
+        <childnode refid="43" relation="include">
+        </childnode>
+        <childnode refid="45" relation="include">
+        </childnode>
+        <childnode refid="47" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+        <childnode refid="53" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="41" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+      </node>
+      <node id="47">
+        <label>illixr/error_util.hpp</label>
+        <link refid="error__util_8hpp_source"/>
+        <childnode refid="48" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+      </node>
+      <node id="48">
+        <label>global_module_defs.hpp</label>
+        <link refid="global__module__defs_8hpp_source"/>
+        <childnode refid="49" relation="include">
+        </childnode>
+        <childnode refid="51" relation="include">
+        </childnode>
+        <childnode refid="52" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>managed_thread.hpp</label>
+        <link refid="managed__thread_8hpp_source"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>network/network_backend.hpp</label>
+        <link refid="network__backend_8hpp_source"/>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+      </node>
+      <node id="21">
+        <label>topic_config.hpp</label>
+        <link refid="topic__config_8hpp_source"/>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>illixr/phonebook.hpp</label>
+        <link refid="phonebook_8hpp_source"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+      </node>
+      <node id="54">
+        <label>illixr/plugin.hpp</label>
+        <link refid="include_2illixr_2plugin_8hpp_source"/>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="55" relation="include">
+        </childnode>
+        <childnode refid="56" relation="include">
+        </childnode>
+        <childnode refid="57" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="58" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="25">
+        <label>record_logger.hpp</label>
+        <link refid="record__logger_8hpp_source"/>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+      </node>
+      <node id="49">
+        <label>relative_clock.hpp</label>
+        <link refid="relative__clock_8hpp_source"/>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="50" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>illixr/switchboard.hpp</label>
+        <link refid="switchboard_8hpp_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>/home/friedel/devel/ILLIXR/plugins/ground_truth_slam/plugin.hpp</label>
+        <link refid="plugins_2ground__truth__slam_2plugin_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="38" relation="include">
+        </childnode>
+        <childnode refid="42" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="54" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="46">
+        <label>GL/glu.h</label>
+      </node>
+      <node id="51">
+        <label>algorithm</label>
+      </node>
+      <node id="26">
+        <label>any</label>
+      </node>
+      <node id="6">
+        <label>atomic</label>
+      </node>
+      <node id="32">
+        <label>boost/archive/binary_iarchive.hpp</label>
+      </node>
+      <node id="33">
+        <label>boost/archive/binary_oarchive.hpp</label>
+      </node>
+      <node id="34">
+        <label>boost/iostreams/device/back_inserter.hpp</label>
+      </node>
+      <node id="35">
+        <label>boost/iostreams/stream.hpp</label>
+      </node>
+      <node id="36">
+        <label>boost/serialization/shared_ptr.hpp</label>
+      </node>
+      <node id="7">
+        <label>cassert</label>
+      </node>
+      <node id="22">
+        <label>chrono</label>
+      </node>
+      <node id="52">
+        <label>cmath</label>
+      </node>
+      <node id="4">
+        <label>concurrentqueue/blockingconcurrentqueue.hpp</label>
+      </node>
+      <node id="29">
+        <label>eigen3/Eigen/Core</label>
+      </node>
+      <node id="37">
+        <label>eigen3/Eigen/Dense</label>
+      </node>
+      <node id="30">
+        <label>eigen3/Eigen/Geometry</label>
+      </node>
+      <node id="53">
+        <label>fstream</label>
+      </node>
+      <node id="8">
+        <label>functional</label>
+      </node>
+      <node id="19">
+        <label>iostream</label>
+      </node>
+      <node id="44">
+        <label>iterator</label>
+      </node>
+      <node id="31">
+        <label>list</label>
+      </node>
+      <node id="41">
+        <label>map</label>
+      </node>
+      <node id="14">
+        <label>memory</label>
+      </node>
+      <node id="15">
+        <label>mutex</label>
+      </node>
+      <node id="23">
+        <label>optional</label>
+      </node>
+      <node id="50">
+        <label>ratio</label>
+      </node>
+      <node id="16">
+        <label>shared_mutex</label>
+      </node>
+      <node id="55">
+        <label>spdlog/common.h</label>
+      </node>
+      <node id="56">
+        <label>spdlog/sinks/basic_file_sink.h</label>
+      </node>
+      <node id="57">
+        <label>spdlog/sinks/stdout_color_sinks.h</label>
+      </node>
+      <node id="20">
+        <label>spdlog/spdlog.h</label>
+      </node>
+      <node id="28">
+        <label>sstream</label>
+      </node>
+      <node id="9">
+        <label>stdexcept</label>
+      </node>
+      <node id="27">
+        <label>string</label>
+      </node>
+      <node id="10">
+        <label>thread</label>
+      </node>
+      <node id="17">
+        <label>typeindex</label>
+      </node>
+      <node id="58">
+        <label>typeinfo</label>
+      </node>
+      <node id="18">
+        <label>unordered_map</label>
+      </node>
+      <node id="11">
+        <label>utility</label>
+      </node>
+      <node id="24">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <innerclass refid="classILLIXR_1_1ground__truth__slam" prot="public">ILLIXR::ground_truth_slam</innerclass>
+    <innernamespace refid="namespaceILLIXR">ILLIXR</innernamespace>
+    <sectiondef kind="define">
+      <memberdef kind="define" id="plugins_2ground__truth__slam_2plugin_8hpp_1abd2bbe388f28fc9e4df6d1d07be3d936" prot="public" static="no">
+        <name>ViconRoom1Easy</name>
+        <initializer>1403715273262142976</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/ground_truth_slam/plugin.hpp" line="12" column="9" bodyfile="/home/friedel/devel/ILLIXR/plugins/ground_truth_slam/plugin.hpp" bodystart="12" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="plugins_2ground__truth__slam_2plugin_8hpp_1a3bac36ea0564e48a01f80b4cc4c5d73e" prot="public" static="no">
+        <name>ViconRoom1Medium</name>
+        <initializer>1403715523912143104</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/ground_truth_slam/plugin.hpp" line="13" column="9" bodyfile="/home/friedel/devel/ILLIXR/plugins/ground_truth_slam/plugin.hpp" bodystart="13" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="plugins_2ground__truth__slam_2plugin_8hpp_1a136989b0d4460dac01e94cfc263fe5f1" prot="public" static="no">
+        <name>ViconRoom1Difficult</name>
+        <initializer>1403715886544058112</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/ground_truth_slam/plugin.hpp" line="14" column="9" bodyfile="/home/friedel/devel/ILLIXR/plugins/ground_truth_slam/plugin.hpp" bodystart="14" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="plugins_2ground__truth__slam_2plugin_8hpp_1a7c64f3adad4910df9feb6621faf47c4a" prot="public" static="no">
+        <name>ViconRoom2Easy</name>
+        <initializer>1413393212225760512</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/ground_truth_slam/plugin.hpp" line="15" column="9" bodyfile="/home/friedel/devel/ILLIXR/plugins/ground_truth_slam/plugin.hpp" bodystart="15" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="plugins_2ground__truth__slam_2plugin_8hpp_1a615394cc999a2843f528090ab8b2d5a5" prot="public" static="no">
+        <name>ViconRoom2Medium</name>
+        <initializer>1413393885975760384</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/ground_truth_slam/plugin.hpp" line="16" column="9" bodyfile="/home/friedel/devel/ILLIXR/plugins/ground_truth_slam/plugin.hpp" bodystart="16" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="plugins_2ground__truth__slam_2plugin_8hpp_1aeba46f860690e156e73dbd18f7ba3753" prot="public" static="no">
+        <name>ViconRoom2Hard</name>
+        <initializer>1413394881555760384</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/ground_truth_slam/plugin.hpp" line="17" column="9" bodyfile="/home/friedel/devel/ILLIXR/plugins/ground_truth_slam/plugin.hpp" bodystart="17" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;illixr/data_format/imu.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;illixr/data_format/pose.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;illixr/data_loading.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;illixr/phonebook.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;illixr/plugin.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;illixr/switchboard.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceILLIXR" kindref="compound">ILLIXR</ref><sp/>{</highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="comment">//<sp/>These<sp/>are<sp/>the<sp/>first<sp/>IMU<sp/>timestamp<sp/>of<sp/>the<sp/>datasets.<sp/>See<sp/>line#31<sp/>for<sp/>more<sp/>info.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>ViconRoom1Easy<sp/><sp/><sp/><sp/><sp/><sp/>1403715273262142976</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>ViconRoom1Medium<sp/><sp/><sp/><sp/>1403715523912143104</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>ViconRoom1Difficult<sp/>1403715886544058112</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>ViconRoom2Easy<sp/><sp/><sp/><sp/><sp/><sp/>1413393212225760512</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>ViconRoom2Medium<sp/><sp/><sp/><sp/>1413393885975760384</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>ViconRoom2Hard<sp/><sp/><sp/><sp/><sp/><sp/>1413394881555760384</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/><ref refid="structILLIXR_1_1data__format_1_1pose__type" kindref="compound">data_format::pose_type</ref><sp/>sensor_types;</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal">ground_truth_slam<sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1plugin" kindref="compound">plugin</ref><sp/>{</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/>[[maybe_unused]]<sp/>ground_truth_slam(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>name,<sp/><ref refid="classILLIXR_1_1phonebook" kindref="compound">phonebook</ref>*<sp/>pb);</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>start()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>feed_ground_truth(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1switchboard_1af91c1b9436918512e95e5fa8553846a7" kindref="member">switchboard::ptr&lt;const data_format::imu_type&gt;</ref>&amp;<sp/>datum);</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::shared_ptr&lt;switchboard&gt;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>switchboard_;</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1switchboard_1_1writer" kindref="compound">switchboard::writer&lt;data_format::pose_type&gt;</ref><sp/>true_pose_;</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1switchboard_1_1writer" kindref="compound">switchboard::writer&lt;switchboard::event_wrapper&lt;Eigen::Vector3f&gt;</ref>&gt;<sp/>ground_truth_offset_;</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::map&lt;ullong,<sp/>sensor_types&gt;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>sensor_data_;</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/>ullong<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dataset_first_time_;</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>first_time_;</highlight></codeline>
+<codeline lineno="35"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="36"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>ILLIXR</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="/home/friedel/devel/ILLIXR/plugins/ground_truth_slam/plugin.hpp"/>
+  </compounddef>
+</doxygen>

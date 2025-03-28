@@ -1,0 +1,65 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structILLIXR_1_1rendering__params" kind="struct" language="C++" prot="public">
+    <compoundname>ILLIXR::rendering_params</compoundname>
+    <includes refid="global__module__defs_8hpp" local="no">global_module_defs.hpp</includes>
+    <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="structILLIXR_1_1rendering__params_1aa877afc8134a79e72db34e0676c3af54" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr float</type>
+        <definition>constexpr float ILLIXR::rendering_params::near_z</definition>
+        <argsstring></argsstring>
+        <name>near_z</name>
+        <qualifiedname>ILLIXR::rendering_params::near_z</qualifiedname>
+        <initializer>= 0.1f</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/global_module_defs.hpp" line="58" column="28" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/global_module_defs.hpp" bodystart="58" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1rendering__params_1a332ded0ef3c61e9cf817c65209cca259" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr float</type>
+        <definition>constexpr float ILLIXR::rendering_params::far_z</definition>
+        <argsstring></argsstring>
+        <name>far_z</name>
+        <qualifiedname>ILLIXR::rendering_params::far_z</qualifiedname>
+        <initializer>= 20.0f</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/global_module_defs.hpp" line="61" column="28" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/global_module_defs.hpp" bodystart="61" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1rendering__params_1a5c2ac781905a1c03a91a23286761700e" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr bool</type>
+        <definition>constexpr bool ILLIXR::rendering_params::reverse_z</definition>
+        <argsstring></argsstring>
+        <name>reverse_z</name>
+        <qualifiedname>ILLIXR::rendering_params::reverse_z</qualifiedname>
+        <initializer>= true</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/global_module_defs.hpp" line="63" column="27" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/global_module_defs.hpp" bodystart="63" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Rendering parameters. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/include/illixr/global_module_defs.hpp" line="56" column="1" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/global_module_defs.hpp" bodystart="56" bodyend="64"/>
+    <listofallmembers>
+      <member refid="structILLIXR_1_1rendering__params_1a332ded0ef3c61e9cf817c65209cca259" prot="public" virt="non-virtual"><scope>ILLIXR::rendering_params</scope><name>far_z</name></member>
+      <member refid="structILLIXR_1_1rendering__params_1aa877afc8134a79e72db34e0676c3af54" prot="public" virt="non-virtual"><scope>ILLIXR::rendering_params</scope><name>near_z</name></member>
+      <member refid="structILLIXR_1_1rendering__params_1a5c2ac781905a1c03a91a23286761700e" prot="public" virt="non-virtual"><scope>ILLIXR::rendering_params</scope><name>reverse_z</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

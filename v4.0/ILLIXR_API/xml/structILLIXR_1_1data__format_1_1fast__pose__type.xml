@@ -1,0 +1,178 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structILLIXR_1_1data__format_1_1fast__pose__type" kind="struct" language="C++" prot="public">
+    <compoundname>ILLIXR::data_format::fast_pose_type</compoundname>
+    <basecompoundref refid="classILLIXR_1_1switchboard_1_1event" prot="public" virt="non-virtual">ILLIXR::switchboard::event</basecompoundref>
+    <includes refid="pose_8hpp" local="no">pose.hpp</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1fast__pose__type_1a09448c2b9e5d5d7ba07c85863da89ec9" prot="public" static="no" mutable="no">
+        <type><ref refid="structILLIXR_1_1data__format_1_1pose__type" kindref="compound">pose_type</ref></type>
+        <definition>pose_type ILLIXR::data_format::fast_pose_type::pose</definition>
+        <argsstring></argsstring>
+        <name>pose</name>
+        <qualifiedname>ILLIXR::data_format::fast_pose_type::pose</qualifiedname>
+        <briefdescription>
+<para>The pose data. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/pose.hpp" line="118" column="16" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/pose.hpp" bodystart="118" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1fast__pose__type_1a28bcae7761b4b281aee52a52e498e5e8" prot="public" static="no" mutable="no">
+        <type>time_point</type>
+        <definition>time_point ILLIXR::data_format::fast_pose_type::predict_computed_time</definition>
+        <argsstring></argsstring>
+        <name>predict_computed_time</name>
+        <qualifiedname>ILLIXR::data_format::fast_pose_type::predict_computed_time</qualifiedname>
+        <briefdescription>
+<para>Time at which the prediction was computed. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/pose.hpp" line="119" column="16" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/pose.hpp" bodystart="119" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1fast__pose__type_1aab5db032a24ac1bec9b6ca9f222a6a18" prot="public" static="no" mutable="no">
+        <type>time_point</type>
+        <definition>time_point ILLIXR::data_format::fast_pose_type::predict_target_time</definition>
+        <argsstring></argsstring>
+        <name>predict_target_time</name>
+        <qualifiedname>ILLIXR::data_format::fast_pose_type::predict_target_time</qualifiedname>
+        <briefdescription>
+<para>Time that prediction targeted. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/pose.hpp" line="120" column="16" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/pose.hpp" bodystart="120" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1fast__pose__type_1a8221182003133150595c08bc0ab1695e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::fast_pose_type::fast_pose_type</definition>
+        <argsstring>()</argsstring>
+        <name>fast_pose_type</name>
+        <qualifiedname>ILLIXR::data_format::fast_pose_type::fast_pose_type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Basic constructor </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/pose.hpp" line="125" column="5" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/pose.hpp" bodystart="125" bodyend="128"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1fast__pose__type_1a3b0d105b577bd6eaf1729f84e01d6ce1" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::fast_pose_type::fast_pose_type</definition>
+        <argsstring>(pose_type pose_, time_point predict_computed_time_, time_point predict_target_time_)</argsstring>
+        <name>fast_pose_type</name>
+        <qualifiedname>ILLIXR::data_format::fast_pose_type::fast_pose_type</qualifiedname>
+        <param>
+          <type><ref refid="structILLIXR_1_1data__format_1_1pose__type" kindref="compound">pose_type</ref></type>
+          <declname>pose_</declname>
+        </param>
+        <param>
+          <type>time_point</type>
+          <declname>predict_computed_time_</declname>
+        </param>
+        <param>
+          <type>time_point</type>
+          <declname>predict_target_time_</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Construct an instance using the given data <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>pose_</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The pose to use </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>predict_computed_time_</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The computed time </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>predict_target_time_</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The target time </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/pose.hpp" line="136" column="5" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/pose.hpp" bodystart="136" bodyend="139"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Fast pose </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>ILLIXR::data_format::fast_pose_type</label>
+        <link refid="structILLIXR_1_1data__format_1_1fast__pose__type"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ILLIXR::switchboard::event</label>
+        <link refid="classILLIXR_1_1switchboard_1_1event"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>ILLIXR::data_format::fast_pose_type</label>
+        <link refid="structILLIXR_1_1data__format_1_1fast__pose__type"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>pose</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>ILLIXR::data_format::pose_data</label>
+        <link refid="structILLIXR_1_1data__format_1_1pose__data"/>
+      </node>
+      <node id="3">
+        <label>ILLIXR::data_format::pose_type</label>
+        <link refid="structILLIXR_1_1data__format_1_1pose__type"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ILLIXR::switchboard::event</label>
+        <link refid="classILLIXR_1_1switchboard_1_1event"/>
+      </node>
+    </collaborationgraph>
+    <location file="/home/friedel/devel/ILLIXR/include/illixr/data_format/pose.hpp" line="117" column="1" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/data_format/pose.hpp" bodystart="117" bodyend="140"/>
+    <listofallmembers>
+      <member refid="structILLIXR_1_1data__format_1_1fast__pose__type_1a8221182003133150595c08bc0ab1695e" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::fast_pose_type</scope><name>fast_pose_type</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1fast__pose__type_1a3b0d105b577bd6eaf1729f84e01d6ce1" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::fast_pose_type</scope><name>fast_pose_type</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1fast__pose__type_1a09448c2b9e5d5d7ba07c85863da89ec9" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::fast_pose_type</scope><name>pose</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1fast__pose__type_1a28bcae7761b4b281aee52a52e498e5e8" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::fast_pose_type</scope><name>predict_computed_time</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1fast__pose__type_1aab5db032a24ac1bec9b6ca9f222a6a18" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::fast_pose_type</scope><name>predict_target_time</name></member>
+      <member refid="classILLIXR_1_1switchboard_1_1event_1a55399aaf47bc0d3943fd89d7afb55624" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::fast_pose_type</scope><name>serialize</name></member>
+      <member refid="classILLIXR_1_1switchboard_1_1event_1a01fb51a03e9025d71087de76823e449e" prot="public" virt="virtual"><scope>ILLIXR::data_format::fast_pose_type</scope><name>~event</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

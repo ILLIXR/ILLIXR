@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="plugins_2openwarp__vk_2monado_2CMakeLists_8txt" kind="file" language="C++">
+    <compoundname>CMakeLists.txt</compoundname>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="plugins_2openwarp__vk_2monado_2CMakeLists_8txt_1a167e7adf52662f161cdd1ea498ee7bd4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>get_external_for_plugin</definition>
+        <argsstring>(Monado_vk) file(COPY_FILE $</argsstring>
+        <name>get_external_for_plugin</name>
+        <param>
+          <type>Monado_vk</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/plugins/openwarp_vk/monado/CMakeLists.txt" line="1" column="1" bodyfile="/home/friedel/devel/ILLIXR/plugins/openwarp_vk/monado/CMakeLists.txt" bodystart="1" bodyend="2"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="normal">get_external_for_plugin(Monado_vk)</highlight></codeline>
+<codeline lineno="2"><highlight class="normal">file(COPY_FILE<sp/>${CMAKE_SOURCE_DIR}/plugins/openwarp_vk/plugin.cpp<sp/>${CMAKE_BINARY_DIR}/plugins/openwarp_vk/plugin_m.cpp)</highlight></codeline>
+<codeline lineno="3"><highlight class="normal">set(PLUGIN_NAME<sp/></highlight><highlight class="stringliteral">&quot;plugin.openwarp_vk.monado${ILLIXR_BUILD_SUFFIX}&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="4"><highlight class="normal">set(OW_PLUGIN_DEFINITIONS<sp/>MONADO_REQUIRED)</highlight></codeline>
+<codeline lineno="5"><highlight class="normal">set(PLUGIN_SOURCE<sp/></highlight><highlight class="stringliteral">&quot;${CMAKE_BINARY_DIR}/plugins/openwarp_vk/plugin_m.cpp&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="6"><highlight class="normal">set(OW_PREFIX<sp/></highlight><highlight class="stringliteral">&quot;../&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="7"><highlight class="normal">set(OW_POSTFIX<sp/></highlight><highlight class="stringliteral">&quot;/..&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal">include(../CMakeLists.txt)</highlight></codeline>
+    </programlisting>
+    <location file="/home/friedel/devel/ILLIXR/plugins/openwarp_vk/monado/CMakeLists.txt"/>
+  </compounddef>
+</doxygen>

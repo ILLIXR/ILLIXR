@@ -1,0 +1,79 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structILLIXR_1_1server__params" kind="struct" language="C++" prot="public">
+    <compoundname>ILLIXR::server_params</compoundname>
+    <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="structILLIXR_1_1server__params_1a69ac961d304e99de19135b8c50df6a88" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr float</type>
+        <definition>constexpr float ILLIXR::server_params::fov_left[2]</definition>
+        <argsstring>[2]</argsstring>
+        <name>fov_left</name>
+        <qualifiedname>ILLIXR::server_params::fov_left</qualifiedname>
+        <initializer>= {-0.907341, -0.897566}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/global_module_defs.hpp" line="79" column="28" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/global_module_defs.hpp" bodystart="79" bodyend="79"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1server__params_1a35ac2e61dc3fe14175d1984d9344b176" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr float</type>
+        <definition>constexpr float ILLIXR::server_params::fov_right[2]</definition>
+        <argsstring>[2]</argsstring>
+        <name>fov_right</name>
+        <qualifiedname>ILLIXR::server_params::fov_right</qualifiedname>
+        <initializer>= {0.897500, 0.907700}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/global_module_defs.hpp" line="80" column="28" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/global_module_defs.hpp" bodystart="80" bodyend="80"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1server__params_1aa886a117dad1cd06252cb871ddd00eb3" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr float</type>
+        <definition>constexpr float ILLIXR::server_params::fov_up[2]</definition>
+        <argsstring>[2]</argsstring>
+        <name>fov_up</name>
+        <qualifiedname>ILLIXR::server_params::fov_up</qualifiedname>
+        <initializer>= {0.953644, 0.954293}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/global_module_defs.hpp" line="81" column="28" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/global_module_defs.hpp" bodystart="81" bodyend="81"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1server__params_1a12e21444fc82114f076052deba474377" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr float</type>
+        <definition>constexpr float ILLIXR::server_params::fov_down[2]</definition>
+        <argsstring>[2]</argsstring>
+        <name>fov_down</name>
+        <qualifiedname>ILLIXR::server_params::fov_down</qualifiedname>
+        <initializer>= {-0.953628, -0.952802}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/include/illixr/global_module_defs.hpp" line="82" column="28" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/global_module_defs.hpp" bodystart="82" bodyend="82"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/include/illixr/global_module_defs.hpp" line="69" column="1" bodyfile="/home/friedel/devel/ILLIXR/include/illixr/global_module_defs.hpp" bodystart="69" bodyend="83"/>
+    <listofallmembers>
+      <member refid="structILLIXR_1_1server__params_1a12e21444fc82114f076052deba474377" prot="public" virt="non-virtual"><scope>ILLIXR::server_params</scope><name>fov_down</name></member>
+      <member refid="structILLIXR_1_1server__params_1a69ac961d304e99de19135b8c50df6a88" prot="public" virt="non-virtual"><scope>ILLIXR::server_params</scope><name>fov_left</name></member>
+      <member refid="structILLIXR_1_1server__params_1a35ac2e61dc3fe14175d1984d9344b176" prot="public" virt="non-virtual"><scope>ILLIXR::server_params</scope><name>fov_right</name></member>
+      <member refid="structILLIXR_1_1server__params_1aa886a117dad1cd06252cb871ddd00eb3" prot="public" virt="non-virtual"><scope>ILLIXR::server_params</scope><name>fov_up</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
