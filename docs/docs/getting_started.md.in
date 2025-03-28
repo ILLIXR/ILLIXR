@@ -237,6 +237,10 @@ Each plugin can define environment variables to use. See the documentation of ea
 
 ILLIXR currently supports both OpenGL and Vulkan backends (indicated as `gl` and `vk` in the config suffixes). Since some plugins should behave differently (and compile differently) based on what backend is being used, it's important to run `make clean` if you want to try swapping between the two backends.
 
+!!! warning
+
+    The use of the OpenGL back end is in the process of being deprecated. Thus `gl` based plugins are not guaranteed to work in every instance.
+
 ## Rationale
 
 -  The current system can use profile files to control everything from the build to running ILLIXR, in keeping with the [DRY principle][E10].
