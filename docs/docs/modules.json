@@ -133,7 +133,6 @@
         "libgsm",
         "libiec61883",
         "libmodplug",
-        "libmp3lame",
         "libopenjpeg",
         "libopenmpt",
         "libopus",
@@ -183,7 +182,6 @@
         "libgsm",
         "libiec61883",
         "libmodplug",
-        "libmp3lame",
         "libopenjpeg",
         "libopenmpt",
         "libopus",
@@ -593,22 +591,6 @@
       }
     },
     {
-      "glog": {
-        "pkg": {
-          "Ubuntu": {
-            "pkg": "libgoogle-glog-dev",
-            "postnotes": "",
-            "notes": ""
-          },
-          "Fedora": {
-            "pkg": "glog-devel",
-            "postnotes": "",
-            "notes": ""
-          }
-        }
-      }
-    },
-    {
       "gnutls": {
         "pkg": {
           "Ubuntu": {
@@ -684,22 +666,6 @@
             "pkg": "libaom-dev",
             "postnotes": "",
             "notes": ""
-          }
-        }
-      }
-    },
-    {
-      "libuvc": {
-        "pkg": {
-          "Ubuntu": {
-            "pkg": "libuvc-dev",
-            "postnotes": "",
-            "notes": ""
-          },
-          "Fedora": {
-            "pkg": "",
-            "postnotes": "",
-            "notes": "Fedora does not supply libuvc from its repositories. You will need to install it from <a href=\"https://github.com/libuvc/libuvc\">https://github.com/libuvc/libuvc</a>."
           }
         }
       }
@@ -1073,22 +1039,6 @@
       }
     },
     {
-      "libsrt": {
-        "pkg": {
-          "Ubuntu": {
-            "pkg": "libsrt-openssl-dev",
-            "postnotes": "",
-            "notes": ""
-          },
-          "Fedora": {
-            "pkg": "libsrt-openssl-dev",
-            "postnotes": "",
-            "notes": ""
-          }
-        }
-      }
-    },
-    {
       "libssh": {
         "pkg": {
           "Ubuntu": {
@@ -1097,23 +1047,7 @@
             "notes": ""
           },
           "Fedora": {
-            "pkg": "libssh-dev",
-            "postnotes": "",
-            "notes": ""
-          }
-        }
-      }
-    },
-    {
-      "libsvtav1": {
-        "pkg": {
-          "Ubuntu": {
-            "pkg": "libsvtav1enc-dev",
-            "postnotes": "",
-            "notes": ""
-          },
-          "Fedora": {
-            "pkg": "libsvtav1enc-dev",
+            "pkg": "libssh-devel",
             "postnotes": "",
             "notes": ""
           }
@@ -1370,22 +1304,6 @@
           },
           "Fedora": {
             "pkg": "openxr-devel",
-            "postnotes": "",
-            "notes": ""
-          }
-        }
-      }
-    },
-    {
-      "libzimg": {
-        "pkg": {
-          "Ubuntu": {
-            "pkg": "libzimg-dev",
-            "postnotes": "",
-            "notes": ""
-          },
-          "Fedora": {
-            "pkg": "patch",
             "postnotes": "",
             "notes": ""
           }

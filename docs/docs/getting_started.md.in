@@ -479,7 +479,7 @@ If you want to add your own plugin, see [Writing Your Plugin][I11].
         currentRow = tabRef.insertRow(-1);
 
         for(let g of profiles) {
-            if(count >= 4) {
+            if(count >= 3) {
                 currentRow = tabRef.insertRow(-1);
                 count = 0;
             }
@@ -515,7 +515,7 @@ If you want to add your own plugin, see [Writing Your Plugin][I11].
         tabRef = document.getElementById("listing_table");
         currentRow = tabRef.insertRow(-1);
         for(const dep of plugins) {
-            if(count >= 4) {
+            if(count >= 3) {
                 currentRow = tabRef.insertRow(-1);
                 count = 0;
             }
