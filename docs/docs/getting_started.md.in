@@ -55,7 +55,7 @@ Use the following to install the dependencies for the selected plugins:
 <div class="code-box-copy">
 
     <button class="code-box-copy__btn" data-clipboard-target="#output" title="Copy"></button>
-    <pre class="language-shell" id="output"></pre>
+    <pre class="language-shell" id="output" style="white-space:pre-wrap;"></pre>
 
 </div>
 
