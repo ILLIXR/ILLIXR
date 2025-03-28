@@ -120,11 +120,10 @@ The CMake process will also create a [_YAML_][G12] file call `illixr.yaml` which
 
 ## Running ILLIXR
 
-To run the ILLIXR binary just call `main.<>.exe` with any of the following command line arguments. (the `&lt;&gt;` indicate
+To run the ILLIXR binary just call `main.<>.exe` with any of the following command line arguments. (the `<>` indicate
 an infix specifying the build type, for `Debug` use `dbg`, for `Release` use `opt`, for `RelWithDebInfo` use `optdbg`)
 
 - -p,--plugins=<>, comma separated list of plugins to use (case sensitive, all lowercase, no spaces)
-- -r,--run=<>, comma separated list of plugins to use (case sensitive, all lowercase, no spaces), supersedes plugins entry.  This is only necessary if a plugin builds more than one library (e.g. offload_vio builds 4 libraries) as each must be loaded individually.
 - -y,--yaml=<>, the [profile][G23] file to use which specifies some or all of the above arguments (e.g. the generated `illixr.yaml`)
 - --<ANY ENVIRONMENT VARIABLE NAME>, you can specify any variable the ILLIXR uses on the command line. Common ones are:
   - --duration=<>, the duration to run for in seconds (default is 60)
