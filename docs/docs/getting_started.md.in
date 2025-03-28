@@ -22,8 +22,10 @@ are not available in the distribution repos. The instructions below are a genera
 ### Clone the repository
 
 ``` { .bash .copy }
-git clone https://github.com/ILLIXR/ILLIXR
+git clone https://github.com/ILLIXR/ILLIXR --single-branch
 ```
+
+This will clone only the default branch, if you want all branches then remove the `--single-branch` flag.
 
 ### Install dependencies
 
