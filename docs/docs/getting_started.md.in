@@ -146,7 +146,7 @@ For specific usage instructions, refer to the README files of the respective plu
 ### Profile file format
 An example of a [_YAML_][G12] [profile][G23] file is
 ```yaml
-plugins: timewarp_vk,vkdemo,ground_truth_slam,offload_vio
+plugins: pose_lookup,timewarp_vk,vkdemo,native_renderer
 build_type: Debug
 install_prefix: /home/user/illixr
 env_vars:
