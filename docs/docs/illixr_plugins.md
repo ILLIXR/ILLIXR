@@ -233,6 +233,7 @@ Topic details:
 
 - `offload_vio.device_rx`
   - Asynchronously *reads* a string from topic `vio_pose`.
+  - Synchronously *reads* [`imu_type`][A15] from `imu` topic
   - *Publishes* [`pose_type`][A12] to `slow_pose` topic.
   - *Publishes* [`imu_integrator_input`][A17] to `imu_integrator_input` topic.
 - `offload_vio.device_tx`
@@ -244,6 +245,7 @@ Topic details:
   - *Publishes* [`binocular_cam_type`][A14] to `cam` topic.
 - `offload_vio.server_tx`
   - Asynchronously *reads* [`imu_integrator_input`][A17] from `imu_integrator_input` topic.
+  - Synchronously *reads* [`pose_type`][A12] from `slow_pose` topic from `open_vins`
   - *Publishes* a string to `vio_pose` topic.
 
 &nbsp;&nbsp;[**Details**][P17]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C17]
