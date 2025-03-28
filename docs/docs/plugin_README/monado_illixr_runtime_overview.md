@@ -36,13 +36,6 @@ When used with [_Monado_][G10], the ILLIXR [_Runtime_][G14] is compiled into a s
 The library exports its two major functionalities: initializing the [_switchboard_][G16] and [_phonebook_][G17], and
 loading [_plugins_][G13].
 
-The driver starts to load the runtime by loading the shared library into the current (application's) address space and
-calls the Switchboard and Phonebook initialization. Then, it calls the plugin loading for each ILLIXR plugin (except 
-[`vkdeom`][P10], which is replaced by the OpenXR app). Finally, it calls a special plugin loading which takes a function
-address instead of a file path to load a Translation Plugin into ILLIXR as the application. If the plugin implements a
-long-running computation, it may block the main ILLIXR thread which drives the entire application. To remedy this, a
-plugin should implement long-running processing in its own thread. This way, the driver will be able to reacquire
-control and return to Monado and the application efficiently.
 The driver starts to load the runtime by loading the shared library into the current
     (application's) address space and calls the Switchboard and Phonebook initialization.
 Then, it calls the plugin loading for each ILLIXR plugin
