@@ -115,7 +115,8 @@ see our [YouTube][E54] channel, and join our [Discord][E47] for announcements.
 
 ## Demo Videos
 
-All of our demo videos can be seen on our [YouTube][E54] channel. Here are some highlights:
+All of our demo videos can be seen on our [YouTube][E54] channel. 
+<!-- Here are some highlights:
 
 | Running Locally                                                                                                                                                                                                                                                                                                                                                                         | Head Tracking (VIO) Offloaded                                                                                                                                                                                                                                                                                                                                                                              |
 |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -124,7 +125,7 @@ All of our demo videos can be seen on our [YouTube][E54] channel. Here are some 
 
 | Rendering Offloaded                                                                                                                                                                                                                                                                                                                                                                              |
 |--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| <iframe width="400" height="225" src="https://www.youtube.com/embed/oGBYZIPj6Zc" title="Demo of ILLIXR with rendering offloaded" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe><br><a href="https://youtu.be/oGBYZIPj6Zc">Video Link</a> |
+| <iframe width="400" height="225" src="https://www.youtube.com/embed/oGBYZIPj6Zc" title="Demo of ILLIXR with rendering offloaded" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe><br><a href="https://youtu.be/oGBYZIPj6Zc">Video Link</a> | -->
 
 # Citation
 

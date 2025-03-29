@@ -1,6 +1,6 @@
 # Getting Started
 
-The ILLIXR application is configured and built via CMake. The CMake system checks for required dependencies,
+ILLIXR is configured and built via CMake. The CMake system checks for required dependencies,
 builds each requested plugin, builds the main ILLIXR binary, and (optionally) installs these components.
 
 ILLIXR currently only builds on Linux systems, and has been tested on the following configurations:
