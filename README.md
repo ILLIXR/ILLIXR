@@ -13,8 +13,8 @@ Illinois Extended Reality testbed or ILLIXR (pronounced like elixir) is a fully 
 system and testbed. The modular, extensible, and OpenXR-compatible ILLIXR runtime integrates state-of-the-art XR
 components into a complete XR system.
 
-The current ILLIXR release is v4.0. Source code is available from our GitHub repository, which also contains
-instructions for building fully contained Docker images. Docker images can also be downloaded from a hub (see here for
+The current ILLIXR release is [v4.0][P69]. Source code is available from our [GitHub repository][P68], which also contains
+instructions for building fully contained [Docker images][P70]. Docker images can also be downloaded from a hub (see [here][P70] for
 instructions.)
 
 ILLIXR provides its components in standalone configurations to enable architects and system designers to research each
@@ -115,7 +115,8 @@ see our [YouTube][E54] channel, and join our [Discord][E47] for announcements.
 
 ## Demo Videos
 
-All of our demo videos can be seen on our [YouTube][E54] channel. Here are some highlights:
+All of our demo videos can be seen on our [YouTube][E54] channel. 
+<!-- Here are some highlights:
 
 | Running Locally                                                                                                                                                                                                                                                                                                                                                                         | Head Tracking (VIO) Offloaded                                                                                                                                                                                                                                                                                                                                                                              |
 |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -124,7 +125,7 @@ All of our demo videos can be seen on our [YouTube][E54] channel. Here are some 
 
 | Rendering Offloaded                                                                                                                                                                                                                                                                                                                                                                              |
 |--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| <iframe width="400" height="225" src="https://www.youtube.com/embed/oGBYZIPj6Zc" title="Demo of ILLIXR with rendering offloaded" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe><br><a href="https://youtu.be/oGBYZIPj6Zc">Video Link</a> |
+| <iframe width="400" height="225" src="https://www.youtube.com/embed/oGBYZIPj6Zc" title="Demo of ILLIXR with rendering offloaded" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe><br><a href="https://youtu.be/oGBYZIPj6Zc">Video Link</a> | -->
 
 # Citation
 
@@ -420,6 +421,12 @@ request!
 [P66]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html
 
 [P67]:   https://illixr.github.io/ILLIXR/illixr_services/index.html
+
+[P68]:   https://github.com/ILLIXR/ILLIXR
+
+[P69]:   https://github.com/ILLIXR/ILLIXR/releases/tag/v4.0.0
+
+[P70]:   https://github.com/ILLIXR/ILLIXR/tree/master/docker
 
 [//]: # (- Third Party Packages -)
 
