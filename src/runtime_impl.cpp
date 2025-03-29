@@ -8,10 +8,13 @@
 #include "illixr/record_logger.hpp"
 #include "illixr/stoplight.hpp"
 #include "illixr/switchboard.hpp"
+#include "illixr/vk/vk_extension_request.hpp"
+#include "vulkan_display.hpp"
 #include "sqlite_record_logger.hpp"
 
 #include <algorithm>
 #include <memory>
+#include <set>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
