@@ -13,8 +13,8 @@ Illinois Extended Reality testbed or ILLIXR (pronounced like elixir) is a fully 
 system and testbed. The modular, extensible, and OpenXR-compatible ILLIXR runtime integrates state-of-the-art XR
 components into a complete XR system.
 
-The current ILLIXR release is v4.0. Source code is available from our GitHub repository, which also contains
-instructions for building fully contained Docker images. Docker images can also be downloaded from a hub (see here for
+The current ILLIXR release is [v4.0][P69]. Source code is available from our [GitHub repository][P68], which also contains
+instructions for building fully contained [Docker images][P70]. Docker images can also be downloaded from a hub (see [here][P70] for
 instructions.)
 
 ILLIXR provides its components in standalone configurations to enable architects and system designers to research each
@@ -421,6 +421,12 @@ request!
 [P66]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html
 
 [P67]:   https://illixr.github.io/ILLIXR/illixr_services/index.html
+
+[P68]:   https://github.com/ILLIXR/ILLIXR
+
+[P69]:   https://github.com/ILLIXR/ILLIXR/releases/tag/v4.0.0
+
+[P70]:   https://github.com/ILLIXR/ILLIXR/tree/master/docker
 
 [//]: # (- Third Party Packages -)
 
