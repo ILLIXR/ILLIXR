@@ -1,0 +1,12 @@
+digraph "/home/friedel/devel/ILLIXR/services/vkdemo"
+{
+ // LATEX_PDF_SIZE
+  bgcolor="transparent";
+  edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
+  node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
+  compound=true
+  subgraph clusterdir_056ec8f0377ddc4293192cbc6b19c99c {
+    graph [ bgcolor="#edf0f7", pencolor="grey25", label="services", fontname=Helvetica,fontsize=10 style="filled,dashed", URL="dir_056ec8f0377ddc4293192cbc6b19c99c.html",tooltip=""]
+  dir_afea582717a47693732909439b44aeb5 [label="vkdemo", fillcolor="#edf0f7", color="grey25", style="filled,bold", URL="dir_afea582717a47693732909439b44aeb5.html",tooltip=""];
+  }
+}
