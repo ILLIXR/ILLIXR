@@ -9,8 +9,8 @@
 #include "illixr/stoplight.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/vk/vk_extension_request.hpp"
-#include "vulkan_display.hpp"
 #include "sqlite_record_logger.hpp"
+#include "vulkan_display.hpp"
 
 #include <algorithm>
 #include <memory>
