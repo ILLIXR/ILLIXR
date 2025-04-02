@@ -331,7 +331,8 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
         th.join();
 
         delete runtime_;
-    } catch (...) {
+    } catch (const std::exception& ex) {
+        std::cout << "ERROR: Exception caught in main: " << ex.what() << std::endl;
         delete runtime_;
     }
     return 0;
