@@ -3,6 +3,7 @@
 #include "illixr/data_format/imu.hpp"
 #include "illixr/data_format/opencv_data_types.hpp"
 #include "illixr/data_format/pose.hpp"
+#include "illixr/threadloop.hpp"
 #include "zed_camera_thread.hpp"
 
 namespace ILLIXR {
