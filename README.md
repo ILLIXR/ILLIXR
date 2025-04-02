@@ -13,9 +13,8 @@ Illinois Extended Reality testbed or ILLIXR (pronounced like elixir) is a fully 
 system and testbed. The modular, extensible, and OpenXR-compatible ILLIXR runtime integrates state-of-the-art XR
 components into a complete XR system.
 
-The current ILLIXR release is [v4.0][P69]. Source code is available from our [GitHub repository][P68], which also contains
-instructions for building fully contained [Docker images][P70]. Docker images can also be downloaded from a hub (see [here][P70] for
-instructions.)
+The current ILLIXR release is [v4.0][E51]. Source code is available from our [GitHub repository][P68], which also contains
+instructions for building fully contained [Docker images][E56].
 
 ILLIXR provides its components in standalone configurations to enable architects and system designers to research each
 component in isolation. The standalone components are packaged together as of the v3.1.0 release of ILLIXR.
@@ -336,7 +335,7 @@ request!
 
 [E50]:   https://illixr.org/open_meetings
 
-[E51]:   https://github.com/ILLIXR/ILLIXR/releases/tag/v4.0.0
+[E51]:   https://github.com/ILLIXR/ILLIXR/releases/latest
 
 [E52]:   https://illixr.github.io/ILLIXR/docker/
 
@@ -345,6 +344,8 @@ request!
 [E54]:   https://www.youtube.com/@sadve-group
 
 [E55]:   https://illixr.github.io/ILLIXR/plugin_README/zed_capture/
+
+[E56]:   https://github.com/ILLIXR/ILLIXR/tree/master/docker
 
 [//]: # (- Plugins -)
 
@@ -424,9 +425,6 @@ request!
 
 [P68]:   https://github.com/ILLIXR/ILLIXR
 
-[P69]:   https://github.com/ILLIXR/ILLIXR/releases/tag/v4.0.0
-
-[P70]:   https://github.com/ILLIXR/ILLIXR/tree/master/docker
 
 [//]: # (- Third Party Packages -)
 
