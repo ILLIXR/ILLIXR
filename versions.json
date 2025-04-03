@@ -1,13 +1,13 @@
 [
   {
-    "version": "v4.0",
+    "version": "ILLIXR/v4.0",
     "title": "v4.0",
     "aliases": [
       "latest"
     ]
   },
   {
-    "version": "v3.2",
+    "version": "ILLIXR/v3.2",
     "title": "v3.2",
     "aliases": []
   }
