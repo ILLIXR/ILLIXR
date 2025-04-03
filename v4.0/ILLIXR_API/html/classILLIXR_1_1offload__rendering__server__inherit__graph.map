@@ -1,0 +1,7 @@
+<map id="ILLIXR::offload_rendering_server" name="ILLIXR::offload_rendering_server">
+<area shape="rect" id="Node000001" title="Main server implementation for offload rendering." alt="" coords="5,152,191,192"/>
+<area shape="rect" id="Node000002" href="$classILLIXR_1_1threadloop.html" title="A reusable threadloop for plugins." alt="" coords="28,79,168,104"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="101,118,101,152,95,152,95,118"/>
+<area shape="rect" id="Node000003" href="$classILLIXR_1_1plugin.html" title="A dynamically&#45;loadable plugin for Spindle." alt="" coords="43,5,153,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="101,44,101,79,95,79,95,44"/>
+</map>
