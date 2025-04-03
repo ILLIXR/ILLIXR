@@ -1,0 +1,1131 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://illixr.github.io/testing/latest/legacy/v1/README-efusion/">
+      
+      
+        <link rel="prev" href="../README-audio/">
+      
+      
+        <link rel="next" href="../README-hotlab/">
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.7">
+    
+    
+      
+        <title>ElasticFusion (Version 1) - ILLIXR Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.8608ea7d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#elasticfusion" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="ILLIXR Documentation" class="md-header__button md-logo" aria-label="ILLIXR Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ILLIXR Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              ElasticFusion (Version 1)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="ILLIXR Documentation" class="md-nav__button md-logo" aria-label="ILLIXR Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    ILLIXR Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../.." class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Latest Documentation
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_1" id="__nav_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            Latest Documentation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../getting_started/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Getting Started (Version 2)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../building_illixr/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Building ILLIXR (Version 2)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../debugging_illixr/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ILLIXR Debugging Tips (Version 2)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../virtualization/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ILLIXR under Virtualization (Version 2)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../illixr_plugins/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ILLIXR Plugins (Version 2)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../modifying_a_plugin/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Modifying a Plugin (Version 2)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../writing_your_plugin/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Writing your Plugin (Version 2)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../monado_illixr_runtime_overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Monado Overview (Version 2)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../monado_integration_dataflow/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Monado Dataflow (Version 2)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../logging_and_metrics/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Logging and Metrics (Version 2)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../glossary/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ILLIXR Glossary (Version 2)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../api/annotated/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ILLIXR API (Version 2)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../LICENSE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ILLIXR License (Version 2)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contributing Guidelines (Version 2)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Legacy Documentation
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Legacy Documentation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../README-audio/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Audio Pipeline (Version 1)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    ElasticFusion (Version 1)
+    
+  </span>
+  
+
+      </a>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../README-hotlab/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    HOTlab (Version 1)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../README-openvins/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    OpenVINS (Version 1)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../README-ritnet/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    RITnet (Version 1)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../README-visualpp/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Visual Post-processing (Version 1)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="elasticfusion">ElasticFusion</h1>
+<p>Real-time dense visual SLAM system capable of capturing comprehensive dense
+    globally consistent surfel-based maps of room scale environments explored using
+    an RGB-D camera.</p>
+<p><strong>Part of <a href="../">ILLIXR</a>, the Illinios Extended Reality Benchmark Suite.
+This version of ElasticFusion has been modified to enable fast odometry and disable the GUI.</strong>
+Please use the following command to replicate the results from the paper:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1">./ElasticFusion<span class="w"> </span>-l<span class="w"> </span>dyson_lab.klg<span class="w"> </span>-fo<span class="w"> </span>-nso<span class="w"> </span>-sc<span class="w"> </span>-q
+</span></code></pre></div>
+<p>The description of each flag is provided in "How Do I Use It?" below.</p>
+<h1 id="related-publications">Related Publications</h1>
+<p>Please cite this work if you make use of our system in any of your own endeavors:</p>
+<ul>
+<li><strong><a href="http://www.thomaswhelan.ie/Whelan16ijrr.pdf">ElasticFusion: Real-Time Dense SLAM and Light Source Estimation</a></strong>,
+        <em>T. Whelan, R. F. Salas-Moreno, B. Glocker, A. J. Davison and S. Leutenegger</em>, IJRR '16</li>
+<li><strong><a href="http://thomaswhelan.ie/Whelan15rss.pdf">ElasticFusion: Dense SLAM Without A Pose Graph</a></strong>,
+        <em>T. Whelan, S. Leutenegger, R. F. Salas-Moreno, B. Glocker and A. J. Davison</em>, RSS '15</li>
+</ul>
+<h1 id="1-what-do-i-need-to-build-it">1. What do I need to build it?</h1>
+<h2 id="11-ubuntu">1.1. Ubuntu</h2>
+<ul>
+<li>Ubuntu 14.04, 15.04 or 16.04 (Though many other linux distros will work fine)</li>
+<li>CMake</li>
+<li>OpenGL</li>
+<li><a href="https://developer.nvidia.com/cuda-downloads">CUDA &gt;= 7.0</a></li>
+<li><a href="https://github.com/occipital/OpenNI2">OpenNI2</a></li>
+<li>SuiteSparse</li>
+<li>Eigen</li>
+<li>zlib</li>
+<li>libjpeg</li>
+<li><a href="https://github.com/stevenlovegrove/Pangolin">Pangolin</a></li>
+<li><a href="https://github.com/IntelRealSense/librealsense">librealsense</a> - Optional (for Intel RealSense cameras)</li>
+</ul>
+<p>Firstly, add <a href="https://developer.nvidia.com/cuda-downloads">nVidia's official CUDA repository</a> to your apt sources,
+    then run the following command to pull in most dependencies from the official repos:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1">sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>cmake-qt-gui<span class="w"> </span>git<span class="w"> </span>build-essential<span class="w"> </span>libusb-1.0-0-dev<span class="w"> </span>libudev-dev<span class="w"> </span>openjdk-7-jdk<span class="w"> </span>freeglut3-dev<span class="w"> </span>libglew-dev<span class="w"> </span>cuda-7-5<span class="w"> </span>libsuitesparse-dev<span class="w"> </span>libeigen3-dev<span class="w"> </span>zlib1g-dev<span class="w"> </span>libjpeg-dev
+</span></code></pre></div>
+<p>Afterwards install <a href="https://github.com/occipital/OpenNI2">OpenNI2</a> and <a href="https://github.com/stevenlovegrove/Pangolin">Pangolin</a> from source.
+Note, you may need to manually tell CMake where OpenNI2 is since Occipital's fork does not
+    have an install option.
+It is important to build Pangolin last so that it can find some of the libraries it has
+    optional dependencies on. </p>
+<p>When you have all of the dependencies installed, build the Core followed by the GUI. </p>
+<h2 id="12-windows-visual-studio">1.2. Windows - Visual Studio</h2>
+<ul>
+<li>Windows 7/10 with Visual Studio 2013 Update 5 (Though other configurations may work)</li>
+<li><a href="https://cmake.org">CMake</a></li>
+<li>OpenGL</li>
+<li><a href="https://developer.nvidia.com/cuda-downloads">CUDA &gt;= 7.0</a></li>
+<li><a href="https://github.com/occipital/OpenNI2">OpenNI2</a></li>
+<li><a href="https://github.com/jlblancoc/suitesparse-metis-for-windows">SuiteSparse</a></li>
+<li><a href="http://eigen.tuxfamily.org">Eigen</a></li>
+<li><a href="https://github.com/IntelRealSense/librealsense">Pangolin</a><ul>
+<li>zlib (Pangolin can automatically download and build this)</li>
+<li>libjpeg (Pangolin can automatically download and build this)</li>
+</ul>
+</li>
+<li><a href="https://github.com/IntelRealSense/librealsense">librealsense</a> - Optional (for Intel RealSense cameras)</li>
+</ul>
+<p>Firstly install cmake and cuda.
+Then download and build from source OpenNI2, SuiteSparse.
+Next download Eigen (no need to build it since it is a header-only library).
+Then download and build from source Pangolin but pay attention to the following cmake settings. 
+There will be a lot of dependencies where path was not found.
+That is OK except OPENNI2 and EIGEN3 (those should be set to valid paths).
+You also need to set MSVC_USE_STATIC_CRT to false in order to correctly link
+    to ElasticFusion projects.
+Also, you can set BUILD_EXAMPLES to false since we don't need them and some were crashing
+    on my machine.</p>
+<p>Finally, build Core and GUI.</p>
+<h1 id="2-is-there-an-easier-way-to-build-it">2. Is there an easier way to build it?</h1>
+<p>Yes, if you run the <em>build.sh</em> script on a fresh clean install
+    of Ubuntu 14.04, 15.04, or 16.04, enter your password for sudo a few times and wait
+    a few minutes all dependencies will get downloaded and installed and
+    it should build everything correctly.
+This has not been tested on anything but fresh installs, so I would advise using it
+    with caution if you already have some of the dependencies installed.</p>
+<h1 id="3-installation-issues">3. Installation issues</h1>
+<p><strong><em><code>#include &lt;Eigen/Core&gt;</code> not found</em></strong></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1">sudo<span class="w"> </span>ln<span class="w"> </span>-sf<span class="w"> </span>/usr/include/eigen3/Eigen<span class="w"> </span>/usr/include/Eigen
+</span><span id="__span-2-2">sudo<span class="w"> </span>ln<span class="w"> </span>-sf<span class="w"> </span>/usr/include/eigen3/unsupported<span class="w"> </span>/usr/include/unsupported
+</span></code></pre></div>
+<p><strong><em>invalid use of incomplete type ‘const struct Eigen ...</em></strong></p>
+<p>Pangolin must be installed AFTER all the other libraries to make use of optional dependencies.</p>
+<p><strong><em>GLSL 3.30 is not supported.
+Supported versions are 1.10, 1.20, 1.30, 1.00 ES and 3.00 ES</em></strong></p>
+<p>Make sure you are running ElasticFusion on your nVidia GPU.
+In particular, if you have an Optimus GPU
+-   If you use Prime, follow instructions <a href="http://askubuntu.com/questions/661922/how-am-i-supposed-to-use-nvidia-prime">here</a>
+-   If you use Bumblebee, remember to run as <code>optirun ./ElasticFusion</code></p>
+<h1 id="4-how-do-i-use-it">4. How do I use it?</h1>
+<p>There are three subprojects in the repo:</p>
+<ul>
+<li>The <em>Core</em> is the main engine which builds into a shared library that you can link
+        into other projects and treat like an API. </li>
+<li>The <em>GUI</em> is the graphical interface used to run the system on either live sensor data
+        or a logged data file. </li>
+<li>The <em>GPUTest</em> is a small benchmarking program you can use to tune
+        the CUDA kernel launch parameters used in the main engine. </li>
+</ul>
+<p>The GUI (<em>ElasticFusion</em>) can take a bunch of parameters when launching it from the command line.
+They are as follows:</p>
+<ul>
+<li><em>-cal <calibration></em> : Loads a camera calibration file specified as <em>fx fy cx cy</em>.</li>
+<li><em>-l <logfile></em> : Processes the specified .klg log file.</li>
+<li><em>-p <poses></em> : Loads ground truth poses to use instead of estimated pose.</li>
+<li><em>-c <confidence></em> : Surfel confidence threshold (default <em>10</em>).</li>
+<li><em>-d <depth></em> : Cutoff distance for depth processing (default <em>3</em>m).</li>
+<li><em>-i <icp></em> : Relative ICP/RGB tracking weight (default <em>10</em>).</li>
+<li><em>-ie <error></em> : Local loop closure residual threshold (default <em>5e-05</em>).</li>
+<li><em>-ic <count></em> : Local loop closure inlier threshold (default <em>35000</em>).</li>
+<li><em>-cv <covariance></em> : Local loop closure covariance threshold (default <em>1e-05</em>).</li>
+<li><em>-pt <photometric></em> : Global loop closure photometric threshold (default <em>115</em>).</li>
+<li><em>-ft <threshold></em> : Fern encoding threshold (default <em>0.3095</em>).</li>
+<li><em>-t <time></em> : Time window length (default <em>200</em>).</li>
+<li><em>-s <skip></em> : Frames to skip at start of log.</li>
+<li><em>-e <end></em> : Cut off frame of log.</li>
+<li><em>-f</em> : Flip RGB/BGR.</li>
+<li><em>-icl</em> : Enable this if using the <a href="http://www.doc.ic.ac.uk/~ahanda/VaFRIC/iclnuim.html">ICL-NUIM</a> dataset
+        (flips normals to account for negative focal length on that data).</li>
+<li><em>-o</em> : Open loop mode.</li>
+<li><em>-rl</em> : Enable relocalisation.</li>
+<li><em>-fs</em> : Frame skip if processing a log to simulate real-time.</li>
+<li><em>-q</em> : Quit when finished a log.</li>
+<li><em>-fo</em> : Fast odometry (single level pyramid).</li>
+<li><em>-nso</em> : Disables SO(3) pre-alignment in tracking.</li>
+<li><em>-r</em> : Rewind and loop log forever. </li>
+<li><em>-ftf</em> : Do frame-to-frame RGB tracking. </li>
+<li><em>-sc</em> : Showcase mode (minimal GUI).</li>
+</ul>
+<p>Essentially by default <em>./ElasticFusion</em> will try run off an attached ASUS sensor live.
+You can provide a .klg log file instead with the -l parameter. 
+You can capture .klg format logs using either <a href="https://github.com/mp3guy/Logger1">Logger1</a> or <a href="https://github.com/mp3guy/Logger2">Logger2</a>.</p>
+<h1 id="5-how-do-i-just-use-the-core-api">5. How do I just use the Core API?</h1>
+<p>The libefusion.so shared library which gets built by the Core is what you want to link against.</p>
+<p>An example of this can be seen in the GUI code.
+Essentially all you need to do is utilise the provided Findefusion.cmake file in GUI/src
+    and include the following in your CMakeLists.txt file:</p>
+<div class="language-text highlight"><pre><span></span><code>find_package(efusion REQUIRED)
+include_directories(${EFUSION_INCLUDE_DIR})
+target_link_libraries(MyProject ${EFUSION_LIBRARY})
+</code></pre></div>
+<p>To then use the Core API, make sure to include the header file in your source file:
+<div class="language-cpp highlight"><pre><span></span><code><span id="__span-3-1"><span class="w">    </span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;ElasticFusion.h&gt;</span>
+</span></code></pre></div></p>
+<p>Initialise the static configuration parameters once somewhere at the start of your program
+    (this <a href="http://en.wikipedia.org/wiki/Code_smell">smells</a>, but whatever):
+<div class="language-cpp highlight"><pre><span></span><code><span id="__span-4-1"><span class="w">    </span><span class="n">Resolution</span><span class="o">::</span><span class="n">getInstance</span><span class="p">(</span><span class="mi">640</span><span class="p">,</span><span class="w"> </span><span class="mi">480</span><span class="p">);</span>
+</span><span id="__span-4-2"><span class="w">    </span><span class="n">Intrinsics</span><span class="o">::</span><span class="n">getInstance</span><span class="p">(</span><span class="mi">528</span><span class="p">,</span><span class="w"> </span><span class="mi">528</span><span class="p">,</span><span class="w"> </span><span class="mi">320</span><span class="p">,</span><span class="w"> </span><span class="mi">240</span><span class="p">);</span>
+</span></code></pre></div></p>
+<p>Create an OpenGL context before creating an ElasticFusion object,
+    as ElasticFusion uses OpenGL internally.
+You can do this whatever way you wish, using Pangolin is probably easiest given it's a dependency:
+<div class="language-cpp highlight"><pre><span></span><code><span id="__span-5-1"><span class="w">    </span><span class="n">pangolin</span><span class="o">::</span><span class="n">Params</span><span class="w"> </span><span class="n">windowParams</span><span class="p">;</span>
+</span><span id="__span-5-2"><span class="w">    </span><span class="n">windowParams</span><span class="p">.</span><span class="n">Set</span><span class="p">(</span><span class="s">&quot;SAMPLE_BUFFERS&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+</span><span id="__span-5-3"><span class="w">    </span><span class="n">windowParams</span><span class="p">.</span><span class="n">Set</span><span class="p">(</span><span class="s">&quot;SAMPLES&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+</span><span id="__span-5-4"><span class="w">    </span><span class="n">pangolin</span><span class="o">::</span><span class="n">CreateWindowAndBind</span><span class="p">(</span><span class="s">&quot;Main&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">1280</span><span class="p">,</span><span class="w"> </span><span class="mi">800</span><span class="p">,</span><span class="w"> </span><span class="n">windowParams</span><span class="p">);</span>
+</span></code></pre></div></p>
+<p>Make an ElasticFusion object and start using it:
+<div class="language-cpp highlight"><pre><span></span><code><span id="__span-6-1"><span class="w">    </span><span class="n">ElasticFusion</span><span class="w"> </span><span class="n">eFusion</span><span class="p">;</span>
+</span><span id="__span-6-2"><span class="w">    </span><span class="n">eFusion</span><span class="p">.</span><span class="n">processFrame</span><span class="p">(</span><span class="n">rgb</span><span class="p">,</span><span class="w"> </span><span class="n">depth</span><span class="p">,</span><span class="w"> </span><span class="n">timestamp</span><span class="p">,</span><span class="w"> </span><span class="n">currentPose</span><span class="p">,</span><span class="w"> </span><span class="n">weightMultiplier</span><span class="p">);</span>
+</span></code></pre></div></p>
+<p>See the source code of MainController.cpp in the GUI source to see more usage.</p>
+<h1 id="6-datasets">6. Datasets</h1>
+<p>We have provided a sample dataset which you can run easily with ElasticFusion
+    for download <a href="http://www.doc.ic.ac.uk/~sleutene/datasets/elasticfusion/dyson_lab.klg">here</a>.
+Launch it as follows:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1">./ElasticFusion<span class="w"> </span>-l<span class="w"> </span>dyson_lab.klg
+</span></code></pre></div>
+<h1 id="7-license">7. License</h1>
+<p>ElasticFusion is freely available for non-commercial use only.
+Full terms and conditions which govern its use are detailed <a href="http://www.imperial.ac.uk/dyson-robotics-lab/downloads/elastic-fusion/elastic-fusion-license">here</a> and in the LICENSE.txt file.</p>
+<h1 id="8-faq">8. FAQ</h1>
+<p><strong><em>What are the hardware requirements?</em></strong></p>
+<p>A <a href="https://en.wikipedia.org/wiki/List_of_Nvidia_graphics_processing_units#GeForce_900_Series">very fast nVidia GPU (3.5TFLOPS+)</a>, and a fast CPU (something like an i7).
+If you want to use a non-nVidia GPU you can rewrite the tracking code or substitute it
+    with something else, as the rest of the pipeline is actually written in
+    the OpenGL Shading Language. </p>
+<p><strong><em>How can I get performance statistics?</em></strong></p>
+<p>Download <a href="https://github.com/mp3guy/Stopwatch">Stopwatch</a> and run <em>StopwatchViewer</em> at the same time as ElasticFusion. </p>
+<p><strong><em>I ran a large dataset and got assert(graph.size() / 16 &lt; MAX_NODES) failed</em></strong></p>
+<p>Currently there's a limit on the number of nodes in the deformation graph down to lazy coding
+    (using a really wide texture instead of a proper 2D one).
+So we're bound by the maximum dimension of a texture, which is 16384 on modern cards/OpenGL.
+Either fix the code so this isn't a problem any more, or increase the modulo factor
+    in <em>Shaders/sample.geom</em>. </p>
+<p><strong><em>I have a nice new laptop with a good GPU but it's still slow</em></strong></p>
+<p>If your laptop is running on battery power the GPU will throttle down to save power,
+    so that's unlikely to work (as an aside, <a href="https://github.com/mp3guy/Kintinuous">Kintinuous</a> will run at 30Hz on
+    a modern laptop on battery power these days).
+You can try disabling SO(3) pre-alignment, enabling fast odometry,
+    only using either ICP or RGB tracking and not both, running in open loop mode
+    or disabling the tracking pyramid.
+All of these will cost you accuracy. </p>
+<p><strong><em>I saved a map, how can I view it?</em></strong></p>
+<p>Download <a href="http://meshlab.sourceforge.net">Meshlab</a>. Select Render-&gt;Shaders-&gt;Splatting. </p>
+<p><strong><em>The map keeps getting corrupted - tracking is failing - loop closures
+    are incorrect/not working</em></strong></p>
+<p>Firstly, if you're running live and not processing a log file, ensure you're hitting 30Hz,
+    this is important.
+Secondly, you cannot move the sensor extremely fast because this violates
+    the assumption behind projective data association.
+In addition to this, you're probably using a primesense, which means you're suffering
+    from motion blur, unsynchronised cameras and rolling shutter.
+All of these are aggravated by fast motion and hinder tracking performance. </p>
+<p>If you're not getting loop closures and expecting some, pay attention to
+    the inlier and residual graphs in the bottom right, these are an indicator of how closae
+    you are to a local loop closure.
+For global loop closures, you're depending on <a href="http://www.doc.ic.ac.uk/~bglocker/pdfs/glocker2015tvcg.pdf">fern keyframe encoding</a> to save you,
+    which like all appearance-based place recognition methods, has its limitations. </p>
+<p><strong><em>Is there a ROS bridge/node?</em></strong></p>
+<p>No.
+The system relies on an extremely fast and tight coupling between the mapping and tracking
+    on the GPU, which I don't believe ROS supports natively in terms of message passing. </p>
+<p><strong><em>This doesn't seem to work like it did in the videos/papers</em></strong></p>
+<p>A substantial amount of refactoring was carried out in order to open source this system,
+    including rewriting a lot of functionality to avoid certain licenses and reduce dependencies.
+Although great care was taken during this process, it is possible that
+    performance regressions were introduced and have not yet been discovered.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["search.suggest", "content.code.annotate", "content.footnote.tooltips", "navigation.indexes", "toc.integrate"], "search": "../../../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": "latest", "provider": "mike"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.c8b220af.min.js"></script>
+      
+    
+  </body>
+</html>
