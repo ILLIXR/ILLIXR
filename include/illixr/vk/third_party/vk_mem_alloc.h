@@ -2763,11 +2763,11 @@ static void vma_aligned_free(void* VMA_NULLABLE ptr) {
         #endif
 
         #ifndef VMA_MIN
-            #define VMA_MIN(v1, v2) ((std::min)((v1), (v2)))
+            #define VMA_MIN(v1, v2) ((std::min) ((v1), (v2)))
         #endif
 
         #ifndef VMA_MAX
-            #define VMA_MAX(v1, v2) ((std::max)((v1), (v2)))
+            #define VMA_MAX(v1, v2) ((std::max) ((v1), (v2)))
         #endif
 
         #ifndef VMA_SWAP
