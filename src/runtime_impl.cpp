@@ -60,9 +60,6 @@ public:
             RAC_ERRNO_MSG("runtime_impl before creating the dynamic library");
             return dynamic_lib::create(so_path);
         });
-        for (auto& i : libraries_) {
-            enable_monado_ = enable_monado_ || i.get<n_monado_t>("needs_monado")();
-        }
         RAC_ERRNO_MSG("runtime_impl after creating the dynamic libraries");
 
         std::vector<plugin_factory> plugin_factories;

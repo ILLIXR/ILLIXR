@@ -12,18 +12,6 @@
 #include <typeinfo>
 #include <utility>
 
-#ifndef DOUBLE_INCLUDE
-extern "C" {
-bool needs_monado() {
-    #ifdef MONADO_REQUIRED
-    return true;
-    #else
-    return false;
-    #endif
-}
-}
-#endif
-
 namespace ILLIXR {
 
 using plugin_id_t = std::size_t;
