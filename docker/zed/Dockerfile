@@ -16,7 +16,7 @@ ARG ZED_SDK_PATCH=3
 USER root
 RUN apt-get update
 RUN apt-get install -y libzstd-dev
-RUN apt-get install -y zstd
+RUN apt-get install -y zstd libopenblas-dev libopenblas-pthread-dev
 
 RUN groupadd -U illixr zed
 USER illixr
