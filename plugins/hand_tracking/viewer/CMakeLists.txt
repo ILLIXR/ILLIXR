@@ -14,7 +14,7 @@ if(BUILD_OPENCV)
 endif()
 #target_compile_definitions(${PLUGIN_NAME} PUBLIC -DVIEW_DUMP)
 target_include_directories(${PLUGIN_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/include ${OpenCV_INCLUDE_DIRS} ${Eigen3_INCLUDE_DIRS})
-target_link_libraries(${PLUGIN_NAME} PUBLIC ${OpenCV_LIBRARIES} ${Eigen3_LIBRARIES} dl Threads::Threads)
+target_link_libraries(${PLUGIN_NAME} PUBLIC ${OpenCV_LIBRARIES} ${Eigen3_LIBRARIES} dl Threads::Threads ${GLEW_LIBRARIES})
 target_compile_features(${PLUGIN_NAME} PRIVATE cxx_std_17)
 
 install(TARGETS ${PLUGIN_NAME} DESTINATION lib)

@@ -81,7 +81,6 @@
       "cmake_flag": "USE_NATIVE_RENDERER=ON",
       "dependencies": [
         "ccache",
-        "Vulkan",
         "glfw3",
         "glm",
         "OpenXR",
@@ -115,16 +114,6 @@
       "dependencies": []
     },
     {
-      "name": "offload_rendering_client_jetson",
-      "cmake_flag": "USE_OFFLOAD_RENDERING_CLIENT=ON",
-      "dependencies": [
-        "libdrm",
-        "EGL",
-        "GLESv2",
-        "Vulkan"
-      ]
-    },
-    {
       "name": "offload_rendering_client",
       "cmake_flag": "USE_OFFLOAD_RENDERING_CLIENT=ON",
       "dependencies": [
@@ -144,7 +133,6 @@
         "libgsm",
         "libiec61883",
         "libmodplug",
-        "libmp3lame",
         "libopenjpeg",
         "libopenmpt",
         "libopus",
@@ -194,7 +182,6 @@
         "libgsm",
         "libiec61883",
         "libmodplug",
-        "libmp3lame",
         "libopenjpeg",
         "libopenmpt",
         "libopus",
@@ -236,6 +223,7 @@
       "name": "offload_vio.device_tx",
       "cmake_flag": "USE_OFFLOAD_VIO.DEVICE_TX=ON",
       "dependencies": [
+        "deepstream",
         "glib",
         "gstreamer",
         "ecal",
@@ -254,6 +242,7 @@
       "name": "offload_vio.server_rx",
       "cmake_flag": "USE_OFFLOAD_VIO.SERVER_RX=ON",
       "dependencies": [
+        "deepstream",
         "glib",
         "gstreamer",
         "ecal",
@@ -274,11 +263,9 @@
     },
     {
       "name": "openwarp_vk",
-      "cmake_flag": "OSE_OPENWARP_VK=ON",
+      "cmake_flag": "USE_OPENWARP_VK=ON",
       "dependencies": [
-        "vulkan",
-        "glm",
-        "glslang"
+        "glm"
       ]
     },
     {
@@ -335,7 +322,6 @@
       "cmake_flag": "USE_TIMEWARP_GL=ON",
       "dependencies": [
         "ccache",
-        "glslang",
         "gflags",
         "JPEG",
         "PNG",
@@ -347,7 +333,6 @@
         "xcb-randr",
         "xkbcommon",
         "OpenXR",
-        "Vulkan",
         "libusb",
         "libuvc",
         "SDL2"
@@ -358,7 +343,6 @@
       "cmake_flag": "USE_TIMEWARP_VK=ON",
       "dependencies": [
         "ccache",
-        "Vulkan",
         "glfw3",
         "glm",
         "OpenXR",
@@ -381,7 +365,6 @@
       "cmake_flag": "USE_VKDEMO=ON",
       "dependencies": [
         "ccache",
-        "Vulkan",
         "glfw3",
         "glm",
         "OpenXR",
@@ -459,6 +442,22 @@
             "pkg": "cuda-cudart-devel",
             "postnotes": "",
             "notes": "The cuda-rt package is version named, you will need to determine which is available for your system."
+          }
+        }
+      }
+    },
+    {
+      "deepstream": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "",
+            "postnotes": "",
+            "notes": "DeepStream is not available from a repo. Please see <a href=\"https://docs.nvidia.com/metropolis/deepstream/dev-guide/text/DS_Installation.html#dgpu-setup-for-ubuntu\">here</a> for details."
+          },
+          "Fedora": {
+            "pkg": "",
+            "postnotes": "",
+            "notes": "DeepStream, needed by the offload_vio plugins is not available for Fedora."
           }
         }
       }
@@ -608,38 +607,6 @@
       }
     },
     {
-      "glog": {
-        "pkg": {
-          "Ubuntu": {
-            "pkg": "libgoogle-glog-dev",
-            "postnotes": "",
-            "notes": ""
-          },
-          "Fedora": {
-            "pkg": "glog-devel",
-            "postnotes": "",
-            "notes": ""
-          }
-        }
-      }
-    },
-    {
-      "glslang": {
-        "pkg": {
-          "Ubuntu": {
-            "pkg": "glslang-dev glslang-tools",
-            "postnotes": "",
-            "notes": ""
-          },
-          "Fedora": {
-            "pkg": "glslang-devel",
-            "postnotes": "",
-            "notes": ""
-          }
-        }
-      }
-    },
-    {
       "gnutls": {
         "pkg": {
           "Ubuntu": {
@@ -715,22 +682,6 @@
             "pkg": "libaom-dev",
             "postnotes": "",
             "notes": ""
-          }
-        }
-      }
-    },
-    {
-      "libuvc": {
-        "pkg": {
-          "Ubuntu": {
-            "pkg": "libuvc-dev",
-            "postnotes": "",
-            "notes": ""
-          },
-          "Fedora": {
-            "pkg": "",
-            "postnotes": "",
-            "notes": "Fedora does not supply libuvc from its repositories. You will need to install it from <a href=\"https://github.com/libuvc/libuvc\">https://github.com/libuvc/libuvc</a>."
           }
         }
       }
@@ -915,12 +866,12 @@
       "libmodplug": {
         "pkg": {
           "Ubuntu": {
-            "pkg": "ibmodplug-dev",
+            "pkg": "libmodplug-dev",
             "postnotes": "",
             "notes": ""
           },
           "Fedora": {
-            "pkg": "ibmodplug-dev",
+            "pkg": "libmodplug-dev",
             "postnotes": "",
             "notes": ""
           }
@@ -1104,22 +1055,6 @@
       }
     },
     {
-      "libsrt": {
-        "pkg": {
-          "Ubuntu": {
-            "pkg": "libsrt-openssl-dev",
-            "postnotes": "",
-            "notes": ""
-          },
-          "Fedora": {
-            "pkg": "libsrt-openssl-dev",
-            "postnotes": "",
-            "notes": ""
-          }
-        }
-      }
-    },
-    {
       "libssh": {
         "pkg": {
           "Ubuntu": {
@@ -1128,23 +1063,7 @@
             "notes": ""
           },
           "Fedora": {
-            "pkg": "libssh-dev",
-            "postnotes": "",
-            "notes": ""
-          }
-        }
-      }
-    },
-    {
-      "libsvtav1": {
-        "pkg": {
-          "Ubuntu": {
-            "pkg": "libsvtav1enc-dev",
-            "postnotes": "",
-            "notes": ""
-          },
-          "Fedora": {
-            "pkg": "libsvtav1enc-dev",
+            "pkg": "libssh-devel",
             "postnotes": "",
             "notes": ""
           }
@@ -1408,22 +1327,6 @@
       }
     },
     {
-      "patch": {
-        "pkg": {
-          "Ubuntu": {
-            "pkg": "patch",
-            "postnotes": "",
-            "notes": ""
-          },
-          "Fedora": {
-            "pkg": "patch",
-            "postnotes": "",
-            "notes": ""
-          }
-        }
-      }
-    },
-    {
       "PNG": {
         "pkg": {
           "Ubuntu": {
@@ -1568,22 +1471,6 @@
       }
     },
     {
-      "Vulkan": {
-        "pkg": {
-          "Ubuntu": {
-            "pkg": "libvulkan-dev vulkan-validationlayers",
-            "postnotes": "",
-            "notes": ""
-          },
-          "Fedora": {
-            "pkg": "vulkan-loader-devel vulkan-validation-layers",
-            "postnotes": "",
-            "notes": ""
-          }
-        }
-      }
-    },
-    {
       "wayland-server": {
         "pkg": {
           "Ubuntu": {
@@ -1641,6 +1528,22 @@
           },
           "Fedora": {
             "pkg": "libxcb-devel",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "xcb-shm": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "libxcb-shm0-dev",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "",
             "postnotes": "",
             "notes": ""
           }

@@ -6,8 +6,6 @@ set(CMAKE_PREFIX_PATH ${CMAKE_INSTALL_PREFIX}/lib/cmake;${CMAKE_INSTALL_PREFIX}/
 
 set(ENV{PKG_CONFIG_PATH} "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig:${CMAKE_INSTALL_PREFIX}/share/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig")
 
-get_external(Vulkan)
-
 pkg_check_modules(libavcodec_illixr libavcodec_illixr)
 pkg_check_modules(libavdevice_illixr libavdevice_illixr)
 pkg_check_modules(libavformat_illixr libavformat_illixr)
@@ -47,7 +45,7 @@ if(NOT (libavcodec_illixr_FOUND AND libavdevice_illixr_FOUND AND
     message("FFMPEG NOT FOUND, will build from source")
     EXTERNALPROJECT_ADD(ILLIXR_FFmpeg_ext
                         GIT_REPOSITORY https://github.com/ILLIXR/FFmpeg.git
-                        GIT_TAG 10c2519b7fcd5bddd4bc7275331cda10ef0ad120
+                        GIT_TAG 654802ac3c22b50ecac4c4f6ef8e1847f54e6364
                         PREFIX ${CMAKE_BINARY_DIR}/_deps/ffmpeg
                         DEPENDS ${Vulkan_DEP_STR}
                         CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=Release

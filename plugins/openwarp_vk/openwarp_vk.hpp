@@ -114,7 +114,7 @@ public:
     void initialize();
     void setup(VkRenderPass render_pass, uint32_t subpass,
                std::shared_ptr<vulkan::buffer_pool<data_format::fast_pose_type>> buffer_pool_,
-               bool                                                              input_texture_vulkan_coordinates_) override;
+               bool                                                              input_texture_external_) override;
     void partial_destroy();
     void update_uniforms(const data_format::pose_type& render_pose) override;
     void record_command_buffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left) override;
@@ -146,8 +146,8 @@ private:
     std::shared_ptr<vulkan::display_provider> display_provider_ = nullptr;
     std::mutex                                setup_mutex_;
 
-    bool initialized_                      = false;
-    bool input_texture_vulkan_coordinates_ = true;
+    bool initialized_            = false;
+    bool input_texture_external_ = false;
 
     bool using_godot_         = false;
     bool offloaded_rendering_ = false;

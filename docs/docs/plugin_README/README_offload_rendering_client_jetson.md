@@ -1,1 +1,0 @@
-../../../plugins/offload_rendering_client_jetson/README.md

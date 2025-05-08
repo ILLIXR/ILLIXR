@@ -2,12 +2,17 @@ cmake_minimum_required(VERSION 3.22)
 
 project(timewarp_vk)
 
-
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-get_external_for_plugin(Vulkan)
 find_package(glm REQUIRED)
+
+if(NOT PLUGIN_NAME)
+    set(PLUGIN_NAME "plugin.timewarp_vk${ILLIXR_BUILD_SUFFIX}")
+    set(PLUGIN_SOURCE "plugin.cpp")
+    set(TW_PREFIX "")
+    set(TW_POSTFIX "")
+endif()
 
 file(GLOB_RECURSE GLSL_SOURCE_FILES
      "${TW_PREFIX}shaders/*.frag"
@@ -17,6 +22,8 @@ set(TIMEWARP_VK_DEP_STR "")
 if(Vulkan_EXTERNAL)
     set(TIMEWARP_VK_DEP_STR ${Vulkan_DEP_STR})
 endif()
+
+set(PROJECT_BINARY_DIR "${PROJECT_BINARY_DIR}${TW_POSTFIX}")
 
 foreach(GLSL ${GLSL_SOURCE_FILES})
     get_filename_component(FILE_NAME ${GLSL} NAME)
@@ -39,11 +46,6 @@ if(NOT TARGET Timewarp_VK_Shaders)
             Timewarp_VK_Shaders
             DEPENDS ${SPIRV_BINARY_FILES}
     )
-endif()
-if(NOT PLUGIN_NAME)
-    set(PLUGIN_NAME "plugin.timewarp_vk${ILLIXR_BUILD_SUFFIX}")
-    set(PLUGIN_SOURCE "plugin.cpp")
-    set(TW_PREFIX "")
 endif()
 
 add_library(${PLUGIN_NAME} SHARED

@@ -6,27 +6,32 @@ tcp_network_backend::tcp_network_backend(const std::string& name_, phonebook* pb
     : plugin(name_, pb_)
     , switchboard_{pb_->lookup_impl<switchboard>()} {
     // read environment variables
-    if (switchboard_->get_env_char("ILLIXR_TCP_HOST_IP")) {
-        self_ip_ = switchboard_->get_env_char("ILLIXR_TCP_HOST_IP");
-        spdlog::get("illixr")->info("[tcp_network_backend] Using TCP host IP {}", self_ip_);
+    if (switchboard_->get_env_char("ILLIXR_TCP_SERVER_IP")) {
+        server_ip_ = switchboard_->get_env_char("ILLIXR_TCP_SERVER_IP");
+        spdlog::get("illixr")->info("[tcp_network_backend] Using TCP server IP {}", server_ip_);
     }
 
-    if (switchboard_->get_env_char("ILLIXR_TCP_HOST_PORT")) {
-        self_port_ = std::stoi(switchboard_->get_env_char("ILLIXR_TCP_HOST_PORT"));
-        spdlog::get("illixr")->info("[tcp_network_backend] Using TCP host port {}", self_port_);
+    if (switchboard_->get_env_char("ILLIXR_TCP_SERVER_PORT")) {
+        server_port_ = std::stoi(switchboard_->get_env_char("ILLIXR_TCP_SERVER_PORT"));
+        spdlog::get("illixr")->info("[tcp_network_backend] Using TCP server port {}", server_port_);
     }
 
-    if (switchboard_->get_env_char("ILLIXR_TCP_PEER_IP")) {
-        peer_ip_ = switchboard_->get_env_char("ILLIXR_TCP_PEER_IP");
-        spdlog::get("illixr")->info("[tcp_network_backend] Using TCP peer IP {}", peer_ip_);
+    if (switchboard_->get_env_char("ILLIXR_TCP_CLIENT_IP")) {
+        client_ip_ = switchboard_->get_env_char("ILLIXR_TCP_CLIENT_IP");
+        spdlog::get("illixr")->info("[tcp_network_backend] Using TCP client IP {}", client_ip_);
     }
 
-    if (switchboard_->get_env_char("ILLIXR_TCP_PEER_PORT")) {
-        peer_port_ = std::stoi(switchboard_->get_env_char("ILLIXR_TCP_PEER_PORT"));
-        spdlog::get("illixr")->info("[tcp_network_backend] Using TCP peer port {}", peer_port_);
+    if (switchboard_->get_env_char("ILLIXR_TCP_CLIENT_PORT")) {
+        client_port_ = std::stoi(switchboard_->get_env_char("ILLIXR_TCP_CLIENT_PORT"));
+        spdlog::get("illixr")->info("[tcp_network_backend] Using TCP client port {}", client_port_);
     }
 
-    if (peer_port_ != 0) {
+    if (switchboard_->get_env_char("ILLIXR_IS_CLIENT")) {
+        is_client_ = std::stoi(switchboard_->get_env_char("ILLIXR_IS_CLIENT"));
+        spdlog::get("illixr")->info("[tcp_network_backend] Is client", is_client_);
+    }
+
+    if (is_client_) {
         client = true;
         std::thread([this]() {
             start_client();
@@ -36,9 +41,7 @@ tcp_network_backend::tcp_network_backend(const std::string& name_, phonebook* pb
         while (!ready_) {
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
-    }
-
-    if (self_port_ != 0) {
+    } else {
         client = false;
         std::thread([this]() {
             start_server();
@@ -52,12 +55,15 @@ tcp_network_backend::tcp_network_backend(const std::string& name_, phonebook* pb
 
 void tcp_network_backend::start_client() {
     auto* socket = new network::TCPSocket();
+    if (switchboard_->get_env_char("ILLIXR_TCP_CLIENT_IP") && switchboard_->get_env_char("ILLIXR_TCP_CLIENT_PORT")) {
+        socket->socket_bind(client_ip_, client_port_);
+    }
     socket->socket_set_reuseaddr();
     socket->enable_no_delay();
     peer_socket_ = socket;
 
-    std::cout << "Connecting to " + peer_ip_ + " at port " + std::to_string(peer_port_) << std::endl;
-    socket->socket_connect(peer_ip_, peer_port_);
+    std::cout << "Connecting to " + server_ip_ + " at port " + std::to_string(server_port_) << std::endl;
+    socket->socket_connect(server_ip_, server_port_);
     std::cout << "Connected to server" << std::endl;
 
     ready_ = true;
@@ -67,12 +73,12 @@ void tcp_network_backend::start_client() {
 void tcp_network_backend::start_server() {
     network::TCPSocket server_socket;
     server_socket.socket_set_reuseaddr();
-    server_socket.socket_bind(self_ip_, self_port_);
+    server_socket.socket_bind(server_ip_, server_port_);
     server_socket.enable_no_delay();
     server_socket.socket_listen();
 
     auto* client_socket = new network::TCPSocket(server_socket.socket_accept());
-    std::cout << "Accepted connection from peer: " << client_socket->peer_address() << std::endl;
+    std::cout << "Accepted connection from client: " << client_socket->peer_address() << std::endl;
     peer_socket_ = client_socket;
     ready_       = true;
     read_loop(client_socket);

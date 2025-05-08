@@ -18,8 +18,7 @@ offload_rendering_client::offload_rendering_client(const std::string& name, phon
     display_provider_ffmpeg = display_provider_;
 
     // Configure depth frame handling
-    use_depth_ = switchboard_->get_env_char("ILLIXR_USE_DEPTH_IMAGES") != nullptr &&
-        std::stoi(switchboard_->get_env_char("ILLIXR_USE_DEPTH_IMAGES"));
+    use_depth_ = switchboard_->get_env_bool("ILLIXR_USE_DEPTH_IMAGES");
     log_->debug(use_depth_ ? "Encoding depth images for the client" : "Not encoding depth images for the client");
 }
 
@@ -492,6 +491,7 @@ void offload_rendering_client::push_pose() {
     auto now = time_point{std::chrono::duration<long, std::nano>{std::chrono::high_resolution_clock::now().time_since_epoch()}};
     current_pose.predict_target_time   = now;
     current_pose.predict_computed_time = now;
+    std::cout << "Pushing new pose" << std::endl;
     pose_writer_.put(std::make_shared<fast_pose_type>(current_pose));
 }
 

@@ -52,11 +52,8 @@ int main(int argc, const char* argv[]) {
         "data", "The data", cxxopts::value<std::string>())("demo_data", "The demo data", cxxopts::value<std::string>())(
         "enable_offload", "")("enable_alignment", "")("enable_verbose_errors", "")("enable_pre_sleep", "")(
         "h,help", "Produce help message")("realsense_cam", "", cxxopts::value<std::string>()->default_value("auto"))(
-        "p,plugins", "The plugins to use", cxxopts::value<std::vector<std::string>>())("y,yaml", "Yaml config file",
-                                                                                       cxxopts::value<std::string>())(
-        "r,run",
-        "The plugins to run, supersedes plugins entry. This is only necessary if a plugin builds more than one library (e.g. "
-        "offload_vio builds 4 libraries) as each must be loaded individually.")("openxr", "");
+        "p,plugins", "The plugins to use",
+        cxxopts::value<std::vector<std::string>>())("y,yaml", "Yaml config file", cxxopts::value<std::string>())("openxr", "");
     auto result = options.parse(argc, argv);
     if (result.count("help")) {
         std::cout << options.help() << std::endl;

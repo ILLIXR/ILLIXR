@@ -1,7 +1,0 @@
-# This file was auto generated, take caution if manually editing.
-plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,ground_truth_slam,gldemo,timewarp_gl,debugview,offload_data,orb_slam3
-env_vars:
-  enable_offload: false
-  enable_alignment: false
-  enable_verbose_errors: false
-  enable_pre_sleep: false

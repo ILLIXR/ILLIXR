@@ -1,7 +1,7 @@
 # This file was auto generated, take caution if manually editing.
 plugins: tcp_network_backend,offload_rendering_server
 env_vars:
-  enable_offload: false
-  enable_alignment: false
-  enable_verbose_errors: false
-  enable_pre_sleep: false
+  ENABLE_OFFLOAD: false
+  ENABLE_ALIGNMENT: false
+  ENABLE_VERBOSE_ERRORS: false
+  ENABLE_PRE_SLEEP: false

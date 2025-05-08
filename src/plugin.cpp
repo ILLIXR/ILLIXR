@@ -277,7 +277,7 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
 
         bool have_plugins = false;
         // run entry supersedes plugins entry
-        for (auto item : {"plugins", "run"}) {
+        for (auto item : {"plugins"}) {
             if (options.count(item)) {
                 plugins      = options[item].as<std::vector<std::string>>();
                 have_plugins = true;
@@ -331,7 +331,8 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
         th.join();
 
         delete runtime_;
-    } catch (...) {
+    } catch (const std::exception& ex) {
+        std::cout << "ERROR: Exception caught in main: " << ex.what() << std::endl;
         delete runtime_;
     }
     return 0;

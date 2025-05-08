@@ -31,19 +31,16 @@ void lighthouse::stop() {
 void lighthouse::process_slow_pose(SurviveObject* so, survive_long_timecode timecode, const SurvivePose* pose) {
     survive_default_pose_process(so, timecode, pose);
 
-    auto quat = Eigen::Quaterniond{pose->Rot[0], pose->Rot[1], pose->Rot[2], pose->Rot[3]}.cast<float>();
+    auto quat = Eigen::Quaternionf{pose->Rot[0], pose->Rot[1], pose->Rot[2], pose->Rot[3]};
 
-    // // convert to euler angles
-    // auto euler = quat.toRotationMatrix().eulerAngles(0, 1, 2);
-    //
-    // // print in degrees
-    // lighthouse_instance->log->info("slow pose: {}, {}, {}", euler[0] * 180 / M_PI, euler[1] * 180 / M_PI,
-    //                                euler[2] * 180 / M_PI);
+    // The libsurvive coordinate system must be adjusted.
+    auto adjustment = Eigen::Quaternionf{-sqrt(2.0) / 2.0, sqrt(2.0) / 2.0, 0.0, 0.0};
+    auto new_quat   = adjustment * quat;
+    new_quat.normalize();
 
-    // rotate 90 degrees around x
-    quat = Eigen::AngleAxisf{-M_PI / 2, Eigen::Vector3f::UnitX()} * quat;
     lighthouse_instance->slow_pose_.put(lighthouse_instance->slow_pose_.allocate(
-        lighthouse_instance->clock_->now(), Eigen::Vector3d{pose->Pos[0], pose->Pos[2], -pose->Pos[1]}.cast<float>(), quat));
+        lighthouse_instance->clock_->now(), Eigen::Vector3d{pose->Pos[0], pose->Pos[2], -pose->Pos[1]}.cast<float>(),
+        new_quat));
 
     lighthouse_instance->slow_pose_count_++;
 }

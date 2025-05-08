@@ -7,10 +7,10 @@
 
 namespace ILLIXR {
 /// Create a "pose_prediction" type service
-class faux_pose_impl : public data_format::pose_prediction {
+class fauxpose_impl : public data_format::pose_prediction {
 public:
-    explicit faux_pose_impl(const phonebook* pb);
-    ~faux_pose_impl() override;
+    explicit fauxpose_impl(const phonebook* pb);
+    ~fauxpose_impl() override;
 
     data_format::pose_type get_true_pose() const override {
         throw std::logic_error{"Not Implemented"};
@@ -51,11 +51,11 @@ private:
     Eigen::Vector3f center_location_; /* The location around which the tracking should orbit */
 };
 
-class faux_pose : public plugin {
+class fauxpose : public plugin {
 public:
     // ********************************************************************
     /* Constructor: Provide handles to faux_pose */
-    [[maybe_unused]] faux_pose(const std::string& name, phonebook* pb);
-    ~faux_pose() override;
+    [[maybe_unused]] fauxpose(const std::string& name, phonebook* pb);
+    ~fauxpose() override;
 };
 } // namespace ILLIXR

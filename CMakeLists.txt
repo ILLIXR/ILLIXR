@@ -27,9 +27,9 @@ endif()
 set(BUILDING_ILLIXR Yes)
 
 set(PACKAGE_NAME "ILLIXR")
-set(PACKAGE_STRING "ILLIXR 3.2.0")
-set(PACKAGE_VERSION_MAJOR "3")
-set(PACKAGE_VERSION_MINOR "2")
+set(PACKAGE_STRING "ILLIXR 4.0.0")
+set(PACKAGE_VERSION_MAJOR "4")
+set(PACKAGE_VERSION_MINOR "0")
 set(PACKAGE_VERSION_PATCH "0")
 set(PACKAGE_VERSION_LABEL "")
 
@@ -71,11 +71,15 @@ set(CMAKE_CXX_FLAGS_DEBUG "-ggdb -Wall -Wextra -rdynamic -Wno-attributes -Wno-un
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG -Wall -Wextra -Wno-attributes -Wno-unknown-pragmas -fPIC")
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-ggdb -O3 -Wall -Wextra -Wno-attributes -Wno-unknown-pragmas -fPIC")
 
+# check for the Jetson platform
+if (CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64" AND EXISTS "/etc/nv_tegra_release")
+    set(ON_JETSON_PLATFORM YES)
+else()
+    set(ON_JETSON_PLATFORM NO)
+endif()
+
 # needed to generate runtime scripts
-set(MONADO_RUNTIME_VK "")
-set(MONADO_RUNTIME_GL "")
 set(OPENXR_RUNTIME "")
-set(OPENXR_PLUGINS "")
 
 # set the CMake search path to include the local files
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH})
@@ -86,9 +90,17 @@ cmake_dependent_option(BUILD_OXR_TEST "Build the  test for the OpenXr interface 
 option(BUILD_ZED_CAPTURE "Build the ZED capture program" OFF)
 set(DATA_FILE "http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip")
 
+# docs variables
 option(BUILD_DOCS "Build documentation" OFF)
+option(BUILD_DOCS_FOR_RELEASE "Build the documentation in preparation for an official release" OFF)
+option(MKDOCS_LOCATION "The path of the mkdocs executable" "")
+option(PIP_LOCATION "The path of the pip script" "")
+mark_as_advanced(FORCE MKDOCS_LOCATION PIP_LOCATION BUILD_DOCS_FOR_RELEASE)
+
+option(USE_MONADO "Build for monado use" OFF)
 option(NO_GPL "Do not build any code licensed under GPL. This will affect any generated profile files as well." OFF)
 option(NO_LGPL "Do not build any code licensed under LGPL or GPL. This will affect any generated profile files as well." OFF)
+option(NO_ZED "Do not build and ZED related code" OFF)
 
 set(LAST_NO_GPL "$CACHE{NO_GPL_CACHE}")
 set(LAST_NO_LGPL "$CACHE{NO_LGPL_CACHE}")
@@ -196,6 +208,8 @@ pkg_check_modules(gl REQUIRED gl)
 
 find_package(Eigen3 REQUIRED)
 
+get_external(Vulkan)
+
 #############
 # plugin specific dependencies that are used by several plugins
 #############
@@ -266,8 +280,11 @@ foreach(ITEM IN LISTS PLUGIN_LIST)
     if(${ITEM_UPPER})
         add_subdirectory(${CURRENT_PLUGIN_SRC})
         if (${ITEM_UPPER})  # this can change when adding the target
-            list(APPEND OPENXR_PLUGINS ${ITEM_LOWER})
-            message("Adding ${ITEM_LOWER}")
+            list(FIND PLUGIN_UNORDERED ${ITEM_LOWER} ITEM_FOUND)
+            if(${ITEM_FOUND} GREATER_EQUAL 0)
+                list(APPEND PLUGIN_UNORDERED ${ITEM_LOWER})
+            endif()
+            message("Adding plugins/${ITEM_LOWER}")
         endif()
     endif()
     unset(ITEM_LOWER)
@@ -284,8 +301,6 @@ endforeach()
 set(FULL_PLUGIN_LIST_STRING "${FULL_PLUGIN_LIST_STRING}\n")
 set(CURRENT_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}" CACHE INTERNAL "")
 
-# set up documentaiton build
-add_subdirectory(docs)
 
 # deal with the data file if there is one
 if(DATA_FILE)
@@ -309,8 +324,6 @@ endif()
 if(BUILD_ZED_CAPTURE)
     add_subdirectory(plugins/zed/capture)
 endif()
-# give a summary of what will be done
-include(cmake/ConfigurationSummary.cmake)
 
 # set up to install profile files
 if(ILLIXR_PROFILE_NAMES)
@@ -325,9 +338,10 @@ endif()
 if(BUILD_DEP_MAP)
     find_package(Python3 COMPONENTS Interpreter)
     if(Python3_FOUND)
+        set(DEP_MAP_PRODUCTS "${CMAKE_SOURCE_DIR}/plugins/plugin_deps.yaml ${CMAKE_SOURCE_DIR}/docs/dataflow.dot")
         message(STATUS "Rebuilding dep_map")
         add_custom_target(depmaker ALL
-                          BYPRODUCTS "${CMAKE_SOURCE_DIR}/plugins/plugin_deps.yaml"
+                          BYPRODUCTS "${DEP_MAP_PRODUCTS}"
                           COMMAND ${CMAKE_SOURCE_DIR}/dep_mapper.py ${CMAKE_BINARY_DIR}
                           WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         )
@@ -338,10 +352,20 @@ if(BUILD_DEP_MAP)
             add_dependencies(depmaker "OpenVINS")
         endif()
         if(USE_HAND_TRACKING)
-            #set(dependencies "${dependencies} ${HT_TARGET_NAME}")
+            set(dependencies "${dependencies} ${HT_TARGET_NAME}")
+        endif()
+        if(USE_ORB_SLAM3)
+            set(dependencies "${dependencies} ORB_Slam3")
         endif()
     endif()
 endif()
+
+# set up documentaiton build
+add_subdirectory(docs)
+
+# give a summary of what will be done
+include(cmake/ConfigurationSummary.cmake)
+
 install(FILES "${CMAKE_SOURCE_DIR}/plugins/plugin_deps.yaml"
         DESTINATION $ENV{HOME}/.illixr/profiles)
 install(FILES "${CMAKE_SOURCE_DIR}/plugins/plugin_deps.yaml"

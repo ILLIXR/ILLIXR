@@ -2,132 +2,134 @@
 
 [![NCSA licensed](https://img.shields.io/badge/license-NCSA-blue.svg)](LICENSE)
 [![ILLIXR CI](https://github.com/ILLIXR/ILLIXR/actions/workflows/ci.yaml/badge.svg)](https://github.com/ILLIXR/ILLIXR/actions/workflows/ci.yaml)
-[![Discord](https://img.shields.io/discord/830812443189444698?logo=discord&logoColor=white&label=Discord)][47]
+[![Discord](https://img.shields.io/discord/830812443189444698?logo=discord&logoColor=white&label=Discord)][E47]
+
+<iframe width="400" height="225" src="https://www.youtube.com/embed/VyOShOfHt48" title="Demo of ILLIXR running locally" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 
-<a href="https://youtu.be/GVcCW8WgEDY">
-    <img
-        alt="ILLIXR Simple Demo"
-        src="https://img.youtube.com/vi/GVcCW8WgEDY/0.jpg"
-        style="width: 320px"
-        class="center"
-    >
-</a>
+# Overview
 
-Illinois Extended Reality testbed or ILLIXR (pronounced like elixir) is the first fully open-source Extended Reality (
-XR) system and testbed. The modular, extensible, and [OpenXR][26]-compatible ILLIXR runtime integrates state-of-the-art
-XR components into a complete XR system. The testbed is part of the broader [ILLIXR consortium][37], an
-industry-supported community effort to democratize XR systems research, development, and benchmarking.
+Illinois Extended Reality testbed or ILLIXR (pronounced like elixir) is a fully open-source Extended Reality (XR)
+system and testbed. The modular, extensible, and OpenXR-compatible ILLIXR runtime integrates state-of-the-art XR
+components into a complete XR system.
 
-The current ILLIXR release is [v3.3][51]. Source code is available from our GitHub [repository][38], which also contains
-instructions for building fully contained Docker images. Docker images can also be downloaded from a hub (see [here][52]
-for instructions.)
+The current ILLIXR release is [v4.0][E51]. Source code is available from our [GitHub repository][P68], which also contains
+instructions for building fully contained [Docker images][E56].
 
-ILLIXR provides its components in standalone configurations to enable architects and
-system designers to research each component in isolation.
-The standalone components are packaged together in the as of the [v3.1.0 release][39] of ILLIXR.
+ILLIXR provides its components in standalone configurations to enable architects and system designers to research each
+component in isolation. The standalone components are packaged together as of the v3.1.0 release of ILLIXR.
 
-ILLIXR's modular and extensible runtime allows adding new components and swapping different
-implementations of a given component.
-ILLIXR currently contains the following components:
+ILLIXR's modular and extensible runtime allows adding new components and swapping different implementations of a given
+component. ILLIXR currently contains the following [plugins][P66] and [services][P67]:
 
-- *Perception*
-    - Simultaneous Localization and Mapping
-        1. [OpenVINS][1]<SUP>1</SUP>
-    - Cameras and IMUs
-        1. [zed][PL35] supporting [ZED Mini][42]
-        2. [realsense][PL36] supporting [Intel RealSense][41]
-        3. [webcam][PL37]
+## Current Plugins and Services
 
-- *Visual*
-    - [Chromatic aberration correction]
-    - [Lens distortion correction]
-    - Asynchronous Reprojection [TimeWarp][PL38], both [OpenGL][2] and [Vulkan][3] based
+### Perception
 
-- *Detection and Tracking*
-    - Head tracking [ORB_SLAM3][6]<SUP>1</SUP>
-    - [Hand tracking][5]<SUP>1</SUP>
-    - [openni][PL54]
-    - [lighthouse][PL55]
-    - [depthai][PL56]
+- Filter-based visual-inertial estimator
+    - [OpenVINS][P54][^1]
+- Tracking
+    - Head tracking: [ORB_SLAM3][P6][^1] and [lighthouse][P55]
+    - [Hand tracking][P5][^1]
+    - [openni][P54]
+    - [depthai][P56]
+- IMU integrators
+    - [gtsam_integrator][P49]
+    - [passthrough_integrator][P7]
+    - [rk4_integrator][P53]
+- Pose Related Service
+    - [fauxpose][P50]
+    - [pose_prediction][P51]
+    - [pose_lookup][P52]
+- Cameras
+    - [zed][P35] supporting [ZED Mini][E42]
+    - [realsense][P36] supporting [Intel RealSense][E41]
+    - [webcam][P37]
 
-- *Aural*
-    - [Audio encoding][4]<SUP>1</SUP>
-    - [Audio playback][4]<SUP>1</SUP>
+### Visual
 
-- *Data Recording*
-    - [offload_data][PL46]
-    - [record_imu_cam][PL39]
-    - [record_rgb_depth][PL40]
-    - zed_capture (standalone executable)
+- Asynchronous reprojection:
+    - [timewarp_gl][P38], [OpenGL][E2] based
+    - [timewarp_vk][P65], [Vulkan][E3] based
+- Asynchronous 6-degree reprojection [openwarp][P58]
+- [vkdemo][P57] - toy application, with native ILLIXR rendering interface gldemo
+- [native_renderer][P59] - render management
+- [gldemo][P47] - stand-in application when ILLIXR is run as a standalone application without an actual OpenXR application
 
-- *Data Reading/Injection*
-    - [offline_cam][PL41]
-    - [offline_imu][PL42]
-    - [zed.data_injection][PL43]
-    - [vkdemo][PL57]
+### Aural
 
-- *Visualization*
-    - [debugview][PL44]
-    - [hand_tracking.viewer][PL45]
+- [spatial audio encoding/playback][P1][^1]
 
-- *Renderers/Reprojection*
-    - [gldemo][PL47]
-    - [openwarp][PL58]
-    - [native_renderer][PL59]
+### Data Recording
 
-- *Data Testing*
-    - [ground_truth_slam][PL48]
+- [offload_data][P46]
+- [record_imu_cam][P39]
+- [record_rgb_depth][P40]
+- [zed_capture][E55] (standalone executable)
 
-- *Pose Providers*
-    - [gtsam_integrator][PL49]
-    - [fauxpose][PL50]
-    - [pose_prediction][PL51]
-    - [pose_lookup][PL52]
-    - [rk4_integrator][PL53]
+### Data Reading/Injection
 
-- *Offloading/Remote Work*
-    - [offload_vio][PL60]
-    - [offload_rendering_client][PL61]
-    - [offload_rendering_client_jetson][PL62]
-    - [offload_rendering_server][PL63]
-    - [tcp_network_backend][PL64]
+- [offline_cam][P41]
+- [offline_imu][P42]
+- [zed.data_injection][P43]
+- [ground_truth_slam][P48]
 
-<SUP>1</SUP> Source is hosted in an external repository under the [ILLIXR project][7].
-<BR><SUP>2</SUP> Source is in the main ILLIXR [repository][38] under plugins.
+### Visualization
 
-We continue to refine and add new components and implementations.
-Many of the current components of ILLIXR were developed by domain experts and obtained from
-publicly available repositories.
-They were modified for one or more of the following reasons: fixing compilation, adding features,
-or removing extraneous code or dependencies.
-Each component not developed by us is available as a forked GitHub repository for
-proper attribution to its authors.
+- [debugview][P44]
+- [hand_tracking.viewer][P45]
+
+### Offloading/Remote Work
+
+- [offload_vio][P60]
+- [offload_rendering_client][P61]
+- [offload_rendering_client_jetson][P62]
+- [offload_rendering_server][P63]
+- [tcp_network_backend][P64]
+
+[^1]: Source is hosted in an external repository under the [ILLIXR project][E7].
+
+Some components, such as eye tracking and reconstruction are available as standalone components and are in the process
+of being integrated.
+
+We continue to refine and add new components and implementations. Many of the current components of ILLIXR were
+developed by domain experts and obtained from publicly available repositories. They were modified for one or more of the
+following reasons: fixing compilation, adding features, or removing extraneous code or dependencies. Each component not
+developed by us is available as a forked GitHub repository for proper attribution to its authors.
 
 # Papers, talks, demos, consortium
 
-A [paper][8] with details on ILLIXR, including its components, runtime, telemetry support,
-and a comprehensive analysis of performance, power, and quality on desktop and embedded systems.
+A [paper][E8] with details on ILLIXR, including its components, runtime, telemetry support, and a comprehensive analysis
+of performance, power, and quality on desktop and embedded systems.
 
-A [talk presented at NVIDIA GTC'21][42] describing ILLIXR and announcing the ILLIXR consortium:
-[Video][43].
-[Slides][44].
+A [talk presented at NVIDIA GTC'21][E42] describing ILLIXR and announcing the ILLIXR consortium:
+[Video][E43].
+[Slides][E44].
 
-A [demo][45] of an OpenXR application running with ILLIXR.
+A [demo][E45] of an OpenXR application running with ILLIXR.
 
-For more up-to-date list of related papers, demos, and talks, please visit [illixr.org][37].
+The [ILLIXR consortium][E37] is an industry-supported community effort to democratize XR systems research, development,
+and benchmarking. Visit our [website][E37] for more information. For news and papers go to [illixr.org][E37], for talks
+see our [YouTube][E54] channel, and join our [Discord][E47] for announcements.
 
-The [ILLIXR consortium][37] is an industry-supported community effort to democratize
-XR systems research, development, and benchmarking.
-Visit our [website][37] for more information.
+## Demo Videos
 
-The ILLIXR consortium is also holding a biweekly consortium meeting. For past meetings, for more information, past
-meeting recordings, and request for presenting, please visit [here][50]. Please join our [Discord][47] for announcement.
+All of our demo videos can be seen on our [YouTube][E54] channel. 
+<!-- Here are some highlights:
+
+| Running Locally                                                                                                                                                                                                                                                                                                                                                                         | Head Tracking (VIO) Offloaded                                                                                                                                                                                                                                                                                                                                                                              |
+|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| <iframe width="400" height="225" src="https://www.youtube.com/embed/XEiqujGuRyE" title="Demo of ILLIXR running locally" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe><br><a href="https://youtu.be/XEiqujGuRyE">Video Link</a> | <iframe width="400" height="225" src="https://www.youtube.com/embed/675L1etdTMg" title="Demo of ILLIXR with head tracking (VIO) offloaded" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe><br><a href="https://youtu.be/675L1etdTMg">Video Link</a> |
+| <iframe width="400" height="225" src="https://www.youtube.com/embed/VyOShOfHt48" title="Demo of ILLIXR running locally" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe><br><a href="https://youtu.be/VyOShOfHt48">Video Link</a> | <iframe width="400" height="225" src="https://www.youtube.com/embed/2z6eufVJrJE" title="Demo of ILLIXR with head tracking (VIO) offloaded" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe><br><a href="https://youtu.be/2z6eufVJrJE">Video Link</a> |
+
+| Rendering Offloaded                                                                                                                                                                                                                                                                                                                                                                              |
+|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| <iframe width="400" height="225" src="https://www.youtube.com/embed/oGBYZIPj6Zc" title="Demo of ILLIXR with rendering offloaded" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe><br><a href="https://youtu.be/oGBYZIPj6Zc">Video Link</a> | -->
 
 # Citation
 
-We request that you cite our following [paper][8] when you use ILLIXR for a publication.
-We would also appreciate it if you send us a citation once your work has been published.
+We request that you cite our following [paper][E8] when you use ILLIXR for a publication. We would also appreciate it if
+you send us a citation once your work has been published.
 
 ```
 @inproceedings{huzaifa2021illixr,
@@ -140,26 +142,32 @@ We would also appreciate it if you send us a citation once your work has been pu
 }
 ```
 
+Once your work is published, please send the citation to us at [illixr@cs.illinois.edu](mailto:illixr@cs.illinois.edu).
+
 ## Contributing and Documentation
 
-We welcome anyone to contribute to ILLIXR. If you wish to contribute, please see out contribution [guide][53]. Full
-documentation, including API specifications, can be found at our [Getting Started page][33].
+We welcome anyone to contribute to ILLIXR. If you wish to contribute, please see out contribution [guide][E53]. Full
+documentation, including API specifications, can be found at our [Getting Started page][E33].
 
 ## Acknowledgements
 
-The ILLIXR project started in [Sarita Adve’s research group][9],
+The ILLIXR project started in [Sarita Adve’s research group][E9],
 co-led by PhD candidate Muhammad Huzaifa, at the University of Illinois at Urbana-Champaign.
 Other major contributors include
 Rishi Desai,
 Douglas Friedel,
+Steven Gao,
 Samuel Grayson,
+Qinjun Jiang,
 Xutao Jiang,
 Ying Jing,
 Jae Lee,
+Jeffrey Liu,
 Fang Lu,
 Yihan Pang,
 Joseph Ravichandran,
 Giordano Salvador,
+Rahul Singh,
 Finn Sinclair,
 Boyuan Tian,
 Henghzhi Yuan,
@@ -192,351 +200,327 @@ Sachin Talathi,
 and
 Chris Widdowson.
 
-Our OpenXR implementation is derived from [Monado][10].
-We are particularly thankful to Jakob Bornecrantz and Ryan Pavlik.
+Our OpenXR implementation is derived from [Monado][E10]. We are particularly thankful to Jakob Bornecrantz and Ryan
+Pavlik.
 
-The development of ILLIXR was supported by
-the Applications Driving Architectures (ADA) Research Center
-(a JUMP Center co-sponsored by SRC and DARPA),
-the Center for Future Architectures Research (C-FAR, a STARnet research center),
-a Semiconductor Research Corporation program sponsored by MARCO and DARPA,
-and
-by a Google Faculty Research Award.
-The development of ILLIXR was also aided by generous hardware and software donations
-from ARM and NVIDIA.
-Facebook Reality Labs provided the [OpenEDS Semantic Segmentation Dataset][11].
+The development of ILLIXR was supported by the Applications Driving Architectures (ADA) Research Center (a JUMP Center
+co-sponsored by SRC and DARPA), the Center for Future Architectures Research (C-FAR, a STARnet research center), a
+Semiconductor Research Corporation program sponsored by MARCO and DARPA, National Science Foundation grants 2120464 and
+2217144 and by a Google Faculty Research Award. The development of ILLIXR was also aided by generous hardware and
+software donations from ARM and NVIDIA. Facebook Reality Labs provided the [OpenEDS Semantic Segmentation Dataset][E11].
 
 Wesley Darvin came up with the name for ILLIXR.
 
 ## Licensing Structure
 
-ILLIXR is available as open-source software under the permissive
-[University of Illinois/NCSA Open Source License][34].
-As mentioned above, ILLIXR largely consists of components developed by domain experts and
-modified for the purposes of inclusion in ILLIXR.
-However, ILLIXR does contain software developed solely by us.
-**The NCSA license is limited to only this software**.
-The external libraries and software included in ILLIXR each have their own licenses and
-must be used according to those licenses:
+ILLIXR is available as open-source software under the permissive [University of Illinois/NCSA Open Source License][E34].
+As mentioned above, ILLIXR largely consists of components developed by domain experts and modified for the purposes of
+inclusion in ILLIXR. However, ILLIXR does contain software developed solely by us. **The NCSA license is limited to only
+this software**. The external libraries and software included in ILLIXR each have their own licenses and must be used
+according to those licenses:
 
-| Package                            | License<SUP>1</SUP>                                |
-|:-----------------------------------|:---------------------------------------------------|
-| [abseil-cpp][P48]                  | [Apache v2][L48]                                   |
-| [ARM NEON 2 x86 SSE][P42]          | [BSD-2 clause][L42]<SUP>2</SUP>                    |
-| [concurrentqueue][P1]              | [BSD-2 clause][L1]                                 |
-| [cxxopts][P2]                      | [MIT][L2]                                          |
-| [Depthai Core][P3]                 | [MIT][L3]                                          |
-| [EGL-Registry][P47]                | None given                                         |
-| [farmhash][P46]                    | [MIT][L46]                                         |
-| [FFmpeg][P4]                       | [GNU General Public License v3.0][L35]<SUP>3</SUP> |
-| [filter][P5]                       | [MIT][L5]                                          |
-| [flatbuffers][P44]                 | [Apache v2][L44]                                   |
-| [gemmlowp][P43]                    | [Apache v2][L43]                                   |
-| [glslang][P6]                      | [BSD-3 clause][L6]<SUP>4</SUP>                     |
-| [Gtsam][P7]                        | [BSD-2 clause][L7]<SUP>2</SUP>                     |
-| [imgui][P8]                        | [MIT][L8]                                          |
-| [libspatialaudio][P28]             | [LGPL v2.1][L28]                                   |
-| [mediapipe][P36]                   | [Apache v2][L36]                                   |
-| [Monado][P29]                      | [MIT][L29]                                         |
-| [Monado integration][P9]           | [Boost v1][L9]                                     |
-| [Monado Vulkan Integration][P10]   | [Boost v1][L10]                                    |
-| [moodycamel::ConcurrentQueue][P30] | [BSD-2 clause][L30]<SUP>2</SUP>                    |
-| [OouraFFT][P45]                    | [MIT-like][L45]                                    |
-| [Open-VINS][P35]                   | [GNU General Public License v3.0][L35]             |
-| [OpenXR][P12]                      | [Boost v1][L12]                                    |
-| [PortAudio][P13]                   | [MIT][L13]                                         |
-| [ORB_SLAM3][P49]                   | [GNU General Public License v3.0][L49]             |
-| [protobuf][L41]                    | [BSD-3 clause][L41]                                |
-| [pthreadpool][P40]                 | [BSD-2 clause][L40]<SUP>2</SUP>                    |
-| [robin-hood-hashing][P14]          | [MIT][L14]                                         |
-| [ruy][P39]                         | [Apache v2][P39]                                   |
-| [SPIRV Headers][P16]               | [MIT][L16]                                         |
-| [SPIRV Tools][P17]                 | [Apache v2][L17]                                   |
-| [SqliteCPP][P18]                   | [MIT][L18]                                         |
-| [stb][P19]                         | [MIT][L19]                                         |
-| [tensorflow-lite][P38]             | [Apache v2][L38]                                   |
-| [tinyobjloader][P20]               | [MIT][L20]                                         |
-| [Vulkan Headers][P21]              | [Apache v2][L21]                                   |
-| [Vulkan Loader][P22]               | [Apache v2][L22]                                   |
-| [Vulkan Utility Libraries][P23]    | [Apache v2][L23]                                   |
-| [Vulkan Validation Layers][P24]    | [Apache v2][L24]                                   |
-| [VulkanMemoryAllocator][P25]       | [MIT][L25]                                         |
-| [XNNPACK][P37]                     | [BSD-3 clause][L37]                                |
-| [yaml-cpp][P26]                    | [MIT][L26]                                         |
-| zed_opencv (Sterolabs)             | [MIT][L27]                                         |
+| Package                              | License[^2]                                |
+|:-------------------------------------|:-------------------------------------------|
+| [abseil-cpp][TPP48]                  | [Apache v2][L48]                           |
+| [ARM NEON 2 x86 SSE][TPP42]          | [BSD-2 clause][L42][^3]                    |
+| [concurrentqueue][TPP1]              | [BSD-2 clause][L1]                         |
+| [cxxopts][TPP2]                      | [MIT][L2]                                  |
+| [Depthai Core][TPP3]                 | [MIT][L3]                                  |
+| [EGL-Registry][TPP47]                | None given                                 |
+| [farmhash][TPP46]                    | [MIT][L46]                                 |
+| [FFmpeg][TPP4]                       | [GNU General Public License v3.0][L35][^4] |
+| [filter][TPP5]                       | [MIT][L5]                                  |
+| [flatbuffers][TPP44]                 | [Apache v2][L44]                           |
+| [gemmlowp][TPP43]                    | [Apache v2][L43]                           |
+| [glslang][TPP6]                      | [BSD-3 clause][L6][^5]                     |
+| [Gtsam][TPP7]                        | [BSD-2 clause][L7][^3]                     |
+| [imgui][TPP8]                        | [MIT][L8]                                  |
+| [mediapipe][TPP36]                   | [Apache v2][L36]                           |
+| [Monado][TPP29]                      | [MIT][L29]                                 |
+| [Monado integration][TPP9]           | [Boost v1][L9]                             |
+| [Monado Vulkan Integration][TPP10]   | [Boost v1][L10]                            |
+| [moodycamel::ConcurrentQueue][TPP30] | [BSD-2 clause][L30][^3]                    |
+| [OouraFFT][TPP45]                    | [MIT-like][L45]                            |
+| [Open-VINS][TPP35]                   | [GNU General Public License v3.0][L35]     |
+| [OpenXR][TPP12]                      | [Boost v1][L12]                            |
+| [ORB_SLAM3][TPP49]                   | [GNU General Public License v3.0][L49]     |
+| [protobuf][L41]                      | [BSD-3 clause][L41]                        |
+| [pthreadpool][TPP40]                 | [BSD-2 clause][L40][^3]                    |
+| [robin-hood-hashing][TPP14]          | [MIT][L14]                                 |
+| [ruy][TPP39]                         | [Apache v2][TPP39]                         |
+| [SPIRV Headers][TPP16]               | [MIT][L16]                                 |
+| [SPIRV Tools][TPP17]                 | [Apache v2][L17]                           |
+| [SqliteCPP][TPP18]                   | [MIT][L18]                                 |
+| [stb][TPP19]                         | [MIT][L19]                                 |
+| [tensorflow-lite][TPP38]             | [Apache v2][L38]                           |
+| [tinyobjloader][TPP20]               | [MIT][L20]                                 |
+| [Vulkan Headers][TPP21]              | [Apache v2][L21]                           |
+| [Vulkan Loader][TPP22]               | [Apache v2][L22]                           |
+| [Vulkan Utility Libraries][TPP23]    | [Apache v2][L23]                           |
+| [Vulkan Validation Layers][TPP24]    | [Apache v2][L24]                           |
+| [VulkanMemoryAllocator][TPP25]       | [MIT][L25]                                 |
+| [XNNPACK][TPP37]                     | [BSD-3 clause][L37]                        |
+| [yaml-cpp][TPP26]                    | [MIT][L26]                                 |
+| zed_opencv (Sterolabs)               | [MIT][L27]                                 |
 
-<SUP>1</SUP> Current as of March 5, 2025.
+[^2]: Current as of March 5, 2025.
 
-<SUP>2</SUP> Also known as the Simplified BSD License.
+[^3]: Also known as the Simplified BSD License.
 
-<SUP>3</SUP> ILLIXR uses a customized version of FFmpeg, compiled with x264 and x265 encoding support, thus it is
-licensed under GPL v3.0
+[^4]: ILLIXR uses a customized version of FFmpeg, compiled with x264 and x265 encoding support, thus it is licensed under GPL v3.0
 
-<SUP>4</SUP> This software is covered by multiple open source licenses, see the link for details.
+[^5]: This software is covered by multiple open source licenses, see the link for details.
 
 Any LGPL or GPL licensed code are contained in optional components. ILLIXR's extensibility allows the source to be
-configured and compiled using only
-permissively licensed software, if desired. See out [Getting Started][33] page for instructions.
+configured and compiled using only permissively licensed software, if desired. See out [Getting Started][E33] page for
+instructions.
 
 ## Get in Touch
 
-Whether you are a computer architect, a compiler writer, a systems person, work on XR related algorithms
-or applications, or just anyone interested in XR research, development, or products, we would love to hear from you and
-hope you will contribute!
-You can join the [ILLIXR consortium][37], [Discord][47], or [mailing list][48], or send us an [email][49], or just send
-us a pull request!
+Whether you are a computer architect, a compiler writer, a systems person, work on XR related algorithms or
+applications, or just anyone interested in XR research, development, or products, we would love to hear from you and
+hope you will contribute! You can join our [Discord][E47], [mailing list][E48], [email][E49] us, or just send a pull
+request!
 
 
-[//]: # (- References -)
+[//]: # (- external -)
 
-[1]:    https://github.com/ILLIXR/open_vins
+[E2]:    https://www.opengl.org/
 
-[2]:    https://www.opengl.org/
+[E3]:    https://www.vulkan.org/
 
-[3]:    https://www.vulkan.org/
+[E4]:    https://github.com/ILLIXR/audio_pipeline
 
-[4]:    https://github.com/ILLIXR/audio_pipeline
+[E7]:    https://github.com/ILLIXR
 
-[5]:    https://github.com/ILLIXR/hand_tracking
+[E8]:    https://ieeexplore.ieee.org/abstract/document/9741292
 
-[6]:    https://github.com/ILLIXR/ORB_SLAM3
+[E9]:    http://rsim.cs.illinois.edu
 
-[7]:    https://github.com/ILLIXR
+[E10]:   https://monado.dev
 
-[8]:    https://ieeexplore.ieee.org/abstract/document/9741292
+[E11]:   https://research.fb.com/programs/openeds-challenge
 
-[9]:    http://rsim.cs.illinois.edu
+[E26]:   https://www.khronos.org/openxr
 
-[10]:   https://monado.dev
+[E33]:   https://illixr.github.io/ILLIXR/getting_started/
 
-[11]:   https://research.fb.com/programs/openeds-challenge
+[E34]:   https://illixr.github.io/ILLIXR/LICENSE/
 
-[26]:   https://www.khronos.org/openxr
+[E35]:   https://illixr.github.io/ILLIXR/illixr_plugins/
 
-[33]:   https://illixr.github.io/ILLIXR/getting_started/
+[E36]:   https://illixr.github.io/ILLIXR/writing_your_plugin/
 
-[34]:   https://illixr.github.io/ILLIXR/LICENSE/
+[E37]:   http://illixr.org
 
-[35]:   https://illixr.github.io/ILLIXR/illixr_plugins/
+[E38]:   https://github.com/ILLIXR/ILLIXR
 
-[36]:   https://illixr.github.io/ILLIXR/writing_your_plugin/
+[E39]:   https://github.com/ILLIXR/ILLIXR/releases/tag/v3.1.0
 
-[37]:   http://illixr.org
+[E41]:   https://www.intelrealsense.com/
 
-[38]:   https://github.com/ILLIXR/ILLIXR
+[E42]:   https://www.stereolabs.com/zed-mini/
 
-[39]:   https://github.com/ILLIXR/ILLIXR/releases/tag/v3.1.0
+[E43]:   https://youtu.be/ZY98lWksnpM
 
-[41]:   https://www.intelrealsense.com/
+[E44]:   https://ws.engr.illinois.edu/sitemanager/getfile.asp?id=2971
 
-[42]:   https://www.stereolabs.com/zed-mini/
+[E45]:   https://youtu.be/GVcCW8WgEDY
 
-[43]:   https://youtu.be/ZY98lWksnpM
+[E47]:   https://discord.gg/upkvy7x3W4
 
-[44]:   https://ws.engr.illinois.edu/sitemanager/getfile.asp?id=2971
+[E48]:   mailto:lists@lists.cs.illinois.edu?subject=sub%20illixr-community
 
-[45]:   https://youtu.be/GVcCW8WgEDY
+[E49]:   mailto:illixr@cs.illinois.edu
 
-[47]:   https://discord.gg/upkvy7x3W4
+[E50]:   https://illixr.org/open_meetings
 
-[48]:   mailto:lists@lists.cs.illinois.edu?subject=sub%20illixr-community
+[E51]:   https://github.com/ILLIXR/ILLIXR/releases/latest
 
-[49]:   mailto:illixr@cs.illinois.edu
+[E52]:   https://illixr.github.io/ILLIXR/docker/
 
-[50]:   https://illixr.org/open_meetings
+[E53]:   https://illixr.github.io/ILLIXR/contributing/contributing/index.html
 
-[51]:   https://ffmpeg.org/
+[E54]:   https://www.youtube.com/@sadve-group
 
-[52]:   https://github.com/ILLIXR/opencv
+[E55]:   https://illixr.github.io/ILLIXR/plugin_README/zed_capture/
 
-[53]:   https://github.com/opencv/opencv/blob/4.x/LICENSE
-
-[54]:   https://github.com/ILLIXR/Monado_OpenXR_Simple_Example
-
-[56]:   https://github.com/PortAudio/portaudio
-
-[57]:   https://github.com/PortAudio/portaudio/blob/master/LICENSE.txt
-
-[58]:   https://github.com/jbeder/yaml-cpp
-
-[59]:   https://github.com/jbeder/yaml-cpp/blob/master/LICENSE
-
-[60]:   https://github.com/KhronosGroup
-
-[61]:   https://choosealicense.com/licenses/apache-2.0/
-
-[62]:   https://choosealicense.com/licenses/mit/
-
-[71]:   https://github.com/google-ai-edge/mediapipe
-
-[72]:   https://github.com/google-ai-edge/mediapipe/blob/master/LICENSE
-
-[51]:   https://github.com/ILLIXR/ILLIXR/releases/tag/v3.3.0
-
-[52]:   https://illixr.github.io/ILLIXR/docker/
-
-[53]:   https://illixr.github.io/ILLIXR/contributing/contributing/
+[E56]:   https://github.com/ILLIXR/ILLIXR/tree/master/docker
 
 [//]: # (- Plugins -)
 
-[PL35]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-zed
+[P1]:    https://illixr.github.io/ILLIXR/illixr_plugins/index.html#audio_pipeline
 
-[PL36]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-realsense
+[P5]:    https://illixr.github.io/ILLIXR/illixr_plugins/index.html#hand_tracking
 
-[PL37]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-webcam
+[P6]:    https://illixr.github.io/ILLIXR/illixr_plugins/index.html#orb_slam3
 
-[PL38]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-timewarp
+[P7]:    https://illixr.github.io/ILLIXR/illixr_plugins/index.html#passthrough_integrator
 
-[PL39]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-record-imu-cam
+[P35]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#zed
 
-[PL40]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-record-rgb-depth
+[P36]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#realsense
 
-[PL41]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-offline-cam
+[P37]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#webcam
 
-[PL42]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-offline-imu
+[P38]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#timewarp_gl
 
-[PL43]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-zed-data-injection
+[P39]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#record_imu_cam
 
-[PL44]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-debugview
+[P40]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#record_rgb_depth
 
-[PL45]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-hand-tracking-viewer
+[P41]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#offline_cam
 
-[PL46]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-offload-data
+[P42]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#offline_imu
 
-[PL47]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-gldemo
+[P43]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#zeddata_injection
 
-[PL48]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-ground-truth-slam
+[P44]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#debugview
 
-[PL49]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-gtsam-integrator
+[P45]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#hand_trackingviewer
 
-[PL50]:   https://illixr.github.io/ILLIXR/illixr_services/index.html#service-fauxpose
+[P46]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#offload_data
 
-[PL51]:   https://illixr.github.io/ILLIXR/illixr_services/index.html#service-pose-prediction
+[P47]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#gldemo
 
-[PL52]:   https://illixr.github.io/ILLIXR/illixr_services/index.html#service-pose-lookup
+[P48]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#ground_truth_slam
 
-[PL53]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-rk4-integrator
+[P49]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#gtsam_integrator
 
-[PL54]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-openni
+[P50]:   https://illixr.github.io/ILLIXR/illixr_services/index.html#fauxpose
 
-[PL55]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-lighthouse
+[P51]:   https://illixr.github.io/ILLIXR/illixr_services/index.html#pose_prediction
 
-[PL56]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-depthai
+[P52]:   https://illixr.github.io/ILLIXR/illixr_services/index.html#pose_lookup
 
-[PL57]:   https://illixr.github.io/ILLIXR/illixr_services/index.html#service-vkdemo
+[P53]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#rk4_integrator
 
-[PL58]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-openwarp-vk
+[P54]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#openni
 
-[PL59]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-native-renderer
+[P55]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#lighthouse
 
-[PL60]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-offload-vio
+[P56]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#depthai
 
-[PL61]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-offload-rendering-client
+[P57]:   https://illixr.github.io/ILLIXR/illixr_services/index.html#vkdemo
 
-[PL62]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-offload-rendering-client-jetson
+[P58]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#openwarp_vk
 
-[PL63]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-offload-rendering-server
+[P59]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#native_renderer
 
-[PL64]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#plugins-tcp-network-backend
+[P60]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#offload_vio
+
+[P61]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#offload_rendering_client
+
+[P62]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#offload_rendering_client_jetson
+
+[P63]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#offload_rendering_server
+
+[P64]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#tcp_network_backend
+
+[P65]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#timewarp_vk
+
+[P66]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html
+
+[P67]:   https://illixr.github.io/ILLIXR/illixr_services/index.html
+
+[P68]:   https://github.com/ILLIXR/ILLIXR
 
 
 [//]: # (- Third Party Packages -)
 
-[P1]:   https://github.com/cameron314/concurrentqueue
+[TPP1]:   https://github.com/cameron314/concurrentqueue
 
-[P2]:   https://github.com/jarro2783/cxxopts
+[TPP2]:   https://github.com/jarro2783/cxxopts
 
-[P3]:   https://github.com/luxonis/depthai-core
+[TPP3]:   https://github.com/luxonis/depthai-core
 
-[P4]:   https://github.com/ILLIXR/FFmpeg/
+[TPP4]:   https://github.com/ILLIXR/FFmpeg/
 
-[P5]:   https://github.com/casiez/OneEuroFilter
+[TPP5]:   https://github.com/casiez/OneEuroFilter
 
-[P6]:   https://github.com/KhronosGroup/glslang
+[TPP6]:   https://github.com/KhronosGroup/glslang
 
-[P7]:   https://github.com/borglab/gtsam
+[TPP7]:   https://github.com/borglab/gtsam
 
-[P8]:   https://github.com/ocornut/imgui
+[TPP8]:   https://github.com/ocornut/imgui
 
-[P9]:   https://github.com/ILLIXR/monado_integration
+[TPP9]:   https://github.com/ILLIXR/monado_integration
 
-[P10]:   https://github.com/ILLIXR/monado_vulkan_integration
+[TPP10]:   https://github.com/ILLIXR/monado_vulkan_integration
 
-[P11]:   https://github.com/ILLIXR/opencv
+[TPP11]:   https://github.com/ILLIXR/opencv
 
-[P12]:   https://github.com/ILLIXR/Monado_OpenXR_Simple_Example
+[TPP12]:   https://github.com/ILLIXR/Monado_OpenXR_Simple_Example
 
-[P13]:   https://github.com/PortAudio/portaudio
+[TPP13]:   https://github.com/PortAudio/portaudio
 
-[P14]:   https://github.com/martinus/robin-hood-hashing
+[TPP14]:   https://github.com/martinus/robin-hood-hashing
 
-[P15]:   https://github.com/ILLIXR/libspatialaudio
+[TPP16]:   https://github.com/KhronosGroup/SPIRV-Headers
 
-[P16]:   https://github.com/KhronosGroup/SPIRV-Headers
+[TPP17]:   https://github.com/KhronosGroup/SPIRV-Tools
 
-[P17]:   https://github.com/KhronosGroup/SPIRV-Tools
+[TPP18]:   https://github.com/iwongu/sqlite3pp
 
-[P18]:   https://github.com/iwongu/sqlite3pp
+[TPP19]:   https://github.com/nothings/stb
 
-[P19]:   https://github.com/nothings/stb
+[TPP20]:   https://github.com/tinyobjloader/tinyobjloader
 
-[P20]:   https://github.com/tinyobjloader/tinyobjloader
+[TPP21]:   https://github.com/KhronosGroup/Vulkan-Headers
 
-[P21]:   https://github.com/KhronosGroup/Vulkan-Headers
+[TPP22]:   https://github.com/KhronosGroup/Vulkan-Loader
 
-[P22]:   https://github.com/KhronosGroup/Vulkan-Loader
+[TPP23]:   https://github.com/KhronosGroup/Vulkan-Utility-Libraries
 
-[P23]:   https://github.com/KhronosGroup/Vulkan-Utility-Libraries
+[TPP24]:   https://github.com/KhronosGroup/Vulkan-ValidationLayers
 
-[P24]:   https://github.com/KhronosGroup/Vulkan-ValidationLayers
+[TPP25]:   https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator/blob/master/include/vk_mem_alloc.h
 
-[P25]:   https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator/blob/master/include/vk_mem_alloc.h
+[TPP26]:   https://github.com/jbeder/yaml-cpp
 
-[P26]:   https://github.com/jbeder/yaml-cpp
+[TPP28]:   https://github.com/videolabs/libspatialaudio
 
-[P28]:   https://github.com/videolabs/libspatialaudio
+[TPP29]:   https://gitlab.freedesktop.org/monado/monado
 
-[P29]:   https://gitlab.freedesktop.org/monado/monado
+[TPP30]:   https://github.com/cameron314/concurrentqueue
 
-[P30]:   https://github.com/cameron314/concurrentqueue
+[TPP31]:   https://github.com/mp3guy/ElasticFusion
 
-[P31]:   https://github.com/mp3guy/ElasticFusion
+[TPP32]:   https://github.com/ILLIXR/KinectFusionApp/tree/illixr-integration
 
-[P32]:   https://github.com/ILLIXR/KinectFusionApp/tree/illixr-integration
+[TPP33]:   https://github.com/MartinPersson/HOTlab
 
-[P33]:   https://github.com/MartinPersson/HOTlab
+[TPP34]:   https://github.com/AayushKrChaudhary/RITnet
 
-[P34]:   https://github.com/AayushKrChaudhary/RITnet
+[TPP35]:   https://github.com/rpng/open_vins
 
-[P35]:   https://github.com/rpng/open_vins
+[TPP36]:   https://github.com/google-ai-edge/mediapipe
 
-[P36]:   https://github.com/google-ai-edge/mediapipe
+[TPP37]:   https://github.com/ILLIXR/XNNPACK
 
-[P37]:   https://github.com/ILLIXR/XNNPACK
+[TPP38]:   https://github.com/ILLIXR/tensorflow-lite
 
-[P38]:   https://github.com/ILLIXR/tensorflow-lite
+[TPP39]:   https://github.com/ILLIXR/ruy
 
-[P39]:   https://github.com/ILLIXR/ruy
+[TPP40]:   https://github.com/Maratyszcza/pthreadpool
 
-[P40]:   https://github.com/Maratyszcza/pthreadpool
+[TPP41]:   https://github.com/protocolbuffers/protobuf
 
-[P41]:   https://github.com/protocolbuffers/protobuf
+[TPP42]:   https://github.com/intel/ARM_NEON_2_x86_SSE
 
-[P42]:   https://github.com/intel/ARM_NEON_2_x86_SSE
+[TPP43]:   https://github.com/google/gemmlowp
 
-[P43]:   https://github.com/google/gemmlowp
+[TPP44]:   https://github.com/google/flatbuffers
 
-[P44]:   https://github.com/google/flatbuffers
+[TPP45]:   https://github.com/petewarden/OouraFFT
 
-[P45]:   https://github.com/petewarden/OouraFFT
+[TPP46]:   https://github.com/google/farmhash
 
-[P46]:   https://github.com/google/farmhash
+[TPP47]:   https://github.com/KhronosGroup/EGL-Registry
 
-[P47]:   https://github.com/KhronosGroup/EGL-Registry
+[TPP48]:   https://github.com/abseil/abseil-cpp
 
-[P48]:   https://github.com/abseil/abseil-cpp
-
-[P49]:   https://github.com/ILLIXR/ORB_SLAM3
+[TPP49]:   https://github.com/ILLIXR/ORB_SLAM3
 
 [//]: # (- Licenses -)
 
@@ -567,8 +551,6 @@ us a pull request!
 [L13]:   https://github.com/PortAudio/portaudio/blob/master/LICENSE.txt
 
 [L14]:   https://github.com/martinus/robin-hood-hashing/blob/master/LICENSE
-
-[L15]:   https://github.com/ILLIXR/libspatialaudio/blob/master/LICENSE
 
 [L16]:   https://github.com/KhronosGroup/SPIRV-Headers/blob/main/LICENSE
 

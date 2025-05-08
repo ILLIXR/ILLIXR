@@ -33,3 +33,5 @@ scripts/__pycache__/
 profiles/all.yaml
 
 docs/docs/index.md
+
+docs/mkdocs.yaml

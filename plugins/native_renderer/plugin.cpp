@@ -101,7 +101,7 @@ void native_renderer::_p_thread_setup() {
     }
     create_swapchain_framebuffers();
     app_->setup(app_pass_, 0, buffer_pool_);
-    timewarp_->setup(timewarp_pass_, 0, buffer_pool_, true);
+    timewarp_->setup(timewarp_pass_, 0, buffer_pool_, app_->is_external());
 }
 
 void native_renderer::_p_one_iteration() {
@@ -189,14 +189,14 @@ void native_renderer::_p_one_iteration() {
     auto next_swap = vsync_.get_ro_nullable();
     if (next_swap == nullptr) {
         std::this_thread::sleep_for(display_params::period / 6.0 * 5);
-        printf("WARNING!!! no vsync estimate\n");
+        log_->debug("No vsync estimate!");
     } else {
         // convert next_swap_time to std::chrono::time_point
         auto next_swap_time_point = std::chrono::time_point<std::chrono::system_clock>(
             std::chrono::duration_cast<std::chrono::system_clock::duration>((**next_swap).time_since_epoch()));
         auto current_time = clock_->now().time_since_epoch();
         auto diff         = next_swap_time_point - current_time;
-        printf("swap diff: %ld\n", diff.time_since_epoch());
+        log_->debug("swap diff: {} ms", std::chrono::duration_cast<std::chrono::milliseconds>(diff.time_since_epoch()).count());
         next_swap_time_point -= std::chrono::duration_cast<std::chrono::system_clock::duration>(
             display_params::period / 6.0 * 5); // sleep till 1/6 of the period before vsync to begin timewarp
         std::this_thread::sleep_until(next_swap_time_point);

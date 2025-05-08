@@ -49,8 +49,8 @@ private:
     std::shared_ptr<vulkan::display_provider>                   display_provider_ = nullptr;
     std::mutex                                                  setup_mutex_;
 
-    bool initialized_                      = false;
-    bool input_texture_vulkan_coordinates_ = true;
+    bool initialized_            = false;
+    bool input_texture_external_ = false;
 
     // Vulkan resources
     std::stack<std::function<void()>> deletion_queue_;

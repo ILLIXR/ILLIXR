@@ -22,6 +22,11 @@ dep_map:
     - gtsam_integrator
     - passthrough_integrator
     - rk4_integrator
+  - needs: pose_prediction
+    provided_by:
+    - fauxpose
+    - pose_lookup
+    - pose_prediction
   - needs: pose_type
     provided_by:
     - ground_truth_slam
@@ -36,6 +41,13 @@ dep_map:
     - realsense
     - zed
   plugin: debugview
+- dependencies:
+  - needs: imu_type
+    provided_by:
+    - fauxpose
+    - pose_lookup
+    - pose_prediction
+  plugin: gldemo
 - dependencies:
   - needs: imu_type
     provided_by:
@@ -59,6 +71,52 @@ dep_map:
     - zed
   plugin: gtsam_integrator
 - dependencies:
+  - needs: binocular_cam_type
+    provided_by:
+    - depthai
+    - offline_cam
+    - offload_vio.server_rx
+    - realsense
+    - zed
+    - zed.data_injection
+  - needs: cam_type_zed
+    provided_by:
+    - zed
+  - needs: camera_data
+    provided_by:
+    - zed
+    - zed.data_injection
+  - needs: monocular_cam_type
+    provided_by:
+    - webcam
+  - needs: pose_type
+    provided_by:
+    - ground_truth_slam
+    - lighthouse
+    - offload_vio.device_rx
+    - openvins
+    - zed.data_injection
+  - needs: rgb_depth_type
+    provided_by:
+    - depthai
+    - openni
+    - realsense
+    - zed
+  plugin: hand_tracking
+- dependencies:
+  - needs: ht::ht_frame
+    provided_by:
+    - hand_tracking
+  plugin: hand_tracking.viewer
+- dependencies:
+  - needs: pose_prediction
+    provided_by:
+    - fauxpose
+    - pose_lookup
+    - pose_prediction
+  - needs: vulkan::app
+    provided_by:
+    - vkdemo
   - needs: vulkan::timewarp
     provided_by:
     - openwarp_vk
@@ -73,18 +131,17 @@ dep_map:
   - needs: compressed_frame
     provided_by:
     - offload_rendering_server
-  plugin: offload_rendering_client
-- dependencies:
-  - needs: compressed_frame
+  - needs: pose_prediction
     provided_by:
-    - offload_rendering_server
-  plugin: offload_rendering_client_jetson
+    - fauxpose
+    - pose_lookup
+    - pose_prediction
+  plugin: offload_rendering_client
 - dependencies:
   - needs: fast_pose_type
     provided_by:
     - lighthouse
     - offload_rendering_client
-    - offload_rendering_client_jetson
   plugin: offload_rendering_server
 - dependencies:
   - needs: binocular_cam_type
@@ -134,6 +191,13 @@ dep_map:
     - zed
   plugin: openvins
 - dependencies:
+  - needs: pose_prediction
+    provided_by:
+    - fauxpose
+    - pose_lookup
+    - pose_prediction
+  plugin: openwarp_vk
+- dependencies:
   - needs: imu_integrator_input
     provided_by:
     - offload_vio.device_rx
@@ -146,6 +210,20 @@ dep_map:
     - realsense
     - zed
   plugin: passthrough_integrator
+- dependencies:
+  - needs: imu_raw_type
+    provided_by:
+    - gtsam_integrator
+    - passthrough_integrator
+    - rk4_integrator
+  - needs: pose_type
+    provided_by:
+    - ground_truth_slam
+    - lighthouse
+    - offload_vio.device_rx
+    - openvins
+    - zed.data_injection
+  plugin: pose_prediction
 - dependencies:
   - needs: binocular_cam_type
     provided_by:
@@ -188,9 +266,22 @@ dep_map:
   - needs: image_handle
     provided_by:
     - gldemo
+  - needs: pose_prediction
+    provided_by:
+    - fauxpose
+    - pose_lookup
+    - pose_prediction
   - needs: rendered_frame
-    provided_by: &id001
+    provided_by:
     - gldemo
   - needs: rendered_frame
-    provided_by: *id001
+    provided_by:
+      - gldemo
   plugin: timewarp_gl
+- dependencies:
+  - needs: pose_prediction
+    provided_by:
+    - fauxpose
+    - pose_lookup
+    - pose_prediction
+  plugin: timewarp_vk

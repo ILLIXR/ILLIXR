@@ -1,5 +1,4 @@
 #pragma once
-#define VULKAN_REQUIRED
 
 #include "illixr/plugin.hpp"
 #include "illixr/vk/vk_extension_request.hpp"

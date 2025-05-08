@@ -1,6 +1,6 @@
 # Getting Started
 
-The ILLIXR application is configured and built via CMake. The CMake system checks for required dependencies,
+ILLIXR is configured and built via CMake. The CMake system checks for required dependencies,
 builds each requested plugin, builds the main ILLIXR binary, and (optionally) installs these components.
 
 ILLIXR currently only builds on Linux systems, and has been tested on the following configurations:
@@ -21,13 +21,11 @@ are not available in the distribution repos. The instructions below are a genera
 
 ### Clone the repository
 
-<div class="code-box-copy">
+``` { .bash .copy }
+git clone https://github.com/ILLIXR/ILLIXR --single-branch
+```
 
-    <button class="code-box-copy__btn" data-clipboard-target="#clone" title="Copy"></button>
-    <pre class="language-shell" id="clone">git clone https://github.com/ILLIXR/ILLIXR</pre>
-
-</div>
-<br>
+This will clone only the default branch, if you want all branches then remove the `--single-branch` flag.
 
 ### Install dependencies
 
@@ -45,7 +43,7 @@ ILLIXR may compile with other versions of the above operating systems, but some 
 <table id="profile_table" style="border-spacing: 8px; border: 1px solid black;"></table>
 <table id="listing_table" style="border-spacing: 8px; border: 1px solid black;"></table>
 
-<table style="border-spaceing: 20px; border: 1px solid black;">
+<table style="border-spacing: 20px; border: 1px solid black;">
     <tr><td>Include virtualization support: <input type="checkbox" id="withVirt" onclick="updateChecked();"><br>See <a class="reference internal" href="../virtualization/">ILLIXR Under Virtualization</a> for details.</td></tr>
 </table>
 
@@ -56,7 +54,7 @@ Use the following to install the dependencies for the selected plugins:
 <div class="code-box-copy">
 
     <button class="code-box-copy__btn" data-clipboard-target="#output" title="Copy"></button>
-    <pre class="language-shell" id="output"></pre>
+    <pre class="language-shell" id="output" style="white-space:pre-wrap;"></pre>
 
 </div>
 
@@ -73,7 +71,10 @@ Use the following to install the dependencies for the selected plugins:
 
 Use the following to build and install ILLIXR. You can specify the install location by giving the path to `CMAKE_INSTALL_PREFIX`.
 If you want the default install path then do not add the option to the command line.
-Note that if your install prefix requires sudo privileges then you will need to run both the build and install under sudo (this is due to the way cmake builds and installs some of the pre-packaged dependencies during the build phase).
+
+!!! warning
+
+    If your install prefix requires sudo privileges then you will need to run both the build and install under sudo (this is due to the way cmake builds and installs some of the pre-packaged dependencies during the build phase).
 
 Some ILLIXR plugins rely on code that falls under the <a href="https://opensource.org/license/gpl-3-0">GNU General Public License (GPL) v3.0</a>
 or <a href="https://opensource.org/license/lgpl-2-1">GNU Lesser General Public License (LGPL) v2.1</a>. If you do not wish to build
@@ -95,17 +96,26 @@ Common CMake command line arguments (always prepend with a `-D`):
 -  ***CMAKE_BUILD_TYPE***
    The build type to do: Debug, Release, RelWithDebInfo
 -  ***YAML_FILE***
-   The [_profile_][23] file of [plugins][22] to build and install. The default is None, meaning plugins should be specified individually on the command line.
+   The [_profile_][G23] file of [plugins][G22] to build and install. The default is None, meaning plugins should be specified individually on the command line.
 -  ***USE_&lt;PLUGIN_NAME&gt;=ON***
-   Build the specifically named [plugin][22] (e.g `-DUSE_TIMEWARP_GL=ON` to build the timewarp_gl [plugin][22]). Any number of [plugins][22] can be specified on the command line in this fashion.
+   Build the specifically named [plugin][G22] (e.g `-DUSE_TIMEWARP_VK=ON` to build the timewarp_vk [plugin][G22]). Any number of [plugins][G22] can be specified on the command line in this fashion.
+-  ***BUILD_DOCS***
+   Set to `ON` to enable building the documentation.
 
-An alternate to specifying the plugins as command line arguments is to create a [_YAML_][2] file which specifies the
-plugins to build. Using `-DYAML_FILE=&lt;FILE_NAME&gt;` as the command line argument specifying the [_YAML_][2] file to use. Note: You may need to specify the full path to the YAML_FILE.
-See [profile][23] for the format.
+!!! note "Documentation Prerequisites"
+
+    Building the documentation requires [Doxygen][E14] and [mkdocs][E15](>= v1.5) to be installed, both of which are typically available from OS packages. Additionally, we utilize the [material][E16], [mkdocs-material-extensions][E19], [mkdocs-get-deps][E20], [mkdocs-include-markdown-plugin][E21], [PyMdown][E17], [Pygments][E18], [mkdoxy][E22], and [mkdocs-glightbox][E23] python packages, which can be installed via [pip][E24] using `docs/requirements.txt`.
+
+An alternate to specifying the plugins as command line arguments is to create a [_YAML_][G12] file which specifies the
+plugins to build. Using `-DYAML_FILE=&lt;FILE_NAME&gt;` as the command line argument specifying the [_YAML_][G12] file to use.
+
+!!! note "You may need to specify the full path to the YAML_FILE"
+
+    See [profile][G23] for the format.
 
 The current list of plugins is: @FULL_PLUGIN_LIST_STRING@
 
-The CMake process will also create a [_YAML_][2] file call `illixr.yaml` which can be used as input to the binary.
+The CMake process will also create a [_YAML_][G12] file call `illixr.yaml` which can be used as input to the binary.
 
 ## Running ILLIXR
 
@@ -113,8 +123,7 @@ To run the ILLIXR binary just call `main.<>.exe` with any of the following comma
 an infix specifying the build type, for `Debug` use `dbg`, for `Release` use `opt`, for `RelWithDebInfo` use `optdbg`)
 
 - -p,--plugins=<>, comma separated list of plugins to use (case sensitive, all lowercase, no spaces)
-- -r,--run=<>, comma separated list of plugins to use (case sensitive, all lowercase, no spaces), supersedes plugins entry.  This is only necessary if a plugin builds more than one library (e.g. offload_vio builds 4 libraries) as each must be loaded individually.
-- -y,--yaml=<>, the [profile][23] file to use which specifies some or all of the above arguments (e.g. the generated `illixr.yaml`)
+- -y,--yaml=<>, the [profile][G23] file to use which specifies some or all of the above arguments (e.g. the generated `illixr.yaml`)
 - --<ANY ENVIRONMENT VARIABLE NAME>, you can specify any variable the ILLIXR uses on the command line. Common ones are:
   - --duration=<>, the duration to run for in seconds (default is 60)
   - --data=<>, the data file to use
@@ -129,22 +138,24 @@ Regarding parameters for the binary, the following priority will be used:
 2. If the parameter has a value in the yaml file this value will only be used if it is not specified on the command line (second priority)
 3. If the parameter has a value as an environment variable this value will only be used if it is not specified on the command line nor yaml file
 
+Please refer to the [display backend][I12] for instructions on setting display-related environment variables.
+
+For specific usage instructions, refer to the README files of the respective plugins.
+
 ### Profile file format
-An example of a [_YAML_][2] [profile][23] file is
+An example of a [_YAML_][G12] [profile][G23] file is
 ```yaml
-plugins: timewarp_gl,gldemo,ground_truth_slam,offload_vio
-run: timewarp_gl,gldemo,ground_truth_slam,offload_vio.device_rx
-visualizers: openvins
+plugins: pose_lookup,timewarp_vk,vkdemo,native_renderer
 build_type: Debug
 install_prefix: /home/user/illixr
 env_vars:
-  duration: 5
-  data: data/mav0
-  demo_data: demo_data
-  enable_offload: true
-  enable_alignment: false
-  enable_verbose_errors: false
-  enable_pre_sleep: false
+  ILLIXR_RUN_DURATION: 5
+  DATA: data/mav0
+  DEMO_DATA: demo_data
+  ENABLE_OFFLOAD: false
+  ENABLE_ALIGNMENT: false
+  ENABLE_VERBOSE_ERRORS: false
+  ENABLE_PRE_SLEEP: false
 ```
 
 Where the entries are defined as (* indicates required field):
@@ -152,23 +163,21 @@ Where the entries are defined as (* indicates required field):
 - plugins *
 : Comma separated list of plugins (case-sensitive) to build or load at runtime.
 
-- run
-: Comma separated list of plugins (case-sensitive) which are used at run time. This is only needed in cases like offload_vio where multiple plugin libraries are built by a single plugin, but must be loaded individually. (e.g. offload_vio.server_rx)
-
-- visualizers
-: Comma separated list of visualizers to build or load at runtime (currently openvins is available). At runtime, if multiple visualizers are listed, only the first one will be used.
-
 - build_type
 : The type of build to perform (Debug, Release, or RelWithDebInfo). Ignored at run time.
 
 - install_prefix
-: The root path to where the compiled libraries and binaries should be installed. (e.g. specifying /home/user will install libraries in /home/user/lib and binaries in /home/user/bin). **Note**: The prefix is also used for installing any packages that were downloaded and build from external repositories (e.g. DBoW2, GTSAM, etc). At runtime this path is added to *LD_LIBRARY_PATH* to aid in finding the plugin libraries.
+: The root path to where the compiled libraries and binaries should be installed. (e.g. specifying /home/user will install libraries in /home/user/lib and binaries in /home/user/bin).
+
+  !!! note
+
+      The prefix is also used for installing any packages that were downloaded and build from external repositories (e.g. DBoW2, GTSAM, etc). At runtime this path is added to *LD_LIBRARY_PATH* to aid in finding the plugin libraries.
 
 - env_vars
 : environment variables to use, any environment variable ILLIXR uses can be set here and will be valid during program execution.
 
 
-In general, you should not edit a [profile][23] file directly. The exception to this is when you are testing things on your own machine. [Profile][23] files are generated automatically from the master `profiles/plugins.yaml` during the cmake configuration stage. This is done so that any changes to a [profile][23] or the addition or removal of a [plugin][22] can be managed from a single file. The build system will generate an *illixr.yaml* file which contains entries from the command line and any input profile file and can be freely edited (it is generated every time `cmake` is called).
+In general, you should not edit a [profile][G23] file directly. The exception to this is when you are testing things on your own machine. [Profile][G23] files are generated automatically from the master `profiles/plugins.yaml` during the cmake configuration stage. This is done so that any changes to a [profile][G23] or the addition or removal of a [plugin][G22] can be managed from a single file. The build system will generate an *illixr.yaml* file which contains entries from the command line and any input profile file and can be freely edited (it is generated every time `cmake` is called).
 
 ## Environment Variables
 
@@ -181,18 +190,26 @@ main.dbg.exe --yaml=my.yaml --DATA_SOURCE=/home/my/data --PROCESS_DATA
 This will set env environment variables `DATA_SOURCE` to `/home/my/data` and `PROCESS_DATA` to `True`. For yaml files, any items not in the expected set will be considered to be environment variables. For example:
 
 ```yaml
-plugins: fauxpose,gldemo,debugview,audio_pipeline
+plugins: fauxpose,timewarp_vk,vkdemo,debugview,audio_pipeline
 enable_offload: false
 env_vars:
   DATA_SOURCE: /home/my/data
   PROCESS_DATA: true
 ```
 
-Here, the keywords `plugins` and `enable_offload` are ignored, as they are expected options. The `DATA_SOURCE` and `PROCESS_DATA` entries will cause environment variables to be set to the respective values. *Note:* the names and values of the environment variables are case-sensitive. *Note:* the `get_env_bool` considers any of 'y', 'yes', 'true', and 'on' (case-insensitive) to be `true`.
+Here, the keywords `plugins` and `enable_offload` are ignored, as they are expected options. The `DATA_SOURCE` and `PROCESS_DATA` entries will cause environment variables to be set to the respective values.
+
+!!! note
+
+    The names and values of the environment variables are case-sensitive.
+
+!!! note
+
+    The `get_env_bool` considers any of 'y', 'yes', 'true', 'on' (case-insensitive), and "1" to be `true`.
 
 ### Common Environment Variables
 
-- duration
+- illixr_run_duration
 : The duration to run ILLIXR for in seconds.
 
 - data
@@ -219,9 +236,13 @@ Each plugin can define environment variables to use. See the documentation of ea
 
 ILLIXR currently supports both OpenGL and Vulkan backends (indicated as `gl` and `vk` in the config suffixes). Since some plugins should behave differently (and compile differently) based on what backend is being used, it's important to run `make clean` if you want to try swapping between the two backends.
 
+!!! warning
+
+    The use of the OpenGL back end is in the process of being deprecated. Thus `gl` based plugins are not guaranteed to work in every instance.
+
 ## Rationale
 
--  The current system can use profile files to control everything from the build to running ILLIXR, inkeeping with the [DRY principle][1].
+-  The current system can use profile files to control everything from the build to running ILLIXR, in keeping with the [DRY principle][E10].
    However, for maximum flexibility control can also be done at the command line level as well.
 
 
@@ -246,20 +267,20 @@ The source code is divided into components in the following directories:
 
 -   `ILLIXR/src/`:
     A directory holding the implementation for loading and interfacing plugins.
-    This directory contains [_Spindle_][13].
+    This directory contains [_Spindle_][G13].
 
 -   `ILLIXR/include/illixr/`:
     A directory holding resources and utilities available globally to all plugins.
-    This directory contains the interfaces for [_Switchboard_][14] and [_Phonebook_][15].
+    This directory contains the interfaces for [_Switchboard_][G14] and [_Phonebook_][G15].
 
 -   `ILLIXR/plugins/<plugin_dir>/`:
     A unique directory for each plugin.
     Most of the core XR functionality is implemented via plugins.
-    See [Default Components][10] for more details.
+    See [Default Components][I10] for more details.
 
 If you edit any of the source files, the CMake system will detect and rebuild the respective binary
 the next time it runs.
-If you want to add your own plugin, see [Writing Your Plugin][11].
+If you want to add your own plugin, see [Writing Your Plugin][I11].
 
 <script>
     const dependencies = {};
@@ -352,7 +373,7 @@ If you want to add your own plugin, see [Writing Your Plugin][11].
          document.getElementById("offload_vio.device_rx").checked ||
           document.getElementById("offload_vio.server_tx").checked ||
            document.getElementById("offload_vio.server_rx").checked)) {
-            pkgnotes += "<P><br>For the offload_vio plugins it is strongly recommended to install DeepStream. Please see the installation instructions <a href=\"https://docs.nvidia.com/metropolis/deepstream/dev-guide/text/DS_Quickstart.html#remove-all-previous-deepstream-installations\">here</a>.";
+            pkgnotes += "<P><br>For the offload_vio plugins it is strongly recommended to install DeepStream. Please see the installation instructions <a href=\"https://docs.nvidia.com/metropolis/deepstream/dev-guide/text/DS_Installation.html#dgpu-setup-for-ubuntu">here</a>.";
         }
 
         depinstall.innerHTML = pkgnotes;
@@ -457,7 +478,7 @@ If you want to add your own plugin, see [Writing Your Plugin][11].
         currentRow = tabRef.insertRow(-1);
 
         for(let g of profiles) {
-            if(count >= 4) {
+            if(count >= 3) {
                 currentRow = tabRef.insertRow(-1);
                 count = 0;
             }
@@ -493,7 +514,7 @@ If you want to add your own plugin, see [Writing Your Plugin][11].
         tabRef = document.getElementById("listing_table");
         currentRow = tabRef.insertRow(-1);
         for(const dep of plugins) {
-            if(count >= 4) {
+            if(count >= 3) {
                 currentRow = tabRef.insertRow(-1);
                 count = 0;
             }
@@ -515,20 +536,59 @@ If you want to add your own plugin, see [Writing Your Plugin][11].
 </script>
 
 
-[//]: # (- References -)
-[1]:    https://en.wikipedia.org/wiki/Don%27t_repeat_yourself
+[//]: # (- glossary -)
+
+[G12]:    glossary.md#yaml
+
+[G13]:   glossary.md#spindle
+
+[G14]:   glossary.md#switchboard
+
+[G15]:   glossary.md#phonebook
+
+[G17]:   glossary.md#xvfb
+
+[G18]:   glossary.md#monado
+
+[G19]:   glossary.md#openxr
+
+[G20]:   glossary.md#qemu-kvm
+
+[G22]:   glossary.md#plugin
+
+[G23]:   glossary.md#profile
+
+
+[//]: # (- external -)
+
+[E10]:    https://en.wikipedia.org/wiki/Don%27t_repeat_yourself
+
+[E14]:   https://www.doxygen.nl/
+
+[E15]:   https://www.mkdocs.org/
+
+[E16]:   https://squidfunk.github.io/mkdocs-material/getting-started/
+
+[E17]:   https://facelessuser.github.io/pymdown-extensions/installation/
+
+[E18]:   https://pygments.org/
+
+[E19]:   https://pypi.org/project/mkdocs-material-extensions/
+
+[E20]:   https://pypi.org/project/mkdocs-get-deps/
+
+[E21]:   https://pypi.org/project/mkdocs-include-markdown-plugin/
+
+[E22]:   https://pypi.org/project/mkdoxy/
+
+[E23]:   https://pypi.org/project/mkdocs-glightbox/
+
+[E24]:   https://pypi.org/project/pip/
 
 [//]: # (- Internal -)
-[2]:    glossary.md#yaml
-[10]:   illixr_plugins.md
-[11]:   writing_your_plugin.md
-[13]:   glossary.md#spindle
-[14]:   glossary.md#switchboard
-[15]:   glossary.md#phonebook
-[16]:   virtualization.md
-[17]:   glossary.md#xvfb
-[18]:   glossary.md#monado
-[19]:   glossary.md#openxr
-[20]:   glossary.md#qemu-kvm
-[22]:   glossary.md#plugin
-[23]:   glossary.md#profile
+
+[I10]:   illixr_plugins.md
+
+[I11]:   working_with/writing_your_plugin.md
+
+[I12]:   working_with/display_backend.md

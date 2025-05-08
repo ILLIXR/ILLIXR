@@ -1,7 +1,0 @@
-# This file was auto generated, take caution if manually editing.
-plugins: pose_lookup,gldemo,debugview,offload_data,openvins
-env_vars:
-  enable_offload: false
-  enable_alignment: false
-  enable_verbose_errors: false
-  enable_pre_sleep: false

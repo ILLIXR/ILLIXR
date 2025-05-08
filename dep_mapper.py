@@ -15,23 +15,24 @@ except Exception as _:
     print("INFO: PyYAML does not appear to be installed in your python. An updated dependency map will not be generated.")
     sys.exit(0)
 
-lookup_re = re.compile(r".*lookup_impl<(\S+)>\(\)")  # regex for lookup_impl calls
-reader_re = re.compile(r".*->get(?:_buffered)?_reader<(?:ILLIXR::)?(?:data_format::)?(\S+)>.*")
-writer_re = re.compile(r".*->get(?:_network)?_writer<(?:ILLIXR::)?(?:data_format::)?(\S+)>.*")
-plugin_re = re.compile(r"\S*plugins/(\S+)/\S+\.[ch]pp")
+alias_re = re.compile(r"namespace (\S+)\s?=\s?(\S+);")
 build_re = re.compile(r"\S*build/_deps/([a-zA-Z0-9_]*)/\S+\.[ch]pp")
-comment_re = re.compile(r"(//.*)")                   # regex for inline comments
+class_end_re = re.compile(r"^\s*};")  # regex for class/struct ending
 class_re = re.compile(r"^\s*class ([a-zA-Z0-9_]+)")  # regex for the start of a class
-inh_class_re = re.compile(r"^\s*class ([a-zA-Z0-9_]+).*:.*public.*") # regex for child class
+comment_re = re.compile(r"(//.*)")  # regex for inline comments
+inh_class_re = re.compile(r"^\s*class ([a-zA-Z0-9_]+).*:.*public.*")  # regex for child class
 inh_class_sub_re = re.compile(r"public\s+([a-zA-Z0-9_:]+)")
 # inh_class_ml_re = re.compile(r"^\s*[:,].*public\s+([a-zA-Z0-9_:]+)\s*{?")  # regex for child class with multiline definition
-class_end_re = re.compile(r"^\s*};")                 # regex for class/struct ending
-struct_re = re.compile(r"^\s*struct\s+")             # regex for struct
-struct2_re = re.compile(r"^\s*struct\s+.*};$")       # regex for one line struct
 line_end_re = re.compile(r".*\s*;\s*(?:[^/]|//.*)$")  # regex for the end of a code line
-version_re = re.compile(r"[><=]+")                   # regex for version numbers
-schedule_re = re.compile(r"\s*\S+->schedule<(\S+)>\s?\(")
-alias_re = re.compile(r"namespace (\S+)\s?=\s?(\S+);")
+lookup_re = re.compile(r".*lookup_impl<(\S+)>\(\)")  # regex for lookup_impl calls
+plugin_re = re.compile(r"\S*plugins/(\S+)/\S+\.[ch]pp")
+reader_re = re.compile(r".*->get(?:_buffered)?_reader<(?:ILLIXR::)?(?:data_format::)?(\S+)>\(\"(\S+)\"\).*")
+schedule_re = re.compile(r"\s*\S+->schedule<(\S+)>\s?\(\s*\S+\s*,\s*\"(\S+)\".*")
+service_re = re.compile(r"\S*services/(\S+)/\S+\.[ch]pp")
+struct_re = re.compile(r"^\s*struct\s+")  # regex for struct
+struct2_re = re.compile(r"^\s*struct\s+.*};$")  # regex for one line struct
+writer_re = re.compile(r".*->get(?:_network)?_writer<(?:ILLIXR::)?(?:data_format::)?(\S+)>\(\"(\S+)\"\).*")
+version_re = re.compile(r"[><=]+")  # regex for version numbers
 
 skip_list = ['src/cxxopts.hpp',
              "plugins/zed/capture/cxxopts.hpp",
@@ -61,7 +62,7 @@ def wrap_line(items: List[str], indent: int = 0, length: int = 50) -> str:
                 line += ', '.join(items[start: idx]) + ',\n'
                 out_line += line
                 start = idx
-                line = ' '*indent + "  "
+                line = ' ' * indent + "  "
         line += ', '.join(items[start:])
         out_line += line
     return out_line
@@ -122,11 +123,17 @@ def get_plugin_name(file_name: str) -> str:
     """
     Determines the plugin name from the input file name
 
+def get_plugin_name(file_name: str) -> str:
+    """
+    Determines the plugin name from the input file name
+
     :param file_name: the file name
     :return: the plugin name
     """
     if 'plugins' in file_name:
         p_match = plugin_re.match(file_name)
+    elif 'services' in file_name:
+        p_match = service_re.match(file_name)
     elif 'build' in file_name and '_deps' in file_name:
         p_match = build_re.match(file_name)
     else:
@@ -471,7 +478,7 @@ def report_plugin_invoke(invoke: Dict, deps: Dict, system_classes: List, readers
             print(f"{plugin:25s}  {pl_uses[0]['needs']:20s} {', '.join(pl_uses[0]['provided_by'])}")
             for i in range(len(pl_uses)):
                 pl_deps.append({'needs': pl_uses[i]['needs'],
-                               'provided_by': pl_uses[i]['provided_by']
+                                'provided_by': pl_uses[i]['provided_by']
                                 })
                 if i > 0:
                     print(f"{' ':25s}  {pl_uses[i]['needs']:20s} {', '.join(pl_uses[i]['provided_by'])}")

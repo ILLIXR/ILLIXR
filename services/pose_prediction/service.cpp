@@ -18,7 +18,8 @@ pose_prediction_impl::pose_prediction_impl(const phonebook* const pb)
     , imu_raw_{switchboard_->get_reader<imu_raw_type>("imu_raw")}
     , true_pose_{switchboard_->get_reader<pose_type>("true_pose")}
     , ground_truth_offset_{switchboard_->get_reader<switchboard::event_wrapper<Eigen::Vector3f>>("ground_truth_offset")}
-    , vsync_estimate_{switchboard_->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")} { }
+    , vsync_estimate_{switchboard_->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")}
+    , using_lighthouse_{switchboard_->get_env_bool("ILLIXR_LIGHTHOUSE")} { }
 
 // No parameter get_fast_pose() should just predict to the next vsync
 // However, we don't have vsync estimation yet.
@@ -70,11 +71,9 @@ fast_pose_type pose_prediction_impl::get_fast_pose(time_point future_timestamp) 
 
     switchboard::ptr<const imu_raw_type> imu_raw = imu_raw_.get_ro_nullable();
     if (imu_raw == nullptr) {
-#ifndef NDEBUG
-    #ifndef LIGHTHOUSE
-        spdlog::get("illixr")->debug("[POSEPREDICTION] FAST POSE IS SLOW POSE!");
-    #endif
-#endif
+        if (!using_lighthouse_)
+            spdlog::get("illixr")->debug("[POSEPREDICTION] FAST POSE IS SLOW POSE!");
+
         // No imu_raw, return slow_pose
         return fast_pose_type{
             correct_pose(*slow_pose),
@@ -131,9 +130,9 @@ Eigen::Quaternionf pose_prediction_impl::apply_offset(const Eigen::Quaternionf& 
 }
 
 bool pose_prediction_impl::fast_pose_reliable() const {
-#ifdef LIGHTHOUSE
-    return true;
-#endif
+    if (using_lighthouse_)
+        return true;
+
     return slow_pose_.get_ro_nullable() && imu_raw_.get_ro_nullable();
     /*
       SLAM takes some time to initialize, so initially fast_pose
@@ -166,9 +165,9 @@ Eigen::Quaternionf pose_prediction_impl::get_offset() {
 // Correct the orientation of the pose due to the lopsided IMU in the
 // current Dataset we are using (EuRoC)
 pose_type pose_prediction_impl::correct_pose(const pose_type& pose) const {
-#ifdef LIGHTHOUSE
-    return pose;
-#endif
+    if (using_lighthouse_) // The lighthouse plugin should already apply the correct pose.
+        return pose;
+
     pose_type swapped_pose;
 
     // Make any changes to the axes direction below

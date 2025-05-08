@@ -2,20 +2,19 @@
 
 #include "illixr/dynamic_lib.hpp"
 #include "illixr/error_util.hpp"
-#include "illixr/extended_window.hpp"
 #include "illixr/global_module_defs.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/plugin.hpp"
 #include "illixr/record_logger.hpp"
 #include "illixr/stoplight.hpp"
 #include "illixr/switchboard.hpp"
-#include "illixr/vk/display_provider.hpp"
 #include "illixr/vk/vk_extension_request.hpp"
 #include "sqlite_record_logger.hpp"
 #include "vulkan_display.hpp"
 
 #include <algorithm>
 #include <memory>
+#include <set>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
@@ -23,7 +22,6 @@
 #include <vector>
 
 using namespace ILLIXR;
-typedef bool (*n_vulkan_t)();
 typedef bool (*n_monado_t)();
 
 void spdlogger(const std::string& name, const char* log_level) {
@@ -52,7 +50,6 @@ public:
         phonebook_.register_impl<switchboard>(std::make_shared<switchboard>(&phonebook_));
         switchboard_   = phonebook_.lookup_impl<switchboard>();
         enable_monado_ = false;
-        enable_vulkan_ = false;
         phonebook_.register_impl<stoplight>(std::make_shared<stoplight>());
     }
 
@@ -64,7 +61,6 @@ public:
             return dynamic_lib::create(so_path);
         });
         for (auto& i : libraries_) {
-            enable_vulkan_ = enable_vulkan_ || i.get<n_vulkan_t>("needs_vulkan")();
             enable_monado_ = enable_monado_ || i.get<n_monado_t>("needs_monado")();
         }
         RAC_ERRNO_MSG("runtime_impl after creating the dynamic libraries");
@@ -74,11 +70,7 @@ public:
             return lib.template get<plugin* (*) (phonebook*)>("this_plugin_factory");
         });
 
-        if (!enable_monado_ && !enable_vulkan_) {
-            phonebook_.register_impl<xlib_gl_extended_window>(std::make_shared<xlib_gl_extended_window>(
-                display_params::width_pixels, display_params::height_pixels, nullptr));
-        }
-        if (enable_vulkan_ && !enable_monado_) {
+        if (!enable_monado_) {
             // get env var ILLIXR_DISPLAY_MODE
             std::string display_mode =
                 switchboard_->get_env_char("ILLIXR_DISPLAY_MODE") ? switchboard_->get_env_char("ILLIXR_DISPLAY_MODE") : "glfw";
@@ -96,7 +88,7 @@ public:
 
         phonebook_.lookup_impl<relative_clock>()->start();
 
-        if (enable_vulkan_ && !enable_monado_) {
+        if (!enable_monado_) {
             const std::string display_mode =
                 switchboard_->get_env_char("ILLIXR_DISPLAY_MODE") ? switchboard_->get_env_char("ILLIXR_DISPLAY_MODE") : "glfw";
             if (display_mode != "none") {

@@ -14,14 +14,6 @@
 
 #ifndef DOUBLE_INCLUDE
 extern "C" {
-bool needs_vulkan() {
-    #ifdef VULKAN_REQUIRED
-    return true;
-    #else
-    return false;
-    #endif
-}
-
 bool needs_monado() {
     #ifdef MONADO_REQUIRED
     return true;

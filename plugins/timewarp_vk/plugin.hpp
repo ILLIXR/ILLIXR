@@ -1,6 +1,5 @@
 #pragma once
 
-#define VULKAN_REQUIRED
 #include "illixr/threadloop.hpp"
 #include "timewarp_vk.hpp"
 
