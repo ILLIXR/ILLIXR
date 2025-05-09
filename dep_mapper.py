@@ -119,9 +119,6 @@ def get_src(path: str, recursive: bool = False) -> List[str]:
     """
     return search_for_files(path, ['cpp'], recursive)
 
-def get_plugin_name(file_name: str) -> str:
-    """
-    Determines the plugin name from the input file name
 
 def get_plugin_name(file_name: str) -> str:
     """

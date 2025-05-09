@@ -1,8 +1,9 @@
 ARG ILLIXR_VERSION="x"
 ARG PARENT_IMAGE="x"
-ARG BUILD_FLAGS="x"
 
 FROM ${PARENT_IMAGE}:${ILLIXR_VERSION}
+
+ARG BUILD_FLAGS="x"
 
 USER illixr
 RUN git clone -b changing-docker-deployment https://github.com/ILLIXR/ILLIXR.git --single-branch
