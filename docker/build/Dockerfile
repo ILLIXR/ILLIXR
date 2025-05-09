@@ -5,10 +5,10 @@ ARG BUILD_FLAGS="x"
 FROM ${PARENT_IMAGE}:${ILLIXR_VERSION}
 
 USER illixr
-RUN git clone -b master https://github.com/ILLIXR/ILLIXR.git --single-branch
+RUN git clone -b changing-docker-deployment https://github.com/ILLIXR/ILLIXR.git --single-branch
 RUN mkdir -p ILLIXR/build
 
-RUN cmake -S/home/illixr/ILLIXR -B/home/illixr/ILLIXR/build -DCMAKE_INSTALL_PREFIX=/home/illixr -DBUILD_DOCS=ON -DYAML_FILE=profiles/all.yaml ${BUILD_FLAGS}
+RUN cmake -S/home/illixr/ILLIXR -B/home/illixr/ILLIXR/build -DCMAKE_INSTALL_PREFIX=/home/illixr -DCMAKE_BUILD_TYPE=Debug -DBUILD_DOCS=ON -DYAML_FILE=profiles/all.yaml ${BUILD_FLAGS}
 RUN cmake --build /home/illixr/ILLIXR/build -j4
 RUN cmake --build /home/illixr/ILLIXR/build -t docs
 RUN cmake --install /home/illixr/ILLIXR/build

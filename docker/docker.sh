@@ -3,7 +3,7 @@
 set -o pipefail
 set -e
 
-ROOT_DIR=$(dirname $0)
+ROOT_DIR=$(dirname "$0")
 cd "${ROOT_DIR}"
 
 ILLIXR_VERSION=$(cat ../VERSION)
@@ -22,6 +22,7 @@ NO_LGPL=0
 NO_ZED=0
 BUILD_FULL=0
 MAKE_ALL=0
+USE_LOG=0
 
 # image names
 WITH_ZED="with_zed"
@@ -34,7 +35,7 @@ BASE_IMAGE="illixr/base_image"
 function print_help {
     cat <<EOF
 
-$0 [-afghlr:z]
+$0 [-afghlor:z]
 
 This script can be used to generate ILLIXR Docker images
   -a           : make all possible images (exclusive with all other flags)
@@ -42,12 +43,13 @@ This script can be used to generate ILLIXR Docker images
   -g           : docker image will have no GPL licensed code (exclusive with -a and -f)
   -h           : print this help and exit
   -l           : docker image will have no LGPL or GPL licensed code, implies -g (exclusive with -a and -f)
+  -o           : save docker build output to log files
   -r <version> : the version for the images, defaults to value in VERSION file
   -z           : docker image will not have the ZED SDK (exclusive with -a and -f)
 EOF
 }
 
-while getopts aglzhf opt; do
+while getopts aglzhfo opt; do
     case $opt in
         a)
             MAKE_ALL=1
@@ -65,6 +67,9 @@ while getopts aglzhf opt; do
         l)
             NO_GPL=1
             NO_LGPL=1
+            ;;
+        o)
+            USE_LOG=1
             ;;
         z)
             NO_ZED=1
@@ -106,6 +111,13 @@ echo "#  UBUNTU_RELEASE  : ${UBUNTU_RELEASE_YEAR}.04"
 if [[ $NO_ZED -eq 0 ]]; then
     echo "#  ZED SDK         : ${ZED_SDK_MAJOR}.${ZED_SDK_MINOR}.${ZED_SDK_PATCH}"
 fi
+if [[ USE_LOG -ne 0 ]]; then
+    echo "# Capturing output : Yes"
+    DOC_FLAGS="--progress=plain"
+else
+    echo "# Capturing output : No"
+    DOC_FLAGS=""
+fi
 
 img_root="illixr_"
 
@@ -136,15 +148,27 @@ echo "# ------------------------------------------------------------------------
 # build root image
 echo ""
 echo "Building base image"
-docker build \
-    --build-arg ILLIXR_VERSION=${ILLIXR_VERSION} \
-    --build-arg CUDA_MAJOR=${CUDA_MAJOR} \
-    --build-arg CUDA_MINOR=${CUDA_MINOR} \
-    --build-arg CUDA_PATCH=${CUDA_PATCH} \
-    --build-arg UBUNTU_RELEASE_YEAR=${UBUNTU_RELEASE_YEAR} \
-    --tag ${BASE_IMAGE}:${ILLIXR_VERSION} \
-    --file base/Dockerfile \
-    .
+LOG=""
+command=("docker build " \
+    "--build-arg ILLIXR_VERSION=${ILLIXR_VERSION}" \
+    "--build-arg CUDA_MAJOR=${CUDA_MAJOR}" \
+    "--build-arg CUDA_MINOR=${CUDA_MINOR}" \
+    "--build-arg CUDA_PATCH=${CUDA_PATCH}" \
+    "--build-arg UBUNTU_RELEASE_YEAR=${UBUNTU_RELEASE_YEAR}" \
+    "--tag ${BASE_IMAGE}:${ILLIXR_VERSION}" \
+    "--file base/Dockerfile" \
+    "${DOC_FLAGS}" \
+    ".")
+
+if [[ USE_LOG -ne 0 ]]; then
+    LOG="2>&1 | tee -a base.log"
+    echo "${command[@]}" > base.log
+fi
+
+eval "${command[@]}" "${LOG}"
+
+
+
 echo ""
 echo "Base image complete"
 BUILD_FLAGS=""
@@ -152,58 +176,92 @@ BUILD_FLAGS=""
 function build_image {
     echo""
     echo "Building final image illixr$3 from $1 with flags $2"
-    docker build \
-        --build-arg ILLIXR_VERSION=${ILLIXR_VERSION} \
-        --build-arg PARENT_IMAGE="$1" \
-        --build-arg BUILD_FLAGS="$2" \
-        --tag "illixr/illixr$3:v${ILLIXR_VERSION}" \
-        --file build/Dockerfile \
-        .
+    command=("docker build" \
+        "--build-arg ILLIXR_VERSION=${ILLIXR_VERSION}" \
+        "--build-arg PARENT_IMAGE=$1" \
+        "--build-arg BUILD_FLAGS=\"$2\"" \
+        "--tag illixr/illixr$3:v${ILLIXR_VERSION}" \
+        "--file build/Dockerfile" \
+        "${DOC_FLAGS}" \
+        ".")
+    if [[ USE_LOG -ne 0 ]]; then
+        LOG="2>&1 | tee -a $3.log"
+        echo "${command[@]}" > "$3.log"
+    fi
+
+    eval "${command[@]}" "${LOG}"
 }
 
 function build_zed {
     echo ""
     echo "Building ZED image $2 from $1"
-    docker build \
-        --progress plain \
-        --build-arg ILLIXR_VERSION=${ILLIXR_VERSION} \
-        --build-arg CUDA_MAJOR=${CUDA_MAJOR} \
-        --build-arg CUDA_MINOR=${CUDA_MINOR} \
-        --build-arg CUDA_PATCH=${CUDA_PATCH} \
-        --build-arg UBUNTU_RELEASE_YEAR=${UBUNTU_RELEASE_YEAR} \
-        --build-arg ZED_SDK_MAJOR=4 \
-        --build-arg ZED_SDK_MINOR=2 \
-        --build-arg ZED_SDK_PATCH=3 \
-        --build-arg PARENT_IMAGE="$1" \
-        --tag "illixr/$2:${ILLIXR_VERSION}" \
-        --file zed/Dockerfile \
-        .
+    command=("docker build" \
+        "--progress plain" \
+        "--build-arg ILLIXR_VERSION=${ILLIXR_VERSION}" \
+        "--build-arg CUDA_MAJOR=${CUDA_MAJOR}" \
+        "--build-arg CUDA_MINOR=${CUDA_MINOR}" \
+        "--build-arg CUDA_PATCH=${CUDA_PATCH}" \
+        "--build-arg UBUNTU_RELEASE_YEAR=${UBUNTU_RELEASE_YEAR}" \
+        "--build-arg ZED_SDK_MAJOR=4" \
+        "--build-arg ZED_SDK_MINOR=2" \
+        "--build-arg ZED_SDK_PATCH=3" \
+        "--build-arg PARENT_IMAGE=$1" \
+        "--tag illixr/$2:${ILLIXR_VERSION}" \
+        "--file zed/Dockerfile" \
+        "${DOC_FLAGS}" \
+        ".")
+
+    if [[ USE_LOG -ne 0 ]]; then
+        LOG="2>&1 | tee -a $2.log"
+        echo "${command[@]}" > "$2.log"
+    fi
+
+    eval "${command[@]}" "${LOG}"
+
     echo ""
     echo "ZED build complete"
 }
 
 function build_lgpl {
     echo "Building LGPL image $2 from $1"
-    docker build \
-        --build-arg ILLIXR_VERSION=${ILLIXR_VERSION} \
-        --build-arg PARENT_IMAGE="$1" \
-        --tag "illixr/$2:${ILLIXR_VERSION}" \
-        --file lgpl/Dockerfile \
-        .
+    command=("docker build" \
+        "--build-arg ILLIXR_VERSION=${ILLIXR_VERSION}" \
+        "--build-arg PARENT_IMAGE=$1" \
+        "--tag illixr/$2:${ILLIXR_VERSION}" \
+        "--file lgpl/Dockerfile" \
+        "${DOC_FLAGS}" \
+        ".")
+
+    if [[ USE_LOG -ne 0 ]]; then
+        LOG="2>&1 | tee -a $2.log"
+        echo "${command[@]}" > "$2.log"
+    fi
+
+    eval "${command[@]}" "${LOG}"
+
     echo ""
     echo "LGPL build complete"
 }
 
 function build_gpl {
     echo "Building GPL image $2 from $1"
-    docker build \
-        --build-arg ILLIXR_VERSION=${ILLIXR_VERSION} \
-        --build-arg CUDA_MAJOR=${CUDA_MAJOR} \
-        --build-arg CUDA_MINOR=${CUDA_MINOR} \
-        --build-arg PARENT_IMAGE="$1" \
-        --tag "illixr/$2:${ILLIXR_VERSION}" \
-        --file gpl/Dockerfile \
-        .
+    command=("docker build" \
+        "--build-arg ILLIXR_VERSION=${ILLIXR_VERSION}" \
+        "--build-arg CUDA_MAJOR=${CUDA_MAJOR}" \
+        "--build-arg CUDA_MINOR=${CUDA_MINOR}" \
+        "--build-arg PARENT_IMAGE=$1" \
+        "--tag illixr/$2:${ILLIXR_VERSION}" \
+        "--file gpl/Dockerfile" \
+        "${DOC_FLAGS}" \
+        ".")
+
+    if [[ USE_LOG -ne 0 ]]; then
+        LOG="2>&1 | tee -a $2.log"
+        echo "${command[@]}" > "$2.log"
+    fi
+
+    eval "${command[@]}" "${LOG}"
+
     echo ""
     echo "GPL build complete"
 }
