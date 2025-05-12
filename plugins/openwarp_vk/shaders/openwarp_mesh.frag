@@ -38,6 +38,7 @@ float u_debugOpacity = 0.0f;
 
 layout (location = 0) in vec4 worldspace;
 layout (location = 1) in vec2 warpUv;
+//layout (location = 2) flat in vec2 warpUvFlat;
 
 layout (location = 0) out vec4 outColor;
 
@@ -45,8 +46,10 @@ void main()
 {
     outColor = texture(image_texture, warpUv);
 
-    // float depth = gl_FragCoord.z;
+    // float depth = texture(depth_texture, warpUv).r;
+     // depth = gl_FragCoord.z;
     // outColor = vec4(vec3(depth), 1.0f);
+
 
     // Worldspace parameterization grid overlay.
     // For debug + visualization only

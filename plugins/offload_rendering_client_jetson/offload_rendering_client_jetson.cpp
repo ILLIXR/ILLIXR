@@ -13,8 +13,7 @@ offload_rendering_client_jetson::offload_rendering_client_jetson(const std::stri
     , pose_prediction_{pb->lookup_impl<pose_prediction>()}
     , clock_{pb->lookup_impl<relative_clock>()} {
     // Check environment variables for configuration
-    use_depth_ = switchboard_->get_env_char("ILLIXR_USE_DEPTH_IMAGES") != nullptr &&
-        std::stoi(switchboard_->get_env_char("ILLIXR_USE_DEPTH_IMAGES"));
+    use_depth_ = switchboard_->get_env_bool("ILLIXR_USE_DEPTH_IMAGES");
     if (use_depth_) {
         log_->debug("Encoding depth images for the client");
     } else {
