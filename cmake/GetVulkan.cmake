@@ -14,7 +14,7 @@ function(clearVars)
     endforeach()
 endfunction()
 
-set(ILLIXR_VULKAN_VERSION $<IF:${ON_JETSON_PLATFORM}, 1.3, 1.4)
+set(ILLIXR_VULKAN_VERSION $<IF:${ON_JETSON_PLATFORM}, 1.3, 1.4>)
 message(STATUS "Checking for module 'vulkan' > ${ILLIXR_VULKAN_VERSION}")
 find_package(Vulkan 1.4 QUIET)
 if(NOT Vulkan_FOUND)
