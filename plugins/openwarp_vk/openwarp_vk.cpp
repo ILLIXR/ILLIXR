@@ -26,7 +26,7 @@ openwarp_vk::openwarp_vk(const phonebook* pb)
     else
         spdlog::get("illixr")->info("[openwarp] Using Unreal projection matrices");
 
-        this->offloaded_rendering_ = switchboard_->get_env_bool("ILLIXR_OFFLOADING_RENDERING");
+    this->offloaded_rendering_ = switchboard_->get_env_bool("ILLIXR_OFFLOADING_RENDERING");
 }
 
 // For objects that only need to be created a single time and do not need to change.
@@ -609,13 +609,13 @@ void openwarp_vk::generate_distortion_data() {
         if (!using_godot_) {
             spdlog::get("illixr")->info("Using unreal projection");
             math_util::unreal_projection(&basic_projection_[eye], index_params::fov_left[eye], index_params::fov_right[eye],
-                                            index_params::fov_up[eye], index_params::fov_down[eye]);
+                                         index_params::fov_up[eye], index_params::fov_down[eye]);
         } else {
             spdlog::get("illixr")->info("Using godot projection");
             math_util::godot_projection(&basic_projection_[eye], index_params::fov_left[eye], index_params::fov_right[eye],
                                         index_params::fov_up[eye], index_params::fov_down[eye]);
         }
-        
+
         if (!offloaded_rendering_) {
             inverse_projection_[eye] = basic_projection_[eye].inverse();
         } else {
