@@ -14,7 +14,8 @@ extern "C" {
 }
 
 #define OFFLOAD_RENDERING_FFMPEG_ENCODER_NAME "hevc_nvenc"
-#define OFFLOAD_RENDERING_BITRATE             100000000
+#define OFFLOAD_RENDERING_COLOR_BITRATE       90000000
+#define OFFLOAD_RENDERING_DEPTH_BITRATE       5000000
 
 namespace ILLIXR::vulkan::ffmpeg_utils {
 
