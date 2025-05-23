@@ -216,9 +216,9 @@ private:
     std::vector<std::array<vulkan::ffmpeg_utils::ffmpeg_vk_frame, 2>> avvk_color_frames_;
     std::vector<std::array<vulkan::ffmpeg_utils::ffmpeg_vk_frame, 2>> avvk_depth_frames_;
 
-    int  framerate_ = 144;
-    long color_bitrate_   = OFFLOAD_RENDERING_COLOR_BITRATE;
-    long depth_bitrate_   = OFFLOAD_RENDERING_DEPTH_BITRATE;
+    int  framerate_     = 144;
+    long color_bitrate_ = OFFLOAD_RENDERING_COLOR_BITRATE;
+    long depth_bitrate_ = OFFLOAD_RENDERING_DEPTH_BITRATE;
 
     bool use_pass_depth_ = false;
     bool nalu_only_      = false;
