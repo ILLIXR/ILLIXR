@@ -20,6 +20,7 @@ RUN apt-get install -y zstd libopenblas-dev libopenblas-pthread-dev
 
 RUN groupadd -U illixr zed
 USER illixr
+ENV USE_ZED=1
 WORKDIR /home/illixr
 
 # ZED sdk install

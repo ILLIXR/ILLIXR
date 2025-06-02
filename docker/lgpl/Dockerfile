@@ -8,3 +8,4 @@ RUN apt-get update
 RUN apt-get install -y portaudio19-dev libspatialaudio-dev
 
 USER illixr
+ENV USE_LGPL=1
