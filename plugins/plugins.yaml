@@ -193,7 +193,7 @@ profiles:
       enable_pre_sleep: false
 
   - open3d:
-    plugins: offline_scannet,scene_reconstruction
+    plugins: offline_imu,offline_cam,gtsam_integrator,offline_scannet,scene_reconstruction,pose_prediction,ground_truth_slam,vkdemo,timewarp_vk,native_renderer,debugview
     env_vars:
       enable_offload: false
       enable_alignment: false

@@ -1,4 +1,4 @@
-#pragme once
+#pragma once
 
 #include "illixr/data_format/pose.hpp"
 #include "illixr/phonebook.hpp"
