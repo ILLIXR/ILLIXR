@@ -116,7 +116,7 @@ public:
                std::shared_ptr<vulkan::buffer_pool<data_format::fast_pose_type>> buffer_pool_,
                bool                                                              input_texture_external_) override;
     void partial_destroy();
-    void update_uniforms(const data_format::pose_type& render_pose) override;
+    void update_uniforms(const data_format::pose_type& render_pose, bool left) override;
     void record_command_buffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left) override;
     bool is_external() override;
     void destroy() override;
@@ -139,6 +139,7 @@ private:
 
     const phonebook* const             phonebook_;
     const std::shared_ptr<switchboard> switchboard_;
+    const std::shared_ptr<relative_clock> relative_clock_;
 
     const std::shared_ptr<data_format::pose_prediction> pose_prediction_;
 

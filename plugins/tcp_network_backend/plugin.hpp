@@ -42,6 +42,39 @@ private:
 
     // To delimit the topic_name and the serialization method when creating a topic
     std::string delimiter_ = ":";
+
+protected:
+    // CSV logger for pose data
+    std::shared_ptr<spdlog::logger> network_logger_ = nullptr;
+    
+    /**
+     * @brief Logs the data type, transmission start time, and payload size to a CSV file.
+     *
+     * @param render_pose The pose used for rendering the frame
+     * @param reprojection_pose The pose used for reprojection/timewarp
+     */
+    void log_to_csv(const time_point& send_time, const int& payload_size, const std::string& data_type) {
+        if (!network_logger_) {
+            // Initialize the CSV logger if it doesn't exist
+            network_logger_ = spdlog::basic_logger_mt("network_logger_", "logs/network.csv", true);
+            
+            // Set the pattern to just write the message (no timestamp or log level)
+            network_logger_->set_pattern("%v");
+            
+            // Write header row
+            network_logger_->info("send_time,payload_size,data_type");
+        }
+        
+        // Log the pose data in CSV format
+        network_logger_->info("{},{},{}",
+            send_time.time_since_epoch().count(),
+            payload_size,
+            data_type
+        );
+        
+        // Flush to ensure data is written immediately
+        network_logger_->flush();
+    }
 };
 
 } // namespace ILLIXR

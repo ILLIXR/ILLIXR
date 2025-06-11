@@ -147,12 +147,12 @@ void timewarp_vk::partial_destroy() {
     descriptor_pool_ = VK_NULL_HANDLE;
 }
 
-void timewarp_vk::update_uniforms(const pose_type& render_pose) {
+fast_pose_type timewarp_vk::update_uniforms(const fast_pose_type& render_pose) {
     num_update_uniforms_calls_++;
 
     // Generate "starting" view matrix, from the pose sampled at the time of rendering the frame
     Eigen::Matrix4f view_matrix   = Eigen::Matrix4f::Identity();
-    view_matrix.block(0, 0, 3, 3) = render_pose.orientation.toRotationMatrix();
+    view_matrix.block(0, 0, 3, 3) = render_pose.pose.orientation.toRotationMatrix();
 
     // We simulate two asynchronous view matrices, one at the beginning of
     // display refresh, and one at the end of display refresh. The
@@ -163,11 +163,11 @@ void timewarp_vk::update_uniforms(const pose_type& render_pose) {
     Eigen::Matrix4f view_matrix_end   = Eigen::Matrix4f::Identity();
 
     auto      next_vsync  = vsync_.get_ro_nullable().get();
-    pose_type latest_pose = disable_warp_
+    fast_pose_type latest_pose = disable_warp_
         ? render_pose
-        : (next_vsync == nullptr ? pose_prediction_->get_fast_pose().pose : pose_prediction_->get_fast_pose(**next_vsync).pose);
+        : (next_vsync == nullptr ? pose_prediction_->get_fast_pose() : pose_prediction_->get_fast_pose(**next_vsync));
 
-    view_matrix_begin.block(0, 0, 3, 3) = latest_pose.orientation.toRotationMatrix();
+    view_matrix_begin.block(0, 0, 3, 3) = latest_pose.pose.orientation.toRotationMatrix();
 
     // TODO: We set the "end" pose to the same as the beginning pose, but this really should be the pose for
     // `display_period` later
@@ -187,6 +187,7 @@ void timewarp_vk::update_uniforms(const pose_type& render_pose) {
         memcpy(&ubo->timewarp_start_transform[eye], timeWarpStartTransform4x4.data(), sizeof(glm::mat4));
         memcpy(&ubo->timewarp_end_transform[eye], timeWarpEndTransform4x4.data(), sizeof(glm::mat4));
     }
+    return latest_pose;
 }
 
 void timewarp_vk::record_command_buffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left) {

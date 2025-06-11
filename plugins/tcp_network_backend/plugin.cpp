@@ -181,6 +181,7 @@ void tcp_network_backend::send_to_peer(const std::string& topic_name, std::strin
     packet.append(reinterpret_cast<char*>(&topic_name_length), 4);
     packet.append(topic_name);
     packet.append(message.begin(), message.end());
+    log_to_csv(time_point{std::chrono::high_resolution_clock::now().time_since_epoch()}, packet.size(), topic_name);
     peer_socket_->write_data(packet);
 }
 
