@@ -49,7 +49,6 @@ component. ILLIXR currently contains the following [plugins][P66] and [services]
 ### Visual
 
 - Asynchronous reprojection:
-    - [timewarp_gl][P38], [OpenGL][E2] based
     - [timewarp_vk][P65], [Vulkan][E3] based
 - Asynchronous 6-degree reprojection [openwarp][P58]
 - [vkdemo][P57] - toy application, with native ILLIXR rendering interface gldemo

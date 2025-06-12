@@ -42,13 +42,6 @@ dep_map:
     - zed
   plugin: debugview
 - dependencies:
-  - needs: pose_prediction
-    provided_by:
-    - fauxpose
-    - pose_lookup
-    - pose_prediction
-  plugin: gldemo
-- dependencies:
   - needs: imu_type
     provided_by:
     - depthai
@@ -262,22 +255,6 @@ dep_map:
     - realsense
     - zed
   plugin: rk4_integrator
-- dependencies:
-  - needs: image_handle
-    provided_by:
-    - gldemo
-  - needs: pose_prediction
-    provided_by:
-    - fauxpose
-    - pose_lookup
-    - pose_prediction
-  - needs: rendered_frame
-    provided_by:
-    - gldemo
-  - needs: rendered_frame
-    provided_by:
-      - gldemo
-  plugin: timewarp_gl
 - dependencies:
   - needs: pose_prediction
     provided_by:

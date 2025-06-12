@@ -1,7 +1,0 @@
-# This file was auto generated, take caution if manually editing.
-plugins: offline_imu,offline_cam,gtsam_integrator,openvins,pose_prediction,timewarp_gl.monado
-env_vars:
-  ENABLE_OFFLOAD: false
-  ENABLE_ALIGNMENT: false
-  ENABLE_VERBOSE_ERRORS: false
-  ENABLE_PRE_SLEEP: false
