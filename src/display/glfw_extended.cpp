@@ -1,4 +1,3 @@
-
 #define GLFW_INCLUDE_VULKAN
 #include "glfw_extended.hpp"
 
@@ -66,6 +65,15 @@ glfw_extended::glfw_extended() {
 
     window_ = glfwCreateWindow(display_params::width_pixels, display_params::height_pixels, "ILLIXR Eyebuffer Window (Vulkan)",
                                nullptr, nullptr);
+
+    // Get the primary monitor
+    GLFWmonitor* primary_monitor = glfwGetPrimaryMonitor();
+    if (primary_monitor) {
+        // Get the video mode of the primary monitor
+        const GLFWvidmode* mode = glfwGetVideoMode(primary_monitor);
+        // Set the window to fullscreen on the primary monitor
+        glfwSetWindowMonitor((GLFWwindow*) window_, primary_monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+    }
 }
 
 std::set<const char*> glfw_extended::get_required_device_extensions() {

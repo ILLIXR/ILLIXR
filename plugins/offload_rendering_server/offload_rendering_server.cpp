@@ -46,16 +46,29 @@ void offload_rendering_server::_p_thread_setup() {
     log_->info("Obtained display provider");
 
     // Configure encoding bitrate from environment or use default
-    auto bitrate_env = switchboard_->get_env_char("ILLIXR_OFFLOAD_RENDERING_BITRATE");
-    if (bitrate_env == nullptr) {
-        bitrate_ = OFFLOAD_RENDERING_BITRATE;
+    auto color_bitrate_env = switchboard_->get_env_char("ILLIXR_OFFLOAD_RENDERING_COLOR_BITRATE");
+    if (color_bitrate_env == nullptr) {
+        color_bitrate_ = OFFLOAD_RENDERING_COLOR_BITRATE;
     } else {
-        bitrate_ = std::stol(bitrate_env);
+        color_bitrate_ = std::stol(color_bitrate_env);
+        if (color_bitrate_ <= 0) {
+            throw std::runtime_error{"Invalid color bitrate value"};
+        }
     }
-    if (bitrate_ <= 0) {
-        throw std::runtime_error{"Invalid bitrate value"};
+    log_->info("Using color bitrate: {}", color_bitrate_);
+
+    if (use_pass_depth_) {
+        auto depth_bitrate_env = switchboard_->get_env_char("ILLIXR_OFFLOAD_RENDERING_DEPTH_BITRATE");
+        if (depth_bitrate_env == nullptr) {
+            depth_bitrate_ = OFFLOAD_RENDERING_DEPTH_BITRATE;
+        } else {
+            depth_bitrate_ = std::stol(depth_bitrate_env);
+            if (depth_bitrate_ <= 0) {
+                throw std::runtime_error{"Invalid depth bitrate value"};
+            }
+        }
+        log_->info("Using depth bitrate: {}", depth_bitrate_);
     }
-    log_->info("Using bitrate: {}", bitrate_);
 
     // Configure framerate from environment or use default
     auto framerate_env = switchboard_->get_env_char("ILLIXR_OFFLOAD_RENDERING_FRAMERATE");
@@ -548,7 +561,7 @@ void offload_rendering_server::ffmpeg_init_encoder() {
     codec_color_ctx_->height    = static_cast<int>(buffer_pool_->image_pool[0][0].image_info.extent.height);
     codec_color_ctx_->time_base = {1, framerate_};
     codec_color_ctx_->framerate = {framerate_, 1};
-    codec_color_ctx_->bit_rate  = bitrate_;
+    codec_color_ctx_->bit_rate  = color_bitrate_;
 
     // Configure color space
     codec_color_ctx_->color_range     = AVCOL_RANGE_JPEG;
@@ -586,7 +599,7 @@ void offload_rendering_server::ffmpeg_init_encoder() {
         codec_depth_ctx_->height    = static_cast<int>(buffer_pool_->depth_image_pool[0][0].image_info.extent.height);
         codec_depth_ctx_->time_base = {1, framerate_};
         codec_depth_ctx_->framerate = {framerate_, 1};
-        codec_depth_ctx_->bit_rate  = bitrate_;
+        codec_depth_ctx_->bit_rate  = depth_bitrate_;
 
         // Configure color space
         codec_depth_ctx_->color_range     = AVCOL_RANGE_JPEG;

@@ -25,6 +25,8 @@ openwarp_vk::openwarp_vk(const phonebook* pb)
         spdlog::get("illixr")->info("[openwarp] Using Godot projection matrices");
     else
         spdlog::get("illixr")->info("[openwarp] Using Unreal projection matrices");
+
+    this->offloaded_rendering_ = switchboard_->get_env_bool("ILLIXR_OFFLOADING_RENDERING");
 }
 
 // For objects that only need to be created a single time and do not need to change.
@@ -89,8 +91,6 @@ void openwarp_vk::setup(VkRenderPass render_pass, uint32_t subpass,
 
     create_offscreen_images();
     create_descriptor_sets();
-
-    this->offloaded_rendering_ = switchboard_->get_env_bool("ILLIXR_OFFLOADING_RENDERING");
 }
 
 void openwarp_vk::partial_destroy() {
@@ -606,15 +606,17 @@ void openwarp_vk::generate_distortion_data() {
 
     // Construct perspective projection matrices
     for (int eye = 0; eye < 2; eye++) {
-        if (!offloaded_rendering_) {
-            if (!using_godot_) {
-                math_util::unreal_projection(&basic_projection_[eye], index_params::fov_left[eye], index_params::fov_right[eye],
-                                             index_params::fov_up[eye], index_params::fov_down[eye]);
-            } else {
-                math_util::godot_projection(&basic_projection_[eye], index_params::fov_left[eye], index_params::fov_right[eye],
-                                            index_params::fov_up[eye], index_params::fov_down[eye]);
-            }
+        if (!using_godot_) {
+            spdlog::get("illixr")->info("Using unreal projection");
+            math_util::unreal_projection(&basic_projection_[eye], index_params::fov_left[eye], index_params::fov_right[eye],
+                                         index_params::fov_up[eye], index_params::fov_down[eye]);
+        } else {
+            spdlog::get("illixr")->info("Using godot projection");
+            math_util::godot_projection(&basic_projection_[eye], index_params::fov_left[eye], index_params::fov_right[eye],
+                                        index_params::fov_up[eye], index_params::fov_down[eye]);
+        }
 
+        if (!offloaded_rendering_) {
             inverse_projection_[eye] = basic_projection_[eye].inverse();
         } else {
             float scale = 1.0f;
@@ -630,8 +632,10 @@ void openwarp_vk::generate_distortion_data() {
             // The FOVs provided to the server should match the ones provided to Monado.
             Eigen::Matrix4f server_fov;
             if (!using_godot_) {
+                spdlog::get("illixr")->info("Using unreal projection for offload rendering");
                 math_util::unreal_projection(&server_fov, fov_left, fov_right, fov_up, fov_down);
             } else {
+                spdlog::get("illixr")->info("Using godot projection for offload rendering");
                 math_util::godot_projection(&server_fov, fov_left, fov_right, fov_up, fov_down);
             }
 

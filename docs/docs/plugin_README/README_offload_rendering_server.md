@@ -8,7 +8,8 @@ used for the rendered frame so that the client can reprojected the decoded frame
 
 Relevant environment variables include:
   - ``ILLIXR_USE_DEPTH_IMAGES`` set to non-zero will encode/transmit depth images.
-  - ``ILLIXR_OFFLOAD_RENDERING_BITRATE`` sets the encoding bitrate.
+  - ``ILLIXR_OFFLOAD_RENDERING_COLOR_BITRATE`` sets the color encoding bitrate.
+  - ``ILLIXR_OFFLOAD_RENDERING_DEPTH_BITRATE`` sets the depth encoding bitrate, if depth encoding is enabled.
   - ``ILLIXR_OFFLOAD_RENDERING_FRAMERATE`` sets the encoding framerate.
   - ``ILLIXR_OFFLOAD_RENDERING_NALU_ONLY`` set to non-zero indicates a Jetson client.
 

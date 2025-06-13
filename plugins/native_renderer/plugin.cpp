@@ -189,7 +189,7 @@ void native_renderer::_p_one_iteration() {
     auto next_swap = vsync_.get_ro_nullable();
     if (next_swap == nullptr) {
         std::this_thread::sleep_for(display_params::period / 6.0 * 5);
-        log_->debug("No vsync estimate!");
+        // log_->debug("No vsync estimate!");
     } else {
         // convert next_swap_time to std::chrono::time_point
         auto next_swap_time_point = std::chrono::time_point<std::chrono::system_clock>(

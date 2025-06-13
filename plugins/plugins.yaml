@@ -1,4 +1,4 @@
-all_plugins: audio_pipeline,debugview,depthai,gldemo,ground_truth_slam,gtsam_integrator,offline_cam,offline_imu,offload_data,offload_vio.device_rx,offload_vio.device_tx,offload_vio.server_rx,offload_vio.server_tx,passthrough_integrator,pose_lookup,pose_prediction,realsense,record_imu_cam,rk4_integrator,timewarp_gl,timewarp_gl.monado,openwarp_vk,openwarp_vk.monado,zed,fauxpose,native_renderer,timewarp_vk,timewarp_vk.monado,vkdemo,openni,record_rgb_depth,offload_rendering_client,offload_rendering_server,tcp_network_backend,lighthouse,webcam,hand_tracking,hand_tracking.viewer,hand_tracking_gpu,zed.data_injection,openvins,orb_slam3
+all_plugins: audio_pipeline,debugview,depthai,gldemo,ground_truth_slam,gtsam_integrator,offline_cam,offline_imu,offload_data,offload_vio.device_rx,offload_vio.device_tx,offload_vio.server_rx,offload_vio.server_tx,passthrough_integrator,pose_lookup,pose_prediction,realsense,record_imu_cam,rk4_integrator,timewarp_gl,timewarp_gl.monado,openwarp_vk,openwarp_vk.monado,zed,fauxpose,native_renderer,timewarp_vk,timewarp_vk.monado,vkdemo,openni,record_rgb_depth,offload_rendering_client,offload_rendering_client_jetson,offload_rendering_server,tcp_network_backend,lighthouse,webcam,hand_tracking,hand_tracking.viewer,hand_tracking_gpu,zed.data_injection,openvins,orb_slam3
 
 profiles:
   - ci:
@@ -134,6 +134,14 @@ profiles:
 
   - offload_rendering_client:
     plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,tcp_network_backend,offload_rendering_client,timewarp_vk,native_renderer,openvins
+    env_vars:
+      enable_offload: false
+      enable_alignment: false
+      enable_verbose_errors: false
+      enable_pre_sleep: false
+
+  - offload_rendering_client_jetson:
+    plugins: lighthouse,pose_prediction,tcp_network_backend,offload_rendering_client_jetson,openwarp_vk,native_renderer
     env_vars:
       enable_offload: false
       enable_alignment: false
