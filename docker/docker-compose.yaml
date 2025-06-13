@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+    illixr:
+        image: ghcr.io/illixr/illixr_${ILLIXR_DOCKER_IMAGE}:latest
+        privileged: true
+        container_name: illixr_${ILLIXR_DOCKER_IMAGE}:latest
+        environment:
+          - DISPLAY=${DISPLAY}
+          - QT_X11_NO_MITSHM=1 # for QT applications
+        hostname: illixr-docker
+        volumes:
+            - /tmp/.X11-unix:/tmp/.X11-unix
+        deploy:
+            resources:
+                reservations:
+                    devices:
+                      - driver: nvidia
+                        count: 1
+                        capabilities: [gpu]

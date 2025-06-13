@@ -6,6 +6,8 @@
 #include <filesystem>
 #include <shared_mutex>
 
+// #define LIGHTHOUSE
+
 using namespace ILLIXR;
 using namespace ILLIXR::data_format;
 

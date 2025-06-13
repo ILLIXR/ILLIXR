@@ -42,7 +42,7 @@ dep_map:
     - zed
   plugin: debugview
 - dependencies:
-  - needs: pose_prediction
+  - needs: imu_type
     provided_by:
     - fauxpose
     - pose_lookup

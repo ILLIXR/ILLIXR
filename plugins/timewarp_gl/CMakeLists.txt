@@ -2,6 +2,7 @@
 if(NOT DEFINED BUILDING_ILLIXR)
     message(ERROR "The timewarp_gl plugin cannot be built outside of the main ILLIXR build")
 endif()
+get_external_for_plugin(Vulkan)
 
 if(NOT PLUGIN_NAME)
     set(PLUGIN_NAME "plugin.timewarp_gl${ILLIXR_BUILD_SUFFIX}")

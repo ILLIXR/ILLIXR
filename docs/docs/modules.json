@@ -479,6 +479,22 @@
       }
     },
     {
+      "EGL": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "libegl-dev",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "egl-devel",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
       "fmt": {
         "pkg": {
           "Ubuntu": {
@@ -1512,6 +1528,22 @@
           },
           "Fedora": {
             "pkg": "libxcb-devel",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "xcb-shm": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "libxcb-shm0-dev",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "",
             "postnotes": "",
             "notes": ""
           }

@@ -36,8 +36,7 @@ required only for specific plugins.
 
 <table id="operating_system" style="border-spacing: 20px; border: 1px solid black;"></table>
 
-ILLIXR may compile with other versions of the above operating systems, but some of the necessary prerequisite packages are not supplied by the OS repos and will need to be compiled by hand. You should be able to use the package and cmake commands for other versions of the same OS (other than the missing packages) to compile ILLIXR. RHEL is not supported at this time as many of the prerequisite packages are not natively available. You will also need to have a C++ compiler
-installed (gcc, clang, etc.) as well as a generator (make, ninja, etc.) and CMake 3.22 or newer (installation is os dependent).
+ILLIXR may compile with other versions of the above operating systems, but some of the necessary prerequesite packages are not supplied by the OS repos and will need to be compiled by hand. You should be able to use the package and cmake commands for other versions of the same OS (other than the missing packages) to compile ILLIXR. RHEL is not supported at this time as many of the prerequisite packages are not natively available.
 
 #### Pick the ILLIXR plugins you want to use
 
@@ -120,7 +119,7 @@ The CMake process will also create a [_YAML_][G12] file call `illixr.yaml` which
 
 ## Running ILLIXR
 
-To run the ILLIXR binary just call `main.<>.exe` with any of the following command line arguments. (the `<>` indicate
+To run the ILLIXR binary just call `main.<>.exe` with any of the following command line arguments. (the `&lt;&gt;` indicate
 an infix specifying the build type, for `Debug` use `dbg`, for `Release` use `opt`, for `RelWithDebInfo` use `optdbg`)
 
 - -p,--plugins=<>, comma separated list of plugins to use (case sensitive, all lowercase, no spaces)

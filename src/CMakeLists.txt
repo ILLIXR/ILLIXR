@@ -22,6 +22,7 @@ add_executable(main${ILLIXR_BUILD_SUFFIX}.exe
 )
 
 add_library(plugin.main${ILLIXR_BUILD_SUFFIX} SHARED
+            ${VULKAN_FILES}
             src/plugin.cpp
             src/runtime_impl.cpp
             src/illixr.hpp

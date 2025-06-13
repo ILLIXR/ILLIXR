@@ -90,6 +90,14 @@ profiles:
   - native_vk_slam:
     plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,ground_truth_slam,timewarp_vk,vkdemo,native_renderer,debugview,offload_data,orb_slam3
     env_vars:
+      enable_offload: False
+      enable_alignment: False
+      enable_verbose_errors: False
+      enable_pre_sleep: False
+
+  - offload_vio_device_monado:
+    plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,timewarp_vk.monado,offload_vio.device_rx,offload_vio.device_tx
+    env_vars:
       enable_offload: false
       enable_alignment: false
       enable_verbose_errors: false

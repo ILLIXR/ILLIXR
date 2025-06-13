@@ -44,6 +44,12 @@ elif(NOT UNIX)
     message(FATAL_ERROR "Unknown operating system")
 endif()
 
+if (CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64" AND EXISTS "/etc/nv_tegra_release")
+    set(ON_JETSON_PLATFORM YES)
+else()
+    set(ON_JETSON_PLATFORM NO)
+endif()
+
 if(PACKAGE_VERSION_LABEL)
     set(PACKAGE_VERSION "${PACKAGE_VERSION_MAJOR}.${PACKAGE_VERSION_MINOR}.${PACKAGE_VERSION_PATCH}-${PACKAGE_VERSION_LABEL}")
 else()
@@ -364,7 +370,6 @@ install(FILES "${CMAKE_SOURCE_DIR}/plugins/plugin_deps.yaml"
         DESTINATION $ENV{HOME}/.illixr/profiles)
 install(FILES "${CMAKE_SOURCE_DIR}/plugins/plugin_deps.yaml"
         DESTINATION ${CMAKE_INSTALL_PREFIX}/share/illixr/profiles)
-
 #get_cmake_property(_variableNames VARIABLES)
 #foreach (_variableName ${_variableNames})
 #    message(STATUS "${_variableName}=${${_variableName}}")

@@ -9,7 +9,7 @@
 using namespace ILLIXR;
 using namespace ILLIXR::data_format;
 
-// #define USE_COMPRESSION
+#define USE_COMPRESSION
 
 [[maybe_unused]] offload_writer::offload_writer(const std::string& name, phonebook* pb)
     : threadloop{name, pb}
