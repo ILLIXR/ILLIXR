@@ -285,6 +285,10 @@ foreach(ITEM IN LISTS PLUGIN_LIST)
     unset(ITEM_UPPER)
 endforeach()
 
+add_subdirectory(plugins/timewarp_gl)
+add_subdirectory(plugins/timewarp_vk)
+add_subdirectory(plugins/frame_logger)
+
 include(src/CMakeLists.txt)
 
 list(SORT FULL_PLUGIN_LIST COMPARE STRING CASE INSENSITIVE ORDER ASCENDING)

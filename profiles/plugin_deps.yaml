@@ -1,0 +1,3 @@
+frame_logger:
+  - display_vk
+  - vulkan_display 
