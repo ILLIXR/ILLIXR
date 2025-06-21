@@ -204,7 +204,7 @@ void gtsam_integrator::propagate_imu_values(time_point real_time) {
         Eigen::AngleAxisd(filtered_angles(1, 0), Eigen::Vector3d::UnitY()) *
         Eigen::AngleAxisd(filtered_angles(2, 0), Eigen::Vector3d::UnitZ());
 
-    Eigen::MatrixWrapper<Eigen::Array<double, 3, 1, 0, 3, 1>> filtered_pos{
+    auto filtered_pos{
         filters_[4](out_pose.translation().array(), seconds_since_epoch).matrix()};
 
     imu_raw_.put(imu_raw_.allocate<imu_raw_type>(
@@ -212,7 +212,10 @@ void gtsam_integrator::propagate_imu_values(time_point real_time) {
                      filtered_pos,                                                    /// Position
                      filters_[5](navstate_k.velocity().array(), seconds_since_epoch), /// Velocity
                      new_quaternion,                                                  /// Eigen Quat
-                     real_time}));
+                     real_time,
+                     input_values->last_cam_integration_time}));
+    log_pose_to_csv(real_time, filtered_pos.x(), filtered_pos.y(), filtered_pos.z(),
+                     new_quaternion.w(), new_quaternion.x(), new_quaternion.y(), new_quaternion.z());
 }
 
 // Select IMU readings based on timestamp similar to how OpenVINS selects IMU values to propagate

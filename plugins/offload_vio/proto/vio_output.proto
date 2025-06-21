@@ -27,9 +27,10 @@ message IMUParams {
 
 message SlowPose
 {
-    fixed64 timestamp = 1;
-    Vec3 position = 2;
-    Quat rotation = 3;
+    fixed64 cam_timestamp = 1;
+    fixed64 imu_timestamp = 2;
+    Vec3 position = 3;
+    Quat rotation = 4;
 }
 
 message IMUIntInput {

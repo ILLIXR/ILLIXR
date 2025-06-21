@@ -107,8 +107,16 @@ private:
      */
     void create_timewarp_pass();
 
+    /**
+     * @brief Logs the pose to a CSV file.
+     * @param pose The fast pose to log.
+     * @param pose_type The type of the pose (e.g., "render", "reprojection").
+     */
+    void log_pose_to_csv(const ILLIXR::data_format::fast_pose_type& pose, const std::string& pose_type);
+
     const std::shared_ptr<switchboard>                  switchboard_;
     const std::shared_ptr<spdlog::logger>               log_;
+    std::shared_ptr<spdlog::logger>                     pose_csv_logger_;
     const std::shared_ptr<data_format::pose_prediction> pose_prediction_;
     const std::shared_ptr<vulkan::display_provider>     display_sink_;
     const std::shared_ptr<vulkan::timewarp>             timewarp_;

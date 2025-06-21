@@ -38,6 +38,21 @@ using namespace ILLIXR::data_format;
     }
 
     export_dma_ = switchboard_->get_env_bool("ILLIXR_EXPORT_DMA");
+    
+    // Set up CSV logger for pose data
+    spdlog::file_event_handlers handlers;
+    handlers.after_open = [](spdlog::filename_t, std::FILE* fstream) {
+        fputs("timestamp,pose_type,pos_x,pos_y,pos_z,quat_w,quat_x,quat_y,quat_z,predict_computed_time,predict_target_time\n", fstream);
+    };
+
+    pose_csv_logger_ = spdlog::basic_logger_mt(
+        "pose_csv_logger",
+        "logs/pose_data.csv",
+        true, // Truncate
+        handlers
+    );
+    pose_csv_logger_->set_pattern("%v"); // Only output the message part, no timestamps or logger name
+    pose_csv_logger_->set_level(spdlog::level::info);
 }
 
 native_renderer::~native_renderer() {
@@ -55,6 +70,41 @@ native_renderer::~native_renderer() {
         deletion_queue_.top()();
         deletion_queue_.pop();
     }
+}
+
+/**
+ * @brief Logs a pose to the CSV file with the specified pose type.
+ * 
+ * @param pose The pose to log
+ * @param pose_type A string indicating the type of pose (e.g., "render", "reprojection")
+ */
+void native_renderer::log_pose_to_csv(const fast_pose_type& pose, const std::string& pose_type) {
+    if (!pose_csv_logger_) {
+        log_->warn("Pose CSV logger is not initialized");
+        return;
+    }
+    
+    // Get current timestamp
+    auto now = clock_->now().time_since_epoch().count();
+    
+    // Extract position and orientation
+    float pos_x = pose.pose.position.x();
+    float pos_y = pose.pose.position.y();
+    float pos_z = pose.pose.position.z();
+    
+    float quat_w = pose.pose.orientation.w();
+    float quat_x = pose.pose.orientation.x();
+    float quat_y = pose.pose.orientation.y();
+    float quat_z = pose.pose.orientation.z();
+    
+    // Get the prediction timestamps
+    auto predict_computed = pose.predict_computed_time.time_since_epoch().count();
+    auto predict_target = pose.predict_target_time.time_since_epoch().count();
+    
+    // Log to CSV
+    pose_csv_logger_->info("{},{},{:.6f},{:.6f},{:.6f},{:.6f},{:.6f},{:.6f},{:.6f},{},{}",
+                         now, pose_type, pos_x, pos_y, pos_z, quat_w, quat_x, quat_y, quat_z,
+                         predict_computed, predict_target);
 }
 
 /**
@@ -125,10 +175,14 @@ void native_renderer::_p_one_iteration() {
     }
 
     auto fast_pose = pose_prediction_->get_fast_pose();
+    
+    // Log the render pose
+    log_pose_to_csv(fast_pose, "render");
+    
     if (!app_->is_external()) {
         // Get the current fast pose and update the uniforms
         // log_->debug("Updating uniforms");
-        app_->update_uniforms(fast_pose.pose);
+        app_->update_uniforms(fast_pose.pose, 1);
 
         VK_ASSERT_SUCCESS(vkResetCommandBuffer(app_command_buffer_, 0))
 
@@ -189,7 +243,7 @@ void native_renderer::_p_one_iteration() {
     auto next_swap = vsync_.get_ro_nullable();
     if (next_swap == nullptr) {
         std::this_thread::sleep_for(display_params::period / 6.0 * 5);
-        // log_->debug("No vsync estimate!");
+        log_->debug("No vsync estimate!");
     } else {
         // convert next_swap_time to std::chrono::time_point
         auto next_swap_time_point = std::chrono::time_point<std::chrono::system_clock>(
@@ -207,7 +261,7 @@ void native_renderer::_p_one_iteration() {
         auto res          = buffer_pool_->post_processing_acquire_image();
         auto buffer_index = res.first;
         auto pose         = res.second;
-        timewarp_->update_uniforms(pose.pose);
+        timewarp_->update_uniforms(pose.pose, 1);
 
         if (buffer_index == -1) {
             return;

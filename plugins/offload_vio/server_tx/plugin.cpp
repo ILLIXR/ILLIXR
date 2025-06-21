@@ -39,7 +39,8 @@ void server_writer::start() {
 void server_writer::send_vio_output(const switchboard::ptr<const pose_type>& datum) {
     // Construct slow pose for output
     auto* protobuf_slow_pose = new vio_output_proto::SlowPose();
-    protobuf_slow_pose->set_timestamp(datum->sensor_time.time_since_epoch().count());
+    protobuf_slow_pose->set_cam_timestamp(datum->cam_time.time_since_epoch().count());
+    protobuf_slow_pose->set_imu_timestamp(datum->imu_time.time_since_epoch().count());
 
     auto* position = new vio_output_proto::Vec3();
     position->set_x(datum->position.x());

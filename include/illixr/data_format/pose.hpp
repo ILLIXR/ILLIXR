@@ -60,18 +60,21 @@ struct pose_data {
 struct [[maybe_unused]] pose_type
     : public switchboard::event
     , public pose_data {
-    time_point sensor_time; //!< Recorded time of sensor data ingestion
+    time_point cam_time;
+    time_point imu_time;
 
     /**
      * Basic constructor
      */
     pose_type()
         : pose_data()
-        , sensor_time{time_point{}} { }
+        , cam_time{time_point{}}
+        , imu_time{time_point{}} { }
 
     /**
      * Construct an instance based on the given data
-     * @param sensor_time_ Time associated with htese data
+     * @param cam_time Time of the camera data associated with this pose
+     * @param imu_time Time of the IMU data associated with this pose
      * @param position_ The positional part of the pose
      * @param orientation_ RThe rotational part of the pose
      * @param unit_ The units for the pose, default is UNSET
@@ -79,36 +82,40 @@ struct [[maybe_unused]] pose_type
      * @param ref The reference space, default is VIEWER
      * @param confidence_ The confidence of the pose (0..1, where 0 means no confidence)
      */
-    pose_type(time_point sensor_time_, Eigen::Vector3f& position_, Eigen::Quaternionf& orientation_,
+    pose_type(time_point cam_time_, time_point imu_time_, Eigen::Vector3f& position_, Eigen::Quaternionf& orientation_,
               units::measurement_unit unit_ = units::UNSET, coordinates::frame frm = coordinates::RIGHT_HANDED_Y_UP,
               coordinates::reference_space ref = coordinates::VIEWER, const float confidence_ = 0.)
         : pose_data{position_, orientation_, unit_, frm, ref, confidence_}
-        , sensor_time{sensor_time_} { }
+        , cam_time{cam_time_}
+        , imu_time{imu_time_} { }
 
     /**
      * Construct an instance based on the given data
-     * @param sensor_time_ Time associated with htese data
-     * @param position_ The positional part of the pose
+     * @param cam_time Time of the camera data associated with this pose
+     * @param imu_time Time of the IMU data associated with this pose
      * @param orientation_ RThe rotational part of the pose
      * @param unit_ The units for the pose, default is UNSET
      * @param frm The reference frame, default is RIGHT_HANDED_Y_UP
      * @param ref The reference space, default is VIEWER
      * @param confidence_ The confidence of the pose (0..1, where 0 means no confidence)
      */
-    pose_type(time_point sensor_time_, const Eigen::Vector3f& position_, const Eigen::Quaternionf& orientation_,
+    pose_type(time_point cam_time_, time_point imu_time_, const Eigen::Vector3f& position_, const Eigen::Quaternionf& orientation_,
               units::measurement_unit unit_ = units::UNSET, coordinates::frame frm = coordinates::RIGHT_HANDED_Y_UP,
               coordinates::reference_space ref = coordinates::VIEWER, const float confidence_ = 0.)
         : pose_data{position_, orientation_, unit_, frm, ref, confidence_}
-        , sensor_time{sensor_time_} { }
+        , cam_time{cam_time_}
+        , imu_time{imu_time_} { }
 
     /**
      * Construct an instance using the given pose
-     * @param sensor_time_ The timne associated with the pose
+     * @param cam_time Time of the camera data associated with this pose
+     * @param imu_time Time of the IMU data associated with this pose
      * @param other The pose to use
      */
-    pose_type(time_point sensor_time_, pose_data& other)
+    pose_type(time_point cam_time_, time_point imu_time_, pose_data& other)
         : pose_data{other.position, other.orientation, other.unit, other.co_frame, other.ref_space, other.confidence}
-        , sensor_time{sensor_time_} { }
+        , cam_time{cam_time_}
+        , imu_time{imu_time_} { }
 };
 
 /**

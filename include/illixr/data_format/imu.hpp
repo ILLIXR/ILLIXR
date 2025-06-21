@@ -72,10 +72,11 @@ struct [[maybe_unused]] imu_raw_type : public switchboard::event {
     Eigen::Matrix<double, 3, 1> vel;
     Eigen::Quaterniond          quat;
     time_point                  imu_time;
+    time_point                  cam_time;
 
     imu_raw_type(Eigen::Matrix<double, 3, 1> w_hat_, Eigen::Matrix<double, 3, 1> a_hat_, Eigen::Matrix<double, 3, 1> w_hat2_,
                  Eigen::Matrix<double, 3, 1> a_hat2_, Eigen::Matrix<double, 3, 1> pos_, Eigen::Matrix<double, 3, 1> vel_,
-                 Eigen::Quaterniond quat_, time_point imu_time_)
+                 Eigen::Quaterniond quat_, time_point imu_time_, time_point cam_time_)
         : w_hat{std::move(w_hat_)}
         , a_hat{std::move(a_hat_)}
         , w_hat2{std::move(w_hat2_)}
@@ -83,7 +84,9 @@ struct [[maybe_unused]] imu_raw_type : public switchboard::event {
         , pos{std::move(pos_)}
         , vel{std::move(vel_)}
         , quat{std::move(quat_)}
-        , imu_time{imu_time_} { }
+        , imu_time{imu_time_} 
+        , cam_time{cam_time_}
+    { }
 };
 
 } // namespace ILLIXR::data_format

@@ -128,15 +128,15 @@ void openwarp_vk::partial_destroy() {
     descriptor_pool_ = VK_NULL_HANDLE;
 }
 
-void openwarp_vk::update_uniforms(const pose_type& render_pose, bool left) {
+void openwarp_vk::update_uniforms(const fast_pose_type& render_pose, bool left) {
     num_update_uniforms_calls_++;
 
-    // pose_type latest_pose = disable_warp_ ? render_pose : pose_prediction_->get_fast_pose().pose;
-    fast_pose_type latest_fast_pose = disable_warp_ ? fast_pose_type{render_pose, {}, {}}: pose_prediction_->get_fast_pose();
+    fast_pose_type latest_pose = disable_warp_ ? render_pose : pose_prediction_->get_fast_pose();
+    // fast_pose_type latest_fast_pose = disable_warp_ ? fast_pose_type{render_pose, {}, {}}: pose_prediction_->get_fast_pose();
 
     for (int eye = 0; eye < 2; eye++) {
-        Eigen::Matrix4f renderedCameraMatrix = create_camera_matrix(render_pose, eye);
-        Eigen::Matrix4f currentCameraMatrix  = create_camera_matrix(latest_fast_pose.pose, eye);
+        Eigen::Matrix4f renderedCameraMatrix = create_camera_matrix(render_pose.pose, eye);
+        Eigen::Matrix4f currentCameraMatrix  = create_camera_matrix(latest_pose.pose, eye);
 
         Eigen::Matrix4f warpVP =
             basic_projection_[eye] * currentCameraMatrix.inverse(); // inverse of camera matrix is view matrix
@@ -146,7 +146,7 @@ void openwarp_vk::update_uniforms(const pose_type& render_pose, bool left) {
         memcpy(&ow_ubo->render_inv_view[eye], renderedCameraMatrix.data(), sizeof(Eigen::Matrix4f));
         memcpy(&ow_ubo->warp_view_projection[eye], warpVP.data(), sizeof(Eigen::Matrix4f));
     }
-    if (left) log_pose_to_csv(relative_clock_->now(), render_pose, pose_type{latest_fast_pose.predict_target_time, latest_fast_pose.pose});
+    if (left) log_pose_to_csv(relative_clock_->now(), render_pose, latest_pose);
 }
 
 void openwarp_vk::record_command_buffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left) {

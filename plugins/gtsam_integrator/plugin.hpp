@@ -71,5 +71,38 @@ private:
     duration                    last_imu_offset_{};
 
     std::unique_ptr<pim_object> pim_obj_;
+
+    protected:
+    // CSV logger for pose data
+    std::shared_ptr<spdlog::logger> gtsam_pose_csv_logger_ = nullptr;
+    
+    /**
+     * @brief Logs the render pose and reprojection pose to a CSV file.
+     *
+     * @param render_pose The pose used for rendering the frame
+     * @param reprojection_pose The pose used for reprojection/timewarp
+     */
+    void log_pose_to_csv(const time_point& imu_time, const double& x, const double& y, const double& z, const double& qw, const double& qx, const double& qy, const double& qz) {
+        if (!gtsam_pose_csv_logger_) {
+            // Initialize the CSV logger if it doesn't exist
+            gtsam_pose_csv_logger_ = spdlog::basic_logger_mt("gtsam_pose_csv_logger", "logs/gtsam_pose_data.csv", true);
+
+            // Set the pattern to just write the message (no timestamp or log level)
+            gtsam_pose_csv_logger_->set_pattern("%v");
+
+            // Write header row
+            gtsam_pose_csv_logger_->info("imu_time,x,y,z,qw,qx,qy,qz");
+        }
+        
+        // Log the pose data in CSV format
+        gtsam_pose_csv_logger_->info("{},{},{},{},{},{},{},{}",
+            imu_time.time_since_epoch().count(),
+            x, y, z,
+            qw, qx, qy, qz
+        );
+        
+        // Flush to ensure data is written immediately
+        gtsam_pose_csv_logger_->flush();
+    }
 };
 } // namespace ILLIXR

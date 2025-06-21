@@ -147,7 +147,7 @@ void timewarp_vk::partial_destroy() {
     descriptor_pool_ = VK_NULL_HANDLE;
 }
 
-fast_pose_type timewarp_vk::update_uniforms(const fast_pose_type& render_pose) {
+void timewarp_vk::update_uniforms(const fast_pose_type& render_pose, bool left) {
     num_update_uniforms_calls_++;
 
     // Generate "starting" view matrix, from the pose sampled at the time of rendering the frame
@@ -187,7 +187,6 @@ fast_pose_type timewarp_vk::update_uniforms(const fast_pose_type& render_pose) {
         memcpy(&ubo->timewarp_start_transform[eye], timeWarpStartTransform4x4.data(), sizeof(glm::mat4));
         memcpy(&ubo->timewarp_end_transform[eye], timeWarpEndTransform4x4.data(), sizeof(glm::mat4));
     }
-    return latest_pose;
 }
 
 void timewarp_vk::record_command_buffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left) {

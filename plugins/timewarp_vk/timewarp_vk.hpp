@@ -18,7 +18,7 @@ public:
                std::shared_ptr<vulkan::buffer_pool<data_format::fast_pose_type>> buffer_pool,
                bool                                                              input_texture_vulkan_coordinates_in) override;
     void partial_destroy();
-    data_format::fast_pose_type update_uniforms(const data_format::fast_pose_type& render_pose) override;
+    void update_uniforms(const data_format::fast_pose_type& render_pose, bool left) override;
     void record_command_buffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left) override;
     void destroy() override;
 

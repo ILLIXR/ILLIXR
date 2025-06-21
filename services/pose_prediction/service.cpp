@@ -26,9 +26,13 @@ fast_pose_type pose_prediction_impl::get_fast_pose() const {
     switchboard::ptr<const switchboard::event_wrapper<time_point>> vsync_estimate = vsync_estimate_.get_ro_nullable();
 
     if (vsync_estimate == nullptr) {
+        // Even if no vsync is available, we should at least make a reasonable guess
         return get_fast_pose(clock_->now());
     } else {
-        return get_fast_pose(vsync_estimate.get()->operator time_point());
+        time_point vsync_time = vsync_estimate->operator time_point();
+        // spdlog::get("illixr")->info("[POSEPREDICTION] FAST POSE IS PREDICTED TO VSYNC {}!", vsync_time.time_since_epoch().count());
+        // return get_fast_pose(vsync_estimate.get()->operator time_point());
+        return get_fast_pose(vsync_time);
     }
 }
 
@@ -47,7 +51,7 @@ pose_type pose_prediction_impl::get_true_pose() const {
         offset_pose = *pose_ptr;
         offset_pose.position -= **offset_ptr;
     } else {
-        offset_pose.sensor_time = clock_->now();
+        offset_pose.imu_time = clock_->now();
         offset_pose.position    = Eigen::Vector3f{0, 0, 0};
         offset_pose.orientation = Eigen::Quaternionf{1, 0, 0, 0};
     }
@@ -90,7 +94,7 @@ fast_pose_type pose_prediction_impl::get_fast_pose(time_point future_timestamp) 
     auto predictor_imu_time = imu_raw->imu_time;
 
     pose_type predicted_pose =
-        correct_pose({predictor_imu_time, state_p.position.cast<float>(), state_p.orientation.cast<float>()});
+        correct_pose({imu_raw->cam_time, predictor_imu_time, state_p.position.cast<float>(), state_p.orientation.cast<float>()});
 
     // Make the first valid fast pose be straight ahead.
     if (first_time_) {
@@ -181,7 +185,8 @@ pose_type pose_prediction_impl::correct_pose(const pose_type& pose) const {
     Eigen::Quaternionf raw_o(pose.orientation.w(), -pose.orientation.y(), pose.orientation.z(), -pose.orientation.x());
 
     swapped_pose.orientation = apply_offset(raw_o);
-    swapped_pose.sensor_time = pose.sensor_time;
+    swapped_pose.imu_time = pose.imu_time;
+    swapped_pose.cam_time = pose.cam_time;
 
     return swapped_pose;
 }

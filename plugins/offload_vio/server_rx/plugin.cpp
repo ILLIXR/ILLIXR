@@ -6,7 +6,7 @@
 using namespace ILLIXR;
 using namespace ILLIXR::data_format;
 
-// #define USE_COMPRESSION
+#define USE_COMPRESSION
 
 [[maybe_unused]] server_reader::server_reader(const std::string& name, phonebook* pb)
     : threadloop{name, pb}

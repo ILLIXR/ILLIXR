@@ -90,9 +90,9 @@ void vkdemo::setup(VkRenderPass render_pass, uint32_t subpass, std::shared_ptr<v
     create_pipeline(render_pass, subpass);
 }
 
-void vkdemo::update_uniforms(const pose_type& fp) {
-    update_uniform(fp, 0);
-    update_uniform(fp, 1);
+void vkdemo::update_uniforms(const fast_pose_type& fp) {
+    update_uniform(fp.pose, 0);
+    update_uniform(fp.pose, 1);
 }
 
 void vkdemo::record_command_buffer(VkCommandBuffer command_buffer, VkFramebuffer frame_buffer, int buffer_ind, bool left) {

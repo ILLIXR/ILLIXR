@@ -73,7 +73,7 @@ public:
     void initialize();
     void setup(VkRenderPass render_pass, uint32_t subpass,
                std::shared_ptr<vulkan::buffer_pool<data_format::fast_pose_type>> _) override;
-    void update_uniforms(const data_format::pose_type& fp) override;
+    void update_uniforms(const data_format::fast_pose_type& fp) override;
     void record_command_buffer(VkCommandBuffer command_buffer, VkFramebuffer frame_buffer, int buffer_ind, bool left) override;
     void destroy() override;
 

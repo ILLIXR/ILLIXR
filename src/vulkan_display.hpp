@@ -35,6 +35,10 @@ public:
 
         // ILLIXR_DISPLAY_MODE defaults to GLFW if not specified.
         const char* env_var = switchboard_->get_env_char("ILLIXR_DISPLAY_MODE");
+        if (env_var == nullptr) {
+            spdlog::get("illixr")->info("[vulkan_display] No display mode specified, defaulting to GLFW");
+            env_var = "glfw";
+        }
         if (!strcmp(env_var, "glfw")) {
             spdlog::get("illixr")->info("[vulkan_display] Selected GLFW for display backend");
             backend_type_ = display::display_backend::GLFW;
