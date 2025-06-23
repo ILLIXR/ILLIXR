@@ -11,6 +11,8 @@
 #include <boost/serialization/export.hpp>
 #include <GL/gl.h>
 
+#include <vulkan/vulkan.h>
+
 #ifdef ILLIXR_LIBAV
 extern "C" {
     #include "libavcodec_illixr/avcodec.h"
@@ -22,6 +24,26 @@ extern "C" {
 #endif
 
 namespace ILLIXR::data_format {
+struct frame_to_be_saved : public switchboard::event {
+    VkImage image;
+    uint32_t width;
+    uint32_t height;
+    uint32_t frame_number;
+    bool left;
+    std::string output_directory;
+
+    frame_to_be_saved() = default;
+
+    frame_to_be_saved(VkImage image_, uint32_t width_, uint32_t height_, uint32_t frame_number_, bool left_,
+                      std::string output_directory_)
+        : image(image_)
+        , width(width_)
+        , height(height_)
+        , frame_number(frame_number_)
+        , left(left_)
+        , output_directory(std::move(output_directory_)) { }
+};
+
 // Using arrays as a swapchain
 // Array of left eyes, array of right eyes
 // This more closely matches the format used by Monado

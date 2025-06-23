@@ -10,6 +10,7 @@ openwarp_vk::openwarp_vk(const phonebook* pb)
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
     , relative_clock_{phonebook_->lookup_impl<relative_clock>()}
     , pose_prediction_{phonebook_->lookup_impl<pose_prediction>()}
+    , frame_writer_{switchboard_->get_writer<data_format::frame_to_be_saved>("frames_to_be_saved")}
     , disable_warp_{switchboard_->get_env_bool("ILLIXR_TIMEWARP_DISABLE", "False")} {
     if (switchboard_->get_env_char("ILLIXR_OPENWARP_WIDTH") == nullptr ||
         switchboard_->get_env_char("ILLIXR_OPENWARP_HEIGHT") == nullptr) {
@@ -155,6 +156,14 @@ void openwarp_vk::record_command_buffer(VkCommandBuffer commandBuffer, VkFramebu
     if (left)
         frame_count_++;
 
+    // Log the rendered frame
+    // First, get the associated VkImage
+    VkImage srcImage = buffer_pool_->image_pool[buffer_ind][left ? 0 : 1].image;
+    frame_writer_.put(std::make_shared<data_format::frame_to_be_saved>(srcImage, static_cast<uint32_t>(swapchain_width_ / 2),
+                                                                        static_cast<uint32_t>(swapchain_height_), frame_count_, left,
+                                                                        "rendered_frames"));
+    spdlog::get("illixr")->info("[openwarp] Published one rendered frame to be saved, frame count: {}", frame_count_);
+
     VkDeviceSize offsets = 0;
     VkClearValue clear_colors[2];
     clear_colors[0].color              = {0.0f, 0.0f, 0.0f, 1.0f};
@@ -196,6 +205,11 @@ void openwarp_vk::record_command_buffer(VkCommandBuffer commandBuffer, VkFramebu
     vkCmdBindIndexBuffer(commandBuffer, ow_index_buffer_, 0, VK_INDEX_TYPE_UINT32);
     vkCmdDrawIndexed(commandBuffer, num_openwarp_indices_, 1, 0, 0, 0);
     vkCmdEndRenderPass(commandBuffer);
+
+    VkImage offscreen_image = offscreen_images_[left ? 0 : 1];
+    frame_writer_.put(std::make_shared<data_format::frame_to_be_saved>(offscreen_image, static_cast<uint32_t>(swapchain_width_ / 2),
+                                                                        static_cast<uint32_t>(swapchain_height_), frame_count_, left,
+                                                                        "offscreen_frames"));
 
     // Then perform distortion correction to the framebuffer expected by Monado
     VkClearValue clear_color;

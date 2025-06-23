@@ -1,5 +1,5 @@
 # This file was auto generated, take caution if manually editing.
-plugins: offline_imu,offline_cam,gtsam_integrator,openvins,pose_prediction,openwarp_vk.monado
+plugins: offline_imu,offline_cam,gtsam_integrator,openvins,pose_prediction,openwarp_vk.monado,frame_logger
 env_vars:
   ENABLE_OFFLOAD: false
   ENABLE_ALIGNMENT: false

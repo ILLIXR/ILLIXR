@@ -1,6 +1,7 @@
 #pragma once
 
 #include "illixr/data_format/pose_prediction.hpp"
+#include "illixr/data_format/frame.hpp"
 #include "illixr/hmd.hpp"
 #include "illixr/switchboard.hpp"
 // #include "illixr/threadloop.hpp"
@@ -142,6 +143,7 @@ private:
     const std::shared_ptr<relative_clock> relative_clock_;
 
     const std::shared_ptr<data_format::pose_prediction> pose_prediction_;
+    switchboard::writer<data_format::frame_to_be_saved> frame_writer_;
 
     bool                                      disable_warp_     = false;
     std::shared_ptr<vulkan::display_provider> display_provider_ = nullptr;
