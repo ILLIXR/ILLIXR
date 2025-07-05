@@ -24,14 +24,16 @@ const record_header __imu_cam_record{"imu_cam",
 
 std::shared_ptr<zed_camera> zed_imu_thread::start_camera() {
     std::shared_ptr<zed_camera> zed_cam            = std::make_shared<zed_camera>(switchboard_);
-    bool                        with_hand_tracking = true;
+    bool                        with_hand_tracking = false;
     assert(zed_cam != nullptr && "Zed camera should be initialized");
 
     // Cam setup
     sl::InitParameters init_params;
     init_params.camera_resolution      = (with_hand_tracking) ? sl::RESOLUTION::HD720 : sl::RESOLUTION::VGA;
-    init_params.coordinate_units       = sl::UNIT::UNITS;                          // For scene reconstruction
-    init_params.coordinate_system      = sl::COORDINATE_SYSTEM::RIGHT_HANDED_Y_UP; // Coordinate system used in ROS
+    // init_params.coordinate_units       = sl::UNIT::UNITS;                          // For scene reconstruction
+    init_params.coordinate_units       = sl::UNIT::MILLIMETER;                      // For IMU
+    // init_params.coordinate_system      = sl::COORDINATE_SYSTEM::RIGHT_HANDED_Y_UP; // Coordinate system used in ROS
+    init_params.coordinate_system      = sl::COORDINATE_SYSTEM::RIGHT_HANDED_Z_UP_X_FWD;
     init_params.camera_fps             = 30;                                       // gives the best user experience
     init_params.depth_mode             = (with_hand_tracking) ? sl::DEPTH_MODE::QUALITY : sl::DEPTH_MODE::PERFORMANCE;
     init_params.depth_stabilization    = true;

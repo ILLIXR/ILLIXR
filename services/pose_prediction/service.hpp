@@ -32,6 +32,29 @@ private:
     mutable Eigen::Quaternionf                                       offset_{Eigen::Quaternionf::Identity()};
     mutable std::shared_mutex                                        offset_mutex_;
     const bool                                                       using_lighthouse_;
+
+    std::vector<data_format::fast_pose_type> render_poses_;
+    std::vector<data_format::fast_pose_type> warp_poses_;
+
+    void setup_pose_reader() {
+        std::string pose_path_ = switchboard_->get_env_char("ILLIXR_POSE_PATH");
+        if (pose_path_.empty()) {
+            spdlog::get("illixr")->error("Please set ILLIXR_POSE_PATH environment variable to the path of the pose file.");
+            ILLIXR::abort("ILLIXR_POSE_PATH is not set");
+        }
+        std::ifstream pose_file_(pose_path_);
+        if (!pose_file_.is_open()) {
+            spdlog::get("illixr")->error("Could not open pose file at {}", pose_path_);
+            ILLIXR::abort("Could not open pose file");
+        }
+        // std::string line;
+        // while (std::getline(pose_file_, line)) {
+        //     std::istringstream iss(line);
+        //     data_format::fast_pose_type pose;
+        //     iss >> pose.imu_time >> pose.position.x() >> pose.position.y() >> pose.position.z()
+        //         >> pose.orientation.w() >> pose.orientation.x() >> pose.orientation.y() >>
+    }
+
 };
 
 } // namespace ILLIXR

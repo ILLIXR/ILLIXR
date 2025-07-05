@@ -25,7 +25,7 @@ public:
      * @param buffer_ind The index of the buffer to use.
      * @param left 0 for left eye, 1 for right eye.
      */
-    virtual void record_command_buffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left) = 0;
+    virtual void record_command_buffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left, VkFence fence) = 0;
 
     /**
      * @brief Update the uniforms for the render pass.
@@ -36,6 +36,8 @@ public:
     virtual void update_uniforms(const data_format::fast_pose_type& render_pose, bool left) {
         (void) render_pose;
     };
+
+    virtual void save_frame(VkFence fence) = 0;
 
     /**
      * @brief Destroy the render pass and free all Vulkan resources.

@@ -30,18 +30,22 @@ struct frame_to_be_saved : public switchboard::event {
     uint32_t height;
     uint32_t frame_number;
     bool left;
+    VkFence fence;
     std::string output_directory;
+    int index;
 
     frame_to_be_saved() = default;
 
     frame_to_be_saved(VkImage image_, uint32_t width_, uint32_t height_, uint32_t frame_number_, bool left_,
-                      std::string output_directory_)
+                      VkFence fence_, std::string output_directory_, int index_)
         : image(image_)
         , width(width_)
         , height(height_)
         , frame_number(frame_number_)
         , left(left_)
-        , output_directory(std::move(output_directory_)) { }
+        , fence(fence_)
+        , output_directory(std::move(output_directory_)) 
+        , index(index_) { }
 };
 
 // Using arrays as a swapchain

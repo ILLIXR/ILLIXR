@@ -240,6 +240,10 @@ void ILLIXR::vulkan::end_one_time_command(VkDevice vk_device, VkCommandPool vk_c
                                           VkCommandBuffer vk_command_buffer) {
     VK_ASSERT_SUCCESS(vkEndCommandBuffer(vk_command_buffer))
 
+    VkFenceCreateInfo fi{ VK_STRUCTURE_TYPE_FENCE_CREATE_INFO };
+    VkFence fence;
+    vkCreateFence(vk_device, &fi, nullptr, &fence);
+
     VkSubmitInfo submitInfo{
         VK_STRUCTURE_TYPE_SUBMIT_INFO, // sType
         nullptr,                       // pNext
@@ -253,8 +257,11 @@ void ILLIXR::vulkan::end_one_time_command(VkDevice vk_device, VkCommandPool vk_c
     };
 
     std::lock_guard<std::mutex> lock(*q.mutex);
-    VK_ASSERT_SUCCESS(vkQueueSubmit(q.vk_queue, 1, &submitInfo, VK_NULL_HANDLE))
+    VK_ASSERT_SUCCESS(vkQueueSubmit(q.vk_queue, 1, &submitInfo, fence))
     VK_ASSERT_SUCCESS(vkQueueWaitIdle(q.vk_queue))
+
+    vkWaitForFences(vk_device, 1, &fence, VK_TRUE, UINT64_MAX);
+    vkDestroyFence(vk_device, fence, nullptr);
 
     vkFreeCommandBuffers(vk_device, vk_command_pool, 1, &vk_command_buffer);
 }

@@ -44,7 +44,7 @@ struct buffer_pool {
         for (image_index_t i = 0; i < image_states.size(); i++) {
             if (image_states[i] == FREE) {
                 image_states[i] = SRC_IN_FLIGHT;
-                // std::cout << "Src acquire image " << (int) i << std::endl;
+                std::cout << "Src acquire image " << (int) i << std::endl;
                 return i;
             }
         }
@@ -103,6 +103,18 @@ struct buffer_pool {
 
         // std::cout << "Post processing release image " << (int) image_index << std::endl;
     }
+
+    // void save_acquire_image(image_index_t image_index) {
+    //     std::lock_guard<std::mutex> lock(image_state_mutex);
+    //     assert(image_states[image_index] == SRC_IN_FLIGHT);
+    //     image_states[image_index] = SAVE_IN_FLIGHT;
+    // }
+
+    // void save_release_image(image_index_t image_index) {
+    //     std::lock_guard<std::mutex> lock(image_state_mutex);
+    //     assert(image_states[image_index] == SAVE_IN_FLIGHT);
+    //     image_states[image_index] = FREE;
+    // }
 };
 
 } // namespace ILLIXR::vulkan

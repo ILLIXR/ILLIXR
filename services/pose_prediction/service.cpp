@@ -17,7 +17,11 @@ pose_prediction_impl::pose_prediction_impl(const phonebook* const pb)
     , true_pose_{switchboard_->get_reader<pose_type>("true_pose")}
     , ground_truth_offset_{switchboard_->get_reader<switchboard::event_wrapper<Eigen::Vector3f>>("ground_truth_offset")}
     , vsync_estimate_{switchboard_->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")}
-    , using_lighthouse_{switchboard_->get_env_bool("ILLIXR_LIGHTHOUSE")} { }
+    , using_lighthouse_{switchboard_->get_env_bool("ILLIXR_LIGHTHOUSE")} { 
+        if (switchboard_->get_env_bool("ILLIXR_COMPARE_IMAGES")) {
+            setup_pose_reader();
+        }
+    }
 
 // No parameter get_fast_pose() should just predict to the next vsync
 // However, we don't have vsync estimation yet.

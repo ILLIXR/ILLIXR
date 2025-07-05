@@ -55,7 +55,7 @@ HMD::build_distortion_meshes(std::array<std::array<std::vector<mesh_coord2d_t>, 
     const float horizontal_shift_meters = (hmd_info.lens_separation_in_meters / 2) - (hmd_info.visible_meters_wide / 4);
     const float horizontal_shift_view   = horizontal_shift_meters / (hmd_info.visible_meters_wide / 2);
 
-    bool compare_images = std::getenv("ILLIXR_COMPARE_IMAGES") != nullptr && std::stoi(std::getenv("ILLIXR_COMPARE_IMAGES"));
+    bool compare_images = switchboard_->get_env_bool("ILLIXR_COMPARE_IMAGES");
 
     for (int eye = 0; eye < NUM_EYES; eye++) {
         for (int y = 0; y <= hmd_info.eye_tiles_high; y++) {

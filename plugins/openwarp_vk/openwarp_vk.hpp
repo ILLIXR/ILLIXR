@@ -118,7 +118,8 @@ public:
                bool                                                              input_texture_external_) override;
     void partial_destroy();
     void update_uniforms(const data_format::fast_pose_type& render_pose, bool left) override;
-    void record_command_buffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left) override;
+    void record_command_buffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left, VkFence fence) override;
+    void save_frame(VkFence fence) override;
     bool is_external() override;
     void destroy() override;
 
@@ -127,6 +128,7 @@ private:
     void                   create_vertex_buffers();
     void                   create_index_buffers();
     void                   generate_distortion_data();
+    void                   generate_fake_distortion_data();
     void                   generate_openwarp_mesh(size_t width, size_t height);
     void                   create_texture_sampler();
     void                   create_descriptor_set_layouts();
@@ -155,7 +157,8 @@ private:
     bool using_godot_         = false;
     bool offloaded_rendering_ = false;
 
-    uint64_t frame_count_ = 0;
+    uint64_t frame_count_ = 4;
+    uint64_t last_buffer_ind_ = 0; // last buffer index used for rendering
 
     // Vulkan resources
     std::stack<std::function<void()>> deletion_queue_;

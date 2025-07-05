@@ -80,6 +80,7 @@ void openwarp_vk::setup(VkRenderPass render_pass, uint32_t subpass,
 
     generate_openwarp_mesh(openwarp_width_, openwarp_height_);
     generate_distortion_data();
+    // generate_fake_distortion_data();
 
     create_vertex_buffers();
     create_index_buffers();
@@ -150,7 +151,24 @@ void openwarp_vk::update_uniforms(const fast_pose_type& render_pose, bool left) 
     if (left) log_pose_to_csv(relative_clock_->now(), render_pose, latest_pose);
 }
 
-void openwarp_vk::record_command_buffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left) {
+void openwarp_vk::save_frame(VkFence fence) {
+    int index = last_buffer_ind_ == 0 ? 1 : 0; // Use the other eye's index for saving
+    std::cout << "[openwarp] Saving frame for index: " << index << std::endl;
+    VkImage srcImageLeft = buffer_pool_->image_pool[last_buffer_ind_][0].image;
+    frame_writer_.put(std::make_shared<data_format::frame_to_be_saved>(srcImageLeft, static_cast<uint32_t>(swapchain_width_ / 2),
+                                                                        static_cast<uint32_t>(swapchain_height_), frame_count_, true,
+                                                                        fence, "rendered_frames", last_buffer_ind_));
+    VkImage srcImageRight = buffer_pool_->image_pool[last_buffer_ind_][1].image;
+    frame_writer_.put(std::make_shared<data_format::frame_to_be_saved>(srcImageRight, static_cast<uint32_t>(swapchain_width_ / 2),
+                                                                        static_cast<uint32_t>(swapchain_height_), frame_count_, false,
+                                                                        fence, "rendered_frames", last_buffer_ind_));
+}
+
+// void openwarp_vk::save_frame(VkFence fence) {
+//     return;
+// }
+
+void openwarp_vk::record_command_buffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left, VkFence fence) {
     num_record_calls_++;
 
     if (left)
@@ -158,11 +176,21 @@ void openwarp_vk::record_command_buffer(VkCommandBuffer commandBuffer, VkFramebu
 
     // Log the rendered frame
     // First, get the associated VkImage
-    VkImage srcImage = buffer_pool_->image_pool[buffer_ind][left ? 0 : 1].image;
-    frame_writer_.put(std::make_shared<data_format::frame_to_be_saved>(srcImage, static_cast<uint32_t>(swapchain_width_ / 2),
-                                                                        static_cast<uint32_t>(swapchain_height_), frame_count_, left,
-                                                                        "rendered_frames"));
-    spdlog::get("illixr")->info("[openwarp] Published one rendered frame to be saved, frame count: {}", frame_count_);
+    // std::pair<ILLIXR::vulkan::image_index_t, fast_pose_type> res =
+    //     buffer_pool_->post_processing_acquire_image(static_cast<signed char>(last_frame_ind_));
+    // auto ind = res.first;
+    // if (ind != -1) {
+    //     VkImage srcImage = buffer_pool_->image_pool[buffer_ind][left ? 0 : 1].image;
+    //     frame_writer_.put(std::make_shared<data_format::frame_to_be_saved>(srcImage, static_cast<uint32_t>(swapchain_width_ / 2),
+    //                                                                         static_cast<uint32_t>(swapchain_height_), frame_count_, left,
+    //                                                                         "rendered_frames"));
+    //     spdlog::get("illixr")->info("[openwarp] Published one rendered frame to be saved, frame count: {}", frame_count_);
+    // }
+    // VkImage srcImage = buffer_pool_->image_pool[last_buffer_ind_][left ? 0 : 1].image;
+    // frame_writer_.put(std::make_shared<data_format::frame_to_be_saved>(srcImage, static_cast<uint32_t>(swapchain_width_ / 2),
+    //                                                                     static_cast<uint32_t>(swapchain_height_), frame_count_, left,
+    //                                                                     fence, "rendered_frames"));
+    last_buffer_ind_ = buffer_ind;
 
     VkDeviceSize offsets = 0;
     VkClearValue clear_colors[2];
@@ -205,11 +233,6 @@ void openwarp_vk::record_command_buffer(VkCommandBuffer commandBuffer, VkFramebu
     vkCmdBindIndexBuffer(commandBuffer, ow_index_buffer_, 0, VK_INDEX_TYPE_UINT32);
     vkCmdDrawIndexed(commandBuffer, num_openwarp_indices_, 1, 0, 0, 0);
     vkCmdEndRenderPass(commandBuffer);
-
-    VkImage offscreen_image = offscreen_images_[left ? 0 : 1];
-    frame_writer_.put(std::make_shared<data_format::frame_to_be_saved>(offscreen_image, static_cast<uint32_t>(swapchain_width_ / 2),
-                                                                        static_cast<uint32_t>(swapchain_height_), frame_count_, left,
-                                                                        "offscreen_frames"));
 
     // Then perform distortion correction to the framebuffer expected by Monado
     VkClearValue clear_color;
@@ -581,6 +604,71 @@ void openwarp_vk::create_index_buffers() {
 
     vmaDestroyBuffer(vma_allocator_, dc_staging_buffer, dc_staging_alloc);
 }
+
+void openwarp_vk::generate_fake_distortion_data()
+{
+    /* ---------- 1. counts & index list (unchanged) ----------------------- */
+    num_distortion_vertices_ = (hmd_info_.eye_tiles_high + 1) * (hmd_info_.eye_tiles_wide + 1);
+    num_distortion_indices_  = hmd_info_.eye_tiles_high * hmd_info_.eye_tiles_wide * 6;
+
+    distortion_indices_.resize(num_distortion_indices_);
+
+    for (int y = 0; y < hmd_info_.eye_tiles_high; ++y) {
+        for (int x = 0; x < hmd_info_.eye_tiles_wide; ++x) {
+            const int off = (y * hmd_info_.eye_tiles_wide + x) * 6;
+
+            distortion_indices_[off + 0] = (y    ) * (hmd_info_.eye_tiles_wide + 1) + (x    );
+            distortion_indices_[off + 1] = (y + 1) * (hmd_info_.eye_tiles_wide + 1) + (x    );
+            distortion_indices_[off + 2] = (y    ) * (hmd_info_.eye_tiles_wide + 1) + (x + 1);
+
+            distortion_indices_[off + 3] = (y    ) * (hmd_info_.eye_tiles_wide + 1) + (x + 1);
+            distortion_indices_[off + 4] = (y + 1) * (hmd_info_.eye_tiles_wide + 1) + (x    );
+            distortion_indices_[off + 5] = (y + 1) * (hmd_info_.eye_tiles_wide + 1) + (x + 1);
+        }
+    }
+
+    /* ---------- 2. vertex array ----------------------------------------- */
+    const std::size_t verts_per_eye = num_distortion_vertices_;
+    distortion_vertices_.resize(HMD::NUM_EYES * verts_per_eye);
+
+    for (int eye = 0; eye < HMD::NUM_EYES; ++eye)
+    {
+        for (int y = 0; y <= hmd_info_.eye_tiles_high; ++y)
+        {
+            for (int x = 0; x <= hmd_info_.eye_tiles_wide; ++x)
+            {
+                const int idx  = eye * verts_per_eye + y * (hmd_info_.eye_tiles_wide + 1) + x;
+
+                /* --- 2a. clip-space position (simple plane) --------------- */
+                float u = static_cast<float>(x) / hmd_info_.eye_tiles_wide;   // 0 → 1
+                float v = static_cast<float>(y) / hmd_info_.eye_tiles_high;   // 0 → 1
+
+                distortion_vertices_[idx].pos.x =
+                    -1.0f + 2.0f * u;                        // -1 → +1 horizontally
+                distortion_vertices_[idx].pos.y =
+                    (input_texture_external_ ? 1.0f : -1.0f) *
+                    (-1.0f + 2.0f * (1.0f - v));            // flip if needed, keep full height
+                distortion_vertices_[idx].pos.z = 0.0f;
+
+                /* --- 2b. UVs : identity mapping --------------------------- */
+                // Same UV for R, G, B so the fragment shader samples identical pixels.
+                float uv_u = u;
+                float uv_v = input_texture_external_ ? v : (1.0f - v); // compensates Vulkan/GL Y-flip
+
+                distortion_vertices_[idx].uv0 = {uv_u, uv_v};
+                distortion_vertices_[idx].uv1 = distortion_vertices_[idx].uv0;
+                distortion_vertices_[idx].uv2 = distortion_vertices_[idx].uv0;
+            }
+        }
+    }
+
+    /* ---------- 3. any per-eye matrices still required elsewhere? ------- */
+    // If the rest of your pipeline no longer needs the projection / inverse
+    // matrices you can delete this block entirely.  Otherwise keep generating
+    // them exactly as before—those calculations do not affect the passthrough
+    // UVs and are harmless to leave in.
+}
+
 
 void openwarp_vk::generate_distortion_data() {
     // Calculate the number of vertices+ineye_tiles_high distortion mesh.

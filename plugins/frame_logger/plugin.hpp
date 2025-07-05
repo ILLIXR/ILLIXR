@@ -26,7 +26,7 @@ public:
     void initialize();
 
 private:
-    void save_frame(const VkImage& image, uint32_t width, uint32_t height, uint32_t frame_number, bool left, const std::string& output_directory);
+    void save_frame(const VkImage& image, uint32_t width, uint32_t height, uint32_t frame_number, bool left, VkFence fence, const std::string& output_directory, int index);
     std::shared_ptr<vulkan::display_provider> display_provider_;
     std::shared_ptr<switchboard> switchboard_;
     const phonebook* phonebook_;
@@ -38,6 +38,7 @@ private:
     VkCommandPool                     command_pool_{};
 
     std::shared_ptr<spdlog::logger>   log_;
+    int countdown = 40; // Countdown to wait for the app to be ready
 };
 
 } // namespace ILLIXR 

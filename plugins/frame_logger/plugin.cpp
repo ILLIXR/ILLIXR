@@ -4,6 +4,7 @@
 #include "illixr/vk/vulkan_utils.hpp"
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "illixr/gl_util/lib/stb_image_write.h"
+#include "illixr/vk/vulkan_objects.hpp"
 
 
 namespace ILLIXR {
@@ -65,20 +66,22 @@ void frame_logger::_p_one_iteration() {
         return;
     }
 
-    log_->info("_p_one_iteration called");
-
     // Process frames to be saved
     auto frame_event = frame_reader_.size() > 0 ? frame_reader_.dequeue() : nullptr;
     if (frame_event) {
         const auto& frame = *frame_event;
         log_->info("Processing frame {}", frame.frame_number);
-        save_frame(frame.image, frame.width, frame.height, frame.frame_number, frame.left, frame.output_directory);
-    } 
+        save_frame(frame.image, frame.width, frame.height, frame.frame_number, frame.left, frame.fence, frame.output_directory, frame.index);
+    }
 }
 
-void frame_logger::save_frame(const VkImage& image, uint32_t width, uint32_t height, uint32_t frame_number, bool left, 
-                                  const std::string& output_directory) {
-    
+void frame_logger::save_frame(const VkImage& image, uint32_t width, uint32_t height, uint32_t frame_number, bool left,
+                                  VkFence fence, const std::string& output_directory, int index) {
+
+    if (countdown-- > 0) {
+        log_->info("Waiting for app to be ready, countdown: {}", countdown);
+        return;
+    }
     // Ensure the output directory exists - I do not like this checking as it executes every time a frame is saved
     std::filesystem::path output_directory_ = std::filesystem::current_path() / output_directory;
     if (!std::filesystem::exists(output_directory_)) {
@@ -91,7 +94,7 @@ void frame_logger::save_frame(const VkImage& image, uint32_t width, uint32_t hei
     VmaAllocation staging_buffer_allocation;
     VkBufferCreateInfo buffer_info{};
     buffer_info.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-    buffer_info.size = width * height * 4; // RGBA format - wrong! Monado uses GBRA
+    buffer_info.size = width * height * 4;
     buffer_info.usage = VK_BUFFER_USAGE_TRANSFER_DST_BIT;
     buffer_info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
@@ -111,8 +114,8 @@ void frame_logger::save_frame(const VkImage& image, uint32_t width, uint32_t hei
     // Transition image layout for copying
     VkImageMemoryBarrier barrier{};
     barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-    // barrier.oldLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR; // this may not be right for source images and offscreen images
-    barrier.oldLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL; // This is the layout for the src image
+    // barrier.oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+    barrier.oldLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
     barrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
     barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
     barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
@@ -122,11 +125,13 @@ void frame_logger::save_frame(const VkImage& image, uint32_t width, uint32_t hei
     barrier.subresourceRange.levelCount = 1;
     barrier.subresourceRange.baseArrayLayer = 0;
     barrier.subresourceRange.layerCount = 1;
-    barrier.srcAccessMask = VK_ACCESS_SHADER_READ_BIT; // Assuming the src image was used as a shader input
+    barrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+    // barrier.srcAccessMask = VK_ACCESS_SHADER_READ_BIT;
     barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
 
     vkCmdPipelineBarrier(command_buffer,
-                        VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
+                        VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+                        // VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
                         VK_PIPELINE_STAGE_TRANSFER_BIT,
                         0,
                         0, nullptr,
@@ -150,20 +155,23 @@ void frame_logger::save_frame(const VkImage& image, uint32_t width, uint32_t hei
                           staging_buffer, 1, &region);
     log_->info("Copy image to buffer (vkCmdCopyImageToBuffer) for frame {}", frame_number);
 
-    // Transition image back to present layout
-    barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
-    barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-    barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
-    barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+    // // Transition image back to present layout
+    // barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+    // barrier.newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+    // // barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    // barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+    // barrier.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+    // // barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 
-    vkCmdPipelineBarrier(command_buffer,
-                        VK_PIPELINE_STAGE_TRANSFER_BIT,
-                        VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
-                        0,
-                        0, nullptr,
-                        0, nullptr,
-                        1, &barrier);
-    log_->info("Transition image back to present layout (vkCmdPipelineBarrier) for frame {}", frame_number);
+    // vkCmdPipelineBarrier(command_buffer,
+    //                     VK_PIPELINE_STAGE_TRANSFER_BIT,
+    //                     VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+    //                     // VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
+    //                     0,
+    //                     0, nullptr,
+    //                     0, nullptr,
+    //                     1, &barrier);
+    // log_->info("Transition image back to present layout (vkCmdPipelineBarrier) for frame {}", frame_number);
 
     // Submit command buffer
     vulkan::end_one_time_command(display_provider_->vk_device_,
@@ -183,6 +191,22 @@ void frame_logger::save_frame(const VkImage& image, uint32_t width, uint32_t hei
         std::swap(pixels[i * 4 + 0], pixels[i * 4 + 2]); // B <-> R
     }
 
+    // auto srgb_to_linear = [](uint8_t c) {
+    //     float f = c / 255.0f;
+    //     return f <= 0.04045f ? f / 12.92f : powf((f + 0.055f) / 1.055f, 2.4f);
+    // };
+
+    // for (uint32_t i = 0; i < width * height; ++i) {
+    //     float r = srgb_to_linear(pixels[i * 4 + 2]);
+    //     float g = srgb_to_linear(pixels[i * 4 + 1]);
+    //     float b = srgb_to_linear(pixels[i * 4 + 0]);
+
+    //     pixels[i * 4 + 0] = uint8_t(std::clamp(r * 255.f, 0.f, 255.f));
+    //     pixels[i * 4 + 1] = uint8_t(std::clamp(g * 255.f, 0.f, 255.f));
+    //     pixels[i * 4 + 2] = uint8_t(std::clamp(b * 255.f, 0.f, 255.f));
+    // }
+
+
     std::string filename = (output_directory_ / ("frame_" + std::to_string(frame_number) + (left ? "_left" : "_right") + ".png")).string();
     stbi_write_png(filename.c_str(), width, height, 4, pixels, width * 4);
 
@@ -192,6 +216,8 @@ void frame_logger::save_frame(const VkImage& image, uint32_t width, uint32_t hei
     vmaDestroyBuffer(this->vma_allocator_, staging_buffer, staging_buffer_allocation);
 
     log_->info("Saved frame {} to {}", frame_number, filename);
+
+    // if (!left) src_release_image(index);
 }
 
 } // namespace ILLIXR
