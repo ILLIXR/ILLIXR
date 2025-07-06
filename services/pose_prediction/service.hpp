@@ -5,6 +5,11 @@
 #include "illixr/data_format/pose_prediction.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/plugin.hpp"
+#include <chrono>
+#include <eigen3/Eigen/Dense>
+#include <fstream>
+#include <iostream>
+#include <sstream>
 
 namespace ILLIXR {
 class pose_prediction_impl : public data_format::pose_prediction {
@@ -36,6 +41,12 @@ private:
     std::vector<data_format::fast_pose_type> render_poses_;
     std::vector<data_format::fast_pose_type> warp_poses_;
 
+    inline std::string next_token(std::istringstream& ss) {
+        std::string tok;
+        std::getline(ss, tok, ',');
+        return tok;
+    }
+
     void setup_pose_reader() {
         std::string pose_path_ = switchboard_->get_env_char("ILLIXR_POSE_PATH");
         if (pose_path_.empty()) {
@@ -47,12 +58,51 @@ private:
             spdlog::get("illixr")->error("Could not open pose file at {}", pose_path_);
             ILLIXR::abort("Could not open pose file");
         }
-        // std::string line;
-        // while (std::getline(pose_file_, line)) {
-        //     std::istringstream iss(line);
-        //     data_format::fast_pose_type pose;
-        //     iss >> pose.imu_time >> pose.position.x() >> pose.position.y() >> pose.position.z()
-        //         >> pose.orientation.w() >> pose.orientation.x() >> pose.orientation.y() >>
+        // Read the file line by line and parse the poses
+        std::string line;
+        while (std::getline(pose_file_, line)) {
+            std::istringstream iss(line);
+
+            data_format::fast_pose_type render_pose{}, warp_pose{};
+            long now = std::stoul(next_token(iss));
+
+            render_pose.pose.cam_time            = time_point{std::chrono::nanoseconds(std::stoul(next_token(iss)))};
+            render_pose.pose.imu_time            = time_point{std::chrono::nanoseconds(std::stoul(next_token(iss)))};
+            render_pose.pose.predict_target_time = time_point{std::chrono::nanoseconds(std::stoul(next_token(iss)))};
+
+            warp_pose.pose.cam_time              = time_point{std::chrono::nanoseconds(std::stoul(next_token(iss)))};
+            warp_pose.pose.imu_time              = time_point{std::chrono::nanoseconds(std::stoul(next_token(iss)))};
+            warp_pose.pose.predict_target_time   = time_point{std::chrono::nanoseconds(std::stoul(next_token(iss)))};
+
+            render_pose.pose.position.x()        = std::stof(next_token(iss));
+            render_pose.pose.position.y()        = std::stof(next_token(iss));
+            render_pose.pose.position.z()        = std::stof(next_token(iss));
+
+            render_pose.pose.orientation.w()     = std::stof(next_token(iss));
+            render_pose.pose.orientation.x()     = std::stof(next_token(iss));
+            render_pose.pose.orientation.y()     = std::stof(next_token(iss));
+            render_pose.pose.orientation.z()     = std::stof(next_token(iss));
+
+            warp_pose.pose.position.x()          = std::stof(next_token(iss));
+            warp_pose.pose.position.y()          = std::stof(next_token(iss));
+            warp_pose.pose.position.z()          = std::stof(next_token(iss));
+
+            warp_pose.pose.orientation.w()       = std::stof(next_token(iss));
+            warp_pose.pose.orientation.x()       = std::stof(next_token(iss));
+            warp_pose.pose.orientation.y()       = std::stof(next_token(iss));
+            warp_pose.pose.orientation.z()       = std::stof(next_token(iss));
+
+            render_poses_.emplace_back(render_pose);
+            warp_poses_.emplace_back(warp_pose);
+            // iss >> render_pose.pose.cam_time >> render_pose.pose.imu_time >> render_pose.pose.predict_target_time
+            //     >> warp_pose.pose.cam_time >> warp_pose.pose.imu_time >> warp_pose.pose.predict_target_time
+            //     >> render_pose.pose.position.x() >> render_pose.pose.position.y() >> render_pose.pose.position.z()
+            //     >> render_pose.pose.orientation.w() >> render_pose.pose.orientation.x() >> render_pose.pose.orientation.y() 
+            //     >> render_pose.pose.orientation.z()
+            //     >> warp_pose.pose.position.x() >> warp_pose.pose.position.y() >> warp_pose.pose.position.z()
+            //     >> warp_pose.pose.orientation.w() >> warp_pose.pose.orientation.x() >> warp_pose.pose.orientation.y() >>
+            //     warp_pose.pose.orientation.z();
+        }
     }
 
 };
