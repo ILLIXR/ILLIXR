@@ -15,7 +15,8 @@ template<class Archive>
 void serialize(Archive& ar, ILLIXR::data_format::pose_type& pose, const unsigned int version) {
     (void) version;
     ar& boost::serialization::base_object<ILLIXR::switchboard::event>(pose);
-    ar & pose.sensor_time;
+    ar& pose.cam_time;
+    ar& pose.imu_time;
     ar& boost::serialization::make_array(pose.position.derived().data(), pose.position.size());
     ar& boost::serialization::make_array(pose.orientation.coeffs().data(), pose.orientation.coeffs().size());
 }
