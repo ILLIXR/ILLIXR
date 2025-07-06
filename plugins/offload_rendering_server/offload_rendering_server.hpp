@@ -132,8 +132,8 @@ public:
     /**
      * @brief Update uniforms (no-op in this implementation)
      */
-    void update_uniforms(const data_format::pose_type& r_pose, bool left) override {
-        (void) r_pose;
+    void update_uniforms(const data_format::fast_pose_type& render_pose, bool left) override {
+        (void) render_pose;
         (void) left;
     }
 
