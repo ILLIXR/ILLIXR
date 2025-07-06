@@ -29,13 +29,24 @@ pose_prediction_impl::pose_prediction_impl(const phonebook* const pb)
 fast_pose_type pose_prediction_impl::get_fast_pose() const {
     switchboard::ptr<const switchboard::event_wrapper<time_point>> vsync_estimate = vsync_estimate_.get_ro_nullable();
 
+    // If we are comparing images, return pose from the pose reader
+    if (switchboard_->get_env_bool("ILLIXR_COMPARE_IMAGES")) {
+        if (!render_poses_.empty()) {
+            fast_pose_type render_pose = render_poses_.front();
+            render_poses_.erase(render_poses_.begin());
+            return render_pose;
+        } else {
+            spdlog::get("illixr")->warn("[POSEPREDICTION] No render poses available, returning zero pose.");
+            return fast_pose_type{correct_pose(pose_type{}), clock_->now(), clock_->now()};
+        }
+    }
+
     if (vsync_estimate == nullptr) {
         // Even if no vsync is available, we should at least make a reasonable guess
         return get_fast_pose(clock_->now());
     } else {
         time_point vsync_time = vsync_estimate->operator time_point();
         // spdlog::get("illixr")->info("[POSEPREDICTION] FAST POSE IS PREDICTED TO VSYNC {}!", vsync_time.time_since_epoch().count());
-        // return get_fast_pose(vsync_estimate.get()->operator time_point());
         return get_fast_pose(vsync_time);
     }
 }

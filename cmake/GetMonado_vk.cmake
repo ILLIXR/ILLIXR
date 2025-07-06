@@ -25,7 +25,7 @@ else ()
 
     ExternalProject_Add(MonadoVK
                         GIT_REPOSITORY https://github.com/ILLIXR/monado_vulkan_integration.git   # Git repo for source code
-                        GIT_TAG 3dd0d3fb9150e508ddcbc07a88046f5662384fdf       # sha5 hash for specific commit to pull (if there is no specific tag to use)
+                        GIT_TAG record_timestamps       # sha5 hash for specific commit to pull (if there is no specific tag to use)
 
                         PREFIX ${CMAKE_BINARY_DIR}/_deps/monado_vk             # the build directory
                         DEPENDS ${Vulkan_DEP_STR}                              # dependencies of this module
