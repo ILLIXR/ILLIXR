@@ -194,13 +194,10 @@ private:
     class topic_subscription {
     public:
         topic_subscription(const std::string& topic_name, plugin_id_t plugin_id,
-                           std::function<void(ptr<const event>&&, std::size_t)> callback,
-                           const std::shared_ptr<record_logger>&                record_logger_)
+                           std::function<void(ptr<const event>&&, std::size_t)> callback)
             : topic_name_{topic_name}
             , plugin_id_{plugin_id}
             , callback_{std::move(callback)}
-            , record_logger_{record_logger_}
-            , cb_log_{record_logger_}
             , thread_{[this] {
                           this->thread_body();
                       },
@@ -249,18 +246,6 @@ private:
                 // std::cerr << "deq " << ptr_to_str(reinterpret_cast<const void*>(this_event.get_ro())) << " " <<
                 // this_event.use_count() << " v\n";
                 callback_(std::move(this_event), dequeued_);
-                if (cb_log_) {
-                    cb_log_.log(record{_switchboard_callback_header,
-                                       {
-                                           {plugin_id_},
-                                           {topic_name_},
-                                           {dequeued_},
-                                           {cb_start_cpu_time},
-                                           {thread_cpu_time()},
-                                           {cb_start_wall_time},
-                                           {std::chrono::high_resolution_clock::now()},
-                                       }});
-                }
             } else {
                 // Nothing to do.
                 idle_cycles_++;
@@ -280,25 +265,11 @@ private:
                     this_event.reset();
                 }
             }
-
-            // Log stats
-            if (record_logger_) {
-                record_logger_->log(record{_switchboard_topic_stop_header,
-                                           {
-                                               {plugin_id_},
-                                               {topic_name_},
-                                               {dequeued_},
-                                               {unprocessed},
-                                               {idle_cycles_},
-                                           }});
-            }
         }
 
         const std::string&                                    topic_name_;
         plugin_id_t                                           plugin_id_;
         std::function<void(ptr<const event>&&, std::size_t)>  callback_;
-        const std::shared_ptr<record_logger>                  record_logger_;
-        record_coalescer                                      cb_log_;
         moodycamel::BlockingConcurrentQueue<ptr<const event>> queue_{8 /*max size estimate*/};
         moodycamel::ConsumerToken                             token_{queue_};
         static constexpr std::chrono::milliseconds            queue_timeout_{100};
@@ -358,10 +329,9 @@ private:
      */
     class topic {
     public:
-        topic(std::string name, const std::type_info& ty, std::shared_ptr<record_logger> record_logger_)
+        topic(std::string name, const std::type_info& ty)
             : name_{std::move(name)}
             , type_info_{ty}
-            , record_logger_{std::move(record_logger_)}
             , latest_index_{0} { }
 
         const std::string& name() {
@@ -455,7 +425,7 @@ private:
             // Write on subscriptions_.
             // Must acquire unique state on subscriptions_lock_
             const std::unique_lock lock{subscriptions_lock_};
-            subscriptions_.emplace_back(name_, plugin_id, callback, record_logger_);
+            subscriptions_.emplace_back(name_, plugin_id, callback);
         }
 
         topic_buffer& get_buffer() {
@@ -481,7 +451,6 @@ private:
 
         const std::string                                 name_;
         const std::type_info&                             type_info_;
-        const std::shared_ptr<record_logger>              record_logger_;
         std::atomic<size_t>                               latest_index_;
         std::array<ptr<const event>, latest_buffer_size_> latest_buffer_;
         std::list<topic_subscription>                     subscriptions_;
@@ -672,8 +641,7 @@ public:
      * If @p pb is null, then logging is disabled.
      */
     explicit switchboard(const phonebook* pb)
-        : phonebook_{pb}
-        , record_logger_{pb ? pb->lookup_impl<record_logger>() : nullptr} {
+        : phonebook_{pb} {
         for (const auto& item : ENV_VARS) {
             char* value = getenv(item.c_str());
             if (value) {
@@ -853,7 +821,6 @@ private:
     const phonebook*                             phonebook_;
     std::unordered_map<std::string, topic>       registry_;
     std::shared_mutex                            registry_lock_;
-    std::shared_ptr<record_logger>               record_logger_;
     std::unordered_map<std::string, std::string> env_vars_;
 
     template<typename Specific_event>
@@ -879,7 +846,7 @@ private:
 #endif
         // Topic not found. Need to create it here.
         const std::unique_lock lock{registry_lock_};
-        return registry_.try_emplace(topic_name, topic_name, typeid(Specific_event), record_logger_).first->second;
+        return registry_.try_emplace(topic_name, topic_name, typeid(Specific_event)).first->second;
     }
 
     /**

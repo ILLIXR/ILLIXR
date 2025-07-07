@@ -16,17 +16,6 @@ namespace ILLIXR {
 
 using plugin_id_t = std::size_t;
 
-/*
- * This gets included, but it is functionally 'private'.
- */
-const record_header _plugin_start_header{
-    "plugin_name",
-    {
-        {"plugin_id", typeid(plugin_id_t)},
-        {"plugin_name", typeid(std::string)},
-    },
-};
-
 /**
  * @brief A dynamically-loadable plugin for Spindle.
  */
@@ -35,7 +24,6 @@ public:
     plugin(std::string name, phonebook* pb)
         : name_{std::move(name)}
         , phonebook_{pb}
-        , record_logger_{phonebook_->lookup_impl<record_logger>()}
         , gen_guid_{phonebook_->lookup_impl<gen_guid>()}
         , id_{gen_guid_->get()} { }
 
@@ -48,13 +36,7 @@ public:
      * methods (due to structure of C++). See `threadloop` for an example of
      * this use-case.
      */
-    virtual void start() {
-        record_logger_->log(record{_plugin_start_header,
-                                   {
-                                       {id_},
-                                       {name_},
-                                   }});
-    }
+    virtual void start() {}
 
     /**
      * @brief A method which Spindle calls when it stops the component.
@@ -116,7 +98,6 @@ public:
 protected:
     std::string                          name_;
     const phonebook*                     phonebook_;
-    const std::shared_ptr<record_logger> record_logger_;
     const std::shared_ptr<gen_guid>      gen_guid_;
     const std::size_t                    id_;
     std::shared_ptr<spdlog::logger>      plugin_logger_;

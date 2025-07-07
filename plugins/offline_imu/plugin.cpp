@@ -28,7 +28,6 @@ inline std::map<ullong, sensor_types> read_data(std::ifstream& gt_file, const st
     , imu_{switchboard_->get_writer<imu_type>("imu")}
     , dataset_first_time_{sensor_data_it_->first}
     , dataset_now_{0}
-    , imu_cam_log_{record_logger_}
     , clock_{phonebook_->lookup_impl<relative_clock>()} { }
 
 ILLIXR::threadloop::skip_option offline_imu::_p_should_skip() {

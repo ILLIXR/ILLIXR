@@ -40,8 +40,6 @@ private:
     // Current IMU timestamp
     ullong dataset_now_;
 
-    record_coalescer imu_cam_log_;
-
     std::shared_ptr<relative_clock> clock_;
 };
 } // namespace ILLIXR
