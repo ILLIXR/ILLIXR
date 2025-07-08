@@ -22,13 +22,7 @@ pose_prediction_impl::pose_prediction_impl(const phonebook* const pb)
             setup_pose_reader();
         }
     }
-
-// No parameter get_fast_pose() should just predict to the next vsync
-// However, we don't have vsync estimation yet.
-// So we will predict to `now()`, as a temporary approximation
-fast_pose_type pose_prediction_impl::get_fast_pose() const {
-    switchboard::ptr<const switchboard::event_wrapper<time_point>> vsync_estimate = vsync_estimate_.get_ro_nullable();
-
+fast_pose_type pose_prediction_impl::get_fake_render_pose() {
     // If we are comparing images, return pose from the pose reader
     if (switchboard_->get_env_bool("ILLIXR_COMPARE_IMAGES")) {
         if (!render_poses_.empty()) {
@@ -40,6 +34,28 @@ fast_pose_type pose_prediction_impl::get_fast_pose() const {
             return fast_pose_type{correct_pose(pose_type{}), clock_->now(), clock_->now()};
         }
     }
+}
+
+fast_pose_type pose_prediction_impl::get_fake_warp_pose() {
+    // If we are comparing images, return pose from the pose reader
+    if (switchboard_->get_env_bool("ILLIXR_COMPARE_IMAGES")) {
+        if (!warp_poses_.empty()) {
+            fast_pose_type warp_pose = warp_poses_.front();
+            warp_poses_.erase(warp_poses_.begin());
+            return warp_pose;
+        } else {
+            spdlog::get("illixr")->warn("[POSEPREDICTION] No warp poses available, returning zero pose.");
+            return fast_pose_type{correct_pose(pose_type{}), clock_->now(), clock_->now()};
+        }
+    }
+}
+
+// No parameter get_fast_pose() should just predict to the next vsync
+// However, we don't have vsync estimation yet.
+// So we will predict to `now()`, as a temporary approximation
+fast_pose_type pose_prediction_impl::get_fast_pose() const {
+
+    switchboard::ptr<const switchboard::event_wrapper<time_point>> vsync_estimate = vsync_estimate_.get_ro_nullable();
 
     if (vsync_estimate == nullptr) {
         // Even if no vsync is available, we should at least make a reasonable guess

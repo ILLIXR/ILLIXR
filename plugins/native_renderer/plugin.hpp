@@ -116,7 +116,7 @@ private:
 
     const std::shared_ptr<switchboard>                  switchboard_;
     const std::shared_ptr<spdlog::logger>               log_;
-    std::shared_ptr<spdlog::logger>                     pose_csv_logger_;
+    std::shared_ptr<spdlog::logger>                     nr_pose_csv_logger_;
     const std::shared_ptr<data_format::pose_prediction> pose_prediction_;
     const std::shared_ptr<vulkan::display_provider>     display_sink_;
     const std::shared_ptr<vulkan::timewarp>             timewarp_;

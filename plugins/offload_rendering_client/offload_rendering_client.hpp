@@ -72,18 +72,24 @@ public:
     /**
      * @brief Record command buffer (no-op in this implementation)
      */
-    void record_command_buffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left) override {
+    void record_command_buffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left, VkFence fence) override {
         (void) commandBuffer;
         (void) framebuffer;
         (void) buffer_ind;
         (void) left;
+        (void) fence;
     }
 
     /**
      * @brief Update uniforms (no-op in this implementation)
      */
-    void update_uniforms(const data_format::pose_type& render_pose, bool left) override {
+    void update_uniforms(const data_format::fast_pose_type& render_pose, bool left) override {
         (void) render_pose;
+        (void) left;
+    }
+
+    void save_frame(VkFence fence) override {
+        (void) fence; // No-op in this implementation
     }
 
     /**

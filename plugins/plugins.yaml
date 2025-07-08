@@ -69,7 +69,7 @@ profiles:
       enable_pre_sleep: false
 
   - monado_openwarp_vk:
-    plugins: offline_imu,offline_cam,gtsam_integrator,openvins,pose_prediction,openwarp_vk.monado,frame_logger
+    plugins: offline_imu,offline_cam,gtsam_integrator,openvins,pose_prediction,openwarp_vk.monado
     env_vars:
       enable_offload: false
       enable_alignment: false
@@ -133,7 +133,7 @@ profiles:
 # Offload rendering Client/Server.
 
   - offload_rendering_client:
-    plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,tcp_network_backend,offload_rendering_client,timewarp_vk,native_renderer,openvins
+    plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,tcp_network_backend,offload_rendering_client,openwarp_vk,native_renderer,openvins
     env_vars:
       enable_offload: false
       enable_alignment: false

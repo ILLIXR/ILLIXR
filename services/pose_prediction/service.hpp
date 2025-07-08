@@ -25,6 +25,9 @@ public:
     Eigen::Quaternionf          get_offset() override;
     data_format::pose_type      correct_pose(const data_format::pose_type& pose) const override;
 
+    data_format::fast_pose_type get_fake_render_pose() override;
+    data_format::fast_pose_type get_fake_warp_pose() override;
+
 private:
     mutable std::atomic<bool>                                        first_time_{true};
     const std::shared_ptr<switchboard>                               switchboard_;
@@ -44,14 +47,19 @@ private:
     inline std::string next_token(std::istringstream& ss) {
         std::string tok;
         std::getline(ss, tok, ',');
+        if (tok.empty()) {
+            spdlog::get("illixr")->error("Empty token found in pose file, please check the format.");
+            ILLIXR::abort("Empty token in pose file");
+        }
         return tok;
     }
 
     void setup_pose_reader() {
-        std::string pose_path_ = switchboard_->get_env_char("ILLIXR_POSE_PATH");
+        std::string pose_path_ = switchboard_->get_env_char("ILLIXR_POSE_PATH") ? switchboard_->get_env_char("ILLIXR_POSE_PATH") : "";
         if (pose_path_.empty()) {
             spdlog::get("illixr")->error("Please set ILLIXR_POSE_PATH environment variable to the path of the pose file.");
-            ILLIXR::abort("ILLIXR_POSE_PATH is not set");
+            // ILLIXR::abort("ILLIXR_POSE_PATH is not set");
+            return;
         }
         std::ifstream pose_file_(pose_path_);
         if (!pose_file_.is_open()) {
@@ -64,15 +72,15 @@ private:
             std::istringstream iss(line);
 
             data_format::fast_pose_type render_pose{}, warp_pose{};
-            long now = std::stoul(next_token(iss));
+            uint64_t now = std::stoull(next_token(iss));
 
-            render_pose.pose.cam_time            = time_point{std::chrono::nanoseconds(std::stoul(next_token(iss)))};
-            render_pose.pose.imu_time            = time_point{std::chrono::nanoseconds(std::stoul(next_token(iss)))};
-            render_pose.predict_target_time      = time_point{std::chrono::nanoseconds(std::stoul(next_token(iss)))};
+            render_pose.pose.cam_time            = time_point{std::chrono::nanoseconds(std::stoull(next_token(iss)))};
+            render_pose.pose.imu_time            = time_point{std::chrono::nanoseconds(std::stoull(next_token(iss)))};
+            render_pose.predict_target_time      = time_point{std::chrono::nanoseconds(std::stoull(next_token(iss)))};
 
-            warp_pose.pose.cam_time              = time_point{std::chrono::nanoseconds(std::stoul(next_token(iss)))};
-            warp_pose.pose.imu_time              = time_point{std::chrono::nanoseconds(std::stoul(next_token(iss)))};
-            warp_pose.predict_target_time        = time_point{std::chrono::nanoseconds(std::stoul(next_token(iss)))};
+            warp_pose.pose.cam_time              = time_point{std::chrono::nanoseconds(std::stoull(next_token(iss)))};
+            warp_pose.pose.imu_time              = time_point{std::chrono::nanoseconds(std::stoull(next_token(iss)))};
+            warp_pose.predict_target_time        = time_point{std::chrono::nanoseconds(std::stoull(next_token(iss)))};
 
             render_pose.pose.position.x()        = std::stof(next_token(iss));
             render_pose.pose.position.y()        = std::stof(next_token(iss));

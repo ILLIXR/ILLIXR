@@ -19,6 +19,9 @@ public:
     [[maybe_unused]] [[nodiscard]] virtual Eigen::Quaternionf get_offset()                                      = 0;
     [[nodiscard]] virtual pose_type                           correct_pose(const pose_type& pose) const         = 0;
 
+    virtual fast_pose_type get_fake_render_pose() = 0;
+    virtual fast_pose_type get_fake_warp_pose()   = 0;
+
     ~pose_prediction() override = default;
 
 protected:

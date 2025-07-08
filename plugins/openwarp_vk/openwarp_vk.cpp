@@ -133,8 +133,13 @@ void openwarp_vk::partial_destroy() {
 void openwarp_vk::update_uniforms(const fast_pose_type& render_pose, bool left) {
     num_update_uniforms_calls_++;
 
-    fast_pose_type latest_pose = disable_warp_ ? render_pose : pose_prediction_->get_fast_pose();
-    // fast_pose_type latest_fast_pose = disable_warp_ ? fast_pose_type{render_pose, {}, {}}: pose_prediction_->get_fast_pose();
+    fast_pose_type latest_pose;
+    if (switchboard_->get_env_bool("ILLIXR_COMPARE_IMAGES")) {
+        // If we are comparing images, we use the fake render pose
+        latest_pose = disable_warp_ ? render_pose : pose_prediction_->get_fake_warp_pose();
+    } else {
+        latest_pose = disable_warp_ ? render_pose : pose_prediction_->get_fast_pose();
+    }
 
     for (int eye = 0; eye < 2; eye++) {
         Eigen::Matrix4f renderedCameraMatrix = create_camera_matrix(render_pose.pose, eye);

@@ -45,14 +45,14 @@ using namespace ILLIXR::data_format;
         fputs("timestamp,pose_type,pos_x,pos_y,pos_z,quat_w,quat_x,quat_y,quat_z,predict_computed_time,predict_target_time\n", fstream);
     };
 
-    pose_csv_logger_ = spdlog::basic_logger_mt(
-        "pose_csv_logger",
-        "logs/pose_data.csv",
+    nr_pose_csv_logger_ = spdlog::basic_logger_mt(
+        "nr_pose_csv_logger_",
+        "logs/nr_pose_data.csv",
         true, // Truncate
         handlers
     );
-    pose_csv_logger_->set_pattern("%v"); // Only output the message part, no timestamps or logger name
-    pose_csv_logger_->set_level(spdlog::level::info);
+    nr_pose_csv_logger_->set_pattern("%v"); // Only output the message part, no timestamps or logger name
+    nr_pose_csv_logger_->set_level(spdlog::level::info);
 }
 
 native_renderer::~native_renderer() {
@@ -79,7 +79,7 @@ native_renderer::~native_renderer() {
  * @param pose_type A string indicating the type of pose (e.g., "render", "reprojection")
  */
 void native_renderer::log_pose_to_csv(const fast_pose_type& pose, const std::string& pose_type) {
-    if (!pose_csv_logger_) {
+    if (!nr_pose_csv_logger_) {
         log_->warn("Pose CSV logger is not initialized");
         return;
     }
@@ -102,7 +102,7 @@ void native_renderer::log_pose_to_csv(const fast_pose_type& pose, const std::str
     auto predict_target = pose.predict_target_time.time_since_epoch().count();
     
     // Log to CSV
-    pose_csv_logger_->info("{},{},{:.6f},{:.6f},{:.6f},{:.6f},{:.6f},{:.6f},{:.6f},{},{}",
+    nr_pose_csv_logger_->info("{},{},{:.6f},{:.6f},{:.6f},{:.6f},{:.6f},{:.6f},{:.6f},{},{}",
                          now, pose_type, pos_x, pos_y, pos_z, quat_w, quat_x, quat_y, quat_z,
                          predict_computed, predict_target);
 }
@@ -182,7 +182,7 @@ void native_renderer::_p_one_iteration() {
     if (!app_->is_external()) {
         // Get the current fast pose and update the uniforms
         // log_->debug("Updating uniforms");
-        app_->update_uniforms(fast_pose.pose, 1);
+        app_->update_uniforms(fast_pose, 1);
 
         VK_ASSERT_SUCCESS(vkResetCommandBuffer(app_command_buffer_, 0))
 
@@ -261,7 +261,7 @@ void native_renderer::_p_one_iteration() {
         auto res          = buffer_pool_->post_processing_acquire_image();
         auto buffer_index = res.first;
         auto pose         = res.second;
-        timewarp_->update_uniforms(pose.pose, 1);
+        timewarp_->update_uniforms(pose, 1);
 
         if (buffer_index == -1) {
             return;
@@ -399,7 +399,7 @@ void native_renderer::record_src_command_buffer(vulkan::image_index_t buffer_ind
             vkCmdBeginRenderPass(app_command_buffer_, &render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
             // Call app service to record the command buffer
             app_->record_command_buffer(app_command_buffer_, offscreen_framebuffers_[buffer_index][eye], buffer_index,
-                                        eye == 0);
+                                        eye == 0, nullptr);
             vkCmdEndRenderPass(app_command_buffer_);
         }
         VK_ASSERT_SUCCESS(vkEndCommandBuffer(app_command_buffer_))
@@ -419,7 +419,7 @@ void native_renderer::record_post_processing_command_buffer(vulkan::image_index_
 
     for (auto eye = 0; eye < 2; eye++) {
         timewarp_->record_command_buffer(timewarp_command_buffer_, swapchain_framebuffers_[swapchain_image_index], buffer_index,
-                                         eye == 0);
+                                         eye == 0, nullptr);
     }
 
     VK_ASSERT_SUCCESS(vkEndCommandBuffer(timewarp_command_buffer_))

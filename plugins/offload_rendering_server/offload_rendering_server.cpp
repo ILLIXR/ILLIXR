@@ -6,7 +6,7 @@ using namespace vulkan::ffmpeg_utils;
 
 offload_rendering_server::offload_rendering_server(const std::string& name, phonebook* pb)
     : threadloop{name, pb}
-    , log_{spdlogger("debug")}
+    , log_{spdlogger("error")}
     , switchboard_{pb->lookup_impl<switchboard>()}
     , frames_topic_{switchboard_->get_network_writer<compressed_frame>("compressed_frames", {})}
     , render_pose_{switchboard_->get_reader<fast_pose_type>("render_pose")} {

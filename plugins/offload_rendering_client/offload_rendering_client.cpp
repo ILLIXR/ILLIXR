@@ -253,6 +253,7 @@ void offload_rendering_client::_p_one_iteration() {
     if (!ready_) {
         return;
     }
+    std::cout << "Offload rendering client iteration started" << std::endl;
 
     // Send latest pose to server
     push_pose();
@@ -486,7 +487,12 @@ void offload_rendering_client::_p_one_iteration() {
 }
 
 void offload_rendering_client::push_pose() {
-    auto current_pose = pose_prediction_->get_fast_pose();
+    fast_pose_type current_pose;
+    if (switchboard_->get_env_bool("ILLIXR_COMPARE_IMAGES")) {
+        current_pose = pose_prediction_->get_fake_render_pose();
+    } else {
+        current_pose = pose_prediction_->get_fast_pose();
+    }
 
     auto now = time_point{std::chrono::duration<long, std::nano>{std::chrono::high_resolution_clock::now().time_since_epoch()}};
     current_pose.predict_target_time   = now;

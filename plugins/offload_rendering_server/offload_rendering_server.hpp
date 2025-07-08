@@ -118,6 +118,14 @@ public:
         return {};
     }
 
+    data_format::fast_pose_type get_fake_render_pose() override {
+        return {};
+    }
+
+    data_format::fast_pose_type get_fake_warp_pose() override {
+        return {};
+    }
+
     /**
      * @brief Record command buffer (no-op in this implementation)
      */
