@@ -48,7 +48,7 @@ private:
         std::string tok;
         std::getline(ss, tok, ',');
         if (tok.empty()) {
-            spdlog::get("illixr")->error("Empty token found in pose file, please check the format.");
+            spdlog::get("illixr")->warn("Empty token found in pose file, please check the format.");
             ILLIXR::abort("Empty token in pose file");
         }
         return tok;

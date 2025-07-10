@@ -59,15 +59,21 @@ public:
     void setup(VkRenderPass render_pass, uint32_t subpass,
                std::shared_ptr<vulkan::buffer_pool<data_format::fast_pose_type>> buffer_pool) override;
 
-    void record_command_buffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left) override {
+    void record_command_buffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left, VkFence fence) override {
         (void) commandBuffer;
         (void) framebuffer;
         (void) buffer_ind;
         (void) left;
+	(void) fence;
     }
 
-    void update_uniforms(const data_format::pose_type& render_pose) override {
+    void update_uniforms(const data_format::fast_pose_type& render_pose, bool left) override {
         (void) render_pose;
+	(void) left;
+    }
+
+    void save_frame(VkFence fence) override {
+	(void) fence;
     }
 
     bool is_external() override {
