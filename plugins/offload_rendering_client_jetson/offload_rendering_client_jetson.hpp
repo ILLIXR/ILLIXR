@@ -138,6 +138,7 @@ private:
     std::atomic<bool> ready_{false};
     std::atomic<bool> running_{true};
     bool              use_depth_{false};
+    bool              compare_images_{false};
     // bool              resolutionRequeue{false};
 
     // Buffer management

@@ -14,10 +14,14 @@ offload_rendering_client_jetson::offload_rendering_client_jetson(const std::stri
     , clock_{pb->lookup_impl<relative_clock>()} {
     // Check environment variables for configuration
     use_depth_ = switchboard_->get_env_bool("ILLIXR_USE_DEPTH_IMAGES");
+    compare_images_ = switchboard_->get_env_bool("ILLIXR_COMPARE_IMAGES");
     if (use_depth_) {
         log_->debug("Encoding depth images for the client");
     } else {
         log_->debug("Not encoding depth images for the client");
+    }
+    if (compare_images_) {
+        log_->info("Dumping frames for quality comparison");
     }
 }
 
@@ -424,7 +428,12 @@ void offload_rendering_client_jetson::_p_one_iteration() {
 }
 
 void offload_rendering_client_jetson::push_pose() {
-    auto current_pose = pose_prediction_->get_fast_pose();
+    fast_pose_type = current_pose;
+    if (compare_images_) {
+        current_pose = pose_prediction_->get_fake_render_pose();
+    } else {
+        current_pose = pose_prediction_->get_fast_pose();
+    }
 
     auto now = time_point{std::chrono::duration<long, std::nano>{std::chrono::high_resolution_clock::now().time_since_epoch()}};
     current_pose.predict_target_time   = now;

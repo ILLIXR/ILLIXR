@@ -66,6 +66,11 @@ public:
     [[nodiscard]] string read_data(const size_t limit = BUFFER_SIZE) const {
         char    buffer[BUFFER_SIZE];
         ssize_t bytes_read = read(fd_, buffer, min(BUFFER_SIZE, limit));
+        if (bytes_read == -1) {
+            throw runtime_error("Error reading from socket");
+        } else if (bytes_read == 0) {
+            return ""; // EOF
+        }
         return string(buffer, bytes_read);
     }
 

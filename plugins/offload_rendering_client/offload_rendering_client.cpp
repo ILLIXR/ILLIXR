@@ -253,7 +253,6 @@ void offload_rendering_client::_p_one_iteration() {
     if (!ready_) {
         return;
     }
-    std::cout << "Offload rendering client iteration started" << std::endl;
 
     // Send latest pose to server
     push_pose();
