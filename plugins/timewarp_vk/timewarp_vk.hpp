@@ -19,8 +19,9 @@ public:
                bool                                                              input_texture_vulkan_coordinates_in) override;
     void partial_destroy();
     void update_uniforms(const data_format::fast_pose_type& render_pose, bool left) override;
-    void record_command_buffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left) override;
+    void record_command_buffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left, VkFence fence) override;
     void destroy() override;
+    void save_frame(VkFence fence) override;
 
 private:
     void create_vertex_buffer();

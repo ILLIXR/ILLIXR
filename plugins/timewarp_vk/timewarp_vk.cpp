@@ -163,9 +163,15 @@ void timewarp_vk::update_uniforms(const fast_pose_type& render_pose, bool left) 
     Eigen::Matrix4f view_matrix_end   = Eigen::Matrix4f::Identity();
 
     auto      next_vsync  = vsync_.get_ro_nullable().get();
-    fast_pose_type latest_pose = disable_warp_
+    fast_pose_type latest_pose;
+    if (switchboard_->get_env_bool("ILLIXR_COMPARE_IMAGES")) {
+        // If we are comparing images, we use the fake render pose
+        latest_pose = disable_warp_ ? render_pose : pose_prediction_->get_fake_warp_pose();
+    } else {
+        latest_pose = disable_warp_
         ? render_pose
         : (next_vsync == nullptr ? pose_prediction_->get_fast_pose() : pose_prediction_->get_fast_pose(**next_vsync));
+    }
 
     view_matrix_begin.block(0, 0, 3, 3) = latest_pose.pose.orientation.toRotationMatrix();
 
@@ -189,7 +195,7 @@ void timewarp_vk::update_uniforms(const fast_pose_type& render_pose, bool left) 
     }
 }
 
-void timewarp_vk::record_command_buffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left) {
+void timewarp_vk::record_command_buffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left, VkFence fence) {
     num_record_calls_++;
 
     VkDeviceSize offsets = 0;
@@ -240,6 +246,10 @@ void timewarp_vk::record_command_buffer(VkCommandBuffer commandBuffer, VkFramebu
     vkCmdBindIndexBuffer(commandBuffer, index_buffer_, 0, VK_INDEX_TYPE_UINT32);
     vkCmdDrawIndexed(commandBuffer, num_distortion_indices_, 1, 0, static_cast<int>(num_distortion_vertices_ * !left), 0);
     vkCmdEndRenderPass(commandBuffer);
+}
+
+void timewarp_vk::save_frame(VkFence fence) {
+    return;
 }
 
 void timewarp_vk::destroy() {
