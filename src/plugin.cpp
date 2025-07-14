@@ -243,11 +243,6 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
         GET_BOOL(openxr, ILLIXR_OPENXR)
         GET_STRING(realsense_cam, REALSENSE_CAM)
 
-        if (switchboard_->get_env_char("ILLIXR_DISPLAY_MODE") == nullptr) {
-            spdlog::get("illixr")->info("[main] Display mode not selected, defaulting to GLFW.");
-            switchboard_->set_env("ILLIXR_DISPLAY_MODE", "glfw");
-        }
-
         setenv("__GL_MaxFramesAllowed", "1", false);
         setenv("__GL_SYNC_TO_VBLANK", "1", false);
 

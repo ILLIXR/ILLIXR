@@ -70,6 +70,7 @@ public:
             return lib.template get<plugin* (*) (phonebook*)>("this_plugin_factory");
         });
 
+        /*
         if (!enable_monado_) {
             // get env var ILLIXR_DISPLAY_MODE
             std::string display_mode =
@@ -77,6 +78,7 @@ public:
             if (display_mode != "none")
                 phonebook_.register_impl<vulkan::display_provider>(std::make_shared<display_vk>(&phonebook_));
         }
+        */
 
         RAC_ERRNO_MSG("runtime_impl after generating plugin factories");
 
@@ -88,6 +90,7 @@ public:
 
         phonebook_.lookup_impl<relative_clock>()->start();
 
+        /*
         if (!enable_monado_) {
             const std::string display_mode =
                 switchboard_->get_env_char("ILLIXR_DISPLAY_MODE") ? switchboard_->get_env_char("ILLIXR_DISPLAY_MODE") : "glfw";
@@ -110,6 +113,7 @@ public:
                 display->start(instance_extensions, device_extensions);
             }
         }
+        */
 
         std::for_each(plugins_.cbegin(), plugins_.cend(), [](const auto& plugin) {
             // Well-behaved plugins_ (any derived from threadloop) start there threads here, and then wait on the Stoplight.
