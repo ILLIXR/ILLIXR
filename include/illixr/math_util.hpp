@@ -104,7 +104,7 @@ void unreal_projection(Eigen::Matrix4f* result, const float fov_left, const floa
 
     (*result)(1, 0) = 0;
     (*result)(1, 1) = 2 * inv_tb;
-    (*result)(1, 2) = sum_tb * (-inv_tb);
+    (*result)(1, 2) = sum_tb * (inv_tb);
     (*result)(1, 3) = 0;
 
     (*result)(2, 0) = 0;
@@ -116,6 +116,11 @@ void unreal_projection(Eigen::Matrix4f* result, const float fov_left, const floa
     (*result)(3, 1) = 0;
     (*result)(3, 2) = -1;
     (*result)(3, 3) = 0;
+
+    std::cout << "Unreal projection matrix:\n" << (*result)(0, 0) << ", " << (*result)(0, 1) << ", " << (*result)(0, 2) << ", " << (*result)(0, 3) << std::endl
+                                            << (*result)(1, 0) << ", " << (*result)(1, 1) << ", " << (*result)(1, 2) << ", " << (*result)(1, 3) << std::endl
+                                            << (*result)(2, 0) << ", " << (*result)(2, 1) << ", " << (*result)(2, 2) << ", " << (*result)(2, 3) << std::endl
+                                            << (*result)(3, 0) << ", " << (*result)(3, 1) << ", " << (*result)(3, 2) << ", " << (*result)(3, 3) << std::endl;
 }
 
 // TODO: this is just a complicated version to achieve reverse Z with a finite far plane.
@@ -140,7 +145,7 @@ void unreal_projection(Eigen::Matrix4f* result, const float fov_left, const floa
 
     openxr_matrix(0, 0) = 2 / angle_width;
     openxr_matrix(0, 1) = 0;
-    openxr_matrix(0, 2) = (angle_right + angle_left) / angle_width;
+    openxr_matrix(0, 2) = (angle_right + angle_left) / -angle_width;
     openxr_matrix(0, 3) = 0;
 
     openxr_matrix(1, 0) = 0;
@@ -150,8 +155,8 @@ void unreal_projection(Eigen::Matrix4f* result, const float fov_left, const floa
 
     openxr_matrix(2, 0) = 0;
     openxr_matrix(2, 1) = 0;
-    openxr_matrix(2, 2) = -(far_z + offset_z) / (far_z - near_z);
-    openxr_matrix(2, 3) = -(far_z * (near_z + offset_z)) / (far_z - near_z);
+    openxr_matrix(2, 2) = -(far_z + offset_z) / (far_z - near_z); // -1
+    openxr_matrix(2, 3) = -(far_z * (near_z + offset_z)) / (far_z - near_z); // -0.1
 
     openxr_matrix(3, 0) = 0;
     openxr_matrix(3, 1) = 0;
@@ -162,6 +167,7 @@ void unreal_projection(Eigen::Matrix4f* result, const float fov_left, const floa
     // https://github.com/Khasehemwy/godot/blob/d950f5f83819240771aebb602bfdd4875363edce/core/math/projection.cpp#L722
     Eigen::Matrix4f remap_z;
 
+    // This remapping has flip_y disabled, but remap_z and reverse_z enabled
     remap_z(0, 0) = 1;
     remap_z(0, 1) = 0;
     remap_z(0, 2) = 0;
@@ -183,6 +189,11 @@ void unreal_projection(Eigen::Matrix4f* result, const float fov_left, const floa
     remap_z(3, 3) = 1;
 
     (*result) = remap_z * openxr_matrix;
+    // after remapping, the matrix is the same as the Unreal matrix, except for the sign of (0,2) and (1,2), and the (2,3) element (corresponding to near_z 0.5).
+    std::cout << "Godot projection matrix:\n" << (*result)(0, 0) << ", " << (*result)(0, 1) << ", " << (*result)(0, 2) << ", " << (*result)(0, 3) << std::endl
+                                            << (*result)(1, 0) << ", " << (*result)(1, 1) << ", " << (*result)(1, 2) << ", " << (*result)(1, 3) << std::endl
+                                            << (*result)(2, 0) << ", " << (*result)(2, 1) << ", " << (*result)(2, 2) << ", " << (*result)(2, 3) << std::endl
+                                            << (*result)(3, 0) << ", " << (*result)(3, 1) << ", " << (*result)(3, 2) << ", " << (*result)(3, 3) << std::endl;
 }
 
 /*

@@ -58,79 +58,95 @@ layout (location = 1) out vec2 warpUv;
 // TODO: pass this in as an argument!
 #define REVERSE_Z
 
+
+// Convert linearized depth back to clip space for coordinate transformation
+float linearDepthToClipSpace(float linear_depth) {
+    float near = 0.05;
+    float far = 4000.0;
+    float offset = 0.05;
+    
+    // Convert linear depth to view space depth
+    float z_view = -linear_depth;  // Linear depth is positive distance, view space is negative
+    
+    // Apply the Godot projection transformation
+    float A = -(far + offset) / (far - near);
+    float B = -(far * (near + offset)) / (far - near);
+    float z_ndc = (A * z_view + B) / -z_view;
+    
+    // Convert to [0,1] range (Godot's remapping)
+    return z_ndc * -0.5 + 0.5;
+}
+
+// Get linearized depth for bleeding calculations
+float linearizeDepth(float depth_nl) {
+    float near = 0.05;    
+    float far = 4000.0;  
+    float offset = near;  
+
+    // Reverse Godot's depth transformation
+    float depth_ndc = depth_nl * -2.0 + 1.0;  // [1,0] -> [-1,1]
+    
+    // Reverse the projection: z_ndc = A*z_view + B
+    // where A = -(far + offset)/(far - near), B = -(far * (near + offset))/(far - near)
+    float A = -(far + offset) / (far - near);
+    float B = -(far * (near + offset)) / (far - near);
+    
+    // Solve for z_view: z_view = (z_ndc - B) / A
+    float z_view = -B / (A + depth_ndc);
+
+    // Linear depth is the positive distance from camera
+    return -z_view;
+}
+
 float getDepth(vec2 uv){
+	float depth = textureLod(depth_texture, uv, 0.0).x; // nonlinear depth
+	return linearizeDepth(depth);
+}
+
+float getRawDepth(vec2 uv) {
 	return textureLod(depth_texture, uv, 0.0).x;
 }
 
 void main( void )
 {
-	float z = getDepth(in_uv);
+	float z_linear = getDepth(in_uv);
 	float inv = 1.0 / sqrt(2.0);
 
-#ifdef REVERSE_Z
-	float outlier = max(              											
-					  max(
+	float outlier = min(
+					  min(
 					  		getDepth(in_uv - vec2(bleedRadius, 0)),
 							getDepth(in_uv + vec2(bleedRadius, 0))
-					  ),														
-					  max(
+					  ),
+					  min(
 							getDepth(in_uv - vec2(0, bleedRadius)),
 							getDepth(in_uv + vec2(0, bleedRadius))
 					  )
 					);
 
-	float diags = max(
-					max(
+	float diags = min(
+					min(
 						getDepth(in_uv + inv * vec2(bleedRadius, bleedRadius)),
 					  	getDepth(in_uv + inv * vec2(-bleedRadius, -bleedRadius))
 					),
-					max(
+					min(
 						getDepth(in_uv + inv * vec2(-bleedRadius, bleedRadius)),
 						getDepth(in_uv + inv * vec2(bleedRadius, -bleedRadius))
 					)
 				  );
 
-	outlier = max(diags, outlier);
-	if(outlier - z > edgeTolerance){
-		z = outlier;
-	}
-	// Uncomment the line below if the depth is being gamma-corrected (for annoying reasons...)
-	// z = (z > 0.04045) ? pow((z + 0.055) / 1.055, 2.4) : z / 12.92;
-	z = max(0.01, z);
-#else
-	float outlier = min(              											
-					  min(														
-							getDepth(depth_texture, in_uv - vec2(bleedRadius, 0)), 
-							getDepth(depth_texture, in_uv + vec2(bleedRadius, 0))  
-					  ),														
-					  min(
-							getDepth(depth_texture, in_uv - vec2(0, bleedRadius)), 
-							getDepth(depth_texture, in_uv + vec2(0, bleedRadius))  
-					  )
-					);
-
-	float diags = min(
-					min(
-						getDepth(depth_texture, in_uv + inv * vec2(bleedRadius, bleedRadius)),
-					  	getDepth(depth_texture, in_uv + inv * vec2(-bleedRadius, -bleedRadius))
-					),
-					min(
-						getDepth(depth_texture, in_uv + inv * vec2(-bleedRadius, bleedRadius)),
-					  	getDepth(depth_texture, in_uv + inv * vec2(bleedRadius, -bleedRadius))
-					)
-				  );
-
 	outlier = min(diags, outlier);
-	if(z - outlier > edgeTolerance){
-		z = outlier;
+	if(z_linear - outlier > edgeTolerance){
+		z_linear = outlier;
 	}
-	z = min(0.99, z);
-#endif
+	
+	// z_linear = clamp(z_linear, 0.05, 3999.9);
+	float z_clip = linearDepthToClipSpace(z_linear);
 
-	vec4 clipSpacePosition = vec4(in_uv.x * 2.0 - 1.0, 1.0 - in_uv.y * 2.0, z, 1.0);
+ 	vec4 clipSpacePosition = vec4(in_uv.x * 2.0 - 1.0, 1.0 - in_uv.y * 2.0, z_clip, 1.0);
 	vec4 frag_viewspace = warp_matrices.u_renderInverseP[eye.index] * clipSpacePosition;
+	frag_viewspace.w = max(0.001, frag_viewspace.w);
 	frag_viewspace /= frag_viewspace.w;
-	vec4 frag_worldspace = (warp_matrices.u_renderInverseV[eye.index] * frag_viewspace);
+    vec4 frag_worldspace = (warp_matrices.u_renderInverseV[eye.index] * frag_viewspace);
 
 	vec4 result = warp_matrices.u_warpVP[eye.index] * frag_worldspace;
 	result /= abs(result.w);
