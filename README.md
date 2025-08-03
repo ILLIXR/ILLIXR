@@ -17,8 +17,9 @@ Users are encouraged to follow updates closely and transition to the main ILLIXR
 
 ## Additional Requirements
 
-* To run ADA, you need a custom version of Google DRACO. [Download the custom DRACO implementation](#) (placeholder link).
+* To run ADA, you need a custom version of Google DRACO. [GitHub Link](#) (placeholder link).
 * To run ADA with datasets, please follow the [ScanNet download procedure](#) (placeholder link).
+** Given the entire dataset is large, we provide a sample sequence for initial testing [here](#) (placeholder link).
 
 ---
 
