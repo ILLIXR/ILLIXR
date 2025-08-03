@@ -1,3 +1,22 @@
+# ADA: A Distributed, Power-Aware, Real-Time Scene Provider for XR
+
+**Authors:**
+
+* [Yihan Pang](https://orcid.org/0000-0003-0524-6934), University of Illinois Urbana-Champaign ([yihanp2@illinois.edu](mailto:yihanp2@illinois.edu))
+* [Sushant Kondguli](https://orcid.org/0000-0002-7295-4626), Meta ([sushantkondguli@meta.com](mailto:sushantkondguli@meta.com))
+* [Shenlong Wang](https://orcid.org/0000-0002-7984-266X), University of Illinois Urbana-Champaign ([shenlong@illinois.edu](mailto:shenlong@illinois.edu))
+* [Sarita Adve](https://orcid.org/0000-0002-3403-5119), University of Illinois Urbana-Champaign ([sadve@illinois.edu](mailto:sadve@illinois.edu))
+
+This repository contains the implementation of **ADA**, a distributed, power-aware, real-time scene provisioning system for Extended Reality (XR).
+
+## Note on Integration Status
+
+Currently, ADA is built upon an older version of [ILLIXR](https://illixr.org/). We are actively working on integrating ADA into the latest main branch of ILLIXR. Once integration is complete, this `Ada_integration` branch will become obsolete, and ADA will be directly available in the ILLIXR master branch.
+
+Users are encouraged to follow updates closely and transition to the main ILLIXR branch once integration is complete.
+
+---
+
 ![ILLIXR logo](docs/docs/images/LogoWithHeader.png)
 
 [![NCSA licensed](https://img.shields.io/badge/license-NCSA-blue.svg)](LICENSE)
