@@ -15,6 +15,14 @@ Currently, ADA is built upon an older version of [ILLIXR](https://illixr.org/). 
 
 Users are encouraged to follow updates closely and transition to the main ILLIXR branch once integration is complete.
 
+## Additional Requirements
+
+* To run ADA, you need a custom version of Google DRACO. [Download the custom DRACO implementation](#) (placeholder link).
+* To run ADA with datasets, please follow the [ScanNet download procedure](#) (placeholder link).
+
+---
+
+
 ---
 
 ![ILLIXR logo](docs/docs/images/LogoWithHeader.png)
