@@ -788,9 +788,15 @@ void timewarp_vk::calculate_timewarp_transform(Eigen::Matrix4f& transform, const
     // However, the (i,j) accessors are row-major (i.e, the first argument
     // is which row, and the second argument is which column.)
     Eigen::Matrix4f tex_coord_projection;
-    tex_coord_projection << 0.5f * render_projection_matrix(0, 0), 0.0f, 0.5f * render_projection_matrix(0, 2) - 0.5f, 0.0f,
-        0.0f, -0.5f * render_projection_matrix(1, 1), 0.5f * render_projection_matrix(1, 2) - 0.5f, 0.0f, 0.0f, 0.0f, -1.0f,
-        0.0f, 0.0f, 0.0f, 0.0f, 1.0f;
+    // Converting from the clip space (y-up in [-1,1]) to the UV space (y-down in [0,1])
+    // Assuming the clip space coordinate is [x, y, z, 1], the UV space coordinate will be [u, v, z', 1]
+    // Then u = 0.5 * x + 0.5, v = -0.5 * y + 0.5, z' = -z
+    // So this transformation, beyond scaling and translation, also flips the y-axis and inverts the z.
+    tex_coord_projection <<
+        0.5f * render_projection_matrix(0, 0), 0.0f, 0.5f * render_projection_matrix(0, 2) - 0.5f, 0.0f,
+        0.0f, -0.5f * render_projection_matrix(1, 1), -0.5f * render_projection_matrix(1, 2) - 0.5f, 0.0f,
+        0.0f, 0.0f, -1.0f, 0.0f,
+        0.0f, 0.0f, 0.0f, 1.0f;
 
     // Calculate the delta between the view matrix used for rendering and
     // a more recent or predicted view matrix based on new sensor input.

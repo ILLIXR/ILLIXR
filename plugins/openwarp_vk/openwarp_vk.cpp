@@ -80,7 +80,6 @@ void openwarp_vk::setup(VkRenderPass render_pass, uint32_t subpass,
 
     generate_openwarp_mesh(openwarp_width_, openwarp_height_);
     generate_distortion_data();
-    // generate_fake_distortion_data();
 
     create_vertex_buffers();
     create_index_buffers();
@@ -346,7 +345,7 @@ void openwarp_vk::create_offscreen_images() {
             .pNext                 = nullptr,
             .flags                 = {},
             .imageType             = VK_IMAGE_TYPE_2D,
-            .format                = VK_FORMAT_D16_UNORM,
+            .format                = VK_FORMAT_D32_SFLOAT,
             .extent                = {.width  = static_cast<uint32_t>(swapchain_width_ / 2),
                                       .height = static_cast<uint32_t>(swapchain_height_),
                                       .depth  = 1},
@@ -378,7 +377,7 @@ void openwarp_vk::create_offscreen_images() {
                                                  .flags            = {},
                                                  .image            = offscreen_depths_[eye],
                                                  .viewType         = VK_IMAGE_VIEW_TYPE_2D,
-                                                 .format           = VK_FORMAT_D16_UNORM,
+                                                 .format           = VK_FORMAT_D32_SFLOAT,
                                                  .components       = {.r = VK_COMPONENT_SWIZZLE_IDENTITY,
                                                                       .g = VK_COMPONENT_SWIZZLE_IDENTITY,
                                                                       .b = VK_COMPONENT_SWIZZLE_IDENTITY,
@@ -610,70 +609,6 @@ void openwarp_vk::create_index_buffers() {
     vmaDestroyBuffer(vma_allocator_, dc_staging_buffer, dc_staging_alloc);
 }
 
-void openwarp_vk::generate_fake_distortion_data()
-{
-    /* ---------- 1. counts & index list (unchanged) ----------------------- */
-    num_distortion_vertices_ = (hmd_info_.eye_tiles_high + 1) * (hmd_info_.eye_tiles_wide + 1);
-    num_distortion_indices_  = hmd_info_.eye_tiles_high * hmd_info_.eye_tiles_wide * 6;
-
-    distortion_indices_.resize(num_distortion_indices_);
-
-    for (int y = 0; y < hmd_info_.eye_tiles_high; ++y) {
-        for (int x = 0; x < hmd_info_.eye_tiles_wide; ++x) {
-            const int off = (y * hmd_info_.eye_tiles_wide + x) * 6;
-
-            distortion_indices_[off + 0] = (y    ) * (hmd_info_.eye_tiles_wide + 1) + (x    );
-            distortion_indices_[off + 1] = (y + 1) * (hmd_info_.eye_tiles_wide + 1) + (x    );
-            distortion_indices_[off + 2] = (y    ) * (hmd_info_.eye_tiles_wide + 1) + (x + 1);
-
-            distortion_indices_[off + 3] = (y    ) * (hmd_info_.eye_tiles_wide + 1) + (x + 1);
-            distortion_indices_[off + 4] = (y + 1) * (hmd_info_.eye_tiles_wide + 1) + (x    );
-            distortion_indices_[off + 5] = (y + 1) * (hmd_info_.eye_tiles_wide + 1) + (x + 1);
-        }
-    }
-
-    /* ---------- 2. vertex array ----------------------------------------- */
-    const std::size_t verts_per_eye = num_distortion_vertices_;
-    distortion_vertices_.resize(HMD::NUM_EYES * verts_per_eye);
-
-    for (int eye = 0; eye < HMD::NUM_EYES; ++eye)
-    {
-        for (int y = 0; y <= hmd_info_.eye_tiles_high; ++y)
-        {
-            for (int x = 0; x <= hmd_info_.eye_tiles_wide; ++x)
-            {
-                const int idx  = eye * verts_per_eye + y * (hmd_info_.eye_tiles_wide + 1) + x;
-
-                /* --- 2a. clip-space position (simple plane) --------------- */
-                float u = static_cast<float>(x) / hmd_info_.eye_tiles_wide;   // 0 → 1
-                float v = static_cast<float>(y) / hmd_info_.eye_tiles_high;   // 0 → 1
-
-                distortion_vertices_[idx].pos.x =
-                    -1.0f + 2.0f * u;                        // -1 → +1 horizontally
-                distortion_vertices_[idx].pos.y =
-                    (input_texture_external_ ? 1.0f : -1.0f) *
-                    (-1.0f + 2.0f * (1.0f - v));            // flip if needed, keep full height
-                distortion_vertices_[idx].pos.z = 0.0f;
-
-                /* --- 2b. UVs : identity mapping --------------------------- */
-                // Same UV for R, G, B so the fragment shader samples identical pixels.
-                float uv_u = u;
-                float uv_v = input_texture_external_ ? v : (1.0f - v); // compensates Vulkan/GL Y-flip
-
-                distortion_vertices_[idx].uv0 = {uv_u, uv_v};
-                distortion_vertices_[idx].uv1 = distortion_vertices_[idx].uv0;
-                distortion_vertices_[idx].uv2 = distortion_vertices_[idx].uv0;
-            }
-        }
-    }
-
-    /* ---------- 3. any per-eye matrices still required elsewhere? ------- */
-    // If the rest of your pipeline no longer needs the projection / inverse
-    // matrices you can delete this block entirely.  Otherwise keep generating
-    // them exactly as before—those calculations do not affect the passthrough
-    // UVs and are harmless to leave in.
-}
-
 
 void openwarp_vk::generate_distortion_data() {
     // Calculate the number of vertices+ineye_tiles_high distortion mesh.
@@ -811,7 +746,8 @@ void openwarp_vk::generate_openwarp_mesh(size_t width, size_t height) {
     for (size_t y = 0; y < height; y++) {
         for (size_t x = 0; x < width; x++) {
             const size_t offset = (y * width + x) * 6;
-
+            // Each face is made of two triangles, so we need 6 indices per face.
+            // Indices 0 to 2 form the first triangle at top left, and indices 3 to 5 form the second triangle at bottom right.
             openwarp_indices_[offset + 0] = (GLuint) ((y + 0) * (width + 1) + (x + 0));
             openwarp_indices_[offset + 1] = (GLuint) ((y + 1) * (width + 1) + (x + 0));
             openwarp_indices_[offset + 2] = (GLuint) ((y + 0) * (width + 1) + (x + 1));
@@ -830,6 +766,7 @@ void openwarp_vk::generate_openwarp_mesh(size_t width, size_t height) {
             openwarp_vertices_[index].uv.x = static_cast<float>(x) / static_cast<float>(width);
             openwarp_vertices_[index].uv.y = (static_cast<float>(height) - static_cast<float>(y)) / static_cast<float>(height);
 
+            // not sure why mapping the boarders outside the texture
             if (x == 0) {
                 openwarp_vertices_[index].uv.x = -0.5f;
             }
@@ -1090,7 +1027,7 @@ void openwarp_vk::create_openwarp_pipeline() {
     VkAttachmentReference color_attachment_ref{.attachment = 0, .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL};
 
     VkAttachmentDescription depth_attachment{.flags          = 0,
-                                             .format         = VK_FORMAT_D16_UNORM, // this should match the offscreen image
+                                             .format         = VK_FORMAT_D32_SFLOAT, // this should match the offscreen image
                                              .samples        = VK_SAMPLE_COUNT_1_BIT,
                                              .loadOp         = VK_ATTACHMENT_LOAD_OP_CLEAR,
                                              .storeOp        = VK_ATTACHMENT_STORE_OP_STORE,
@@ -1161,6 +1098,7 @@ void openwarp_vk::create_openwarp_pipeline() {
 
     VkPipelineShaderStageCreateInfo shader_stages[] = {vert_stage_info, frage_stage_info};
 
+    // Tell the shader how to interpret the vertex data (positions, UVs, etc.)
     auto bindingDescription    = OpenWarpVertex::get_binding_description();
     auto attributeDescriptions = OpenWarpVertex::get_attribute_descriptions();
 
@@ -1172,6 +1110,7 @@ void openwarp_vk::create_openwarp_pipeline() {
         .pVertexBindingDescriptions      = &bindingDescription,
         .vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size()),
         .pVertexAttributeDescriptions    = attributeDescriptions.data()};
+
     VkPipelineInputAssemblyStateCreateInfo input_assembly = {.sType =
                                                                  VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,
                                                              .pNext                  = nullptr,

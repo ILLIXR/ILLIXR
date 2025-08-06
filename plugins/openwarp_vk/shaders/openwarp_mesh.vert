@@ -144,15 +144,13 @@ void main( void )
 
  	vec4 clipSpacePosition = vec4(in_uv.x * 2.0 - 1.0, 1.0 - in_uv.y * 2.0, z_clip, 1.0);
 	vec4 frag_viewspace = warp_matrices.u_renderInverseP[eye.index] * clipSpacePosition;
-	frag_viewspace.w = max(0.001, frag_viewspace.w);
 	frag_viewspace /= frag_viewspace.w;
     vec4 frag_worldspace = (warp_matrices.u_renderInverseV[eye.index] * frag_viewspace);
 
 	vec4 result = warp_matrices.u_warpVP[eye.index] * frag_worldspace;
 	result /= abs(result.w);
-
-	// Uncomment the line below to disable warping.
-    // result = vec4(in_uv.x * 2.0 - 1.0, 1.0 - in_uv.y * 2.0, 0.5, 1.0);
+    // in case z becomes negative, clamp it to 0.001
+    result.z = max(0.001, result.z);
 
 	gl_Position = result;
 

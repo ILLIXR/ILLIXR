@@ -28,7 +28,7 @@ tcp_network_backend::tcp_network_backend(const std::string& name_, phonebook* pb
 
     if (switchboard_->get_env_char("ILLIXR_IS_CLIENT")) {
         is_client_ = std::stoi(switchboard_->get_env_char("ILLIXR_IS_CLIENT"));
-        spdlog::get("illixr")->info("[tcp_network_backend] Is client", is_client_);
+        spdlog::get("illixr")->info("[tcp_network_backend] Is client {}", is_client_);
     }
 
     if (is_client_) {
