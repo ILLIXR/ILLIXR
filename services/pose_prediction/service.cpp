@@ -19,34 +19,45 @@ pose_prediction_impl::pose_prediction_impl(const phonebook* const pb)
     , vsync_estimate_{switchboard_->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")}
     , using_lighthouse_{switchboard_->get_env_bool("ILLIXR_LIGHTHOUSE")} { 
         if (switchboard_->get_env_bool("ILLIXR_COMPARE_IMAGES")) {
-            setup_pose_reader();
+            // setup_pose_reader();
+            setup_fake_poses();
         }
     }
 fast_pose_type pose_prediction_impl::get_fake_render_pose() {
     // If we are comparing images, return pose from the pose reader
+    // if (switchboard_->get_env_bool("ILLIXR_COMPARE_IMAGES")) {
+    //     if (!render_poses_.empty()) {
+    //         fast_pose_type render_pose = render_poses_.front();
+    //         render_poses_.erase(render_poses_.begin());
+    //         return render_pose;
+    //     } else {
+    //         spdlog::get("illixr")->warn("[POSEPREDICTION] No render poses available, returning zero pose.");
+    //         return fast_pose_type{correct_pose(pose_type{}), clock_->now(), clock_->now()};
+    //     }
+    // }
     if (switchboard_->get_env_bool("ILLIXR_COMPARE_IMAGES")) {
-        if (!render_poses_.empty()) {
-            fast_pose_type render_pose = render_poses_.front();
-            render_poses_.erase(render_poses_.begin());
-            return render_pose;
-        } else {
-            spdlog::get("illixr")->warn("[POSEPREDICTION] No render poses available, returning zero pose.");
-            return fast_pose_type{correct_pose(pose_type{}), clock_->now(), clock_->now()};
-        }
+        return fake_render_pose_;
+    } else {
+        return get_fast_pose();
     }
 }
 
 fast_pose_type pose_prediction_impl::get_fake_warp_pose() {
     // If we are comparing images, return pose from the pose reader
+    // if (switchboard_->get_env_bool("ILLIXR_COMPARE_IMAGES")) {
+    //     if (!warp_poses_.empty()) {
+    //         fast_pose_type warp_pose = warp_poses_.front();
+    //         warp_poses_.erase(warp_poses_.begin());
+    //         return warp_pose;
+    //     } else {
+    //         spdlog::get("illixr")->warn("[POSEPREDICTION] No warp poses available, returning zero pose.");
+    //         return fast_pose_type{correct_pose(pose_type{}), clock_->now(), clock_->now()};
+    //     }
+    // }
     if (switchboard_->get_env_bool("ILLIXR_COMPARE_IMAGES")) {
-        if (!warp_poses_.empty()) {
-            fast_pose_type warp_pose = warp_poses_.front();
-            warp_poses_.erase(warp_poses_.begin());
-            return warp_pose;
-        } else {
-            spdlog::get("illixr")->warn("[POSEPREDICTION] No warp poses available, returning zero pose.");
-            return fast_pose_type{correct_pose(pose_type{}), clock_->now(), clock_->now()};
-        }
+        return fake_warp_pose_;
+    } else {
+        return get_fast_pose();
     }
 }
 
