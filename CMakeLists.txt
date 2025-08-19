@@ -10,6 +10,14 @@
 
 cmake_minimum_required(VERSION 3.22)
 
+# since several plugins now require clang to compile themselves or their dependencies
+# clang is now a required dependency
+find_program(CLANG_EXEC clang REQUIRED)
+find_program(CLANGPP_EXEC clang++ REQUIRED)
+
+set(CMAKE_C_COMPILER clang)
+set(CMAKE_CXX_COMPILER clang++)
+
 set(CMAKE_VERBOSE_MAKEFILE True)
 
 if (POLICY CMP0048)
