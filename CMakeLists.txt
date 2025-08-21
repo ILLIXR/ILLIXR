@@ -12,12 +12,13 @@ cmake_minimum_required(VERSION 3.22)
 
 # since several plugins now require clang to compile themselves or their dependencies
 # clang is now a required dependency
-find_program(CLANG_EXEC clang REQUIRED)
-find_program(CLANGPP_EXEC clang++ REQUIRED)
+find_program(CLANG_EXE clang REQUIRED)
+find_program(CLANG_CXX_EXE clang++ REQUIRED NAMES clang-cpp clang++)
 
-set(CMAKE_C_COMPILER clang)
-set(CMAKE_CXX_COMPILER clang++)
+set(CMAKE_C_COMPILER ${CLANG_EXE} CACHE FILEPATH "" FORCE)
+set(CMAKE_CXX_COMPILER ${CLANG_CXX_EXE} CACHE FILEPATH "" FORCE)
 
+set(DEPENDENCY_COMPILE_ARGS "-DCMAKE_CXX_COMPILER=${CLANG_CXX_EXE} -DCMAKE_C_COMPILER=${CLANG_EXE}")
 set(CMAKE_VERBOSE_MAKEFILE True)
 
 if (POLICY CMP0048)
@@ -208,7 +209,7 @@ find_package(X11 REQUIRED)
 
 pkg_check_modules(gl REQUIRED gl)
 
-find_package(Eigen3 REQUIRED)
+find_package(Eigen3 REQUIRED CONFIG)
 
 get_external(Vulkan)
 

@@ -11,7 +11,7 @@ else()
             GIT_TAG 0.8.0                                           # sha5 hash for specific commit to pull (if there is no specific tag to use)
             PREFIX ${CMAKE_BINARY_DIR}/_deps/yaml-cpp               # the build directory
             # arguments to pass to CMake
-            CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_LIBDIR=lib -DBUILD_TESTING=OFF -DYAML_BUILD_SHARED_LIBS=ON
+            CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_LIBDIR=lib -DBUILD_TESTING=OFF -DYAML_BUILD_SHARED_LIBS=ON ${DEPENDENCY_COMPILE_ARGS}
             )
     # set variables for use by modules that depend on this one
     set(Yamlcpp_EXTERNAL Yes)      # Mark that this module is being built
