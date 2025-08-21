@@ -4,7 +4,7 @@
 
 #include <ctime>
 #include <spdlog/spdlog.h>
-#include <stdio.h>
+
 // for printing out mesh
 // #define VERIFY
 
@@ -22,7 +22,7 @@ using namespace ILLIXR::data_format;
                                            this->process_inactive_frame(datum);
                                        });
     switchboard_->schedule<vb_type>(id_, "VB_update_lists", [&](switchboard::ptr<const vb_type> datum, std::size_t) {
-        this->process_VB_lists(datum);
+        this->process_vb_lists(datum);
     });
 
     current_id_      = -1;
@@ -62,7 +62,7 @@ using namespace ILLIXR::data_format;
     std::cout.flush();
 }
 
-void scene_management::process_VB_lists(switchboard::ptr<const vb_type>& datum) {
+void scene_management::process_vb_lists(switchboard::ptr<const vb_type>& datum) {
     // printf("================================Device Mesh Manager: Started Processing VB List for Scene
     // %u=========================\n", datum->scene_id);
     if (mesh_processing_) {
@@ -75,10 +75,10 @@ void scene_management::process_VB_lists(switchboard::ptr<const vb_type>& datum) 
         // stage 1 outdated region processing
         grid_.clean_mesh_vb_redesign_with_list(datum->unique_VB_lists);
         grid_.deleted_ranges_processing();
-        last_cleaned_ = datum->scene_id;
+        last_cleaned_ = static_cast<int>(datum->scene_id);
 
         auto end      = std::chrono::high_resolution_clock::now();
-        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() / 1000.0;
+        auto duration = static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(end - start).count()) / 1000.0;
         mesh_management_latency_ << "Clean " << datum->scene_id << " " << duration << "\n";
         printf("===Device Mesh Manager: Finished Processing VB List for Scene %u===\n", datum->scene_id);
     }
@@ -90,7 +90,7 @@ void scene_management::process_inactive_frame(switchboard::ptr<const draco_type>
     // cleaned %d, pending chunk size %zu\n", datum->frame_id, last_processed, current_id, chunk_counter, last_cleaned,
     // pending_chunks.size());
     if (static_cast<int>(datum->frame_id) > last_processed_ && static_cast<int>(datum->frame_id) > current_id_) {
-        current_id_    = datum->frame_id;
+        current_id_    = static_cast<int>(datum->frame_id);
         chunk_counter_ = 1;
     } else if (static_cast<int>(datum->frame_id) == current_id_) {
         chunk_counter_++;
@@ -114,7 +114,7 @@ void scene_management::process_inactive_frame(switchboard::ptr<const draco_type>
             grid_.append_mesh_allocate(pending_chunks_[i]->scene_update_mapping);
         }
         auto end      = std::chrono::high_resolution_clock::now();
-        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() / 1000.0;
+        auto duration = static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(end - start).count()) / 1000.0;
         mesh_management_latency_ << "Merge " << datum->frame_id << " " << duration << "\n";
 
         start = std::chrono::high_resolution_clock::now();
@@ -124,11 +124,11 @@ void scene_management::process_inactive_frame(switchboard::ptr<const draco_type>
         current_gap = grid_.append_mesh_match_and_insert(false);
 
         end      = std::chrono::high_resolution_clock::now();
-        duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() / 1000.0;
+        duration = static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(end - start).count()) / 1000.0;
         mesh_management_latency_ << "Map " << datum->frame_id << " " << duration << "\n";
 
         // At this point the Scene Mesh is up-to-date
-        duration = std::chrono::duration_cast<std::chrono::microseconds>(end - const_start).count() / 1000.0;
+        duration = static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(end - const_start).count()) / 1000.0;
 
         size_t vertices_size_in_bytes = grid_.vertices_.size() * sizeof(Eigen::Vector3d);
         size_t faces_size_in_bytes    = grid_.faces_.size() * sizeof(int);
@@ -137,8 +137,8 @@ void scene_management::process_inactive_frame(switchboard::ptr<const draco_type>
         mesh_management_latency_ << "Display " << datum->frame_id << " " << duration << " " << vertices_size_in_bytes << " "
                                  << faces_size_in_bytes << " " << total_size_in_bytes << " " << current_gap << "\n";
 
-        auto sinceEpoch = end.time_since_epoch();
-        auto millis     = std::chrono::duration_cast<std::chrono::milliseconds>(sinceEpoch).count();
+        auto since_epoch = end.time_since_epoch();
+        auto millis     = std::chrono::duration_cast<std::chrono::milliseconds>(since_epoch).count();
         // record timestamp on when mesh is available
         mesh_management_latency_ << "Ready " << datum->frame_id << " " << millis << "\n";
 
@@ -159,7 +159,7 @@ void scene_management::process_inactive_frame(switchboard::ptr<const draco_type>
         pending_chunks_.erase(pending_chunks_.begin(), pending_chunks_.begin() + thread_count_);
 
         end      = std::chrono::high_resolution_clock::now();
-        duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() / 1000.0;
+        duration = static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(end - start).count()) / 1000.0;
         // PP: post-processing (remove partial mesh chunks) very minimal but recorded if people want to test it out
         mesh_management_latency_ << "PP " << datum->frame_id << " " << duration << "\n";
 
@@ -175,16 +175,16 @@ void scene_management::process_inactive_frame(switchboard::ptr<const draco_type>
             auto pending_request = pending_clean_reqs_.back();
             grid_.clean_mesh_vb_redesign_with_list(pending_request->unique_VB_lists);
             grid_.deleted_ranges_processing();
-            last_cleaned_  = pending_request->scene_id;
+            last_cleaned_  = static_cast<int>(pending_request->scene_id);
             clean_waiting_ = false;
             end       = std::chrono::high_resolution_clock::now();
-            duration  = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() / 1000.0;
+            duration  = static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(end - start).count()) / 1000.0;
             mesh_management_latency_ << "Clean " << pending_request->scene_id << " " << duration << "\n";
             printf("===Device Mesh Manager: Finished Processing VB List for Scene %u===\n", pending_request->scene_id);
             pending_clean_reqs_.pop_back();
         }
 
-        last_processed_ = datum->frame_id;
+        last_processed_ = static_cast<int>(datum->frame_id);
 
         printf("===Device Mesh Manager: Finished Scene %u===\n", datum->frame_id);
         mesh_processing_ = false;

@@ -194,11 +194,11 @@ void spatial_hash::append_mesh_allocate(const std::unordered_map<unsigned, std::
                     VoxelBlockIndex stored_vb = std::get<0>(vb_entry);
                     if (cur_vb == stored_vb) {
                         found_vb            = true;
-                        auto& vertices_ ? ? = std::get<1>(vb_entry);
+                        auto& merged_vertices = std::get<1>(vb_entry);
 
                         // Efficiently move-append the new vertices and colors to the existing ones
-                        vertices_.insert(vertices_.end(), std::make_move_iterator(cur_vertices.begin()),
-                                         std::make_move_iterator(cur_vertices.end()));
+                        merged_vertices.insert(merged_vertices.end(), std::make_move_iterator(cur_vertices.begin()),
+                                               std::make_move_iterator(cur_vertices.end()));
                         break;
                     }
                 }

@@ -17,7 +17,7 @@ class scene_management : public threadloop {
 public:
     [[maybe_unused]] scene_management(const std::string& name_, phonebook* pb_);
 
-    void process_VB_lists(switchboard::ptr<const data_format::vb_type>& datum);
+    void process_vb_lists(switchboard::ptr<const data_format::vb_type>& datum);
 
     void process_inactive_frame(switchboard::ptr<const data_format::draco_type>& datum);
 

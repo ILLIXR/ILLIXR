@@ -18,11 +18,20 @@ add_library(${PLUGIN_NAME} SHARED
             plugin.hpp
             spatial_hash.cpp
             spatial_hash.hpp
+            ${ILLIXR_SOURCE_DIR}/include/illixr/data_format/draco.hpp
+            ${ILLIXR_SOURCE_DIR}/include/illixr/data_format/mesh.hpp
+            ${ILLIXR_SOURCE_DIR}/include/illixr/data_format/scene_reconstruction.hpp
+            ${ILLIXR_SOURCE_DIR}/include/illixr/phonebook.hpp
+            ${ILLIXR_SOURCE_DIR}/include/illixr/relative_clock.hpp
+            ${ILLIXR_SOURCE_DIR}/include/illixr/switchboard.hpp
+            ${ILLIXR_SOURCE_DIR}/include/illixr/threadloop.hpp
 )
 
 # Link OpenMP
 target_link_libraries(${PLUGIN_NAME} OpenMP::OpenMP_CXX draco_illixr::draco ${OpenCV_LIBRARIES})
-target_include_directories(${PLUGIN_NAME} PRIVATE ${OpenCV_INCLUDE_DIRS})
+target_include_directories(${PLUGIN_NAME} PRIVATE ${OpenCV_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR}/include)
 if (Draco_EXTERNAL)
     add_dependencies(${PLUGIN_NAME} ${Draco_DEP_STR})
 endif()
+
+install(TARGETS ${PLUGIN_NAME} DESTINATION lib)
