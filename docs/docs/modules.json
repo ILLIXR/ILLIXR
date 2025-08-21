@@ -72,6 +72,24 @@
       ]
     },
     {
+      "name": "infinitam",
+      "cmake_flag": "USE_INFINITAM=ON",
+      "dependencies": [
+        "PNG",
+        "GLUT",
+        "realsense",
+        "OpenMP",
+        "cuda-toolkit"
+      ]
+    },
+    {
+      "name": "scene_management",
+      "cmake_flag": "USE_SCENE_MANAGEMENT=ON",
+      "dependencies": [
+        "OpenMP"
+      ]
+    },
+    {
       "name": "webcam",
       "cmake_flag": "USE_WEBCAM=ON",
       "dependencies": []
@@ -431,6 +449,22 @@
       }
     },
     {
+      "cuda-toolkit": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "",
+            "postnotes": "",
+            "notes": "The CUDA toolkit is available online <a href=\"https://developer.nvidia.com/cuda-toolkit-archive\">here</a>"
+          }
+        },
+        "Fedora": {
+          "pkg": "",
+          "postnotes": "",
+          "notes": "The CUDA toolkit is available online <a href=\"https://developer.nvidia.com/cuda-toolkit-archive\">here</a>"
+        }
+      }
+    },
+    {
       "cuda-cudart": {
         "pkg": {
           "Ubuntu": {
@@ -584,6 +618,22 @@
           },
           "Fedora": {
             "pkg": "glm-devel",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "glut": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "libglut-dev",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedors": {
+            "pkg": "libglut-devel",
             "postnotes": "",
             "notes": ""
           }
@@ -1288,6 +1338,22 @@
           },
           "Fedora": {
             "pkg": "libopengl-dev",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "OpenMP": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "libomp-dev",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "libomp-devel",
             "postnotes": "",
             "notes": ""
           }
