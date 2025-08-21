@@ -14,8 +14,8 @@ struct [[maybe_unused]] scene_recon_path : public switchboard::event {
     std::string                 depth_path;
     std::string                 rgb_path;
 
-    [[maybe_unused]] scene_recon_path(time_point& camera_time, pose_type& pose_, std::string& depth_path_,
-                                      std::string& rgb_path_)
+    [[maybe_unused]] scene_recon_path(time_point camera_time, pose_type pose_, std::string depth_path_,
+                                      std::string rgb_path_)
         : time{camera_time}
         , pose{pose_}
         , depth_path{depth_path_}
@@ -29,8 +29,7 @@ struct [[maybe_unused]] scene_recon_type : public switchboard::event {
     cv::Mat                     rgb; // rgb is only you need colored mesh
     [[maybe_unused]]bool        last_frame;
 
-    [[maybe_unused]] scene_recon_type(time_point& camera_time, pose_type& pose_, cv::Mat& depth_, cv::Mat& rgb_,
-                                      bool& is_last_frame)
+    [[maybe_unused]] scene_recon_type(time_point camera_time, pose_type pose_, cv::Mat depth_, cv::Mat rgb_, bool is_last_frame)
         : time{camera_time}
         , pose{pose_}
         , depth{depth_}

@@ -90,6 +90,11 @@
       ]
     },
     {
+      "name": "offline_scannet",
+      "cmake_flag": "USE_OFFLINE_SCANNET=ON",
+      "dependencies": []
+    },
+    {
       "name": "webcam",
       "cmake_flag": "USE_WEBCAM=ON",
       "dependencies": []
