@@ -7,91 +7,10 @@
 #include <thread>
 
 namespace ILLIXR {
-// #define ZED
 
-#ifdef ZED
-    #define IMG_WIDTH  672
-    #define IMG_HEIGHT 376
-#else
-    #define IMG_WIDTH  752
-    #define IMG_HEIGHT 480
-#endif
 
-#define ILLIXR_BITRATE 5242880
 
-// Alternative encoding bitrates
-// 50Mbps = 52428800
-// 20Mbps = 20971520
-// 10Mbps = 10485760
-// 5Mbps = 5242880
-// 2Mbps = 2097152
-// 0.5Mbps = 524288
-// 0.1Mbps = 104857
-
-GstFlowReturn cb_new_sample(GstElement* appsink, gpointer* user_data) {
-    return reinterpret_cast<video_encoder*>(user_data)->cb_appsink(appsink);
-}
-
-video_encoder::video_encoder(std::function<void(const GstMapInfo&, const GstMapInfo&)> callback)
-    : callback_(std::move(callback)) { }
-
-void video_encoder::create_pipelines() {
-    gst_init(nullptr, nullptr);
-
-    appsrc_img0_  = gst_element_factory_make("appsrc", "appsrc_img0");
-    appsrc_img1_  = gst_element_factory_make("appsrc", "appsrc_img1");
-    appsink_img0_ = gst_element_factory_make("appsink", "appsink_img0");
-    appsink_img1_ = gst_element_factory_make("appsink", "appsink_img1");
-
-    auto nvvideoconvert_0 = gst_element_factory_make("nvvideoconvert", "nvvideoconvert0");
-    auto nvvideoconvert_1 = gst_element_factory_make("nvvideoconvert", "nvvideoconvert1");
-
-    auto encoder_img0 = gst_element_factory_make("nvv4l2h264enc", "encoder_img0");
-    auto encoder_img1 = gst_element_factory_make("nvv4l2h264enc", "encoder_img1");
-
-    auto caps_8uc1 = gst_caps_new_simple("video/x-raw", "format", G_TYPE_STRING, "GRAY8", "framerate", GST_TYPE_FRACTION, 0, 1,
-                                         "width", G_TYPE_INT, IMG_WIDTH, "height", G_TYPE_INT, IMG_HEIGHT, NULL);
-    g_object_set(G_OBJECT(appsrc_img0_), "caps", caps_8uc1, nullptr);
-    g_object_set(G_OBJECT(appsrc_img1_), "caps", caps_8uc1, nullptr);
-    gst_caps_unref(caps_8uc1);
-
-    // set bitrate from environment variables
-    // g_object_set(G_OBJECT(encoder_img0), "bitrate", std::stoi(sb->get_env("ILLIXR_BITRATE")), nullptr, 10);
-    // g_object_set(G_OBJECT(encoder_img1), "bitrate", std::stoi(sb->get_env("ILLIXR_BITRATE")), nullptr, 10);
-
-    // set bitrate from defined variables
-    g_object_set(G_OBJECT(encoder_img0), "bitrate", ILLIXR_BITRATE, nullptr);
-    g_object_set(G_OBJECT(encoder_img1), "bitrate", ILLIXR_BITRATE, nullptr);
-
-    g_object_set(G_OBJECT(appsrc_img0_), "stream-type", 0, "format", GST_FORMAT_BYTES, "is-live", TRUE, nullptr);
-    g_object_set(G_OBJECT(appsrc_img1_), "stream-type", 0, "format", GST_FORMAT_BYTES, "is-live", TRUE, nullptr);
-
-    g_object_set(appsink_img0_, "emit-signals", TRUE, "sync", FALSE, nullptr);
-    g_object_set(appsink_img1_, "emit-signals", TRUE, "sync", FALSE, nullptr);
-
-    g_signal_connect(appsink_img0_, "new-sample", G_CALLBACK(cb_new_sample), this);
-    g_signal_connect(appsink_img1_, "new-sample", G_CALLBACK(cb_new_sample), this);
-
-    pipeline_img0_ = gst_pipeline_new("pipeline_img0");
-    pipeline_img1_ = gst_pipeline_new("pipeline_img1");
-
-    gst_bin_add_many(GST_BIN(pipeline_img0_), appsrc_img0_, nvvideoconvert_0, encoder_img0, appsink_img0_, nullptr);
-    gst_bin_add_many(GST_BIN(pipeline_img1_), appsrc_img1_, nvvideoconvert_1, encoder_img1, appsink_img1_, nullptr);
-
-    // link elements
-    if (!gst_element_link_many(appsrc_img0_, nvvideoconvert_0, encoder_img0, appsink_img0_, nullptr) ||
-        !gst_element_link_many(appsrc_img1_, nvvideoconvert_1, encoder_img1, appsink_img1_, nullptr)) {
-        abort("Failed to link elements");
-    }
-
-    gst_element_set_state(pipeline_img0_, GST_STATE_PLAYING);
-    gst_element_set_state(pipeline_img1_, GST_STATE_PLAYING);
-}
-
-void video_encoder::enqueue(cv::Mat& img0, cv::Mat& img1) {
-    // push cv mat into appsrc
-    // print img0 size
-
+void vio_video_encoder::enqueue(cv::Mat& img0, cv::Mat& img1) {
     auto data_size      = img0.cols * img0.rows * img0.channels();
     int  size           = floor(data_size + ceil(img0.cols / 2.0) * ceil(img0.rows / 2.0) * 2);
     auto fill_zero_size = size - data_size;
@@ -117,11 +36,7 @@ void video_encoder::enqueue(cv::Mat& img0, cv::Mat& img1) {
     }
 }
 
-void video_encoder::init() {
-    create_pipelines();
-}
-
-GstFlowReturn video_encoder::cb_appsink(GstElement* sink) {
+GstFlowReturn vio_video_encoder::cb_appsink(GstElement* sink) {
     GstSample* sample;
     g_signal_emit_by_name(sink, "pull-sample", &sample);
     if (sample) {

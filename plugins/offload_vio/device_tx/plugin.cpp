@@ -27,7 +27,7 @@ using namespace ILLIXR::data_format;
 void offload_writer::start() {
     threadloop::start();
 
-    encoder_ = std::make_unique<video_encoder>([this](const GstMapInfo& img0, const GstMapInfo& img1) {
+    encoder_ = std::make_unique<vio_video_encoder>([this](const GstMapInfo& img0, const GstMapInfo& img1) {
         queue_.consume_one([&](uint64_t& timestamp) {
             (void) timestamp;
             uint64_t curr =
