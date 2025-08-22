@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package sr_input_proto;
+
+message Pose {
+  //position info
+  double p_x = 1;
+  double p_y = 2;
+  double p_z = 3;
+  //orientation info
+  double o_x = 4;
+  double o_y = 5;
+  double o_z = 6;
+  double o_w = 7;
+}
+
+message ImgData{
+    bytes img_data = 1;
+    int32 rows = 2;
+    int32 columns = 3;
+    int64 size = 4;
+}
+//uncompressed mesh
+message MeshData{
+    repeated double v_x = 1;
+    repeated double v_y = 2;
+    repeated double v_f = 3;
+    repeated int32  c_r = 4;
+    repeated int32  c_g = 5;
+    repeated int32  c_b = 6;
+    repeated int64  f_1 = 7;
+    repeated int64  f_2 = 8;
+    repeated int64  f_3 = 9;
+}
+
+//compressed mesh
+message CompressMeshData{
+    bytes draco_data =1;
+}
+
+message SRSendData
+{
+  Pose input_pose = 1;
+  ImgData depth_img_MSB_data = 2;
+  ImgData depth_img_LSB_data = 3;
+  ImgData rgb_img_data = 4;
+  int32 id = 5;
+}
+
