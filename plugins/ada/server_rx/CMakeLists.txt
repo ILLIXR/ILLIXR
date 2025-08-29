@@ -9,7 +9,7 @@ find_package(Protobuf REQUIRED)
 
 PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS ${CMAKE_CURRENT_SOURCE_DIR}/../proto/sr_input.proto)
 
-add_library(plugin SHARED
+add_library(${PLUGIN_NAME} SHARED
             plugin.cpp
             plugin.hpp
             video_decoder.cpp
@@ -17,6 +17,10 @@ add_library(plugin SHARED
             ${CMAKE_CURRENT_SOURCE_DIR}/../device_to_server_base.hpp
             ${PROTO_SRCS}
             ${PROTO_HDRS}
+            ${ILLIXR_SOURCE_DIR}/include/illixr/data_format/scene_reconstruction.hpp
+            ${ILLIXR_SOURCE_DIR}/include/illixr/phonebook.hpp
+            ${ILLIXR_SOURCE_DIR}/include/illixr/switchboard.hpp
+            ${ILLIXR_SOURCE_DIR}/include/illixr/threadloop.hpp
 )
 
 find_package(PkgConfig)
@@ -40,7 +44,17 @@ list(REMOVE_DUPLICATES LINK_LIBS)
 # reverse back to original order
 list(REVERSE LINK_LIBS)
 
-target_include_directories(${PLUGIN_NAME} PUBLIC ${INC_DIRS} ${OpenCV_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
-target_link_libraries(${PROJECT_NAME} ${LINK_LIBS} ${OpenCV_LIBS} protobuf::libprotobuf spdlog::spdlog)
+target_include_directories(${PLUGIN_NAME} PUBLIC
+                           ${INC_DIRS}
+                           ${OpenCV_INCLUDE_DIRS}
+                           ${CMAKE_CURRENT_BINARY_DIR}
+)
+
+target_link_libraries(${PLUGIN_NAME}
+                      ${LINK_LIBS}
+                      ${OpenCV_LIBS}
+                      protobuf::libprotobuf
+                      spdlog::spdlog
+)
 
 install(TARGETS ${PLUGIN_NAME} DESTINATION lib)

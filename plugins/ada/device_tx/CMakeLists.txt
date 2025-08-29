@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.17)
+cmake_minimum_required(VERSION 3.22)
 
 set(PLUGIN_NAME plugin.ada.device_tx${ILLIXR_BUILD_SUFFIX})
 
@@ -17,6 +17,13 @@ add_library(${PLUGIN_NAME} SHARED
             ${CMAKE_CURRENT_SOURCE_DIR}/../device_to_server_base.hpp
             ${PROTO_SRCS}
             ${PROTO_HDRS}
+            ${ILLIXR_SOURCE_DIR}/include/illixr/data_format/scene_reconstruction.hpp
+            ${ILLIXR_SOURCE_DIR}/include/illixr/network/net_config.hpp
+            ${ILLIXR_SOURCE_DIR}/include/illixr/phonebook.hpp
+            ${ILLIXR_SOURCE_DIR}/include/illixr/plugin.hpp
+            ${ILLIXR_SOURCE_DIR}/include/illixr/stoplight.hpp
+            ${ILLIXR_SOURCE_DIR}/include/illixr/switchboard.hpp
+            ${ILLIXR_SOURCE_DIR}/include/illixr/threadloop.hpp
 )
 
 find_package(PkgConfig)
@@ -40,7 +47,17 @@ list(REMOVE_DUPLICATES LINK_LIBS)
 # reverse back to original order
 list(REVERSE LINK_LIBS)
 
-target_include_directories(${PLUGIN_NAME} PUBLIC ${INC_DIRS} ${OpenCV_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
-target_link_libraries(${PLUGIN_NAME} PUBLIC ${LINK_LIBS} ${OpenCV_LIBS} protobuf::libprotobuf spdlog::spdlog)
+target_include_directories(${PLUGIN_NAME} PUBLIC
+                           ${INC_DIRS}
+                           ${OpenCV_INCLUDE_DIRS}
+                           ${CMAKE_CURRENT_BINARY_DIR}
+)
+
+target_link_libraries(${PLUGIN_NAME} PUBLIC
+                      ${LINK_LIBS}
+                      ${OpenCV_LIBS}
+                      protobuf::libprotobuf
+                      spdlog::spdlog
+)
 
 install(TARGETS ${PLUGIN_NAME} DESTINATION lib)
