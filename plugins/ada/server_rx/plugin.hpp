@@ -5,17 +5,24 @@
 #include "illixr/phonebook.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
-#include "sr_input.pb.h"
+
+#if __has_include("sr_output.pb.h")
+    #include "sr_output.pb.h"
+#else
+    #include "../proto/input_stub.hpp"
+#endif
 #include "video_decoder.hpp"
 
 #include <filesystem>
 
 namespace ILLIXR {
-const std::string delimiter       = "EEND!";
+const std::string delimiter = "EEND!";
 
-class server_rx : public threadloop, public device_to_server_base {
+class server_rx
+    : public threadloop
+    , public device_to_server_base {
 public:
-    server_rx(std::string name_, phonebook* pb_);
+    [[maybe_unused]] server_rx(std::string name_, phonebook* pb_);
 
     skip_option _p_should_skip() override {
         return skip_option::run;
@@ -37,8 +44,8 @@ public:
 private:
     void receive_sr_input(const sr_input_proto::SRSendData& sr_input);
 
-    const std::shared_ptr<switchboard>                 switchboard_;
-    switchboard::writer<data_format::scene_recon_type> scannet_;
+    const std::shared_ptr<switchboard>                                    switchboard_;
+    switchboard::writer<data_format::scene_recon_type>                    scannet_;
     switchboard::buffered_reader<switchboard::event_wrapper<std::string>> ada_reader_;
 
     unsigned          cur_frame;
@@ -46,7 +53,6 @@ private:
     std::ofstream     receive_time;
     std::ofstream     receive_timestamp;
     std::ofstream     receive_size;
-
 
     std::unique_ptr<ada_video_decoder> decoder_;
     cv::Mat                            img0_dst_;

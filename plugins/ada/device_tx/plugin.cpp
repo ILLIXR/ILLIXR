@@ -1,6 +1,10 @@
 #include "plugin.hpp"
 
+#if __has_include("sr_input.pb.h")
 #include "sr_input.pb.h"
+#else
+#include "../proto/input_stub.hpp"
+#endif
 
 #include <spdlog/spdlog.h>
 #include <netinet/in.h>
@@ -14,7 +18,9 @@ using namespace ILLIXR::data_format;
     , clock_{phonebook_->lookup_impl<relative_clock>()} // make sure you have the rigth IP address
     , stoplight_{phonebook_->lookup_impl<stoplight>()}
     , ada_writer_{switchboard_->get_network_writer<switchboard::event_wrapper<std::string>>(
-          "ada_data", network::topic_config{.serialization_method = network::topic_config::SerializationMethod::PROTOBUF})} {
+          "ada_data", network::topic_config{.latency = std::chrono::milliseconds(0),
+                        .serialization_method = network::topic_config::SerializationMethod::PROTOBUF
+          })} {
     if (!std::filesystem::exists(data_path_)) {
         if (!std::filesystem::create_directory(data_path_)) {
             spdlog::get("illixr")->error("Failed to create data directory.");

@@ -21,19 +21,20 @@
 
 namespace ILLIXR {
 
-const std::string delimiter       = "EEND!";
+const std::string delimiter = "EEND!";
 
-class device_tx : public threadloop, public device_to_server_base {
+class device_tx
+    : public threadloop
+    , public device_to_server_base {
 public:
     [[maybe_unused]] device_tx(const std::string& name_, phonebook* pb_);
 
     void start() override;
 
+    void send_scene_recon_data(switchboard::ptr<const data_format::scene_recon_type> datum);
+
 protected:
     void _p_one_iteration() override;
-
-public:
-    void send_scene_recon_data(switchboard::ptr<const data_format::scene_recon_type> datum);
 
 private:
     // pyh more cache and memory friendly, less overhead
@@ -52,9 +53,9 @@ private:
 
     unsigned frame_id_{0};
 
-    std::string             send_buf_;
-    std::string             msb_bytes_;
-    std::string             lsb_bytes_;
+    std::string send_buf_;
+    std::string msb_bytes_;
+    std::string lsb_bytes_;
 };
 
 } // namespace ILLIXR

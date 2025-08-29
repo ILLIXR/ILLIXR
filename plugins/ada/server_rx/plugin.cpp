@@ -1,23 +1,11 @@
 #include "plugin.hpp"
-// #include <algorithm>
-#include <arpa/inet.h>
-// #include <chrono>
-// #include <climits>
-// #include <cstdint>
-// #include <cstring>
-// #include <fstream>
-// #include <iostream>
-// #include <limits>
-// #include <opencv2/highgui.hpp>
-// #include <sys/socket.h>
-// #include <sys/types.h>
 
 #include <spdlog/spdlog.h>
 
 using namespace ILLIXR;
 using namespace ILLIXR::data_format;
 
-server_rx::server_rx(std::string name_, phonebook* pb_)
+[[maybe_unused]] server_rx::server_rx(std::string name_, phonebook* pb_)
     : threadloop{name_, pb_}
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
     , scannet_{switchboard_->get_writer<scene_recon_type>("ScanNet_Data")}
@@ -109,12 +97,11 @@ void server_rx::receive_sr_input(const sr_input_proto::SRSendData& sr_input) {
         receive_timestamp << cur_frame << " " << millis << "\n";
     }
     Eigen::Vector3f    incoming_position{static_cast<float>(sr_input.input_pose().p_x()),
-                                         static_cast<float>(sr_input.input_pose().p_y()),
-                                         static_cast<float>(sr_input.input_pose().p_z())};
-    Eigen::Quaternionf incoming_orientation{static_cast<float>(sr_input.input_pose().o_w()),
-                                            static_cast<float>(sr_input.input_pose().o_x()),
-                                            static_cast<float>(sr_input.input_pose().o_y()),
-                                            static_cast<float>(sr_input.input_pose().o_z())};
+                                      static_cast<float>(sr_input.input_pose().p_y()),
+                                      static_cast<float>(sr_input.input_pose().p_z())};
+    Eigen::Quaternionf incoming_orientation{
+        static_cast<float>(sr_input.input_pose().o_w()), static_cast<float>(sr_input.input_pose().o_x()),
+        static_cast<float>(sr_input.input_pose().o_y()), static_cast<float>(sr_input.input_pose().o_z())};
 
     pose_type pose = {time_point{}, incoming_position, incoming_orientation};
 
