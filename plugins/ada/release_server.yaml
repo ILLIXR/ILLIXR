@@ -1,0 +1,40 @@
+plugin_groups:
+    - plugin_group:
+        - path: ada_release/server_rx_nocolor_new/
+        - path: ada_release/server_tx_new/
+        - path: ada_release/InfiniTAM_nocolor/
+        - path: ada_release/mesh_compression_0/
+        - path: ada_release/mesh_compression_1/
+        - path: ada_release/mesh_compression_2/
+        - path: ada_release/mesh_compression_3/
+        - path: ada_release/mesh_compression_4/
+        - path: ada_release/mesh_compression_5/
+        - path: ada_release/mesh_compression_6/
+        - path: ada_release/mesh_compression_7/
+
+#pyh this path you don't need the actual data (images, and poses) you just need the calibration file in the path
+data: /path/to/your/scannet/dataset/scene0005
+
+demo_data: demo_data/
+
+enable_offload:   False
+enable_alignment: False
+enable_verbose_errors: False
+enable_pre_sleep: False
+
+action:
+  kimera_path: .cache/paths/https%c%s%sgithub.com%sILLIXR%sKimera-VIO.git/
+  audio_path:  .cache/paths/https%c%s%sgithub.com%sILLIXR%saudio_pipeline.git/
+  name: native
+  ILLIXR_RUN_DURATION: 24000
+  # run in GDB:
+  #command: gdb -q --args $cmd
+
+  # Print cmd for external use:
+  # command: printf %s\n $env_cmd
+
+  # Capture stdout for metrics
+  # log_stdout: metrics/output.log
+
+profile: opt
+
