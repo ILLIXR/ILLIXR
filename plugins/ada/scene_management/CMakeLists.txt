@@ -4,13 +4,11 @@ set(CMAKE_CXX_STANDARD 17)
 
 set(PLUGIN_NAME plugin.scene_management${ILLIXR_BUILD_SUFFIX})
 
-get_external_for_plugin(Draco)
-
 # Find OpenMP
 find_package(OpenMP REQUIRED)
 
 # Find Draco library
-find_package(draco_illixr REQUIRED CONFIG)
+get_external_for_plugin(Draco)
 
 # Add the plugin library
 add_library(${PLUGIN_NAME} SHARED

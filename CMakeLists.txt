@@ -211,7 +211,7 @@ pkg_check_modules(gl REQUIRED gl)
 find_package(Eigen3 REQUIRED CONFIG)
 
 get_external(Vulkan)
-
+get_external(Draco)
 #############
 # plugin specific dependencies that are used by several plugins
 #############
