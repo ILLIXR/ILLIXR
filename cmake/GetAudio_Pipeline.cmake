@@ -9,5 +9,5 @@ ExternalProject_Add(Audio_Pipeline
                     GIT_TAG f2603d835005250652634f7f25466e51d1b72892              # sha5 hash for specific commit to pull (if there is no specific tag to use)
                     PREFIX ${CMAKE_BINARY_DIR}/_deps/audio_pipeline               # the build directory
                     #arguments to pass to CMake
-                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DILLIXR_INTEGRATION=ON -DILLIXR_ROOT=${CMAKE_SOURCE_DIR}/include -DILLIXR_BUILD_SUFFIX=${ILLIXR_BUILD_SUFFIX} ${DEPENDENCY_COMPILE_ARGS}
+                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DILLIXR_INTEGRATION=ON -DILLIXR_ROOT=${CMAKE_SOURCE_DIR}/include -DILLIXR_BUILD_SUFFIX=${ILLIXR_BUILD_SUFFIX} -DCMAKE_CXX_COMPILER=${CLANG_CXX_EXE} -DCMAKE_C_COMPILER=${CLANG_EXE}
 )
