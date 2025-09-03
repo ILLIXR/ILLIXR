@@ -43,7 +43,8 @@ layout (location = 0) out vec4 outColor;
 
 void main()
 {
-    outColor = texture(image_texture, warpUv);
+    vec2 uv = clamp(warpUv, vec2(0.0, 0.0), vec2(1.0, 1.0));
+    outColor = texture(image_texture, uv);
 
     // float depth = gl_FragCoord.z;
     // outColor = vec4(vec3(depth), 1.0f);
