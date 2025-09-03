@@ -19,9 +19,15 @@ lighthouse* lighthouse_instance;
     , log_(spdlogger("info"))
     , clock_{phonebook_->lookup_impl<relative_clock>()}
     , slow_pose_{switchboard_->get_writer<pose_type>("slow_pose")}
-    , fast_pose_{switchboard_->get_writer<fast_pose_type>("fast_pose")} {
-    lighthouse_instance = this;
-}
+    , fast_pose_{switchboard_->get_writer<fast_pose_type>("fast_pose")}
+    , record_data_{get_record_data_path()} {
+        lighthouse_instance = this;
+
+        boost::filesystem::create_directories(record_data_);
+        std::string pose_path = record_data_.string() + "/lighthouse_poses.csv";
+        lighthouse_poses_file_.open(pose_path, std::ofstream::out);
+        lighthouse_poses_file_ << "timestamp, x, y, z, q.w, q.x, q.y, q.z" << std::endl;
+    }
 
 void lighthouse::stop() {
     threadloop::stop();
@@ -38,11 +44,20 @@ void lighthouse::process_slow_pose(SurviveObject* so, survive_long_timecode time
     auto new_quat   = adjustment * quat;
     new_quat.normalize();
 
-    lighthouse_instance->slow_pose_.put(lighthouse_instance->slow_pose_.allocate(
-        lighthouse_instance->clock_->now(), Eigen::Vector3d{pose->Pos[0], pose->Pos[2], -pose->Pos[1]}.cast<float>(),
-        new_quat));
+    time_point now = lighthouse_instance->clock_->now();
+    std::shared_ptr<pose_type> curr_pose = std::make_shared<pose_type>(now, now, Eigen::Vector3d{pose->Pos[0], pose->Pos[2], -pose->Pos[1]}.cast<float>(), new_quat);
+    lighthouse_instance->slow_pose_.put(std::move(curr_pose));
 
     lighthouse_instance->slow_pose_count_++;
+    lighthouse_instance->lighthouse_poses_file_ << curr_pose->cam_time.time_since_epoch().count() << ","
+                               << curr_pose->position.x() << ","
+                               << curr_pose->position.y() << ","
+                               << curr_pose->position.z() << ","
+                               << curr_pose->orientation.w() << ","
+                               << curr_pose->orientation.x() << ","
+                               << curr_pose->orientation.y() << ","
+                               << curr_pose->orientation.z() << std::endl;
+
 }
 
 // static void process_fast_pose(SurviveObject* so, survive_long_timecode timecode, const SurvivePose* pose) {
@@ -79,6 +94,11 @@ void lighthouse::_p_one_iteration() {
         fast_pose_count_ = 0;
         last_time_       = now;
     }
+}
+
+boost::filesystem::path lighthouse::get_record_data_path() {
+    boost::filesystem::path ILLIXR_DIR = boost::filesystem::current_path();
+    return ILLIXR_DIR / "lighthouse_poses";
 }
 
 // This line makes the plugin importable by Spindle

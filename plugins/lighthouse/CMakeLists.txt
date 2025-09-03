@@ -21,14 +21,14 @@ set(SRC_FILES plugin.cpp
 
 add_library(${PLUGIN_NAME} SHARED ${SRC_FILES})
 
-target_include_directories(${PLUGIN_NAME} PUBLIC ${CMAKE_INSTALL_PREFIX}/include ${Eigen3_INCLUDE_DIRS} ${survive_INCLUDE_DIRS} ${survive_INCLUDE_DIRS}/redist)
+target_include_directories(${PLUGIN_NAME} PUBLIC ${CMAKE_INSTALL_PREFIX}/include ${Eigen3_INCLUDE_DIRS} ${survive_INCLUDE_DIRS} ${survive_INCLUDE_DIRS}/redist ${BOOST_INCLUDE_DIRS})
 
 if (LibSurvive_EXTERNAL)
     message("SURVIVE   ${survive_INCLUDE_DIRS} ${survive_INCLUDE_DIRS}/redist ${survive_LIBRARIES}")
     add_dependencies(${PLUGIN_NAME} ${LibSurvive_DEP_STR})
 endif()
 
-target_link_libraries(${PLUGIN_NAME} ${Eigen3_LIBRARIES} spdlog::spdlog Threads::Threads ${survive_LIBRARIES})
+target_link_libraries(${PLUGIN_NAME} ${Eigen3_LIBRARIES} spdlog::spdlog Threads::Threads ${survive_LIBRARIES} boost_filesystem)
 target_compile_features(${PLUGIN_NAME} PRIVATE cxx_std_17)
 
 install(TARGETS ${PLUGIN_NAME} DESTINATION lib)

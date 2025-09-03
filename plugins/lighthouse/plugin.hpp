@@ -6,6 +6,9 @@
 #include "illixr/threadloop.hpp"
 #include "survive.h"
 
+#include <boost/filesystem.hpp>
+#include <fstream>
+
 namespace ILLIXR {
 
 class lighthouse : public threadloop {
@@ -35,6 +38,10 @@ private:
     std::chrono::time_point<std::chrono::high_resolution_clock> last_time_;
     int                                                         slow_pose_count_ = 0;
     int                                                         fast_pose_count_ = 0;
+
+    static boost::filesystem::path get_record_data_path();
+    const boost::filesystem::path record_data_;
+    std::ofstream lighthouse_poses_file_;
 };
 
 } // namespace ILLIXR
