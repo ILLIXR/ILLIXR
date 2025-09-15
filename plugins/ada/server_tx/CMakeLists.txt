@@ -29,6 +29,7 @@ target_include_directories(${PLUGIN_NAME} PUBLIC
 target_link_libraries(${PLUGIN_NAME}
                       ${OpenCV_LIBS}
                       protobuf::libprotobuf
+                      draco_illixr::draco
 )
 
 install(TARGETS ${PLUGIN_NAME} DESTINATION lib)

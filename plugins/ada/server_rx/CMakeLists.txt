@@ -14,6 +14,7 @@ add_library(${PLUGIN_NAME} SHARED
             plugin.hpp
             video_decoder.cpp
             video_decoder.hpp
+            $<TARGET_OBJECTS:video_decoder_ada>
             ${CMAKE_CURRENT_SOURCE_DIR}/../device_to_server_base.hpp
             ${PROTO_SRCS}
             ${PROTO_HDRS}
@@ -21,6 +22,7 @@ add_library(${PLUGIN_NAME} SHARED
             ${ILLIXR_SOURCE_DIR}/include/illixr/phonebook.hpp
             ${ILLIXR_SOURCE_DIR}/include/illixr/switchboard.hpp
             ${ILLIXR_SOURCE_DIR}/include/illixr/threadloop.hpp
+            $<TARGET_OBJECTS:video_decoder_ada>
 )
 
 find_package(PkgConfig)
@@ -45,9 +47,9 @@ list(REMOVE_DUPLICATES LINK_LIBS)
 list(REVERSE LINK_LIBS)
 
 target_include_directories(${PLUGIN_NAME} PUBLIC
+                           ${CMAKE_CURRENT_BINARY_DIR}
                            ${INC_DIRS}
                            ${OpenCV_INCLUDE_DIRS}
-                           ${CMAKE_CURRENT_BINARY_DIR}
 )
 
 target_link_libraries(${PLUGIN_NAME}

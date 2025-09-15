@@ -6,8 +6,8 @@
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
 
-#if __has_include("sr_output.pb.h")
-    #include "sr_output.pb.h"
+#if __has_include("sr_input.pb.h")
+    #include "sr_input.pb.h"
 #else
     #include "../proto/input_stub.hpp"
 #endif

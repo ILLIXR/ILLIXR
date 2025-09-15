@@ -24,6 +24,7 @@ add_library(${PLUGIN_NAME} SHARED
             ${ILLIXR_SOURCE_DIR}/include/illixr/stoplight.hpp
             ${ILLIXR_SOURCE_DIR}/include/illixr/switchboard.hpp
             ${ILLIXR_SOURCE_DIR}/include/illixr/threadloop.hpp
+            $<TARGET_OBJECTS:video_decoder_ada>
 )
 
 find_package(PkgConfig)
@@ -48,9 +49,9 @@ list(REMOVE_DUPLICATES LINK_LIBS)
 list(REVERSE LINK_LIBS)
 
 target_include_directories(${PLUGIN_NAME} PUBLIC
+                           ${CMAKE_CURRENT_BINARY_DIR}
                            ${INC_DIRS}
                            ${OpenCV_INCLUDE_DIRS}
-                           ${CMAKE_CURRENT_BINARY_DIR}
 )
 
 target_link_libraries(${PLUGIN_NAME} PUBLIC
