@@ -93,16 +93,16 @@ VkSurfaceKHR x11_direct::create_surface() {
         vkGetDisplayPlaneCapabilitiesKHR(vk_physical_device_, selected_mode_.displayMode, plane_index, &plane_capabilities));
 
     VkDisplaySurfaceCreateInfoKHR surface_create_info = {
-        .sType           = VK_STRUCTURE_TYPE_DISPLAY_SURFACE_CREATE_INFO_KHR,
-        .pNext           = nullptr,
-        .flags           = 0,
-        .displayMode     = selected_mode_.displayMode,
-        .planeIndex      = plane_index,
-        .planeStackIndex = plane_properties[plane_index].currentStackIndex,
-        .transform       = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR,
-        .globalAlpha     = 1.0f,
-        .alphaMode       = VK_DISPLAY_PLANE_ALPHA_OPAQUE_BIT_KHR,
-        .imageExtent     = selected_mode_.parameters.visibleRegion,
+        VK_STRUCTURE_TYPE_DISPLAY_SURFACE_CREATE_INFO_KHR,
+        nullptr,
+        0,
+        selected_mode_.displayMode,
+        plane_index,
+        plane_properties[plane_index].currentStackIndex,
+        VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR,
+        1.0f,
+        VK_DISPLAY_PLANE_ALPHA_OPAQUE_BIT_KHR,
+        selected_mode_.parameters.visibleRegion,
     };
 
     VkSurfaceKHR surface;
@@ -161,10 +161,10 @@ bool x11_direct::register_display_timings_event(VkDevice vk_device) {
         return false;
     }
 
-    auto display_event_info = (VkDisplayEventInfoEXT) {
-        .sType        = VK_STRUCTURE_TYPE_DISPLAY_EVENT_INFO_EXT,
-        .pNext        = nullptr,
-        .displayEvent = VK_DISPLAY_EVENT_TYPE_FIRST_PIXEL_OUT_EXT,
+    VkDisplayEventInfoEXT display_event_info{
+        VK_STRUCTURE_TYPE_DISPLAY_EVENT_INFO_EXT,
+        nullptr,
+        VK_DISPLAY_EVENT_TYPE_FIRST_PIXEL_OUT_EXT,
     };
 
     auto ret = (register_display_event(vk_device, display_, &display_event_info, nullptr, &display_event_fence_));

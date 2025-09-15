@@ -501,7 +501,10 @@ void native_renderer::create_offscreen_pool() {
     };
 
     uint32_t                mem_type_index;
-    VmaAllocationCreateInfo alloc_info{.flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT, .usage = VMA_MEMORY_USAGE_GPU_ONLY};
+    VmaAllocationCreateInfo alloc_info;
+    alloc_info.flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT;
+    alloc_info.usage = VMA_MEMORY_USAGE_GPU_ONLY;
+
     vmaFindMemoryTypeIndexForImageInfo(display_sink_->vma_allocator_, &sample_create_info, &alloc_info, &mem_type_index);
 
     offscreen_export_mem_alloc_info_.sType = VK_STRUCTURE_TYPE_EXPORT_MEMORY_ALLOCATE_INFO;
@@ -564,7 +567,10 @@ void native_renderer::create_offscreen_target(vulkan::vk_image& image) {
         VK_IMAGE_LAYOUT_UNDEFINED                                                                       // initialLayout
     };
 
-    VmaAllocationCreateInfo alloc_info{.flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT, .usage = VMA_MEMORY_USAGE_GPU_ONLY};
+    VmaAllocationCreateInfo alloc_info{};
+    alloc_info.flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT;
+    alloc_info.usage = VMA_MEMORY_USAGE_GPU_ONLY;
+
     if (timewarp_->is_external() || app_->is_external()) {
         alloc_info.pool = offscreen_pool_;
     }
@@ -778,12 +784,13 @@ void native_renderer::create_timewarp_pass() {
     };
 
     VkSubpassDependency dependency = {
-        .srcSubpass    = VK_SUBPASS_EXTERNAL,
-        .dstSubpass    = 0,
-        .srcStageMask  = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-        .dstStageMask  = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-        .srcAccessMask = 0,
-        .dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+        VK_SUBPASS_EXTERNAL,
+        0,
+        VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+        VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+        0,
+        VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+        0
     };
 
     VkSubpassDescription subpass = {

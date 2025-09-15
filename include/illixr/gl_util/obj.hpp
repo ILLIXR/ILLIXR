@@ -201,8 +201,8 @@ public:
                     }
 
                     for (int vert = 0; vert < 3; vert++) {
-                        buffer.push_back(vertex_t{.position = {verts[vert][0], verts[vert][1], verts[vert][2]},
-                                                  .uv       = {tex_coords[vert][0], tex_coords[vert][1]}});
+                        buffer.push_back(vertex_t{{verts[vert][0], verts[vert][1], verts[vert][2]},
+                                                  {tex_coords[vert][0], tex_coords[vert][1]}});
                     }
                 }
 
