@@ -12,6 +12,7 @@
 
 #if defined(_WIN32) || defined(_WIN64)
 #include <Windows.h>
+#include <cstdlib>
 #endif
 
 #ifndef NDEBUG
@@ -21,6 +22,13 @@
 #endif
 
 namespace ILLIXR {
+
+#if defined(_WIN32) || defined(_WIN64)
+static void setenv(const std::string& var, const std::string& val, int) {
+    std::string env_stmt = var + "=" + val;
+    putenv(env_stmt.c_str());
+}
+#endif
 
 /**
  * @brief A [service locator][1] for ILLIXR.

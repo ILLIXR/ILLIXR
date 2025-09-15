@@ -739,8 +739,9 @@ public:
         } catch (std::out_of_range&) {
             char* val = std::getenv(var.c_str());
             if (val) {
+                std::string temp(val);
                 set_env(var, val); // store it locally for faster retrieval
-                return {val};
+                return temp;
             }
             return _default;
         }
