@@ -47,16 +47,32 @@ add_library(${PLUGIN_NAME} SHARED service.cpp
             ${CMAKE_SOURCE_DIR}/include/illixr/vk/vulkan_utils.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/gl_util/lib/tiny_obj_loader.h
             ${CMAKE_SOURCE_DIR}/include/illixr/gl_util/lib/stb_image.h
+            $<TARGET_OBJECTS:illixr_vulkan_utils>
 )
-if(Vulkan_EXTERNAL)
-    add_dependencies(${PLUGIN_NAME} ${Vulkan_DEP_STR})
-endif()
 
 add_dependencies(${PLUGIN_NAME} Vkdemo_Shaders)
 set_target_properties(${PLUGIN_NAME} PROPERTIES OUTPUT_NAME ${PLUGIN_NAME})
+target_link_libraries(${PLUGIN_NAME} PUBLIC 
+        spdlog::spdlog
+        Boost::serialization
+        Eigen3::Eigen
+)
+target_include_directories(${PLUGIN_NAME} PUBLIC ${ILLIXR_SOURCE_DIR}/include)
 
-target_link_libraries(${PLUGIN_NAME} ${Vulkan_LIBRARIES} spdlog::spdlog)
-target_include_directories(${PLUGIN_NAME} PUBLIC ${Vulkan_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR}/include)
+if(WIN32 OR MSVC)
+    target_link_libraries(${PLUGIN_NAME} PUBLIC 
+            Vulkan::Vulkan
+            GPUOpen::VulkanMemoryAllocator
+    )
+    target_compile_definitions(${PLUGIN_NAME} PRIVATE BUILDING_LIBRARY)
+else()
+    if(Vulkan_EXTERNAL)
+        add_dependencies(${PLUGIN_NAME} ${Vulkan_DEP_STR})
+    endif()
+
+    target_link_libraries(${PLUGIN_NAME} ${Vulkan_LIBRARIES})
+    target_include_directories(${PLUGIN_NAME} PUBLIC ${Vulkan_INCLUDE_DIRS})
+endif()
 
 install_shaders(SPIRV_BINARY_FILES vkdemo ${PLUGIN_NAME})
 

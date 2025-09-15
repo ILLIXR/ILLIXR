@@ -1,11 +1,3 @@
-find_package(glfw3 QUIET)
-if (NOT glfw3_FOUND)
-    pkg_search_module(glfw3 REQUIRED glfw3)
-endif ()
-
-find_package(OpenGL REQUIRED)
-
-
 add_library(illixr_hmd OBJECT hmd.cpp
             hmd.hpp
 )
@@ -24,8 +16,14 @@ add_library(illixr_vulkan_utils STATIC vulkan_utils.cpp
 )
 
 target_include_directories(illixr_vulkan_utils PUBLIC ${CMAKE_SOURCE_DIR}/include)
-target_link_libraries(illixr_vulkan_utils PUBLIC spdlog::spdlog)
-
+target_link_libraries(illixr_vulkan_utils PUBLIC
+            spdlog::spdlog 
+            Boost::serialization
+)
+if(WIN32 OR MSVC)
+    target_link_libraries(illixr_vulkan_utils PUBLIC Vulkan::Vulkan GPUOpen::VulkanMemoryAllocator)
+endif()
+#[[
 add_library(illixr_imgui STATIC
             imgui/imconfig.h
             imgui/imgui.cpp
@@ -38,10 +36,8 @@ add_library(illixr_imgui STATIC
             imgui/imstb_rectpack.h
             imgui/imstb_textedit.h
             imgui/imstb_truetype.h
-            imgui/backends/imgui_impl_glfw.cpp
-            imgui/backends/imgui_impl_glfw.h
-            #imgui/backends/imgui_impl_glut.cpp
-            #imgui/backends/imgui_impl_glut.h
+            #imgui/backends/imgui_impl_glfw.cpp
+            #imgui/backends/imgui_impl_glfw.h
             imgui/backends/imgui_impl_opengl3.cpp
             imgui/backends/imgui_impl_opengl3.h
             imgui/backends/imgui_impl_opengl3_loader.h
@@ -57,9 +53,6 @@ add_library(illixr_imgui STATIC
             #imgui/backends/imgui_impl_vulkan.h
             imgui/misc/cpp/imgui_stdlib.cpp
             imgui/misc/cpp/imgui_stdlib.h
-            #imgui/misc/fonts/binary_to_compressed_c.cpp
-            #imgui/misc/freetype/imgui_freetype.cpp
-            #imgui/misc/freetype/imgui_freetype.h
 )
 
 target_include_directories(illixr_imgui PUBLIC
@@ -76,3 +69,4 @@ target_link_libraries(illixr_imgui PUBLIC
                       glfw
                       OpenGL::GL
 )
+]]
