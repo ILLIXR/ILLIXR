@@ -1,0 +1,70 @@
+{
+  "name": "illixr",
+  "version": "4.0.1",
+  "dependencies": [
+    {
+      "name": "opengl"
+    },
+    {
+      "name": "eigen3"
+    },
+    {
+      "name": "boost"
+    },
+    {
+      "name": "glm"
+    },
+    {
+      "name": "glfw3"
+    },
+    {
+      "name": "glew"
+    },
+    {
+      "name": "opencv",
+      "features": ["eigen", "fs", "opengl", "thread", "jpeg", "png", "tiff"]
+    },
+    {
+      "name": "sqlite3"
+    },
+    {
+      "name": "spdlog"
+    },
+    {
+      "name": "vulkan"
+    },
+    {
+      "name": "vulkan-validationlayers"
+    },
+    {
+      "name": "vulkan-utility-libraries"
+    },
+    {
+      "name": "vulkan-memory-allocator"
+    },
+    {
+      "name": "vulkan-memory-allocator-hpp"
+    },
+    {
+      "name": "glslang",
+      "features": ["tools"]
+    },
+    {
+      "name": "spirv-headers"
+    },
+    {
+      "name": "spirv-tools",
+      "features": ["tools"]
+    },
+    {
+      "name": "vulkan-sdk-components"
+    },
+    {
+      "name": "libx11"
+    },
+    {
+      "name": "libxrandr"
+    }
+  ]
+
+}
