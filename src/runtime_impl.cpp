@@ -2,6 +2,7 @@
 
 #include "illixr/dynamic_lib.hpp"
 #include "illixr/error_util.hpp"
+//#include "illixr/extended_window.hpp"
 #include "illixr/global_module_defs.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/plugin.hpp"
@@ -9,7 +10,8 @@
 #include "illixr/stoplight.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/vk/vk_extension_request.hpp"
-#include "sqlite_record_logger.hpp"
+#include "stdout_record_logger.hpp"
+//#include "sqlite_record_logger.hpp"
 #include "vulkan_display.hpp"
 
 #include <algorithm>
@@ -20,6 +22,10 @@
 #include <spdlog/spdlog.h>
 #include <string>
 #include <vector>
+
+#if defined(_WIN32) || defined(_WIN64)
+#include <cstdlib>
+#endif
 
 using namespace ILLIXR;
 typedef bool (*n_monado_t)();
@@ -45,10 +51,12 @@ public:
     explicit runtime_impl() {
         spdlogger("illixr", std::getenv("ILLIXR_LOG_LEVEL")); // can't use switchboard interface here
         phonebook_.register_impl<relative_clock>(std::make_shared<relative_clock>());
-        phonebook_.register_impl<record_logger>(std::make_shared<sqlite_record_logger>());
+        phonebook_.register_impl<record_logger>(std::make_shared<stdout_record_logger>());
         phonebook_.register_impl<gen_guid>(std::make_shared<gen_guid>());
         phonebook_.register_impl<switchboard>(std::make_shared<switchboard>(&phonebook_));
         switchboard_   = phonebook_.lookup_impl<switchboard>();
+        //phonebook_.register_impl<xlib_gl_extended_window>(
+        //    std::make_shared<xlib_gl_extended_window>(display_params::width_pixels, display_params::height_pixels, nullptr));
         enable_monado_ = false;
         phonebook_.register_impl<stoplight>(std::make_shared<stoplight>());
     }
@@ -83,7 +91,7 @@ public:
         std::transform(plugin_factories.cbegin(), plugin_factories.cend(), std::back_inserter(plugins_),
                        [this](const auto& plugin_factory) {
                            RAC_ERRNO_MSG("runtime_impl before building the plugin");
-                           return std::unique_ptr<plugin>{plugin_factory(&phonebook_)};
+                           return std::unique_ptr<plugin>{plugin_factory(&this->phonebook_)};
                        });
 
         phonebook_.lookup_impl<relative_clock>()->start();
