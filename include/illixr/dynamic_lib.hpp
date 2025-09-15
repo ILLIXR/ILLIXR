@@ -2,7 +2,11 @@
 
 #include "error_util.hpp"
 
+#if defined(_WIN32) || defined(_WIN64)
+#include <Windows.h>
+#else
 #include <dlfcn.h>
+#endif
 #include <functional>
 #include <iostream>
 #include <memory>

@@ -1,6 +1,9 @@
 #pragma once
 
 #define GLFW_INCLUDE_VULKAN
+#if defined(_WIN32) || defined(_WIN64)
+#include <windows.h>
+#endif
 #include "illixr/data_format/misc.hpp"
 #include "illixr/data_format/pose.hpp"
 #include "illixr/phonebook.hpp"

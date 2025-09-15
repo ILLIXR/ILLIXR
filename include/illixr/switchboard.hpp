@@ -1,5 +1,7 @@
 #pragma once
 
+#if defined(_WIN32) || defined(_WIN64)
+#include <cstdlib>
 #include "concurrentqueue/blockingconcurrentqueue.hpp"
 #include "managed_thread.hpp"
 #include "network/network_backend.hpp"

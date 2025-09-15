@@ -5,7 +5,9 @@
 #include <vector>
 
 #ifdef USE_GL
-    #include <GL/gl.h>
+#if defined(_WIN32) || defined(_WIN64)
+#include <windows.h>
+#endif
     #define FLOAT GLfloat
 #else
     #define FLOAT float

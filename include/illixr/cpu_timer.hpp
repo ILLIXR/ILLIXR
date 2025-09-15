@@ -12,6 +12,9 @@
 #include <string>
 #include <thread>
 #include <utility>
+#if defined(_WIN32) || defined(_WIN64)
+#include <Windows.h>
+#endif
 
 /**
  * @brief A C++ translation of [clock_gettime][1]

@@ -1,4 +1,6 @@
-
+#if defined(_WIN32) || defined(_WIN64)
+#include <Windows.h>
+#endif
 #define GLFW_INCLUDE_VULKAN
 #include "glfw_extended.hpp"
 

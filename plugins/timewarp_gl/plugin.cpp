@@ -1,4 +1,7 @@
 #define GL_GLEXT_PROTOTYPES
+#if defined(_WIN32) || defined(_WIN64)
+#include <windows.h>
+#endif
 // clang-format off
 #include <GL/glew.h> // GLEW has to be loaded before other GL libraries
 #include <GL/glx.h>

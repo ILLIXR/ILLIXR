@@ -1,4 +1,7 @@
 #pragma once
+#if defined(_WIN32) || defined(_WIN64)
+#include <windows.h>
+#endif
 
 #include "error_util.hpp"
 

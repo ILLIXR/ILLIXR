@@ -7,6 +7,10 @@
 #include "illixr/vk/display_provider.hpp"
 #include "illixr/vk/render_pass.hpp"
 
+#if defined(_WIN32) || defined(_WIN64)
+#include <windows.h>
+#endif
+
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #define GLM_ENABLE_EXPERIMENTAL

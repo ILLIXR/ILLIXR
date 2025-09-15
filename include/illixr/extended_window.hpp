@@ -6,7 +6,10 @@
 
 #include <cassert>
 #include <cerrno>
+#if defined(_WIN32) || defined(_WIN64)
+#include <windows.h>
 #include <GL/glx.h>
+#endif
 #ifndef NDEBUG
     #include <spdlog/spdlog.h>
 #endif
