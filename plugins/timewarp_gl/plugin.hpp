@@ -55,10 +55,16 @@ private:
     const std::shared_ptr<data_format::pose_prediction> pose_prediction_;
     const std::shared_ptr<const relative_clock>         clock_;
 
+#if defined(_WIN32) || defined(_WIN64)
+    HWND  hwnd_;
+    HDC   hdc_;
+    HGLRC context_;
+#else
     // OpenGL objects
     Display*   display_;
     Window     root_window_;
     GLXContext context_;
+#endif
 
     // Shared objects between ILLIXR and the application (either gldemo or Monado)
     bool                      rendering_ready_;
