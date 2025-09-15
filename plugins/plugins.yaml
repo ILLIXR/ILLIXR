@@ -18,6 +18,14 @@ profiles:
       enable_verbose_errors: False
       enable_pre_sleep: False
 
+  - windows_test:
+    plugins: pose_lookup,timewarp_gl,gldemo
+    env_vars:
+      enable_offload: False
+      enable_alignment: False
+      enable_verbose_errors: False
+      enable_pre_sleep: False
+
 # Looked-up poses with native VK or Monado.
 
   - native_vk_lookup:
