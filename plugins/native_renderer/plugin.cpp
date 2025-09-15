@@ -528,8 +528,8 @@ void native_renderer::create_offscreen_target(vulkan::vk_image& image) {
     if (timewarp_->is_external() || app_->is_external()) {
         assert(offscreen_pool_ != VK_NULL_HANDLE);
         image.export_image_info = {VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_IMAGE_CREATE_INFO, nullptr,
-                                   export_dma_ ? VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT
-                                               : VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT};
+            export_dma_ ? static_cast<VkExternalMemoryHandleTypeFlags>(VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT)
+                        : static_cast<VkExternalMemoryHandleTypeFlags>(VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT)};
     }
 
     std::vector<uint32_t> queue_family_indices;
