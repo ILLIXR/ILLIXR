@@ -40,7 +40,7 @@ void spdlogger(const std::string& name, const char* log_level) {
     spdlog::register_logger(logger);
 }
 
-class runtime_impl : public runtime {
+class MY_EXPORT_API runtime_impl : public runtime {
 public:
     explicit runtime_impl() {
         spdlogger("illixr", std::getenv("ILLIXR_LOG_LEVEL")); // can't use switchboard interface here

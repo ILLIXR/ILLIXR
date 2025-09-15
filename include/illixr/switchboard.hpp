@@ -2,7 +2,9 @@
 
 #if defined(_WIN32) || defined(_WIN64)
 #include <cstdlib>
+#endif
 #include "concurrentqueue/blockingconcurrentqueue.hpp"
+#include "export.hpp"
 #include "managed_thread.hpp"
 #include "network/network_backend.hpp"
 #include "network/topic_config.hpp"
@@ -117,7 +119,7 @@ const record_header _switchboard_topic_stop_header{"switchboard_topic_stop",
  * });
  * \endcode
  */
-class switchboard : public phonebook::service {
+class MY_EXPORT_API switchboard : public phonebook::service {
 public:
     /**
      * @brief The type of shared pointer returned by switchboard.

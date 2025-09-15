@@ -1,5 +1,7 @@
 #pragma once
 
+#include "export.hpp"
+
 #include <cassert>
 #include <memory>
 #include <mutex>
@@ -70,7 +72,7 @@ namespace ILLIXR {
  * [1]: https://en.wikipedia.org/wiki/Service_locator_pattern
  * [2]: https://en.wikibooks.org/wiki/C%2B%2B_Programming/Classes/Abstract_Classes
  */
-class phonebook {
+class MY_EXPORT_API phonebook {
     /*
       Proof of thread-safety:
       - Since all instance members are private, acquiring a lock in each method implies the class is datarace-free.

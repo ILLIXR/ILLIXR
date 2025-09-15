@@ -10,7 +10,7 @@ namespace ILLIXR {
 
 typedef data_format::pose_type sensor_types;
 
-class pose_lookup_impl : public data_format::pose_prediction {
+class MY_EXPORT_API pose_lookup_impl : public data_format::pose_prediction {
 public:
     explicit pose_lookup_impl(const phonebook* const pb);
     data_format::fast_pose_type get_fast_pose() const override;

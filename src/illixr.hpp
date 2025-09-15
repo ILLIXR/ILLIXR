@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cxxopts.hpp"
+#include "illixr/export.hpp"
 #include "illixr/runtime.hpp"
 
 #include <atomic>
@@ -43,10 +44,10 @@ std::vector<T> operator+(const std::vector<T>& a, const std::vector<T>& b) {
     return c;
 }
 
-extern ILLIXR::runtime* runtime_;
+extern MY_EXPORT_API ILLIXR::runtime* runtime_;
 
 namespace ILLIXR {
-int run(const cxxopts::ParseResult& options);
+MY_EXPORT_API int run(const cxxopts::ParseResult& options);
 
 class cancellable_sleep {
 public:

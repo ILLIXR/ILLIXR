@@ -73,7 +73,7 @@ struct convert<ILLIXR::Dependency> {
 };
 } // namespace YAML
 
-ILLIXR::runtime* runtime_ = nullptr;
+MY_EXPORT_API ILLIXR::runtime* runtime_ = nullptr;
 
 using namespace ILLIXR;
 
