@@ -56,6 +56,15 @@ public:
     static dynamic_lib create(const std::string_view& path) {
         char* error;
 
+#if defined(_WIN32) || defined(_WIN64)
+        HMODULE handle = LoadLibrary(path.data());
+        if (!handle) {
+            DWORD error = GetLastError();
+            spdlog::get("illixr")->error(error);
+            throw std::runtime_error("LoadLibrary(\"" + std::string{path} +
+                                     "\"): " + std::to_string(error));
+        }
+#else
         // dlopen man page says that it can set errno sp
         RAC_ERRNO_MSG("dynamic_lib before dlopen");
         void* handle = dlopen(path.data(), RTLD_LAZY | RTLD_LOCAL);
@@ -66,16 +75,23 @@ public:
             throw std::runtime_error{"dlopen(\"" + std::string{path} +
                                      "\"): " + (error == nullptr ? "NULL" : std::string{error})};
         }
-
+#endif
         return dynamic_lib{
             void_ptr{handle,
                      [](void* handle) {
                          RAC_ERRNO();
+#if defined(_WIN32) || defined(_WIN64)
+                         int ret = FreeLibrary(static_cast<HMODULE>(handle));
+                         if (ret == 0) {
+                             DWORD error = GetLastError();
+                             const std::string msg_error{"dlclose(): " + std::to_string(error)};
 
+#else
                          char* error;
                          int   ret = dlclose(handle);
                          if ((error = dlerror()) || ret) {
                              const std::string msg_error{"dlclose(): " + (error == nullptr ? "NULL" : std::string{error})};
+#endif
                              spdlog::get("illixr")->error("[dynamic_lib] {}", msg_error);
                              throw std::runtime_error{msg_error};
                          }
@@ -87,11 +103,19 @@ public:
     const void* operator[](const std::string& symbol_name) const {
         RAC_ERRNO_MSG("dynamic_lib at start of operator[]");
 
+#if defined(_WIN32) || defined(_WIN64)
+        void* symbol = GetProcAddress(static_cast<HMODULE>(handle_.get()), symbol_name.c_str());
+        if (!symbol) {
+            DWORD error = GetLastError();
+            throw std::runtime_error{"dlsym(\"" + symbol_name + "\"): " + std::to_string(error)};
+        }
+#else
         char* error;
         void* symbol = dlsym(handle_.get(), symbol_name.c_str());
         if ((error = dlerror())) {
             throw std::runtime_error{"dlsym(\"" + symbol_name + "\"): " + std::string{error}};
         }
+#endif
         return symbol;
     }
 
