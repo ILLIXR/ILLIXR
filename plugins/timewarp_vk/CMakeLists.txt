@@ -75,9 +75,6 @@ if(TW_PLUGIN_DEFINITIONS)
 endif()
 
 add_dependencies(${PLUGIN_NAME} Timewarp_VK_Shaders)
-if(Vulkan_EXTERNAL)
-    add_dependencies(${PLUGIN_NAME} ${Vulkan_DEP_STR})
-endif()
 
 set_target_properties(${PLUGIN_NAME} PROPERTIES OUTPUT_NAME ${PLUGIN_NAME})
 
