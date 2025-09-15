@@ -16,7 +16,6 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "illixr/gl_util/lib/stb_image.h"
 #include "illixr/vk/display_provider.hpp"
-#include "illixr/vk/render_pass.hpp"
 #include "illixr/vk/vulkan_utils.hpp"
 
 #include <unordered_map>
