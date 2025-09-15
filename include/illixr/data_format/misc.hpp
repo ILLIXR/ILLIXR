@@ -77,11 +77,11 @@ struct [[maybe_unused]] image_handle : public switchboard::event {
 };
 
 struct [[maybe_unused]] hologram_input : public switchboard::event {
-    uint seq{};
+    unsigned int seq{};
 
     hologram_input() = default;
 
-    explicit hologram_input(uint seq_)
+    explicit hologram_input(unsigned int seq_)
         : seq{seq_} { }
 };
 

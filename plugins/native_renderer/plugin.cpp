@@ -287,7 +287,7 @@ void native_renderer::_p_one_iteration() {
 void native_renderer::create_swapchain_framebuffers() {
     swapchain_framebuffers_.resize(display_sink_->swapchain_image_views_.size());
 
-    for (ulong i = 0; i < display_sink_->swapchain_image_views_.size(); i++) {
+    for (auto i = 0; i < display_sink_->swapchain_image_views_.size(); i++) {
         std::array<VkImageView, 1> attachments = {display_sink_->swapchain_image_views_[i]};
 
         assert(timewarp_pass_ != VK_NULL_HANDLE);

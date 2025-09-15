@@ -191,7 +191,7 @@ void vkdemo::create_descriptor_set_layout() {
     VkDescriptorSetLayoutBinding sampled_image_layout_binding{
         2,                                      // binding
         VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,       // descriptorType
-        static_cast<uint>(texture_map_.size()), // descriptorCount
+        static_cast<unsigned int>(texture_map_.size()), // descriptorCount
         VK_SHADER_STAGE_FRAGMENT_BIT,           // stageFlags
         nullptr                                 // pImmutableSamplers
     };
