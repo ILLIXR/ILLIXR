@@ -8,6 +8,7 @@
 #if defined(_WIN32) || defined(_WIN64)
 #include <windows.h>
 #endif
+#include <GL/gl.h>
     #define FLOAT GLfloat
 #else
     #define FLOAT float
