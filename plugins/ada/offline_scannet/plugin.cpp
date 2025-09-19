@@ -11,20 +11,32 @@ using namespace ILLIXR::data_format;
 
 inline std::map<ullong, sensor_types> read_data(std::ifstream& gt_file, const std::string& file_name) {
     std::map<ullong, sensor_types> data;
-    std::string illixr_data = file_name.substr(0, file_name.find("poses/"));
-    ullong t;
-    ullong row_count = 0;
-    for (csv_iterator row{gt_file, 0}; row != csv_iterator{}; ++row) {
-        t = static_cast<ullong>(static_cast<double>(row_count) * 33.33);
+    //guard for npos
+    const auto p = file_name.rfind("poses/");
+    std::string illixr_data;
+    if(p == std::string::npos){
+        spdlog::get("illixr")->error("No pose is in the dataset.");
+        ILLIXR::abort();
+    }
+    else{
+        illixr_data = file_name.substr(0,p);
+    }
+
+    ullong idx = 0;
+    for (csv_iterator row{gt_file, 0}; row != csv_iterator{}; ++row, ++idx) {
         Eigen::Vector3f    pose_position{std::stof(row[1]), std::stof(row[2]), std::stof(row[3])};
         Eigen::Quaternionf pose_orientation{std::stof(row[7]), std::stof(row[4]), std::stof(row[5]), std::stof(row[6])};
-        data[t].pose = {time_point{}, pose_position, pose_orientation};
+        sensor_types each_datapoint;
+        each_datapoint.pose = {time_point{}, pose_position, pose_orientation};
         // Create lazy_load_image objects with loaded images instead of just storing paths
-        data[t].depth_cam = lazy_load_image{illixr_data + "/" + row[9]};
-        data[t].color_cam = lazy_load_image{illixr_data + "/" + row[11]};
-        row_count++;
+        each_datapoint.depth_cam = lazy_load_image{illixr_data + "/" + row[9]};
+        each_datapoint.color_cam = lazy_load_image{illixr_data + "/" + row[11]};
+        data.emplace(idx, std::move(each_datapoint));
     }
-    data[t].last_frame = true;
+    if (!data.empty()) {
+        auto last = data.rbegin();
+        last->second.last_frame = true;
+    }
     return data;
 }
 
@@ -82,7 +94,7 @@ void offline_scannet::_p_one_iteration() {
     if (cam_color.empty()) {
         spdlog::get("illixr")->warn("color not loaded");
     }
-
+    
     data_format::pose_type pose = {time_point{}, sensor_datum.pose.position, sensor_datum.pose.orientation};
 
     scannet_.put(scannet_.allocate<scene_recon_type>(
@@ -90,9 +102,13 @@ void offline_scannet::_p_one_iteration() {
 
     if (sensor_datum.last_frame) {
         printf("sending last frame %u\n", current_frame_count_);
+        spdlog::get("illixr")->info("finish sending the last frame");
+
     }
+    printf("frame %u\n", current_frame_count_);
     if (current_frame_count_ == (frame_count_ - 30)) {
         printf("reaching last 30 frame: %u\n", current_frame_count_);
+        spdlog::get("illixr")->info("reaching last 30 frame");
     }
 
     current_frame_count_++;
