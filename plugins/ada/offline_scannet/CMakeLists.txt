@@ -1,4 +1,4 @@
-set(PLUGIN_NAME plugin.offline_scannet${ILLIXR_BUILD_SUFFIX})
+set(PLUGIN_NAME plugin.ada.offline_scannet${ILLIXR_BUILD_SUFFIX})
 
 # this is for the conversion script
 find_package(Python3 REQUIRED COMPONENTS Interpreter)
