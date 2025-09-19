@@ -30,9 +30,9 @@ inline std::map<ullong, sensor_types> read_data(std::ifstream& gt_file, const st
 
 [[maybe_unused]] offline_scannet::offline_scannet(const std::string& name_, phonebook* pb_)
     : threadloop{name_, pb_}
+    , switchboard_{phonebook_->lookup_impl<switchboard>()}
     , sensor_data_{load_data<sensor_types>("poses", "offline_scannet", &read_data, switchboard_, "groundtruth.txt")}
     , sensor_data_it_{sensor_data_.cbegin()}
-    , switchboard_{phonebook_->lookup_impl<switchboard>()}
     , clock_{phonebook_->lookup_impl<relative_clock>()} // this is for RGBA
     , scannet_{switchboard_->get_writer<data_format::scene_recon_type>("ScanNet_Data")} {
     try {

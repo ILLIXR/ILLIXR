@@ -65,9 +65,9 @@ protected:
     void        _p_one_iteration() override;
 
 private:
+    const std::shared_ptr<switchboard>                 switchboard_;
     const std::map<ullong, sensor_types>               sensor_data_;
     std::map<ullong, sensor_types>::const_iterator     sensor_data_it_;
-    const std::shared_ptr<switchboard>                 switchboard_;
     std::shared_ptr<const relative_clock>              clock_;
     switchboard::writer<data_format::scene_recon_type> scannet_;
 
