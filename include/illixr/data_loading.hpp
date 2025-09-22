@@ -1,6 +1,5 @@
 #pragma once
 
-#include "illixr/csv_iterator.hpp"
 #include "illixr/data_format/misc.hpp"
 #include "illixr/error_util.hpp"
 #include "illixr/switchboard.hpp"

@@ -2,6 +2,8 @@
 
 #include "utils.hpp"
 
+#include "illixr/iterators/csv_iterator.hpp"
+
 #include <memory>
 #include <shared_mutex>
 

@@ -1,6 +1,7 @@
 #include "plugin.hpp"
 
 #include "illixr/data_loading.hpp"
+#include "illixr/iterators/ssv_iterator.hpp"
 
 #include <cassert>
 #include <ratio>
@@ -23,7 +24,7 @@ inline std::map<ullong, sensor_types> read_data(std::ifstream& gt_file, const st
     }
 
     ullong idx = 0;
-    for (csv_iterator row{gt_file, 0}; row != csv_iterator{}; ++row, ++idx) {
+    for (ssv_iterator row{gt_file, 0}; row != ssv_iterator{}; ++row, ++idx) {
         Eigen::Vector3f    pose_position{std::stof(row[1]), std::stof(row[2]), std::stof(row[3])};
         Eigen::Quaternionf pose_orientation{std::stof(row[7]), std::stof(row[4]), std::stof(row[5]), std::stof(row[6])};
         sensor_types each_datapoint;
@@ -94,7 +95,7 @@ void offline_scannet::_p_one_iteration() {
     if (cam_color.empty()) {
         spdlog::get("illixr")->warn("color not loaded");
     }
-    
+
     data_format::pose_type pose = {time_point{}, sensor_datum.pose.position, sensor_datum.pose.orientation};
 
     scannet_.put(scannet_.allocate<scene_recon_type>(

@@ -6,7 +6,8 @@ set(PLUGIN_NAME plugin.ground_truth_slam${ILLIXR_BUILD_SUFFIX})
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
             plugin.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/data_loading.hpp
-            ${CMAKE_SOURCE_DIR}/include/illixr/csv_iterator.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/iterators/csv_iterator.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/iterators/data_iterator.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/plugin.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/data_format/pose.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/data_format/imu.hpp
