@@ -28,7 +28,7 @@ static std::map<ullong, T> load_data(const std::string& spath, const std::string
     std::ifstream gt_file{illixr_data + subpath};
 
     if (!gt_file.good()) {
-        spdlog::get("illixr")->error("[{0}] ${ILLIXR_DATA}{1} ({2}{1}{3}) is not a good path", plugin_name, subpath, illixr_data, file_name);
+        spdlog::get("illixr")->error("[{0}] $ILLIXR_DATA{1} ({2}{1}{3}) is not a good path", plugin_name, subpath, illixr_data, file_name);
         ILLIXR::abort();
     }
 
