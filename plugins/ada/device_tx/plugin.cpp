@@ -1,10 +1,5 @@
 #include "plugin.hpp"
 
-#if __has_include("sr_input.pb.h")
-#include "sr_input.pb.h"
-#else
-#include "../proto/input_stub.hpp"
-#endif
 
 #include <spdlog/spdlog.h>
 #include <netinet/in.h>
@@ -15,7 +10,7 @@ using namespace ILLIXR::data_format;
 [[maybe_unused]] device_tx::device_tx(const std::string& name_, phonebook* pb_)
     : threadloop{name_, pb_}
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
-    , clock_{phonebook_->lookup_impl<relative_clock>()} // make sure you have the rigth IP address
+    , clock_{phonebook_->lookup_impl<relative_clock>()} // make sure you have the right IP address
     , stoplight_{phonebook_->lookup_impl<stoplight>()}
     , ada_writer_{switchboard_->get_network_writer<switchboard::event_wrapper<std::string>>(
           "ada_data", network::topic_config{.latency = std::chrono::milliseconds(0),
@@ -35,24 +30,20 @@ using namespace ILLIXR::data_format;
         spdlog::get("illixr")->error("[device_tx] Failed to open one or more log files.");
     }
 
-    const char* env_value   = std::getenv("frame_count_");
-    const char* env_value_1 = std::getenv("fps_");
+    const char* env_value   = std::getenv("FRAME_COUNT");
+    const char* env_value_1 = std::getenv("FPS");
 
     if (env_value != nullptr && env_value_1 != nullptr) {
         try {
             frame_count_ = std::stoul(env_value);
             fps_         = std::stoul(env_value_1);
         } catch (...) {
-            spdlog::get("illixr")->error("device_tx: invalid frame_count_/fps_; falling back to {} / {}", frame_count_, fps_);
+            spdlog::get("illixr")->error("device_tx: invalid FRAME_COUNT/FPS; falling back to {} / {}", frame_count_, fps_);
         }
     } else {
-        spdlog::get("illixr")->error("device_tx: frame_count_ or fps_ not set; using defaults {} / {}", frame_count_, fps_);
+        spdlog::get("illixr")->error("device_tx: FRAME_COUNT or FPS not set; using defaults {} / {}", frame_count_, fps_);
     }
-    spdlog::get("illixr")->info("device_tx: frame_count {} /fps {}", frame_count_, fps_);
-
-    send_buf_.reserve(1 << 20);
-    msb_bytes_.reserve(1 << 20);
-    lsb_bytes_.reserve(1 << 20);
+    spdlog::get("illixr")->info("device_tx: FRAME_COUNT {} /FPS {}", frame_count_, fps_);
 }
 
 void device_tx::start() {
@@ -92,8 +83,7 @@ void device_tx::send_scene_recon_data(switchboard::ptr<const scene_recon_type> d
     }
 
     // Build Payload
-    sr_input_proto::SRSendData outgoing_payload;
-    sr_input_proto::Pose*      pose = outgoing_payload.mutable_input_pose();
+    pose = outgoing_payload->mutable_input_pose();
 
     // pyh assign outgoing pose & image information
     pose->set_p_x(datum->pose.position.x());
@@ -108,8 +98,8 @@ void device_tx::send_scene_recon_data(switchboard::ptr<const scene_recon_type> d
     // Depth
     cv::Mat cur_depth = datum->depth;
 
-    sr_input_proto::ImgData* depth_img_msb = outgoing_payload.mutable_depth_img_msb_data();
-    sr_input_proto::ImgData* depth_img_lsb = outgoing_payload.mutable_depth_img_lsb_data();
+    sr_input_proto::ImgData* depth_img_msb = outgoing_payload->mutable_depth_img_msb_data();
+    sr_input_proto::ImgData* depth_img_lsb = outgoing_payload->mutable_depth_img_lsb_data();
 
     depth_img_msb->set_rows(cur_depth.rows);
     depth_img_msb->set_columns(cur_depth.cols);
@@ -152,18 +142,17 @@ void device_tx::send_scene_recon_data(switchboard::ptr<const scene_recon_type> d
     frame_send_timing_ << "Encode " << (static_cast<double>(duration_depth_encoding) / 1000.0) << " " << depth_img_msb->size()
                        << " " << depth_img_lsb->size() << "\n";
 
-    outgoing_payload.set_id(static_cast<int>(frame_id_));
-
-    // --- build [len][payload] directly into the reusable member buffer ---
-    const size_t payload_size = outgoing_payload.ByteSizeLong();
-    send_buf_.resize(payload_size);
-
+    outgoing_payload->set_id(static_cast<int>(frame_id_));
 
     // serialize protobuf directly into place (no temporary std::string)
-    outgoing_payload.SerializeToArray(send_buf_.data(), static_cast<int>(payload_size));
+    send_buf_ = outgoing_payload->SerializeAsString();
 
     // send
     ada_writer_.put(std::make_shared<switchboard::event_wrapper<std::string>>(send_buf_ + delimiter));
+    spdlog::get("illixr")->debug("Pose of frame {}: {}, {}, {}; {}, {}, {}, {}", frame_id_, outgoing_payload->input_pose().p_x(),
+                                 outgoing_payload->input_pose().p_y(), outgoing_payload->input_pose().p_z(),
+                                 outgoing_payload->input_pose().o_w(), outgoing_payload->input_pose().o_x(),
+                                 outgoing_payload->input_pose().o_y(), outgoing_payload->input_pose().o_z());
 
     {
         std::lock_guard<std::mutex> lk{mutex_};
@@ -181,13 +170,15 @@ void device_tx::send_scene_recon_data(switchboard::ptr<const scene_recon_type> d
         sending_timestamp_ << frame_id_ << " " << millis << "\n";
     }
 
-    if (frame_id_ == frame_count_) {
+    if (frame_id_ == frame_count_ - 1) {
         printf("finish sending\n");
         frame_send_timing_.flush();
         sending_timestamp_.flush();
         starting_timestamp_.flush();
     }
     frame_id_++;
+    delete outgoing_payload;
+    outgoing_payload = new sr_input_proto::SRSendData();
 }
 
 void device_tx::decompose_16bit_to_8bit(const cv::Mat& depth16, cv::Mat& out_msb, cv::Mat& out_lsb) {
@@ -208,6 +199,10 @@ void device_tx::decompose_16bit_to_8bit(const cv::Mat& depth16, cv::Mat& out_msb
             lsb[x]           = static_cast<uint8_t>(v & 0xFF);
         }
     }
+}
+
+device_tx::~device_tx() {
+    delete outgoing_payload;
 }
 
 PLUGIN_MAIN(device_tx)

@@ -5,7 +5,7 @@
 using namespace ILLIXR;
 using namespace ILLIXR::data_format;
 
-[[maybe_unused]] server_rx::server_rx(std::string name_, phonebook* pb_)
+[[maybe_unused]] server_rx::server_rx(const std::string& name_, phonebook* pb_)
     : threadloop{name_, pb_}
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
     , scannet_{switchboard_->get_writer<scene_recon_type>("ScanNet_Data")}
@@ -24,17 +24,17 @@ using namespace ILLIXR::data_format;
         spdlog::get("illixr")->error("[server_rx] Failed to open one or more log files.");
     }
 
-    rx_buf_.reserve(1u << 20);
-    const int W = 640, H = 480;
-    msb_buf_.create(H, W, CV_8UC1);
-    lsb_buf_.create(H, W, CV_8UC1);
-    hi16_.create(H, W, CV_16U);
-    lo16_.create(H, W, CV_16U);
-    depth16_.create(H, W, CV_16U);
+    /*const int width = 640;
+    const int height = 480;
+    msb_buf_.create(height, width, CV_8UC1);
+    lsb_buf_.create(height, width, CV_8UC1);
+    hi16_.create(height, width, CV_16U);
+    lo16_.create(height, width, CV_16U);
+    depth16_.create(height, width, CV_16U);*/
 
     cur_frame = 0;
 
-    const char* env_var_name   = "frame_count_";
+    const char* env_var_name   = "FRAME_COUNT";
     const char* env_value      = std::getenv(env_var_name);
     const char* env_var_name_1 = "FPS";
     const char* env_value_1    = std::getenv(env_var_name_1);
@@ -60,13 +60,17 @@ void server_rx::_p_one_iteration() {
         auto                   buffer_ptr   = ada_reader_.dequeue();
         std::string            buffer_str   = **buffer_ptr;
         std::string::size_type end_position = buffer_str.find(delimiter);
-
         sr_input_proto::SRSendData sr_input;
         bool                       success = sr_input.ParseFromString(buffer_str.substr(0, end_position));
         if (!success) {
             spdlog::get("illixr")->error("Error parsing the protobuf, vio input size = {}",
                                          buffer_str.size() - delimiter.size());
         } else {
+            spdlog::get("illixr")->debug("Pose of frame {}: {}, {}, {}; {}, {}, {}, {}", current_frame_no_,
+                                         sr_input.input_pose().p_x(),
+                                         sr_input.input_pose().p_y(), sr_input.input_pose().p_z(),
+                                         sr_input.input_pose().o_w(), sr_input.input_pose().o_x(),
+                                         sr_input.input_pose().o_y(), sr_input.input_pose().o_z());
             receive_sr_input(sr_input);
         }
     }
@@ -88,12 +92,12 @@ void server_rx::start() {
 
 void server_rx::receive_sr_input(const sr_input_proto::SRSendData& sr_input) {
 #ifndef NDEBUG
-    spdlog::get("illixr")->debug("Received SR input frame {}", frame_count_);
+    spdlog::get("illixr")->debug("Received SR input frame {}/{}", current_frame_no_, frame_count_-1);
 #endif
     auto start = std::chrono::high_resolution_clock::now();
     if (cur_frame % fps_ == 0 && cur_frame > 0) {
-        auto sinceEpoch = start.time_since_epoch();
-        auto millis     = std::chrono::duration_cast<std::chrono::milliseconds>(sinceEpoch).count();
+        auto since_epoch = start.time_since_epoch();
+        auto millis     = std::chrono::duration_cast<std::chrono::milliseconds>(since_epoch).count();
         receive_timestamp << cur_frame << " " << millis << "\n";
     }
     Eigen::Vector3f    incoming_position{static_cast<float>(sr_input.input_pose().p_x()),
@@ -106,8 +110,8 @@ void server_rx::receive_sr_input(const sr_input_proto::SRSendData& sr_input) {
     pose_type pose = {time_point{}, incoming_position, incoming_orientation};
 
     // Must do a deep copy of the received data (in the form of a string of bytes)
-    std::string& msb = const_cast<std::string&>(sr_input.depth_img_msb_data().img_data());
-    std::string& lsb = const_cast<std::string&>(sr_input.depth_img_lsb_data().img_data());
+    auto msb = const_cast<std::string&>(sr_input.depth_img_msb_data().img_data());
+    auto lsb = const_cast<std::string&>(sr_input.depth_img_lsb_data().img_data());
 
     receive_size << "MSB " << cur_frame << " " << sr_input.depth_img_msb_data().size() << "\n";
     receive_size << "LSB " << cur_frame << " " << sr_input.depth_img_lsb_data().size() << "\n";
@@ -127,7 +131,7 @@ void server_rx::receive_sr_input(const sr_input_proto::SRSendData& sr_input) {
     auto depth_decoding_end = std::chrono::high_resolution_clock::now();
     auto duration_depth_decoding =
         std::chrono::duration_cast<std::chrono::microseconds>(depth_decoding_end - depth_decoding_start).count();
-    double duration_depth_decoding_ms = duration_depth_decoding / 1000.0;
+    double duration_depth_decoding_ms = static_cast<double>(duration_depth_decoding) / 1000.0;
     // printf("DepthDecode %.3f\n", duration_depth_decoding_ms);
     receive_time << "DepthDecode " << cur_frame << " " << duration_depth_decoding_ms << "\n";
 
@@ -137,7 +141,7 @@ void server_rx::receive_sr_input(const sr_input_proto::SRSendData& sr_input) {
     cv::bitwise_or(hi16_, lo16_, depth16_);
     auto   combine_end         = std::chrono::high_resolution_clock::now();
     auto   duration_combine    = std::chrono::duration_cast<std::chrono::microseconds>(combine_end - combine_start).count();
-    double duration_combine_ms = duration_combine / 1000.0;
+    double duration_combine_ms = static_cast<double>(duration_combine) / 1000.0;
     receive_time << "Combine " << cur_frame << " " << duration_combine_ms << "\n";
 
     // pyh unillixr to explicit save the decoded message (for depth image distoration evaluation)
@@ -153,7 +157,7 @@ void server_rx::receive_sr_input(const sr_input_proto::SRSendData& sr_input) {
 
     auto end         = std::chrono::high_resolution_clock::now();
     auto duration    = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-    auto duration_ms = duration / 1000.0;
+    auto duration_ms = static_cast<double>(duration) / 1000.0;
     receive_time << "Full " << cur_frame << " " << duration_ms << "\n";
     cur_frame++;
     if (cur_frame == frame_count_) {
@@ -161,6 +165,7 @@ void server_rx::receive_sr_input(const sr_input_proto::SRSendData& sr_input) {
         receive_size.flush();
         receive_timestamp.flush();
     }
+    current_frame_no_++;
 }
 
 PLUGIN_MAIN(server_rx)

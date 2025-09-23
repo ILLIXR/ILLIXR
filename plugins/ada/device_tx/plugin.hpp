@@ -10,6 +10,12 @@
 #include "illixr/threadloop.hpp"
 #include "video_encoder.hpp"
 
+#if __has_include("sr_input.pb.h")
+    #include "sr_input.pb.h"
+#else
+    #include "../proto/input_stub.hpp"
+#endif
+
 #include <filesystem>
 #include <string>
 
@@ -32,6 +38,7 @@ public:
     void start() override;
 
     void send_scene_recon_data(switchboard::ptr<const data_format::scene_recon_type> datum);
+    ~device_tx() override;
 
 protected:
     void _p_one_iteration() override;
@@ -51,7 +58,9 @@ private:
     std::ofstream     starting_timestamp_;
     std::ofstream     frame_send_timing_;
 
-    unsigned frame_id_{0};
+    unsigned                    frame_id_{0};
+    sr_input_proto::SRSendData* outgoing_payload = new sr_input_proto::SRSendData();
+    sr_input_proto::Pose*       pose             = nullptr;
 
     std::string send_buf_;
     std::string msb_bytes_;

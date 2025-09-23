@@ -51,13 +51,11 @@ void server_tx::send_vb_list(switchboard::ptr<const vb_type> datum) {
     }
 
     const size_t payload_size = server_outgoing_vb_payload->ByteSizeLong();
-    uint32_t     len_net      = htonl(static_cast<uint32_t>(payload_size));
 
-    std::string buffer;
-    buffer.resize(4 + payload_size);
-    std::memcpy(buffer.data(), &len_net, 4);
-    server_outgoing_vb_payload->SerializeToArray(buffer.data() + 4, static_cast<int>(payload_size));
-    ada_writer_.put(std::make_shared<switchboard::event_wrapper<std::string>>(buffer + delimiter));
+    std::string buffer = std::to_string(htonl(static_cast<uint32_t>(payload_size)));
+
+    buffer += server_outgoing_vb_payload->SerializeAsString() + delimiter;
+    ada_writer_.put(std::make_shared<switchboard::event_wrapper<std::string>>(buffer));
 
     delete server_outgoing_vb_payload;
 

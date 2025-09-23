@@ -3,7 +3,7 @@ set(PLUGIN_NAME plugin.ada.offline_scannet${ILLIXR_BUILD_SUFFIX})
 # this is for the conversion script
 find_package(Python3 REQUIRED COMPONENTS Interpreter)
 
-add_library(${PLUGIN_NAME}
+add_library(${PLUGIN_NAME} SHARED
             plugin.cpp
             plugin.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/data_loading.hpp

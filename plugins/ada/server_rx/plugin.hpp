@@ -22,7 +22,7 @@ class server_rx
     : public threadloop
     , public device_to_server_base {
 public:
-    [[maybe_unused]] server_rx(std::string name_, phonebook* pb_);
+    [[maybe_unused]] server_rx(const std::string& name_, phonebook* pb_);
 
     skip_option _p_should_skip() override {
         return skip_option::run;
@@ -30,7 +30,7 @@ public:
 
     void _p_one_iteration() override;
 
-    ~server_rx() {
+    ~server_rx() override {
         receive_time.flush();
         receive_time.close();
         receive_size.flush();
@@ -66,6 +66,7 @@ private:
     cv::Mat depth16_; // CV_16U,  480x640
 
     std::vector<uint8_t> rx_buf_;
+    unsigned int current_frame_no_ = 0;
 };
 
 } // namespace ILLIXR
