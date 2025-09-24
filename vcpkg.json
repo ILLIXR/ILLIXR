@@ -64,7 +64,9 @@
     },
     {
       "name": "libxrandr"
+    },
+    {
+      "name": "protobuf"
     }
   ]
-
 }
