@@ -59,7 +59,7 @@ target_link_directories(plugin.main${ILLIXR_BUILD_SUFFIX} PUBLIC
 )
 target_link_libraries(plugin.main${ILLIXR_BUILD_SUFFIX} PUBLIC
                       Threads::Threads
-                      ${yaml-cpp_LIBRARIES}
+                      yaml-cpp::yaml-cpp 
                       spdlog::spdlog
                       ${SQLite3_LIBRARIES}
                       Boost::serialization
