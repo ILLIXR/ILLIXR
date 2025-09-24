@@ -19,7 +19,7 @@ namespace ILLIXR {
  * [1]: https://en.cppreference.com/w/cpp/chrono/time_point
  * [2]: https://en.cppreference.com/w/cpp/named_req/Clock
  */
-using clock_rep_      = long;
+using clock_rep_      = long long;
 using clock_period_   = std::nano;
 using clock_duration_ = std::chrono::duration<clock_rep_, clock_period_>;
 
