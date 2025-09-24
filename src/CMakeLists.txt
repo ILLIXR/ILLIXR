@@ -25,6 +25,7 @@ add_library(plugin.main${ILLIXR_BUILD_SUFFIX} SHARED
             src/runtime_impl.cpp
             src/illixr.hpp
             src/cxxopts.hpp
+            src/vulkan_display.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/runtime.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/phonebook.hpp
             ${VULKAN_FILES}
