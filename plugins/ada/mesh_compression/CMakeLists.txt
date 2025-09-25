@@ -17,5 +17,5 @@ target_include_directories(${PLUGIN_NAME} PUBLIC ${CMAKE_INSTALL_PREFIX}/include
 target_link_libraries(${PLUGIN_NAME} PUBLIC draco_illixr::draco spdlog::spdlog)
 
 if (Draco_EXTERNAL)
-    add_dependencies(${PLUGIN_NAME} Draco_DEP_STR)
+    add_dependencies(${PLUGIN_NAME} ${Draco_DEP_STR})
 endif()

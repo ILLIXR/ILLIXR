@@ -11,11 +11,11 @@ if (NOT draco_illixr_FOUND)
     add_library(draco_illixr::draco STATIC IMPORTED)
     set_target_properties(draco_illixr::draco PROPERTIES
                           INTERFACE_COMPILE_FEATURES "cxx_std_11"
-                          INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include"
+                          INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/include"
     )
     set_target_properties(draco_illixr::draco PROPERTIES
                           IMPORTED_LINK_INTERFACE_LANGUAGES "CXX"
-                          IMPORTED_LOCATION "/home/friedel/ilxr-c/lib/libdraco_illixr.a"
+                          IMPORTED_LOCATION "${CMAKE_INSTALL_PREFIX}/lib/libdraco_illixr.a"
     )
 
 else()
