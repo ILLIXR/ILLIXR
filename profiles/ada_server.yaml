@@ -1,0 +1,7 @@
+# This file was auto generated, take caution if manually editing.
+plugins: ada.infinitam,tcp_network_backend,ada.server_rx,ada.server_tx
+env_vars:
+  ENABLE_OFFLOAD: false
+  ENABLE_ALIGNMENT: false
+  ENABLE_VERBOSE_ERRORS: false
+  ENABLE_PRE_SLEEP: false

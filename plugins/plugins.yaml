@@ -199,3 +199,19 @@ profiles:
       enable_alignment: false
       enable_verbose_errors: false
       enable_pre_sleep: false
+
+  - ada_device:
+    plugins: ada.offline_scannet,tcp_netwaork_backend,ada.device_rx,ada.device_tx
+    env_vars:
+      enable_offload: false
+      enable_alignment: false
+      enable_verbose_errors: false
+      enable_pre_sleep: false
+
+  - ada_server:
+    plugins: ada.infinitam,tcp_network_backend,ada.server_rx,ada.server_tx
+    env_vars:
+      enable_offload: false
+      enable_alignment: false
+      enable_verbose_errors: false
+      enable_pre_sleep: false
