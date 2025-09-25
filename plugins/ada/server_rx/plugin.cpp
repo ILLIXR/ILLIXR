@@ -5,6 +5,43 @@
 using namespace ILLIXR;
 using namespace ILLIXR::data_format;
 
+namespace {
+bool write16BitPGM(const cv::Mat& image, const std::string& filename) {
+    // Check if the input image is 16-bit single-channel
+    if (image.empty() || image.type() != CV_16U) {
+        std::cerr << "Input image must be non-empty and 16-bit single-channel." << std::endl;
+        return false;
+    }
+
+    std::ofstream file(filename, std::ios::binary | std::ios::out);
+    if (!file.is_open()) {
+        std::cerr << "Failed to open file: " << filename << std::endl;
+        return false;
+    }
+
+    // PGM header for a binary P5 type, 16-bit depth
+    file << "P5\n";
+    file << image.cols << " " << image.rows << "\n";
+    file << "65535\n"; // Maximum value for 16-bit depth
+
+    // Writing the image data
+    for (int y = 0; y < image.rows; ++y) {
+        for (int x = 0; x < image.cols; ++x) {
+            uint16_t pixelValue = image.at<uint16_t>(y, x);
+
+            // Write the pixel value as big endian
+            char highByte = pixelValue >> 8;
+            char lowByte = pixelValue & 0xFF;
+            file.write(&highByte, 1);
+            file.write(&lowByte, 1);
+        }
+    }
+
+    file.close();
+    return true;
+}
+}
+
 [[maybe_unused]] server_rx::server_rx(const std::string& name_, phonebook* pb_)
     : threadloop{name_, pb_}
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
@@ -145,12 +182,12 @@ void server_rx::receive_sr_input(const sr_input_proto::SRSendData& sr_input) {
     receive_time << "Combine " << cur_frame << " " << duration_combine_ms << "\n";
 
     // pyh unillixr to explicit save the decoded message (for depth image distoration evaluation)
-    // std::string depth_str = std::to_string(cur_frame) + ".pgm";
-    // std::string depth_str_MSB = std::to_string(cur_frame) + "_depth_MSB.png";
-    // std::string depth_str_LSB = std::to_string(cur_frame) + "_depth_LSB.png";
-    // cv::imwrite(depth_str_LSB, test_depth_LSB);
-    // cv::imwrite(depth_str_MSB, test_depth_MSB);
-    // write16BitPGM(test_depth, depth_str);
+    std::string depth_str = std::to_string(cur_frame) + ".pgm";
+    //std::string depth_str_MSB = std::to_string(cur_frame) + "_depth_MSB.png";
+    //std::string depth_str_LSB = std::to_string(cur_frame) + "_depth_LSB.png";
+    //cv::imwrite(depth_str_LSB, test_depth_LSB);
+    //cv::imwrite(depth_str_MSB, test_depth_MSB);
+    write16BitPGM(depth16_, depth_str);
 
     cv::Mat rgb; // pyh dummy here
     scannet_.put(scannet_.allocate<scene_recon_type>(scene_recon_type{time_point{}, pose, depth16_.clone(), rgb, false}));
