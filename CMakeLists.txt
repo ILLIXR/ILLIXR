@@ -61,7 +61,7 @@ else()
     set(PACKAGE_VERSION "${PACKAGE_VERSION_MAJOR}.${PACKAGE_VERSION_MINOR}.${PACKAGE_VERSION_PATCH}")
 endif()
 
-include(ExternalProject)
+include(FetchContent)
 include(CMakeDependentOption)
 
 project(ILLIXR VERSION 3.2.0)
