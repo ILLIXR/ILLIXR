@@ -22,7 +22,15 @@
     },
     {
       "name": "opencv",
-      "features": ["eigen", "fs", "opengl", "thread", "jpeg", "png", "tiff"]
+      "features": [
+        "eigen",
+        "fs",
+        "opengl",
+        "thread",
+        "jpeg",
+        "png",
+        "tiff"
+      ]
     },
     {
       "name": "sqlite3"
@@ -47,14 +55,18 @@
     },
     {
       "name": "glslang",
-      "features": ["tools"]
+      "features": [
+        "tools"
+      ]
     },
     {
       "name": "spirv-headers"
     },
     {
       "name": "spirv-tools",
-      "features": ["tools"]
+      "features": [
+        "tools"
+      ]
     },
     {
       "name": "vulkan-sdk-components"
@@ -67,6 +79,28 @@
     },
     {
       "name": "protobuf"
+    },
+    {
+      "name": "openxr-loader",
+      "features": [
+        "vulkan"
+      ]
+    },
+    {
+      "name": "sdl2",
+      "features": [
+        "vulkan"
+      ]
+    },
+    {
+      "name": "pkgconf"
+    },
+    {
+      "name": "libusb"
+    },
+    {
+      "name": "libxrandr"
     }
-  ]
+  ],
+  "builtin-baseline": "e6e4bc74aaf5c63dfc358810594f662f7e9bc4d4"
 }
