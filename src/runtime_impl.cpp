@@ -192,7 +192,7 @@ private:
     std::vector<std::shared_ptr<plugin>> plugins_;
 };
 
-extern "C" [[maybe_unused]] runtime* runtime_factory() {
+extern "C" [[maybe_unused]] MY_EXPORT_API runtime* runtime_factory() {
     RAC_ERRNO_MSG("runtime_impl before creating the runtime");
     return new runtime_impl{};
 }
