@@ -31,13 +31,12 @@ void video_encoder::create_pipelines() {
     // g_object_set(G_OBJECT(encoder_img1), "bitrate", std::stoi(sb->get_env("ILLIXR_BITRATE")), nullptr, 10);
 
     // set bitrate from defined variables
-    g_object_set(G_OBJECT(encoder_img0), "bitrate", ILLIXR_BITRATE, nullptr);
-#if defined VIO
     g_object_set(G_OBJECT(encoder_img1), "bitrate", ILLIXR_BITRATE, nullptr);
-        g_object_set(G_OBJECT(appsrc_img0_), "stream-type", 0, "format", GST_FORMAT_BYTES, "is-live", TRUE, nullptr);
-        g_object_set(G_OBJECT(appsrc_img1_), "stream-type", 0, "format", GST_FORMAT_BYTES, "is-live", TRUE, nullptr);
+#if defined VIO
+    g_object_set(G_OBJECT(encoder_img0), "bitrate", ILLIXR_BITRATE, nullptr);
+    g_object_set(G_OBJECT(appsrc_img0_), "stream-type", 0, "format", GST_FORMAT_BYTES, "is-live", TRUE, nullptr);
+    g_object_set(G_OBJECT(appsrc_img1_), "stream-type", 0, "format", GST_FORMAT_BYTES, "is-live", TRUE, nullptr);
 #elif defined ADA
-
     // this is for 4(lossless setting) 2(default)
     g_object_set(G_OBJECT(encoder_img0), "tuning-info-id", 4, nullptr);
     g_object_set(G_OBJECT(encoder_img1), "tuning-info-id", 2, nullptr);
