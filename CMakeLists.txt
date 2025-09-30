@@ -87,7 +87,8 @@ endif()
 set(OPENXR_RUNTIME "")
 
 # set the CMake search path to include the local files
-set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH})
+list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_BINARY_DIR}")
 option(COLOR_OUTPUT "Produce color output to the screen" ON)
 option(DOWNLOAD_DATA_FILE "The data file to get" OFF)
 option(BUILD_OXR_INTERFACE "Build the OpenXR interface (hand tracking only)" OFF)
