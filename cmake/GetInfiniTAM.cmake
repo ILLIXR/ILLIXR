@@ -3,7 +3,7 @@ if (NOT Infinitam_FOUND)
     message(STATUS "Downloading InfiniTAM")
     FetchContent_Declare(InfiniTAM_ext
                          GIT_REPOSITORY https://github.com/ILLIXR/InfiniTAM.git
-                         GIT_TAG 40ec1705f169b2eddb97e4c2d983d099518ef8bc
+                         GIT_TAG 280ac7619167bc949173aa67fd8c29c057802ebe
     )
     set(ILLIXR_ROOT ${CMAKE_SOURCE_DIR}/include)
 
