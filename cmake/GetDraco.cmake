@@ -9,7 +9,7 @@ if (NOT draco_illixr_FOUND)
     set(CMAKE_BUILD_TYPE=Release)
     FetchContent_MakeAvailable(Draco_ILLIXR)
     set(CMAKE_BUILD_TYPE ${TEMP_BUILD_TYPE})
-    uset(DRACO_TRANSCODER_SUPPORT)
+    unset(DRACO_TRANSCODER_SUPPORT)
      	       
 
 #[[
