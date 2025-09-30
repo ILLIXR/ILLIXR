@@ -1,3 +1,5 @@
+cmake_minimum_required(VERSION 3.24)
+
 find_package(draco_illixr QUIET CONFIG)
 if (NOT draco_illixr_FOUND)
     message(STATUS "Draco not found, downloading.")
