@@ -1,11 +1,18 @@
 find_package(draco_illixr QUIET CONFIG)
 if (NOT draco_illixr_FOUND)
-    externalproject_add(Draco_ext
-                        GIT_REPOSITORY https://github.com/ILLIXR/draco.git
-                        GIT_TAG bba2a71ae3d46631a3b6d969e60730d570e904aa
-                        PREFIX ${CMAKE_BINARY_DIR}/_deps/draco
-                        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DDRACO_TRANSCODER_SUPPORTED=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=${CLANG_CXX_EXE} -DCMAKE_C_COMPILER=${CLANG_EXE}
+    FetchContent_Declare(Draco_ILLIXR
+                         GIT_REPOSITORY https://github.com/ILLIXR/draco.git
+                         GIT_TAG bba2a71ae3d46631a3b6d969e60730d570e904aa
     )
+    set(TEMP_BUILD_TYPE ${CMAKE_BUILD_TYPE})
+    set(DRACO_TRANSCODER_SUPPORTED ON)
+    set(CMAKE_BUILD_TYPE=Release)
+    FetchContent_MakeAvailable(Draco_ILLIXR)
+    set(CMAKE_BUILD_TYPE ${TEMP_BUILD_TYPE})
+    uset(DRACO_TRANSCODER_SUPPORT)
+     	       
+
+#[[
     set(Draco_DEP_STR Draco_ext)
     set(Draco_EXTERNAL Yes)
     add_library(draco_illixr::draco STATIC IMPORTED)
@@ -17,7 +24,7 @@ if (NOT draco_illixr_FOUND)
                           IMPORTED_LINK_INTERFACE_LANGUAGES "CXX"
                           IMPORTED_LOCATION "${CMAKE_INSTALL_PREFIX}/lib/libdraco_illixr.a"
     )
-
+]]
 else()
     message(STATUS "  Found draco_illixr, ${draco_illixr_VERSION}")
 endif()

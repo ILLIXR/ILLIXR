@@ -14,6 +14,8 @@ cmake_minimum_required(VERSION 3.22)
 # clang is now a required dependency
 find_program(CLANG_EXE clang REQUIRED)
 find_program(CLANG_CXX_EXE clang++ REQUIRED NAMES clang-cpp clang++)
+#find_program(CLANG_EXE clang-11 REQUIRED)
+#find_program(CLANG_CXX_EXE clang++-11 REQUIRED NAMES clang-cpp-11 clang++-11)
 
 set(CMAKE_C_COMPILER ${CLANG_EXE} CACHE FILEPATH "" FORCE)
 set(CMAKE_CXX_COMPILER ${CLANG_CXX_EXE} CACHE FILEPATH "" FORCE)
@@ -59,6 +61,7 @@ else()
 endif()
 
 include(ExternalProject)
+include(FetchContent)
 include(CMakeDependentOption)
 
 project(ILLIXR VERSION 3.2.0)
