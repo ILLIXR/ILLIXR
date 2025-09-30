@@ -32,4 +32,10 @@ if (Draco_EXTERNAL)
     add_dependencies(${PLUGIN_NAME} ${Draco_DEP_STR})
 endif()
 
+if(TARGET draco_static)
+    add_dependencies(${PLUGIN_NAME} draco_static)
+    target_include_directories(${PLUGIN_NAME} PUBLIC ${draco_illixr_SOURCE_DIR}/src ${CMAKE_BINARY_DIR})
+endif()
+
+
 install(TARGETS ${PLUGIN_NAME} DESTINATION lib)

@@ -16,6 +16,9 @@ add_library(${PLUGIN_NAME} SHARED
 target_include_directories(${PLUGIN_NAME} PUBLIC ${CMAKE_INSTALL_PREFIX}/include)
 target_link_libraries(${PLUGIN_NAME} PUBLIC draco_illixr::draco spdlog::spdlog)
 
-if (Draco_EXTERNAL)
-    add_dependencies(${PLUGIN_NAME} ${Draco_DEP_STR})
+if(TARGET draco_static)
+    add_dependencies(${PLUGIN_NAME} draco_static)
+    target_include_directories(${PLUGIN_NAME} PUBLIC ${draco_illixr_SOURCE_DIR}/src ${CMAKE_BINARY_DIR})
 endif()
+
+install(TARGETS ${PLUGIN_NAME} DESTINATION lib)

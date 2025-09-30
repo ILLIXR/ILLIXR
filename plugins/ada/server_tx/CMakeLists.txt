@@ -32,4 +32,9 @@ target_link_libraries(${PLUGIN_NAME}
                       draco_illixr::draco
 )
 
+if(TARGET draco_static)
+    add_dependencies(${PLUGIN_NAME} draco_static)
+    target_include_directories(${PLUGIN_NAME} PUBLIC ${draco_illixr_SOURCE_DIR}/src ${CMAKE_BINARY_DIR})
+endif()
+
 install(TARGETS ${PLUGIN_NAME} DESTINATION lib)
