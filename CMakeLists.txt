@@ -89,7 +89,7 @@ set(OPENXR_RUNTIME "")
 # set the CMake search path to include the local files
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH})
 option(COLOR_OUTPUT "Produce color output to the screen" ON)
-option(DATA_FILE "The data file to get" ON)
+option(DOWNLOAD_DATA_FILE "The data file to get" OFF)
 option(BUILD_OXR_INTERFACE "Build the OpenXR interface (hand tracking only)" OFF)
 cmake_dependent_option(BUILD_OXR_TEST "Build the  test for the OpenXr interface (hand tracking only)" OFF BUILD_OXR_INTERFACE OFF)
 option(BUILD_ZED_CAPTURE "Build the ZED capture program" OFF)
@@ -308,7 +308,7 @@ set(CURRENT_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}" CACHE INTERNAL "")
 
 
 # deal with the data file if there is one
-if(DATA_FILE)
+if(DOWNLOAD_DATA_FILE AND DATA_FILE)
     string(REGEX MATCH "^http" HAVE_MATCH ${DATA_FILE})
     if(NOT HAVE_MATCH)
         message("Data file appears local")
