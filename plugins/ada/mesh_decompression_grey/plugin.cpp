@@ -34,7 +34,7 @@ void decompress(const uint idx, std::shared_ptr<switchboard::writer<draco_type>>
     // pyh: prepare output directory & open latency log
     decoding_latency.open(data_path_ + "/decoding_latency_" + std::to_string(idx) + ".csv", std::ios::out);
     if (!decoding_latency.is_open()) {
-        spdlog::get("illixr")->error("Failed to open decompression latency files {}", data_path_ + "/decoding_latency_" + std::to_string(idx) + ".csv");
+        spdlog::get("illixr")->error("Failed to open decompression latency file {}", data_path_ + "/decoding_latency_" + std::to_string(idx) + ".csv");
     }
     while (true) {
         if (queue_[idx].wait_dequeue_timed(datum, std::chrono::milliseconds(2))) {
