@@ -6,7 +6,7 @@
 #include <spdlog/spdlog.h>
 
 // for printing out mesh
-// #define VERIFY
+#define VERIFY
 
 // new slim scene management
 using namespace ILLIXR;
@@ -165,7 +165,7 @@ void scene_management::process_inactive_frame(switchboard::ptr<const draco_type>
 
 #if defined VERIFY
         if (datum->frame_id == ((frame_count_ / fps_) - 1)) {
-            grid_.print_mesh_as_OBJ(datum->frame_id, 1, "");
+            grid_.print_mesh_as_obj(datum->frame_id, 1, "");
         }
 #endif
         // if a clean request received while the previous frame is processing need to clean it

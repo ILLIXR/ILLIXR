@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.22)
 
-set(PLUGIN_NAME plugin.ada.mesh_decompression_depthonly${ILLIXR_BUILD_SUFFIX})
+set(PLUGIN_NAME plugin.ada.mesh_decompression_grey${ILLIXR_BUILD_SUFFIX})
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.16)
 
 set(CMAKE_CXX_STANDARD 17)
 
-set(PLUGIN_NAME plugin.scene_management${ILLIXR_BUILD_SUFFIX})
+set(PLUGIN_NAME plugin.ada.scene_management${ILLIXR_BUILD_SUFFIX})
 
 # Find OpenMP
 find_package(OpenMP REQUIRED)
