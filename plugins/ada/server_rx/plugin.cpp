@@ -6,7 +6,7 @@ using namespace ILLIXR;
 using namespace ILLIXR::data_format;
 
 namespace {
-bool write16BitPGM(const cv::Mat& image, const std::string& filename) {
+[[maybe_unused]] bool write_16_bit_pgm(const cv::Mat& image, const std::string& filename) {
     // Check if the input image is 16-bit single-channel
     if (image.empty() || image.type() != CV_16U) {
         std::cerr << "Input image must be non-empty and 16-bit single-channel." << std::endl;
@@ -187,7 +187,7 @@ void server_rx::receive_sr_input(const sr_input_proto::SRSendData& sr_input) {
     //std::string depth_str_LSB = std::to_string(cur_frame) + "_depth_LSB.png";
     //cv::imwrite(depth_str_LSB, test_depth_LSB);
     //cv::imwrite(depth_str_MSB, test_depth_MSB);
-    write16BitPGM(depth16_, depth_str);
+    //write_16_bit_pgm(depth16_, depth_str);
 
     cv::Mat rgb; // pyh dummy here
     scannet_.put(scannet_.allocate<scene_recon_type>(scene_recon_type{time_point{}, pose, depth16_.clone(), rgb, false}));
