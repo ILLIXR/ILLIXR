@@ -49,10 +49,12 @@ threadloop::skip_option device_rx::_p_should_skip() {
 
 void device_rx::_p_one_iteration() {
     if (sr_reader_.size() > 0) {
+        spdlog::get("illixr")->debug("device_rx sr packet");
         auto                   buffer_ptr = sr_reader_.dequeue();
         std::string            buffer_str = **buffer_ptr;
         std::string::size_type end        = buffer_str.find(delimiter_);
-
+	spdlog::get("illixr")->debug("   Buffer size: {},   end: {}", buffer_str.size(), end);
+	spdlog::get("illixr")->debug("   Buffer: {}", buffer_str);
         sr_output_proto::CompressMeshData sr_output;
         if (sr_output.ParseFromString(buffer_str.substr(0, end))) {
             receive_sr_output(sr_output);
