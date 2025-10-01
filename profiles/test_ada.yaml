@@ -1,5 +1,5 @@
 # This file was auto generated, take caution if manually editing.
-plugins: ada.infinitam,ada.scene_management,ada.offline_scannet,ada.device_rx,tcp_network_backend,ada.device_tx,ada.mesh_compression,ada.mesh_decompression,ada.server_rx,ada.server_tx
+plugins: ada.infinitam,ada.scene_management,ada.offline_scannet,ada.device_rx,tcp_network_backend,ada.device_tx,ada.mesh_compression,ada.mesh_decompression_grey,ada.server_rx,ada.server_tx
 env_vars:
   ENABLE_OFFLOAD: false
   ENABLE_ALIGNMENT: false
