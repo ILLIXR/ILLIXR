@@ -28,9 +28,7 @@ add_library(${PLUGIN_NAME} SHARED
 # Link OpenMP
 target_link_libraries(${PLUGIN_NAME} OpenMP::OpenMP_CXX draco_illixr::draco ${OpenCV_LIBRARIES})
 target_include_directories(${PLUGIN_NAME} PRIVATE ${OpenCV_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR}/include)
-if (Draco_EXTERNAL)
-    add_dependencies(${PLUGIN_NAME} ${Draco_DEP_STR})
-endif()
+
 
 if(TARGET draco_static)
     add_dependencies(${PLUGIN_NAME} draco_static)

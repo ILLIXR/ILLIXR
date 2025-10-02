@@ -174,7 +174,7 @@ void server_rx::receive_sr_input(const sr_input_proto::SRSendData& sr_input) {
 
     auto combine_start = std::chrono::high_resolution_clock::now();
     msb_buf_.convertTo(hi16_, CV_16U, 256.0);
-    lsb_buf_.convertTo(lo16_, CV_16U, 256.0);
+    lsb_buf_.convertTo(lo16_, CV_16U);
     cv::bitwise_or(hi16_, lo16_, depth16_);
     auto   combine_end         = std::chrono::high_resolution_clock::now();
     auto   duration_combine    = std::chrono::duration_cast<std::chrono::microseconds>(combine_end - combine_start).count();
