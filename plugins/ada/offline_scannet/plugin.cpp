@@ -74,6 +74,7 @@ threadloop::skip_option offline_scannet::_p_should_skip() {
     }
 }
 
+
 void offline_scannet::_p_one_iteration() {
     assert(sensor_data_it_ != sensor_data_.end());
 
@@ -98,6 +99,15 @@ void offline_scannet::_p_one_iteration() {
 
     data_format::pose_type pose = {time_point{}, sensor_datum.pose.position, sensor_datum.pose.orientation};
 
+    //pyh test to verify the depth is loaded correctly
+    //pyh verified that images and poses are load correctly
+    // printf("frame %u\n", current_frame_count_);
+    // std::string depth_str = std::to_string(current_frame_count_) + ".pgm";
+    // write_16bit_pgm(cam_depth, depth_str);
+    // printf("pose at frame %u: p(%f,%f,%f), o(%f,%f,%f,%f)\n", current_frame_count_, pose.position.x(),
+    //        pose.position.y(), pose.position.z(), pose.orientation.w(), pose.orientation.x(),
+    //        pose.orientation.y(), pose.orientation.z());
+
     scannet_.put(scannet_.allocate<scene_recon_type>(
         scene_recon_type{time_point{}, pose, cam_depth, cam_color, sensor_datum.last_frame}));
 
@@ -106,7 +116,7 @@ void offline_scannet::_p_one_iteration() {
         spdlog::get("illixr")->info("finish sending the last frame");
 
     }
-    printf("frame %u\n", current_frame_count_);
+
     if (current_frame_count_ == (frame_count_ - 30)) {
         printf("reaching last 30 frame: %u\n", current_frame_count_);
         spdlog::get("illixr")->info("reaching last 30 frame");
