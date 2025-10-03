@@ -92,9 +92,9 @@ void decompress(const uint idx, std::shared_ptr<switchboard::writer<draco_type>>
                 VoxelBlockIndex vb_index{vb_index_v1[0], vb_index_v1[1], vb_index_v1[2]};
                 unsigned        hash_idx = hash_vb(vb_index);
 
-                Eigen::Vector3d vertex1(dracoVertex_v1[0] / 100.0f, dracoVertex_v1[1] / 100.0f, dracoVertex_v1[2] / 100.0f);
-                Eigen::Vector3d vertex2(dracoVertex_v2[0] / 100.0f, dracoVertex_v2[1] / 100.0f, dracoVertex_v2[2] / 100.0f);
-                Eigen::Vector3d vertex3(dracoVertex_v3[0] / 100.0f, dracoVertex_v3[1] / 100.0f, dracoVertex_v3[2] / 100.0f);
+                Eigen::Vector3d vertex1(dracoVertex_v1[0], dracoVertex_v1[1], dracoVertex_v1[2]);
+                Eigen::Vector3d vertex2(dracoVertex_v2[0], dracoVertex_v2[1], dracoVertex_v2[2]);
+                Eigen::Vector3d vertex3(dracoVertex_v3[0], dracoVertex_v3[1], dracoVertex_v3[2]);
 
                 auto& bucketlist = AllocateNewVB[hash_idx];
 
