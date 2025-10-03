@@ -73,7 +73,11 @@ void decompress(const uint idx, std::shared_ptr<switchboard::writer<draco_type>>
             const int vb_id = dracoMesh->GetAttributeIdByMetadataEntry("attribute_name", "_VOXELBLOCK_INFO");
             auto      vb    = dracoMesh->GetAttributeByUniqueId(vb_id);
 
-            printf("Decompressing chunk %u with %zu faces\n", datum->chunk_id, dracoMesh->num_faces());
+            spdlog::get("illixr")->info(
+                "Decompressing chunk {} with {} faces",
+                datum->chunk_id,
+                dracoMesh->num_faces()
+            );
             for (draco_illixr::FaceIndex faceIndex(0); faceIndex < dracoMesh->num_faces(); ++faceIndex) {
                 float dracoVertex_v1[3], dracoVertex_v2[3], dracoVertex_v3[3];
                 int   vb_index_v1[3];
