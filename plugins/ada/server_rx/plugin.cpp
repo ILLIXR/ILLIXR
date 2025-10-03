@@ -153,7 +153,7 @@ void server_rx::receive_sr_input(const sr_input_proto::SRSendData& sr_input) {
     receive_size << "MSB " << cur_frame << " " << sr_input.depth_img_msb_data().size() << "\n";
     receive_size << "LSB " << cur_frame << " " << sr_input.depth_img_lsb_data().size() << "\n";
 
-    auto                         depth_decoding_start = std::chrono::high_resolution_clock::now();
+    auto depth_decoding_start = std::chrono::high_resolution_clock::now();
     std::unique_lock<std::mutex> lock{mutex_};
     decoder_->enqueue(msb, lsb);
     cond_var_.wait(lock, [this]() {
@@ -173,21 +173,25 @@ void server_rx::receive_sr_input(const sr_input_proto::SRSendData& sr_input) {
     receive_time << "DepthDecode " << cur_frame << " " << duration_depth_decoding_ms << "\n";
 
     auto combine_start = std::chrono::high_resolution_clock::now();
+
+    //pyh verify MSB is encoded losslessly
+    // std::string depth_str_MSB = std::to_string(cur_frame) + "_depth_MSB.png";
+    // std::string depth_str_LSB = std::to_string(cur_frame) + "_depth_LSB.png";
+    // cv::imwrite(depth_str_MSB, msb_buf_);
+    // cv::imwrite(depth_str_LSB, lsb_buf_);
+
     msb_buf_.convertTo(hi16_, CV_16U, 256.0);
     lsb_buf_.convertTo(lo16_, CV_16U);
+    
     cv::bitwise_or(hi16_, lo16_, depth16_);
     auto   combine_end         = std::chrono::high_resolution_clock::now();
     auto   duration_combine    = std::chrono::duration_cast<std::chrono::microseconds>(combine_end - combine_start).count();
     double duration_combine_ms = static_cast<double>(duration_combine) / 1000.0;
     receive_time << "Combine " << cur_frame << " " << duration_combine_ms << "\n";
 
-    // pyh unillixr to explicit save the decoded message (for depth image distoration evaluation)
-    std::string depth_str = std::to_string(cur_frame) + ".pgm";
-    //std::string depth_str_MSB = std::to_string(cur_frame) + "_depth_MSB.png";
-    //std::string depth_str_LSB = std::to_string(cur_frame) + "_depth_LSB.png";
-    //cv::imwrite(depth_str_LSB, test_depth_LSB);
-    //cv::imwrite(depth_str_MSB, test_depth_MSB);
-    //write_16_bit_pgm(depth16_, depth_str);
+    // pyh verify decoded depth
+    // std::string depth_str = std::to_string(cur_frame) + ".pgm";
+    // write_16_bit_pgm(depth16_, depth_str);
 
     cv::Mat rgb; // pyh dummy here
     scannet_.put(scannet_.allocate<scene_recon_type>(scene_recon_type{time_point{}, pose, depth16_.clone(), rgb, false}));
