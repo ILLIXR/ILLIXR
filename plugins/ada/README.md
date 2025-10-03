@@ -1,6 +1,6 @@
 # Ada Setup and Run Guide
 
-Thank you for your interest in **Ada** —  
+Thank you for your interest in **Ada** :
 [Ada: A Distributed, Power-Aware, Real-Time Scene Provider for XR](https://rsim.cs.illinois.edu/Pubs/25-TVCG-Ada.pdf).
 
 This guide provides step-by-step instructions to set up and run the Ada system within the [ILLIXR](https://illixr.org) testbed, using the ScanNet dataset.
