@@ -172,7 +172,9 @@ Make sure both shells have `LD_LIBRARY_PATH` set to include your ILLIXR build di
 - If you enable the `VERIFY` flag in `plugins/ada/scene_management/plugin.cpp`, Ada will write out a reconstructed mesh at the last update as `x.obj` (`x = FRAME_COUNT/FPS - 1`)
 - A `recorded_data` folder will be created inside your build directory. This folder contains diagnostic and intermediate data collected during the run
 
-### FAQ: Can I use Ada on a different device than Jetson Orin?
+### FAQ: 
+
+#### Q1: Can I use Ada on a different device than Jetson Orin?
 
 Ada relies on GStreamer with NVIDIA’s DeepStream (NVENC/NVDEC) for efficient depth encoding.  
 In particular, Ada requires the `enable-lossless` flag for the `nvv4l2h265enc` / `nvv4l2h264enc` GStreamer elements.  
@@ -181,3 +183,22 @@ This flag may be missing in some driver + device combinations.
 - In theory, any NVIDIA GPU with Ampere or newer architecture (30xx series or Jetson Orin and above) supports this capability.  
 - However, software support is inconsistent across platforms.  
 - For devices that do not support this, we plan to release an alternative version using a prior method (16-bit depth → HSV color model → 8-bit RGB), which offers the next-best depth preservation.
+
+#### Q2: How to Change the Scene Fidelity
+To adjust scene fidelity in **Ada**:
+1. Go to 
+`ILLIXR/build/_deps/infinitam_ext-src/ITMLib/Utils/ITMLibSettings.cpp `
+2. Find line 55:
+`sceneParams(0.1f, 100, 0.02f, 0.2f, 4.0f, false), // 2cm //pyh Ada used config`
+    - The third parameter (0.02f in this example) controls the voxel size.
+    - Smaller values → higher fidelity (e.g., 0.02f = 2 cm).
+    - Larger values → lower fidelity (e.g., 0.04f = 4 cm, 0.06f = 6 cm).
+3. Predefined configurations are available:
+    - Line 53 → 6 cm voxel size
+    - Line 54 → 4 cm voxel size
+    - Line 55 → 2 cm voxel size (default in Ada)
+4. After editing, rebuild ILLIXR:
+  ```bash
+  cmake --build . -j8
+  cmake --install .
+  ```
