@@ -4,7 +4,7 @@ find_package(draco_illixr QUIET CONFIG)
 if (NOT draco_illixr_FOUND)
     message(STATUS "Draco not found, downloading.")
     FetchContent_Declare(Draco_ILLIXR
-                         GIT_REPOSITORY https://github.com/ILLIXR/draco.git
+                         GIT_REPOSITORY git@github.com:ILLIXR/draco.git
                          GIT_TAG bba2a71ae3d46631a3b6d969e60730d570e904aa
                          OVERRIDE_FIND_PACKAGE
     )
