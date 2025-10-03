@@ -1,8 +1,20 @@
-# ADA Setup and Run Guide
+# Ada Setup and Run Guide
 
-This guide explains how to set up and run the ADA system using ILLIXR with ScanNet data.
+Thank you for your interest in **Ada** —  
+[Ada: A Distributed, Power-Aware, Real-Time Scene Provider for XR](https://rsim.cs.illinois.edu/Pubs/25-TVCG-Ada.pdf).
+
+This guide provides step-by-step instructions to set up and run the Ada system within the [ILLIXR](https://illixr.org) testbed, using the ScanNet dataset.
 
 ---
+
+## 1) Prerequiste 
+Hardware:
+Device: Jetson Orin AGX
+  - Note: using a different device can make Ada not produce the correct mesh
+  - Why Ada uses GSTREAMER which uses NVIDIA's DeepStream to use NVENC/NVDEC to use efficient depth encoding. However, the needed flag in Ada ("enable-lossless" for nvv4l2h265enc/nvv4l2h264enc element in GStreamer) can be missing in some combination. IN theory any NVIDIA GPU that has architecture Ampere or above (30xx series and Orin above) supports this but the software support seems still not fully there 
+  - If you want to test on a machine that does not support this capability, we plan to release a version using previous work's encoding method (16bit Depth to HSV color model to 8-bit RBG) that has nexts best ability to perserve depth as a future release. 
+Server: Any Server with a NVIDIA GPU (Ada's number is measured on a 3080TI, but we have also verified on using Jetson Orin AGX)
+
 
 ## 1) Install Dependencies
 
