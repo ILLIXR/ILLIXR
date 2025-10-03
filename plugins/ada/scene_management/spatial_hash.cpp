@@ -550,6 +550,8 @@ unsigned spatial_hash::append_mesh_match_and_insert(bool merge) {
     return total_gap;
 }
 
+
+//pyh verified previously missing \n
 [[maybe_unused]] void spatial_hash::print_mesh_as_obj(unsigned id, unsigned type, const std::string& sub_str) {
     (void)type;
     (void)sub_str;
@@ -558,11 +560,11 @@ unsigned spatial_hash::append_mesh_match_and_insert(bool merge) {
 
     // Print vertices with colors
     for (const auto & vertex : vertices_) {
-        out_file << "v " << vertex.x() << " " << vertex.y() << " " << vertex.z() << "";
+        out_file << "v " << vertex.x() << " " << vertex.y() << " " << vertex.z() << "\n";
     }
     spdlog::get("illixr")->info("Output Mesh has %lu faces", faces_.size());
     for (size_t i = 0; i < faces_.size(); i += 3) {
-        out_file << "f " << faces_[i] + 1 << " " << faces_[i + 1] + 1 << " " << faces_[i + 2] + 1 << "";
+        out_file << "f " << faces_[i] + 1 << " " << faces_[i + 1] + 1 << " " << faces_[i + 2] + 1 << "\n";
     }
     out_file.close();
     spdlog::get("illixr")->info("Mesh successfully written to {}", filename);

@@ -14,7 +14,7 @@ using b_queue = moodycamel::BlockingReaderWriterCircularBuffer<std::shared_ptr<c
 
 std::vector<b_queue> queue_;
 std::mutex           writer_mutex_;
-bool                 done_ = false;
+std::atomic<bool> done_{false};
 std::string          data_path_;
 
 unsigned hash_vb(const ILLIXR::VoxelBlockIndex& index) {
@@ -28,8 +28,6 @@ void decompress(const uint idx, std::shared_ptr<switchboard::writer<draco_type>>
     std::shared_ptr<const mesh_type> datum;
 
     std::fstream decoding_latency;
-
-    draco_illixr::FileWriterFactory::RegisterWriter(draco_illixr::StdioFileWriter::Open);
 
     // pyh: prepare output directory & open latency log
     decoding_latency.open(data_path_ + "/decoding_latency_" + std::to_string(idx) + ".csv", std::ios::out);
@@ -75,6 +73,7 @@ void decompress(const uint idx, std::shared_ptr<switchboard::writer<draco_type>>
             const int vb_id = dracoMesh->GetAttributeIdByMetadataEntry("attribute_name", "_VOXELBLOCK_INFO");
             auto      vb    = dracoMesh->GetAttributeByUniqueId(vb_id);
 
+            printf("Decompressing chunk %u with %zu faces\n", datum->chunk_id, dracoMesh->num_faces());
             for (draco_illixr::FaceIndex faceIndex(0); faceIndex < dracoMesh->num_faces(); ++faceIndex) {
                 float dracoVertex_v1[3], dracoVertex_v2[3], dracoVertex_v3[3];
                 int   vb_index_v1[3];
@@ -147,6 +146,9 @@ void decompress(const uint idx, std::shared_ptr<switchboard::writer<draco_type>>
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
     , decoded_mesh_{
           std::make_shared<switchboard::writer<draco_type>>(switchboard_->get_writer<draco_type>("decoded_inactive_scene"))} {
+
+    draco_illixr::FileWriterFactory::RegisterWriter(draco_illixr::StdioFileWriter::Open);
+
     data_path_ = std::filesystem::current_path().string() + "/recorded_data";
     if (!std::filesystem::exists(data_path_)) {
         if (!std::filesystem::create_directories(data_path_)) {

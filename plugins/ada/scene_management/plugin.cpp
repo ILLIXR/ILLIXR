@@ -191,9 +191,8 @@ void scene_management::process_inactive_frame(switchboard::ptr<const draco_type>
 
         std::cout.flush();
         if (datum->frame_id == (frame_count_ / fps_) - 1) {
+            printf("Scene Management processed all frames, shutting down...\n");
             mesh_management_latency_.flush();
-
-            phonebook_->ILLIXR::phonebook::lookup_impl<stoplight>()->signal_shutdown_complete();
         }
     }
 }

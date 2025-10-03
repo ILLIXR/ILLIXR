@@ -37,9 +37,9 @@ void video_encoder::create_pipelines() {
     g_object_set(G_OBJECT(appsrc_img0_), "stream-type", 0, "format", GST_FORMAT_BYTES, "is-live", TRUE, nullptr);
     g_object_set(G_OBJECT(appsrc_img1_), "stream-type", 0, "format", GST_FORMAT_BYTES, "is-live", TRUE, nullptr);
 #elif defined ADA
-    // this is for 4(lossless setting) 2(default)
-    g_object_set(G_OBJECT(encoder_img0), "tuning-info-id", 4, nullptr);
-    g_object_set(G_OBJECT(encoder_img1), "tuning-info-id", 2, nullptr);
+    // flag for orin
+    g_object_set(G_OBJECT(encoder_img0), "enable-lossless", TRUE, nullptr);
+    //g_object_set(G_OBJECT(encoder_img1), "tuning-info-id", 2, nullptr);
 
     // pyh: Set to a large value to avoid periodic latency spikes from keyframe insertion.
     // should be safe for our use case because we don't need random access to old frames.

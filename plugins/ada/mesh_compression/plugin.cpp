@@ -16,6 +16,7 @@
 #include <queue>
 #include <spdlog/spdlog.h>
 #include <thread>
+#include <atomic>
 
 const int tex_coords_quantization_bits_ = 10;
 const int normals_quantization_bits_    = 8;
@@ -30,7 +31,8 @@ using b_queue = moodycamel::BlockingReaderWriterCircularBuffer<std::shared_ptr<c
 
 std::vector<b_queue> queue_;
 std::mutex  writer_mutex_;
-bool        done_ = false;
+std::atomic<bool> done_{false};
+
 std::string data_path_;
 
 const float origin[] = {0.0f, 0.0f, 0.0f};
@@ -52,8 +54,7 @@ void compress(const uint idx, std::shared_ptr<switchboard::writer<mesh_type>> wr
         spdlog::get("illixr")->error("Failed to open compression latency file {}", idx);
     }
 
-    draco_illixr::FileReaderFactory::RegisterReader(draco_illixr::StdioFileReader::Open);
-    draco_illixr::FileWriterFactory::RegisterWriter(draco_illixr::StdioFileWriter::Open);
+
     while (true) {
         if (queue_[idx].wait_dequeue_timed(datum, std::chrono::milliseconds(2))) {
             auto start = std::chrono::high_resolution_clock::now();
@@ -100,6 +101,9 @@ void compress(const uint idx, std::shared_ptr<switchboard::writer<mesh_type>> wr
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
     , compressed_mesh_{std::make_shared<switchboard::writer<data_format::mesh_type>>(
           switchboard_->get_writer<mesh_type>("compressed_scene"))} {
+    
+    draco_illixr::FileReaderFactory::RegisterReader(draco_illixr::StdioFileReader::Open);
+    draco_illixr::FileWriterFactory::RegisterWriter(draco_illixr::StdioFileWriter::Open);
     data_path_ = std::filesystem::current_path().string() + "/recorded_data";
     if (!std::filesystem::exists(data_path_)) {
         if (!std::filesystem::create_directories(data_path_)) {
