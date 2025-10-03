@@ -174,11 +174,6 @@ void server_rx::receive_sr_input(const sr_input_proto::SRSendData& sr_input) {
 
     auto combine_start = std::chrono::high_resolution_clock::now();
 
-    //pyh verify MSB is encoded losslessly
-    // std::string depth_str_MSB = std::to_string(cur_frame) + "_depth_MSB.png";
-    // std::string depth_str_LSB = std::to_string(cur_frame) + "_depth_LSB.png";
-    // cv::imwrite(depth_str_MSB, msb_buf_);
-    // cv::imwrite(depth_str_LSB, lsb_buf_);
 
     msb_buf_.convertTo(hi16_, CV_16U, 256.0);
     lsb_buf_.convertTo(lo16_, CV_16U);
@@ -189,9 +184,6 @@ void server_rx::receive_sr_input(const sr_input_proto::SRSendData& sr_input) {
     double duration_combine_ms = static_cast<double>(duration_combine) / 1000.0;
     receive_time << "Combine " << cur_frame << " " << duration_combine_ms << "\n";
 
-    // pyh verify decoded depth
-    // std::string depth_str = std::to_string(cur_frame) + ".pgm";
-    // write_16_bit_pgm(depth16_, depth_str);
 
     cv::Mat rgb; // pyh dummy here
     scannet_.put(scannet_.allocate<scene_recon_type>(scene_recon_type{time_point{}, pose, depth16_.clone(), rgb, false}));
