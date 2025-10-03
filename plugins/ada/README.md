@@ -7,221 +7,177 @@ This guide provides step-by-step instructions to set up and run the Ada system w
 
 ---
 
-## 1) Prerequiste 
-Hardware:
-Device: Jetson Orin AGX
-  - Note: using a different device can make Ada not produce the correct mesh
-  - Why Ada uses GSTREAMER which uses NVIDIA's DeepStream to use NVENC/NVDEC to use efficient depth encoding. However, the needed flag in Ada ("enable-lossless" for nvv4l2h265enc/nvv4l2h264enc element in GStreamer) can be missing in some combination. IN theory any NVIDIA GPU that has architecture Ampere or above (30xx series and Orin above) supports this but the software support seems still not fully there 
-  - If you want to test on a machine that does not support this capability, we plan to release a version using previous work's encoding method (16bit Depth to HSV color model to 8-bit RBG) that has nexts best ability to perserve depth as a future release. 
-Server: Any Server with a NVIDIA GPU (Ada's number is measured on a 3080TI, but we have also verified on using Jetson Orin AGX)
+## 1) Installation
+Before building Ada, make sure the following dependencies are installed:
+- **ILLIXR:** latest `main` branch  
+- **Jetson Orin (device):**  
+  - JetPack ≥ 5.1.3  
+  - DeepStream ≥ 6.3  
+  - CUDA ≥ 11.4  
+- **Server:**  
+  - Clang ≥ 10.0.0  
+  - CUDA ≥ 11.4  
+  - DeepStream ≥ 6.3  
 
+> We recommend JetPack 6.0.0 / DeepStream 7.1 / CUDA 12.2 (or JetPack 5.1.3 / DeepStream 6.3 / CUDA 11.4), which were used in our tested configurations.
 
-## 1) Install Dependencies
+### 1.1 Build and Install Ada Components in ILLIXR
 
-### Core ILLIXR Dependencies
-Follow the official [ILLIXR getting started guide](https://illixr.github.io/ILLIXR/getting_started/) to install all core dependencies.
-- ADA was originally built on branch `offload-h265-clean`, commit `cc4d7e8`.
-- We are in the process of updating the code to the latest `main` branch.
-
-### Draco Library (custom)
-Build and install Draco using the **custom repository** provided with ADA (do **not** use the upstream Google repo directly).
-- Reference for general build steps: [Google Draco BUILDING.md](https://github.com/google/draco/blob/main/BUILDING.md).
-
-### DeepStream & GStreamer
-Install NVIDIA DeepStream and GStreamer.
-- Official docs: [NVIDIA DeepStream Dev Guide](https://docs.nvidia.com/metropolis/deepstream/dev-guide/)
-- Archived reference (used during our installation):  
-  [Wayback Machine link](http://web.archive.org/web/20230327195958/https://docs.nvidia.com/metropolis/deepstream/dev-guide/text/DS_Quickstart.html#dgpu-setup-for-ubuntu)
-
----
-
-## 2) Prepare the ScanNet Dataset
-
-### Step 1: Download
-Follow the official instructions: [ScanNet download](https://github.com/ScanNet/ScanNet#scannet-data).
-
-### Step 2: Clone ILLIXR's ScanNet Fork
+#### Step 1: Clone ILLIXR
 ```bash
-git clone git@github.com:ILLIXR/ScanNet.git
-cd ScanNet
-git checkout infinitam
-cd SensReader/c++
-make
+git clone git@github.com:ILLIXR/ILLIXR.git
+cd ILLIXR
 ```
 
-### Step 3: Create a Sequence Directory
-Create the final sequence directory (outside the repo):
-```
-scene<sceneId>/
-├─ images   # depth and color images
-└─ poses    # associated pose files
-```
+#### Step 2 Configure the Build
+Create a build directory and run cmake with Ada components enabled.
 
-### Step 4: Convert `.sens` Files
-Follow the SensReader instructions to extract calibration, pose, color, and depth:
-- https://github.com/ILLIXR/ScanNet/tree/master/SensReader/c%2B%2B
+Replace /path/to/install with the installation directory of your choice.
 
-Example:
 ```bash
-./sens /path/to/scannet/scans/scene0000_00/scene0000_00.sens        /path/to/scenes/scene0000/images
+mkdir build && cd build
+cmake .. \
+  -DCMAKE_INSTALL_PREFIX=/path/to/install \
+  -DBUILD_SHARED_LIBS=ON \
+  -DUSE_ADA.OFFLINE_SCANNET=ON \
+  -DUSE_TCP_NETWORK_BACKEND=ON \
+  -DUSE_ADA.DEVICE_TX=ON \
+  -DUSE_ADA.DEVICE_RX=ON \
+  -DUSE_ADA.SERVER_RX=ON \
+  -DUSE_ADA.SERVER_TX=ON \
+  -DUSE_ADA.INFINITAM=ON \
+  -DUSE_ADA.MESH_COMPRESSION=ON \
+  -DUSE_ADA.MESH_DECOMPRESSION_GREY=ON \
+  -DUSE_ADA.SCENE_MANAGEMENT=ON \
+  -DCMAKE_BUILD_TYPE=Release
 ```
 
-### Step 5: Convert to InfiniTAM Format
+### Step 3: Build 
 ```bash
-cd InfiniTAM/scripts/misc
-python3.8 convert_scannet.py --source-dir /path/to/scenes/scene<sceneId>/images
+cmake --build . -j8
 ```
+(Adjust -j8 based on the number of cores on your machine.)
 
----
-
-## 3) Repository Structure
-
-- **device_side_plugins/** → Device-side plugins (requires the prepared ScanNet data).
-- **server_side_plugins/** → Server-side plugins.
-- **draco_custom/** → Custom Draco source (required on both device and server).
-
----
-
-## 4) Device Setup (Jetson Orin)
-
-### 4.1 Configure Power Mode (nvpmodel)
-> **Note:** Make a backup of `/etc/nvpmodel.conf` before editing. You’ll need `sudo`.
-
-Add a power model for ADA (example with `ID=6` and `NAME=Ada`):
-```conf
-< POWER_MODEL ID=6 NAME=Ada >
-CPU_ONLINE CORE_0 1
-CPU_ONLINE CORE_1 1
-CPU_ONLINE CORE_2 1
-CPU_ONLINE CORE_3 1
-CPU_ONLINE CORE_4 1
-CPU_ONLINE CORE_5 1
-CPU_ONLINE CORE_6 1
-CPU_ONLINE CORE_7 1
-CPU_ONLINE CORE_8 0
-CPU_ONLINE CORE_9 0
-CPU_ONLINE CORE_10 0
-CPU_ONLINE CORE_11 0
-TPC_POWER_GATING TPC_PG_MASK 254
-GPU_POWER_CONTROL_ENABLE GPU_PWR_CNTL_EN on
-CPU_A78_0 MIN_FREQ 1728000
-CPU_A78_0 MAX_FREQ 1728000
-CPU_A78_1 MIN_FREQ 1728000
-CPU_A78_1 MAX_FREQ 1728000
-GPU MIN_FREQ 714000000
-GPU MAX_FREQ 714000000
-GPU_POWER_CONTROL_DISABLE GPU_PWR_CNTL_DIS auto
-EMC MAX_FREQ 2133000000
-DLA0_CORE MAX_FREQ 1369600000
-DLA1_CORE MAX_FREQ 1369600000
-DLA0_FALCON MAX_FREQ 729600000
-DLA1_FALCON MAX_FREQ 729600000
-PVA0_VPS MAX_FREQ 512000000
-PVA0_AXI MAX_FREQ 358400000
-```
-
-- DLA/PVA are not used by ADA in our setup; their values are not critical.
-- After saving the file, either:
-  - **GUI:** Click the NVIDIA logo (top-right), choose **Power Mode → Ada**, then reboot when prompted.
-  - **CLI (alternative):**
-    ```bash
-    sudo nvpmodel -m 6
-    sudo reboot
-    ```
-
-### 4.2 Set IPs and Ports
-Edit `common/network/net_config.hpp` on **both** device and server so they agree:
-```cpp
-const std::string SERVER_IP   = "your.server.ip";
-const std::string SERVER_PORT_1 = "port1";
-const std::string SERVER_PORT_2 = "port2";
-
-const std::string DEVICE_IP   = "your.device.ip";
-const std::string DEVICE_PORT_1 = "port1";
-const std::string DEVICE_PORT_2 = "port2";
-```
-> Ensure ports do not conflict with other services and firewall rules allow traffic in both directions.
-
----
-
-## 5) Running ADA
-
-### On the Device
+### Step 4: Install
 ```bash
-export PARTIAL_MESH_COUNT=X   # e.g., 8 for testing
-export frame_count_=Y          # total frames in the sequence (e.g., 1158 for ScanNet scene 0005)
-export fps_=Z                  # proactive scene extraction frequency (paper setup: 15)
-./runner.sh config/release_device.yaml
+cmake --install .
 ```
 
-### On the Server
+### Step 5: Update Environment Variables
+Add the install folder’s lib directory to your LD_LIBRARY_PATH:
 ```bash
-export frame_count_=Y  # must match the device
-export fps_=Z          # must match the device
-./runner.sh config/release_server.yaml
+export LD_LIBRARY_PATH=/path/to/install/lib:$LD_LIBRARY_PATH
+```
+(Add the above line to your .bashrc or .zshrc for persistence across sessions.)
+
+
+
+## 2) Setting up Ada
+To run Ada, you’ll need a device with Jetson-class hardware and a server with an NVIDIA GPU.  
+Below are the configurations we used for reproducibility in the Ada paper.
+
+**Hardware**
+- **Device (required):** NVIDIA Jetson Orin AGX  
+  (Ada relies on Jetson’s NVENC/NVDEC capabilities for depth encoding.)  
+- **Server (flexible):** Any machine with an NVIDIA GPU  
+  (we used an RTX 3080 Ti for our experiments, but other GPUs also work).
+
+
+## 3) ILLIXR Configuration
+Ada runs as a set of ILLIXR plugins. To launch it, you need to provide configuration files that specify  
+which plugins to load, where to find the dataset, and Ada specific tuning parameters.  
+
+### Example Device Configuration File
+```yaml
+plugins: ada.offline_scannet,tcp_network_backend,ada.device_tx,ada.device_rx,ada.mesh_decompression_grey,ada.scene_management
+
+
+install_prefix: /path/to/install #location of your ILLIXR build
+env_vars:
+  ILLIXR_RUN_DURATION: 1200 #how long you want to run ILLIXR (in seconds)
+  DATA: /home/illixr/Downloads/scannet_0005 #location of your dataset
+  ILLIXR_DATA: /home/illixr/Downloads/scannet_0005
+  FRAME_COUNT: 1158 #frames in your dataset
+  FPS: 15 #how often you want to trigger proactive scene extraction (Sec 4.2 in the paper)
+  PARTIAL_MESH_COUNT: 8 #number of parallel compression and decompression of mesh happening (Sec 4.4 in the paper)
+  MESH_COMPRESS_PARALLELISM: 8 #should match PARTIAL_MESH_COUNT
+  ILLIXR_TCP_SERVER_IP:  127.0.0.1 #IP address of the server (can be localhost if testing on one machine)
+  ILLIXR_TCP_SERVER_PORT: 9000 #Port of the server (your choice )
+  ILLIXR_TCP_CLIENT_IP: 127.0.0.1 #IP address of the device (can be localhost if testing on one machine)
+  ILLIXR_TCP_CLIENT_PORT: 9001 #Port of the device (your choice, should be different from server port)
+  ILLIXR_IS_CLIENT: 1 #1 for device, 0 for server
+  ENABLE_OFFLOAD: false #ILLIXR-related flags, not used in Ada, keep them false
+  ENABLE_ALIGNMENT: false
+  ENABLE_VERBOSE_ERRORS: false
+  ENABLE_PRE_SLEEP: false
 ```
 
----
+### Example Server Configuration File
+```yaml
+plugins: tcp_network_backend,ada.server_rx,ada.server_tx,ada.infinitam,ada.mesh_compression
 
-## 6) Adjusting Compression Parallelism
+install_prefix: /path/to/install #location of your ILLIXR build
+env_vars:
+  ILLIXR_RUN_DURATION: 1200 #how long you want to run ILLIXR (in seconds)
+  DATA: /home/illixr/Downloads/scannet_0005 #location of your dataset
+  ILLIXR_DATA: /home/illixr/Downloads/scannet_0005
+  FRAME_COUNT: 1158 #frames in your dataset
+  FPS: 15 #how often you want to trigger proactive scene extraction (Sec 4.2 in the paper)
+  PARTIAL_MESH_COUNT: 8 #number of parallel compression and decompression of mesh happening (Sec 4.4 in the paper)
+  MESH_COMPRESS_PARALLELISM: 8 #should match PARTIAL_MESH_COUNT
+  ILLIXR_TCP_SERVER_IP:  127.0.0.1 #IP address of the server (can be localhost if testing on one machine)
+  ILLIXR_TCP_SERVER_PORT: 9000 #Port of the server (your choice )
+  ILLIXR_TCP_CLIENT_IP: 127.0.0.1 #IP address of the device (can be localhost if testing on one machine)
+  ILLIXR_TCP_CLIENT_PORT: 9001  #Port of the device (your choice, should be different from server port)
+  ILLIXR_IS_CLIENT: 0 #1 for device, 0 for server
+  ENABLE_OFFLOAD: false #ILLIXR-related flags, not used in Ada, keep them false
+  ENABLE_ALIGNMENT: false
+  ENABLE_VERBOSE_ERRORS: false
+  ENABLE_PRE_SLEEP: false
+```
+#### What differs between device and server?
 
-To increase compression parallelism (e.g., from 8 to 10 threads):
+The plugin set (device loads offline_scannet, rx/tx, decompression, scene management; server loads rx/tx, InfiniTAM, compression).
 
-1. **Update environment variables** to reflect the desired thread count.
-2. **Update YAML configs** to include the extra plugins:
-   - In `config/release_server.yaml`: add `mesh_compression_8`, `mesh_compression_9`.
-   - In `config/release_device.yaml`: add `mesh_decompression_8`, `mesh_decompression_9`.
-3. **Modify server-side `InfiniTAM/plugin.cpp`** and uncomment the indicated lines:
-   - (near lines **57–58**)
-     ```cpp
-     //, _m_mesh_8{switchboard_->get_writer<mesh_type>("requested_scene_8")}
-     //, _m_mesh_9{switchboard_->get_writer<mesh_type>("requested_scene_9")}
-     ```
-   - (near lines **248–251**)
-     ```cpp
-     // [&](std::unique_ptr<draco::PlyReader>&& ply_reader, unsigned face_number, unsigned per_vertices, unsigned num_partitions) {
-     //     _m_mesh_8.put(_m_mesh_8.allocate<mesh_type>(mesh_type{std::move(ply_reader), scene_id, 8, num_partitions, face_number, per_vertices, set_active}));},
-     // [&](std::unique_ptr<draco::PlyReader>&& ply_reader, unsigned face_number, unsigned per_vertices, unsigned num_partitions) {
-     //     _m_mesh_9.put(_m_mesh_9.allocate<mesh_type>(mesh_type{std::move(ply_reader), scene_id, 9, num_partitions, face_number, per_vertices, set_active}));},
-     ```
-   - (near lines **424–425**)
-     ```cpp
-     //switchboard::writer<mesh_type> _m_mesh_8;
-     //switchboard::writer<mesh_type> _m_mesh_9;
-     ```
-4. **Modify device-side `device_rx/plugin.cpp`** and uncomment the indicated lines:
-   - (near lines **44–45**)
-     ```cpp
-     //, _m_mesh_8{switchboard_->get_writer<mesh_type>("compressed_scene_8")}
-     //, _m_mesh_9{switchboard_->get_writer<mesh_type>("compressed_scene_9")}
-     ```
-   - (near lines **147–148**)
-     ```cpp
-     //case 8: _m_mesh_8.put(_m_mesh_8.allocate<mesh_type>(mesh_type{payload, false, scene_id, sr_output.chunk_id(), sr_output.max_chunk()})); break;
-     //case 9: _m_mesh_9.put(_m_mesh_9.allocate<mesh_type>(mesh_type{payload, false, scene_id, sr_output.chunk_id(), sr_output.max_chunk()})); break;
-     ```
-   - (near lines **198–199**)
-     ```cpp
-     //switchboard::writer<mesh_type> _m_mesh_8;
-     //switchboard::writer<mesh_type> _m_mesh_9;
-     ```
+The role flag: ILLIXR_IS_CLIENT = 1 (device) vs 0 (server).
 
-> **Tip:** Keep `PARTIAL_MESH_COUNT` consistent with the highest chunk index you enable. For example, if you enable up to `_m_mesh_9`, set `PARTIAL_MESH_COUNT=10`.
+### How to Understand Ada-Specific Parameters in YAML
 
----
+- **FPS**  
+  - Controls the **proactive scene extraction rate**.  
+  - In our paper’s evaluation, proactive extraction was triggered every *N* frames (we used **every 15 frames**).  
+  - ⚠️ *Note: this name may be confusing since it overlaps with dataset playback rate; we plan to update it in a future release.*
 
-## 7) Tested Configurations
+- **MESH_COMPRESS_PARALLELISM** and **PARTIAL_MESH_COUNT**  
+  - `MESH_COMPRESS_PARALLELISM`: number of worker threads launched to compress/decompress mesh chunks in parallel.  
+  - `PARTIAL_MESH_COUNT`: number of chunks the mesh is divided into; the scene management plugin expects this value.  
+  - In the current version, these **must match**.  
+  - Future support will allow mismatch — e.g., splitting into 8 chunks but only using 4 compression threads.
 
-### ILLIXR
-- Branch: `offload-h265-clean`
-- Commit: `cc4d7e8`
 
-### Jetson Orin (Device)
-- JetPack: 5.1.3
-- DeepStream: 6.3
-- CUDA: 11.4
+## 4) Running Ada
+To run Ada, open **two terminals** (one for the server, one for the device).  
+Make sure both shells have `LD_LIBRARY_PATH` set to include your ILLIXR build directory:  
+### Step 1: Start the Server:
+```bash
+./main.opt.exe --y your_server_config.yaml
+```
 
-### Server
-- Clang: 10.0.0
-- CUDA: 11.4 (12.1 also works)
-- DeepStream: 6.3
+### Step 2: Start the Device:
+```bash
+./main.opt.exe -y your_device.config.yaml
+```
+
+### Output:
+- If you enable the `VERIFY` flag in `plugins/ada/scene_management/plugin.cpp`, Ada will write out a reconstructed mesh at the last update as `x.obj` (`x = FRAME_COUNT/FPS - 1`)
+- A `recorded_data` folder will be created inside your build directory. This folder contains diagnostic and intermediate data collected during the run
+
+### FAQ: Can I use Ada on a different device than Jetson Orin?
+
+Ada relies on GStreamer with NVIDIA’s DeepStream (NVENC/NVDEC) for efficient depth encoding.  
+In particular, Ada requires the `enable-lossless` flag for the `nvv4l2h265enc` / `nvv4l2h264enc` GStreamer elements.  
+This flag may be missing in some driver + device combinations.  
+
+- In theory, any NVIDIA GPU with Ampere or newer architecture (30xx series or Jetson Orin and above) supports this capability.  
+- However, software support is inconsistent across platforms.  
+- For devices that do not support this, we plan to release an alternative version using a prior method (16-bit depth → HSV color model → 8-bit RGB), which offers the next-best depth preservation.
