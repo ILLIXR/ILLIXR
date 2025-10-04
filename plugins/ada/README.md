@@ -160,7 +160,7 @@ To run Ada, open **two terminals** (one for the server, one for the device).
 Make sure both shells have `LD_LIBRARY_PATH` set to include your ILLIXR build directory:  
 ### Step 1: Start the Server:
 ```bash
-./main.opt.exe --y your_server_config.yaml
+./main.opt.exe -y your_server_config.yaml
 ```
 
 ### Step 2: Start the Device:
