@@ -347,6 +347,9 @@ sudo systemctl stop ntp.service
 # Make sure on the server side edit your /etc/ntp.conf and add
 allow ip_of_your_other_device
 
+#enable your ntp service
+sudo systemctl enable --now ntp
+
 # Sync clock with the reference device
 sudo ntpdate <other_device_ip>
 ```
