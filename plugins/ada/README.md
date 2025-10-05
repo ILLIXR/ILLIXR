@@ -9,15 +9,15 @@ This guide provides step-by-step instructions to set up and run the Ada system w
 
 ## 1) Installation
 Before building Ada, make sure the following dependencies are installed:
-- **ILLIXR:** latest `main` branch  
-- **Jetson Orin (device):**  
-  - JetPack ≥ 5.1.3  
-  - DeepStream ≥ 6.3  
-  - CUDA ≥ 11.4  
-- **Server:**  
-  - Clang ≥ 10.0.0  
-  - CUDA ≥ 11.4  
-  - DeepStream ≥ 6.3  
+- **ILLIXR:** latest `main` branch
+- **Jetson Orin (device):**
+  - JetPack ≥ 5.1.3
+  - DeepStream ≥ 6.3
+  - CUDA ≥ 11.4
+- **Server:**
+  - Clang ≥ 10.0.0
+  - CUDA ≥ 11.4
+  - DeepStream ≥ 6.3
 
 > We recommend JetPack 6.0.0 / DeepStream 7.1 / CUDA 12.2 (or JetPack 5.1.3 / DeepStream 6.3 / CUDA 11.4), which were used in our tested configurations.
 
@@ -52,7 +52,7 @@ cmake .. \
   -DCMAKE_BUILD_TYPE=Release
 ```
 
-### Step 3: Build 
+### Step 3: Build
 ```bash
 cmake --build . -j8
 ```
@@ -73,19 +73,19 @@ export LD_LIBRARY_PATH=/path/to/install/lib:$LD_LIBRARY_PATH
 
 
 ## 2) Setting up Ada
-To run Ada, you’ll need a device with Jetson-class hardware and a server with an NVIDIA GPU.  
+To run Ada, you’ll need a device with Jetson-class hardware and a server with an NVIDIA GPU.
 Below are the configurations we used for reproducibility in the Ada paper.
 
 **Hardware**
-- **Device (required):** NVIDIA Jetson Orin AGX  
-  (Ada relies on Jetson’s NVENC/NVDEC capabilities for depth encoding.)  
-- **Server (flexible):** Any machine with an NVIDIA GPU  
+- **Device (required):** NVIDIA Jetson Orin AGX
+  (Ada relies on Jetson’s NVENC/NVDEC capabilities for depth encoding.)
+- **Server (flexible):** Any machine with an NVIDIA GPU
   (we used an RTX 3080 Ti for our experiments, but other GPUs also work).
 
 
 ## 3) ILLIXR Configuration
-Ada runs as a set of ILLIXR plugins. To launch it, you need to provide configuration files that specify  
-which plugins to load, where to find the dataset, and Ada specific tuning parameters.  
+Ada runs as a set of ILLIXR plugins. To launch it, you need to provide configuration files that specify
+which plugins to load, where to find the dataset, and Ada specific tuning parameters.
 
 ### Example Device Configuration File
 ```yaml
@@ -143,21 +143,21 @@ The role flag: ILLIXR_IS_CLIENT = 1 (device) vs 0 (server).
 
 ### How to Understand Ada-Specific Parameters in YAML
 
-- **FPS**  
-  - Controls the **proactive scene extraction rate**.  
-  - In our paper’s evaluation, proactive extraction was triggered every *N* frames (we used **every 15 frames**).  
+- **FPS**
+  - Controls the **proactive scene extraction rate**.
+  - In our paper’s evaluation, proactive extraction was triggered every *N* frames (we used **every 15 frames**).
   - ⚠️ *Note: this name may be confusing since it overlaps with dataset playback rate; we plan to update it in a future release.*
 
-- **MESH_COMPRESS_PARALLELISM** and **PARTIAL_MESH_COUNT**  
-  - `MESH_COMPRESS_PARALLELISM`: number of worker threads launched to compress/decompress mesh chunks in parallel.  
-  - `PARTIAL_MESH_COUNT`: number of chunks the mesh is divided into; the scene management plugin expects this value.  
-  - In the current version, these **must match**.  
+- **MESH_COMPRESS_PARALLELISM** and **PARTIAL_MESH_COUNT**
+  - `MESH_COMPRESS_PARALLELISM`: number of worker threads launched to compress/decompress mesh chunks in parallel.
+  - `PARTIAL_MESH_COUNT`: number of chunks the mesh is divided into; the scene management plugin expects this value.
+  - In the current version, these **must match**.
   - Future support will allow mismatch — e.g., splitting into 8 chunks but only using 4 compression threads.
 
 
 ## 4) Running Ada
-To run Ada, open **two terminals** (one for the server, one for the device).  
-Make sure both shells have `LD_LIBRARY_PATH` set to include your ILLIXR build directory:  
+To run Ada, open **two terminals** (one for the server, one for the device).
+Make sure both shells have `LD_LIBRARY_PATH` set to include your ILLIXR build directory:
 ### Step 1: Start the Server:
 ```bash
 ./main.opt.exe -y your_server_config.yaml
@@ -172,21 +172,21 @@ Make sure both shells have `LD_LIBRARY_PATH` set to include your ILLIXR build di
 - If you enable the `VERIFY` flag in `plugins/ada/scene_management/plugin.cpp`, Ada will write out a reconstructed mesh at the last update as `x.obj` (`x = FRAME_COUNT/FPS - 1`)
 - A `recorded_data` folder will be created inside your build directory. This folder contains diagnostic and intermediate data collected during the run
 
-### FAQ: 
+### FAQ:
 
 #### Q1: Can I use Ada on a different device than Jetson Orin?
 
-Ada relies on GStreamer with NVIDIA’s DeepStream (NVENC/NVDEC) for efficient depth encoding.  
-In particular, Ada requires the `enable-lossless` flag for the `nvv4l2h265enc` / `nvv4l2h264enc` GStreamer elements.  
-This flag may be missing in some driver + device combinations.  
+Ada relies on GStreamer with NVIDIA’s DeepStream (NVENC/NVDEC) for efficient depth encoding.
+In particular, Ada requires the `enable-lossless` flag for the `nvv4l2h265enc` / `nvv4l2h264enc` GStreamer elements.
+This flag may be missing in some driver + device combinations.
 
-- In theory, any NVIDIA GPU with Ampere or newer architecture (30xx series or Jetson Orin and above) supports this capability.  
-- However, software support is inconsistent across platforms.  
+- In theory, any NVIDIA GPU with Ampere or newer architecture (30xx series or Jetson Orin and above) supports this capability.
+- However, software support is inconsistent across platforms.
 - For devices that do not support this, we plan to release an alternative version using a prior method (16-bit depth → HSV color model → 8-bit RGB), which offers the next-best depth preservation.
 
-#### Q2: How to Change the Scene Fidelity
+#### Q2: How to Change the Scene Fidelit9y
 To adjust scene fidelity in **Ada**:
-1. Go to 
+1. Go to
 `ILLIXR/build/_deps/infinitam_ext-src/ITMLib/Utils/ITMLibSettings.cpp `
 2. Find line 55:
 `sceneParams(0.1f, 100, 0.02f, 0.2f, 4.0f, false), // 2cm //pyh Ada used config`
@@ -202,3 +202,48 @@ To adjust scene fidelity in **Ada**:
   cmake --build . -j8
   cmake --install .
   ```
+### Q3. How do I adjust the bitrate of LSB?
+
+To modify the bitrate used by the **LSB encoder**, open  
+`ILLIXR/utils/video_encoder.hpp` and locate **line 11** under the `#if defined(ADA)` block:
+
+```cpp
+#define ILLIXR_BITRATE X
+```
+
+Replace `X` with your desired bitrate value (in bits per second).
+
+Currently, it is set to **0.5 Mbps**.  
+Here are some common examples for reference:
+
+| Target Bitrate | Value (bits per second) |
+|-----------------|-------------------------|
+| 50 Mbps | 52428800 |
+| 20 Mbps | 20971520 |
+| 10 Mbps | 10485760 |
+| 5 Mbps  | 5242880  |
+| 2 Mbps  | 2097152  |
+| 0.5 Mbps | 524288 |
+
+---
+
+### Q4. My extracted mesh looks weird — what went wrong?
+
+The reconstruction algorithm used in **Ada (InfinITAM)** is generally robust.  
+If your extracted mesh appears **corrupted**, **distorted**, or **missing**, it usually indicates that **depth or pose information** was not passed correctly.
+
+A **missing mesh (nothing is getting updated)** often causes a **segmentation fault**, since the compression stage expects non-empty submesh chunks.  
+If you encounter a segfault, you can verify whether the mesh is missing by printing out the `face_number` variable in the **InfiniTAM plugin** located at:  
+`build/_deps/infinitam_ext-src/plugin.cpp`
+
+`face_number` is assigned around **line 184** — simply add a `printf` to check its value.  
+If it prints `0`, that means the mesh is missing.
+
+The most common culprit—based on the author’s experience—is a **version mismatch in NVENC support** across different **GStreamer** and **NVIDIA DeepStream** releases.  
+Even if the pipeline is set up correctly, internal changes in GStreamer or DeepStream may alter the encoding behavior, leading to inconsistent depth reconstruction.
+
+#### Quick diagnostic test
+Use the provided helper function in `server_rx`:
+```cpp
+write_16_bit_to_pgm()
+```
