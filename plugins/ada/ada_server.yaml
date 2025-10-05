@@ -1,0 +1,20 @@
+plugins: tcp_network_backend,ada.server_rx,ada.server_tx,ada.infinitam,ada.mesh_compression
+
+install_prefix:  #location of your ILLIXR build
+env_vars:
+  ILLIXR_RUN_DURATION: 1200 #how long you want to run ILLIXR (in seconds)
+  DATA:  #location of your dataset
+  ILLIXR_DATA: #location of your dataset
+  FRAME_COUNT: 1158 #frames in your dataset
+  FPS: 15 #how often you want to trigger proactive scene extraction (Sec 4.2 in the paper)
+  PARTIAL_MESH_COUNT: 8 #number of parallel compression and decompression of mesh happening (Sec 4.4 in the paper)
+  MESH_COMPRESS_PARALLELISM: 8 #should match PARTIAL_MESH_COUNT
+  ILLIXR_TCP_SERVER_IP: #IP address of the server (can be localhost if testing on one machine)
+  ILLIXR_TCP_SERVER_PORT: 9000 #Port of the server (your choice )
+  ILLIXR_TCP_CLIENT_IP: #IP address of the device (can be localhost if testing on one machine)
+  ILLIXR_TCP_CLIENT_PORT: 9001  #Port of the device (your choice, should be different from server port)
+  ILLIXR_IS_CLIENT: 0 #1 for device, 0 for server
+  ENABLE_OFFLOAD: false #ILLIXR-related flags, not used in Ada, keep them false
+  ENABLE_ALIGNMENT: false
+  ENABLE_VERBOSE_ERRORS: false
+  ENABLE_PRE_SLEEP: false
