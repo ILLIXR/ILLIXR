@@ -247,3 +247,22 @@ Use the provided helper function in `server_rx`:
 ```cpp
 write_16_bit_to_pgm()
 ```
+
+### Q5. Anything changed since the paper?
+
+Yes. During the open-sourcing process, the author revisited and refined parts of the implementation.  
+
+One key change concerns how **depth images** are handled in the **Most Significant Byte (MSB)** and **Least Significant Byte (LSB)** encoding paths.
+
+In the original design, both MSB and LSB components of the depth image were converted to **YUV444** format before encoding.  
+However, upon further investigation, the author realized that this is **unnecessary for the LSB path** — it can safely use **YUV420** instead.  
+Because the depth information is stored entirely in the **Y channel**, the UV downsampling in YUV420 has no impact on accuracy.
+
+As a result, in the open-source version:
+- **LSB encoding** has been simplified to use **YUV420**.  
+- **MSB encoding** remains in **YUV444**, since the `enable-lossless` flag only works with that format.
+
+This change makes the LSB pipeline more efficient without affecting reconstruction quality.
+
+In short: less codes, better results, fewer regrets.
+
