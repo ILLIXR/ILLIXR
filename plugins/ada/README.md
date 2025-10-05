@@ -356,7 +356,10 @@ If you need tighter timing guarantees, you’d need hardware-level synchronizati
 Because my first cat, **Ada**, has been faithfully supervising the development of this system — usually from the comfort of my desktop case. 🐈‍⬛  
 It only felt right to acknowledge her *invaluable contributions* (moral support, occasional bug introductions, and mandatory break reminders).
 
-![Ada the cat](./ada.jpg)
+<p align="center">
+  <img src="./ada.jpg" alt="Ada the cat" width="40%"/><br>
+  <em>Ada</em>
+</p>
 
 Unfortunately, my advisor probably wouldn’t allow Ada to be listed as a co-author,  
 so naming the system **Ada** was the next best way to give her the credit she deserves.
