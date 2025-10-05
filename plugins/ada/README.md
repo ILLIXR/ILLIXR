@@ -266,3 +266,108 @@ This change makes the LSB pipeline more efficient without affecting reconstructi
 
 In short: less codes, better results, fewer regrets.
 
+### Q6. How do I prepare a dataset?
+
+If you’d like to try Ada with your own data, the process is similar to the provided **ScanNet** sequences.  
+You can start by checking out the author’s example datasets here:  
+[👉 Google Drive link](https://drive.google.com/drive/folders/1f2Q8nUpKCoNLar3zy_NbKrvptDTzwQHZ?usp=drive_link)
+
+Below is a step-by-step guide to prepare a **ScanNet** sequence for Ada.  
+You can follow the same procedure for other datasets — as long as you end up with depth, color, and pose files in the same format, you’re good to go.
+
+---
+
+### Step 1: Download ScanNet
+Follow the official instructions here:  
+[🔗 ScanNet download](https://github.com/ScanNet/ScanNet#scannet-data)
+
+---
+
+### Step 2: Clone ILLIXR’s ScanNet Fork
+Ada uses a modified ScanNet reader compatible with **InfiniTAM**.  
+Run the following commands:
+```bash
+git clone git@github.com:ILLIXR/ScanNet.git
+cd ScanNet
+git checkout infinitam
+cd SensReader/c++
+make
+```
+
+---
+
+### Step 3: Create a Sequence Directory
+Create your final dataset directory (outside the repo).  
+It should look like this:
+```
+scene<sceneId>/
+├─ images/   # depth and color images
+└─ poses/    # associated pose files 
+```
+
+---
+
+### Step 4: Convert `.sens` Files
+Use **SensReader** to extract calibration, pose, color, and depth images.  
+See the instructions here:  
+[ScanNet SensReader C++](https://github.com/ILLIXR/ScanNet/tree/master/SensReader/c%2B%2B)
+
+Example:
+```bash
+./sens /path/to/scannet/scans/scene0000_00/scene0000_00.sens        /path/to/scenes/scene0000/images
+```
+
+---
+
+### Step 5: Convert to InfiniTAM Format
+Finally, convert the extracted data into the **InfiniTAM**-compatible format:
+```bash
+cd ILLIXR/plugins/ada
+python3.8 convert_scannet.py --source-dir /path/to/scenes/scene<sceneId>/images
+```
+---
+
+
+### Q7. How do I ensure the timing is relatively accurate?
+
+Unfortunately, getting accurate **scene update timing** requires synchronized clocks across server and device.  
+In this project, the author used **NTP (Network Time Protocol)** to keep the clocks of two Linux devices in sync.
+
+Before starting your experiment, pick one device as the reference and run the following on the other device:
+
+```bash
+sudo apt install ntpdate -y
+
+# Stop Ubuntu's default time sync service
+sudo systemctl stop systemd-timesyncd.service
+
+# (Optional) Stop ntpd if it's running
+sudo systemctl stop ntp.service
+
+# Sync clock with the reference device
+sudo ntpdate <other_device_ip>
+```
+It’s best to perform this synchronization before every trial to minimize drift. Even after NTP synchronization, there can still be small timing offsets — typically on the order of a few milliseconds — due to network latency and OS scheduling.
+This isn’t perfect, but it’s usually accurate enough for most Ada experiments.
+If you need tighter timing guarantees, you’d need hardware-level synchronization (e.g., PTP or GPS-based time sources), which is a different level of pain.
+
+### Q8. Why name your system *Ada*? Any meaning behind it?
+
+Because my first cat, **Ada**, has been faithfully supervising the development of this system — usually from the comfort of my desktop case. 🐈‍⬛  
+It only felt right to acknowledge her *invaluable contributions* (moral support, occasional bug introductions, and mandatory break reminders).
+
+![Ada the cat](./ada.jpg)
+
+Unfortunately, my advisor probably wouldn’t allow Ada to be listed as a co-author,  
+so naming the system **Ada** was the next best way to give her the credit she deserves.
+
+### Questions?
+
+If you have any other questions, issues, or general confusion regarding **Ada**,  
+feel free to reach out to the author at 📧 **[yihanp2@illinois.edu](mailto:yihanp2@illinois.edu)**.  
+He might even reply faster than your compile finishes *(except in the mornings)*.
+
+
+
+
+
