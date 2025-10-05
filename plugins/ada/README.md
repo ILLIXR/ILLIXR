@@ -353,7 +353,7 @@ If you need tighter timing guarantees, you’d need hardware-level synchronizati
 
 ### Q8. Why name your system *Ada*? Any meaning behind it?
 
-Because my first cat, **Ada**, has been faithfully supervising the development of this system — usually from the comfort of my desktop case. 🐈‍⬛  
+Because my first cat, **Ada**, has been faithfully supervising the development of this system — usually from the comfort of my "server" case. 🐈‍⬛  
 It only felt right to acknowledge her *invaluable contributions* (moral support, occasional bug introductions, and mandatory break reminders).
 
 <p align="center">
@@ -370,6 +370,8 @@ If you have any other questions, issues, or general confusion regarding **Ada**,
 feel free to reach out to the author at 📧 **[yihanp2@illinois.edu](mailto:yihanp2@illinois.edu)**.  
 He might even reply faster than your compile finishes *(except in the mornings)*.
 
+
+Lastly, the author would like to thank **Doug Friedel** and **Qinjun Jiang** for their invaluable help with the **Ada integration and testing process**.
 
 
 
