@@ -5,7 +5,7 @@ set(PLUGIN_NAME plugin.ada.mesh_decompression_grey${ILLIXR_BUILD_SUFFIX})
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-get_external_for_plugin(Draco)
+get_external(Draco)
 
 add_library(${PLUGIN_NAME} SHARED
             plugin.hpp

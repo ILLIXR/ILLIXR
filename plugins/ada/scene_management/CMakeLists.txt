@@ -8,7 +8,7 @@ set(PLUGIN_NAME plugin.ada.scene_management${ILLIXR_BUILD_SUFFIX})
 find_package(OpenMP REQUIRED)
 
 # Find Draco library
-get_external_for_plugin(Draco)
+get_external(Draco)
 
 # Add the plugin library
 add_library(${PLUGIN_NAME} SHARED

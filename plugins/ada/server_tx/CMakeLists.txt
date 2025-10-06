@@ -5,6 +5,7 @@ set(PLUGIN_NAME plugin.ada.server_tx${ILLIXR_BUILD_SUFFIX})
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+get_external(Draco)
 find_package(Protobuf REQUIRED)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS ${CMAKE_CURRENT_SOURCE_DIR}/../proto/sr_output.proto)
