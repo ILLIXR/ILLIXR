@@ -727,9 +727,10 @@ void native_renderer::create_app_pass() {
              0,                                             // srcSubpass
              VK_SUBPASS_EXTERNAL,                           // dstSubpass
              VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, // srcStageMask
-             timewarp_->is_external()
-                 ? VK_PIPELINE_STAGE_TRANSFER_BIT
-                 : VK_PIPELINE_STAGE_VERTEX_SHADER_BIT | VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,  // dstStageMask
+             static_cast<VkPipelineStageFlags>(
+                timewarp_->is_external()
+                    ? VK_PIPELINE_STAGE_TRANSFER_BIT
+                    : (VK_PIPELINE_STAGE_VERTEX_SHADER_BIT | VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT)),  // dstStageMask
              VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,                                               // srcAccessMask
              timewarp_->is_external() ? VK_ACCESS_TRANSFER_READ_BIT : VK_ACCESS_SHADER_READ_BIT, // dstAccessMask
              VK_DEPENDENCY_BY_REGION_BIT                                                         // dependencyFlags
