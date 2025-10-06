@@ -1578,17 +1578,17 @@ VMA_CALL_PRE void VMA_CALL_POST vmaGetAllocatorInfo(VmaAllocator VMA_NOT_NULL   
 PhysicalDeviceProperties are fetched from physicalDevice by the allocator.
 You can access it here, without fetching it again on your own.
 */
-VMA_CALL_PRE void VMA_CALL_POST
-vmaGetPhysicalDeviceProperties(VmaAllocator VMA_NOT_NULL                                    allocator,
-                               const VkPhysicalDeviceProperties* VMA_NULLABLE* VMA_NOT_NULL ppPhysicalDeviceProperties);
+VMA_CALL_PRE void VMA_CALL_POST vmaGetPhysicalDeviceProperties(VmaAllocator VMA_NOT_NULL allocator,
+                                                               const VkPhysicalDeviceProperties * VMA_NULLABLE *
+                                                                   VMA_NOT_NULL ppPhysicalDeviceProperties);
 
 /**
 PhysicalDeviceMemoryProperties are fetched from physicalDevice by the allocator.
 You can access it here, without fetching it again on your own.
 */
-VMA_CALL_PRE void VMA_CALL_POST
-vmaGetMemoryProperties(VmaAllocator VMA_NOT_NULL                                          allocator,
-                       const VkPhysicalDeviceMemoryProperties* VMA_NULLABLE* VMA_NOT_NULL ppPhysicalDeviceMemoryProperties);
+VMA_CALL_PRE void VMA_CALL_POST vmaGetMemoryProperties(VmaAllocator VMA_NOT_NULL allocator,
+                                                       const VkPhysicalDeviceMemoryProperties * VMA_NULLABLE *
+                                                           VMA_NOT_NULL ppPhysicalDeviceMemoryProperties);
 
 /**
 \brief Given Memory Type Index, returns Property Flags of this memory type.
@@ -2763,11 +2763,11 @@ static void vma_aligned_free(void* VMA_NULLABLE ptr) {
         #endif
 
         #ifndef VMA_MIN
-            #define VMA_MIN(v1, v2) ((std::min)((v1), (v2)))
+            #define VMA_MIN(v1, v2) ((std::min) ((v1), (v2)))
         #endif
 
         #ifndef VMA_MAX
-            #define VMA_MAX(v1, v2) ((std::max)((v1), (v2)))
+            #define VMA_MAX(v1, v2) ((std::max) ((v1), (v2)))
         #endif
 
         #ifndef VMA_SWAP
