@@ -219,51 +219,51 @@ inclusion in ILLIXR. However, ILLIXR does contain software developed solely by u
 this software**. The external libraries and software included in ILLIXR each have their own licenses and must be used
 according to those licenses:
 
-| Package                              | License[^2]                                         |
-|:-------------------------------------|:----------------------------------------------------|
-| [abseil-cpp][TPP48]                  | [Apache v2][L48]                                    |
-| [ARM NEON 2 x86 SSE][TPP42]          | [BSD-2 clause][L42][^3]                             |
-| [concurrentqueue][TPP1]              | [BSD-2 clause][L1]                                  |
-| [cxxopts][TPP2]                      | [MIT][L2]                                           |
-| [Depthai Core][TPP3]                 | [MIT][L3]                                           |
-| [draco][TPP51]                       | [Apache v2][L51]                                    |
-| [EGL-Registry][TPP47]                | None given                                          |
-| [farmhash][TPP46]                    | [MIT][L46]                                          |
-| [FFmpeg][TPP4]                       | [GNU General Public License v3.0][L35][^4]          |
-| [filter][TPP5]                       | [MIT][L5]                                           |
-| [flatbuffers][TPP44]                 | [Apache v2][L44]                                    |
-| [gemmlowp][TPP43]                    | [Apache v2][L43]                                    |
-| [glslang][TPP6]                      | [BSD-3 clause][L6][^5]                              |
-| [Gtsam][TPP7]                        | [BSD-2 clause][L7][^3]                              |
-| [imgui][TPP8]                        | [MIT][L8]                                           |
+| Package                              | License[^2]                                          |
+|:-------------------------------------|:-----------------------------------------------------|
+| [abseil-cpp][TPP48]                  | [Apache v2][L48]                                     |
+| [ARM NEON 2 x86 SSE][TPP42]          | [BSD-2 clause][L42][^3]                              |
+| [concurrentqueue][TPP1]              | [BSD-2 clause][L1]                                   |
+| [cxxopts][TPP2]                      | [MIT][L2]                                            |
+| [Depthai Core][TPP3]                 | [MIT][L3]                                            |
+| [draco][TPP51]                       | [Apache v2][L51]                                     |
+| [EGL-Registry][TPP47]                | None given                                           |
+| [farmhash][TPP46]                    | [MIT][L46]                                           |
+| [FFmpeg][TPP4]                       | [GNU General Public License v3.0][L35][^4]           |
+| [filter][TPP5]                       | [MIT][L5]                                            |
+| [flatbuffers][TPP44]                 | [Apache v2][L44]                                     |
+| [gemmlowp][TPP43]                    | [Apache v2][L43]                                     |
+| [glslang][TPP6]                      | [BSD-3 clause][L6][^5]                               |
+| [Gtsam][TPP7]                        | [BSD-2 clause][L7][^3]                               |
+| [imgui][TPP8]                        | [MIT][L8]                                            |
 | [InfiniTAM][TPP50]                   | [Oxford University Innovation Academic License][L50] |
-| [mediapipe][TPP36]                   | [Apache v2][L36]                                    |
-| [Monado][TPP29]                      | [MIT][L29]                                          |
-| [Monado integration][TPP9]           | [Boost v1][L9]                                      |
-| [Monado Vulkan Integration][TPP10]   | [Boost v1][L10]                                     |
-| [moodycamel::ConcurrentQueue][TPP30] | [BSD-2 clause][L30][^3]                             |
-| [OouraFFT][TPP45]                    | [MIT-like][L45]                                     |
-| [Open-VINS][TPP35]                   | [GNU General Public License v3.0][L35]              |
-| [OpenXR][TPP12]                      | [Boost v1][L12]                                     |
-| [ORB_SLAM3][TPP49]                   | [GNU General Public License v3.0][L49]              |
-| [protobuf][L41]                      | [BSD-3 clause][L41]                                 |
-| [pthreadpool][TPP40]                 | [BSD-2 clause][L40][^3]                             |
-| [robin-hood-hashing][TPP14]          | [MIT][L14]                                          |
-| [ruy][TPP39]                         | [Apache v2][TPP39]                                  |
-| [SPIRV Headers][TPP16]               | [MIT][L16]                                          |
-| [SPIRV Tools][TPP17]                 | [Apache v2][L17]                                    |
-| [SqliteCPP][TPP18]                   | [MIT][L18]                                          |
-| [stb][TPP19]                         | [MIT][L19]                                          |
-| [tensorflow-lite][TPP38]             | [Apache v2][L38]                                    |
-| [tinyobjloader][TPP20]               | [MIT][L20]                                          |
-| [Vulkan Headers][TPP21]              | [Apache v2][L21]                                    |
-| [Vulkan Loader][TPP22]               | [Apache v2][L22]                                    |
-| [Vulkan Utility Libraries][TPP23]    | [Apache v2][L23]                                    |
-| [Vulkan Validation Layers][TPP24]    | [Apache v2][L24]                                    |
-| [VulkanMemoryAllocator][TPP25]       | [MIT][L25]                                          |
-| [XNNPACK][TPP37]                     | [BSD-3 clause][L37]                                 |
-| [yaml-cpp][TPP26]                    | [MIT][L26]                                          |
-| zed_opencv (Sterolabs)               | [MIT][L27]                                          |
+| [mediapipe][TPP36]                   | [Apache v2][L36]                                     |
+| [Monado][TPP29]                      | [MIT][L29]                                           |
+| [Monado integration][TPP9]           | [Boost v1][L9]                                       |
+| [Monado Vulkan Integration][TPP10]   | [Boost v1][L10]                                      |
+| [moodycamel::ConcurrentQueue][TPP30] | [BSD-2 clause][L30][^3]                              |
+| [OouraFFT][TPP45]                    | [MIT-like][L45]                                      |
+| [Open-VINS][TPP35]                   | [GNU General Public License v3.0][L35]               |
+| [OpenXR][TPP12]                      | [Boost v1][L12]                                      |
+| [ORB_SLAM3][TPP49]                   | [GNU General Public License v3.0][L49]               |
+| [protobuf][L41]                      | [BSD-3 clause][L41]                                  |
+| [pthreadpool][TPP40]                 | [BSD-2 clause][L40][^3]                              |
+| [robin-hood-hashing][TPP14]          | [MIT][L14]                                           |
+| [ruy][TPP39]                         | [Apache v2][TPP39]                                   |
+| [SPIRV Headers][TPP16]               | [MIT][L16]                                           |
+| [SPIRV Tools][TPP17]                 | [Apache v2][L17]                                     |
+| [SqliteCPP][TPP18]                   | [MIT][L18]                                           |
+| [stb][TPP19]                         | [MIT][L19]                                           |
+| [tensorflow-lite][TPP38]             | [Apache v2][L38]                                     |
+| [tinyobjloader][TPP20]               | [MIT][L20]                                           |
+| [Vulkan Headers][TPP21]              | [Apache v2][L21]                                     |
+| [Vulkan Loader][TPP22]               | [Apache v2][L22]                                     |
+| [Vulkan Utility Libraries][TPP23]    | [Apache v2][L23]                                     |
+| [Vulkan Validation Layers][TPP24]    | [Apache v2][L24]                                     |
+| [VulkanMemoryAllocator][TPP25]       | [MIT][L25]                                           |
+| [XNNPACK][TPP37]                     | [BSD-3 clause][L37]                                  |
+| [yaml-cpp][TPP26]                    | [MIT][L26]                                           |
+| zed_opencv (Sterolabs)               | [MIT][L27]                                           |
 
 [^2]: Current as of March 5, 2025.
 
