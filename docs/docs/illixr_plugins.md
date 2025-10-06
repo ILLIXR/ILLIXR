@@ -2,6 +2,72 @@
 
 This page details the structure of ILLIXR's [_plugins_][G18] and how they interact with each other.
 
+## ada (communication)
+
+Four plugins which work in unison to allow remote [Ada][P33] processing
+
+- `ada.device_rx`
+  - Asynchronously *reads* a string from topic `ada_processed`
+  - *Publishes* [`mesh_type`][A23] to `compressed_scene` topic.
+  - *Publishes* [`vb_type`][A24] to `VB_update_lists` topic.
+- `ada.device_tx`
+  - Synchronously *reads* [`scene_recon_type`][A25] from `ScanNet_Data` topic.
+  - *Publishes* a string to `ada_data` topic.
+- `ada.server_rx`
+  - Asynchronously *reads* a string from topic `ada_data`
+  - *Publishes* [`scene_recon_type`][A25] to `ScanNet_Data` topic.
+- `ada.server_tx`
+  - Synchronously *reads* [`vb_type`][A24] from `unique_VB_list` topic.
+  - Synchronously *reads* [`mesh_type`][A23] from `compressed_scene` topic.
+  - *Publishes* a string to `ada_processed` topic.
+
+&nbsp;&nbsp;[**Details**][P33]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C33]
+
+## add.infinitam
+
+Topic details:
+
+- Synchronously *reads* [`scene_recon_type`][A25] from `ScanNet_Data` topic.
+- *Publishes* [`mesh_type`][A23] to `requested_scene` topic.
+- *Publishes* [`vb_type`][A24] to `unique_VB_list` topic.
+
+&nbsp;&nbsp;[**Details**][P33]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C34]
+
+## ada.mesh_compression
+
+Topic details:
+
+- Synchronously *reads* [`mesh_type`][A23] from `requested_scene` topic.
+- *Publishes* [`mesh_type`][A23] to `compressed_scene` topic.
+
+&nbsp;&nbsp;[**Details**][P33]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C35]
+
+## ada.mesh_decompression_grey
+
+Topic details:
+
+- Synchronously *reads* [`mesh_type`][A23] from `compressed_scene` topic.
+- *Publishes* [`draco_type`][A26] to `decoded_inactive_scene` topic.
+
+&nbsp;&nbsp;[**Details**][P33]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C36]
+
+## ada.offline_scannet
+
+Topic details:
+
+- *Publishes* [`scene_recon_type`][A25] to `ScanNet_Data` topic.
+
+&nbsp;&nbsp;[**Details**][P33]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C37]
+
+## ada.scene_management
+
+Topic details:
+
+- Synchronously *reads* [`draco_type`][A26] from `decoded_inactive_scene` topic.
+- Synchronously *reads* [`vb_type`][A24] from `VB_update_lists` topic.
+
+&nbsp;&nbsp;[**Details**][P33]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C38]
+
 ## audio_pipeline
 
 Launches a thread for [binaural][E12]: recording and one for binaural playback.
@@ -479,7 +545,6 @@ See [Getting Started][I11] for more information on adding plugins to a [_profile
 
 [P22]:  plugin_README/README_offload_rendering_client.md
 
-
 [P24]:  plugin_README/README_record_imu_cam.md
 
 [P28]:  plugin_README/README_timewarp_gl.md
@@ -491,6 +556,8 @@ See [Getting Started][I11] for more information on adding plugins to a [_profile
 [P31]:  plugin_README/README_zed.md
 
 [P32]:  plugin_README/README_zed_data_injection.md
+
+[P33]:   plugin_README/README_ada.md
 
 [S10]:   illixr_services.md#pose_prediction
 
@@ -576,6 +643,19 @@ See [Getting Started][I11] for more information on adding plugins to a [_profile
 
 [C32]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/zed/data_injection
 
+[C33]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/ada
+
+[C34]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/ada/infinitam
+
+[C35]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/ada/mesh_compression
+
+[C36]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/ada/mesh_decompression_grey
+
+[C37]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/ada/offline_scannet
+
+[C38]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/ada/scene_management
+
+
 [//]: # (- Internal -)
 
 [I10]:   working_with/writing_your_plugin.md
@@ -599,7 +679,6 @@ See [Getting Started][I11] for more information on adding plugins to a [_profile
 [G17]:   glossary.md#profile
 
 [G18]:   glossary.md#plugin
-
 
 [//]: # (- api -)
 
@@ -628,3 +707,11 @@ See [Getting Started][I11] for more information on adding plugins to a [_profile
 [A21]:   api/structILLIXR_1_1data__format_1_1cam__type__zed.md
 
 [A22]:   api/structILLIXR_1_1data__format_1_1ht_1_1ht__frame.md
+
+[A23]:   api/structILLIXR_1_1data__format_1_1mesh__type.md
+
+[A24]:   api/structILLIXR_1_1data__format_1_1vb__type.md
+
+[A25]:   api/structILLIXR_1_1data__format_1_1scene__recon__type.md
+
+[A26]:   api/structILLIXR_1_1data__format_1_1draco__type.md
