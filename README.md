@@ -85,6 +85,7 @@ component. ILLIXR currently contains the following [plugins][P66] and [services]
 - [offload_rendering_client_jetson][P62]
 - [offload_rendering_server][P63]
 - [tcp_network_backend][P64]
+- [ada][P69]
 
 [^1]: Source is hosted in an external repository under the [ILLIXR project][E7].
 
@@ -426,6 +427,7 @@ request!
 
 [P68]:   https://github.com/ILLIXR/ILLIXR
 
+[P69]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#ada
 
 [//]: # (- Third Party Packages -)
 
