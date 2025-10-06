@@ -17,11 +17,8 @@ Before building Ada, make sure the following dependencies are installed:
 - **Server:**
   - Clang ≥ 10.0.0
   - CUDA ≥ 11.4
-  - DeepStream ≥ 6.3
+  - DeepStream = 6.3
 
-!!! note
-
-    We recommend JetPack 6.0.0 / DeepStream 7.1 / CUDA 12.2 (or JetPack 5.1.3 / DeepStream 6.3 / CUDA 11.4), which were used in our tested configurations.
 
 ### 1.1 Build and Install Ada Components in ILLIXR
 
