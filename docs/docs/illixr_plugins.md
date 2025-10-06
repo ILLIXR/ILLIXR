@@ -6,22 +6,6 @@ This page details the structure of ILLIXR's [_plugins_][G18] and how they intera
 
 Ada’s distributed design relies on **four communication plugins** that coordinate data transfer between the **device** and **server** for remote scene provisioning.
 
-<<<<<<< Updated upstream
--   `ada.device_rx`
-    - Asynchronously *reads* a string from topic `ada_processed`
-    - *Publishes* [`mesh_type`][A23] to `compressed_scene` topic.
-    - *Publishes* [`vb_type`][A24] to `VB_update_lists` topic.
--   `ada.device_tx`
-    - Synchronously *reads* [`scene_recon_type`][A25] from `ScanNet_Data` topic.
-    - *Publishes* a string to `ada_data` topic.
--   `ada.server_rx`
-    - Asynchronously *reads* a string from topic `ada_data`
-    - *Publishes* [`scene_recon_type`][A25] to `ScanNet_Data` topic.
--   `ada.server_tx`
-    - Synchronously *reads* [`vb_type`][A24] from `unique_VB_list` topic.
-    - Synchronously *reads* [`mesh_type`][A23] from `compressed_scene` topic.
-    - *Publishes* a string to `ada_processed` topic.
-=======
 - `ada.device_rx`
   - *Purpose:* receives processed data from the server to the device. 
   - Asynchronously *reads* a string from the topic `ada_processed`, which contains protobuf packets sent by the server.  
@@ -41,86 +25,55 @@ Ada’s distributed design relies on **four communication plugins** that coordin
   - Synchronously *reads* [`vb_type`][A24] from `unique_VB_list` topic (output of `ada.infiniTAM`). 
   - Synchronously *reads* [`mesh_type`][A23] from `compressed_scene` topic (output of `ada.infiniTAM`).
   - *Publishes* a string to `ada_processed` topic, each string is either a protobuf for vb_type topic or a protobuf for mesh_type topic.
->>>>>>> Stashed changes
 
 &nbsp;&nbsp;[**Details**][P33]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C33]
 
 ## add.infinitam
 Topic details:
-<<<<<<< Updated upstream
-
--   Synchronously *reads* [`scene_recon_type`][A25] from `ScanNet_Data` topic.
--   *Publishes* [`mesh_type`][A23] to `requested_scene` topic.
--   *Publishes* [`vb_type`][A24] to `unique_VB_list` topic.
-=======
 -  *Purpose:* performs **scene reconstruction** using incoming depth and pose data from the device, followed by **on-demand or proactive scene extraction**.  
   During extraction, it generates both the **updated partial mesh** and the **Unique Voxel Block List (UVBL)**, which are sent downstream for compression and scene management.  
 - *Features:* extraction frequency is configurable to balance latency and compute cost.  
 - Synchronously *reads* [`scene_recon_type`][A25] from `ScanNet_Data` topic.
 - *Publishes* [`mesh_type`][A23] to `requested_scene` topic. Extracted mesh chunks for compression
 - *Publishes* [`vb_type`][A24] to `unique_VB_list` topic. This is the metadata for identifying updated voxel regions
->>>>>>> Stashed changes
 
 &nbsp;&nbsp;[**Details**][P33]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C34]
 
 ## ada.mesh_compression
 
 Topic details:
-<<<<<<< Updated upstream
-
--   Synchronously *reads* [`mesh_type`][A23] from `requested_scene` topic.
--   *Publishes* [`mesh_type`][A23] to `compressed_scene` topic.
-=======
 - *Purpose:* compresses mesh chunks from `ada.infinitam` using a **customized version of Google Draco**.  
 - *Features:* compression parallelism can be tuned for different latency–power trade-offs.
 - Synchronously *reads* [`mesh_type`][A23] from `requested_scene` topic.
 - *Publishes* [`mesh_type`][A23] to `compressed_scene` topic. compressed mesh chunks ready for transmission to the device. Voxel block information has been attached to each encoded face. 
->>>>>>> Stashed changes
 
 &nbsp;&nbsp;[**Details**][P33]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C35]
 
 ## ada.mesh_decompression_grey
 
 Topic details:
-<<<<<<< Updated upstream
-
--   Synchronously *reads* [`mesh_type`][A23] from `compressed_scene` topic.
--   *Publishes* [`draco_type`][A26] to `decoded_inactive_scene` topic.
-=======
 - *Purpose:* decompress the mesh chunks received from the server and performs a portion of scene management that can be parallelized. 
 - *Features:* decompression parallelism can be tuned for different latency–power trade-offs. 
 - Synchronously *reads* [`mesh_type`][A23] from `compressed_scene` topic.
 - *Publishes* [`draco_type`][A26] to `decoded_inactive_scene` topic. decoded mesh data sent to `ada.scene_management`.  
 
->>>>>>> Stashed changes
 
 &nbsp;&nbsp;[**Details**][P33]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C36]
 
 ## ada.offline_scannet
 
 Topic details:
-<<<<<<< Updated upstream
-
--   *Publishes* [`scene_recon_type`][A25] to `ScanNet_Data` topic.
-=======
 - *Purpose:* loads the **ScanNet dataset** for offline or reproducible experiments.
 - *Publishes* [`scene_recon_type`][A25] to `ScanNet_Data` topic.
->>>>>>> Stashed changes
 
 &nbsp;&nbsp;[**Details**][P33]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C37]
 
 ## ada.scene_management
 
 Topic details:
-<<<<<<< Updated upstream
-
--   Synchronously *reads* [`draco_type`][A26] from `decoded_inactive_scene` topic.
--   Synchronously *reads* [`vb_type`][A24] from `VB_update_lists` topic.
-=======
 - *Purpose:* integrates incremental scene updates into a **maintained global mesh**, merging new geometry and removing outdated regions for consistency.  
 - Synchronously *reads* [`draco_type`][A26] from `decoded_inactive_scene` topic.
 - Synchronously *reads* [`vb_type`][A24] from `VB_update_lists` topic.
->>>>>>> Stashed changes
 
 &nbsp;&nbsp;[**Details**][P33]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C38]
 
