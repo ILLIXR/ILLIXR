@@ -2,7 +2,7 @@
 
 This page details the structure of ILLIXR's [_plugins_][G18] and how they interact with each other.
 
-## ada (communication)
+## ada
 
 Four plugins which work in unison to allow remote [Ada][P33] processing
 
