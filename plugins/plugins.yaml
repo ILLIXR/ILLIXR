@@ -201,8 +201,6 @@ profiles:
       fps: 15
       partial_mesh_count: 8
       mesh_compress_parallelism: 8
-      illixr_tcp_server_port: 9000
-      illixr_tcp_client_port: 9001
       illixr_is_client: 1
       enable_offload: false
       enable_alignment: false
@@ -216,8 +214,6 @@ profiles:
       fps: 15
       partial_mesh_count: 8
       mesh_compress_parallelism: 8
-      illixr_tcp_server_port: 9000
-      illixr_tcp_client_port: 9001
       illixr_is_client: 0
       enable_offload: false
       enable_alignment: false
