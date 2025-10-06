@@ -1,3 +1,21 @@
+# ILLIXR v4.1 (2025-10-06)
+
+- Release Notes
+  This release of ILLIXR introduces a set of nine plugins for our Ada system, a distributed, power-aware, real-time scene provider for XR.
+- Plugins
+  - This is the first open-source release of **Ada**, implemented on top of the [ILLIXR](https://illixr.org) testbed. Ada provides a reproducible implementation of our ISMAR/TVCG 2025 [paper](https://rsim.cs.illinois.edu/Pubs/25-TVCG-Ada.pdf) results. Its features include:
+    - Full implementation of **Ada’s distributed scene provisioning pipeline**:
+      - Efficient depth encoding with MSB (lossless) + LSB (tunable bitrate)
+      - Decoupled volumetric fusion and scene extraction
+      - Extraction-aware scene management
+      - Real-time mesh compression with parallel encoding
+    - **Device-side and server-side plugin set** for ILLIXR
+    - Support for ScanNet dataset and InfiniTAM-based reconstruction
+    - Example prepared ScanNet sequence for quick testing
+<br>By [@jianxiapyh](https://github.com/jianxiapyh) in PR [#462](https://github.com/ILLIXR/ILLIXR/pull/462)
+
+---
+
 # ILLIXR v4.0 (2025-03-28)
 
 - Release Notes
