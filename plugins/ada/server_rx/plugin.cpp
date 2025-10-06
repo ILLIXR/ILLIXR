@@ -31,7 +31,7 @@ namespace {
 
             // Write the pixel value as big endian
             char highByte = pixelValue >> 8;
-            char lowByte = pixelValue & 0xFF;
+            char lowByte  = pixelValue & 0xFF;
             file.write(&highByte, 1);
             file.write(&lowByte, 1);
         }
@@ -40,7 +40,7 @@ namespace {
     file.close();
     return true;
 }
-}
+} // namespace
 
 [[maybe_unused]] server_rx::server_rx(const std::string& name_, phonebook* pb_)
     : threadloop{name_, pb_}
@@ -94,9 +94,9 @@ namespace {
 
 void server_rx::_p_one_iteration() {
     if (ada_reader_.size() > 0) {
-        auto                   buffer_ptr   = ada_reader_.dequeue();
-        std::string            buffer_str   = **buffer_ptr;
-        std::string::size_type end_position = buffer_str.find(delimiter);
+        auto                       buffer_ptr   = ada_reader_.dequeue();
+        std::string                buffer_str   = **buffer_ptr;
+        std::string::size_type     end_position = buffer_str.find(delimiter);
         sr_input_proto::SRSendData sr_input;
         bool                       success = sr_input.ParseFromString(buffer_str.substr(0, end_position));
         if (!success) {
@@ -104,10 +104,9 @@ void server_rx::_p_one_iteration() {
                                          buffer_str.size() - delimiter.size());
         } else {
             spdlog::get("illixr")->debug("Pose of frame {}: {}, {}, {}; {}, {}, {}, {}", current_frame_no_,
-                                         sr_input.input_pose().p_x(),
-                                         sr_input.input_pose().p_y(), sr_input.input_pose().p_z(),
-                                         sr_input.input_pose().o_w(), sr_input.input_pose().o_x(),
-                                         sr_input.input_pose().o_y(), sr_input.input_pose().o_z());
+                                         sr_input.input_pose().p_x(), sr_input.input_pose().p_y(), sr_input.input_pose().p_z(),
+                                         sr_input.input_pose().o_w(), sr_input.input_pose().o_x(), sr_input.input_pose().o_y(),
+                                         sr_input.input_pose().o_z());
             receive_sr_input(sr_input);
         }
     }
@@ -129,12 +128,12 @@ void server_rx::start() {
 
 void server_rx::receive_sr_input(const sr_input_proto::SRSendData& sr_input) {
 #ifndef NDEBUG
-    spdlog::get("illixr")->debug("Received SR input frame {}/{}", current_frame_no_, frame_count_-1);
+    spdlog::get("illixr")->debug("Received SR input frame {}/{}", current_frame_no_, frame_count_ - 1);
 #endif
     auto start = std::chrono::high_resolution_clock::now();
     if (cur_frame % fps_ == 0 && cur_frame > 0) {
         auto since_epoch = start.time_since_epoch();
-        auto millis     = std::chrono::duration_cast<std::chrono::milliseconds>(since_epoch).count();
+        auto millis      = std::chrono::duration_cast<std::chrono::milliseconds>(since_epoch).count();
         receive_timestamp << cur_frame << " " << millis << "\n";
     }
     Eigen::Vector3f    incoming_position{static_cast<float>(sr_input.input_pose().p_x()),
@@ -153,7 +152,7 @@ void server_rx::receive_sr_input(const sr_input_proto::SRSendData& sr_input) {
     receive_size << "MSB " << cur_frame << " " << sr_input.depth_img_msb_data().size() << "\n";
     receive_size << "LSB " << cur_frame << " " << sr_input.depth_img_lsb_data().size() << "\n";
 
-    auto depth_decoding_start = std::chrono::high_resolution_clock::now();
+    auto                         depth_decoding_start = std::chrono::high_resolution_clock::now();
     std::unique_lock<std::mutex> lock{mutex_};
     decoder_->enqueue(msb, lsb);
     cond_var_.wait(lock, [this]() {
@@ -174,16 +173,14 @@ void server_rx::receive_sr_input(const sr_input_proto::SRSendData& sr_input) {
 
     auto combine_start = std::chrono::high_resolution_clock::now();
 
-
     msb_buf_.convertTo(hi16_, CV_16U, 256.0);
     lsb_buf_.convertTo(lo16_, CV_16U);
-    
+
     cv::bitwise_or(hi16_, lo16_, depth16_);
     auto   combine_end         = std::chrono::high_resolution_clock::now();
     auto   duration_combine    = std::chrono::duration_cast<std::chrono::microseconds>(combine_end - combine_start).count();
     double duration_combine_ms = static_cast<double>(duration_combine) / 1000.0;
     receive_time << "Combine " << cur_frame << " " << duration_combine_ms << "\n";
-
 
     cv::Mat rgb; // pyh dummy here
     scannet_.put(scannet_.allocate<scene_recon_type>(scene_recon_type{time_point{}, pose, depth16_.clone(), rgb, false}));

@@ -193,7 +193,7 @@ void spatial_hash::append_mesh_allocate(const std::unordered_map<unsigned, std::
                 for (auto& vb_entry : it->second) {
                     VoxelBlockIndex stored_vb = std::get<0>(vb_entry);
                     if (cur_vb == stored_vb) {
-                        found_vb            = true;
+                        found_vb              = true;
                         auto& merged_vertices = std::get<1>(vb_entry);
 
                         // Efficiently move-append the new vertices and colors to the existing ones
@@ -550,16 +550,15 @@ unsigned spatial_hash::append_mesh_match_and_insert(bool merge) {
     return total_gap;
 }
 
-
-//pyh verified previously missing \n
+// pyh verified previously missing \n
 [[maybe_unused]] void spatial_hash::print_mesh_as_obj(unsigned id, unsigned type, const std::string& sub_str) {
-    (void)type;
-    (void)sub_str;
+    (void) type;
+    (void) sub_str;
     std::string   filename = std::to_string(id) + ".obj";
     std::ofstream out_file(filename);
 
     // Print vertices with colors
-    for (const auto & vertex : vertices_) {
+    for (const auto& vertex : vertices_) {
         out_file << "v " << vertex.x() << " " << vertex.y() << " " << vertex.z() << "\n";
     }
     spdlog::get("illixr")->info("Output Mesh has %lu faces", faces_.size());

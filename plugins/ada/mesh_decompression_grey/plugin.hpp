@@ -42,11 +42,10 @@ public:
     void process_frame(switchboard::ptr<const data_format::mesh_type> datum);
 
 private:
-    uint mesh_count_;
-    const std::shared_ptr<switchboard>           switchboard_;
+    uint                                                          mesh_count_;
+    const std::shared_ptr<switchboard>                            switchboard_;
     std::shared_ptr<switchboard::writer<data_format::draco_type>> decoded_mesh_;
-    std::vector<std::thread> decompress_thread_;
-
+    std::vector<std::thread>                                      decompress_thread_;
 };
 
 } // namespace ILLIXR

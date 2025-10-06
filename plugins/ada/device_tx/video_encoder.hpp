@@ -9,7 +9,7 @@ public:
     explicit ada_video_encoder(FrameCallback callback)
         : video_encoder(callback) { }
 
-    void enqueue(cv::Mat& img0, cv::Mat& img1) override;
+    void          enqueue(cv::Mat& img0, cv::Mat& img1) override;
     GstFlowReturn cb_appsink_msb(GstElement* sink) override;
     GstFlowReturn cb_appsink_lsb(GstElement* sink) override;
 

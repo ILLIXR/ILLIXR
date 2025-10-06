@@ -16,7 +16,7 @@ public:
     GstFlowReturn cb_appsink(GstElement* sink) override;
 
 private:
-    unsigned int num_samples_ = 0;
+    unsigned int            num_samples_ = 0;
     std::condition_variable pipeline_sync_;
 };
 

@@ -7,9 +7,9 @@
 #include "illixr/switchboard.hpp"
 
 #if __has_include("sr_output.pb.h")
-#include "sr_output.pb.h"
+    #include "sr_output.pb.h"
 #else
-#include "../proto/output_stub.hpp"
+    #include "../proto/output_stub.hpp"
 #endif
 
 #include <filesystem>

@@ -1,8 +1,7 @@
 #include "service.hpp"
 
-#include "utils.hpp"
-
 #include "illixr/iterators/csv_iterator.hpp"
+#include "utils.hpp"
 
 #include <memory>
 #include <shared_mutex>

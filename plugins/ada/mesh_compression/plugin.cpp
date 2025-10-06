@@ -2,6 +2,7 @@
 
 #include "illixr/concurrentqueue/readwritequeue/readerwritercircularbuffer.h"
 
+#include <atomic>
 #include <condition_variable>
 #include <draco_illixr/compression/encode.h>
 #include <draco_illixr/compression/expert_encode.h>
@@ -16,7 +17,6 @@
 #include <queue>
 #include <spdlog/spdlog.h>
 #include <thread>
-#include <atomic>
 
 const int tex_coords_quantization_bits_ = 10;
 const int normals_quantization_bits_    = 8;
@@ -30,8 +30,8 @@ using namespace ILLIXR::data_format;
 using b_queue = moodycamel::BlockingReaderWriterCircularBuffer<std::shared_ptr<const mesh_type>>;
 
 std::vector<b_queue> queue_;
-std::mutex  writer_mutex_;
-std::atomic<bool> done_{false};
+std::mutex           writer_mutex_;
+std::atomic<bool>    done_{false};
 
 std::string data_path_;
 
@@ -54,7 +54,6 @@ void compress(const uint idx, std::shared_ptr<switchboard::writer<mesh_type>> wr
         spdlog::get("illixr")->error("Failed to open compression latency file {}", idx);
     }
 
-
     while (true) {
         if (queue_[idx].wait_dequeue_timed(datum, std::chrono::milliseconds(2))) {
             auto start = std::chrono::high_resolution_clock::now();
@@ -65,9 +64,8 @@ void compress(const uint idx, std::shared_ptr<switchboard::writer<mesh_type>> wr
             ply_decoder->out_mesh_        = draco_mesh.get();
             ply_decoder->out_point_cloud_ = static_cast<draco_illixr::PointCloud*>(draco_mesh.get());
 
-
             ply_decoder->DecodeExternal(datum->reader, false);
-            //ply_decoder->DecodeExternal(std::move(datum->reader), false);
+            // ply_decoder->DecodeExternal(std::move(datum->reader), false);
 
             // expert_encoder.reset(new draco_illixr::ExpertEncoder(*(std::move(draco_mesh))));
             // draco_illixr::PointCloud *draco_pc = draco_mesh.get();
@@ -103,7 +101,6 @@ void compress(const uint idx, std::shared_ptr<switchboard::writer<mesh_type>> wr
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
     , compressed_mesh_{std::make_shared<switchboard::writer<data_format::mesh_type>>(
           switchboard_->get_writer<mesh_type>("compressed_scene"))} {
-
     draco_illixr::FileReaderFactory::RegisterReader(draco_illixr::StdioFileReader::Open);
     draco_illixr::FileWriterFactory::RegisterWriter(draco_illixr::StdioFileWriter::Open);
     data_path_ = std::filesystem::current_path().string() + "/recorded_data";

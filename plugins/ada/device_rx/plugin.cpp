@@ -53,8 +53,8 @@ void device_rx::_p_one_iteration() {
         auto                   buffer_ptr = sr_reader_.dequeue();
         std::string            buffer_str = **buffer_ptr;
         std::string::size_type end        = buffer_str.find(delimiter_);
-	spdlog::get("illixr")->debug("   Buffer size: {},   end: {}", buffer_str.size(), end);
-	spdlog::get("illixr")->debug("   Buffer: {}", buffer_str);
+        spdlog::get("illixr")->debug("   Buffer size: {},   end: {}", buffer_str.size(), end);
+        spdlog::get("illixr")->debug("   Buffer: {}", buffer_str);
         sr_output_proto::CompressMeshData sr_output;
         if (sr_output.ParseFromString(buffer_str.substr(0, end))) {
             receive_sr_output(sr_output);
@@ -73,7 +73,8 @@ void device_rx::receive_sr_output(const sr_output_proto::CompressMeshData& sr_ou
         unsigned           scene_id   = sr_output.request_id();
         std::vector<char>  payload(dataString.begin(), dataString.end());
 
-        mesh_.put(mesh_.allocate<mesh_type>(mesh_type{sr_output.chunk_id() % chunck_number_, payload, false, scene_id, sr_output.chunk_id(), sr_output.max_chunk()}));
+        mesh_.put(mesh_.allocate<mesh_type>(mesh_type{sr_output.chunk_id() % chunck_number_, payload, false, scene_id,
+                                                      sr_output.chunk_id(), sr_output.max_chunk()}));
 
         auto t1          = std::chrono::high_resolution_clock::now();
         auto duration_ms = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count();

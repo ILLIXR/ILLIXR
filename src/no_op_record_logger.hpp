@@ -8,4 +8,4 @@ class no_op_record_logger : public record_logger {
         r.mark_used();
     }
 };
-}
+} // namespace ILLIXR

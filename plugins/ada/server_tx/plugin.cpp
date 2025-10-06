@@ -13,7 +13,7 @@ using namespace ILLIXR::data_format;
     , ada_writer_{switchboard_->get_network_writer<switchboard::event_wrapper<std::string>>(
           "ada_processed",
           network::topic_config{.latency              = std::chrono::milliseconds(0),
-   	                        .serialization_method = network::topic_config::SerializationMethod::PROTOBUF})} {
+                                .serialization_method = network::topic_config::SerializationMethod::PROTOBUF})} {
     if (!std::filesystem::exists(data_path)) {
         if (!std::filesystem::create_directory(data_path)) {
             spdlog::get("illixr")->error("Failed to create data directory.");

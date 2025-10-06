@@ -90,43 +90,43 @@ public:
     [[maybe_unused]] int z() const;
 };
 
-    // compressed mesh
-    // 1 active, 2 inactive, 3 vb_list
-    class CompressMeshData {
-    public:
-        [[maybe_unused]] void set_draco_data(void*, double) { }
+// compressed mesh
+// 1 active, 2 inactive, 3 vb_list
+class CompressMeshData {
+public:
+    [[maybe_unused]] void set_draco_data(void*, double) { }
 
-        [[maybe_unused]] std::string draco_data() const;
+    [[maybe_unused]] std::string draco_data() const;
 
-        [[maybe_unused]] VB* add_vbs();
+    [[maybe_unused]] VB* add_vbs();
 
-        [[maybe_unused]] void set_active(unsigned) { }
+    [[maybe_unused]] void set_active(unsigned) { }
 
-        [[maybe_unused]] void set_request_id(uint32_t) { }
+    [[maybe_unused]] void set_request_id(uint32_t) { }
 
-        [[maybe_unused]] void set_chunk_id(uint32_t) { }
+    [[maybe_unused]] void set_chunk_id(uint32_t) { }
 
-        [[maybe_unused]] void set_max_chunk(uint32_t) { }
+    [[maybe_unused]] void set_max_chunk(uint32_t) { }
 
-        [[maybe_unused]] std::vector<VB> vbs() const;
+    [[maybe_unused]] std::vector<VB> vbs() const;
 
-        [[maybe_unused]] void set_vbs(VB) { }
+    [[maybe_unused]] void set_vbs(VB) { }
 
-        [[maybe_unused]] size_t ByteSizeLong() const;
+    [[maybe_unused]] size_t ByteSizeLong() const;
 
-        [[maybe_unused]] void SerializeToArray(void*, int) { }
+    [[maybe_unused]] void SerializeToArray(void*, int) { }
 
-        [[maybe_unused]] void set_allocated_draco_data(void*) { }
+    [[maybe_unused]] void set_allocated_draco_data(void*) { }
 
-        [[maybe_unused]] bool ParseFromString(const std::string&);
+    [[maybe_unused]] bool ParseFromString(const std::string&);
 
-        [[maybe_unused]] unsigned active() const;
+    [[maybe_unused]] unsigned active() const;
 
-        [[maybe_unused]] uint32_t request_id() const;
+    [[maybe_unused]] uint32_t request_id() const;
 
-        [[maybe_unused]] uint32_t chunk_id() const;
+    [[maybe_unused]] uint32_t chunk_id() const;
 
-        [[maybe_unused]] uint32_t max_chunk() const;
-    };
+    [[maybe_unused]] uint32_t max_chunk() const;
+};
 
-    } // namespace sr_output_proto
+} // namespace sr_output_proto

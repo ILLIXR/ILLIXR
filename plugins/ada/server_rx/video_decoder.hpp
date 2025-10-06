@@ -16,10 +16,10 @@ public:
 
     void enqueue(std::string& img0, std::string& img1) override;
 
-//private:
-    // pyh reused buffers
-//    cv::Mat msb_owned_;
-//    cv::Mat lsb_owned_;
+    // private:
+    //  pyh reused buffers
+    // cv::Mat msb_owned_;
+    // cv::Mat lsb_owned_;
 };
 
 } // namespace ILLIXR

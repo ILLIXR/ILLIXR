@@ -7,7 +7,8 @@
 
 class data_row {
 public:
-    data_row(char delim) : delimiter(delim) {}
+    data_row(char delim)
+        : delimiter(delim) { }
 
     std::string const& operator[](std::size_t index) const {
         return data_[index];
@@ -39,7 +40,7 @@ public:
 
 private:
     std::vector<std::string> data_;
-    const char delimiter;
+    const char               delimiter;
 };
 
 std::istream& operator>>(std::istream& str, data_row& data) {
@@ -50,10 +51,10 @@ std::istream& operator>>(std::istream& str, data_row& data) {
 class data_iterator {
 public:
     typedef std::input_iterator_tag iterator_category;
-    typedef data_row                 value_type;
+    typedef data_row                value_type;
     typedef std::size_t             difference_type;
-    typedef data_row*                pointer;
-    typedef data_row&                reference;
+    typedef data_row*               pointer;
+    typedef data_row&               reference;
 
     explicit data_iterator(std::istream& str, std::size_t skip = 0, char delimiter = ',')
         : stream_(str.good() ? &str : nullptr)
@@ -64,7 +65,7 @@ public:
 
     data_iterator(char delimiter = ',')
         : stream_(nullptr)
-        , row_(delimiter){ }
+        , row_(delimiter) { }
 
     data_iterator& operator+=(std::size_t skip) {
         for (size_t i = 0; i < skip; ++i) {
@@ -112,5 +113,5 @@ public:
 
 private:
     std::istream* stream_;
-    data_row       row_;
+    data_row      row_;
 };

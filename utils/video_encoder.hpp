@@ -1,7 +1,7 @@
 #pragma once
 
-#include "illixr/error_util.hpp"
 #include "gst/gst.h"
+#include "illixr/error_util.hpp"
 
 #include <functional>
 #include <mutex>
@@ -70,7 +70,7 @@ public:
         return GST_FLOW_CUSTOM_ERROR;
     }
 
-    virtual ~video_encoder() {}
+    virtual ~video_encoder() { }
 
 protected:
     void create_pipelines();

@@ -66,7 +66,7 @@ private:
     cv::Mat depth16_; // CV_16U,  480x640
 
     std::vector<uint8_t> rx_buf_;
-    unsigned int current_frame_no_ = 0;
+    unsigned int         current_frame_no_ = 0;
 };
 
 } // namespace ILLIXR

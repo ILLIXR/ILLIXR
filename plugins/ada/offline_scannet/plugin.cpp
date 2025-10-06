@@ -12,22 +12,21 @@ using namespace ILLIXR::data_format;
 
 inline std::map<ullong, sensor_types> read_data(std::ifstream& gt_file, const std::string& file_name) {
     std::map<ullong, sensor_types> data;
-    //guard for npos
-    const auto p = file_name.rfind("poses/");
+    // guard for npos
+    const auto  p = file_name.rfind("poses/");
     std::string illixr_data;
-    if(p == std::string::npos){
+    if (p == std::string::npos) {
         spdlog::get("illixr")->error("No pose is in the dataset.");
         ILLIXR::abort();
-    }
-    else{
-        illixr_data = file_name.substr(0,p);
+    } else {
+        illixr_data = file_name.substr(0, p);
     }
 
     ullong idx = 0;
     for (ssv_iterator row{gt_file, 0}; row != ssv_iterator{}; ++row, ++idx) {
         Eigen::Vector3f    pose_position{std::stof(row[1]), std::stof(row[2]), std::stof(row[3])};
         Eigen::Quaternionf pose_orientation{std::stof(row[7]), std::stof(row[4]), std::stof(row[5]), std::stof(row[6])};
-        sensor_types each_datapoint;
+        sensor_types       each_datapoint;
         each_datapoint.pose = {time_point{}, pose_position, pose_orientation};
         // Create lazy_load_image objects with loaded images instead of just storing paths
         each_datapoint.depth_cam = lazy_load_image{illixr_data + "/" + row[9]};
@@ -35,7 +34,7 @@ inline std::map<ullong, sensor_types> read_data(std::ifstream& gt_file, const st
         data.emplace(idx, std::move(each_datapoint));
     }
     if (!data.empty()) {
-        auto last = data.rbegin();
+        auto last               = data.rbegin();
         last->second.last_frame = true;
     }
     return data;
@@ -74,7 +73,6 @@ threadloop::skip_option offline_scannet::_p_should_skip() {
     }
 }
 
-
 void offline_scannet::_p_one_iteration() {
     assert(sensor_data_it_ != sensor_data_.end());
 
@@ -99,14 +97,14 @@ void offline_scannet::_p_one_iteration() {
 
     data_format::pose_type pose = {time_point{}, sensor_datum.pose.position, sensor_datum.pose.orientation};
 
-    //pyh test to verify the depth is loaded correctly
-    //pyh verified that images and poses are load correctly
-    // printf("frame %u\n", current_frame_count_);
-    // std::string depth_str = std::to_string(current_frame_count_) + ".pgm";
-    // write_16bit_pgm(cam_depth, depth_str);
-    // printf("pose at frame %u: p(%f,%f,%f), o(%f,%f,%f,%f)\n", current_frame_count_, pose.position.x(),
-    //        pose.position.y(), pose.position.z(), pose.orientation.w(), pose.orientation.x(),
-    //        pose.orientation.y(), pose.orientation.z());
+    // pyh test to verify the depth is loaded correctly
+    // pyh verified that images and poses are load correctly
+    //  printf("frame %u\n", current_frame_count_);
+    //  std::string depth_str = std::to_string(current_frame_count_) + ".pgm";
+    //  write_16bit_pgm(cam_depth, depth_str);
+    //  printf("pose at frame %u: p(%f,%f,%f), o(%f,%f,%f,%f)\n", current_frame_count_, pose.position.x(),
+    //         pose.position.y(), pose.position.z(), pose.orientation.w(), pose.orientation.x(),
+    //         pose.orientation.y(), pose.orientation.z());
 
     scannet_.put(scannet_.allocate<scene_recon_type>(
         scene_recon_type{time_point{}, pose, cam_depth, cam_color, sensor_datum.last_frame}));
@@ -114,7 +112,6 @@ void offline_scannet::_p_one_iteration() {
     if (sensor_datum.last_frame) {
         printf("sending last frame %u\n", current_frame_count_);
         spdlog::get("illixr")->info("finish sending the last frame");
-
     }
 
     if (current_frame_count_ == (frame_count_ - 30)) {

@@ -8,8 +8,6 @@
 
 namespace ILLIXR {
 
-
-
 void vio_video_encoder::enqueue(cv::Mat& img0, cv::Mat& img1) {
     auto data_size      = img0.cols * img0.rows * img0.channels();
     int  size           = floor(data_size + ceil(img0.cols / 2.0) * ceil(img0.rows / 2.0) * 2);

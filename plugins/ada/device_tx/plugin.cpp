@@ -1,8 +1,7 @@
 #include "plugin.hpp"
 
-
-#include <spdlog/spdlog.h>
 #include <netinet/in.h>
+#include <spdlog/spdlog.h>
 
 using namespace ILLIXR;
 using namespace ILLIXR::data_format;
@@ -13,9 +12,9 @@ using namespace ILLIXR::data_format;
     , clock_{phonebook_->lookup_impl<relative_clock>()} // make sure you have the right IP address
     , stoplight_{phonebook_->lookup_impl<stoplight>()}
     , ada_writer_{switchboard_->get_network_writer<switchboard::event_wrapper<std::string>>(
-          "ada_data", network::topic_config{.latency = std::chrono::milliseconds(0),
-                        .serialization_method = network::topic_config::SerializationMethod::PROTOBUF
-          })} {
+          "ada_data",
+          network::topic_config{.latency              = std::chrono::milliseconds(0),
+                                .serialization_method = network::topic_config::SerializationMethod::PROTOBUF})} {
     if (!std::filesystem::exists(data_path_)) {
         if (!std::filesystem::create_directory(data_path_)) {
             spdlog::get("illixr")->error("Failed to create data directory.");
@@ -149,10 +148,10 @@ void device_tx::send_scene_recon_data(switchboard::ptr<const scene_recon_type> d
 
     // send
     ada_writer_.put(std::make_shared<switchboard::event_wrapper<std::string>>(send_buf_ + delimiter));
-    spdlog::get("illixr")->debug("Pose of frame {}: {}, {}, {}; {}, {}, {}, {}", frame_id_, outgoing_payload->input_pose().p_x(),
-                                 outgoing_payload->input_pose().p_y(), outgoing_payload->input_pose().p_z(),
-                                 outgoing_payload->input_pose().o_w(), outgoing_payload->input_pose().o_x(),
-                                 outgoing_payload->input_pose().o_y(), outgoing_payload->input_pose().o_z());
+    spdlog::get("illixr")->debug(
+        "Pose of frame {}: {}, {}, {}; {}, {}, {}, {}", frame_id_, outgoing_payload->input_pose().p_x(),
+        outgoing_payload->input_pose().p_y(), outgoing_payload->input_pose().p_z(), outgoing_payload->input_pose().o_w(),
+        outgoing_payload->input_pose().o_x(), outgoing_payload->input_pose().o_y(), outgoing_payload->input_pose().o_z());
 
     {
         std::lock_guard<std::mutex> lk{mutex_};

@@ -27,8 +27,8 @@ public:
     // 91 changed to accept scene update mappings instead
     void append_mesh_allocate(const std::unordered_map<unsigned, std::vector<NewVB>>& inputSceneUpdateMap);
 
-    unsigned append_mesh_match_and_insert(bool merge);
-    static unsigned hash_vb(const VoxelBlockIndex& Index) ;
+    unsigned        append_mesh_match_and_insert(bool merge);
+    static unsigned hash_vb(const VoxelBlockIndex& Index);
 
     void restore_deleted_faces();
 

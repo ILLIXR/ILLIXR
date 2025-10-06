@@ -7,9 +7,9 @@
 #include "illixr/threadloop.hpp"
 
 #if __has_include("sr_output.pb.h")
-#include "sr_output.pb.h"
+    #include "sr_output.pb.h"
 #else
-#include "../proto/output_stub.hpp"
+    #include "../proto/output_stub.hpp"
 #endif
 #include <filesystem>
 #include <fstream>
@@ -33,13 +33,12 @@ private:
     switchboard::buffered_reader<switchboard::event_wrapper<std::string>> sr_reader_;
     switchboard::writer<data_format::mesh_type>                           mesh_;
 
-
     switchboard::writer<data_format::vb_type> vb_;
 
-    int      last_id_       = -1;
+    int      last_id_ = -1;
     unsigned chunck_number_;
 
-    std::string        buffer_str_;
+    std::string buffer_str_;
 
     const std::string data_path_ = std::filesystem::current_path().string() + "/recorded_data";
     std::ofstream     receiving_latency_;

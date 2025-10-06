@@ -45,7 +45,7 @@ void video_decoder::create_pipelines() {
     g_object_set(G_OBJECT(appsrc_img0_), "stream-type", 0, "format", GST_FORMAT_BYTES, "is-live", TRUE, nullptr);
     g_object_set(G_OBJECT(appsrc_img1_), "stream-type", 0, "format", GST_FORMAT_BYTES, "is-live", TRUE, nullptr);
 #endif
-    //works on server but not usable if you are offloading to jetson
+    // works on server but not usable if you are offloading to jetson
     g_object_set(G_OBJECT(decoder_img0), "low-latency-mode", TRUE, nullptr);
     g_object_set(G_OBJECT(decoder_img1), "low-latency-mode", TRUE, nullptr);
 
@@ -124,7 +124,7 @@ GstFlowReturn video_decoder::cb_appsink(GstElement* sink) {
             lock.unlock(); // wait has acquired the lock. unlock it and start cleaning up
         }
 #if defined ADA
-        gst_buffer_unmap(buffer,map);
+        gst_buffer_unmap(buffer, map);
 #elif defined VIO
         if (sink == appsink_img0_) {
             gst_buffer_unmap(buffer, &img0_map_);

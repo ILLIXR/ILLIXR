@@ -6,7 +6,6 @@
 #include "illixr/relative_clock.hpp"
 #include "illixr/switchboard.hpp"
 
-
 namespace ILLIXR {
 
 class mesh_compression : public plugin {
@@ -21,9 +20,9 @@ private:
     uint mesh_count_;
 
     // ILLIXR related variables
-    const std::shared_ptr<switchboard>          switchboard_;
+    const std::shared_ptr<switchboard>                           switchboard_;
     std::shared_ptr<switchboard::writer<data_format::mesh_type>> compressed_mesh_;
-    std::vector<std::thread> compress_thread_;
+    std::vector<std::thread>                                     compress_thread_;
 };
 
 } // namespace ILLIXR
