@@ -192,25 +192,33 @@ profiles:
       enable_verbose_errors: false
       enable_pre_sleep: false
 
-  - test_ada:
-    plugins: ada.infinitam,ada.scene_management,ada.offline_scannet,ada.device_rx,tcp_network_backend,ada.device_tx,ada.mesh_compression,ada.mesh_decompression_grey,ada.server_rx,ada.server_tx
-    env_vars:
-      enable_offload: false
-      enable_alignment: false
-      enable_verbose_errors: false
-      enable_pre_sleep: false
+# Ada
 
   - ada_device:
-    plugins: ada.offline_scannet,tcp_netwaork_backend,ada.device_rx,ada.device_tx
+    plugins: ada.offline_scannet,tcp_network_backend,ada.device_tx,ada.device_rx,ada.mesh_decompression_grey,ada.scene_management
     env_vars:
+      duration: 1200
+      fps: 15
+      partial_mesh_count: 8
+      mesh_compress_parallelism: 8
+      illixr_tcp_server_port: 9000
+      illixr_tcp_client_port: 9001
+      illixr_is_client: 1
       enable_offload: false
       enable_alignment: false
       enable_verbose_errors: false
       enable_pre_sleep: false
 
   - ada_server:
-    plugins: ada.infinitam,tcp_network_backend,ada.server_rx,ada.server_tx
+    plugins: tcp_network_backend,ada.server_rx,ada.server_tx,ada.infinitam,ada.mesh_compression
     env_vars:
+      duration: 1200
+      fps: 15
+      partial_mesh_count: 8
+      mesh_compress_parallelism: 8
+      illixr_tcp_server_port: 9000
+      illixr_tcp_client_port: 9001
+      illixr_is_client: 0
       enable_offload: false
       enable_alignment: false
       enable_verbose_errors: false
