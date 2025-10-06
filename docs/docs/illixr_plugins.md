@@ -6,74 +6,76 @@ This page details the structure of ILLIXR's [_plugins_][G18] and how they intera
 
 Ada’s distributed design relies on **four communication plugins** that coordinate data transfer between the **device** and **server** for remote scene provisioning.
 
-- `ada.device_rx`
-  - *Purpose:* receives processed data from the server to the device. 
-  - Asynchronously *reads* a string from the topic `ada_processed`, which contains protobuf packets sent by the server.  
-  - *Publishes* [`mesh_type`][A23] to `compressed_scene` topic.  forwards compressed mesh chunks to `ada.mesh_decompression_grey`  
-  - *Publishes* [`vb_type`][A24] to `VB_update_lists` topic. forwards the unique voxel block list (UVBL) to `ada.scene_management`
-- `ada.device_tx`
-  - *Purpose:* sends encoded depth images (MSB and LSB) along with non-encoded pose information from the device to the server.  
-  - *Features:* the LSB encoding bitrate is configurable for bandwidth–reconstruction accuracy trade-offs. 
-  - Synchronously *reads* [`scene_recon_type`][A25] from `ScanNet_Data` topic, which provides dataset input (via `ada.offline_scannet`).  
-  - *Publishes* encoded depth data as a string to the `ada_data` topic.
-- `ada.server_rx`
-  - *Purpose:* receives encoded depth images and poses (not encoded) from the device, decodes them, and feeds them to the reconstruction module (`ada.infiniTAM`).  
-  - Asynchronously *reads* a string from topic `ada_data`
-  - *Publishes* [`scene_recon_type`][A25] to `ScanNet_Data` topic. provides decoded depth frames and corresponding pose inforamtion to downstream reconstruction.
-- `ada.server_tx`
-  - *Purpose:* sends processed scene data (meshes and Unique Voxel Block Lists(UVBL)) from the server back to the device. 
-  - Synchronously *reads* [`vb_type`][A24] from `unique_VB_list` topic (output of `ada.infiniTAM`). 
-  - Synchronously *reads* [`mesh_type`][A23] from `compressed_scene` topic (output of `ada.infiniTAM`).
-  - *Publishes* a string to `ada_processed` topic, each string is either a protobuf for vb_type topic or a protobuf for mesh_type topic.
+- `ada.device_rx`: Receives processed data from the server to the device. 
+    - Asynchronously *reads* a string from the topic `ada_processed`, which contains protobuf packets sent by the server.  
+    - *Publishes* [`mesh_type`][A23] to `compressed_scene` topic.  forwards compressed mesh chunks to `ada.mesh_decompression_grey`  
+    - *Publishes* [`vb_type`][A24] to `VB_update_lists` topic. forwards the unique voxel block list (UVBL) to `ada.scene_management`
+- `ada.device_tx`: Sends encoded depth images (MSB and LSB) along with non-encoded pose information from the device to the server. The LSB encoding bitrate is configurable for bandwidth–reconstruction accuracy trade-offs. 
+    - Synchronously *reads* [`scene_recon_type`][A25] from `ScanNet_Data` topic, which provides dataset input (via `ada.offline_scannet`).  
+    - *Publishes* encoded depth data as a string to the `ada_data` topic.
+- `ada.server_rx`: Receives encoded depth images and poses (not encoded) from the device, decodes them, and feeds them to the reconstruction module (`ada.infiniTAM`).  
+    - Asynchronously *reads* a string from topic `ada_data`
+    - *Publishes* [`scene_recon_type`][A25] to `ScanNet_Data` topic. provides decoded depth frames and corresponding pose inforamtion to downstream reconstruction.
+- `ada.server_tx`: Sends processed scene data (meshes and Unique Voxel Block Lists(UVBL)) from the server back to the device. 
+    - Synchronously *reads* [`vb_type`][A24] from `unique_VB_list` topic (output of `ada.infiniTAM`). 
+    - Synchronously *reads* [`mesh_type`][A23] from `compressed_scene` topic (output of `ada.infiniTAM`).
+    - *Publishes* a string to `ada_processed` topic, each string is either a protobuf for [`vb_type`][A24] topic or a protobuf for [`mesh_type`][A23] topic.
 
 &nbsp;&nbsp;[**Details**][P33]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C33]
 
-## add.infinitam
+## ada.infinitam
+
+Performs **scene reconstruction** using incoming depth and pose data from the device, followed by **on-demand or proactive scene extraction**.  
+During extraction, it generates both the **updated partial mesh** and the **Unique Voxel Block List (UVBL)**, which are sent downstream for compression and scene management. Extraction frequency is configurable to balance latency and compute cost.
+
 Topic details:
--  *Purpose:* performs **scene reconstruction** using incoming depth and pose data from the device, followed by **on-demand or proactive scene extraction**.  
-  During extraction, it generates both the **updated partial mesh** and the **Unique Voxel Block List (UVBL)**, which are sent downstream for compression and scene management.  
-- *Features:* extraction frequency is configurable to balance latency and compute cost.  
-- Synchronously *reads* [`scene_recon_type`][A25] from `ScanNet_Data` topic.
-- *Publishes* [`mesh_type`][A23] to `requested_scene` topic. Extracted mesh chunks for compression
-- *Publishes* [`vb_type`][A24] to `unique_VB_list` topic. This is the metadata for identifying updated voxel regions
+
+-   Synchronously *reads* [`scene_recon_type`][A25] from `ScanNet_Data` topic.
+-   *Publishes* [`mesh_type`][A23] to `requested_scene` topic. Extracted mesh chunks for compression
+-   *Publishes* [`vb_type`][A24] to `unique_VB_list` topic. This is the metadata for identifying updated voxel regions
 
 &nbsp;&nbsp;[**Details**][P33]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C34]
 
 ## ada.mesh_compression
 
+Compresses mesh chunks from [`ada.infinitam`][I12] using a **customized version of [Google Draco][E17]**. Compression parallelism can be tuned for different latency–power trade-offs.
+
 Topic details:
-- *Purpose:* compresses mesh chunks from `ada.infinitam` using a **customized version of Google Draco**.  
-- *Features:* compression parallelism can be tuned for different latency–power trade-offs.
-- Synchronously *reads* [`mesh_type`][A23] from `requested_scene` topic.
-- *Publishes* [`mesh_type`][A23] to `compressed_scene` topic. compressed mesh chunks ready for transmission to the device. Voxel block information has been attached to each encoded face. 
+
+-   Synchronously *reads* [`mesh_type`][A23] from `requested_scene` topic.
+-   *Publishes* [`mesh_type`][A23] to `compressed_scene` topic. compressed mesh chunks ready for transmission to the device. Voxel block information has been attached to each encoded face. 
 
 &nbsp;&nbsp;[**Details**][P33]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C35]
 
 ## ada.mesh_decompression_grey
 
-Topic details:
-- *Purpose:* decompress the mesh chunks received from the server and performs a portion of scene management that can be parallelized. 
-- *Features:* decompression parallelism can be tuned for different latency–power trade-offs. 
-- Synchronously *reads* [`mesh_type`][A23] from `compressed_scene` topic.
-- *Publishes* [`draco_type`][A26] to `decoded_inactive_scene` topic. decoded mesh data sent to `ada.scene_management`.  
+Decompresses the mesh chunks received from the server and performs a portion of scene management that can be parallelized. Decompression parallelism can be tuned for different latency–power trade-offs.
 
+Topic details:
+
+-   Synchronously *reads* [`mesh_type`][A23] from `compressed_scene` topic.
+-   *Publishes* [`draco_type`][A26] to `decoded_inactive_scene` topic. decoded mesh data sent to [`ada.scene_management`][I13].  
 
 &nbsp;&nbsp;[**Details**][P33]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C36]
 
 ## ada.offline_scannet
 
+Loads the **ScanNet dataset** for offline or reproducible experiments.
+ 
 Topic details:
-- *Purpose:* loads the **ScanNet dataset** for offline or reproducible experiments.
-- *Publishes* [`scene_recon_type`][A25] to `ScanNet_Data` topic.
+
+-   *Publishes* [`scene_recon_type`][A25] to `ScanNet_Data` topic.
 
 &nbsp;&nbsp;[**Details**][P33]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C37]
 
 ## ada.scene_management
 
+Integrates incremental scene updates into a **maintained global mesh**, merging new geometry and removing outdated regions for consistency.
+
 Topic details:
-- *Purpose:* integrates incremental scene updates into a **maintained global mesh**, merging new geometry and removing outdated regions for consistency.  
-- Synchronously *reads* [`draco_type`][A26] from `decoded_inactive_scene` topic.
-- Synchronously *reads* [`vb_type`][A24] from `VB_update_lists` topic.
+
+-   Synchronously *reads* [`draco_type`][A26] from `decoded_inactive_scene` topic.
+-   Synchronously *reads* [`vb_type`][A24] from `VB_update_lists` topic.
 
 &nbsp;&nbsp;[**Details**][P33]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C38]
 
@@ -587,6 +589,8 @@ See [Getting Started][I11] for more information on adding plugins to a [_profile
 
 [E16]:   https://github.com/ILLIXR/ILLIXR/tree/master/services/pose_prediction
 
+[E17]:   https://github.com/google/draco
+
 
 [//]: # (- Code -)
 
@@ -670,6 +674,10 @@ See [Getting Started][I11] for more information on adding plugins to a [_profile
 [I10]:   working_with/writing_your_plugin.md
 
 [I11]:   getting_started.md
+
+[I12]:   illixr_plugins.md#adainfinitam
+
+[I13]:   illixr_plugins.md#adascene_management
 
 [G10]:   glossary.md#ground-truth
 
