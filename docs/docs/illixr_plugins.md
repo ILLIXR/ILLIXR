@@ -6,20 +6,20 @@ This page details the structure of ILLIXR's [_plugins_][G18] and how they intera
 
 Four plugins which work in unison to allow remote [Ada][P33] processing
 
-- `ada.device_rx`
-  - Asynchronously *reads* a string from topic `ada_processed`
-  - *Publishes* [`mesh_type`][A23] to `compressed_scene` topic.
-  - *Publishes* [`vb_type`][A24] to `VB_update_lists` topic.
-- `ada.device_tx`
-  - Synchronously *reads* [`scene_recon_type`][A25] from `ScanNet_Data` topic.
-  - *Publishes* a string to `ada_data` topic.
-- `ada.server_rx`
-  - Asynchronously *reads* a string from topic `ada_data`
-  - *Publishes* [`scene_recon_type`][A25] to `ScanNet_Data` topic.
-- `ada.server_tx`
-  - Synchronously *reads* [`vb_type`][A24] from `unique_VB_list` topic.
-  - Synchronously *reads* [`mesh_type`][A23] from `compressed_scene` topic.
-  - *Publishes* a string to `ada_processed` topic.
+-   `ada.device_rx`
+    - Asynchronously *reads* a string from topic `ada_processed`
+    - *Publishes* [`mesh_type`][A23] to `compressed_scene` topic.
+    - *Publishes* [`vb_type`][A24] to `VB_update_lists` topic.
+-   `ada.device_tx`
+    - Synchronously *reads* [`scene_recon_type`][A25] from `ScanNet_Data` topic.
+    - *Publishes* a string to `ada_data` topic.
+-   `ada.server_rx`
+    - Asynchronously *reads* a string from topic `ada_data`
+    - *Publishes* [`scene_recon_type`][A25] to `ScanNet_Data` topic.
+-   `ada.server_tx`
+    - Synchronously *reads* [`vb_type`][A24] from `unique_VB_list` topic.
+    - Synchronously *reads* [`mesh_type`][A23] from `compressed_scene` topic.
+    - *Publishes* a string to `ada_processed` topic.
 
 &nbsp;&nbsp;[**Details**][P33]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C33]
 
@@ -27,9 +27,9 @@ Four plugins which work in unison to allow remote [Ada][P33] processing
 
 Topic details:
 
-- Synchronously *reads* [`scene_recon_type`][A25] from `ScanNet_Data` topic.
-- *Publishes* [`mesh_type`][A23] to `requested_scene` topic.
-- *Publishes* [`vb_type`][A24] to `unique_VB_list` topic.
+-   Synchronously *reads* [`scene_recon_type`][A25] from `ScanNet_Data` topic.
+-   *Publishes* [`mesh_type`][A23] to `requested_scene` topic.
+-   *Publishes* [`vb_type`][A24] to `unique_VB_list` topic.
 
 &nbsp;&nbsp;[**Details**][P33]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C34]
 
@@ -37,8 +37,8 @@ Topic details:
 
 Topic details:
 
-- Synchronously *reads* [`mesh_type`][A23] from `requested_scene` topic.
-- *Publishes* [`mesh_type`][A23] to `compressed_scene` topic.
+-   Synchronously *reads* [`mesh_type`][A23] from `requested_scene` topic.
+-   *Publishes* [`mesh_type`][A23] to `compressed_scene` topic.
 
 &nbsp;&nbsp;[**Details**][P33]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C35]
 
@@ -46,8 +46,8 @@ Topic details:
 
 Topic details:
 
-- Synchronously *reads* [`mesh_type`][A23] from `compressed_scene` topic.
-- *Publishes* [`draco_type`][A26] to `decoded_inactive_scene` topic.
+-   Synchronously *reads* [`mesh_type`][A23] from `compressed_scene` topic.
+-   *Publishes* [`draco_type`][A26] to `decoded_inactive_scene` topic.
 
 &nbsp;&nbsp;[**Details**][P33]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C36]
 
@@ -55,7 +55,7 @@ Topic details:
 
 Topic details:
 
-- *Publishes* [`scene_recon_type`][A25] to `ScanNet_Data` topic.
+-   *Publishes* [`scene_recon_type`][A25] to `ScanNet_Data` topic.
 
 &nbsp;&nbsp;[**Details**][P33]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C37]
 
@@ -63,8 +63,8 @@ Topic details:
 
 Topic details:
 
-- Synchronously *reads* [`draco_type`][A26] from `decoded_inactive_scene` topic.
-- Synchronously *reads* [`vb_type`][A24] from `VB_update_lists` topic.
+-   Synchronously *reads* [`draco_type`][A26] from `decoded_inactive_scene` topic.
+-   Synchronously *reads* [`vb_type`][A24] from `VB_update_lists` topic.
 
 &nbsp;&nbsp;[**Details**][P33]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C38]
 
@@ -284,22 +284,22 @@ Four plugins which work in unison to allow head tracking (VIO) to be rendered re
 
 Topic details:
 
-- `offload_vio.device_rx`
-  - Asynchronously *reads* a string from topic `vio_pose`.
-  - Synchronously *reads* [`imu_type`][A15] from `imu` topic
-  - *Publishes* [`pose_type`][A12] to `slow_pose` topic.
-  - *Publishes* [`imu_integrator_input`][A17] to `imu_integrator_input` topic.
-- `offload_vio.device_tx`
-  - Asynchronously *reads* [`binocular_cam_type`][A14] from `cam topic`
-  - *Publishes* a string to `compressed_imu_cam` topic
-- `offload_vio.server_rx`
-  - Asynchronously *reads* a string from `compressed_imu_cam` topic
-  - *Publishes* [`imu_type`][A15] to `imu` topic.
-  - *Publishes* [`binocular_cam_type`][A14] to `cam` topic.
-- `offload_vio.server_tx`
-  - Asynchronously *reads* [`imu_integrator_input`][A17] from `imu_integrator_input` topic.
-  - Synchronously *reads* [`pose_type`][A12] from `slow_pose` topic from `open_vins`
-  - *Publishes* a string to `vio_pose` topic.
+-   `offload_vio.device_rx`
+    - Asynchronously *reads* a string from topic `vio_pose`.
+    - Synchronously *reads* [`imu_type`][A15] from `imu` topic
+    - *Publishes* [`pose_type`][A12] to `slow_pose` topic.
+    - *Publishes* [`imu_integrator_input`][A17] to `imu_integrator_input` topic.
+-   `offload_vio.device_tx`
+    - Asynchronously *reads* [`binocular_cam_type`][A14] from `cam topic`
+    - *Publishes* a string to `compressed_imu_cam` topic
+-   `offload_vio.server_rx`
+    - Asynchronously *reads* a string from `compressed_imu_cam` topic
+    - *Publishes* [`imu_type`][A15] to `imu` topic.
+    - *Publishes* [`binocular_cam_type`][A14] to `cam` topic.
+-   `offload_vio.server_tx`
+    - Asynchronously *reads* [`imu_integrator_input`][A17] from `imu_integrator_input` topic.
+    - Synchronously *reads* [`pose_type`][A12] from `slow_pose` topic from `open_vins`
+    - *Publishes* a string to `vio_pose` topic.
 
 &nbsp;&nbsp;[**Details**][P17]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C17]
 
