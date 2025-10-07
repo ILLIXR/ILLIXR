@@ -4,7 +4,7 @@
 find_package(GTSAM 4.3.0 QUIET EXACT)
 find_package(GTSAM_UNSTABLE 4.3.0 QUIET EXACT)
 
-if(NOT GTSAM_FOUND)
+if(NOT GTSAM_FOUND AND NOT GTSAM_UNSTABLE_FOUND)
     message("GTSAM NOT FOUND - building from source")
     EXTERNALPROJECT_ADD(GTSAM_EXT
             GIT_REPOSITORY https://github.com/ILLIXR/gtsam.git   # Git repo for source code
