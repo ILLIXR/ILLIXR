@@ -10,6 +10,14 @@
 
 cmake_minimum_required(VERSION 3.22)
 
+# since several plugins now require clang to compile themselves or their dependencies
+# clang is now a required dependency
+find_program(CLANG_EXE clang REQUIRED)
+find_program(CLANG_CXX_EXE clang++ REQUIRED NAMES clang-cpp clang++)
+
+set(CMAKE_C_COMPILER ${CLANG_EXE} CACHE FILEPATH "" FORCE)
+set(CMAKE_CXX_COMPILER ${CLANG_CXX_EXE} CACHE FILEPATH "" FORCE)
+
 set(CMAKE_VERBOSE_MAKEFILE True)
 
 if (POLICY CMP0048)
@@ -27,9 +35,9 @@ endif()
 set(BUILDING_ILLIXR Yes)
 
 set(PACKAGE_NAME "ILLIXR")
-set(PACKAGE_STRING "ILLIXR 4.0.0")
+set(PACKAGE_STRING "ILLIXR 4.1.0")
 set(PACKAGE_VERSION_MAJOR "4")
-set(PACKAGE_VERSION_MINOR "0")
+set(PACKAGE_VERSION_MINOR "1")
 set(PACKAGE_VERSION_PATCH "0")
 set(PACKAGE_VERSION_LABEL "")
 
@@ -51,6 +59,7 @@ else()
 endif()
 
 include(ExternalProject)
+include(FetchContent)
 include(CMakeDependentOption)
 
 project(ILLIXR VERSION 3.2.0)
@@ -76,9 +85,10 @@ endif()
 set(OPENXR_RUNTIME "")
 
 # set the CMake search path to include the local files
-set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH})
+list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_BINARY_DIR}")
 option(COLOR_OUTPUT "Produce color output to the screen" ON)
-option(DATA_FILE "The data file to get" ON)
+option(DOWNLOAD_DATA_FILE "The data file to get" ON)
 option(BUILD_OXR_INTERFACE "Build the OpenXR interface (hand tracking only)" OFF)
 cmake_dependent_option(BUILD_OXR_TEST "Build the  test for the OpenXr interface (hand tracking only)" OFF BUILD_OXR_INTERFACE OFF)
 option(BUILD_ZED_CAPTURE "Build the ZED capture program" OFF)
@@ -202,7 +212,7 @@ find_package(X11 REQUIRED)
 
 pkg_check_modules(gl REQUIRED gl)
 
-find_package(Eigen3 REQUIRED)
+find_package(Eigen3 REQUIRED CONFIG)
 
 get_external(Vulkan)
 
@@ -299,7 +309,7 @@ set(CURRENT_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}" CACHE INTERNAL "")
 
 
 # deal with the data file if there is one
-if(DATA_FILE)
+if(DOWNLOAD_DATA_FILE AND DATA_FILE)
     string(REGEX MATCH "^http" HAVE_MATCH ${DATA_FILE})
     if(NOT HAVE_MATCH)
         message("Data file appears local")

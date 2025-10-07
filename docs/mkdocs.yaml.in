@@ -79,6 +79,7 @@ nav:
       - 'Plugin Overview': illixr_plugins.md
       - 'Services Overview': illixr_services.md
       - 'Plugin/Service Details':
+          - 'Ada': plugin_README/README_ada.md
           - 'Debugview': plugin_README/README_debugview.md
           - 'Fauxpose': plugin_README/README_fauxpose.md
           - 'Gldemo': plugin_README/README_gldemo.md
@@ -172,19 +173,25 @@ nav:
                   - 'raw_ht_data': api/structILLIXR_1_1data__format_1_1ht_1_1raw__ht__data.md
               - 'compressed_frame': api/structILLIXR_1_1data__format_1_1compressed__frame.md
               - 'connection_signal': api/structILLIXR_1_1data__format_1_1connection__signal.md
+              - 'draco_type': api/structILLIXR_1_1data__format_1_1draco__type.md
               - 'depth_type': api/structILLIXR_1_1data__format_1_1depth__type.md
               - 'hmd_physical_info': api/structILLIXR_1_1data__format_1_1hmd__physical__info.md
               - 'hologram_input': api/structILLIXR_1_1data__format_1_1hologram__input.md
               - 'image_handle': api/structILLIXR_1_1data__format_1_1image__handle.md
+              - 'mesh_type': api/structILLIXR_1_1data__format_1_1mesh__type.md
               - 'proper_quaternion': api/classILLIXR_1_1data__format_1_1proper__quaternion.md
               - 'rect': api/structILLIXR_1_1data__format_1_1rect.md
               - 'rendered_frame': api/structILLIXR_1_1data__format_1_1rendered__frame.md
+              - 'scene_recon_path': api/structILLIXR_1_1data__format_1_1scene__recon__path.md
+              - 'scene_recon_type': api/structILLIXR_1_1data__format_1_1scene__recon__type.md
               - 'signal_to_quad': api/structILLIXR_1_1data__format_1_1signal__to__quad.md
+              - 'vb_type': api/structILLIXR_1_1data__format_1_1vb__type.md
               - 'vk_image_handle': api/structILLIXR_1_1data__format_1_1vk__image__handle.md
           - 'Namespaces': api/namespaces.md
       - 'License': LICENSE.md
       - 'Policies':
          - 'Branch Retention': policies/branch_retention.md
+      - 'Changelog': CHANGELOG.md
 not_in_nav: |
   ILLIXR/*
   api/*

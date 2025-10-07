@@ -5,8 +5,11 @@
 #include <string>
 #include <vector>
 
-class csv_row {
+class data_row {
 public:
+    data_row(char delim)
+        : delimiter(delim) { }
+
     std::string const& operator[](std::size_t index) const {
         return data_[index];
     }
@@ -25,43 +28,46 @@ public:
         std::string       cell;
 
         data_.clear();
-        while (std::getline(line_stream, cell, ',')) {
+        while (std::getline(line_stream, cell, delimiter)) {
             data_.push_back(cell);
         }
         // This checks for a trailing comma with no data after it.
         if (!line_stream && cell.empty()) {
-            // If there was a trailing comma then add an empty element.
+            // If there was a trailing comma, then add an empty element.
             data_.emplace_back("");
         }
     }
 
 private:
     std::vector<std::string> data_;
+    const char               delimiter;
 };
 
-std::istream& operator>>(std::istream& str, csv_row& data) {
+std::istream& operator>>(std::istream& str, data_row& data) {
     data.read_next_row(str);
     return str;
 }
 
-class csv_iterator {
+class data_iterator {
 public:
     typedef std::input_iterator_tag iterator_category;
-    typedef csv_row                 value_type;
+    typedef data_row                value_type;
     typedef std::size_t             difference_type;
-    typedef csv_row*                pointer;
-    typedef csv_row&                reference;
+    typedef data_row*               pointer;
+    typedef data_row&               reference;
 
-    explicit csv_iterator(std::istream& str, std::size_t skip = 0)
-        : stream_(str.good() ? &str : nullptr) {
+    explicit data_iterator(std::istream& str, std::size_t skip = 0, char delimiter = ',')
+        : stream_(str.good() ? &str : nullptr)
+        , row_{delimiter} {
         ++(*this);
         (*this) += skip;
     }
 
-    csv_iterator()
-        : stream_(nullptr) { }
+    data_iterator(char delimiter = ',')
+        : stream_(nullptr)
+        , row_(delimiter) { }
 
-    csv_iterator& operator+=(std::size_t skip) {
+    data_iterator& operator+=(std::size_t skip) {
         for (size_t i = 0; i < skip; ++i) {
             ++(*this);
         }
@@ -69,7 +75,7 @@ public:
     }
 
     // Pre Increment
-    csv_iterator& operator++() {
+    data_iterator& operator++() {
         if (stream_) {
             if (!((*stream_) >> row_)) {
                 stream_ = nullptr;
@@ -79,25 +85,25 @@ public:
     }
 
     // Post increment
-    csv_iterator operator++(int) {
-        csv_iterator tmp(*this);
+    data_iterator operator++(int) {
+        data_iterator tmp(*this);
         ++(*this);
         return tmp;
     }
 
-    csv_row const& operator*() const {
+    data_row const& operator*() const {
         return row_;
     }
 
-    csv_row const* operator->() const {
+    data_row const* operator->() const {
         return &row_;
     }
 
-    bool operator==(csv_iterator const& rhs) {
+    bool operator==(data_iterator const& rhs) {
         return ((this == &rhs) || ((this->stream_ == nullptr) && (rhs.stream_ == nullptr)));
     }
 
-    bool operator!=(csv_iterator const& rhs) {
+    bool operator!=(data_iterator const& rhs) {
         return !((*this) == rhs);
     }
 
@@ -107,5 +113,5 @@ public:
 
 private:
     std::istream* stream_;
-    csv_row       row_;
+    data_row      row_;
 };

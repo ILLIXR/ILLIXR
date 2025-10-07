@@ -16,6 +16,7 @@ add_library(${PLUGIN_NAME} SHARED plugin.cpp
             ${CMAKE_SOURCE_DIR}/include/illixr/data_format/opencv_data_types.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/phonebook.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
+            $<TARGET_OBJECTS:video_decoder_vio>
 )
 
 set(protobuf_files

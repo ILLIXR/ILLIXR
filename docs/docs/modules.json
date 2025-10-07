@@ -15,6 +15,63 @@
   ],
   "plugins": [
     {
+      "name": "ada.device_rx",
+      "cmake_flag": "USE_ADA.DEVICE_RX=ON",
+      "dependencies": [
+        "deepstream"
+      ]
+    },
+    {
+      "name": "ada.device_tx",
+      "cmake_flag": "USE_ADA.DEVICE_TX=ON",
+      "dependencies": [
+        "glib",
+        "gstreamer"
+      ]
+    },
+    {
+      "name": "ada.infinitam",
+      "cmake_flag": "USE_ADA.INFINITAM=ON",
+      "dependencies": []
+    },
+    {
+      "name": "ada.mesh_compression",
+      "cmake_flag": "USE_ADA.MESH_COMPRESSION=ON",
+      "dependencies": []
+    },
+    {
+      "name": "ada.mesh_decompression_grey",
+      "cmake_flag": "USE_ADA.MESH_DECOMPRESSION_GREY=ON",
+      "dependencies": []
+    },
+    {
+      "name": "ada.offline_scannet",
+      "cmake_flag": "USE_ADA.OFFLINE_SCANNET=ON",
+      "dependencies": []
+    },
+    {
+      "name": "ada.scene_management",
+      "cmake_flag": "USE_ADA.SCENE_MANAGEMENT=ON",
+      "dependencies": [
+        "OpenMP"
+      ]
+    },
+    {
+      "name": "ada.server_rx",
+      "cmake_flag": "USE_ADA.SERVER_RX=ON",
+      "dependencies": [
+        "glib",
+        "gstreamer"
+      ]
+    },
+    {
+      "name": "ada.server_tx",
+      "cmake_flag": "USE_ADA.SERVER_TX=ON",
+      "dependencies": [
+        "deepstream"
+      ]
+    },
+    {
       "name": "audio_pipeline",
       "cmake_flag": "USE_AUDIO_PIPELINE=ON",
       "dependencies": [
@@ -70,6 +127,29 @@
       "dependencies": [
         "glfw3"
       ]
+    },
+    {
+      "name": "infinitam",
+      "cmake_flag": "USE_INFINITAM=ON",
+      "dependencies": [
+        "PNG",
+        "GLUT",
+        "realsense",
+        "OpenMP",
+        "cuda-toolkit"
+      ]
+    },
+    {
+      "name": "scene_management",
+      "cmake_flag": "USE_SCENE_MANAGEMENT=ON",
+      "dependencies": [
+        "OpenMP"
+      ]
+    },
+    {
+      "name": "offline_scannet",
+      "cmake_flag": "USE_OFFLINE_SCANNET=ON",
+      "dependencies": []
     },
     {
       "name": "webcam",
@@ -431,6 +511,22 @@
       }
     },
     {
+      "cuda-toolkit": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "",
+            "postnotes": "",
+            "notes": "The CUDA toolkit is available online <a href=\"https://developer.nvidia.com/cuda-toolkit-archive\">here</a>"
+          }
+        },
+        "Fedora": {
+          "pkg": "",
+          "postnotes": "",
+          "notes": "The CUDA toolkit is available online <a href=\"https://developer.nvidia.com/cuda-toolkit-archive\">here</a>"
+        }
+      }
+    },
+    {
       "cuda-cudart": {
         "pkg": {
           "Ubuntu": {
@@ -584,6 +680,22 @@
           },
           "Fedora": {
             "pkg": "glm-devel",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "glut": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "libglut-dev",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedors": {
+            "pkg": "libglut-devel",
             "postnotes": "",
             "notes": ""
           }
@@ -1288,6 +1400,22 @@
           },
           "Fedora": {
             "pkg": "libopengl-dev",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "OpenMP": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "libomp-dev",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "libomp-devel",
             "postnotes": "",
             "notes": ""
           }

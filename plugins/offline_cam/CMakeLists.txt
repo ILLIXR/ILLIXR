@@ -12,12 +12,13 @@ add_library(${PLUGIN_NAME} SHARED plugin.cpp
             ${CMAKE_SOURCE_DIR}/include/illixr/data_format/pose_prediction.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/relative_clock.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/threadloop.hpp
-            ${CMAKE_SOURCE_DIR}/include/illixr/csv_iterator.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/iterators/csv_iterator.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/iterators/data_iterator.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/data_format/misc.hpp
 )
 
-target_include_directories(${PLUGIN_NAME} PRIVATE ${OpenCV_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR}/include ${Eigen3_INCLUDE_DIRS})
-target_link_libraries(${PLUGIN_NAME} ${OpenCV_LIBRARIES} ${Eigen3_LIBRARIES} spdlog::spdlog)
+target_include_directories(${PLUGIN_NAME} PRIVATE ${OpenCV_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR}/include)
+target_link_libraries(${PLUGIN_NAME} ${OpenCV_LIBRARIES} Eigen3::Eigen spdlog::spdlog)
 target_compile_features(${PLUGIN_NAME} PRIVATE cxx_std_17)
 
 install(TARGETS ${PLUGIN_NAME} DESTINATION lib)
