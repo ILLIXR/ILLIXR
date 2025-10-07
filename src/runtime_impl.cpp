@@ -9,7 +9,9 @@
 #include "illixr/stoplight.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/vk/vk_extension_request.hpp"
-#include "sqlite_record_logger.hpp"
+// #include "sqlite_record_logger.hpp"
+// #include "stdout_record_logger.hpp"
+#include "no_op_record_logger.hpp"
 #include "vulkan_display.hpp"
 
 #include <algorithm>
@@ -45,7 +47,7 @@ public:
     explicit runtime_impl() {
         spdlogger("illixr", std::getenv("ILLIXR_LOG_LEVEL")); // can't use switchboard interface here
         phonebook_.register_impl<relative_clock>(std::make_shared<relative_clock>());
-        phonebook_.register_impl<record_logger>(std::make_shared<sqlite_record_logger>());
+        phonebook_.register_impl<record_logger>(std::make_shared<no_op_record_logger>());
         phonebook_.register_impl<gen_guid>(std::make_shared<gen_guid>());
         phonebook_.register_impl<switchboard>(std::make_shared<switchboard>(&phonebook_));
         switchboard_   = phonebook_.lookup_impl<switchboard>();

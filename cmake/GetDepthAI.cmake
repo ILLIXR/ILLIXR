@@ -13,7 +13,7 @@ else()
             GIT_TAG v2.29.0                                              # sha5 hash for specific commit to pull (if there is no specific tag to use)
             PREFIX ${CMAKE_BINARY_DIR}/_deps/depthai                     # the build directory
             #arguments to pass to CMake
-            CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=Release ${DEPTHAI_CMAKE_ARGS} -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_LIBDIR=lib
+            CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=Release ${DEPTHAI_CMAKE_ARGS} -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_LIBDIR=lib -DCMAKE_CXX_COMPILER=${CLANG_CXX_EXE} -DCMAKE_C_COMPILER=${CLANG_EXE}
             )
     # set variables for use by modules that depend on this one
     set(DepthAI_DEP_STR DepthAI_ext)   # Dependency string for other modules that depend on this one

@@ -58,7 +58,7 @@ if (NOT Vulkan_FOUND)
                         GIT_REPOSITORY https://github.com/ILLIXR/ILLIXR-vulkan.git
                         GIT_TAG 7901de80434662709e0357d1eac39376055b0b79
                         PREFIX ${CMAKE_BINARY_DIR}/_deps/vulkan
-                        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=Release -DBUILD_PARALLEL_LEVEL=${BUILD_PARALLEL_LEVEL}
+                        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=Release -DBUILD_PARALLEL_LEVEL=${BUILD_PARALLEL_LEVEL} -DCMAKE_CXX_COMPILER=${CLANG_CXX_EXE} -DCMAKE_C_COMPILER=${CLANG_EXE}
                         BUILD_COMMAND cmake --build . --parallel ${BUILD_PARALLEL_LEVEL}
                         INSTALL_COMMAND cmake --install . --prefix ${CMAKE_INSTALL_PREFIX}
                         )

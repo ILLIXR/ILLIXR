@@ -8,7 +8,7 @@ if(NOT survive_FOUND)
                         GIT_REPOSITORY https://github.com/collabora/libsurvive.git
                         GIT_TAG 4fb6d888d0277a8a3ba725e63707434d80ecdb2a
                         PREFIX ${CMAKE_BINARY_DIR}/_deps/survive
-                        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=Release
+                        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=${CLANG_CXX_EXE} -DCMAKE_C_COMPILER=${CLANG_EXE}
                         UPDATE_COMMAND git submodule update --init
     )
     set(LibSurvive_DEP_STR LibSurvive_ext)

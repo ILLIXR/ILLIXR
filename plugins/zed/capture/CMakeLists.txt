@@ -68,7 +68,7 @@ target_link_libraries(zed_capture PUBLIC
                       ${OpenCV_LIBRARIES}
                       glfw
                       OpenGL::GL
-                      ${Eigen3_LIBRARIES}
+                      Eigen3::Eigen
                       dl
                       Threads::Threads
                       boost_filesystem

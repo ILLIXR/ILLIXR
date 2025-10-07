@@ -40,7 +40,7 @@ private:
     GstMapInfo                            img1_{};
     bool                                  img_ready_ = false;
 
-    std::unique_ptr<video_encoder>                                       encoder_ = nullptr;
+    std::unique_ptr<vio_video_encoder>                                   encoder_ = nullptr;
     std::optional<time_point>                                            latest_imu_time_;
     std::optional<time_point>                                            latest_cam_time_;
     int                                                                  frame_id_    = 0;
