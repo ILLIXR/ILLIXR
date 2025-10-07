@@ -44,8 +44,8 @@ setting appropriate server IP address and port number.
 ## Compression
 
 H.264 codec is supported for compressing the camera images to save bandwidth. To enable compression, define
-`USE_COMPRESSION` in `device_tx/plugin.cpp` and `server_rx/plugin.cpp` (defaulted to not enabled). In
-`device_tx/video_encoder.cpp` and `server_rx/video_decoder.cpp`, define appropriate image dimensions and desired target
+`USE_COMPRESSION` and `VIO` in `device_tx/plugin.cpp` and `server_rx/plugin.cpp` (defaulted to not enabled). In
+`include/illixr/video_encoder.hpp` and `include/illixr/video_decoder.hpp`, define appropriate image dimensions and desired target
 bitrate (defaults to 5Mbps). The codec library is implemented based on GStreamer and DeepStream. Please follow the
 instructions [here][E10] to install GStreamer and DeepStream SDK. You don't have to reinstall CUDA and NVIDIA Driver if
 you have a relatively new version. TensorRT and librdkafka are not required either.
