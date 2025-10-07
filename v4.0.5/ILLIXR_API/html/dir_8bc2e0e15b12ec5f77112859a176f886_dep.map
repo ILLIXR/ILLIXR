@@ -1,0 +1,13 @@
+<map id="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada" name="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada">
+<area shape="rect" id="node2" href="dir_512ed641ba2408f96a014481b937cd6b.html" title="device_rx" alt="" coords="1187,63,1272,88"/>
+<area shape="rect" id="node3" href="dir_29f9efed5b04770f99cffee89645c57c.html" title="device_tx" alt="" coords="1077,63,1163,88"/>
+<area shape="rect" id="node4" href="dir_e12b6a9cf7bb0e1989ec6c8ad142a41b.html" title="infinitam" alt="" coords="971,63,1053,88"/>
+<area shape="rect" id="node5" href="dir_27ef62f1585d4f34e54a4abff2ec4934.html" title="mesh_compression" alt="" coords="799,63,947,88"/>
+<area shape="rect" id="node6" href="dir_e7a697a9e8fe2502ae37ed5c614fc62a.html" title="mesh_decompression_grey" alt="" coords="576,63,776,88"/>
+<area shape="rect" id="node7" href="dir_9d4eb9fb9a6e362cc94e8586da9a0428.html" title="offline_scannet" alt="" coords="429,63,552,88"/>
+<area shape="rect" id="node8" href="dir_5929c4ac04a129fbe3c1a452bcf496f4.html" title="scene_management" alt="" coords="251,63,405,88"/>
+<area shape="rect" id="node9" href="dir_997af12620de582d3c39f025e56d8502.html" title="server_rx" alt="" coords="144,63,227,88"/>
+<area shape="rect" id="node10" href="dir_342bcc04b8226dc0a014144a35b95992.html" title="server_tx" alt="" coords="37,63,120,88"/>
+<area shape="rect" id="clust2" href="dir_8bc2e0e15b12ec5f77112859a176f886.html" alt="" coords="27,52,1355,99"/>
+<area shape="rect" id="clust1" href="dir_38c8d24aef3972a7f87b834274e76e31.html" title="plugins" alt="" coords="16,16,1365,109"/>
+</map>

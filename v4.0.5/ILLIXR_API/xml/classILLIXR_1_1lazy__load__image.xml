@@ -1,0 +1,175 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classILLIXR_1_1lazy__load__image" kind="class" language="C++" prot="public">
+    <compoundname>ILLIXR::lazy_load_image</compoundname>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1lazy__load__image_1a4a115b51c70835451f7159cda059d7f5" prot="private" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string ILLIXR::lazy_load_image::path_</definition>
+        <argsstring></argsstring>
+        <name>path_</name>
+        <qualifiedname>ILLIXR::lazy_load_image::path_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/offline_scannet/plugin.hpp" line="47" column="30" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/offline_scannet/plugin.hpp" bodystart="47" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1lazy__load__image_1ad0195c7ab26ed0a1a9eeb6024cc2939f" prot="private" static="no" mutable="no">
+        <type>std::unique_ptr&lt; cv::Mat &gt;</type>
+        <definition>std::unique_ptr&lt;cv::Mat&gt; ILLIXR::lazy_load_image::image_</definition>
+        <argsstring></argsstring>
+        <name>image_</name>
+        <qualifiedname>ILLIXR::lazy_load_image::image_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/offline_scannet/plugin.hpp" line="48" column="21" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/offline_scannet/plugin.hpp" bodystart="48" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1lazy__load__image_1a9b5d3095d529d75972c31d602d40a7e3" prot="private" static="no" mutable="no">
+        <type>cv::Mat</type>
+        <definition>cv::Mat ILLIXR::lazy_load_image::mat_</definition>
+        <argsstring></argsstring>
+        <name>mat_</name>
+        <qualifiedname>ILLIXR::lazy_load_image::mat_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/plugins/offline_cam/plugin.hpp" line="43" column="17" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/plugins/offline_cam/plugin.hpp" bodystart="43" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classILLIXR_1_1lazy__load__image_1ae852da0c1ad83438fa3d280eccfeecf9" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::lazy_load_image::lazy_load_image</definition>
+        <argsstring>(std::string path)</argsstring>
+        <name>lazy_load_image</name>
+        <qualifiedname>ILLIXR::lazy_load_image::lazy_load_image</qualifiedname>
+        <param>
+          <type>std::string</type>
+          <declname>path</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/offline_scannet/plugin.hpp" line="21" column="14" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/offline_scannet/plugin.hpp" bodystart="21" bodyend="25"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1lazy__load__image_1a5179fe82816cdef4751ebdc26c92e724" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::lazy_load_image::lazy_load_image</definition>
+        <argsstring>()=default</argsstring>
+        <name>lazy_load_image</name>
+        <qualifiedname>ILLIXR::lazy_load_image::lazy_load_image</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/offline_scannet/plugin.hpp" line="28" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1lazy__load__image_1a070f1bc881073273ba1cecb3c8c82e6c" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::unique_ptr&lt; cv::Mat &gt;</type>
+        <definition>std::unique_ptr&lt; cv::Mat &gt; ILLIXR::lazy_load_image::load</definition>
+        <argsstring>() const</argsstring>
+        <name>load</name>
+        <qualifiedname>ILLIXR::lazy_load_image::load</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/offline_scannet/plugin.hpp" line="31" column="22" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/offline_scannet/plugin.hpp" bodystart="31" bodyend="37"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1lazy__load__image_1a9d941a12a8715ec644e717ccf65e7aa2" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::unique_ptr&lt; cv::Mat &gt;</type>
+        <definition>std::unique_ptr&lt; cv::Mat &gt; ILLIXR::lazy_load_image::color_load</definition>
+        <argsstring>() const</argsstring>
+        <name>color_load</name>
+        <qualifiedname>ILLIXR::lazy_load_image::color_load</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/offline_scannet/plugin.hpp" line="40" column="23" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/offline_scannet/plugin.hpp" bodystart="40" bodyend="44"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1lazy__load__image_1a5179fe82816cdef4751ebdc26c92e724" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::lazy_load_image::lazy_load_image</definition>
+        <argsstring>()=default</argsstring>
+        <name>lazy_load_image</name>
+        <qualifiedname>ILLIXR::lazy_load_image::lazy_load_image</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/plugins/offline_cam/plugin.hpp" line="23" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1lazy__load__image_1ae852da0c1ad83438fa3d280eccfeecf9" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::lazy_load_image::lazy_load_image</definition>
+        <argsstring>(std::string path)</argsstring>
+        <name>lazy_load_image</name>
+        <qualifiedname>ILLIXR::lazy_load_image::lazy_load_image</qualifiedname>
+        <param>
+          <type>std::string</type>
+          <declname>path</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/plugins/offline_cam/plugin.hpp" line="25" column="14" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/plugins/offline_cam/plugin.hpp" bodystart="25" bodyend="30"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1lazy__load__image_1abe506558639cc81e6703054c843f697c" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>cv::Mat</type>
+        <definition>cv::Mat ILLIXR::lazy_load_image::load</definition>
+        <argsstring>() const</argsstring>
+        <name>load</name>
+        <qualifiedname>ILLIXR::lazy_load_image::load</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/plugins/offline_cam/plugin.hpp" line="32" column="14" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/plugins/offline_cam/plugin.hpp" bodystart="32" bodyend="39"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/offline_scannet/plugin.hpp" line="18" column="1" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/offline_scannet/plugin.hpp" bodystart="18" bodyend="49"/>
+    <listofallmembers>
+      <member refid="classILLIXR_1_1lazy__load__image_1a9d941a12a8715ec644e717ccf65e7aa2" prot="public" virt="non-virtual"><scope>ILLIXR::lazy_load_image</scope><name>color_load</name></member>
+      <member refid="classILLIXR_1_1lazy__load__image_1ad0195c7ab26ed0a1a9eeb6024cc2939f" prot="private" virt="non-virtual"><scope>ILLIXR::lazy_load_image</scope><name>image_</name></member>
+      <member refid="classILLIXR_1_1lazy__load__image_1ae852da0c1ad83438fa3d280eccfeecf9" prot="public" virt="non-virtual"><scope>ILLIXR::lazy_load_image</scope><name>lazy_load_image</name></member>
+      <member refid="classILLIXR_1_1lazy__load__image_1a5179fe82816cdef4751ebdc26c92e724" prot="public" virt="non-virtual"><scope>ILLIXR::lazy_load_image</scope><name>lazy_load_image</name></member>
+      <member refid="classILLIXR_1_1lazy__load__image_1a5179fe82816cdef4751ebdc26c92e724" prot="public" virt="non-virtual"><scope>ILLIXR::lazy_load_image</scope><name>lazy_load_image</name></member>
+      <member refid="classILLIXR_1_1lazy__load__image_1ae852da0c1ad83438fa3d280eccfeecf9" prot="public" virt="non-virtual"><scope>ILLIXR::lazy_load_image</scope><name>lazy_load_image</name></member>
+      <member refid="classILLIXR_1_1lazy__load__image_1a070f1bc881073273ba1cecb3c8c82e6c" prot="public" virt="non-virtual"><scope>ILLIXR::lazy_load_image</scope><name>load</name></member>
+      <member refid="classILLIXR_1_1lazy__load__image_1abe506558639cc81e6703054c843f697c" prot="public" virt="non-virtual"><scope>ILLIXR::lazy_load_image</scope><name>load</name></member>
+      <member refid="classILLIXR_1_1lazy__load__image_1a9b5d3095d529d75972c31d602d40a7e3" prot="private" virt="non-virtual"><scope>ILLIXR::lazy_load_image</scope><name>mat_</name></member>
+      <member refid="classILLIXR_1_1lazy__load__image_1a4a115b51c70835451f7159cda059d7f5" prot="private" virt="non-virtual"><scope>ILLIXR::lazy_load_image</scope><name>path_</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

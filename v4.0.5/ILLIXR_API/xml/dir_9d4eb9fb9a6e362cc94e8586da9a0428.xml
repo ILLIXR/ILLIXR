@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_9d4eb9fb9a6e362cc94e8586da9a0428" kind="dir">
+    <compoundname>/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/offline_scannet</compoundname>
+    <innerfile refid="plugins_2ada_2offline__scannet_2plugin_8cpp">plugin.cpp</innerfile>
+    <innerfile refid="plugins_2ada_2offline__scannet_2plugin_8hpp">plugin.hpp</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/offline_scannet/"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,347 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structILLIXR_1_1data__format_1_1draco__type" kind="struct" language="C++" prot="public">
+    <compoundname>ILLIXR::data_format::draco_type</compoundname>
+    <basecompoundref refid="classILLIXR_1_1switchboard_1_1event" prot="public" virt="non-virtual">ILLIXR::switchboard::event</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1draco__type_1a29645ac95500c5f1008d9cf9ce40830d" prot="public" static="no" mutable="no">
+        <type>std::unique_ptr&lt; draco_illixr::Mesh &gt;</type>
+        <definition>std::unique_ptr&lt;draco_illixr::Mesh&gt; ILLIXR::data_format::draco_type::preprocessed_mesh</definition>
+        <argsstring></argsstring>
+        <name>preprocessed_mesh</name>
+        <qualifiedname>ILLIXR::data_format::draco_type::preprocessed_mesh</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/draco.hpp" line="12" column="34" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/draco.hpp" bodystart="12" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1draco__type_1a998456eb55ceba9af1cfde232d37ce77" prot="public" static="no" mutable="no">
+        <type>unsigned</type>
+        <definition>unsigned ILLIXR::data_format::draco_type::frame_id</definition>
+        <argsstring></argsstring>
+        <name>frame_id</name>
+        <qualifiedname>ILLIXR::data_format::draco_type::frame_id</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/draco.hpp" line="13" column="54" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/draco.hpp" bodystart="13" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1draco__type_1a203cb1c729d405aa755843c118748ca5" prot="public" static="no" mutable="no">
+        <type>unsigned</type>
+        <definition>unsigned ILLIXR::data_format::draco_type::num_vertices</definition>
+        <argsstring></argsstring>
+        <name>num_vertices</name>
+        <qualifiedname>ILLIXR::data_format::draco_type::num_vertices</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/draco.hpp" line="14" column="54" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/draco.hpp" bodystart="14" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1draco__type_1a8b4fb0260953363ebdf9e2325d6e52c6" prot="public" static="no" mutable="no">
+        <type>unsigned</type>
+        <definition>unsigned ILLIXR::data_format::draco_type::num_faces</definition>
+        <argsstring></argsstring>
+        <name>num_faces</name>
+        <qualifiedname>ILLIXR::data_format::draco_type::num_faces</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/draco.hpp" line="15" column="54" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/draco.hpp" bodystart="15" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1draco__type_1aa1634b19c03b072b11e098ee007e8348" prot="public" static="no" mutable="no">
+        <type>unsigned</type>
+        <definition>unsigned ILLIXR::data_format::draco_type::chunk_id</definition>
+        <argsstring></argsstring>
+        <name>chunk_id</name>
+        <qualifiedname>ILLIXR::data_format::draco_type::chunk_id</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/draco.hpp" line="16" column="54" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/draco.hpp" bodystart="16" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1draco__type_1a5f20cf93bfe333fc1c6b93ee5f788b18" prot="public" static="no" mutable="no">
+        <type>unsigned</type>
+        <definition>unsigned ILLIXR::data_format::draco_type::max_chunk</definition>
+        <argsstring></argsstring>
+        <name>max_chunk</name>
+        <qualifiedname>ILLIXR::data_format::draco_type::max_chunk</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/draco.hpp" line="17" column="54" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/draco.hpp" bodystart="17" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1draco__type_1a1c60dcae72c82ae0fcbe186863dafef9" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; Eigen::Vector3d &gt;</type>
+        <definition>std::vector&lt;Eigen::Vector3d&gt; ILLIXR::data_format::draco_type::vertices</definition>
+        <argsstring></argsstring>
+        <name>vertices</name>
+        <qualifiedname>ILLIXR::data_format::draco_type::vertices</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/draco.hpp" line="18" column="37" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/draco.hpp" bodystart="18" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1draco__type_1a4a4699cc061329d7292d93801ce57457" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; Eigen::Vector3d &gt;</type>
+        <definition>std::vector&lt;Eigen::Vector3d&gt; ILLIXR::data_format::draco_type::colors</definition>
+        <argsstring></argsstring>
+        <name>colors</name>
+        <qualifiedname>ILLIXR::data_format::draco_type::colors</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/draco.hpp" line="19" column="37" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/draco.hpp" bodystart="19" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1draco__type_1a565c6bc57830797233e5fbc7e4d87e93" prot="public" static="no" mutable="no">
+        <type>std::unordered_map&lt; unsigned, std::vector&lt; NewVB &gt; &gt;</type>
+        <definition>std::unordered_map&lt;unsigned, std::vector&lt;NewVB&gt; &gt; ILLIXR::data_format::draco_type::scene_update_mapping</definition>
+        <argsstring></argsstring>
+        <name>scene_update_mapping</name>
+        <qualifiedname>ILLIXR::data_format::draco_type::scene_update_mapping</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/draco.hpp" line="20" column="24" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/draco.hpp" bodystart="20" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1draco__type_1a8ab6df05b26c9f5d366762016e052d26" prot="public" static="no" mutable="no">
+        <type>unsigned</type>
+        <definition>unsigned ILLIXR::data_format::draco_type::face_number</definition>
+        <argsstring></argsstring>
+        <name>face_number</name>
+        <qualifiedname>ILLIXR::data_format::draco_type::face_number</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/draco.hpp" line="21" column="54" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/draco.hpp" bodystart="21" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1draco__type_1a6ead16c8b5fc1bd062607de4a06797d2" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::draco_type::draco_type</definition>
+        <argsstring>(unsigned id, unsigned chunk_id_, std::unordered_map&lt; unsigned, std::vector&lt; NewVB &gt; &gt; &amp;&amp;inputUpdateMap)</argsstring>
+        <name>draco_type</name>
+        <qualifiedname>ILLIXR::data_format::draco_type::draco_type</qualifiedname>
+        <param>
+          <type>unsigned</type>
+          <declname>id</declname>
+        </param>
+        <param>
+          <type>unsigned</type>
+          <declname>chunk_id_</declname>
+        </param>
+        <param>
+          <type>std::unordered_map&lt; unsigned, std::vector&lt; NewVB &gt; &gt; &amp;&amp;</type>
+          <declname>inputUpdateMap</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/draco.hpp" line="24" column="5" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/draco.hpp" bodystart="24" bodyend="27"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1draco__type_1aed64bc1337077d1e4f56fd46ec80df19" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::draco_type::draco_type</definition>
+        <argsstring>(std::unique_ptr&lt; draco_illixr::Mesh &gt; input_mesh, unsigned id, std::vector&lt; Eigen::Vector3d &gt; &amp;vertices_, std::vector&lt; Eigen::Vector3d &gt; &amp;colors_, unsigned face_number_)</argsstring>
+        <name>draco_type</name>
+        <qualifiedname>ILLIXR::data_format::draco_type::draco_type</qualifiedname>
+        <param>
+          <type>std::unique_ptr&lt; draco_illixr::Mesh &gt;</type>
+          <declname>input_mesh</declname>
+        </param>
+        <param>
+          <type>unsigned</type>
+          <declname>id</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; Eigen::Vector3d &gt; &amp;</type>
+          <declname>vertices_</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; Eigen::Vector3d &gt; &amp;</type>
+          <declname>colors_</declname>
+        </param>
+        <param>
+          <type>unsigned</type>
+          <declname>face_number_</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/draco.hpp" line="30" column="5" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/draco.hpp" bodystart="30" bodyend="36"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1draco__type_1a25ea9887eba7940869d5a23cb0e385f4" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::draco_type::draco_type</definition>
+        <argsstring>(std::unique_ptr&lt; draco_illixr::Mesh &gt; input_mesh, unsigned id)</argsstring>
+        <name>draco_type</name>
+        <qualifiedname>ILLIXR::data_format::draco_type::draco_type</qualifiedname>
+        <param>
+          <type>std::unique_ptr&lt; draco_illixr::Mesh &gt;</type>
+          <declname>input_mesh</declname>
+        </param>
+        <param>
+          <type>unsigned</type>
+          <declname>id</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/draco.hpp" line="38" column="5" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/draco.hpp" bodystart="38" bodyend="40"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1draco__type_1ae6f90ee5d3757088c1f71b2b375ecb28" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::draco_type::draco_type</definition>
+        <argsstring>(std::unique_ptr&lt; draco_illixr::Mesh &gt; input_mesh, unsigned id, unsigned chunk_id_, unsigned max_chunk_)</argsstring>
+        <name>draco_type</name>
+        <qualifiedname>ILLIXR::data_format::draco_type::draco_type</qualifiedname>
+        <param>
+          <type>std::unique_ptr&lt; draco_illixr::Mesh &gt;</type>
+          <declname>input_mesh</declname>
+        </param>
+        <param>
+          <type>unsigned</type>
+          <declname>id</declname>
+        </param>
+        <param>
+          <type>unsigned</type>
+          <declname>chunk_id_</declname>
+        </param>
+        <param>
+          <type>unsigned</type>
+          <declname>max_chunk_</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/draco.hpp" line="42" column="5" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/draco.hpp" bodystart="42" bodyend="46"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1draco__type_1a2c099b77ab81f5921c905b47ddb91b32" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::draco_type::draco_type</definition>
+        <argsstring>(std::unique_ptr&lt; draco_illixr::Mesh &gt; input_mesh, unsigned id, unsigned num_vertices_, unsigned num_faces_, unsigned chunk_id_, unsigned max_chunk_)</argsstring>
+        <name>draco_type</name>
+        <qualifiedname>ILLIXR::data_format::draco_type::draco_type</qualifiedname>
+        <param>
+          <type>std::unique_ptr&lt; draco_illixr::Mesh &gt;</type>
+          <declname>input_mesh</declname>
+        </param>
+        <param>
+          <type>unsigned</type>
+          <declname>id</declname>
+        </param>
+        <param>
+          <type>unsigned</type>
+          <declname>num_vertices_</declname>
+        </param>
+        <param>
+          <type>unsigned</type>
+          <declname>num_faces_</declname>
+        </param>
+        <param>
+          <type>unsigned</type>
+          <declname>chunk_id_</declname>
+        </param>
+        <param>
+          <type>unsigned</type>
+          <declname>max_chunk_</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/draco.hpp" line="48" column="5" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/draco.hpp" bodystart="48" bodyend="55"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>ILLIXR::data_format::draco_type</label>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ILLIXR::switchboard::event</label>
+        <link refid="classILLIXR_1_1switchboard_1_1event"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>ILLIXR::data_format::draco_type</label>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ILLIXR::switchboard::event</label>
+        <link refid="classILLIXR_1_1switchboard_1_1event"/>
+      </node>
+    </collaborationgraph>
+    <location file="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/draco.hpp" line="11" column="1" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/draco.hpp" bodystart="11" bodyend="56"/>
+    <listofallmembers>
+      <member refid="structILLIXR_1_1data__format_1_1draco__type_1aa1634b19c03b072b11e098ee007e8348" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::draco_type</scope><name>chunk_id</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1draco__type_1a4a4699cc061329d7292d93801ce57457" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::draco_type</scope><name>colors</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1draco__type_1a6ead16c8b5fc1bd062607de4a06797d2" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::draco_type</scope><name>draco_type</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1draco__type_1aed64bc1337077d1e4f56fd46ec80df19" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::draco_type</scope><name>draco_type</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1draco__type_1a25ea9887eba7940869d5a23cb0e385f4" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::draco_type</scope><name>draco_type</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1draco__type_1ae6f90ee5d3757088c1f71b2b375ecb28" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::draco_type</scope><name>draco_type</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1draco__type_1a2c099b77ab81f5921c905b47ddb91b32" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::draco_type</scope><name>draco_type</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1draco__type_1a8ab6df05b26c9f5d366762016e052d26" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::draco_type</scope><name>face_number</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1draco__type_1a998456eb55ceba9af1cfde232d37ce77" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::draco_type</scope><name>frame_id</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1draco__type_1a5f20cf93bfe333fc1c6b93ee5f788b18" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::draco_type</scope><name>max_chunk</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1draco__type_1a8b4fb0260953363ebdf9e2325d6e52c6" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::draco_type</scope><name>num_faces</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1draco__type_1a203cb1c729d405aa755843c118748ca5" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::draco_type</scope><name>num_vertices</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1draco__type_1a29645ac95500c5f1008d9cf9ce40830d" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::draco_type</scope><name>preprocessed_mesh</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1draco__type_1a565c6bc57830797233e5fbc7e4d87e93" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::draco_type</scope><name>scene_update_mapping</name></member>
+      <member refid="classILLIXR_1_1switchboard_1_1event_1a55399aaf47bc0d3943fd89d7afb55624" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::draco_type</scope><name>serialize</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1draco__type_1a1c60dcae72c82ae0fcbe186863dafef9" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::draco_type</scope><name>vertices</name></member>
+      <member refid="classILLIXR_1_1switchboard_1_1event_1a01fb51a03e9025d71087de76823e449e" prot="public" virt="virtual"><scope>ILLIXR::data_format::draco_type</scope><name>~event</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
