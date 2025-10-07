@@ -50,37 +50,3 @@ target_link_libraries(video_decoder_ada PUBLIC
                       ${LINK_LIBS}
 )
 target_compile_definitions(video_decoder_ada PUBLIC ADA)
-
-
-add_library(video_encoder_vio OBJECT
-            video_encoder.hpp
-            video_encoder.cpp
-)
-
-target_include_directories(video_encoder_vio PUBLIC
-                           ${OpenCV_INCLUDE_DIRS}
-                           ${INC_DIRS}
-)
-
-target_link_libraries(video_encoder_vio PUBLIC
-                      ${OpenCV_LIBS}
-                      ${LINK_LIBS}
-)
-
-target_compile_definitions(video_encoder_vio PUBLIC VIO)
-
-add_library(video_decoder_vio OBJECT
-            video_decoder.hpp
-            video_decoder.cpp
-)
-
-target_include_directories(video_decoder_vio PUBLIC
-                           ${OpenCV_INCLUDE_DIRS}
-                           ${INC_DIRS}
-)
-
-target_link_libraries(video_decoder_vio PUBLIC
-                      ${OpenCV_LIBS}
-                      ${LINK_LIBS}
-)
-target_compile_definitions(video_decoder_vio PUBLIC VIO)
