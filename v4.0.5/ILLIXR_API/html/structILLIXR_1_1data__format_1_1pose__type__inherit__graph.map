@@ -1,7 +1,0 @@
-<map id="ILLIXR::data_format::pose_type" name="ILLIXR::data_format::pose_type">
-<area shape="rect" id="Node000001" title=" " alt="" coords="91,93,242,133"/>
-<area shape="rect" id="Node000002" href="$classILLIXR_1_1switchboard_1_1event.html" title="Virtual class for event types." alt="" coords="5,5,155,45"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="111,53,149,91,146,95,107,57"/>
-<area shape="rect" id="Node000003" href="$structILLIXR_1_1data__format_1_1pose__data.html" title=" " alt="" coords="179,5,330,45"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="227,57,188,95,184,91,223,53"/>
-</map>
