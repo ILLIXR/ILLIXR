@@ -1,0 +1,198 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="plugins_2ada_2device__tx_2video__encoder_8hpp" kind="file" language="C++">
+    <compoundname>video_encoder.hpp</compoundname>
+    <includes refid="include_2illixr_2video__encoder_8hpp" local="yes">illixr/video_encoder.hpp</includes>
+    <includedby refid="plugins_2ada_2device__tx_2plugin_8hpp" local="yes">/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/device_tx/plugin.hpp</includedby>
+    <includedby refid="plugins_2ada_2device__tx_2video__encoder_8cpp" local="yes">/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/device_tx/video_encoder.cpp</includedby>
+    <incdepgraph>
+      <node id="4">
+        <label>illixr/error_util.hpp</label>
+        <link refid="error__util_8hpp_source"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>global_module_defs.hpp</label>
+        <link refid="global__module__defs_8hpp_source"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>phonebook.hpp</label>
+        <link refid="phonebook_8hpp_source"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>relative_clock.hpp</label>
+        <link refid="relative__clock_8hpp_source"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>illixr/video_encoder.hpp</label>
+        <link refid="include_2illixr_2video__encoder_8hpp_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/device_tx/video_encoder.hpp</label>
+        <link refid="plugins_2ada_2device__tx_2video__encoder_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="19">
+        <label>algorithm</label>
+      </node>
+      <node id="8">
+        <label>cassert</label>
+      </node>
+      <node id="17">
+        <label>chrono</label>
+      </node>
+      <node id="20">
+        <label>cmath</label>
+      </node>
+      <node id="22">
+        <label>functional</label>
+      </node>
+      <node id="3">
+        <label>gst/gst.h</label>
+      </node>
+      <node id="15">
+        <label>iostream</label>
+      </node>
+      <node id="9">
+        <label>memory</label>
+      </node>
+      <node id="10">
+        <label>mutex</label>
+      </node>
+      <node id="23">
+        <label>opencv2/core/mat.hpp</label>
+      </node>
+      <node id="18">
+        <label>ratio</label>
+      </node>
+      <node id="11">
+        <label>shared_mutex</label>
+      </node>
+      <node id="16">
+        <label>spdlog/spdlog.h</label>
+      </node>
+      <node id="12">
+        <label>stdexcept</label>
+      </node>
+      <node id="21">
+        <label>string</label>
+      </node>
+      <node id="13">
+        <label>typeindex</label>
+      </node>
+      <node id="14">
+        <label>unordered_map</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="2">
+        <label>/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/device_tx/plugin.hpp</label>
+        <link refid="plugins_2ada_2device__tx_2plugin_8hpp_source"/>
+      </node>
+      <node id="1">
+        <label>/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/device_tx/video_encoder.hpp</label>
+        <link refid="plugins_2ada_2device__tx_2video__encoder_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="classILLIXR_1_1ada__video__encoder" prot="public">ILLIXR::ada_video_encoder</innerclass>
+    <innernamespace refid="namespaceILLIXR">ILLIXR</innernamespace>
+    <sectiondef kind="define">
+      <memberdef kind="define" id="plugins_2ada_2device__tx_2video__encoder_8hpp_1a8efd1d44808f49e4e3ba32602215ebb3" prot="public" static="no">
+        <name>ADA</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/device_tx/video_encoder.hpp" line="2" column="10" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/device_tx/video_encoder.hpp" bodystart="2" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>ADA</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;illixr/video_encoder.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceILLIXR" kindref="compound">ILLIXR</ref><sp/>{</highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal">ada_video_encoder<sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/>video_encoder<sp/>{</highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="9"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/>ada_video_encoder(FrameCallback<sp/>callback)</highlight></codeline>
+<codeline lineno="10"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>video_encoder(callback)<sp/>{<sp/>}</highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>enqueue(cv::Mat&amp;<sp/>img0,<sp/>cv::Mat&amp;<sp/>img1)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="13"><highlight class="normal"><sp/><sp/><sp/><sp/>GstFlowReturn<sp/>cb_appsink_msb(GstElement*<sp/>sink)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="14"><highlight class="normal"><sp/><sp/><sp/><sp/>GstFlowReturn<sp/>cb_appsink_lsb(GstElement*<sp/>sink)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"><sp/><sp/><sp/><sp/>GstSample*<sp/>samp0_{};</highlight></codeline>
+<codeline lineno="18"><highlight class="normal"><sp/><sp/><sp/><sp/>GstSample*<sp/>samp1_{};</highlight></codeline>
+<codeline lineno="19"><highlight class="normal"><sp/><sp/><sp/><sp/>guint64<sp/><sp/><sp/><sp/>frame_idx_<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="20"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="preprocessor">#undef<sp/>ADA</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>ILLIXR</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/device_tx/video_encoder.hpp"/>
+  </compounddef>
+</doxygen>

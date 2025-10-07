@@ -1,0 +1,720 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structILLIXR_1_1data__format_1_1mesh__type" kind="struct" language="C++" prot="public">
+    <compoundname>ILLIXR::data_format::mesh_type</compoundname>
+    <basecompoundref refid="classILLIXR_1_1switchboard_1_1event" prot="public" virt="non-virtual">ILLIXR::switchboard::event</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1mesh__type_1a9a9246265b956f5a1ddd62c9fe2f7991" prot="public" static="no" mutable="no">
+        <type>unsigned</type>
+        <definition>unsigned ILLIXR::data_format::mesh_type::type</definition>
+        <argsstring></argsstring>
+        <name>type</name>
+        <qualifiedname>ILLIXR::data_format::mesh_type::type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/mesh.hpp" line="11" column="31" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/mesh.hpp" bodystart="11" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1mesh__type_1ad6facf8a15ba3ba19f4f19c5e7490888" prot="public" static="no" mutable="no">
+        <type>const std::vector&lt; char &gt;</type>
+        <definition>const std::vector&lt;char&gt; ILLIXR::data_format::mesh_type::mesh</definition>
+        <argsstring></argsstring>
+        <name>mesh</name>
+        <qualifiedname>ILLIXR::data_format::mesh_type::mesh</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/mesh.hpp" line="12" column="25" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/mesh.hpp" bodystart="12" bodyend="12"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1mesh__type_1a371ff4701c624127d65a5eb5bed9f829" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool ILLIXR::data_format::mesh_type::compressed</definition>
+        <argsstring></argsstring>
+        <name>compressed</name>
+        <qualifiedname>ILLIXR::data_format::mesh_type::compressed</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/mesh.hpp" line="13" column="15" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/mesh.hpp" bodystart="13" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1mesh__type_1abe74edac141906fac6034894cb1ab221" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool ILLIXR::data_format::mesh_type::active</definition>
+        <argsstring></argsstring>
+        <name>active</name>
+        <qualifiedname>ILLIXR::data_format::mesh_type::active</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/mesh.hpp" line="14" column="15" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/mesh.hpp" bodystart="14" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1mesh__type_1a42c9b36aebd883df79a19bd7730d4bee" prot="public" static="no" mutable="no">
+        <type>unsigned</type>
+        <definition>unsigned ILLIXR::data_format::mesh_type::id</definition>
+        <argsstring></argsstring>
+        <name>id</name>
+        <qualifiedname>ILLIXR::data_format::mesh_type::id</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/mesh.hpp" line="15" column="15" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/mesh.hpp" bodystart="15" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1mesh__type_1a9476e4a64eb3032aabbcb7117ad10fd7" prot="public" static="no" mutable="no">
+        <type>unsigned</type>
+        <definition>unsigned ILLIXR::data_format::mesh_type::chunk_id</definition>
+        <argsstring></argsstring>
+        <name>chunk_id</name>
+        <qualifiedname>ILLIXR::data_format::mesh_type::chunk_id</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/mesh.hpp" line="16" column="15" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/mesh.hpp" bodystart="16" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1mesh__type_1a369427042dfbdfb0b5d1d60abf558a06" prot="public" static="no" mutable="no">
+        <type>unsigned</type>
+        <definition>unsigned ILLIXR::data_format::mesh_type::max_chunk</definition>
+        <argsstring></argsstring>
+        <name>max_chunk</name>
+        <qualifiedname>ILLIXR::data_format::mesh_type::max_chunk</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/mesh.hpp" line="17" column="15" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/mesh.hpp" bodystart="17" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1mesh__type_1a7dc4febf678daa86a7be5ddb68ee229b" prot="public" static="no" mutable="no">
+        <type>unsigned</type>
+        <definition>unsigned ILLIXR::data_format::mesh_type::num_faces</definition>
+        <argsstring></argsstring>
+        <name>num_faces</name>
+        <qualifiedname>ILLIXR::data_format::mesh_type::num_faces</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/mesh.hpp" line="19" column="15" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/mesh.hpp" bodystart="19" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1mesh__type_1a7b066b23b56895068d6c10305e7660af" prot="public" static="no" mutable="no">
+        <type>unsigned</type>
+        <definition>unsigned ILLIXR::data_format::mesh_type::num_vertices</definition>
+        <argsstring></argsstring>
+        <name>num_vertices</name>
+        <qualifiedname>ILLIXR::data_format::mesh_type::num_vertices</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/mesh.hpp" line="20" column="15" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/mesh.hpp" bodystart="20" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1mesh__type_1a841f5b98d659ef71ad7396f662570b33" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int ILLIXR::data_format::mesh_type::cell_x</definition>
+        <argsstring></argsstring>
+        <name>cell_x</name>
+        <qualifiedname>ILLIXR::data_format::mesh_type::cell_x</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/mesh.hpp" line="22" column="10" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/mesh.hpp" bodystart="22" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1mesh__type_1ab5f6d6acd5e8816a877f77b3de059c78" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int ILLIXR::data_format::mesh_type::cell_y</definition>
+        <argsstring></argsstring>
+        <name>cell_y</name>
+        <qualifiedname>ILLIXR::data_format::mesh_type::cell_y</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/mesh.hpp" line="23" column="10" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/mesh.hpp" bodystart="23" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1mesh__type_1a28974538026f5ab3e87e8a988b8dae23" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int ILLIXR::data_format::mesh_type::cell_z</definition>
+        <argsstring></argsstring>
+        <name>cell_z</name>
+        <qualifiedname>ILLIXR::data_format::mesh_type::cell_z</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/mesh.hpp" line="24" column="10" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/mesh.hpp" bodystart="24" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1mesh__type_1ab7eb1e166cd74a3f09f8a337a13eff84" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; draco_illixr::PlyReader &gt;</type>
+        <definition>std::shared_ptr&lt;draco_illixr::PlyReader&gt; ILLIXR::data_format::mesh_type::reader</definition>
+        <argsstring></argsstring>
+        <name>reader</name>
+        <qualifiedname>ILLIXR::data_format::mesh_type::reader</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/mesh.hpp" line="27" column="22" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/mesh.hpp" bodystart="27" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1mesh__type_1ad864726b05cf0a7524c64381fbe52649" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::mesh_type::mesh_type</definition>
+        <argsstring>(const unsigned type_, std::shared_ptr&lt; draco_illixr::PlyReader &gt; input_reader, unsigned id_)</argsstring>
+        <name>mesh_type</name>
+        <qualifiedname>ILLIXR::data_format::mesh_type::mesh_type</qualifiedname>
+        <param>
+          <type>const unsigned</type>
+          <declname>type_</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; draco_illixr::PlyReader &gt;</type>
+          <declname>input_reader</declname>
+        </param>
+        <param>
+          <type>unsigned</type>
+          <declname>id_</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/mesh.hpp" line="29" column="6" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/mesh.hpp" bodystart="29" bodyend="32"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1mesh__type_1a3611006945d8f20c856982f0d5bb6944" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::mesh_type::mesh_type</definition>
+        <argsstring>(const unsigned type_, std::shared_ptr&lt; draco_illixr::PlyReader &gt; input_reader, unsigned id_, bool is_active)</argsstring>
+        <name>mesh_type</name>
+        <qualifiedname>ILLIXR::data_format::mesh_type::mesh_type</qualifiedname>
+        <param>
+          <type>const unsigned</type>
+          <declname>type_</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; draco_illixr::PlyReader &gt;</type>
+          <declname>input_reader</declname>
+        </param>
+        <param>
+          <type>unsigned</type>
+          <declname>id_</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>is_active</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/mesh.hpp" line="34" column="6" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/mesh.hpp" bodystart="34" bodyend="39"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1mesh__type_1ae700db65d12e8c3cdca6a74bff1bc0a3" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::mesh_type::mesh_type</definition>
+        <argsstring>(const unsigned type_, std::shared_ptr&lt; draco_illixr::PlyReader &gt; input_reader, unsigned id_, unsigned chunk_id_, unsigned max_chunk_, unsigned num_faces_, unsigned num_vertices_, bool is_active)</argsstring>
+        <name>mesh_type</name>
+        <qualifiedname>ILLIXR::data_format::mesh_type::mesh_type</qualifiedname>
+        <param>
+          <type>const unsigned</type>
+          <declname>type_</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; draco_illixr::PlyReader &gt;</type>
+          <declname>input_reader</declname>
+        </param>
+        <param>
+          <type>unsigned</type>
+          <declname>id_</declname>
+        </param>
+        <param>
+          <type>unsigned</type>
+          <declname>chunk_id_</declname>
+        </param>
+        <param>
+          <type>unsigned</type>
+          <declname>max_chunk_</declname>
+        </param>
+        <param>
+          <type>unsigned</type>
+          <declname>num_faces_</declname>
+        </param>
+        <param>
+          <type>unsigned</type>
+          <declname>num_vertices_</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>is_active</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/mesh.hpp" line="41" column="6" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/mesh.hpp" bodystart="41" bodyend="51"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1mesh__type_1ad1d844d158230347fa96bfd801f3632a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::mesh_type::mesh_type</definition>
+        <argsstring>(const unsigned type_, const std::vector&lt; char &gt; &amp;input_mesh, bool is_compressed, unsigned id_)</argsstring>
+        <name>mesh_type</name>
+        <qualifiedname>ILLIXR::data_format::mesh_type::mesh_type</qualifiedname>
+        <param>
+          <type>const unsigned</type>
+          <declname>type_</declname>
+        </param>
+        <param>
+          <type>const std::vector&lt; char &gt; &amp;</type>
+          <declname>input_mesh</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>is_compressed</declname>
+        </param>
+        <param>
+          <type>unsigned</type>
+          <declname>id_</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/mesh.hpp" line="53" column="6" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/mesh.hpp" bodystart="53" bodyend="57"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1mesh__type_1aeece26fab27a4056f1dba1d205518233" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::mesh_type::mesh_type</definition>
+        <argsstring>(const unsigned type_, const std::vector&lt; char &gt; &amp;input_mesh, unsigned id_, unsigned chunk_id_, unsigned max_chunk_)</argsstring>
+        <name>mesh_type</name>
+        <qualifiedname>ILLIXR::data_format::mesh_type::mesh_type</qualifiedname>
+        <param>
+          <type>const unsigned</type>
+          <declname>type_</declname>
+        </param>
+        <param>
+          <type>const std::vector&lt; char &gt; &amp;</type>
+          <declname>input_mesh</declname>
+        </param>
+        <param>
+          <type>unsigned</type>
+          <declname>id_</declname>
+        </param>
+        <param>
+          <type>unsigned</type>
+          <declname>chunk_id_</declname>
+        </param>
+        <param>
+          <type>unsigned</type>
+          <declname>max_chunk_</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/mesh.hpp" line="60" column="6" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/mesh.hpp" bodystart="60" bodyend="66"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1mesh__type_1a85f577959e145c937f019414e679b621" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::mesh_type::mesh_type</definition>
+        <argsstring>(const unsigned type_, const std::vector&lt; char &gt; &amp;input_mesh, bool is_compressed, bool is_active, int cell_x_, int cell_y_, int cell_z_)</argsstring>
+        <name>mesh_type</name>
+        <qualifiedname>ILLIXR::data_format::mesh_type::mesh_type</qualifiedname>
+        <param>
+          <type>const unsigned</type>
+          <declname>type_</declname>
+        </param>
+        <param>
+          <type>const std::vector&lt; char &gt; &amp;</type>
+          <declname>input_mesh</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>is_compressed</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>is_active</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>cell_x_</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>cell_y_</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>cell_z_</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/mesh.hpp" line="68" column="6" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/mesh.hpp" bodystart="68" bodyend="76"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1mesh__type_1a163ca1418fd20f6190fc10723eaa51d1" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::mesh_type::mesh_type</definition>
+        <argsstring>(const unsigned type_, std::shared_ptr&lt; draco_illixr::PlyReader &gt; input_reader, bool is_compressed, bool is_active, unsigned id_)</argsstring>
+        <name>mesh_type</name>
+        <qualifiedname>ILLIXR::data_format::mesh_type::mesh_type</qualifiedname>
+        <param>
+          <type>const unsigned</type>
+          <declname>type_</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; draco_illixr::PlyReader &gt;</type>
+          <declname>input_reader</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>is_compressed</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>is_active</declname>
+        </param>
+        <param>
+          <type>unsigned</type>
+          <declname>id_</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/mesh.hpp" line="79" column="6" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/mesh.hpp" bodystart="79" bodyend="87"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1mesh__type_1af19ce81a4bf7575b29daa41ce605e676" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::mesh_type::mesh_type</definition>
+        <argsstring>(const unsigned type_, const std::vector&lt; char &gt; &amp;input_mesh, bool is_compressed, bool is_active, unsigned id_)</argsstring>
+        <name>mesh_type</name>
+        <qualifiedname>ILLIXR::data_format::mesh_type::mesh_type</qualifiedname>
+        <param>
+          <type>const unsigned</type>
+          <declname>type_</declname>
+        </param>
+        <param>
+          <type>const std::vector&lt; char &gt; &amp;</type>
+          <declname>input_mesh</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>is_compressed</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>is_active</declname>
+        </param>
+        <param>
+          <type>unsigned</type>
+          <declname>id_</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/mesh.hpp" line="90" column="6" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/mesh.hpp" bodystart="90" bodyend="98"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1mesh__type_1a9cccc0a6675b35705b41c28271e1ec04" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::mesh_type::mesh_type</definition>
+        <argsstring>(const unsigned type_, const std::vector&lt; char &gt; &amp;input_mesh, bool is_compressed, bool is_active, unsigned id_, unsigned num_faces_, unsigned num_vertices_)</argsstring>
+        <name>mesh_type</name>
+        <qualifiedname>ILLIXR::data_format::mesh_type::mesh_type</qualifiedname>
+        <param>
+          <type>const unsigned</type>
+          <declname>type_</declname>
+        </param>
+        <param>
+          <type>const std::vector&lt; char &gt; &amp;</type>
+          <declname>input_mesh</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>is_compressed</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>is_active</declname>
+        </param>
+        <param>
+          <type>unsigned</type>
+          <declname>id_</declname>
+        </param>
+        <param>
+          <type>unsigned</type>
+          <declname>num_faces_</declname>
+        </param>
+        <param>
+          <type>unsigned</type>
+          <declname>num_vertices_</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/mesh.hpp" line="100" column="6" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/mesh.hpp" bodystart="100" bodyend="108"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1mesh__type_1a2f656e931dbeccb575827928b73134cf" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::mesh_type::mesh_type</definition>
+        <argsstring>(const unsigned type_, const std::vector&lt; char &gt; &amp;input_mesh, bool is_compressed, bool is_active, unsigned id_, unsigned chunk_id_, unsigned max_chunk_, unsigned num_faces_, unsigned num_vertices_)</argsstring>
+        <name>mesh_type</name>
+        <qualifiedname>ILLIXR::data_format::mesh_type::mesh_type</qualifiedname>
+        <param>
+          <type>const unsigned</type>
+          <declname>type_</declname>
+        </param>
+        <param>
+          <type>const std::vector&lt; char &gt; &amp;</type>
+          <declname>input_mesh</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>is_compressed</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>is_active</declname>
+        </param>
+        <param>
+          <type>unsigned</type>
+          <declname>id_</declname>
+        </param>
+        <param>
+          <type>unsigned</type>
+          <declname>chunk_id_</declname>
+        </param>
+        <param>
+          <type>unsigned</type>
+          <declname>max_chunk_</declname>
+        </param>
+        <param>
+          <type>unsigned</type>
+          <declname>num_faces_</declname>
+        </param>
+        <param>
+          <type>unsigned</type>
+          <declname>num_vertices_</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/mesh.hpp" line="111" column="6" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/mesh.hpp" bodystart="111" bodyend="122"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1mesh__type_1afcc7b3e955918479ef122d96679cbdbb" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::mesh_type::mesh_type</definition>
+        <argsstring>(const unsigned type_, const std::vector&lt; char &gt; &amp;input_mesh, bool is_compressed, bool is_active, unsigned id_, unsigned chunk_id_, unsigned max_chunk_, unsigned num_faces_, unsigned num_vertices_, std::shared_ptr&lt; draco_illixr::PlyReader &gt; input_reader)</argsstring>
+        <name>mesh_type</name>
+        <qualifiedname>ILLIXR::data_format::mesh_type::mesh_type</qualifiedname>
+        <param>
+          <type>const unsigned</type>
+          <declname>type_</declname>
+        </param>
+        <param>
+          <type>const std::vector&lt; char &gt; &amp;</type>
+          <declname>input_mesh</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>is_compressed</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>is_active</declname>
+        </param>
+        <param>
+          <type>unsigned</type>
+          <declname>id_</declname>
+        </param>
+        <param>
+          <type>unsigned</type>
+          <declname>chunk_id_</declname>
+        </param>
+        <param>
+          <type>unsigned</type>
+          <declname>max_chunk_</declname>
+        </param>
+        <param>
+          <type>unsigned</type>
+          <declname>num_faces_</declname>
+        </param>
+        <param>
+          <type>unsigned</type>
+          <declname>num_vertices_</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; draco_illixr::PlyReader &gt;</type>
+          <declname>input_reader</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/mesh.hpp" line="124" column="6" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/mesh.hpp" bodystart="124" bodyend="136"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1mesh__type_1abf5aa953ab493dadc197f831d16381ac" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::mesh_type::mesh_type</definition>
+        <argsstring>(const unsigned type_, const std::vector&lt; char &gt; &amp;input_mesh, bool is_active, unsigned id_, unsigned chunk_id_, unsigned max_chunk_)</argsstring>
+        <name>mesh_type</name>
+        <qualifiedname>ILLIXR::data_format::mesh_type::mesh_type</qualifiedname>
+        <param>
+          <type>const unsigned</type>
+          <declname>type_</declname>
+        </param>
+        <param>
+          <type>const std::vector&lt; char &gt; &amp;</type>
+          <declname>input_mesh</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>is_active</declname>
+        </param>
+        <param>
+          <type>unsigned</type>
+          <declname>id_</declname>
+        </param>
+        <param>
+          <type>unsigned</type>
+          <declname>chunk_id_</declname>
+        </param>
+        <param>
+          <type>unsigned</type>
+          <declname>max_chunk_</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/mesh.hpp" line="138" column="6" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/mesh.hpp" bodystart="138" bodyend="145"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>ILLIXR::data_format::mesh_type</label>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ILLIXR::switchboard::event</label>
+        <link refid="classILLIXR_1_1switchboard_1_1event"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>ILLIXR::data_format::mesh_type</label>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ILLIXR::switchboard::event</label>
+        <link refid="classILLIXR_1_1switchboard_1_1event"/>
+      </node>
+    </collaborationgraph>
+    <location file="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/mesh.hpp" line="10" column="1" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/mesh.hpp" bodystart="10" bodyend="146"/>
+    <listofallmembers>
+      <member refid="structILLIXR_1_1data__format_1_1mesh__type_1abe74edac141906fac6034894cb1ab221" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::mesh_type</scope><name>active</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1mesh__type_1a841f5b98d659ef71ad7396f662570b33" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::mesh_type</scope><name>cell_x</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1mesh__type_1ab5f6d6acd5e8816a877f77b3de059c78" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::mesh_type</scope><name>cell_y</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1mesh__type_1a28974538026f5ab3e87e8a988b8dae23" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::mesh_type</scope><name>cell_z</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1mesh__type_1a9476e4a64eb3032aabbcb7117ad10fd7" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::mesh_type</scope><name>chunk_id</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1mesh__type_1a371ff4701c624127d65a5eb5bed9f829" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::mesh_type</scope><name>compressed</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1mesh__type_1a42c9b36aebd883df79a19bd7730d4bee" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::mesh_type</scope><name>id</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1mesh__type_1a369427042dfbdfb0b5d1d60abf558a06" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::mesh_type</scope><name>max_chunk</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1mesh__type_1ad6facf8a15ba3ba19f4f19c5e7490888" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::mesh_type</scope><name>mesh</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1mesh__type_1ad864726b05cf0a7524c64381fbe52649" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::mesh_type</scope><name>mesh_type</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1mesh__type_1a3611006945d8f20c856982f0d5bb6944" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::mesh_type</scope><name>mesh_type</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1mesh__type_1ae700db65d12e8c3cdca6a74bff1bc0a3" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::mesh_type</scope><name>mesh_type</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1mesh__type_1ad1d844d158230347fa96bfd801f3632a" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::mesh_type</scope><name>mesh_type</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1mesh__type_1aeece26fab27a4056f1dba1d205518233" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::mesh_type</scope><name>mesh_type</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1mesh__type_1a85f577959e145c937f019414e679b621" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::mesh_type</scope><name>mesh_type</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1mesh__type_1a163ca1418fd20f6190fc10723eaa51d1" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::mesh_type</scope><name>mesh_type</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1mesh__type_1af19ce81a4bf7575b29daa41ce605e676" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::mesh_type</scope><name>mesh_type</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1mesh__type_1a9cccc0a6675b35705b41c28271e1ec04" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::mesh_type</scope><name>mesh_type</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1mesh__type_1a2f656e931dbeccb575827928b73134cf" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::mesh_type</scope><name>mesh_type</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1mesh__type_1afcc7b3e955918479ef122d96679cbdbb" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::mesh_type</scope><name>mesh_type</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1mesh__type_1abf5aa953ab493dadc197f831d16381ac" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::mesh_type</scope><name>mesh_type</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1mesh__type_1a7dc4febf678daa86a7be5ddb68ee229b" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::mesh_type</scope><name>num_faces</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1mesh__type_1a7b066b23b56895068d6c10305e7660af" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::mesh_type</scope><name>num_vertices</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1mesh__type_1ab7eb1e166cd74a3f09f8a337a13eff84" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::mesh_type</scope><name>reader</name></member>
+      <member refid="classILLIXR_1_1switchboard_1_1event_1a55399aaf47bc0d3943fd89d7afb55624" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::mesh_type</scope><name>serialize</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1mesh__type_1a9a9246265b956f5a1ddd62c9fe2f7991" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::mesh_type</scope><name>type</name></member>
+      <member refid="classILLIXR_1_1switchboard_1_1event_1a01fb51a03e9025d71087de76823e449e" prot="public" virt="virtual"><scope>ILLIXR::data_format::mesh_type</scope><name>~event</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

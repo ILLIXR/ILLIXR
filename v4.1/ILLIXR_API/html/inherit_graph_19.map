@@ -1,0 +1,33 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" href="$classILLIXR_1_1switchboard_1_1event.html" title="Virtual class for event types." alt="" coords="6,389,155,429"/>
+<area shape="rect" id="Node000001" href="$structILLIXR_1_1data__format_1_1cam__base__type.html" title=" " alt="" coords="235,165,386,205"/>
+<area shape="poly" id="edge11_Node000000_Node000001" title=" " alt="" coords="92,375,109,338,133,295,164,252,202,215,234,198,237,203,206,219,168,256,137,298,114,341,97,378"/>
+<area shape="rect" id="Node000008" href="$structILLIXR_1_1data__format_1_1camera__data.html" title="Data structure to hold information about the full camera system. This information is mostly constant." alt="" coords="235,229,386,269"/>
+<area shape="poly" id="edge18_Node000000_Node000008" title=" " alt="" coords="102,376,145,326,172,301,203,279,234,264,236,269,205,284,176,305,149,330,106,380"/>
+<area shape="rect" id="Node000009" href="$structILLIXR_1_1data__format_1_1fast__pose__type.html" title=" " alt="" coords="235,293,386,333"/>
+<area shape="poly" id="edge19_Node000000_Node000009" title=" " alt="" coords="127,380,203,343,236,331,238,336,205,348,129,385"/>
+<area shape="rect" id="Node000010" href="$structILLIXR_1_1data__format_1_1imu__integrator__input.html" title=" " alt="" coords="227,357,394,397"/>
+<area shape="poly" id="edge20_Node000000_Node000010" title=" " alt="" coords="169,394,227,386,228,392,170,400"/>
+<area shape="rect" id="Node000011" href="$structILLIXR_1_1data__format_1_1imu__raw__type.html" title=" " alt="" coords="235,421,386,461"/>
+<area shape="poly" id="edge21_Node000000_Node000011" title=" " alt="" coords="170,419,235,428,235,434,169,424"/>
+<area shape="rect" id="Node000012" href="$structILLIXR_1_1data__format_1_1imu__type.html" title=" " alt="" coords="235,485,386,525"/>
+<area shape="poly" id="edge22_Node000000_Node000012" title=" " alt="" coords="129,434,205,471,238,483,236,488,203,476,127,439"/>
+<area shape="rect" id="Node000013" href="$structILLIXR_1_1data__format_1_1pose__type.html" title=" " alt="" coords="235,629,386,669"/>
+<area shape="poly" id="edge23_Node000000_Node000013" title=" " alt="" coords="95,442,111,482,135,529,166,575,206,615,236,632,234,637,202,619,162,579,130,531,107,484,90,444"/>
+<area shape="rect" id="Node000015" href="$classILLIXR_1_1switchboard_1_1event__wrapper.html" title="Helper class for making event types." alt="" coords="204,550,417,605"/>
+<area shape="poly" id="edge24_Node000000_Node000015" title=" " alt="" coords="107,439,150,488,177,513,205,535,227,547,225,552,203,540,173,517,146,491,103,442"/>
+<area shape="rect" id="Node000002" href="$structILLIXR_1_1data__format_1_1binocular__cam__type.html" title=" " alt="" coords="470,5,631,45"/>
+<area shape="poly" id="edge12_Node000001_Node000002" title=" " alt="" coords="339,154,395,104,464,55,488,43,490,48,467,60,398,108,343,158"/>
+<area shape="rect" id="Node000003" href="$structILLIXR_1_1data__format_1_1cam__type__zed.html" title=" " alt="" coords="475,69,626,109"/>
+<area shape="poly" id="edge13_Node000001_Node000003" title=" " alt="" coords="371,157,464,119,495,107,497,112,466,124,373,162"/>
+<area shape="rect" id="Node000004" href="$structILLIXR_1_1data__format_1_1depth__type.html" title=" " alt="" coords="475,133,626,173"/>
+<area shape="poly" id="edge14_Node000001_Node000004" title=" " alt="" coords="400,171,475,161,476,166,400,176"/>
+<area shape="rect" id="Node000005" href="$structILLIXR_1_1data__format_1_1ht_1_1ht__frame.html" title=" " alt="" coords="475,197,626,237"/>
+<area shape="poly" id="edge15_Node000001_Node000005" title=" " alt="" coords="400,195,476,205,475,210,400,200"/>
+<area shape="rect" id="Node000006" href="$structILLIXR_1_1data__format_1_1monocular__cam__type.html" title=" " alt="" coords="465,261,636,301"/>
+<area shape="poly" id="edge16_Node000001_Node000006" title=" " alt="" coords="400,207,419,215,443,231,467,247,493,259,491,264,464,252,440,235,416,220,398,212"/>
+<area shape="rect" id="Node000007" href="$structILLIXR_1_1data__format_1_1rgb__depth__type.html" title=" " alt="" coords="475,325,626,365"/>
+<area shape="poly" id="edge17_Node000001_Node000007" title=" " alt="" coords="400,203,419,215,438,240,444,264,450,288,467,311,484,323,481,328,463,315,446,290,439,266,433,242,416,219,397,207"/>
+<area shape="rect" id="Node000014" href="$structILLIXR_1_1data__format_1_1pose__data.html" title=" " alt="" coords="5,629,156,669"/>
+<area shape="poly" id="edge25_Node000014_Node000013" title=" " alt="" coords="170,647,235,647,235,652,170,652"/>
+</map>

@@ -1,0 +1,429 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classILLIXR_1_1device__tx" kind="class" language="C++" prot="public">
+    <compoundname>ILLIXR::device_tx</compoundname>
+    <basecompoundref refid="classILLIXR_1_1threadloop" prot="public" virt="non-virtual">ILLIXR::threadloop</basecompoundref>
+    <basecompoundref prot="public" virt="non-virtual">device_to_server_base</basecompoundref>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1device__tx_1a75296977835c2abb9b7384f3ab25d6de" prot="private" static="no" mutable="no">
+        <type>const std::shared_ptr&lt; <ref refid="classILLIXR_1_1switchboard" kindref="compound">switchboard</ref> &gt;</type>
+        <definition>const std::shared_ptr&lt;switchboard&gt; ILLIXR::device_tx::switchboard_</definition>
+        <argsstring></argsstring>
+        <name>switchboard_</name>
+        <qualifiedname>ILLIXR::device_tx::switchboard_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/device_tx/plugin.hpp" line="50" column="61" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/device_tx/plugin.hpp" bodystart="50" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1device__tx_1a93c6827bb883830c749cb4f8ebcd4523" prot="private" static="no" mutable="no">
+        <type>const std::shared_ptr&lt; <ref refid="classILLIXR_1_1relative__clock" kindref="compound">relative_clock</ref> &gt;</type>
+        <definition>const std::shared_ptr&lt;relative_clock&gt; ILLIXR::device_tx::clock_</definition>
+        <argsstring></argsstring>
+        <name>clock_</name>
+        <qualifiedname>ILLIXR::device_tx::clock_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/device_tx/plugin.hpp" line="51" column="58" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/device_tx/plugin.hpp" bodystart="51" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1device__tx_1a9904055e315a83c3f32e0322d517967b" prot="private" static="no" mutable="no">
+        <type>const std::shared_ptr&lt; <ref refid="classILLIXR_1_1stoplight" kindref="compound">stoplight</ref> &gt;</type>
+        <definition>const std::shared_ptr&lt;stoplight&gt; ILLIXR::device_tx::stoplight_</definition>
+        <argsstring></argsstring>
+        <name>stoplight_</name>
+        <qualifiedname>ILLIXR::device_tx::stoplight_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/device_tx/plugin.hpp" line="52" column="63" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/device_tx/plugin.hpp" bodystart="52" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1device__tx_1af1bbfd258a3b09bff3193a4816af6611" prot="private" static="no" mutable="no">
+        <type>std::unique_ptr&lt; ada_video_encoder &gt;</type>
+        <definition>std::unique_ptr&lt;ada_video_encoder&gt; ILLIXR::device_tx::encoder_</definition>
+        <argsstring></argsstring>
+        <name>encoder_</name>
+        <qualifiedname>ILLIXR::device_tx::encoder_</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/device_tx/plugin.hpp" line="53" column="55" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/device_tx/plugin.hpp" bodystart="53" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1device__tx_1a0c7e17e07b147cb2eb780b83864eb6cd" prot="private" static="no" mutable="no">
+        <type>switchboard::network_writer&lt; <ref refid="classILLIXR_1_1switchboard_1_1event__wrapper" kindref="compound">switchboard::event_wrapper</ref>&lt; std::string &gt; &gt;</type>
+        <definition>switchboard::network_writer&lt;switchboard::event_wrapper&lt;std::string&gt; &gt; ILLIXR::device_tx::ada_writer_</definition>
+        <argsstring></argsstring>
+        <name>ada_writer_</name>
+        <qualifiedname>ILLIXR::device_tx::ada_writer_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/device_tx/plugin.hpp" line="54" column="33" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/device_tx/plugin.hpp" bodystart="54" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1device__tx_1a46ef8c572783f349601414ec3f03d707" prot="private" static="no" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string ILLIXR::device_tx::data_path_</definition>
+        <argsstring></argsstring>
+        <name>data_path_</name>
+        <qualifiedname>ILLIXR::device_tx::data_path_</qualifiedname>
+        <initializer>= std::filesystem::current_path().string() + &quot;/recorded_data&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/device_tx/plugin.hpp" line="56" column="23" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/device_tx/plugin.hpp" bodystart="56" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1device__tx_1a09864f3ead07abe575e926d131ff8f9d" prot="private" static="no" mutable="no">
+        <type>std::ofstream</type>
+        <definition>std::ofstream ILLIXR::device_tx::sending_timestamp_</definition>
+        <argsstring></argsstring>
+        <name>sending_timestamp_</name>
+        <qualifiedname>ILLIXR::device_tx::sending_timestamp_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/device_tx/plugin.hpp" line="57" column="23" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/device_tx/plugin.hpp" bodystart="57" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1device__tx_1ae2581059ff303eebc46af6397f43675f" prot="private" static="no" mutable="no">
+        <type>std::ofstream</type>
+        <definition>std::ofstream ILLIXR::device_tx::starting_timestamp_</definition>
+        <argsstring></argsstring>
+        <name>starting_timestamp_</name>
+        <qualifiedname>ILLIXR::device_tx::starting_timestamp_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/device_tx/plugin.hpp" line="58" column="23" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/device_tx/plugin.hpp" bodystart="58" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1device__tx_1a51ce78181b6de2d12436a9e1161f36b0" prot="private" static="no" mutable="no">
+        <type>std::ofstream</type>
+        <definition>std::ofstream ILLIXR::device_tx::frame_send_timing_</definition>
+        <argsstring></argsstring>
+        <name>frame_send_timing_</name>
+        <qualifiedname>ILLIXR::device_tx::frame_send_timing_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/device_tx/plugin.hpp" line="59" column="23" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/device_tx/plugin.hpp" bodystart="59" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1device__tx_1a5d5a0db4ece4fd7560ae2c2c1a26a56a" prot="private" static="no" mutable="no">
+        <type>unsigned</type>
+        <definition>unsigned ILLIXR::device_tx::frame_id_</definition>
+        <argsstring></argsstring>
+        <name>frame_id_</name>
+        <qualifiedname>ILLIXR::device_tx::frame_id_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/device_tx/plugin.hpp" line="61" column="33" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/device_tx/plugin.hpp" bodystart="61" bodyend="61"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1device__tx_1ac89ca7ffd06404afb234a39d48590994" prot="private" static="no" mutable="no">
+        <type>sr_input_proto::SRSendData *</type>
+        <definition>sr_input_proto::SRSendData* ILLIXR::device_tx::outgoing_payload</definition>
+        <argsstring></argsstring>
+        <name>outgoing_payload</name>
+        <qualifiedname>ILLIXR::device_tx::outgoing_payload</qualifiedname>
+        <initializer>= new sr_input_proto::SRSendData()</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/device_tx/plugin.hpp" line="62" column="32" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/device_tx/plugin.hpp" bodystart="62" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1device__tx_1ac667e678452917116fd6757ae75602e8" prot="private" static="no" mutable="no">
+        <type>sr_input_proto::Pose *</type>
+        <definition>sr_input_proto::Pose* ILLIXR::device_tx::pose</definition>
+        <argsstring></argsstring>
+        <name>pose</name>
+        <qualifiedname>ILLIXR::device_tx::pose</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/device_tx/plugin.hpp" line="63" column="32" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/device_tx/plugin.hpp" bodystart="63" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1device__tx_1a5a118bc3a544152cbc8b6832ece66d49" prot="private" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string ILLIXR::device_tx::send_buf_</definition>
+        <argsstring></argsstring>
+        <name>send_buf_</name>
+        <qualifiedname>ILLIXR::device_tx::send_buf_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/device_tx/plugin.hpp" line="65" column="17" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/device_tx/plugin.hpp" bodystart="65" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1device__tx_1a40cf02a7a83369cea1e1cf4eabe9edc6" prot="private" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string ILLIXR::device_tx::msb_bytes_</definition>
+        <argsstring></argsstring>
+        <name>msb_bytes_</name>
+        <qualifiedname>ILLIXR::device_tx::msb_bytes_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/device_tx/plugin.hpp" line="66" column="17" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/device_tx/plugin.hpp" bodystart="66" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1device__tx_1ac3b617557409bcc6b9ef3ccda386d374" prot="private" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string ILLIXR::device_tx::lsb_bytes_</definition>
+        <argsstring></argsstring>
+        <name>lsb_bytes_</name>
+        <qualifiedname>ILLIXR::device_tx::lsb_bytes_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/device_tx/plugin.hpp" line="67" column="17" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/device_tx/plugin.hpp" bodystart="67" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classILLIXR_1_1device__tx_1ad0f3fa3e98b0840e6825647cbc923dd4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>device_tx::device_tx</definition>
+        <argsstring>(const std::string &amp;name_, phonebook *pb_)</argsstring>
+        <name>device_tx</name>
+        <qualifiedname>ILLIXR::device_tx::device_tx</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>name_</declname>
+        </param>
+        <param>
+          <type><ref refid="classILLIXR_1_1phonebook" kindref="compound">phonebook</ref> *</type>
+          <declname>pb_</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/device_tx/plugin.hpp" line="36" column="6" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/device_tx/plugin.cpp" bodystart="9" bodyend="46"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1device__tx_1aa8e82eee799ed939d4d4a9ec3b69957c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void device_tx::start</definition>
+        <argsstring>() override</argsstring>
+        <name>start</name>
+        <qualifiedname>ILLIXR::device_tx::start</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/device_tx/plugin.hpp" line="38" column="10" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/device_tx/plugin.cpp" bodystart="48" bodyend="66"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1device__tx_1a0acf9c504e43519710f5568468adddaa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void device_tx::send_scene_recon_data</definition>
+        <argsstring>(switchboard::ptr&lt; const data_format::scene_recon_type &gt; datum)</argsstring>
+        <name>send_scene_recon_data</name>
+        <qualifiedname>ILLIXR::device_tx::send_scene_recon_data</qualifiedname>
+        <param>
+          <type><ref refid="classILLIXR_1_1switchboard_1af91c1b9436918512e95e5fa8553846a7" kindref="member">switchboard::ptr</ref>&lt; const data_format::scene_recon_type &gt;</type>
+          <declname>datum</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/device_tx/plugin.hpp" line="40" column="10" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/device_tx/plugin.cpp" bodystart="74" bodyend="181"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1device__tx_1aab017bb7c5b769c35f057131652893b3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>device_tx::~device_tx</definition>
+        <argsstring>() override</argsstring>
+        <name>~device_tx</name>
+        <qualifiedname>ILLIXR::device_tx::~device_tx</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/device_tx/plugin.hpp" line="41" column="5" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/device_tx/plugin.cpp" bodystart="203" bodyend="205"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classILLIXR_1_1device__tx_1abe5ba8df72f23efff06140cbc67bb9d6" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void device_tx::_p_one_iteration</definition>
+        <argsstring>() override</argsstring>
+        <name>_p_one_iteration</name>
+        <qualifiedname>ILLIXR::device_tx::_p_one_iteration</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/device_tx/plugin.hpp" line="44" column="10" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/device_tx/plugin.cpp" bodystart="68" bodyend="72"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-static-func">
+      <memberdef kind="function" id="classILLIXR_1_1device__tx_1add203ef19bcd2d5088beb922531d65dc" prot="private" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void device_tx::decompose_16bit_to_8bit</definition>
+        <argsstring>(const cv::Mat &amp;depth16, cv::Mat &amp;out_msb, cv::Mat &amp;out_lsb)</argsstring>
+        <name>decompose_16bit_to_8bit</name>
+        <qualifiedname>ILLIXR::device_tx::decompose_16bit_to_8bit</qualifiedname>
+        <param>
+          <type>const cv::Mat &amp;</type>
+          <declname>depth16</declname>
+        </param>
+        <param>
+          <type>cv::Mat &amp;</type>
+          <declname>out_msb</declname>
+        </param>
+        <param>
+          <type>cv::Mat &amp;</type>
+          <declname>out_lsb</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/device_tx/plugin.hpp" line="48" column="17" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/device_tx/plugin.cpp" bodystart="183" bodyend="201"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>ILLIXR::device_tx</label>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>ILLIXR::plugin</label>
+        <link refid="classILLIXR_1_1plugin"/>
+      </node>
+      <node id="2">
+        <label>ILLIXR::threadloop</label>
+        <link refid="classILLIXR_1_1threadloop"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>ILLIXR::device_tx</label>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>ILLIXR::phonebook</label>
+        <link refid="classILLIXR_1_1phonebook"/>
+      </node>
+      <node id="3">
+        <label>ILLIXR::plugin</label>
+        <link refid="classILLIXR_1_1plugin"/>
+        <childnode refid="4" relation="usage">
+          <edgelabel>phonebook_</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ILLIXR::threadloop</label>
+        <link refid="classILLIXR_1_1threadloop"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/device_tx/plugin.hpp" line="32" column="1" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/plugins/ada/device_tx/plugin.hpp" bodystart="34" bodyend="68"/>
+    <listofallmembers>
+      <member refid="classILLIXR_1_1device__tx_1abe5ba8df72f23efff06140cbc67bb9d6" prot="protected" virt="non-virtual"><scope>ILLIXR::device_tx</scope><name>_p_one_iteration</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a9ff83bb9e47beff3efccbd26bc3e874a" prot="protected" virt="virtual"><scope>ILLIXR::device_tx</scope><name>_p_should_skip</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a00a89b3f3e9caa870f4c70bbc2f8fe97" prot="protected" virt="virtual"><scope>ILLIXR::device_tx</scope><name>_p_thread_setup</name></member>
+      <member refid="classILLIXR_1_1device__tx_1a0c7e17e07b147cb2eb780b83864eb6cd" prot="private" virt="non-virtual"><scope>ILLIXR::device_tx</scope><name>ada_writer_</name></member>
+      <member refid="classILLIXR_1_1device__tx_1a93c6827bb883830c749cb4f8ebcd4523" prot="private" virt="non-virtual"><scope>ILLIXR::device_tx</scope><name>clock_</name></member>
+      <member refid="classILLIXR_1_1device__tx_1a46ef8c572783f349601414ec3f03d707" prot="private" virt="non-virtual"><scope>ILLIXR::device_tx</scope><name>data_path_</name></member>
+      <member refid="classILLIXR_1_1device__tx_1add203ef19bcd2d5088beb922531d65dc" prot="private" virt="non-virtual"><scope>ILLIXR::device_tx</scope><name>decompose_16bit_to_8bit</name></member>
+      <member refid="classILLIXR_1_1device__tx_1ad0f3fa3e98b0840e6825647cbc923dd4" prot="public" virt="non-virtual"><scope>ILLIXR::device_tx</scope><name>device_tx</name></member>
+      <member refid="classILLIXR_1_1device__tx_1af1bbfd258a3b09bff3193a4816af6611" prot="private" virt="non-virtual"><scope>ILLIXR::device_tx</scope><name>encoder_</name></member>
+      <member refid="classILLIXR_1_1device__tx_1a5d5a0db4ece4fd7560ae2c2c1a26a56a" prot="private" virt="non-virtual"><scope>ILLIXR::device_tx</scope><name>frame_id_</name></member>
+      <member refid="classILLIXR_1_1device__tx_1a51ce78181b6de2d12436a9e1161f36b0" prot="private" virt="non-virtual"><scope>ILLIXR::device_tx</scope><name>frame_send_timing_</name></member>
+      <member refid="classILLIXR_1_1plugin_1afe52734e7edc87bd0bf974caf112961b" prot="protected" virt="non-virtual"><scope>ILLIXR::device_tx</scope><name>gen_guid_</name></member>
+      <member refid="classILLIXR_1_1plugin_1aebda022998bd35983e83f391dc0e5193" prot="public" virt="non-virtual"><scope>ILLIXR::device_tx</scope><name>get_name</name></member>
+      <member refid="classILLIXR_1_1plugin_1aaedb3f9178bdd11e53815e158454aaf3" prot="protected" virt="non-virtual"><scope>ILLIXR::device_tx</scope><name>id_</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a3e12891e504c782da98e21328dbcf0af" prot="public" virt="virtual"><scope>ILLIXR::device_tx</scope><name>internal_stop</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a54e0814711e7a582630d38d45ddbe3f3" prot="protected" virt="non-virtual"><scope>ILLIXR::device_tx</scope><name>iteration_no</name></member>
+      <member refid="classILLIXR_1_1device__tx_1ac3b617557409bcc6b9ef3ccda386d374" prot="private" virt="non-virtual"><scope>ILLIXR::device_tx</scope><name>lsb_bytes_</name></member>
+      <member refid="classILLIXR_1_1device__tx_1a40cf02a7a83369cea1e1cf4eabe9edc6" prot="private" virt="non-virtual"><scope>ILLIXR::device_tx</scope><name>msb_bytes_</name></member>
+      <member refid="classILLIXR_1_1plugin_1aa963c518af83966173840a8558490888" prot="protected" virt="non-virtual"><scope>ILLIXR::device_tx</scope><name>name_</name></member>
+      <member refid="classILLIXR_1_1device__tx_1ac89ca7ffd06404afb234a39d48590994" prot="private" virt="non-virtual"><scope>ILLIXR::device_tx</scope><name>outgoing_payload</name></member>
+      <member refid="classILLIXR_1_1plugin_1a6f7a2a9012350591c00d67a5bc0fd5a6" prot="protected" virt="non-virtual"><scope>ILLIXR::device_tx</scope><name>phonebook_</name></member>
+      <member refid="classILLIXR_1_1plugin_1abc91c0e5be180a8e0bbeaf114a127f17" prot="public" virt="non-virtual"><scope>ILLIXR::device_tx</scope><name>plugin</name></member>
+      <member refid="classILLIXR_1_1plugin_1a8d40c2421cde09079372d12bfe7d45fe" prot="protected" virt="non-virtual"><scope>ILLIXR::device_tx</scope><name>plugin_logger_</name></member>
+      <member refid="classILLIXR_1_1device__tx_1ac667e678452917116fd6757ae75602e8" prot="private" virt="non-virtual"><scope>ILLIXR::device_tx</scope><name>pose</name></member>
+      <member refid="classILLIXR_1_1plugin_1aef671d0cd9b6de45d3ade16dedbf4974" prot="protected" virt="non-virtual"><scope>ILLIXR::device_tx</scope><name>record_logger_</name></member>
+      <member refid="classILLIXR_1_1device__tx_1a5a118bc3a544152cbc8b6832ece66d49" prot="private" virt="non-virtual"><scope>ILLIXR::device_tx</scope><name>send_buf_</name></member>
+      <member refid="classILLIXR_1_1device__tx_1a0acf9c504e43519710f5568468adddaa" prot="public" virt="non-virtual"><scope>ILLIXR::device_tx</scope><name>send_scene_recon_data</name></member>
+      <member refid="classILLIXR_1_1device__tx_1a09864f3ead07abe575e926d131ff8f9d" prot="private" virt="non-virtual"><scope>ILLIXR::device_tx</scope><name>sending_timestamp_</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a75009fa785455bdb4b285424f0494bf7" prot="protected" virt="non-virtual"><scope>ILLIXR::device_tx</scope><name>should_terminate</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a8f6ce8b95d3d9aadf83e4e1414477cd0" prot="protected" virt="non-virtual"><scope>ILLIXR::device_tx</scope><name>skip_no</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a26c08942158dc019cbc78c9880417652" prot="protected" virt="non-virtual"><scope>ILLIXR::device_tx</scope><name>skip_option</name></member>
+      <member refid="classILLIXR_1_1plugin_1a7c1c7c1a0ec2e43bfa1118586a28932f" prot="public" virt="non-virtual"><scope>ILLIXR::device_tx</scope><name>spd_add_file_sink</name></member>
+      <member refid="classILLIXR_1_1plugin_1a569297189ef365cf93f6a95202c76d76" prot="public" virt="non-virtual"><scope>ILLIXR::device_tx</scope><name>spdlogger</name></member>
+      <member refid="classILLIXR_1_1device__tx_1aa8e82eee799ed939d4d4a9ec3b69957c" prot="public" virt="non-virtual"><scope>ILLIXR::device_tx</scope><name>start</name></member>
+      <member refid="classILLIXR_1_1device__tx_1ae2581059ff303eebc46af6397f43675f" prot="private" virt="non-virtual"><scope>ILLIXR::device_tx</scope><name>starting_timestamp_</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a7a968606c7ddfbd1ac6b0fb067ecc5a5" prot="public" virt="virtual"><scope>ILLIXR::device_tx</scope><name>stop</name></member>
+      <member refid="classILLIXR_1_1device__tx_1a9904055e315a83c3f32e0322d517967b" prot="private" virt="non-virtual"><scope>ILLIXR::device_tx</scope><name>stoplight_</name></member>
+      <member refid="classILLIXR_1_1device__tx_1a75296977835c2abb9b7384f3ab25d6de" prot="private" virt="non-virtual"><scope>ILLIXR::device_tx</scope><name>switchboard_</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a8e69bfe104a92c0b98caa5583439c34a" prot="public" virt="non-virtual"><scope>ILLIXR::device_tx</scope><name>threadloop</name></member>
+      <member refid="classILLIXR_1_1device__tx_1aab017bb7c5b769c35f057131652893b3" prot="public" virt="non-virtual"><scope>ILLIXR::device_tx</scope><name>~device_tx</name></member>
+      <member refid="classILLIXR_1_1plugin_1a44d7b00c86e227bbc1a0b221da43d454" prot="public" virt="virtual"><scope>ILLIXR::device_tx</scope><name>~plugin</name></member>
+      <member refid="classILLIXR_1_1threadloop_1afbf7b56801b484b60e9cf43448332195" prot="public" virt="non-virtual"><scope>ILLIXR::device_tx</scope><name>~threadloop</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

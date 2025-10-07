@@ -1,0 +1,95 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structILLIXR_1_1data__format_1_1vb__type" kind="struct" language="C++" prot="public">
+    <compoundname>ILLIXR::data_format::vb_type</compoundname>
+    <basecompoundref refid="classILLIXR_1_1switchboard_1_1event" prot="public" virt="non-virtual">ILLIXR::switchboard::event</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1vb__type_1ae26e9d7a5ac18b1e870f4ff4edb20924" prot="public" static="no" mutable="no">
+        <type>std::set&lt; std::tuple&lt; int, int, int &gt; &gt;</type>
+        <definition>std::set&lt;std::tuple&lt;int, int, int&gt; &gt; ILLIXR::data_format::vb_type::unique_VB_lists</definition>
+        <argsstring></argsstring>
+        <name>unique_VB_lists</name>
+        <qualifiedname>ILLIXR::data_format::vb_type::unique_VB_lists</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/scene_reconstruction.hpp" line="40" column="14" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/scene_reconstruction.hpp" bodystart="40" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1vb__type_1ab028b60e0f9ecd8c927541433273ef29" prot="public" static="no" mutable="no">
+        <type>unsigned</type>
+        <definition>unsigned ILLIXR::data_format::vb_type::scene_id</definition>
+        <argsstring></argsstring>
+        <name>scene_id</name>
+        <qualifiedname>ILLIXR::data_format::vb_type::scene_id</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/scene_reconstruction.hpp" line="41" column="41" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/scene_reconstruction.hpp" bodystart="41" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1vb__type_1af20bb5906c55feba556a215ecf43fa1c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::vb_type::vb_type</definition>
+        <argsstring>(std::set&lt; std::tuple&lt; int, int, int &gt; &gt; &amp;&amp;generated_list, unsigned id_)</argsstring>
+        <name>vb_type</name>
+        <qualifiedname>ILLIXR::data_format::vb_type::vb_type</qualifiedname>
+        <param>
+          <type>std::set&lt; std::tuple&lt; int, int, int &gt; &gt; &amp;&amp;</type>
+          <declname>generated_list</declname>
+        </param>
+        <param>
+          <type>unsigned</type>
+          <declname>id_</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/scene_reconstruction.hpp" line="43" column="5" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/scene_reconstruction.hpp" bodystart="43" bodyend="47"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>ILLIXR::data_format::vb_type</label>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ILLIXR::switchboard::event</label>
+        <link refid="classILLIXR_1_1switchboard_1_1event"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>ILLIXR::data_format::vb_type</label>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ILLIXR::switchboard::event</label>
+        <link refid="classILLIXR_1_1switchboard_1_1event"/>
+      </node>
+    </collaborationgraph>
+    <location file="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/scene_reconstruction.hpp" line="39" column="1" bodyfile="/home/friedel/devel/ILLIXR/ILLIXR/include/illixr/data_format/scene_reconstruction.hpp" bodystart="39" bodyend="48"/>
+    <listofallmembers>
+      <member refid="structILLIXR_1_1data__format_1_1vb__type_1ab028b60e0f9ecd8c927541433273ef29" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::vb_type</scope><name>scene_id</name></member>
+      <member refid="classILLIXR_1_1switchboard_1_1event_1a55399aaf47bc0d3943fd89d7afb55624" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::vb_type</scope><name>serialize</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1vb__type_1ae26e9d7a5ac18b1e870f4ff4edb20924" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::vb_type</scope><name>unique_VB_lists</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1vb__type_1af20bb5906c55feba556a215ecf43fa1c" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::vb_type</scope><name>vb_type</name></member>
+      <member refid="classILLIXR_1_1switchboard_1_1event_1a01fb51a03e9025d71087de76823e449e" prot="public" virt="virtual"><scope>ILLIXR::data_format::vb_type</scope><name>~event</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
