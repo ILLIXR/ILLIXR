@@ -18,40 +18,6 @@ list(REMOVE_DUPLICATES LINK_LIBS)
 # reverse back to original order
 list(REVERSE LINK_LIBS)
 
-add_library(video_encoder_ada OBJECT
-            video_encoder.hpp
-            video_encoder.cpp
-)
-
-target_include_directories(video_encoder_ada PUBLIC
-                           ${OpenCV_INCLUDE_DIRS}
-                           ${INC_DIRS}
-)
-
-target_link_libraries(video_encoder_ada PUBLIC
-                      ${OpenCV_LIBS}
-                      ${LINK_LIBS}
-)
-
-target_compile_definitions(video_encoder_ada PUBLIC ADA)
-
-add_library(video_decoder_ada OBJECT
-            video_decoder.hpp
-            video_decoder.cpp
-)
-
-target_include_directories(video_decoder_ada PUBLIC
-                           ${OpenCV_INCLUDE_DIRS}
-                           ${INC_DIRS}
-)
-
-target_link_libraries(video_decoder_ada PUBLIC
-                      ${OpenCV_LIBS}
-                      ${LINK_LIBS}
-)
-target_compile_definitions(video_decoder_ada PUBLIC ADA)
-
-
 add_library(video_encoder_vio OBJECT
             video_encoder.hpp
             video_encoder.cpp
