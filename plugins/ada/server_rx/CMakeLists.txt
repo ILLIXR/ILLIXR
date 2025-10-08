@@ -31,7 +31,7 @@ else()
         include(../utils/CMakeLists.txt)
     endif()
 
-    target_sources(${PLUGIN_NAME} PUBLIC $<TARGET_OBJECTS:decode_utils>)
+    target_sources(${PLUGIN_NAME} PUBLIC $<TARGET_OBJECTS:decode_utils> $<TARGET_OBJECTS:encode_decode_common>)
 endif()
 
 

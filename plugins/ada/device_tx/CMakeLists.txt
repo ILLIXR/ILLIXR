@@ -34,7 +34,7 @@ else()
         include(../utils/CMakeLists.txt)
     endif()
 
-    target_sources(${PLUGIN_NAME} PUBLIC $<TARGET_OBJECTS:encode_utils>)
+    target_sources(${PLUGIN_NAME} PUBLIC $<TARGET_OBJECTS:encode_utils> $<TARGET_OBJECTS:encode_decode_common>)
 endif()
 
 find_package(PkgConfig)

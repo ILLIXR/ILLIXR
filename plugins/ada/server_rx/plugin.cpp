@@ -194,7 +194,8 @@ void server_rx::receive_sr_input(const sr_input_proto::SRSendData& sr_input) {
     decoder_->rgb2depth(encoded_rgb, temp_depth, zmin, zmax);
     temp_depth.convertTo(depth16_, CV_16U);
 #endif
-
+    std::string depth_str = std::to_string(cur_frame) + ".pgm";
+    write_16_bit_pgm(depth16_, depth_str);
     cv::Mat rgb; // pyh dummy here
     scannet_.put(scannet_.allocate<scene_recon_type>(scene_recon_type{time_point{}, pose, depth16_.clone(), rgb, false}));
 
