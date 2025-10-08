@@ -63,93 +63,93 @@ public:
     [[maybe_unused]] size_t columns() const;
 };
 
-    // uncompressed mesh
-    class MeshData {
-    public:
-        double v_x(int) const;
+// uncompressed mesh
+class MeshData {
+public:
+    double v_x(int) const;
 
-        [[maybe_unused]] void set_v_x(double) { }
+    [[maybe_unused]] void set_v_x(double) { }
 
-        double v_y(int) const;
+    double v_y(int) const;
 
-        [[maybe_unused]] void set_v_y(double) { }
+    [[maybe_unused]] void set_v_y(double) { }
 
-        double v_f(int) const;
+    double v_f(int) const;
 
-        [[maybe_unused]] void set_v_f(double) { }
+    [[maybe_unused]] void set_v_f(double) { }
 
-        [[maybe_unused]] int32_t c_r(int) const;
+    [[maybe_unused]] int32_t c_r(int) const;
 
-        [[maybe_unused]] void set_c_r(int32_t) { }
+    [[maybe_unused]] void set_c_r(int32_t) { }
 
-        [[maybe_unused]] int32_t c_g(int) const;
+    [[maybe_unused]] int32_t c_g(int) const;
 
-        [[maybe_unused]] void set_c_g(int32_t) { }
+    [[maybe_unused]] void set_c_g(int32_t) { }
 
-        [[maybe_unused]] int32_t c_b(int) const;
+    [[maybe_unused]] int32_t c_b(int) const;
 
-        [[maybe_unused]] void set_c_b(int32_t) { }
+    [[maybe_unused]] void set_c_b(int32_t) { }
 
-        [[maybe_unused]] int64_t f_1(int) const;
+    [[maybe_unused]] int64_t f_1(int) const;
 
-        [[maybe_unused]] void set_f_1(int64_t) { }
+    [[maybe_unused]] void set_f_1(int64_t) { }
 
-        [[maybe_unused]] int64_t f_2(int) const;
+    [[maybe_unused]] int64_t f_2(int) const;
 
-        [[maybe_unused]] void set_f_2(int64_t) { }
+    [[maybe_unused]] void set_f_2(int64_t) { }
 
-        [[maybe_unused]] int64_t f_3(int) const;
+    [[maybe_unused]] int64_t f_3(int) const;
 
-        [[maybe_unused]] void set_f_3(int64_t) { }
-    };
+    [[maybe_unused]] void set_f_3(int64_t) { }
+};
 
-    // compressed mesh
-    class CompressMeshData {
-    public:
-        [[maybe_unused]] void set_draco_data(void*, double) { }
+// compressed mesh
+class CompressMeshData {
+public:
+    [[maybe_unused]] void set_draco_data(void*, double) { }
 
-        [[maybe_unused]] std::string draco_data() const;
-    };
+    [[maybe_unused]] std::string draco_data() const;
+};
 
-    class SRSendData {
-    public:
-        [[maybe_unused]] void set_input_pose(Pose) { }
+class SRSendData {
+public:
+    [[maybe_unused]] void set_input_pose(Pose) { }
 
-        [[maybe_unused]] void set_depth_img_MSB_data(ImgData) { }
+    [[maybe_unused]] void set_depth_img_MSB_data(ImgData) { }
 
-        [[maybe_unused]] void set_depth_img_LSB_data(ImgData) { }
+    [[maybe_unused]] void set_depth_img_LSB_data(ImgData) { }
 
-        [[maybe_unused]] void set_rgb_img_data(ImgData) { }
+    [[maybe_unused]] void set_rgb_img_data(ImgData) { }
 
-        [[maybe_unused]] void set_id(int32_t) { }
+    [[maybe_unused]] void set_id(int32_t) { }
 
-        [[maybe_unused]] bool ParseFromString(std::string);
+    [[maybe_unused]] bool ParseFromString(std::string);
 
-        [[maybe_unused]] Pose input_pose() const;
+    [[maybe_unused]] Pose input_pose() const;
 
-        [[maybe_unused]] ImgData depth_img_msb_data() const;
+    [[maybe_unused]] ImgData depth_img_msb_data() const;
 
-        [[maybe_unused]] ImgData depth_img_lsb_data() const;
+    [[maybe_unused]] ImgData depth_img_lsb_data() const;
 
-        [[maybe_unused]] Pose* mutable_input_pose() const;
+    [[maybe_unused]] Pose* mutable_input_pose() const;
 
-        [[maybe_unused]] ImgData* mutable_depth_img_msb_data() const;
+    [[maybe_unused]] ImgData* mutable_depth_img_msb_data() const;
 
-        [[maybe_unused]] ImgData* mutable_depth_img_lsb_data() const;
+    [[maybe_unused]] ImgData* mutable_depth_img_lsb_data() const;
 
-        [[maybe_unused]] size_t ByteSizeLong() const;
+    [[maybe_unused]] size_t ByteSizeLong() const;
 
-        [[maybe_unused]] void SerializeToArray(char*, int) const { }
+    [[maybe_unused]] void SerializeToArray(char*, int) const { }
 
-        [[maybe_unused]] std::string SerializeAsString() const;
+    [[maybe_unused]] std::string SerializeAsString() const;
 
-        [[maybe_unused]] void set_zmin(double) { }
+    [[maybe_unused]] void set_zmin(double) { }
 
-        [[maybe_unused]] void set_zmax(double) { }
+    [[maybe_unused]] void set_zmax(double) { }
 
-        [[maybe_unused]] double zmin() const;
+    [[maybe_unused]] double zmin() const;
 
-        [[maybe_unused]] double zmax() const;
-    };
+    [[maybe_unused]] double zmax() const;
+};
 
-    } // namespace sr_input_proto
+} // namespace sr_input_proto

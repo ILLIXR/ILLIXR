@@ -25,17 +25,17 @@ void encoding_common::rgb2hsv(const cv::Mat& rgb, cv::Mat& hsv) {
     for (int i = 0; i < rgb.rows; i++) {
         for (int j = 0; j < rgb.cols; j++) {
             const auto& pixel = rgb.at<cv::Vec3f>(i, j);
-            float red = pixel[0];
-            float green = pixel[1];
-            float blue = pixel[2];
+            float       red   = pixel[0];
+            float       green = pixel[1];
+            float       blue  = pixel[2];
 
             float max_val = std::max({red, green, blue});
             float min_val = std::min({red, green, blue});
-            float delta = max_val - min_val;
+            float delta   = max_val - min_val;
 
-            float hue = 0.f;
+            float hue        = 0.f;
             float saturation = 0.f;
-            float value = max_val;
+            float value      = max_val;
 
             if (delta > 0) {
                 saturation = delta / max_val;
@@ -49,7 +49,8 @@ void encoding_common::rgb2hsv(const cv::Mat& rgb, cv::Mat& hsv) {
                 }
 
                 hue *= 60.0f;
-                if (hue < 0) hue += 360.0f;
+                if (hue < 0)
+                    hue += 360.0f;
             }
 
             hsv.at<cv::Vec3f>(i, j) = cv::Vec3f(hue, saturation, value);
@@ -62,49 +63,49 @@ void encoding_common::hsv2rgb(const cv::Mat& hsv, cv::Mat& rgb) {
 
     for (int i = 0; i < hsv.rows; i++) {
         for (int j = 0; j < hsv.cols; j++) {
-            const auto& pixel = hsv.at<cv::Vec3f>(i, j);
-            float hue = pixel[0];
-            float saturation = pixel[1];
-            float value = pixel[2];
+            const auto& pixel      = hsv.at<cv::Vec3f>(i, j);
+            float       hue        = pixel[0];
+            float       saturation = pixel[1];
+            float       value      = pixel[2];
 
-            hue = hue / 60.0f;
-            int hi = static_cast<int>(std::floor(hue)) % 6;
-            float f = hue - std::floor(hue);
-            float p = value * (1 - saturation);
-            float q = value * (1 - saturation * f);
-            float t = value * (1 - saturation * (1 - f));
+            hue      = hue / 60.0f;
+            int   hi = static_cast<int>(std::floor(hue)) % 6;
+            float f  = hue - std::floor(hue);
+            float p  = value * (1 - saturation);
+            float q  = value * (1 - saturation * f);
+            float t  = value * (1 - saturation * (1 - f));
 
             float red, green, blue;
             switch (hi) {
             case 0:
-                red = value;
+                red   = value;
                 green = t;
-                blue = p;
+                blue  = p;
                 break;
             case 1:
-                red = q;
+                red   = q;
                 green = value;
-                blue = p;
+                blue  = p;
                 break;
             case 2:
-                red = p;
+                red   = p;
                 green = value;
-                blue = t;
+                blue  = t;
                 break;
             case 3:
-                red = p;
+                red   = p;
                 green = q;
-                blue = value;
+                blue  = value;
                 break;
             case 4:
-                red = t;
+                red   = t;
                 green = p;
-                blue = value;
+                blue  = value;
                 break;
             case 5:
-                red = value;
+                red   = value;
                 green = p;
-                blue = q;
+                blue  = q;
                 break;
             default:
                 red = green = blue = 0;

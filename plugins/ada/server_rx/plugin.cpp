@@ -40,7 +40,7 @@ namespace {
     file.close();
     return true;
 }
-}
+} // namespace
 
 [[maybe_unused]] server_rx::server_rx(const std::string& name_, phonebook* pb_)
     : threadloop{name_, pb_}
@@ -94,9 +94,9 @@ namespace {
 
 void server_rx::_p_one_iteration() {
     if (ada_reader_.size() > 0) {
-        auto                   buffer_ptr   = ada_reader_.dequeue();
-        std::string            buffer_str   = **buffer_ptr;
-        std::string::size_type end_position = buffer_str.find(delimiter);
+        auto                       buffer_ptr   = ada_reader_.dequeue();
+        std::string                buffer_str   = **buffer_ptr;
+        std::string::size_type     end_position = buffer_str.find(delimiter);
         sr_input_proto::SRSendData sr_input;
         bool                       success = sr_input.ParseFromString(buffer_str.substr(0, end_position));
         if (!success) {
@@ -104,10 +104,9 @@ void server_rx::_p_one_iteration() {
                                          buffer_str.size() - delimiter.size());
         } else {
             spdlog::get("illixr")->debug("Pose of frame {}: {}, {}, {}; {}, {}, {}, {}", current_frame_no_,
-                                         sr_input.input_pose().p_x(),
-                                         sr_input.input_pose().p_y(), sr_input.input_pose().p_z(),
-                                         sr_input.input_pose().o_w(), sr_input.input_pose().o_x(),
-                                         sr_input.input_pose().o_y(), sr_input.input_pose().o_z());
+                                         sr_input.input_pose().p_x(), sr_input.input_pose().p_y(), sr_input.input_pose().p_z(),
+                                         sr_input.input_pose().o_w(), sr_input.input_pose().o_x(), sr_input.input_pose().o_y(),
+                                         sr_input.input_pose().o_z());
             receive_sr_input(sr_input);
         }
     }
@@ -142,8 +141,8 @@ void server_rx::receive_sr_input(const sr_input_proto::SRSendData& sr_input) {
         receive_timestamp << cur_frame << " " << millis << "\n";
     }
     Eigen::Vector3f    incoming_position{static_cast<float>(sr_input.input_pose().p_x()),
-                                         static_cast<float>(sr_input.input_pose().p_y()),
-                                         static_cast<float>(sr_input.input_pose().p_z())};
+                                      static_cast<float>(sr_input.input_pose().p_y()),
+                                      static_cast<float>(sr_input.input_pose().p_z())};
     Eigen::Quaternionf incoming_orientation{
         static_cast<float>(sr_input.input_pose().o_w()), static_cast<float>(sr_input.input_pose().o_x()),
         static_cast<float>(sr_input.input_pose().o_y()), static_cast<float>(sr_input.input_pose().o_z())};
@@ -157,7 +156,7 @@ void server_rx::receive_sr_input(const sr_input_proto::SRSendData& sr_input) {
     receive_size << "MSB " << cur_frame << " " << sr_input.depth_img_msb_data().size() << "\n";
     receive_size << "LSB " << cur_frame << " " << sr_input.depth_img_lsb_data().size() << "\n";
 
-    auto depth_decoding_start = std::chrono::high_resolution_clock::now();
+    auto                         depth_decoding_start = std::chrono::high_resolution_clock::now();
     std::unique_lock<std::mutex> lock{mutex_};
     decoder_->enqueue(msb, lsb);
     cond_var_.wait(lock, [this]() {
@@ -187,7 +186,7 @@ void server_rx::receive_sr_input(const sr_input_proto::SRSendData& sr_input) {
     double duration_combine_ms = static_cast<double>(duration_combine) / 1000.0;
     receive_time << "Combine " << cur_frame << " " << duration_combine_ms << "\n";
 #else
-    auto    msb  = const_cast<std::string&>(sr_input.depth_img_msb_data().img_data());
+    auto    msb = const_cast<std::string&>(sr_input.depth_img_msb_data().img_data());
     cv::Mat encoded_rgb(sr_input.depth_img_msb_data().rows(), sr_input.depth_img_msb_data().columns(), CV_8UC3, msb.data());
     float   zmin = sr_input.zmax();
     float   zmax = sr_input.zmax();

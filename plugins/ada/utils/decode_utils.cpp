@@ -2,7 +2,8 @@
 
 using namespace ILLIXR::encoding;
 
-rgb_decoder::rgb_decoder() : encoding_common() {
+rgb_decoder::rgb_decoder()
+    : encoding_common() {
     create_dec_lut();
 }
 
@@ -52,16 +53,14 @@ void rgb_decoder::decode_lut(const cv::Mat& rgb, cv::Mat& depth_img) {
 
     for (int i = 0; i < rgb.rows; i++) {
         for (int j = 0; j < rgb.cols; j++) {
-            const auto& pixel = rgb.at<cv::Vec3b>(i, j);
+            const auto& pixel         = rgb.at<cv::Vec3b>(i, j);
             depth_img.at<float>(i, j) = dec_lut_.at<float>(pixel[0], pixel[1] * 256 + pixel[2]);
         }
     }
 }
 
 void rgb_decoder::rgb2depth(const cv::Mat& rgb, cv::Mat& depth, float zmin, float zmax) {
-
     decode_lut(rgb, depth);
 
     depth = depth * (zmax - zmin) + zmin;
-
 }

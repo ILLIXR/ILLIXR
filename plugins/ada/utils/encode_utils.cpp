@@ -81,7 +81,6 @@ void rgb_encoder::depth2rgb(const cv::Mat& depth_img, cv::Mat& rgb, float& zmin,
     cv::Mat depth_f;
     depth_img.convertTo(depth_f, CV_32FC1);
 
-
     depth_f = (depth_f - zmin) / (zmax - zmin);
 
     encode_lut(depth_f, rgb);

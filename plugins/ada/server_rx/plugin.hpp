@@ -7,16 +7,16 @@
 #include "illixr/threadloop.hpp"
 
 #if __has_include("sr_input.pb.h")
-#include "sr_input.pb.h"
+    #include "sr_input.pb.h"
 #else
-#include "../proto/input_stub.hpp"
+    #include "../proto/input_stub.hpp"
 #endif
 #ifdef USE_NVIDIA_CODEC
-#include "video_decoder.hpp"
-#define DECODER_TYPE ada_video_decoder
+    #include "video_decoder.hpp"
+    #define DECODER_TYPE ada_video_decoder
 #else
-#include "../utils/decode_utils.hpp"
-#define DECODER_TYPE encoding::rgb_decoder
+    #include "../utils/decode_utils.hpp"
+    #define DECODER_TYPE encoding::rgb_decoder
 #endif
 
 #include <filesystem>
@@ -26,7 +26,7 @@ const std::string delimiter = "EEND!";
 
 class server_rx
     : public threadloop
-        , public device_to_server_base {
+    , public device_to_server_base {
 public:
     [[maybe_unused]] server_rx(const std::string& name_, phonebook* pb_);
 
@@ -62,8 +62,8 @@ private:
 
     std::unique_ptr<DECODER_TYPE> decoder_;
 
-    cv::Mat                            img0_dst_;
-    cv::Mat                            img1_dst_;
+    cv::Mat img0_dst_;
+    cv::Mat img1_dst_;
 
     // preallocated
     cv::Mat msb_buf_; // CV_8UC1, 480x640
