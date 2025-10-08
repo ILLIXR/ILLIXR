@@ -40,7 +40,7 @@ namespace {
     file.close();
     return true;
 }
-} // namespace
+}
 
 [[maybe_unused]] server_rx::server_rx(const std::string& name_, phonebook* pb_)
     : threadloop{name_, pb_}
@@ -94,9 +94,9 @@ namespace {
 
 void server_rx::_p_one_iteration() {
     if (ada_reader_.size() > 0) {
-        auto                       buffer_ptr   = ada_reader_.dequeue();
-        std::string                buffer_str   = **buffer_ptr;
-        std::string::size_type     end_position = buffer_str.find(delimiter);
+        auto                   buffer_ptr   = ada_reader_.dequeue();
+        std::string            buffer_str   = **buffer_ptr;
+        std::string::size_type end_position = buffer_str.find(delimiter);
         sr_input_proto::SRSendData sr_input;
         bool                       success = sr_input.ParseFromString(buffer_str.substr(0, end_position));
         if (!success) {
@@ -104,15 +104,17 @@ void server_rx::_p_one_iteration() {
                                          buffer_str.size() - delimiter.size());
         } else {
             spdlog::get("illixr")->debug("Pose of frame {}: {}, {}, {}; {}, {}, {}, {}", current_frame_no_,
-                                         sr_input.input_pose().p_x(), sr_input.input_pose().p_y(), sr_input.input_pose().p_z(),
-                                         sr_input.input_pose().o_w(), sr_input.input_pose().o_x(), sr_input.input_pose().o_y(),
-                                         sr_input.input_pose().o_z());
+                                         sr_input.input_pose().p_x(),
+                                         sr_input.input_pose().p_y(), sr_input.input_pose().p_z(),
+                                         sr_input.input_pose().o_w(), sr_input.input_pose().o_x(),
+                                         sr_input.input_pose().o_y(), sr_input.input_pose().o_z());
             receive_sr_input(sr_input);
         }
     }
 }
 
 void server_rx::start() {
+#ifdef USE_NVIDIA_CODEC
     decoder_ = std::make_unique<ada_video_decoder>([this](cv::Mat&& img0, cv::Mat&& img1) {
         {
             std::lock_guard<std::mutex> lock{mutex_};
@@ -123,6 +125,9 @@ void server_rx::start() {
         cond_var_.notify_one();
     });
     decoder_->init();
+#else
+    decoder_ = std::make_unique<encoding::rgb_decoder>();
+#endif
     threadloop::start();
 }
 
@@ -137,22 +142,22 @@ void server_rx::receive_sr_input(const sr_input_proto::SRSendData& sr_input) {
         receive_timestamp << cur_frame << " " << millis << "\n";
     }
     Eigen::Vector3f    incoming_position{static_cast<float>(sr_input.input_pose().p_x()),
-                                      static_cast<float>(sr_input.input_pose().p_y()),
-                                      static_cast<float>(sr_input.input_pose().p_z())};
+                                         static_cast<float>(sr_input.input_pose().p_y()),
+                                         static_cast<float>(sr_input.input_pose().p_z())};
     Eigen::Quaternionf incoming_orientation{
         static_cast<float>(sr_input.input_pose().o_w()), static_cast<float>(sr_input.input_pose().o_x()),
         static_cast<float>(sr_input.input_pose().o_y()), static_cast<float>(sr_input.input_pose().o_z())};
 
     pose_type pose = {time_point{}, incoming_position, incoming_orientation};
 
-    // Must do a deep copy of the received data (in the form of a string of bytes)
+#ifdef USE_NVIDIA_CODEC
     auto msb = const_cast<std::string&>(sr_input.depth_img_msb_data().img_data());
     auto lsb = const_cast<std::string&>(sr_input.depth_img_lsb_data().img_data());
 
     receive_size << "MSB " << cur_frame << " " << sr_input.depth_img_msb_data().size() << "\n";
     receive_size << "LSB " << cur_frame << " " << sr_input.depth_img_lsb_data().size() << "\n";
 
-    auto                         depth_decoding_start = std::chrono::high_resolution_clock::now();
+    auto depth_decoding_start = std::chrono::high_resolution_clock::now();
     std::unique_lock<std::mutex> lock{mutex_};
     decoder_->enqueue(msb, lsb);
     cond_var_.wait(lock, [this]() {
@@ -181,6 +186,15 @@ void server_rx::receive_sr_input(const sr_input_proto::SRSendData& sr_input) {
     auto   duration_combine    = std::chrono::duration_cast<std::chrono::microseconds>(combine_end - combine_start).count();
     double duration_combine_ms = static_cast<double>(duration_combine) / 1000.0;
     receive_time << "Combine " << cur_frame << " " << duration_combine_ms << "\n";
+#else
+    auto    msb  = const_cast<std::string&>(sr_input.depth_img_msb_data().img_data());
+    cv::Mat encoded_rgb(sr_input.depth_img_msb_data().rows(), sr_input.depth_img_msb_data().columns(), CV_8UC3, msb.data());
+    float   zmin = sr_input.zmax();
+    float   zmax = sr_input.zmax();
+    cv::Mat temp_depth;
+    decoder_->rgb2depth(encoded_rgb, temp_depth, zmin, zmax);
+    temp_depth.convertTo(depth16_, CV_16U);
+#endif
 
     cv::Mat rgb; // pyh dummy here
     scannet_.put(scannet_.allocate<scene_recon_type>(scene_recon_type{time_point{}, pose, depth16_.clone(), rgb, false}));

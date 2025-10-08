@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../device_to_server_base.hpp"
+#include "../utils/device_to_server_base.hpp"
 #include "illixr/data_format/scene_reconstruction.hpp"
 #include "illixr/network/net_config.hpp"
 #include "illixr/phonebook.hpp"
@@ -8,12 +8,18 @@
 #include "illixr/stoplight.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
+#ifdef USE_NVIDIA_CODEC
 #include "video_encoder.hpp"
+#define ENCODER_TYPE ada_video_encoder
+#else
+#include "../utils/encode_utils.hpp"
+#define ENCODER_TYPE encoding::rgb_encoder
+#endif
 
 #if __has_include("sr_input.pb.h")
-    #include "sr_input.pb.h"
+#include "sr_input.pb.h"
 #else
-    #include "../proto/input_stub.hpp"
+#include "../proto/input_stub.hpp"
 #endif
 
 #include <filesystem>
@@ -31,7 +37,7 @@ const std::string delimiter = "EEND!";
 
 class device_tx
     : public threadloop
-    , public device_to_server_base {
+        , public device_to_server_base {
 public:
     [[maybe_unused]] device_tx(const std::string& name_, phonebook* pb_);
 
@@ -50,7 +56,7 @@ private:
     const std::shared_ptr<switchboard>                                   switchboard_;
     const std::shared_ptr<relative_clock>                                clock_;
     const std::shared_ptr<stoplight>                                     stoplight_;
-    std::unique_ptr<ada_video_encoder>                                   encoder_ = nullptr;
+    std::unique_ptr<ENCODER_TYPE>                                   encoder_ = nullptr;
     switchboard::network_writer<switchboard::event_wrapper<std::string>> ada_writer_;
 
     const std::string data_path_ = std::filesystem::current_path().string() + "/recorded_data";

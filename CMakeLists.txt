@@ -14,6 +14,8 @@ cmake_minimum_required(VERSION 3.22)
 # clang is now a required dependency
 find_program(CLANG_EXE clang REQUIRED)
 find_program(CLANG_CXX_EXE clang++ REQUIRED NAMES clang-cpp clang++)
+#find_program(CLANG_EXE clang-11 REQUIRED)
+#find_program(CLANG_CXX_EXE clang++-11 REQUIRED NAMES clang-cpp-11 clang++-11)
 
 set(CMAKE_C_COMPILER ${CLANG_EXE} CACHE FILEPATH "" FORCE)
 set(CMAKE_CXX_COMPILER ${CLANG_CXX_EXE} CACHE FILEPATH "" FORCE)
@@ -35,9 +37,9 @@ endif()
 set(BUILDING_ILLIXR Yes)
 
 set(PACKAGE_NAME "ILLIXR")
-set(PACKAGE_STRING "ILLIXR 4.1.0")
+set(PACKAGE_STRING "ILLIXR 4.0.0")
 set(PACKAGE_VERSION_MAJOR "4")
-set(PACKAGE_VERSION_MINOR "1")
+set(PACKAGE_VERSION_MINOR "0")
 set(PACKAGE_VERSION_PATCH "0")
 set(PACKAGE_VERSION_LABEL "")
 
@@ -48,7 +50,7 @@ if(WIN32)
     message(FATAL_ERROR "Windows is currently not supported")
 elseif(APPLE)
     message(FATAL_ERROR "MacOS is currently not supported")
-elif(NOT UNIX)
+    elif(NOT UNIX)
     message(FATAL_ERROR "Unknown operating system")
 endif()
 
@@ -77,8 +79,23 @@ set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-ggdb -O3 -Wall -Wextra -Wno-attributes -Wno
 # check for the Jetson platform
 if (CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64" AND EXISTS "/etc/nv_tegra_release")
     set(ON_JETSON_PLATFORM YES)
+    file(STRINGS "/etc/nv_tegra_release" NVT_LINES)
+    set(ADA_USE_NVIDIA_CODEC NO)
+    foreach(LINE IN LISTS NVT_LINES)
+        string(REGEX_MATCH "^# R([0-9]+)" MATCH_FOUND ${LINE})
+        if(MATCH_FOUND)
+            if (${CMAKE_MATCH_1} GREATER_EQUAL 36)
+                set(ADA_USE_NVIDIA_CODEC YES)
+            endif()
+            break()
+        endif()
+    endforeach()
+    if (NOT ADA_USE_NVIDIA_CODEC)
+        message(STATUS "Orin platform note detected, using rgb encoding")
+    endif()
 else()
     set(ON_JETSON_PLATFORM NO)
+    set(ADA_USE_NVIDIA_CODEC NO)
 endif()
 
 # needed to generate runtime scripts
@@ -88,7 +105,7 @@ set(OPENXR_RUNTIME "")
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_BINARY_DIR}")
 option(COLOR_OUTPUT "Produce color output to the screen" ON)
-option(DOWNLOAD_DATA_FILE "The data file to get" ON)
+option(DOWNLOAD_DATA_FILE "The data file to get" OFF)
 option(BUILD_OXR_INTERFACE "Build the OpenXR interface (hand tracking only)" OFF)
 cmake_dependent_option(BUILD_OXR_TEST "Build the  test for the OpenXr interface (hand tracking only)" OFF BUILD_OXR_INTERFACE OFF)
 option(BUILD_ZED_CAPTURE "Build the ZED capture program" OFF)
@@ -213,7 +230,7 @@ pkg_check_modules(gl REQUIRED gl)
 find_package(Eigen3 REQUIRED CONFIG)
 
 get_external(Vulkan)
-
+get_external(Draco)
 #############
 # plugin specific dependencies that are used by several plugins
 #############
