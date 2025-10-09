@@ -1,5 +1,6 @@
 #include "service.hpp"
 
+#include "illixr/iterators/csv_iterator.hpp"
 #include "utils.hpp"
 
 #include <memory>

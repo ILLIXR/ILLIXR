@@ -11,8 +11,8 @@ add_library(${PLUGIN_NAME} SHARED plugin.cpp
             ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
 )
 
-target_include_directories(${PLUGIN_NAME} PRIVATE ${Eigen3_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR}/include)
-target_link_libraries(${PLUGIN_NAME} ${Eigen3_LIBRARIES})
+target_include_directories(${PLUGIN_NAME} PRIVATE ${ILLIXR_SOURCE_DIR}/include)
+target_link_libraries(${PLUGIN_NAME} Eigen3::Eigen)
 target_compile_features(${PLUGIN_NAME} PRIVATE cxx_std_17)
 
 install(TARGETS ${PLUGIN_NAME} DESTINATION lib)

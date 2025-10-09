@@ -8,7 +8,8 @@ add_library(${PLUGIN_NAME} SHARED service.cpp
             ${CMAKE_SOURCE_DIR}/include/illixr/data_loading.hpp
             utils.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/error_util.hpp
-            ${CMAKE_SOURCE_DIR}/include/illixr/csv_iterator.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/iterators/csv_iterator.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/iterators/data_iterator.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/data_format/misc.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/data_format/pose.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/plugin.hpp

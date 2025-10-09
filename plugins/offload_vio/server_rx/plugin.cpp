@@ -42,7 +42,7 @@ void server_reader::_p_one_iteration() {
 void server_reader::start() {
     threadloop::start();
 
-    decoder_ = std::make_unique<video_decoder>([this](cv::Mat&& img0, cv::Mat&& img1) {
+    decoder_ = std::make_unique<vio_video_decoder>([this](cv::Mat&& img0, cv::Mat&& img1) {
         queue_.consume_one([&](uint64_t& timestamp) {
             (void) timestamp;
             uint64_t curr =

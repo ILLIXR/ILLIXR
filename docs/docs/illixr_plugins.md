@@ -2,6 +2,83 @@
 
 This page details the structure of ILLIXR's [_plugins_][G18] and how they interact with each other.
 
+## ada
+
+Ada’s distributed design relies on **four communication plugins** that coordinate data transfer between the **device** and **server** for remote scene provisioning.
+
+- `ada.device_rx`: Receives processed data from the server to the device. 
+    - Asynchronously *reads* a string from the topic `ada_processed`, which contains protobuf packets sent by the server.  
+    - *Publishes* [`mesh_type`][A23] to `compressed_scene` topic.  forwards compressed mesh chunks to `ada.mesh_decompression_grey`  
+    - *Publishes* [`vb_type`][A24] to `VB_update_lists` topic. forwards the unique voxel block list (UVBL) to `ada.scene_management`
+- `ada.device_tx`: Sends encoded depth images (MSB and LSB) along with non-encoded pose information from the device to the server. The LSB encoding bitrate is configurable for bandwidth–reconstruction accuracy trade-offs. 
+    - Synchronously *reads* [`scene_recon_type`][A25] from `ScanNet_Data` topic, which provides dataset input (via `ada.offline_scannet`).  
+    - *Publishes* encoded depth data as a string to the `ada_data` topic.
+- `ada.server_rx`: Receives encoded depth images and poses (not encoded) from the device, decodes them, and feeds them to the reconstruction module (`ada.infiniTAM`).  
+    - Asynchronously *reads* a string from topic `ada_data`
+    - *Publishes* [`scene_recon_type`][A25] to `ScanNet_Data` topic. provides decoded depth frames and corresponding pose inforamtion to downstream reconstruction.
+- `ada.server_tx`: Sends processed scene data (meshes and Unique Voxel Block Lists(UVBL)) from the server back to the device. 
+    - Synchronously *reads* [`vb_type`][A24] from `unique_VB_list` topic (output of `ada.infiniTAM`). 
+    - Synchronously *reads* [`mesh_type`][A23] from `compressed_scene` topic (output of `ada.infiniTAM`).
+    - *Publishes* a string to `ada_processed` topic, each string is either a protobuf for [`vb_type`][A24] topic or a protobuf for [`mesh_type`][A23] topic.
+
+&nbsp;&nbsp;[**Details**][P33]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C33]
+
+## ada.infinitam
+
+Performs **scene reconstruction** using incoming depth and pose data from the device, followed by **on-demand or proactive scene extraction**.  
+During extraction, it generates both the **updated partial mesh** and the **Unique Voxel Block List (UVBL)**, which are sent downstream for compression and scene management. Extraction frequency is configurable to balance latency and compute cost.
+
+Topic details:
+
+-   Synchronously *reads* [`scene_recon_type`][A25] from `ScanNet_Data` topic.
+-   *Publishes* [`mesh_type`][A23] to `requested_scene` topic. Extracted mesh chunks for compression
+-   *Publishes* [`vb_type`][A24] to `unique_VB_list` topic. This is the metadata for identifying updated voxel regions
+
+&nbsp;&nbsp;[**Details**][P33]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C34]
+
+## ada.mesh_compression
+
+Compresses mesh chunks from [`ada.infinitam`][I12] using a **customized version of [Google Draco][E17]**. Compression parallelism can be tuned for different latency–power trade-offs.
+
+Topic details:
+
+-   Synchronously *reads* [`mesh_type`][A23] from `requested_scene` topic.
+-   *Publishes* [`mesh_type`][A23] to `compressed_scene` topic. compressed mesh chunks ready for transmission to the device. Voxel block information has been attached to each encoded face. 
+
+&nbsp;&nbsp;[**Details**][P33]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C35]
+
+## ada.mesh_decompression_grey
+
+Decompresses the mesh chunks received from the server and performs a portion of scene management that can be parallelized. Decompression parallelism can be tuned for different latency–power trade-offs.
+
+Topic details:
+
+-   Synchronously *reads* [`mesh_type`][A23] from `compressed_scene` topic.
+-   *Publishes* [`draco_type`][A26] to `decoded_inactive_scene` topic. decoded mesh data sent to [`ada.scene_management`][I13].  
+
+&nbsp;&nbsp;[**Details**][P33]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C36]
+
+## ada.offline_scannet
+
+Loads the **ScanNet dataset** for offline or reproducible experiments.
+ 
+Topic details:
+
+-   *Publishes* [`scene_recon_type`][A25] to `ScanNet_Data` topic.
+
+&nbsp;&nbsp;[**Details**][P33]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C37]
+
+## ada.scene_management
+
+Integrates incremental scene updates into a **maintained global mesh**, merging new geometry and removing outdated regions for consistency.
+
+Topic details:
+
+-   Synchronously *reads* [`draco_type`][A26] from `decoded_inactive_scene` topic.
+-   Synchronously *reads* [`vb_type`][A24] from `VB_update_lists` topic.
+
+&nbsp;&nbsp;[**Details**][P33]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C38]
+
 ## audio_pipeline
 
 Launches a thread for [binaural][E12]: recording and one for binaural playback.
@@ -218,22 +295,22 @@ Four plugins which work in unison to allow head tracking (VIO) to be rendered re
 
 Topic details:
 
-- `offload_vio.device_rx`
-  - Asynchronously *reads* a string from topic `vio_pose`.
-  - Synchronously *reads* [`imu_type`][A15] from `imu` topic
-  - *Publishes* [`pose_type`][A12] to `slow_pose` topic.
-  - *Publishes* [`imu_integrator_input`][A17] to `imu_integrator_input` topic.
-- `offload_vio.device_tx`
-  - Asynchronously *reads* [`binocular_cam_type`][A14] from `cam topic`
-  - *Publishes* a string to `compressed_imu_cam` topic
-- `offload_vio.server_rx`
-  - Asynchronously *reads* a string from `compressed_imu_cam` topic
-  - *Publishes* [`imu_type`][A15] to `imu` topic.
-  - *Publishes* [`binocular_cam_type`][A14] to `cam` topic.
-- `offload_vio.server_tx`
-  - Asynchronously *reads* [`imu_integrator_input`][A17] from `imu_integrator_input` topic.
-  - Synchronously *reads* [`pose_type`][A12] from `slow_pose` topic from `open_vins`
-  - *Publishes* a string to `vio_pose` topic.
+-   `offload_vio.device_rx`
+    - Asynchronously *reads* a string from topic `vio_pose`.
+    - Synchronously *reads* [`imu_type`][A15] from `imu` topic
+    - *Publishes* [`pose_type`][A12] to `slow_pose` topic.
+    - *Publishes* [`imu_integrator_input`][A17] to `imu_integrator_input` topic.
+-   `offload_vio.device_tx`
+    - Asynchronously *reads* [`binocular_cam_type`][A14] from `cam topic`
+    - *Publishes* a string to `compressed_imu_cam` topic
+-   `offload_vio.server_rx`
+    - Asynchronously *reads* a string from `compressed_imu_cam` topic
+    - *Publishes* [`imu_type`][A15] to `imu` topic.
+    - *Publishes* [`binocular_cam_type`][A14] to `cam` topic.
+-   `offload_vio.server_tx`
+    - Asynchronously *reads* [`imu_integrator_input`][A17] from `imu_integrator_input` topic.
+    - Synchronously *reads* [`pose_type`][A12] from `slow_pose` topic from `open_vins`
+    - *Publishes* a string to `vio_pose` topic.
 
 &nbsp;&nbsp;[**Details**][P17]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C17]
 
@@ -479,7 +556,6 @@ See [Getting Started][I11] for more information on adding plugins to a [_profile
 
 [P22]:  plugin_README/README_offload_rendering_client.md
 
-
 [P24]:  plugin_README/README_record_imu_cam.md
 
 [P28]:  plugin_README/README_timewarp_gl.md
@@ -491,6 +567,8 @@ See [Getting Started][I11] for more information on adding plugins to a [_profile
 [P31]:  plugin_README/README_zed.md
 
 [P32]:  plugin_README/README_zed_data_injection.md
+
+[P33]:   plugin_README/README_ada.md
 
 [S10]:   illixr_services.md#pose_prediction
 
@@ -510,6 +588,8 @@ See [Getting Started][I11] for more information on adding plugins to a [_profile
 [E15]:   https://github.com/ILLIXR/ILLIXR/tree/master/include/illixr/vk
 
 [E16]:   https://github.com/ILLIXR/ILLIXR/tree/master/services/pose_prediction
+
+[E17]:   https://github.com/google/draco
 
 
 [//]: # (- Code -)
@@ -576,11 +656,28 @@ See [Getting Started][I11] for more information on adding plugins to a [_profile
 
 [C32]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/zed/data_injection
 
+[C33]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/ada
+
+[C34]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/ada/infinitam
+
+[C35]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/ada/mesh_compression
+
+[C36]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/ada/mesh_decompression_grey
+
+[C37]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/ada/offline_scannet
+
+[C38]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/ada/scene_management
+
+
 [//]: # (- Internal -)
 
 [I10]:   working_with/writing_your_plugin.md
 
 [I11]:   getting_started.md
+
+[I12]:   illixr_plugins.md#adainfinitam
+
+[I13]:   illixr_plugins.md#adascene_management
 
 [G10]:   glossary.md#ground-truth
 
@@ -599,7 +696,6 @@ See [Getting Started][I11] for more information on adding plugins to a [_profile
 [G17]:   glossary.md#profile
 
 [G18]:   glossary.md#plugin
-
 
 [//]: # (- api -)
 
@@ -628,3 +724,11 @@ See [Getting Started][I11] for more information on adding plugins to a [_profile
 [A21]:   api/structILLIXR_1_1data__format_1_1cam__type__zed.md
 
 [A22]:   api/structILLIXR_1_1data__format_1_1ht_1_1ht__frame.md
+
+[A23]:   api/structILLIXR_1_1data__format_1_1mesh__type.md
+
+[A24]:   api/structILLIXR_1_1data__format_1_1vb__type.md
+
+[A25]:   api/structILLIXR_1_1data__format_1_1scene__recon__type.md
+
+[A26]:   api/structILLIXR_1_1data__format_1_1draco__type.md

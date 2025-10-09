@@ -37,7 +37,7 @@ required only for specific plugins.
 <table id="operating_system" style="border-spacing: 20px; border: 1px solid black;"></table>
 
 ILLIXR may compile with other versions of the above operating systems, but some of the necessary prerequisite packages are not supplied by the OS repos and will need to be compiled by hand. You should be able to use the package and cmake commands for other versions of the same OS (other than the missing packages) to compile ILLIXR. RHEL is not supported at this time as many of the prerequisite packages are not natively available. You will also need to have a C++ compiler
-installed (gcc, clang, etc.) as well as a generator (make, ninja, etc.) and CMake 3.22 or newer (installation is os dependent).
+installed as well as a generator (make, ninja, etc.) and CMake 3.24 or newer (installation is os dependent). We recommend the [clang](https://clang.llvm.org/) compiler, as some plugin dependencies require it to build.
 
 #### Pick the ILLIXR plugins you want to use
 

@@ -1,0 +1,12 @@
+# This file was auto generated, take caution if manually editing.
+plugins: ada.offline_scannet,tcp_network_backend,ada.device_tx,ada.device_rx,ada.mesh_decompression_grey,ada.scene_management
+env_vars:
+  ENABLE_OFFLOAD: false
+  ENABLE_ALIGNMENT: false
+  ENABLE_VERBOSE_ERRORS: false
+  ENABLE_PRE_SLEEP: false
+  DURATION: 1200
+  FPS: 15
+  PARTIAL_MESH_COUNT: 8
+  MESH_COMPRESS_PARALLELISM: 8
+  ILLIXR_IS_CLIENT: 1

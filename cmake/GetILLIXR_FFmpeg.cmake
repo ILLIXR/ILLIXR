@@ -48,7 +48,7 @@ if(NOT (libavcodec_illixr_FOUND AND libavdevice_illixr_FOUND AND
                         GIT_TAG 654802ac3c22b50ecac4c4f6ef8e1847f54e6364
                         PREFIX ${CMAKE_BINARY_DIR}/_deps/ffmpeg
                         DEPENDS ${Vulkan_DEP_STR}
-                        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=Release
+                        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=${CLANG_CXX_EXE} -DCMAKE_C_COMPILER=${CLANG_EXE}
                         BUILD_COMMAND cmake --build . --parallel ${BUILD_PARALLEL_LEVEL}
                         INSTALL_COMMAND ${CMAKE_BINARY_DIR}/finalize_install.sh)
     set(FFMPLIBS avcodec;avdevice;avformat;avutil;swscale)
