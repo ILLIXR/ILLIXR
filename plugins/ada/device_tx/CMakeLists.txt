@@ -14,7 +14,7 @@ add_library(${PLUGIN_NAME} SHARED
             plugin.hpp
             video_encoder.cpp
             video_encoder.hpp
-            ${CMAKE_CURRENT_SOURCE_DIR}/../device_to_server_base.hpp
+            ../utils/device_to_server_base.hpp
             ${PROTO_SRCS}
             ${PROTO_HDRS}
             ${ILLIXR_SOURCE_DIR}/include/illixr/data_format/scene_reconstruction.hpp
@@ -24,8 +24,18 @@ add_library(${PLUGIN_NAME} SHARED
             ${ILLIXR_SOURCE_DIR}/include/illixr/stoplight.hpp
             ${ILLIXR_SOURCE_DIR}/include/illixr/switchboard.hpp
             ${ILLIXR_SOURCE_DIR}/include/illixr/threadloop.hpp
-            $<TARGET_OBJECTS:video_encoder_ada>
 )
+
+if (ADA_USE_NVIDIA_CODEC)
+    target_compile_definitions(${PLUGIN_NAME} PUBLIC USE_NVIDIA_CODEC)
+    target_sources(${PLUGIN_NAME} PUBLIC $<TARGET_OBJECTS:video_encoder_ada>)
+else()
+    if (NOT TARGET encode_decode_common)
+        include(../utils/CMakeLists.txt)
+    endif()
+
+    target_sources(${PLUGIN_NAME} PUBLIC $<TARGET_OBJECTS:encode_utils> $<TARGET_OBJECTS:encode_decode_common>)
+endif()
 
 find_package(PkgConfig)
 pkg_search_module(GLIB REQUIRED glib-2.0)

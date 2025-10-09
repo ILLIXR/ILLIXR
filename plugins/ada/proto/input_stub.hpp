@@ -57,6 +57,10 @@ public:
     [[maybe_unused]] ImgData* mutable_img_data() const;
 
     [[maybe_unused]] void swap(const std::string&);
+
+    [[maybe_unused]] size_t rows() const;
+
+    [[maybe_unused]] size_t columns() const;
 };
 
 // uncompressed mesh
@@ -135,7 +139,17 @@ public:
 
     [[maybe_unused]] size_t ByteSizeLong() const;
 
-    [[maybe_unused]] void SerializeToArray(char*, int) const;
+    [[maybe_unused]] void SerializeToArray(char*, int) const { }
+
+    [[maybe_unused]] std::string SerializeAsString() const;
+
+    [[maybe_unused]] void set_zmin(double) { }
+
+    [[maybe_unused]] void set_zmax(double) { }
+
+    [[maybe_unused]] double zmin() const;
+
+    [[maybe_unused]] double zmax() const;
 };
 
 } // namespace sr_input_proto

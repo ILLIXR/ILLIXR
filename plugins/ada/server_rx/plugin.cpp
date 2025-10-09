@@ -113,6 +113,7 @@ void server_rx::_p_one_iteration() {
 }
 
 void server_rx::start() {
+#ifdef USE_NVIDIA_CODEC
     decoder_ = std::make_unique<ada_video_decoder>([this](cv::Mat&& img0, cv::Mat&& img1) {
         {
             std::lock_guard<std::mutex> lock{mutex_};
@@ -123,6 +124,9 @@ void server_rx::start() {
         cond_var_.notify_one();
     });
     decoder_->init();
+#else
+    decoder_ = std::make_unique<encoding::rgb_decoder>();
+#endif
     threadloop::start();
 }
 
@@ -145,7 +149,7 @@ void server_rx::receive_sr_input(const sr_input_proto::SRSendData& sr_input) {
 
     pose_type pose = {time_point{}, incoming_position, incoming_orientation};
 
-    // Must do a deep copy of the received data (in the form of a string of bytes)
+#ifdef USE_NVIDIA_CODEC
     auto msb = const_cast<std::string&>(sr_input.depth_img_msb_data().img_data());
     auto lsb = const_cast<std::string&>(sr_input.depth_img_lsb_data().img_data());
 
@@ -181,7 +185,17 @@ void server_rx::receive_sr_input(const sr_input_proto::SRSendData& sr_input) {
     auto   duration_combine    = std::chrono::duration_cast<std::chrono::microseconds>(combine_end - combine_start).count();
     double duration_combine_ms = static_cast<double>(duration_combine) / 1000.0;
     receive_time << "Combine " << cur_frame << " " << duration_combine_ms << "\n";
-
+#else
+    auto    msb = const_cast<std::string&>(sr_input.depth_img_msb_data().img_data());
+    cv::Mat encoded_rgb(sr_input.depth_img_msb_data().rows(), sr_input.depth_img_msb_data().columns(), CV_8UC3, msb.data());
+    float   zmin = sr_input.zmax();
+    float   zmax = sr_input.zmax();
+    cv::Mat temp_depth;
+    decoder_->rgb2depth(encoded_rgb, temp_depth, zmin, zmax);
+    temp_depth.convertTo(depth16_, CV_16U);
+#endif
+    std::string depth_str = std::to_string(cur_frame) + ".pgm";
+    write_16_bit_pgm(depth16_, depth_str);
     cv::Mat rgb; // pyh dummy here
     scannet_.put(scannet_.allocate<scene_recon_type>(scene_recon_type{time_point{}, pose, depth16_.clone(), rgb, false}));
 

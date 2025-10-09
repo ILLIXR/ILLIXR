@@ -45,5 +45,6 @@ message SRSendData
   ImgData depth_img_LSB_data = 3;
   ImgData rgb_img_data = 4;
   int32 id = 5;
+  double zmin = 6;
+  double zmax = 7;
 }
-
