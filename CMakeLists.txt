@@ -228,6 +228,7 @@ else()
 endif()
 
 find_package(spdlog REQUIRED)
+set(EXTERNAL_PROJECTS "")
 add_definitions(-DFMT_HEADER_ONLY)
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
