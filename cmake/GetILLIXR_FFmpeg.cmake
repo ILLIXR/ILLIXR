@@ -1,5 +1,4 @@
-find_package(PkgConfig REQUIRED)
-
+list(APPEND EXTERNAL_PROJECTS FFMPEG)
 # add any custom module paths for finding cmake and pkg-config files
 set(CMAKE_MODULE_PATH ${CMAKE_INSTALL_PREFIX}/lib/cmake;${CMAKE_INSTALL_PREFIX}/share/cmake;${CMAKE_MODULE_PATH})
 set(CMAKE_PREFIX_PATH ${CMAKE_INSTALL_PREFIX}/lib/cmake;${CMAKE_INSTALL_PREFIX}/lib64/cmake;${CMAKE_PREFIX_PATH})
@@ -43,14 +42,24 @@ FILE(CHMOD ${CMAKE_BINARY_DIR}/finalize_install.sh PERMISSIONS OWNER_READ OWNER_
 if(NOT (libavcodec_illixr_FOUND AND libavdevice_illixr_FOUND AND
         libavformat_illixr_FOUND AND libavutil_illixr_FOUND AND libswscale_illixr_FOUND))
     message("FFMPEG NOT FOUND, will build from source")
-    EXTERNALPROJECT_ADD(ILLIXR_FFmpeg_ext
-                        GIT_REPOSITORY https://github.com/ILLIXR/FFmpeg.git
-                        GIT_TAG 654802ac3c22b50ecac4c4f6ef8e1847f54e6364
-                        PREFIX ${CMAKE_BINARY_DIR}/_deps/ffmpeg
-                        DEPENDS ${Vulkan_DEP_STR}
-                        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=${CLANG_CXX_EXE} -DCMAKE_C_COMPILER=${CLANG_EXE}
-                        BUILD_COMMAND cmake --build . --parallel ${BUILD_PARALLEL_LEVEL}
-                        INSTALL_COMMAND ${CMAKE_BINARY_DIR}/finalize_install.sh)
+    fetch_git(NAME ILLIXR_FFmpeg
+              REPO https://github.com/ILLIXR/FFmpeg.git
+              TAG 654802ac3c22b50ecac4c4f6ef8e1847f54e6364
+    )
+
+    configure_target(NAME ILLIXR_FFmpeg
+                     NO_FIND
+    )
+    add_custom_target(ffmpeg_install
+                      COMMAND ${CMAKE_CURRENT_BINARY_DIR}/finalize_install.sh
+    )
+
+    set_property(TARGET ffmpeg_install
+                 APPEND PROPERTY ???
+    )
+    DEPENDS ${Vulkan_DEP_STR}
+
+INSTALL_COMMAND ${CMAKE_BINARY_DIR}/finalize_install.sh)
     set(FFMPLIBS avcodec;avdevice;avformat;avutil;swscale)
     foreach(LIBRARY IN LISTS FFMPLIBS)
         set(lib${LIBRARY}_illixr_CFLAGS "-I${CMAKE_INSTALL_PREFIX}/include" CACHE INTERNAL "" FORCE)
@@ -119,8 +128,8 @@ if(NOT (libavcodec_illixr_FOUND AND libavdevice_illixr_FOUND AND
     set(libswscale_illixr_STATIC_LIBRARY_DIRS "${CMAKE_INSTALL_PREFIX}/lib" CACHE INTERNAL "" FORCE)
     set(libswscale_illixr_VERSION "7.6.100" CACHE INTERNAL "" FORCE)
 
-    set(ILLIXR_FFmpeg_EXTERNAL Yes)
-    set(ILLIXR_FFmpeg_DEP_STR ILLIXR_FFmpeg_ext)
 else()
-    message("FFMPEG FOUND")
+    set(FFMPEG_VERSION "FOUND" PARENT_SCOPE)
 endif()
+
+set(EXTERNAL_PROJECTS ${EXTERNAL_PROJECTS} PARENT_SCOPE)

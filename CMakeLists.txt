@@ -179,6 +179,8 @@ elseif(lower_type MATCHES "relwithdebinfo")
     set(ILLIXR_BUILD_SUFFIX ".optdbg")
 endif()
 
+set(ILLIXR_BUILD_TYPE ${CMAKE_BUILD_TYPE})
+set(ILLIXR_ROOT ${CMAKE_SOURCE_DIR}/include)
 set(ENV{PKG_CONFIG_PATH} "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig:${CMAKE_INSTALL_PREFIX}/lib64/pkgconfig")
 
 link_directories(BEFORE ${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_INSTALL_PREFIX}/lib64)
@@ -226,6 +228,7 @@ else()
 endif()
 
 find_package(spdlog REQUIRED)
+set(EXTERNAL_PROJECTS "")
 add_definitions(-DFMT_HEADER_ONLY)
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
