@@ -9,7 +9,7 @@
 ########################################################################################
 
 cmake_minimum_required(VERSION 3.22)
-
+set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
 # since several plugins now require clang to compile themselves or their dependencies
 # clang is now a required dependency
 find_program(CLANG_EXE clang REQUIRED)
@@ -17,6 +17,10 @@ find_program(CLANG_CXX_EXE clang++ REQUIRED NAMES clang-cpp clang++)
 
 set(CMAKE_C_COMPILER ${CLANG_EXE} CACHE FILEPATH "" FORCE)
 set(CMAKE_CXX_COMPILER ${CLANG_CXX_EXE} CACHE FILEPATH "" FORCE)
+
+if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
+    message(FATAL_ERROR "In-source build prohibited.")
+endif("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
 
 set(CMAKE_VERBOSE_MAKEFILE True)
 
@@ -44,8 +48,11 @@ set(PACKAGE_VERSION_LABEL "")
 set(GPL_LICENSED_CODE "openvins;orb_slam3;offload_rendering_server;offload_rendering_client")
 set(LGPL_LICENSED_CODE "audio_pipeline")
 
-if(WIN32)
-    message(FATAL_ERROR "Windows is currently not supported")
+if(WIN32 OR MSVC)
+    if(NOT CMAKE_TOOLCHAIN_FILE)
+        message(FATAL_ERROR "For windows builds the CMAKE_TOOLCHAIN_FILE must be given, pointing to the toolchain file of vcpkg.")
+    endif()
+    set(VCPKG_OVERLAY_PORTS "${CMAKE_CURRENT_SOURCE_DIR}/cmake/ports")
 elseif(APPLE)
     message(FATAL_ERROR "MacOS is currently not supported")
 elif(NOT UNIX)
@@ -62,17 +69,6 @@ include(ExternalProject)
 include(FetchContent)
 include(CMakeDependentOption)
 
-project(ILLIXR VERSION 3.2.0)
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-add_definitions(-DGLSL_VERSION="330")
-
-# Vulkan flags
-add_compile_definitions(VK_ENABLE_BETA_EXTENSIONS)
-
-set(CMAKE_CXX_FLAGS_DEBUG "-ggdb -Wall -Wextra -rdynamic -Wno-attributes -Wno-unknown-pragmas -fPIC")
-set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG -Wall -Wextra -Wno-attributes -Wno-unknown-pragmas -fPIC")
-set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-ggdb -O3 -Wall -Wextra -Wno-attributes -Wno-unknown-pragmas -fPIC")
 
 # check for the Jetson platform
 if (CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64" AND EXISTS "/etc/nv_tegra_release")
@@ -85,7 +81,7 @@ endif()
 set(OPENXR_RUNTIME "")
 
 # set the CMake search path to include the local files
-list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_BINARY_DIR}")
 option(COLOR_OUTPUT "Produce color output to the screen" ON)
 option(DOWNLOAD_DATA_FILE "The data file to get" ON)
@@ -160,6 +156,7 @@ if(YAML_FILE)
         endforeach()
     endif()
 endif()
+#################################
 
 set(ILLIXR_BUILD_SUFFIX "")
 if(CMAKE_BUILD_TYPE STREQUAL "")
@@ -183,14 +180,66 @@ set(ILLIXR_BUILD_TYPE ${CMAKE_BUILD_TYPE})
 set(ILLIXR_ROOT ${CMAKE_SOURCE_DIR}/include)
 set(ENV{PKG_CONFIG_PATH} "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig:${CMAKE_INSTALL_PREFIX}/lib64/pkgconfig")
 
+
+if(BUILD_DOCS)
+    set(DOCS_LIST "${CMAKE_SOURCE_DIR}/include/illixr;${CMAKE_SOURCE_DIR}/include/illixr/data_format;${CMAKE_SOURCE_DIR}/include/illixr/network;${CMAKE_SOURCE_DIR}/include/illixr/vk;${CMAKE_SOURCE_DIR}/plugins/hand_tracking/viewer;${CMAKE_SOURCE_DIR}/plugins/zed/data_injection;${CMAKE_SOURCE_DIR}/plugins/zed/capture;${CMAKE_SOURCE_DIR}/src;${CMAKE_SOURCE_DIR}/src/display;${CMAKE_SOURCE_DIR}/utils")
+    set(DOCS_EXCLUDE_LIST "${CMAKE_SOURCE_DIR}/include/illixr/vk/vk_extension_request.hpp")
+endif()
+
+
+if(NO_GPL)
+    if(NO_LGPL)
+        foreach(ITEM IN LISTS LGPL_LICENSED_CODE)
+            string(TOUPPER "USE_${ITEM}" ITEM_UPPER)
+            set(${ITEM_UPPER} OFF)
+        endforeach()
+    endif()
+    foreach(ITEM IN LISTS GPL_LICENSED_CODE)
+        string(TOUPPER "USE_${ITEM}" ITEM_UPPER)
+        set(${ITEM_UPPER} OFF)
+    endforeach()
+endif()
+if(NO_ZED)
+    set(BUILD_ZED_CAPTURE OFF)
+    set(USE_ZED OFF)
+    set(USE_ZED_DATA_INJECTION OFF)
+endif()
+
+if(WIN32 OR MSVC)
+    # define the needed packages
+    set(VCPKG_MANIFEST_FEATURES "")
+    foreach(ITEM IN LISTS PLUGIN_LIST)
+        string(TOUPPER "USE_${ITEM}" ITEM_UPPER)
+        if(${ITEM_UPPER})
+            string(TOLOWER ${ITEM} ITEM_LOWER)
+            list(APPEND VCPKG_MANIFEST_FEATURES "${ITEM_LOWER}")
+            unset(ITEM_LOWER)
+        endif()
+        unset(ITEM_UPPER)
+    endforeach()
+endif()
+
+
+project(ILLIXR VERSION 4.1.0)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+add_definitions(-DGLSL_VERSION="330")
+
+# Vulkan flags
+add_compile_definitions(VK_ENABLE_BETA_EXTENSIONS)
+
+set(CMAKE_CXX_FLAGS_DEBUG "-ggdb -Wall -Wextra -rdynamic -Wno-attributes -Wno-unknown-pragmas -fPIC")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG -Wall -Wextra -Wno-attributes -Wno-unknown-pragmas -fPIC")
+set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-ggdb -O3 -Wall -Wextra -Wno-attributes -Wno-unknown-pragmas -fPIC")
+
+##################################
+
 link_directories(BEFORE ${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_INSTALL_PREFIX}/lib64)
 include_directories(BEFORE ${CMAKE_SOURCE_DIR}/include)
 
 find_package(PkgConfig REQUIRED)
 
-if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
-    message(FATAL_ERROR "In-source build prohibited.")
-endif("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH};${PROJECT_SOURCE_DIR}/cmake;${CMAKE_INSTALL_PREFIX}/lib/cmake;${CMAKE_INSTALL_PREFIX}/share/cmake)
 
@@ -246,31 +295,10 @@ if($ENV{ILLIXR_BUILD_FLAGS})
     endforeach()
 endif()
 
-if(NO_GPL)
-    if(NO_LGPL)
-        foreach(ITEM IN LISTS LGPL_LICENSED_CODE)
-            string(TOUPPER "USE_${ITEM}" ITEM_UPPER)
-            set(${ITEM_UPPER} OFF)
-        endforeach()
-    endif()
-    foreach(ITEM IN LISTS GPL_LICENSED_CODE)
-        string(TOUPPER "USE_${ITEM}" ITEM_UPPER)
-        set(${ITEM_UPPER} OFF)
-    endforeach()
-endif()
-if(NO_ZED)
-    set(BUILD_ZED_CAPTURE OFF)
-    set(USE_ZED OFF)
-    set(USE_ZED_DATA_INJECTION OFF)
-endif()
 # set any plugins that are being built
 set(FULL_PLUGIN_LIST "")
 
 add_subdirectory(utils)
-if(BUILD_DOCS)
-    set(DOCS_LIST "${CMAKE_SOURCE_DIR}/include/illixr;${CMAKE_SOURCE_DIR}/include/illixr/data_format;${CMAKE_SOURCE_DIR}/include/illixr/network;${CMAKE_SOURCE_DIR}/include/illixr/vk;${CMAKE_SOURCE_DIR}/plugins/hand_tracking/viewer;${CMAKE_SOURCE_DIR}/plugins/zed/data_injection;${CMAKE_SOURCE_DIR}/plugins/zed/capture;${CMAKE_SOURCE_DIR}/src;${CMAKE_SOURCE_DIR}/src/display;${CMAKE_SOURCE_DIR}/utils")
-    set(DOCS_EXCLUDE_LIST "${CMAKE_SOURCE_DIR}/include/illixr/vk/vk_extension_request.hpp")
-endif()
 foreach(ITEM IN LISTS PLUGIN_LIST)
     string(TOUPPER "USE_${ITEM}" ITEM_UPPER)
     string(TOLOWER ${ITEM} ITEM_LOWER)
