@@ -50,11 +50,12 @@ else ()
     unset(ILLIXR_PATH)
 
 
-                        DEPENDS ${Vulkan_DEP_STR}                              # dependencies of this module
-                        #arguments to pass to CMake
-
-                        # custom install command to get the name of the plugin correct
-                        INSTALL_COMMAND cmake --install ./ && ln -sf ${CMAKE_INSTALL_PREFIX}/lib/libopenxr_monado_vk.so ${CMAKE_INSTALL_PREFIX}/lib/libopenxr_monado_vk${ILLIXR_BUILD_SUFFIX}.so
+    add_custom_command(OUTPUT ${CMAKE_INSTALL_PREFIX}/lib/libopenxr_monado_vk${ILLIXR_BUILD_SUFFIX}.so
+                       COMMAND cmake --install ./
+                       COMMAND ln -sf ${CMAKE_INSTALL_PREFIX}/lib/libopenxr_monado_vk.so ${CMAKE_INSTALL_PREFIX}/lib/libopenxr_monado_vk${ILLIXR_BUILD_SUFFIX}.so
+                       DEPENDS openxr_monado_vk
+                       WORKING_DIRECTORY ${MonadoVK_BUILD_DIR}
+    )
 
 
 endif ()

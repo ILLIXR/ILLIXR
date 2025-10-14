@@ -1,24 +1,29 @@
 cmake_minimum_required(VERSION 3.22)
+if(WIN32 OR MSVC)
+    message(WARNING "ada.mesh_decompression_grey is not yet available for windows")
+    set(USE_ADA.MESH_DECOMPRESSION_GREY OFF)
+else()
 
-set(PLUGIN_NAME plugin.ada.mesh_decompression_grey${ILLIXR_BUILD_SUFFIX})
+    set(PLUGIN_NAME plugin.ada.mesh_decompression_grey${ILLIXR_BUILD_SUFFIX})
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+    set(CMAKE_CXX_STANDARD 17)
+    set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-get_external(Draco)
+    get_external(Draco)
 
-add_library(${PLUGIN_NAME} SHARED
-            plugin.hpp
-            plugin.cpp
-            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/mesh.hpp
-)
+    add_library(${PLUGIN_NAME} SHARED
+                plugin.hpp
+                plugin.cpp
+                ${CMAKE_SOURCE_DIR}/include/illixr/data_format/mesh.hpp
+    )
 
-target_include_directories(${PLUGIN_NAME} PUBLIC ${CMAKE_INSTALL_PREFIX}/include)
-target_link_libraries(${PLUGIN_NAME} PUBLIC draco_illixr::draco spdlog::spdlog)
+    target_include_directories(${PLUGIN_NAME} PUBLIC ${CMAKE_INSTALL_PREFIX}/include)
+    target_link_libraries(${PLUGIN_NAME} PUBLIC draco_illixr::draco spdlog::spdlog)
 
-if(TARGET draco_static)
-    add_dependencies(${PLUGIN_NAME} draco_static)
-    target_include_directories(${PLUGIN_NAME} PUBLIC ${draco_illixr_SOURCE_DIR}/src ${CMAKE_BINARY_DIR})
+    if(TARGET draco_static)
+        add_dependencies(${PLUGIN_NAME} draco_static)
+        target_include_directories(${PLUGIN_NAME} PUBLIC ${draco_illixr_SOURCE_DIR}/src ${CMAKE_BINARY_DIR})
+    endif()
+
+    install(TARGETS ${PLUGIN_NAME} DESTINATION lib)
 endif()
-
-install(TARGETS ${PLUGIN_NAME} DESTINATION lib)

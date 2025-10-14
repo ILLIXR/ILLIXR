@@ -1,4 +1,9 @@
-cmake_minimum_required(VERSION 3.16)
+if(WIN32 OR MSVC)
+    message(WARNING "openwarp_vk is not yet available for windows")
+    set(USE_OPENWARP_VK OFF)
+else()
+
+    cmake_minimum_required(VERSION 3.16)
 
 project(openwarp_vk)
 

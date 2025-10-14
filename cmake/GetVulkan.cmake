@@ -52,18 +52,20 @@ if(Vulkan_FOUND)
 endif()
 
 if (Vulkan_FOUND)
-    set(Vulkan_VERSION ${Vulkan_VERSION} PARENT_SCOPE)
-endif()
+    set(Vulkan_VERSION ${Vulkan_VERSION})
+else()
+    if(WIN32 OR MSVC)
+        message(FATAL_ERROR "vulkan should be installed with vcpkg")
+    endif()
 
-if (NOT Vulkan_FOUND)
-    fetch_git(NAME Vulkan
-              REPOSITORY https://github.com/ILLIXR/ILLIXR-vulkan.git
+    fetch_git(NAME vulkan
+              REPO https://github.com/ILLIXR/ILLIXR-vulkan.git
               TAG 7901de80434662709e0357d1eac39376055b0b79
     )
 
-    configure_target(NAME Vulkan
+    configure_target(NAME vulkan
                      VERSION 1.4
     )
 endif()
 
-set(EXTERNAL_PROJECTS ${EXTERNAL_PROJECTS} PARENT_SCOPE)
+set(EXTERNAL_PROJECTS ${EXTERNAL_PROJECTS})

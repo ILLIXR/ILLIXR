@@ -4,6 +4,9 @@
 list(APPEND EXTERNAL_PROJECTS g2o)
 find_package(g2o 1.0 QUIET)
 if (NOT g2o_FOUND)
+    if(WIN32 OR MSVC)
+        message(FATAL_ERROR "g2o should be installed with vcpkg")
+    endif()
     fetch_git(NAME g2o
               REPO https://github.com/RainerKuemmerle/g2o.git
               TAG 20241228_git
@@ -16,7 +19,6 @@ if (NOT g2o_FOUND)
     )
     set(CMAKE_CXX_FLAGS ${FLAGS_TEMP})
     unset(FLAGS_TEMP)
-
 else()
     set(g2o_VERSION ${g2o_VERSION} PARENT_SCOPE)
 endif()

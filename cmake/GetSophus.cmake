@@ -5,9 +5,12 @@ find_package(Sophus 1.22 QUIET)
 list(APPEND EXTERNAL_PROJECTS Sophus)
 
 if (NOT Sophus_FOUND)
+    if(WIN32 OR MSVC)
+        message(FATAL_ERROR "sophus should be installed with vcpkg")
+    endif()
     find_package(fmt REQUIRED)
     fetch_git(NAME Sophus
-              REPO htps://github.com/strasdat/Sophus.git
+              REPO https://github.com/strasdat/Sophus.git
               TAG 1.22.10
     )
 

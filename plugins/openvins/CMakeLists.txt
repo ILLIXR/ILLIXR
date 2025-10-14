@@ -1,1 +1,6 @@
-include(GetOpenVINS)
+if(WIN32 OR MSVC)
+    message(WARNING "openvins is not yet available for windows")
+    set(USE_OPENVINS OFF)
+else()
+    include(GetOpenVINS)
+endif()

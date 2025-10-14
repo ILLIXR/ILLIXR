@@ -1,1 +1,6 @@
-include(GetAudio_Pipeline)
+if(WIN32 OR MSVC)
+    message(WARNING "audio_pipeline is not yet available for windows")
+    set(USE_AUDIO_PIPELINE OFF)
+else()
+    include(GetAudio_Pipeline)
+endif()

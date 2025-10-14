@@ -5,6 +5,9 @@ find_package(GTSAM 4.3.0 QUIET EXACT)
 find_package(GTSAM_UNSTABLE 4.3.0 QUIET EXACT)
 list(APPEND EXTERNAL_PROJECTS GTSAM)
 if(NOT GTSAM_FOUND AND NOT GTSAM_UNSTABLE_FOUND)
+    if(WIN32 OR MSVC)
+        message(FATAL_ERROR "GTSAM should be installed with vcpkg")
+    endif()
     fetch_git(NAME GTSAM
               REPO https://github.com/ILLIXR/gtsam.git
               TAG 135f09fe08f749596a03d4d018387f4590f826c1
@@ -24,7 +27,6 @@ if(NOT GTSAM_FOUND AND NOT GTSAM_UNSTABLE_FOUND)
     unset(GTSAM_ROT3_EXPMAP)
     unset(GTSAM_BUILD_TESTS)
     unset(GTSAM_BUILD_EXAMPLES_ALWAYS)
-
 else()
     set(GTSAM_VERSION ${GTSAM_VERSION} PARENT_SCOPE)
 endif()

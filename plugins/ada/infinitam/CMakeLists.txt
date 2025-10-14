@@ -1,1 +1,6 @@
-include(GetInfiniTAM)
+if(WIN32 OR MSVC)
+    message(WARNING "ada.infinitam is not yet available for windows")
+    set(USE_ADA.INFINITAM OFF)
+else()
+    include(GetInfiniTAM)
+endif()

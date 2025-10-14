@@ -5,6 +5,10 @@ if (NOT survive_FOUND)
 endif()
 
 if(NOT survive_FOUND)
+    if(WIN32 OR MSVC)
+        message(FATAL_ERROR "libsurvive should be installed with vcpkg")
+    endif()
+
     fetch_git(NAME survive
               REPO https://github.com/collabora/libsurvive.git
               TAG 4fb6d888d0277a8a3ba725e63707434d80ecdb2a
