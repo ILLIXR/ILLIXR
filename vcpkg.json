@@ -1,0 +1,659 @@
+{
+  "name": "illixr",
+  "version": "4.0.1",
+  "dependencies": [
+    {
+      "name": "opengl"
+    },
+    {
+      "name": "eigen3"
+    },
+    {
+      "name": "boost"
+    },
+    {
+      "name": "glm"
+    },
+    {
+      "name": "glfw3"
+    },
+    {
+      "name": "glew"
+    },
+    {
+      "name": "opencv",
+      "features": [
+        "eigen",
+        "fs",
+        "opengl",
+        "thread",
+        "jpeg",
+        "png",
+        "tiff"
+      ]
+    },
+    {
+      "name": "sqlite3"
+    },
+    {
+      "name": "spdlog"
+    },
+    {
+      "name": "vulkan",
+      "version>=": "1.4"
+    },
+    {
+      "name": "vulkan-validationlayers"
+    },
+    {
+      "name": "vulkan-utility-libraries"
+    },
+    {
+      "name": "vulkan-memory-allocator"
+    },
+    {
+      "name": "vulkan-memory-allocator-hpp"
+    },
+    {
+      "name": "glslang",
+      "features": [
+        "tools"
+      ]
+    },
+    {
+      "name": "spirv-headers"
+    },
+    {
+      "name": "spirv-tools",
+      "features": [
+        "tools"
+      ]
+    },
+    {
+      "name": "vulkan-sdk-components"
+    },
+    {
+      "name": "libx11"
+    },
+    {
+      "name": "libxrandr"?
+    },
+    {
+      "name": "pkgconf"
+    },
+    {
+      "name": "libusb"?
+    },
+    {
+      "name": "libxrandr"?
+    },
+    {
+      "name": "yaml-cpp"
+    }
+  ],
+  "features": {
+    "plugin_ada.device_rx" : {
+      "description": "",
+      "dependencies": [
+        {
+          "name": "protobuf",
+          "features": [
+            "zlib"
+          ]
+        },
+        {
+          "name": "draco-illixr"
+        },
+        {
+          "name": "opencv",
+          "features": [
+            "eigen",
+            "fs",
+            "opengl",
+            "thread",
+            "jpeg",
+            "png",
+            "tiff"
+          ]
+        }
+      ]
+    },
+    "plugin_ada.device_tx" : {
+      "description": "",
+      "dependencies": [
+        {
+          "name": "protobuf",
+          "features": [
+            "zlib"
+          ]
+        },
+        {
+          "name": "glib"
+        },
+        {
+          "name": "gstreamer",
+          "features": [
+            "libde265",
+            "nvcodec",
+            "plugins-base",
+            "plugins-bad",
+            "plugins-good",
+            "plugins-ugly",
+            "soup",
+            "vulkan",
+            "x264",
+            "x265",
+            "alsa",
+            "aom",
+            "faad",
+            "flac",
+            "gl"
+          ]
+        }
+      ]
+    },
+    "plugin_ada.infinitam" : {
+      "description": "",
+      "dependencies": [
+        {
+          "name": "protobuf",
+          "features": [
+            "zlib"
+          ]
+        },
+        {
+          "name": "draco-illixr"
+        }
+      ]
+    },
+    "plugin_ada.mesh_compression" : {
+      "description": "",
+      "dependencies": [
+        {
+          "name": "draco-illixr"
+        }
+      ]
+    },
+    "plugin_ada.mesh_decompression_grey" : {
+      "description": "",
+      "dependencies": [
+        {
+          "name": "draco-illixr"
+        }
+      ]
+    },
+    "plugin_ada.offline_scannet" : {
+      "description": "",
+      "dependencies": [
+        {
+          "name": "python3"
+        }
+      ]
+    },
+    "plugin_ada.scene_management" : {
+      "description": "",
+      "dependencies": [
+        {
+          "name": "openmpi"
+        },
+        {
+          "name": "draco-illixr"
+        }
+      ]
+    },
+    "plugin_ada.server_rx" : {
+      "description": "",
+      "dependencies": [
+        {
+          "name": "protobuf",
+          "features": [
+            "zlib"
+          ]
+        },
+        {
+          "name": "glib"
+        },
+        {
+          "name": "gstreamer",
+          "features": [
+            "libde265",
+            "nvcodec",
+            "plugins-base",
+            "plugins-bad",
+            "plugins-good",
+            "plugins-ugly",
+            "soup",
+            "vulkan",
+            "x264",
+            "x265",
+            "alsa",
+            "aom",
+            "faad",
+            "flac",
+            "gl"
+          ]
+        }
+      ]
+    },
+    "plugin_ada.server_tx" : {
+      "description": "",
+      "dependencies": [
+        {
+          "name": "protobuf",
+          "features": [
+            "zlib"
+          ]
+        },
+        {
+          "name": "draco-illixr"
+        }
+      ]
+    },
+    "plugin_audio_pipeline" : {
+      "description": "",
+      "dependencies": [
+        {
+          "name": "portaudio"
+        },
+        {
+          "name": "spatialaudio"
+        }
+      ]
+    },
+    "plugin_debugview" : {
+      "description": "",
+      "dependencies": [
+        {
+          "name": "imgui",
+          "features": [
+            "glfw-binding",
+            "opengl3-binding",
+            "vulkan-binding",
+            "wun32-binding"
+          ]
+        }
+      ]
+    },
+    "plugin_depthai" : {
+      "description": "",
+      "dependencies": [
+        {
+          "name": "depthai"
+        }
+      ]
+    },
+    "plugin_gldemo" : {
+      "description": "",
+      "dependencies": []
+    },
+    "plugin_ground_truth_slam" : {
+      "description": "",
+      "dependencies": []
+    },
+    "plugin_gtsam_integrator" : {
+      "description": "",
+      "dependencies": [
+        {
+          "name": "gtsam"
+        }
+      ]
+    },
+    "plugin_hand_tracking" : {
+      "description": "",
+      "dependencies": [
+        {
+          "name": "protobuf",
+          "version>=": "3.21.12",
+          "features": [
+            "zlib"
+          ]
+        },
+        {
+          "name": "tensorflow-lite-illixr"
+        }
+      ]
+    },
+    "plugin_hand_tracking_gpu" : {
+      "description": "",
+      "dependencies": [
+        {
+          "name": "protobuf",
+          "features": [
+            "zlib"
+          ]
+        },
+        {
+          "name": "tensorflow-lite-illixr"
+        }
+      ]
+    },
+    "plugin_hand_tracking.viewer" : {
+      "description": "",
+      "dependencies": [
+        {
+          "name": "imgui",
+          "features": [
+            "glfw-binding",
+            "opengl3-binding",
+            "vulkan-binding",
+            "wun32-binding"
+          ]
+        }
+      ]
+    },
+    "plugin_lighthouse" : {
+      "description": "",
+      "dependencies": [
+        {
+          "name": "libsurvive"
+        }
+      ]
+    },
+    "plugin_native_renderer" : {
+      "description": "",
+      "dependencies": []
+    },
+    "plugin_offline_cam" : {
+      "description": "",
+      "dependencies": []
+    },
+    "plugin_offline_imu" : {
+      "description": "",
+      "dependencies": []
+    },
+    "plugin_offload_data" : {
+      "description": "",
+      "dependencies": []
+    },
+    "plugin_offload_rendering_server" : {
+      "description": "",
+      "dependencies": [
+        {
+          "name": "ffmpeg",
+          "features": [
+            "all",
+            "all-gpl",
+            "all-nonfree",
+            "alsa",
+            "aom",
+            "ass",
+            "avcodec",
+            "avdevice",
+            "avfilter",
+            "avformat",
+            "bzip2",
+            "dav1d",
+            "ffmpeg",
+            "fontconfig",
+            "freetype",
+            "fribidi",
+            "gpl",
+            "modplug",
+            "mp3lame",
+            "non-free",
+            "nvcodec",
+            "opencl",
+            "opengl",
+            "openh264",
+            "openjpeg",
+            "openmpt",
+            "openssl",
+            "opus",
+            "sdl2",
+            "soxr",
+            "speex",
+            "ssh",
+            "theora",
+            "vorbis",
+            "vpx",
+            "vulkan",
+            "webp",
+            "x264",
+            "x265",
+            "xml2",
+            "zlib"
+          ]
+        },
+        {
+          "name": "ffnvcodec"
+        }
+      ]
+    },
+    "plugin_offliad_rendering_client" : {
+      "description": "",
+      "dependencies": [
+        {
+          "name": "cuda"
+        },
+        {
+          "name": "ffmpeg",
+          "features": [
+            "all",
+            "all-gpl",
+            "all-nonfree",
+            "alsa",
+            "aom",
+            "ass",
+            "avcodec",
+            "avdevice",
+            "avfilter",
+            "avformat",
+            "bzip2",
+            "dav1d",
+            "ffmpeg",
+            "fontconfig",
+            "freetype",
+            "fribidi",
+            "gpl",
+            "modplug",
+            "mp3lame",
+            "non-free",
+            "nvcodec",
+            "opencl",
+            "opengl",
+            "openh264",
+            "openjpeg",
+            "openmpt",
+            "openssl",
+            "opus",
+            "sdl2",
+            "soxr",
+            "speex",
+            "ssh",
+            "theora",
+            "vorbis",
+            "vpx",
+            "vulkan",
+            "webp",
+            "x264",
+            "x265",
+            "xml2",
+            "zlib"
+          ]
+        },
+        {
+          "name": "ffnvcodec"
+        }
+      ]
+    },
+    "plugin_offload_vio.device_rx" : {
+      "description": "",
+      "dependencies": [
+        {
+          "name": "protobuf"
+        }
+      ]
+    },
+    "plugin_offload_vio_device_tx" : {
+      "description": "",
+      "dependencies": [{
+        "name": "protobuf"
+      }]
+    },
+    "plugin_offload_server_rx" : {
+      "description": "",
+      "dependencies": [{
+        "name": "protobuf"
+      }]
+    },
+    "plugin_offload_server_tx" : {
+      "description": "",
+      "dependencies": [{
+        "name": "protobuf"
+      }]
+    },
+    "plugin_openni" : {
+      "description": "",
+      "dependencies": [
+        {
+          "name": "openni2"
+        }
+      ]
+    },
+    "plugin_openvins" : {
+      "description": "",
+      "dependencies": []
+    },
+    "plugin_openwarp_vk" : {
+      "description": "",
+      "dependencies": []
+    },
+    "plugin_openwarp_vk_monado" : {
+      "description": "",
+      "dependencies": [
+        {
+          "name": "openxr-loader",
+          "features": [
+            "vulkan"
+          ]
+        },
+        {
+          "name": "sdl2",
+          "features": [
+            "vulkan"
+          ]
+        }
+      ]
+    },
+
+    "plugin_orb_slam3" : {
+      "description": "",
+      "dependencies": [
+        {
+          "name": "g2o",
+          "version>=": "2024-12-14",
+          "features": [
+            "spdlog"
+          ]
+        },
+        {
+          "name": "sophus",
+          "version>=": "1.22.10"
+        },
+        {
+          "name": "dbow2-os3"
+        }
+      ]
+    },
+    "plugin_passthrough_integrator" : {
+      "description": "",
+      "dependencies": []
+    },
+    "plugin_realsense" : {
+      "description": "",
+      "dependencies": [
+        {
+          "name": "realsense2",
+          "features": [
+            "openni2",
+            "rs-usb-backend",
+            "tools"
+          ]
+        }
+      ]
+    },
+    "plugin_record_cam_imu" : {
+      "description": "",
+      "dependencies": []
+    },
+    "plugin_rk4_integrator" : {
+      "description": "",
+      "dependencies": []
+    },
+    "plugin_tcp_network_backend" : {
+      "description": "",
+      "dependencies": []
+    },
+    "plugin_timewarp_gl" : {
+      "description": "",
+      "dependencies": []
+    },
+    "plugin_timewarp_vk" : {
+      "description": "",
+      "dependencies": []
+    },
+    "plugin_timewarp_gl.monado" : {
+      "description": "",
+      "dependencies": [
+        {
+          "name": "openxr-loader",
+          "features": [
+            "vulkan"
+          ]
+        },
+        {
+          "name": "sdl2",
+          "features": [
+            "vulkan"
+          ]
+        }
+      ]
+    },
+    "plugin_timewarp_vk.monado" : {
+      "description": "",
+      "dependencies": [
+        {
+          "name": "openxr-loader",
+          "features": [
+            "vulkan"
+          ]
+        },
+        {
+          "name": "sdl2",
+          "features": [
+            "vulkan"
+          ]
+        }
+      ]
+    },
+    "plugin_webcam" : {
+      "description": "",
+      "dependencies": []
+    },
+    "plugin_zed" : {
+      "description": "",
+      "dependencies": [
+        "cuda"
+      ]
+    },
+    "plugin_zed.data_injection" : {
+      "description": "",
+      "dependencies": []
+    },
+    "plugin_zed.capture" : {
+      "description": "",
+      "dependencies": []
+    }
+  },
+  "builtin-baseline": "e6e4bc74aaf5c63dfc358810594f662f7e9bc4d4",
+  "overrides": [
+    {
+      "name": "sophus",
+      "version": "1.22.10"
+    },
+    {
+      "name": "protobuf",
+      "version": "3.21.12"
+    }
+  ]
+}

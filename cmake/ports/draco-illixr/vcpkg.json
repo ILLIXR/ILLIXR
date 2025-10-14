@@ -1,0 +1,9 @@
+{
+  "name": "draco-illixr",
+  "version": "1.0",
+  "dependencies": [
+    {
+      "name": "openmpi"
+    }
+  ]
+}

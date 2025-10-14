@@ -1,0 +1,60 @@
+{
+  "name": "ffmpeg-illixr",
+  "version": "6.1",
+  "dependencies": [
+    {
+      "name": "vulkan"
+    },
+    {
+      "name": "mp3lame"
+    },
+    {
+      "name": "yasm"
+    },
+    {
+      "name": "ffnvcodec",
+      "version>=": "11.1.5.3"
+    },
+    {
+      "name": "fontconfig"
+    },
+    {
+      "name": "libgnutils"
+    },
+    {
+      "name": "aom",
+      "version>=": "1.0.0"
+    },
+    {
+      "name": "libass",
+      "version>=": "0.11.0"
+    },
+    {
+      "name": "libbluray"
+    },
+    {
+      "name": "libbs2b?????"
+    },
+    {
+      "name": "libdrm???"
+    },
+    {
+      "name": "freetype"
+    },
+    {
+      "name": "fribidi"
+    },
+    {
+      "name": "libmodplug"
+    },
+    {
+      "name": "libopenjp2???"
+    }
+  ],
+  "overrides": [
+    {
+      "name": "ffnvcodec",
+      "version": "11.1.5.3"
+    }
+  ]
+}

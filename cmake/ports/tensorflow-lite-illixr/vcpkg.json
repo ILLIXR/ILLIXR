@@ -1,0 +1,14 @@
+{
+  "name": "tensorflow-lite-illixr",
+  "version": "1.0",
+  "dependencies": [
+    "abseil",
+    "fft2d",
+    "gemmlowp",
+    "neon2sse",
+    "farmhash",
+    "flatbuffers",
+    "flatcc",
+    "tfl-xnnpack"
+  ]
+}

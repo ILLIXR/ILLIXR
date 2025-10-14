@@ -1,0 +1,8 @@
+{
+  "name": "ruy-illixr",
+  "version": "1.0",
+  "dependencies": [
+    "fp16",
+    "egl-registry"
+  ]
+}
