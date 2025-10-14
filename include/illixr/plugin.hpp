@@ -1,5 +1,6 @@
 #pragma once
 
+#include "export.hpp"
 #include "phonebook.hpp"
 #include "record_logger.hpp"
 
@@ -14,7 +15,7 @@
 
 #ifndef DOUBLE_INCLUDE
 extern "C" {
-bool needs_monado() {
+MY_EXPORT_API bool needs_monado() {
     #ifdef MONADO_REQUIRED
     return true;
     #else
@@ -135,7 +136,7 @@ protected:
 };
 
 #define PLUGIN_MAIN(PLUGIN_CLASS)                           \
-    extern "C" plugin* this_plugin_factory(phonebook* pb) { \
+    extern "C" MY_EXPORT_API plugin* this_plugin_factory(phonebook* pb) { \
         auto* obj = new PLUGIN_CLASS{#PLUGIN_CLASS, pb};    \
         return obj;                                         \
     }

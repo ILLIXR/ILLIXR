@@ -1,5 +1,5 @@
 #define VMA_IMPLEMENTATION
-#include "illixr/vk/vulkan_utils.hpp"
+#include "vulkan_utils.hpp"
 
 #include <cstdint>
 #include <fstream>
@@ -10,13 +10,17 @@
 #include <vector>
 #include <vulkan/vulkan.h>
 
+#ifdef __linux__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Weverything"
+#endif
 #define VMA_STATIC_VULKAN_FUNCTIONS  0
 #define VMA_DYNAMIC_VULKAN_FUNCTIONS 1
 #include "illixr/switchboard.hpp"
-#include "illixr/vk/third_party/vk_mem_alloc.h"
+#include <vma/vk_mem_alloc.h>
+#ifdef __linux__
 #pragma clang diagnostic pop
+#endif
 
 using namespace ILLIXR::vulkan;
 

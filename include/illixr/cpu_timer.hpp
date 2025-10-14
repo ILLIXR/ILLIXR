@@ -13,6 +13,64 @@
 #include <thread>
 #include <utility>
 
+#if defined(_WIN32) || defined(_WIN64)
+#include <Windows.h>
+#include <time.h>
+#include <atomic>
+#include <cstdlib>
+#ifndef CLOCK_MONOTONIC
+#define CLOCK_MONOTINIC 1
+#endif
+#ifndef CLOCK_THREAD_CPUTIME_ID
+#define CLOCK_THREAD_CPUTIME_ID 3
+#endif
+
+typedef int clockid_t;
+
+static int illixr_clock_gettime(clockid_t clock_id, timespec* ts) {
+    if (clock_id == CLOCK_MONOTINIC) {
+        static LARGE_INTEGER start_ticks;
+        static LARGE_INTEGER frequency;
+        static bool          initialized = false;
+
+        if (!initialized) {
+            QueryPerformanceFrequency(&frequency);
+            QueryPerformanceCounter(&start_ticks);
+            initialized = true;
+        }
+
+        LARGE_INTEGER current_ticks;
+        QueryPerformanceCounter(&current_ticks);
+
+        LONGLONG diff = current_ticks.QuadPart - start_ticks.QuadPart;
+        ts->tv_sec    = diff / frequency.QuadPart;
+        ts->tv_nsec   = static_cast<long>(((diff % frequency.QuadPart) * 1000000000.0) / frequency.QuadPart);
+        return 0;
+    } else if (clock_id == CLOCK_THREAD_CPUTIME_ID) {
+        FILETIME creation_time, exit_time, kernel_time, user_time;
+        if (!GetThreadTimes(GetCurrentThread(), &creation_time, &exit_time, &kernel_time, &user_time))
+            return -1;
+
+        ULARGE_INTEGER ktime, utime;
+        ktime.LowPart = kernel_time.dwLowDateTime;
+        ktime.HighPart = kernel_time.dwHighDateTime;
+
+        utime.LowPart = user_time.dwLowDateTime;
+        utime.HighPart = user_time.dwHighDateTime;
+
+        uint64_t total_time_100ns = ktime.QuadPart + utime.QuadPart;
+
+        // convert to ns
+        uint64_t total_time_ns = total_time_100ns * 100;
+        ts->tv_sec             = static_cast<time_t>(total_time_ns / 1000000000ULL);
+        ts->tv_nsec            = static_cast<time_t>(total_time_ns % 1000000000ULL);
+        return 0;
+    }
+    return -1;
+}
+
+#endif // _WIN32 || _WIN64
+
 /**
  * @brief A C++ translation of [clock_gettime][1]
  *
@@ -21,24 +79,31 @@
  */
 static inline std::chrono::nanoseconds cpp_clock_get_time(clockid_t clock_id) {
     /* This ensures the compiler won't reorder this function call; Pretend like it has memory side effects. */
+    timespec time_spec{};
+
+    RAC_ERRNO_MSG("cpu_timer before clock_get_time");
+#if defined(_WIN32) || defined(_WIN64)
+    _ReadWriteBarrier();
+    #else
     asm volatile(""
                  : /* OutputOperands */
                  : /* InputOperands */
                  : "memory" /* Clobbers */);
+    #endif
 
-    struct timespec time_spec{};
-
-    RAC_ERRNO_MSG("cpu_timer before clock_get_time");
-
-    if (clock_gettime(clock_id, &time_spec)) {
+    if (illixr_clock_gettime(clock_id, &time_spec)) {
         throw std::runtime_error{std::string{"clock_get_time returned "} + strerror(errno)};
     }
     RAC_ERRNO_MSG("cpu_timer after clock_get_time");
 
+#if defined(_WIN32) || defined(_WIN64)
+    _ReadWriteBarrier();
+#else
     asm volatile(""
                  : /* OutputOperands */
                  : /* InputOperands */
                  : "memory" /* Clobbers */);
+#endif
     return std::chrono::seconds{time_spec.tv_sec} + std::chrono::nanoseconds{time_spec.tv_nsec};
 }
 

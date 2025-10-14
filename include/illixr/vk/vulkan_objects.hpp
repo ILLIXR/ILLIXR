@@ -1,7 +1,10 @@
 #pragma once
 
-#include "illixr/vk/third_party/vk_mem_alloc.h"
+#if defined(_WIN32) || defined(_WIN64)
+#include <vma/vk_mem_alloc.h>
+#else
 
+#endif
 #include <vulkan/vulkan.h>
 
 namespace ILLIXR::vulkan {

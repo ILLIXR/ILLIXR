@@ -1,14 +1,14 @@
 #pragma once
 
-#include "illixr/network/network_backend.hpp"
 #include "illixr/network/tcpsocket.hpp"
+#include "illixr/network/network_backend.hpp"
 #include "illixr/network/topic_config.hpp"
 #include "illixr/plugin.hpp"
 #include "illixr/switchboard.hpp"
 
 namespace ILLIXR {
 
-class tcp_network_backend
+class MY_EXPORT_API tcp_network_backend
     : public plugin
     , public network::network_backend {
 public:

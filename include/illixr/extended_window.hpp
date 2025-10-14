@@ -6,20 +6,39 @@
 
 #include <cassert>
 #include <cerrno>
+#if defined(_WIN32) || defined(_WIN64)
+#include <windows.h>
+#include <GL/glew.h>
+
+#define WGL_CONTEXT_MAJOR_VERSION_ARB 0x2091
+#define WGL_CONTEXT_MINOR_VERSION_ARB 0x2092
+
+#else
 #include <GL/glx.h>
+    // GLX context magics
+    #define GLX_CONTEXT_MAJOR_VERSION_ARB 0x2091
+    #define GLX_CONTEXT_MINOR_VERSION_ARB 0x2092
+#endif
+
 #ifndef NDEBUG
     #include <spdlog/spdlog.h>
 #endif
 
-// GLX context magics
-#define GLX_CONTEXT_MAJOR_VERSION_ARB 0x2091
-#define GLX_CONTEXT_MINOR_VERSION_ARB 0x2092
+
+#if defined(_WIN32) || defined(_WIN64)
+typedef HGLRC(WINAPI* wglCreateContextAttribsARBProc)(HDC hDC, HGLRC hShareContext, const int* attribList);
+#else
 typedef GLXContext (*glXCreateContextAttribsARBProc)(Display*, GLXFBConfig, GLXContext, Bool, const int*);
+#endif
 
 namespace ILLIXR {
 class xlib_gl_extended_window : public phonebook::service {
 public:
+#if defined(_WIN32) || defined(_WIN64)
+    xlib_gl_extended_window(int width, int height, HGLRC shared_gl_context) {
+#else
     xlib_gl_extended_window(int width, int height, GLXContext shared_gl_context) {
+#endif
         width_  = width;
         height_ = height;
 
@@ -28,6 +47,44 @@ public:
 #endif
         RAC_ERRNO_MSG("extended_window at start of xlib_gl_extended_window constructor");
 
+#if defined(_WIN32) || defined(_WIN64)
+        HINSTANCE    hInstance  = GetModuleHandle(nullptr);
+        const TCHAR* class_name = TEXT("ILLIXR_Extended_Window_Class");
+
+        // Register a window class
+        WNDCLASS wc      = {};
+        if (!GetClassInfo(hInstance, class_name, &wc)) {
+            wc.style         = CS_OWNDC;
+            wc.lpfnWndProc   = DefWindowProc;
+            wc.hInstance     = hInstance;
+            wc.lpszClassName = class_name;
+
+            if (!RegisterClass(&wc)) {
+                ILLIXR::abort("RegisterClass failed");
+            }
+        }
+        // Create the window
+        hwnd_ = CreateWindow(wc.lpszClassName, TEXT("ILLIXR Extended Window"), WS_OVERLAPPEDWINDOW | WS_VISIBLE, CW_USEDEFAULT,
+                             CW_USEDEFAULT, width_, height_, nullptr, nullptr, wc.hInstance, nullptr);
+
+        if (!hwnd_) {
+            ILLIXR::abort("CreateWindow failed");
+        }
+
+        // Get device context
+        hdc_ = GetDC(hwnd_);
+
+        // Choose a pixel format
+        PIXELFORMATDESCRIPTOR pfd = {};
+        pfd.nSize                 = sizeof(PIXELFORMATDESCRIPTOR);
+        pfd.nVersion              = 1;
+        pfd.dwFlags               = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
+        pfd.iPixelType            = PFD_TYPE_RGBA;
+        pfd.cColorBits            = 32;
+        pfd.cDepthBits            = 24;
+        pfd.cStencilBits          = 8;
+        pfd.iLayerType            = PFD_MAIN_PLANE;
+#else
         display_ = XOpenDisplay(nullptr);
         if (display_ == nullptr) {
             ILLIXR::abort("Cannot connect to X server");
@@ -65,19 +122,45 @@ public:
                                        GLX_DOUBLEBUFFER,
                                        True,
                                        None};
-
+#endif
 #ifndef NDEBUG
         spdlog::get("illixr")->debug("[extended_window] Getting matching framebuffer configs");
 #endif
         RAC_ERRNO_MSG("extended_window before glXChooseFBConfig");
 
+#if defined(_WIN32) || defined(_WIN64)
+        int pixel_format = ChoosePixelFormat(hdc_, &pfd);
+        if (pixel_format == 0) {
+            ILLIXR::abort("ChoosePixelFormat failed");
+        }
+
+         SetPixelFormat(hdc_, pixel_format, &pfd);
+
+        // Create a dummy context so we can load extensions
+         HGLRC temp_context = wglCreateContext(hdc_);
+         wglMakeCurrent(hdc_, temp_context);
+
+         // Load extension
+         auto wglCreateContextAttribsARB = (wglCreateContextAttribsARBProc) wglGetProcAddress("wglCreateContextAttribsARB");
+
+         if (!wglCreateContextAttribsARB) {
+             ILLIXR::abort("wglCreateContextAttribsARB not available, using legacy context");
+             context_ = temp_context;
+         } else {
+             int attribs[] = {WGL_CONTEXT_MAJOR_VERSION_ARB, 3, WGL_CONTEXT_MINOR_VERSION_ARB, 3, 0};
+             context_      = wglCreateContextAttribsARB(hdc_, shared_gl_context, attribs);
+             // Replace dummy
+             wglMakeCurrent(nullptr, nullptr);
+             wglDeleteContext(temp_context);
+             wglMakeCurrent(hdc_, context_);
+         }
+#else
         int          fb_count  = 0;
         int          screen    = DefaultScreen(display_);
         GLXFBConfig* fb_config = glXChooseFBConfig(display_, screen, visual_attribs, &fb_count);
         if (!fb_config) {
             ILLIXR::abort("Failed to retrieve a framebuffer config");
         }
-
 #ifndef NDEBUG
         spdlog::get("illixr")->debug("[extended_window] Found {} matching FB configs", fb_count);
 
@@ -176,11 +259,25 @@ public:
         const bool gl_result_1 = static_cast<bool>(glXMakeCurrent(display_, None, nullptr));
         */
 #endif
+#endif
+
     }
 
     ~xlib_gl_extended_window() override {
         RAC_ERRNO_MSG("xlib_gl_extended_window at start of destructor");
+#if defined(_WIN32) || defined(_WIN64)
 
+        wglMakeCurrent(nullptr, nullptr);
+        if (context_) {
+            wglDeleteContext(context_);
+        }
+        if (hdc_) {
+            ReleaseDC(hwnd_, hdc_);
+        }
+        if (hwnd_) {
+            DestroyWindow(hwnd_);
+        }
+#else
         [[maybe_unused]] const bool gl_result = static_cast<bool>(glXMakeCurrent(display_, None, nullptr));
         assert(gl_result && "glXMakeCurrent should not fail");
 
@@ -193,17 +290,24 @@ public:
         /// See [documentation](https://tronche.com/gui/x/xlib/display/XCloseDisplay.html)
         /// See [example](https://www.khronos.org/opengl/wiki/Programming_OpenGL_in_Linux:_GLX_and_Xlib)
         XCloseDisplay(display_);
-
+#endif
         RAC_ERRNO_MSG("xlib_gl_extended_window at end of destructor");
     }
 
     int        width_;
     int        height_;
+#if defined(_WIN32) || defined(_WIN64)
+    HWND  hwnd_;
+    HDC   hdc_;
+    HGLRC context_;
+
+#else
     Display*   display_;
     Window     window_;
     GLXContext context_;
 
 private:
     Colormap color_map_;
+#endif
 };
 } // namespace ILLIXR

@@ -12,10 +12,12 @@
 #include <boost/algorithm/string/join.hpp>
 #include <cstdlib>
 #include <iostream>
+#ifdef __linux__
 #include <pwd.h>
+#include <unistd.h>
+#endif
 #include <sstream>
 #include <stdexcept>
-#include <unistd.h>
 #include <yaml-cpp/yaml.h>
 
 namespace ILLIXR {
@@ -73,7 +75,7 @@ struct convert<ILLIXR::Dependency> {
 };
 } // namespace YAML
 
-ILLIXR::runtime* runtime_ = nullptr;
+MY_EXPORT_API ILLIXR::runtime* runtime_ = nullptr;
 
 using namespace ILLIXR;
 
@@ -85,8 +87,13 @@ using namespace ILLIXR;
 }*/
 
 std::string get_home_dir() {
+#if defined(_WIN32) || defined(_WIN64)
+    char* path = getenv("USERPROFILE");
+    return {path};
+#else
     struct passwd* pw = getpwuid(getuid());
     return {pw->pw_dir};
+#endif
 }
 
 void check_plugins(std::vector<std::string>& plugins, const std::vector<ILLIXR::Dependency>& dep_map) {
@@ -216,11 +223,19 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
         /// Enable using the ILLIXR_ENABLE_PRE_SLEEP environment variable (see 'runner/runner/main.py:load_tests')
         const bool enable_pre_sleep = switchboard_->get_env_bool("ILLIXR_ENABLE_PRE_SLEEP", "False");
         if (enable_pre_sleep) {
+#if defined(_WIN32) || defined(_WIN64)
+            DWORD pid = GetCurrentProcessId();
+#else
             const pid_t pid = getpid();
+#endif
             spdlog::get("illixr")->info("[main] Pre-sleep enabled.");
             spdlog::get("illixr")->info("[main] PID: {}", pid);
             spdlog::get("illixr")->info("[main] Sleeping for {} seconds...", ILLIXR_PRE_SLEEP_DURATION);
+#if defined(_WIN32) || defined(_WIN64)
+            Sleep(ILLIXR_PRE_SLEEP_DURATION * 1000);
+#else
             sleep(ILLIXR_PRE_SLEEP_DURATION);
+#endif
             spdlog::get("illixr")->info("[main] Resuming...");
         }
 #endif /// NDEBUG
@@ -312,7 +327,11 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
 
         std::vector<std::string> lib_paths;
         std::transform(plugins.begin(), plugins.end(), std::back_inserter(lib_paths), [](const std::string& arg) {
+#if defined(_WIN32) || defined(_WIN64)
+            return "plugin." + arg + STRINGIZE(ILLIXR_BUILD_SUFFIX) + ".dll";
+#else
             return "libplugin." + arg + STRINGIZE(ILLIXR_BUILD_SUFFIX) + ".so";
+#endif
         });
 
         RAC_ERRNO_MSG("main before loading dynamic libraries");

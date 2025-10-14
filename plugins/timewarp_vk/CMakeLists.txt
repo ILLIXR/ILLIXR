@@ -5,7 +5,11 @@ project(timewarp_vk)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(glm REQUIRED)
+if(WIN32 OR MSVC)
+    find_package(glm CONFIG REQUIRED)
+else()
+    find_package(glm REQUIRED)
+endif()
 
 if(NOT PLUGIN_NAME)
     set(PLUGIN_NAME "plugin.timewarp_vk${ILLIXR_BUILD_SUFFIX}")
@@ -71,14 +75,29 @@ if(TW_PLUGIN_DEFINITIONS)
 endif()
 
 add_dependencies(${PLUGIN_NAME} Timewarp_VK_Shaders)
-if(Vulkan_EXTERNAL)
-    add_dependencies(${PLUGIN_NAME} ${Vulkan_DEP_STR})
-endif()
 
 set_target_properties(${PLUGIN_NAME} PROPERTIES OUTPUT_NAME ${PLUGIN_NAME})
 
-target_link_libraries(${PLUGIN_NAME} ${Vulkan_LIBRARIES} spdlog::spdlog)
-target_include_directories(${PLUGIN_NAME} PUBLIC ${Vulkan_INCLUDE_DIRS})
+target_link_libraries(${PLUGIN_NAME} PUBLIC 
+        spdlog::spdlog 
+        Boost::serialization 
+        Eigen3::Eigen
+)
+if(WIN32 OR MSVC)
+    target_link_libraries(${PLUGIN_NAME} PUBLIC 
+            Vulkan::Vulkan 
+            glm::glm-header-only
+            GPUOpen::VulkanMemoryAllocator
+    )
+    target_compile_definitions(${PLUGIN_NAME} PRIVATE BUILDING_LIBRARY)
+else()
+    if(Vulkan_EXTERNAL)
+        add_dependencies(${PLUGIN_NAME} ${Vulkan_DEP_STR})
+    endif()
+    target_link_libraries(${PLUGIN_NAME} ${Vulkan_LIBRARIES})
+    target_include_directories(${PLUGIN_NAME} PUBLIC ${Vulkan_INCLUDE_DIRS})
+endif()
+
 target_include_directories(${PLUGIN_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${ILLIXR_SOURCE_DIR}/include)
 
 install_shaders(SPIRV_BINARY_FILES timewarp_vk ${PLUGIN_NAME})

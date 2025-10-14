@@ -5,6 +5,9 @@
 
 #include <algorithm>
 #include <cmath>
+#ifndef M_PI
+    #define M_PI 3.14159265358979323846
+#endif
 #include <stdexcept>
 #include <string>
 
@@ -25,7 +28,7 @@ struct display_params {
     static constexpr float height_meters = 0.06214f;
 
     // Separation between lens centers in meters
-    static constexpr float lens_separation = 0.05;
+    static constexpr float lens_separation = 0.05f;
 
     // Vertical position of the lens in meters
     [[maybe_unused]] static constexpr float lens_vertical_position = height_meters / 2.0f;
@@ -37,7 +40,7 @@ struct display_params {
     static constexpr float fov_y = 109.16f;
 
     // Meters per tangent angle at the center of the HMD (required by timewarp_gl's distortion correction)
-    static constexpr float meters_per_tan_angle = width_meters / (2 * (fov_x * M_PI / 180.0f));
+    static constexpr float meters_per_tan_angle = width_meters / (2.f * (fov_x * M_PI / 180.0f));
 
     // Inter-pupilary distance (ipd) in meters
     static constexpr float ipd = 0.064f;
@@ -64,7 +67,7 @@ struct rendering_params {
 };
 
 // Offloading parameters - this really should be extended to everything though
-constexpr float server_fov = 0.99;
+constexpr float server_fov = 0.99f;
 
 struct server_params {
     // static constexpr float fov_left[2] = {-server_fov, -server_fov};
@@ -76,17 +79,17 @@ struct server_params {
     //    static constexpr unsigned width_pixels = 2160;
     //    static constexpr unsigned height_pixels = 2400;
 
-    static constexpr float fov_left[2]  = {-0.907341, -0.897566};
-    static constexpr float fov_right[2] = {0.897500, 0.907700};
-    static constexpr float fov_up[2]    = {0.953644, 0.954293};
-    static constexpr float fov_down[2]  = {-0.953628, -0.952802};
+    static constexpr float fov_left[2]  = {-0.907341f, -0.897566f};
+    static constexpr float fov_right[2] = {0.897500f, 0.907700f};
+    static constexpr float fov_up[2]    = {0.953644f, 0.954293f};
+    static constexpr float fov_down[2]  = {-0.953628f, -0.952802f};
 };
 
 struct index_params {
-    static constexpr float fov_left[2]  = {-0.907341, -0.897566};
-    static constexpr float fov_right[2] = {0.897500, 0.907700};
-    static constexpr float fov_up[2]    = {0.953644, 0.954293};
-    static constexpr float fov_down[2]  = {-0.953628, -0.952802};
+    static constexpr float fov_left[2]  = {-0.907341f, -0.897566f};
+    static constexpr float fov_right[2] = {0.897500f, 0.907700f};
+    static constexpr float fov_up[2]    = {0.953644f, 0.954293f};
+    static constexpr float fov_down[2]  = {-0.953628f, -0.952802f};
 };
 
 ;

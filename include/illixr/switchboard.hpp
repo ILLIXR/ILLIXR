@@ -1,6 +1,10 @@
 #pragma once
 
+#if defined(_WIN32) || defined(_WIN64)
+#include <cstdlib>
+#endif
 #include "concurrentqueue/blockingconcurrentqueue.hpp"
+#include "export.hpp"
 #include "managed_thread.hpp"
 #include "network/network_backend.hpp"
 #include "network/topic_config.hpp"
@@ -115,7 +119,7 @@ const record_header _switchboard_topic_stop_header{"switchboard_topic_stop",
  * });
  * \endcode
  */
-class switchboard : public phonebook::service {
+class MY_EXPORT_API switchboard : public phonebook::service {
 public:
     /**
      * @brief The type of shared pointer returned by switchboard.
@@ -735,8 +739,9 @@ public:
         } catch (std::out_of_range&) {
             char* val = std::getenv(var.c_str());
             if (val) {
+                std::string temp(val);
                 set_env(var, val); // store it locally for faster retrieval
-                return {val};
+                return temp;
             }
             return _default;
         }

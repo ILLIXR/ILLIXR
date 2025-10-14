@@ -1,3 +1,6 @@
+#if defined(_WIN32) || defined(_WIN64)
+#include <windows.h>
+#endif
 // clang-format off
 #include <GL/glew.h> // GLEW has to be loaded before other GL libraries
 // clang-format on
@@ -91,8 +94,15 @@ void gldemo::_p_thread_setup() {
     last_time_ = clock_->now();
 
     // Note: glXMakeContextCurrent must be called from the thread which will be using it.
-    [[maybe_unused]] const bool gl_result =
+    HGLRC                ctx = wglGetCurrentContext();
+    HDC                  dcx = wglGetCurrentDC();
+    [[maybe_unused]] int gl_result =
+#if defined(_WIN32) || defined(_WIN64)
+        wglMakeCurrent(ext_window_->hdc_, ext_window_->context_);
+#else
         static_cast<bool>(glXMakeCurrent(ext_window_->display_, ext_window_->window_, ext_window_->context_));
+#endif
+    DWORD error = GetLastError();
     assert(gl_result && "glXMakeCurrent should not fail");
 }
 
@@ -193,7 +203,11 @@ void gldemo::_p_one_iteration() {
 // We override start() to control our own lifecycle
 void gldemo::start() {
     [[maybe_unused]] const bool gl_result_0 =
+#if defined(_WIN32) || defined(_WIN64)
+        static_cast<bool>(wglMakeCurrent(ext_window_->hdc_, ext_window_->context_));
+#else
         static_cast<bool>(glXMakeCurrent(ext_window_->display_, ext_window_->window_, ext_window_->context_));
+#endif
     assert(gl_result_0 && "glXMakeCurrent should not fail");
 
     // Init and verify GLEW
@@ -244,7 +258,12 @@ void gldemo::start() {
                               display_params::fov_y / 2.0f, display_params::fov_y / 2.0f, rendering_params::near_z,
                               rendering_params::far_z);
 
-    [[maybe_unused]] const bool gl_result_1 = static_cast<bool>(glXMakeCurrent(ext_window_->display_, None, nullptr));
+    [[maybe_unused]] const bool gl_result_1 = 
+#if defined(_WIN32) || defined(_WIN64)
+        static_cast<bool>(wglMakeCurrent(ext_window_->hdc_, ext_window_->context_));
+#else
+        static_cast<bool>(glXMakeCurrent(ext_window_->display_, None, nullptr));
+#endif
     assert(gl_result_1 && "glXMakeCurrent should not fail");
 
     // Effectively, last vsync was at zero.

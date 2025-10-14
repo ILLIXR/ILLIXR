@@ -1,6 +1,8 @@
 #pragma once
 #define VULKAN_REQUIRED
-
+#if defined(_WIN32) || defined(_WIN64)
+#include <windows.h>
+#endif
 #include "illixr/data_format/frame.hpp"
 #include "illixr/data_format/misc.hpp"
 #include "illixr/data_format/pose.hpp"
@@ -53,10 +55,16 @@ private:
     const std::shared_ptr<data_format::pose_prediction> pose_prediction_;
     const std::shared_ptr<const relative_clock>         clock_;
 
+#if defined(_WIN32) || defined(_WIN64)
+    HWND  hwnd_;
+    HDC   hdc_;
+    HGLRC context_;
+#else
     // OpenGL objects
     Display*   display_;
     Window     root_window_;
     GLXContext context_;
+#endif
 
     // Shared objects between ILLIXR and the application (either gldemo or Monado)
     bool                      rendering_ready_;

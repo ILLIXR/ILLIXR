@@ -1,5 +1,9 @@
 # CMake module to look for yaml-cpp
 # if it is not found then it is downloaded and marked for compilation and install
+find_package(yaml-cpp QUIET CONFIG)
+if(NOT yaml-cpp_FOUND)
+    pkg_check_modules(yaml-cpp QUIET yaml-cpp)
+endif()
 
 pkg_check_modules(yaml-cpp QUIET yaml-cpp)
 list(APPEND EXTERNAL_PROJECTS yaml-cpp)

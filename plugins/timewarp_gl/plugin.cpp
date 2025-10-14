@@ -1,7 +1,12 @@
 #define GL_GLEXT_PROTOTYPES
+#if defined(_WIN32) || defined(_WIN64)
+#include <windows.h>
+#endif
 // clang-format off
 #include <GL/glew.h> // GLEW has to be loaded before other GL libraries
+#if !defined(_WIN32) && !defined(_WIN64)
 #include <GL/glx.h>
+#endif
 // clang-format on
 
 #include "plugin.hpp"
@@ -23,7 +28,11 @@
 using namespace ILLIXR;
 using namespace ILLIXR::data_format;
 
+#if defined(_WIN32) || defined(_WIN64)
+typedef BOOL(WINAPI* wglSwapIntervalEXTProc)(int interval);
+#else
 typedef void (*glXSwapIntervalEXTProc)(Display* display_, GLXDrawable drawable, int interval);
+#endif
 
 const record_header timewarp_gpu_record{"timewarp_gpu",
                                         {
@@ -67,9 +76,14 @@ timewarp_gl::timewarp_gl(const std::string& name, phonebook* pb)
     spdlogger(switchboard_->get_env_char("TIMEWARP_GL_LOG_LEVEL"));
 #ifndef ENABLE_MONADO
     const std::shared_ptr<xlib_gl_extended_window> x_win = phonebook_->lookup_impl<xlib_gl_extended_window>();
+#if defined(_WIN32) || defined(_WIN64)
+    hwnd_ = x_win->hwnd_;
+    hdc_  = x_win->hdc_;
+#else
     display_                                             = x_win->display_;
     root_window_                                         = x_win->window_;
-    context_                                             = x_win->context_;
+#endif
+    context_ = x_win->context_;
 #else
     // If we use Monado, timewarp_gl must create its own GL context because the extended window isn't used
     std::cout << "Timewarp creating GL Context" << std::endl;
@@ -195,7 +209,11 @@ GLuint timewarp_gl::convert_vk_format_to_GL(int64_t vk_format) {
 }
 
 void timewarp_gl::import_vulkan_image(const vk_image_handle& vk_handle, swapchain_usage usage) {
+#if defined(_WIN32) || defined(_WIN64)
+    const bool gl_result = static_cast<bool>(wglMakeCurrent(hdc_, context_));
+#else
     [[maybe_unused]] const bool gl_result = static_cast<bool>(glXMakeCurrent(display_, root_window_, context_));
+#endif
     assert(gl_result && "glXMakeCurrent should not fail");
     assert(GLEW_EXT_memory_object_fd && "[timewarp_gl] Missing object memory extensions for Vulkan-GL interop");
 
@@ -374,14 +392,23 @@ void timewarp_gl::_setup() {
     build_timewarp(hmd_info_);
 
     // includes setting swap interval
+#if defined(_WIN32) || defined(_WIN64)
+    [[maybe_unused]] const bool gl_result_0 = static_cast<bool>(wglMakeCurrent(hdc_, context_));
+#else
     [[maybe_unused]] const bool gl_result_0 = static_cast<bool>(glXMakeCurrent(display_, root_window_, context_));
+#endif
     assert(gl_result_0 && "glXMakeCurrent should not fail");
 
     // set swap interval for 1
     // TODO do we still need this if timewarp is not doing the presenting?
+#if defined(_WIN32) || defined(_WIN64)
+    auto swap_interval_ext = (wglSwapIntervalEXTProc) wglGetProcAddress("wglSwapIntervalEXT");
+    swap_interval_ext(1);
+#else
     auto glx_swap_interval_ext = (glXSwapIntervalEXTProc) glXGetProcAddressARB((const GLubyte*) "glx_swap_interval_ext");
     glx_swap_interval_ext(display_, root_window_, 1);
-
+#endif
+    
     // Init and verify GLEW
     glewExperimental      = GL_TRUE;
     const GLenum glew_err = glewInit();
@@ -486,13 +513,20 @@ void timewarp_gl::_setup() {
         glBufferData(GL_PIXEL_PACK_BUFFER, display_params::width_pixels * display_params::height_pixels * 3, nullptr,
                      GL_STREAM_DRAW);
     }
-
+#if defined(_WIN32) || defined(_WIN64)
+    [[maybe_unused]] const bool gl_result_1 = static_cast<bool>(wglMakeCurrent(nullptr, nullptr));
+#else
     [[maybe_unused]] const bool gl_result_1 = static_cast<bool>(glXMakeCurrent(display_, None, nullptr));
+#endif
     assert(gl_result_1 && "glXMakeCurrent should not fail");
 }
 
 void timewarp_gl::_prepare_rendering() {
+#if defined(_WIN32) || defined(_WIN64)
+    [[maybe_unused]] const bool gl_result = static_cast<bool>(wglMakeCurrent(hdc_, context_));
+#else
     [[maybe_unused]] const bool gl_result = static_cast<bool>(glXMakeCurrent(display_, root_window_, context_));
+#endif
     assert(gl_result && "glXMakeCurrent should not fail");
 
     if (!rendering_ready_) {
@@ -677,7 +711,11 @@ void timewarp_gl::warp(const switchboard::ptr<const rendered_frame>& most_recent
     // Call swap buffers; when vsync is enabled, this will return to the
     // CPU thread once the buffers have been successfully swapped.
     [[maybe_unused]] time_point time_before_swap = clock_->now();
+#if defined(_WIN32) || defined(_WIN64)
+    SwapBuffers(hdc_);
+#else
     glXSwapBuffers(display_, root_window_);
+#endif
 
     // The swap time needs to be obtained and published as soon as possible
     time_last_swap_                             = clock_->now();

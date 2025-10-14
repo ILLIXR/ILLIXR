@@ -29,6 +29,8 @@ tcp_network_backend::tcp_network_backend(const std::string& name_, phonebook* pb
     if (switchboard_->get_env_char("ILLIXR_IS_CLIENT")) {
         is_client_ = std::stoi(switchboard_->get_env_char("ILLIXR_IS_CLIENT"));
         spdlog::get("illixr")->info("[tcp_network_backend] Is client", is_client_);
+    } else {
+        is_client_ = 0;
     }
 
     if (is_client_) {
@@ -42,7 +44,7 @@ tcp_network_backend::tcp_network_backend(const std::string& name_, phonebook* pb
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
     } else {
-        client = false;
+         client = false;
         std::thread([this]() {
             start_server();
         }).detach();
@@ -183,7 +185,7 @@ void tcp_network_backend::send_to_peer(const std::string& topic_name, std::strin
     peer_socket_->write_data(packet);
 }
 
-extern "C" plugin* this_plugin_factory(phonebook* pb) {
+extern "C" MY_EXPORT_API plugin* this_plugin_factory(phonebook* pb) {
     auto plugin_ptr = std::make_shared<tcp_network_backend>("tcp_network_backend", pb);
     pb->register_impl<network::network_backend>(plugin_ptr);
     auto* obj = plugin_ptr.get();

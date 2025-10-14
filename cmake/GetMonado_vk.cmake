@@ -23,6 +23,11 @@ else ()
               REPO https://github.com/ILLIXR/monado_vulkan_integration.git
               TAG b4d67519ec3e4a5e0af7038bed62740fbf08712c
     )
+    if (UNIX)
+        set(XRT_HAVE_LIBUDEV ON)
+        set(XRT_HAVE_V4L2 ON)
+        set(XRT_HAVE_LIBUSB ON)
+    endif()
 
     set(ILLIXR_PATH ${CMAKE_SOURCE_DIR}/include)
     set(ON_VARS XRT_HAVE_LIBUDEV XRT_HAVE_LIBUSB XRT_HAVE_V4L2 XRT_OPENXR_INSTALL_ABSOLUTE_RUNTIME_PATH XRT_FEATURE_SERVICE)
@@ -43,6 +48,11 @@ else ()
     configure_target(NAME Monado_VK
                      NO_FIND
     )
+    unset(ILLIXR_PATH)
+    if (UNIX)
+        unset(XRT_HAVE_LIBUDEV)
+        unset(XRT_HAVE_V4L2)
+    endif()
 
     foreach(ITEM IN LISTS ON_VARS OFF_VARS)
         unset(${ITEM})

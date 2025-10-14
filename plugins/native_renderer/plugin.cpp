@@ -287,7 +287,7 @@ void native_renderer::_p_one_iteration() {
 void native_renderer::create_swapchain_framebuffers() {
     swapchain_framebuffers_.resize(display_sink_->swapchain_image_views_.size());
 
-    for (ulong i = 0; i < display_sink_->swapchain_image_views_.size(); i++) {
+    for (auto i = 0; i < display_sink_->swapchain_image_views_.size(); i++) {
         std::array<VkImageView, 1> attachments = {display_sink_->swapchain_image_views_[i]};
 
         assert(timewarp_pass_ != VK_NULL_HANDLE);
@@ -501,7 +501,10 @@ void native_renderer::create_offscreen_pool() {
     };
 
     uint32_t                mem_type_index;
-    VmaAllocationCreateInfo alloc_info{.flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT, .usage = VMA_MEMORY_USAGE_GPU_ONLY};
+    VmaAllocationCreateInfo alloc_info;
+    alloc_info.flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT;
+    alloc_info.usage = VMA_MEMORY_USAGE_GPU_ONLY;
+
     vmaFindMemoryTypeIndexForImageInfo(display_sink_->vma_allocator_, &sample_create_info, &alloc_info, &mem_type_index);
 
     offscreen_export_mem_alloc_info_.sType = VK_STRUCTURE_TYPE_EXPORT_MEMORY_ALLOCATE_INFO;
@@ -525,8 +528,8 @@ void native_renderer::create_offscreen_target(vulkan::vk_image& image) {
     if (timewarp_->is_external() || app_->is_external()) {
         assert(offscreen_pool_ != VK_NULL_HANDLE);
         image.export_image_info = {VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_IMAGE_CREATE_INFO, nullptr,
-                                   export_dma_ ? VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT
-                                               : VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT};
+            export_dma_ ? static_cast<VkExternalMemoryHandleTypeFlags>(VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT)
+                        : static_cast<VkExternalMemoryHandleTypeFlags>(VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT)};
     }
 
     std::vector<uint32_t> queue_family_indices;
@@ -564,7 +567,10 @@ void native_renderer::create_offscreen_target(vulkan::vk_image& image) {
         VK_IMAGE_LAYOUT_UNDEFINED                                                                       // initialLayout
     };
 
-    VmaAllocationCreateInfo alloc_info{.flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT, .usage = VMA_MEMORY_USAGE_GPU_ONLY};
+    VmaAllocationCreateInfo alloc_info{};
+    alloc_info.flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT;
+    alloc_info.usage = VMA_MEMORY_USAGE_GPU_ONLY;
+
     if (timewarp_->is_external() || app_->is_external()) {
         alloc_info.pool = offscreen_pool_;
     }
@@ -779,12 +785,13 @@ void native_renderer::create_timewarp_pass() {
     };
 
     VkSubpassDependency dependency = {
-        .srcSubpass    = VK_SUBPASS_EXTERNAL,
-        .dstSubpass    = 0,
-        .srcStageMask  = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-        .dstStageMask  = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-        .srcAccessMask = 0,
-        .dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+        VK_SUBPASS_EXTERNAL,
+        0,
+        VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+        VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+        0,
+        VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+        0
     };
 
     VkSubpassDescription subpass = {

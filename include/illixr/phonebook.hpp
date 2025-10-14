@@ -1,5 +1,7 @@
 #pragma once
 
+#include "export.hpp"
+
 #include <cassert>
 #include <memory>
 #include <mutex>
@@ -8,6 +10,11 @@
 #include <typeindex>
 #include <unordered_map>
 
+#if defined(_WIN32) || defined(_WIN64)
+#include <Windows.h>
+#include <cstdlib>
+#endif
+
 #ifndef NDEBUG
     #include <iostream>
     #include <spdlog/spdlog.h>
@@ -15,6 +22,13 @@
 #endif
 
 namespace ILLIXR {
+
+#if defined(_WIN32) || defined(_WIN64)
+static void setenv(const std::string& var, const std::string& val, int) {
+    std::string env_stmt = var + "=" + val;
+    putenv(env_stmt.c_str());
+}
+#endif
 
 /**
  * @brief A [service locator][1] for ILLIXR.
@@ -66,7 +80,7 @@ namespace ILLIXR {
  * [1]: https://en.wikipedia.org/wiki/Service_locator_pattern
  * [2]: https://en.wikibooks.org/wiki/C%2B%2B_Programming/Classes/Abstract_Classes
  */
-class phonebook {
+class MY_EXPORT_API phonebook {
     /*
       Proof of thread-safety:
       - Since all instance members are private, acquiring a lock in each method implies the class is datarace-free.
