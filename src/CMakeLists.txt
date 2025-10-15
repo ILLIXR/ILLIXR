@@ -1,6 +1,11 @@
 
 add_compile_definitions(VK_USE_PLATFORM_XLIB_KHR)
 
+if(WIN32 OR MSVC)
+    set(EXE_NAME main${ILLIXR_BUILD_SUFFIX})
+else()
+    set(EXE_NAME main${ILLIXR_BUILD_SUFFIX}.exe)
+endif()
 set(VULKAN_FILES
     src/display/x11_direct.hpp
     src/display/x11_direct.cpp
@@ -12,12 +17,12 @@ set(VULKAN_FILES
     ${CMAKE_SOURCE_DIR}/include/illixr/vk/vulkan_objects.hpp
 )
 
-add_executable(main${ILLIXR_BUILD_SUFFIX}
+add_executable(${EXE_NAME}
                src/main.cpp
-               src/illixr.hpp 
+               src/illixr.hpp
                src/cxxopts.hpp
                ${CMAKE_SOURCE_DIR}/include/illixr/runtime.hpp
-               ${CMAKE_SOURCE_DIR}/include/illixr/phonebook.hpp 
+               ${CMAKE_SOURCE_DIR}/include/illixr/phonebook.hpp
 )
 
 add_library(plugin.main${ILLIXR_BUILD_SUFFIX} SHARED
@@ -32,7 +37,7 @@ add_library(plugin.main${ILLIXR_BUILD_SUFFIX} SHARED
             $<TARGET_OBJECTS:illixr_vulkan_utils>
 )
 
-if(WIN32 OR MSVC) 
+if(WIN32 OR MSVC)
     target_compile_definitions(plugin.main${ILLIXR_BUILD_SUFFIX} PRIVATE BUILDING_LIBRARY)
 endif()
 ##############
@@ -60,7 +65,7 @@ target_link_directories(plugin.main${ILLIXR_BUILD_SUFFIX} PUBLIC
 )
 target_link_libraries(plugin.main${ILLIXR_BUILD_SUFFIX} PUBLIC
                       Threads::Threads
-                      yaml-cpp::yaml-cpp 
+                      yaml-cpp::yaml-cpp
                       spdlog::spdlog
                       ${SQLite3_LIBRARIES}
                       Boost::serialization
@@ -79,7 +84,7 @@ else()
 
     if(Vulkan_DEP_STR)
         add_dependencies(plugin.main${ILLIXR_BUILD_SUFFIX} ${Vulkan_DEP_STR})
-    endif() 
+    endif()
 
     target_include_directories(plugin.main${ILLIXR_BUILD_SUFFIX} PUBLIC
                                ${Boost_INCLUDE_DIR}
@@ -96,11 +101,11 @@ else()
                       ${gl_LIBRARIES}
                       ${Vulkan_LIBRARIES}
     )
-endif() 
+endif()
 
-target_include_directories(main${ILLIXR_BUILD_SUFFIX} PUBLIC ${CMAKE_SOURCE_DIR}/include)
-target_link_libraries(main${ILLIXR_BUILD_SUFFIX} plugin.main${ILLIXR_BUILD_SUFFIX})
+target_include_directories(${EXE_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(${EXE_NAME} plugin.main${ILLIXR_BUILD_SUFFIX})
 
 
-install(TARGETS main${ILLIXR_BUILD_SUFFIX} DESTINATION bin)
+install(TARGETS ${EXE_NAME} DESTINATION bin)
 install(TARGETS plugin.main${ILLIXR_BUILD_SUFFIX} DESTINATION lib)

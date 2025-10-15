@@ -9,16 +9,16 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 
 file(GLOB_RECURSE GLSL_SOURCE_FILES
-        "shaders/*.frag"
-        "shaders/*.vert"
-        )
+     "shaders/*.frag"
+     "shaders/*.vert"
+)
 
 set(VKDEMO_DEP_STR "")
 if(Vulkan_EXTERNAL)
     set(VKDEMO_DEP_STR ${Vulkan_DEP_STR})
 endif()
 
-foreach (GLSL ${GLSL_SOURCE_FILES})
+foreach(GLSL ${GLSL_SOURCE_FILES})
     get_filename_component(FILE_NAME ${GLSL} NAME)
     set(SPIRV "${PROJECT_BINARY_DIR}/shaders/${FILE_NAME}.spv")
     add_custom_command(
@@ -27,7 +27,7 @@ foreach (GLSL ${GLSL_SOURCE_FILES})
             COMMAND ${Vulkan_GLSLANG_VALIDATOR_EXECUTABLE} ${GLSL} -V -o ${SPIRV}
             DEPENDS ${GLSL} ${VKDEMO_DEP_STR})
     list(APPEND SPIRV_BINARY_FILES ${SPIRV})
-endforeach (GLSL)
+endforeach(GLSL)
 
 add_custom_target(
         Vkdemo_Shaders
@@ -52,17 +52,17 @@ add_library(${PLUGIN_NAME} SHARED service.cpp
 
 add_dependencies(${PLUGIN_NAME} Vkdemo_Shaders)
 set_target_properties(${PLUGIN_NAME} PROPERTIES OUTPUT_NAME ${PLUGIN_NAME})
-target_link_libraries(${PLUGIN_NAME} PUBLIC 
-        spdlog::spdlog
-        Boost::serialization
-        Eigen3::Eigen
+target_link_libraries(${PLUGIN_NAME} PUBLIC
+                      spdlog::spdlog
+                      Boost::serialization
+                      Eigen3::Eigen
 )
 target_include_directories(${PLUGIN_NAME} PUBLIC ${ILLIXR_SOURCE_DIR}/include)
 
 if(WIN32 OR MSVC)
-    target_link_libraries(${PLUGIN_NAME} PUBLIC 
-            Vulkan::Vulkan
-            GPUOpen::VulkanMemoryAllocator
+    target_link_libraries(${PLUGIN_NAME} PUBLIC
+                          Vulkan::Vulkan
+                          GPUOpen::VulkanMemoryAllocator
     )
     target_compile_definitions(${PLUGIN_NAME} PRIVATE BUILDING_LIBRARY)
 else()
@@ -70,7 +70,7 @@ else()
         add_dependencies(${PLUGIN_NAME} ${Vulkan_DEP_STR})
     endif()
 
-    target_link_libraries(${PLUGIN_NAME} ${Vulkan_LIBRARIES})
+    target_link_libraries(${PLUGIN_NAME} PUBLIC ${Vulkan_LIBRARIES})
     target_include_directories(${PLUGIN_NAME} PUBLIC ${Vulkan_INCLUDE_DIRS})
 endif()
 

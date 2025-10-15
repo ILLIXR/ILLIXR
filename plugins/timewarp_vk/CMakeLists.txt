@@ -76,25 +76,26 @@ endif()
 
 add_dependencies(${PLUGIN_NAME} Timewarp_VK_Shaders)
 
-set_target_properties(${PLUGIN_NAME} PROPERTIES OUTPUT_NAME ${PLUGIN_NAME})
+set_target_properties(${PLUGIN_NAME} PROPERTIES
+                      OUTPUT_NAME ${PLUGIN_NAME})
 
-target_link_libraries(${PLUGIN_NAME} PUBLIC 
-        spdlog::spdlog 
-        Boost::serialization 
-        Eigen3::Eigen
+target_link_libraries(${PLUGIN_NAME} PUBLIC
+                      spdlog::spdlog
+                      Boost::serialization
+                      Eigen3::Eigen
 )
 if(WIN32 OR MSVC)
-    target_link_libraries(${PLUGIN_NAME} PUBLIC 
-            Vulkan::Vulkan 
-            glm::glm-header-only
-            GPUOpen::VulkanMemoryAllocator
+    target_link_libraries(${PLUGIN_NAME} PUBLIC
+                          Vulkan::Vulkan
+                          glm::glm-header-only
+                          GPUOpen::VulkanMemoryAllocator
     )
     target_compile_definitions(${PLUGIN_NAME} PRIVATE BUILDING_LIBRARY)
 else()
     if(Vulkan_EXTERNAL)
         add_dependencies(${PLUGIN_NAME} ${Vulkan_DEP_STR})
     endif()
-    target_link_libraries(${PLUGIN_NAME} ${Vulkan_LIBRARIES})
+    target_link_libraries(${PLUGIN_NAME} PUBLIC ${Vulkan_LIBRARIES})
     target_include_directories(${PLUGIN_NAME} PUBLIC ${Vulkan_INCLUDE_DIRS})
 endif()
 

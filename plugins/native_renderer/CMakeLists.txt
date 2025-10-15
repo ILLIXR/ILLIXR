@@ -21,23 +21,23 @@ add_library(${PLUGIN_NAME} SHARED plugin.cpp
 
 set_target_properties(${PLUGIN_NAME} PROPERTIES OUTPUT_NAME ${PLUGIN_NAME})
 
-target_link_libraries(${PLUGIN_NAME} PUBLIC 
-        spdlog::spdlog
-        Boost::serialization
+target_link_libraries(${PLUGIN_NAME} PUBLIC
+                      spdlog::spdlog
+                      Boost::serialization
 )
 target_include_directories(${PLUGIN_NAME} PUBLIC ${ILLIXR_SOURCE_DIR}/include)
 
 if(WIN32 OR MSVC)
-    target_link_libraries(${PLUGIN_NAME} PUBLIC 
-            Vulkan::Vulkan
-            GPUOpen::VulkanMemoryAllocator
+    target_link_libraries(${PLUGIN_NAME} PUBLIC
+                          Vulkan::Vulkan
+                          GPUOpen::VulkanMemoryAllocator
     )
     target_compile_definitions(${PLUGIN_NAME} PRIVATE BUILDING_LIBRARY)
 else()
     if(Vulkan_EXTERNAL)
         add_dependencies(${PLUGIN_NAME} ${Vulkan_DEP_STR})
     endif()
-    target_link_libraries(${PLUGIN_NAME} ${Vulkan_LIBRARIES})
+    target_link_libraries(${PLUGIN_NAME} PUBLIC ${Vulkan_LIBRARIES})
     target_include_directories(${PLUGIN_NAME} PUBLIC ${Vulkan_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR}/include)
 endif()
 install(TARGETS ${PLUGIN_NAME} DESTINATION lib)
