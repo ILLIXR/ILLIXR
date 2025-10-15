@@ -65,7 +65,10 @@ else()
 
     configure_target(NAME vulkan
                      VERSION 1.4
+                     USE_PKG_CONF
+                     PKG_CONF vulkan
     )
+    set(Vulkan_LIBRARIES "vulkan" CACHE STRING "")
 endif()
 
 set(EXTERNAL_PROJECTS ${EXTERNAL_PROJECTS})
