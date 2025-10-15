@@ -72,7 +72,7 @@ endif()
 set(GPL_LICENSED_CODE "openvins;orb_slam3;offload_rendering_server;offload_rendering_client")
 set(LGPL_LICENSED_CODE "audio_pipeline")
 
-set(yaml-cpp_DIR "D:/ILLIXR/out/install/x64-Debug/lib/cmake/yaml-cpp") 
+set(yaml-cpp_DIR "D:/ILLIXR/out/install/x64-Debug/lib/cmake/yaml-cpp")
 
 if(PACKAGE_VERSION_LABEL)
     set(PACKAGE_VERSION "${PACKAGE_VERSION_MAJOR}.${PACKAGE_VERSION_MINOR}.${PACKAGE_VERSION_PATCH}-${PACKAGE_VERSION_LABEL}")
@@ -85,17 +85,6 @@ include(FetchContent)
 include(CMakeDependentOption)
 
 
-# Vulkan flags
-add_compile_definitions(VK_ENABLE_BETA_EXTENSIONS)
-if(WIN32 OR MSVC)
-    set(CMAKE_CXX_FLAGS_DEBUG "/Zi /Od /MDd")
-    set(CMAKE_EXE_LINKER_FLAGS_DEBUG "/DEBUG")
-    set(CMAKE_SHARED_LINKER_FLAGS_DEBUG "/DEBUG /STACK:8388608")
-    set(CMAKE_CXX_FLAGS_RELEASE "/O3 /DNDEBUG")
-    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "/Zi /O3")
-else()
-    set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG -Wall")
-    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-ggdb -O3 -Wall")
 # check for the Jetson platform
 if (CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64" AND EXISTS "/etc/nv_tegra_release")
     set(ON_JETSON_PLATFORM YES)
@@ -238,7 +227,7 @@ if(WIN32 OR MSVC)
         string(TOUPPER "USE_${ITEM}" ITEM_UPPER)
         if(${ITEM_UPPER})
             string(TOLOWER ${ITEM} ITEM_LOWER)
-            list(APPEND VCPKG_MANIFEST_FEATURES "${ITEM_LOWER}")
+            list(APPEND VCPKG_MANIFEST_FEATURES "plugin_${ITEM_LOWER}")
             unset(ITEM_LOWER)
         endif()
         unset(ITEM_UPPER)
@@ -255,9 +244,17 @@ add_definitions(-DGLSL_VERSION="330")
 # Vulkan flags
 add_compile_definitions(VK_ENABLE_BETA_EXTENSIONS)
 
-set(CMAKE_CXX_FLAGS_DEBUG "-ggdb -Wall -Wextra -rdynamic -Wno-attributes -Wno-unknown-pragmas -fPIC")
-set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG -Wall -Wextra -Wno-attributes -Wno-unknown-pragmas -fPIC")
-set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-ggdb -O3 -Wall -Wextra -Wno-attributes -Wno-unknown-pragmas -fPIC")
+if(WIN32 OR MSVC)
+    set(CMAKE_CXX_FLAGS_DEBUG "/Zi /Od /MDd")
+    set(CMAKE_EXE_LINKER_FLAGS_DEBUG "/DEBUG")
+    set(CMAKE_SHARED_LINKER_FLAGS_DEBUG "/DEBUG /STACK:8388608")
+    set(CMAKE_CXX_FLAGS_RELEASE "/O3 /DNDEBUG")
+    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "/Zi /O3")
+else()
+    set(CMAKE_CXX_FLAGS_DEBUG "-ggdb -Wall -Wextra -rdynamic -Wno-attributes -Wno-unknown-pragmas -fPIC")
+    set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG -Wall -Wextra -Wno-attributes -Wno-unknown-pragmas -fPIC")
+    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-ggdb -O3 -Wall -Wextra -Wno-attributes -Wno-unknown-pragmas -fPIC")
+endif()
 
 ##################################
 
@@ -274,20 +271,12 @@ add_definitions(-DILLIXR_BUILD_SUFFIX=${ILLIXR_BUILD_SUFFIX})
 # dependencies
 ##############
 set(EXTERNAL_LIBRARIES "")
+
 find_package(OpenCV 4 REQUIRED)
-
-
-pkg_check_modules(glu REQUIRED glu)
 
 find_package(SQLite3 REQUIRED)
 
-find_package(X11 REQUIRED)
-
-pkg_check_modules(gl REQUIRED gl)
-
 find_package(Eigen3 REQUIRED CONFIG)
-
-get_external(Vulkan)
 
 #############
 # plugin specific dependencies that are used by several plugins
@@ -306,11 +295,8 @@ else()
     get_external(Vulkan)
 endif()
 
-find_package(SQLite3 REQUIRED)
-find_package(Eigen3 REQUIRED CONFIG)
 find_package(GLEW REQUIRED)
 find_package(glfw3 REQUIRED CONFIG)
-find_package(protobuf REQUIRED CONFIG)
 
 find_package(Git REQUIRED)
 if(WIN32 OR MSVC)
