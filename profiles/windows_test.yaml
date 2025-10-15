@@ -1,7 +1,0 @@
-# This file was auto generated, take caution if manually editing.
-plugins: pose_lookup,timewarp_gl,gldemo
-env_vars:
-  ENABLE_OFFLOAD: False
-  ENABLE_ALIGNMENT: False
-  ENABLE_VERBOSE_ERRORS: False
-  ENABLE_PRE_SLEEP: False

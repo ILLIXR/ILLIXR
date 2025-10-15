@@ -3,7 +3,7 @@
 #if defined(_WIN32) || defined(_WIN64)
 #include <vma/vk_mem_alloc.h>
 #else
-
+#include "illixr/vk/third_party/vk_mem_alloc.h"
 #endif
 #include <vulkan/vulkan.h>
 

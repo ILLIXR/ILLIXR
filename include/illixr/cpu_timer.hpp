@@ -91,7 +91,7 @@ static inline std::chrono::nanoseconds cpp_clock_get_time(clockid_t clock_id) {
                  : "memory" /* Clobbers */);
     #endif
 
-    if (illixr_clock_gettime(clock_id, &time_spec)) {
+    if (clock_gettime(clock_id, &time_spec)) {
         throw std::runtime_error{std::string{"clock_get_time returned "} + strerror(errno)};
     }
     RAC_ERRNO_MSG("cpu_timer after clock_get_time");
