@@ -1,5 +1,5 @@
 #pragma once
-//#define VMA_IMPLEMENTATION
+// #define VMA_IMPLEMENTATION
 #include "display/glfw_extended.hpp"
 #include "display/headless.hpp"
 #include "display/x11_direct.hpp"
@@ -19,6 +19,9 @@
 #include <vulkan/vulkan.h>
 
 using namespace ILLIXR;
+#ifdef __linux__
+using namespace std;
+#endif
 
 class display_vk : public vulkan::display_provider {
 public:
@@ -470,13 +473,7 @@ private:
                                                   swapchain_details.capabilities.maxImageExtent.height);
         }
 
-        uint32_t image_count =
-#ifdef __linux__
-    std::max(
-#else
-            max(
-#endif
-                swapchain_details.capabilities.minImageCount, 2u); // double buffering
+        uint32_t image_count = max(swapchain_details.capabilities.minImageCount, 2u); // double buffering
 
         if (swapchain_details.capabilities.maxImageCount > 0 && image_count > swapchain_details.capabilities.maxImageCount) {
             image_count = swapchain_details.capabilities.maxImageCount;
