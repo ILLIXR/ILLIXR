@@ -76,16 +76,7 @@
       "name": "libx11"
     },
     {
-      "name": "libxrandr"?
-    },
-    {
       "name": "pkgconf"
-    },
-    {
-      "name": "libusb"?
-    },
-    {
-      "name": "libxrandr"?
     },
     {
       "name": "yaml-cpp"
@@ -641,6 +632,22 @@
       "dependencies": []
     },
     "plugin_zed.capture" : {
+      "description": "",
+      "dependencies": []
+    },
+    "plugin_fauxpose" : {
+      "description": "",
+      "dependencies": []
+    },
+    "plugin_pose_lookup" : {
+      "description": "",
+      "dependencies": []
+    },
+    "plugin_pose_prediction" : {
+      "description": "",
+      "dependencies": []
+    },
+    "plugin_vkdemo" : {
       "description": "",
       "dependencies": []
     }
