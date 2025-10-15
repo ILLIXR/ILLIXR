@@ -44,7 +44,7 @@ tcp_network_backend::tcp_network_backend(const std::string& name_, phonebook* pb
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
     } else {
-         client = false;
+        client = false;
         std::thread([this]() {
             start_server();
         }).detach();

@@ -11,8 +11,8 @@
 #include <unordered_map>
 
 #if defined(_WIN32) || defined(_WIN64)
-#include <Windows.h>
-#include <cstdlib>
+    #include <cstdlib>
+    #include <Windows.h>
 #endif
 
 #ifndef NDEBUG

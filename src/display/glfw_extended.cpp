@@ -1,9 +1,8 @@
 #if defined(_WIN32) || defined(_WIN64)
-#include <Windows.h>
+    #include <Windows.h>
 #endif
 #define GLFW_INCLUDE_VULKAN
 #include "glfw_extended.hpp"
-
 #include "illixr/error_util.hpp"
 
 #include <GLFW/glfw3.h>

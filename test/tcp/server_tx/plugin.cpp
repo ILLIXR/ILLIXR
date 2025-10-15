@@ -1,11 +1,9 @@
 #include "plugin.hpp"
 
 #include "illixr/network/topic_config.hpp"
-#include "illixr/network/topic_config.hpp"
 
 #include <algorithm>
 #include <string>
-
 
 using namespace ILLIXR;
 
@@ -16,8 +14,12 @@ using namespace ILLIXR;
     , stoplight_{phonebook_->lookup_impl<stoplight>()}
     , writer_{switchboard_->get_network_writer<switchboard::event_wrapper<std::string>>(
           "server_tx",
-          network::topic_config{network::topic_config::priority_type::MEDIUM, false, false, network::topic_config::packetization_type::DEFAULT,
-                                {}, network::topic_config::SerializationMethod::PROTOBUF})}
+          network::topic_config{network::topic_config::priority_type::MEDIUM,
+                                false,
+                                false,
+                                network::topic_config::packetization_type::DEFAULT,
+                                {},
+                                network::topic_config::SerializationMethod::PROTOBUF})}
     , generator_{rd_()} {
     spdlog::get("illixr")->debug("Device Tx started");
 }
@@ -35,7 +37,7 @@ void tcp_server_tx::_p_one_iteration() {
 
 void tcp_server_tx::send_message() {
     std::uniform_real_distribution<> distribution(-100., 100.);
-    std::string                     message;
+    std::string                      message;
 
     auto* mvmt = new output_proto::Movement();
 

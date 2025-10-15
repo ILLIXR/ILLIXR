@@ -527,7 +527,8 @@ void native_renderer::create_offscreen_pool() {
 void native_renderer::create_offscreen_target(vulkan::vk_image& image) {
     if (timewarp_->is_external() || app_->is_external()) {
         assert(offscreen_pool_ != VK_NULL_HANDLE);
-        image.export_image_info = {VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_IMAGE_CREATE_INFO, nullptr,
+        image.export_image_info = {
+            VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_IMAGE_CREATE_INFO, nullptr,
             export_dma_ ? static_cast<VkExternalMemoryHandleTypeFlags>(VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT)
                         : static_cast<VkExternalMemoryHandleTypeFlags>(VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT)};
     }
@@ -784,15 +785,13 @@ void native_renderer::create_timewarp_pass() {
         VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL // layout
     };
 
-    VkSubpassDependency dependency = {
-        VK_SUBPASS_EXTERNAL,
-        0,
-        VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-        VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-        0,
-        VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-        0
-    };
+    VkSubpassDependency dependency = {VK_SUBPASS_EXTERNAL,
+                                      0,
+                                      VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+                                      VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+                                      0,
+                                      VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+                                      0};
 
     VkSubpassDescription subpass = {
         0,                               // flags

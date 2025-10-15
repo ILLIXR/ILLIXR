@@ -2,7 +2,7 @@
 
 #include "illixr/dynamic_lib.hpp"
 #include "illixr/error_util.hpp"
-//#include "illixr/extended_window.hpp"
+// #include "illixr/extended_window.hpp"
 #include "illixr/global_module_defs.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/plugin.hpp"
@@ -25,7 +25,7 @@
 #include <vector>
 
 #if defined(_WIN32) || defined(_WIN64)
-#include <cstdlib>
+    #include <cstdlib>
 #endif
 
 using namespace ILLIXR;
@@ -55,9 +55,9 @@ public:
         phonebook_.register_impl<record_logger>(std::make_shared<no_op_record_logger>());
         phonebook_.register_impl<gen_guid>(std::make_shared<gen_guid>());
         phonebook_.register_impl<switchboard>(std::make_shared<switchboard>(&phonebook_));
-        switchboard_   = phonebook_.lookup_impl<switchboard>();
-        //phonebook_.register_impl<xlib_gl_extended_window>(
-        //    std::make_shared<xlib_gl_extended_window>(display_params::width_pixels, display_params::height_pixels, nullptr));
+        switchboard_ = phonebook_.lookup_impl<switchboard>();
+        // phonebook_.register_impl<xlib_gl_extended_window>(
+        //     std::make_shared<xlib_gl_extended_window>(display_params::width_pixels, display_params::height_pixels, nullptr));
         enable_monado_ = false;
         phonebook_.register_impl<stoplight>(std::make_shared<stoplight>());
     }

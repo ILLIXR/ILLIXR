@@ -2,30 +2,30 @@
 #define _WINSOCKAPI_
 #include <stdexcept>
 #if defined(_WIN32) || defined(_WIN64)
-#include <WinSock2.h>
-#include <ws2tcpip.h>
-#include <ws2def.h>
-#include <windns.h>
-#include <nldef.h>
-#include <iphlpapi.h>
-#include <mstcpip.h>
-#include <icmpapi.h>
-//#pragma comment(lib, "Ws2_32.lib")
-#define BYTE_TYPE int
-#define SOCKET_TYPE SOCKET
+    #include <icmpapi.h>
+    #include <iphlpapi.h>
+    #include <mstcpip.h>
+    #include <nldef.h>
+    #include <windns.h>
+    #include <WinSock2.h>
+    #include <ws2def.h>
+    #include <ws2tcpip.h>
+    // #pragma comment(lib, "Ws2_32.lib")
+    #define BYTE_TYPE   int
+    #define SOCKET_TYPE SOCKET
 #else
-#include <arpa/inet.h>
-#include <netinet/in.h>
-#include <netinet/tcp.h>
-#include <sys/socket.h>
-#include <unistd.h>
-#define BYTE_TYPE ssize_t
-#define SOCKET_TYPE int
+    #include <arpa/inet.h>
+    #include <netinet/in.h>
+    #include <netinet/tcp.h>
+    #include <sys/socket.h>
+    #include <unistd.h>
+    #define BYTE_TYPE   ssize_t
+    #define SOCKET_TYPE int
 #endif
 
-#include <string>
-
 #include "illixr/export.hpp"
+
+#include <string>
 
 namespace ILLIXR::network {
 
@@ -125,8 +125,8 @@ public:
 
     // Read data from the socket
     [[nodiscard]] std::string read_data(const size_t limit = BUFFER_SIZE) const {
-        char    buffer[BUFFER_SIZE];
-        BYTE_TYPE bytes_read = 
+        char      buffer[BUFFER_SIZE];
+        BYTE_TYPE bytes_read =
 #if defined(_WIN32) || defined(_WIN64)
             recv(fd_, buffer, static_cast<int>(min(BUFFER_SIZE, limit)), 0);
 #else
@@ -160,30 +160,30 @@ public:
     /* accessors */
     [[maybe_unused]] [[nodiscard]] std::string local_address() const {
         sockaddr_in local_address;
-        socklen_t          size = sizeof(local_address);
+        socklen_t   size = sizeof(local_address);
         getsockname(fd_, (struct sockaddr*) &local_address, &size);
 
 #if defined(_WIN32) || defined(_WIN64)
         char local_ip[INET_ADDRSTRLEN];
         inet_ntop(AF_INET, &local_address.sin_addr, local_ip, sizeof(local_ip));
 #else
-        char* local_ip   = inet_ntoa(local_address.sin_addr);
+        char* local_ip = inet_ntoa(local_address.sin_addr);
 #endif
-        int   local_port = ntohs(local_address.sin_port);
+        int local_port = ntohs(local_address.sin_port);
         return std::string(local_ip) + ":" + std::to_string(local_port);
     }
 
     [[nodiscard]] std::string peer_address() const {
         sockaddr_in peer_address;
-        socklen_t          size = sizeof(peer_address);
+        socklen_t   size = sizeof(peer_address);
         getpeername(fd_, (struct sockaddr*) &peer_address, &size);
 #if defined(_WIN32) || defined(_WIN64)
         char peer_ip[INET_ADDRSTRLEN];
         inet_ntop(AF_INET, &peer_address.sin_addr, peer_ip, sizeof(peer_ip));
 #else
-        char* peer_ip   = inet_ntoa(peer_address.sin_addr);
+        char* peer_ip = inet_ntoa(peer_address.sin_addr);
 #endif
-        int   peer_port = ntohs(peer_address.sin_port);
+        int peer_port = ntohs(peer_address.sin_port);
         return std::string(peer_ip) + ":" + std::to_string(peer_port);
     }
 

@@ -7,9 +7,9 @@ using namespace ILLIXR;
 tcp_device_rx::tcp_device_rx(const std::string& name_, phonebook* pb_)
     : threadloop{name_, pb_}
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
-    , clock_ {phonebook_->lookup_impl<relative_clock>()}
+    , clock_{phonebook_->lookup_impl<relative_clock>()}
     , msg_reader_{switchboard_->get_buffered_reader<switchboard::event_wrapper<std::string>>("server_tx")} {
-        spdlog::get("illixr")->debug("Dev_rx started");
+    spdlog::get("illixr")->debug("Dev_rx started");
 }
 
 threadloop::skip_option tcp_device_rx::_p_should_skip() {
@@ -37,6 +37,5 @@ void tcp_device_rx::receive_message(const output_proto::Movement& mvmt) {
                                 mvmt.rotation().rho(), mvmt.quat().w(), mvmt.quat().x(), mvmt.quat().y(), mvmt.quat().z());
     current_frame_++;
 }
-
 
 PLUGIN_MAIN(tcp_device_rx)

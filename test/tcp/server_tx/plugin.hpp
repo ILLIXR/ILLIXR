@@ -10,6 +10,7 @@
 #endif
 
 #include <random>
+
 namespace ILLIXR {
 
 class MY_EXPORT_API tcp_server_tx : public threadloop {
@@ -17,6 +18,7 @@ public:
     [[maybe_unused]] tcp_server_tx(const std::string& name_, phonebook* pb_);
     skip_option _p_should_skip() override;
     void        _p_one_iteration() override;
+
 private:
     void send_message();
 
@@ -29,4 +31,4 @@ private:
     std::mt19937                                                         generator_;
     const std::string                                                    delimiter_ = "EEND!";
 };
-}
+} // namespace ILLIXR

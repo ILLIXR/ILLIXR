@@ -1,7 +1,7 @@
 #include "plugin.hpp"
 
-#include <string>
 #include <algorithm>
+#include <string>
 
 using namespace ILLIXR;
 
@@ -35,7 +35,7 @@ void tcp_device_tx::_p_one_iteration() {
 
 void tcp_device_tx::send_data() {
     std::uniform_real_distribution<> distribution(-10., 10.);
-    std::string                     message;
+    std::string                      message;
 
     auto* vec = new input_proto::Vec3();
 

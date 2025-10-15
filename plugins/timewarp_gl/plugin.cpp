@@ -1,6 +1,6 @@
 #define GL_GLEXT_PROTOTYPES
 #if defined(_WIN32) || defined(_WIN64)
-#include <windows.h>
+    #include <windows.h>
 #endif
 // clang-format off
 #include <GL/glew.h> // GLEW has to be loaded before other GL libraries
@@ -9,12 +9,11 @@
 #endif
 // clang-format on
 
-#include "plugin.hpp"
-
 #include "illixr/error_util.hpp"
 #include "illixr/global_module_defs.hpp"
 #include "illixr/math_util.hpp"
 #include "illixr/shader_util.hpp"
+#include "plugin.hpp"
 #include "shaders/timewarp_shader.hpp"
 
 #include <atomic>
@@ -76,13 +75,13 @@ timewarp_gl::timewarp_gl(const std::string& name, phonebook* pb)
     spdlogger(switchboard_->get_env_char("TIMEWARP_GL_LOG_LEVEL"));
 #ifndef ENABLE_MONADO
     const std::shared_ptr<xlib_gl_extended_window> x_win = phonebook_->lookup_impl<xlib_gl_extended_window>();
-#if defined(_WIN32) || defined(_WIN64)
+    #if defined(_WIN32) || defined(_WIN64)
     hwnd_ = x_win->hwnd_;
     hdc_  = x_win->hdc_;
-#else
-    display_                                             = x_win->display_;
-    root_window_                                         = x_win->window_;
-#endif
+    #else
+    display_     = x_win->display_;
+    root_window_ = x_win->window_;
+    #endif
     context_ = x_win->context_;
 #else
     // If we use Monado, timewarp_gl must create its own GL context because the extended window isn't used
@@ -408,7 +407,7 @@ void timewarp_gl::_setup() {
     auto glx_swap_interval_ext = (glXSwapIntervalEXTProc) glXGetProcAddressARB((const GLubyte*) "glx_swap_interval_ext");
     glx_swap_interval_ext(display_, root_window_, 1);
 #endif
-    
+
     // Init and verify GLEW
     glewExperimental      = GL_TRUE;
     const GLenum glew_err = glewInit();
@@ -711,11 +710,11 @@ void timewarp_gl::warp(const switchboard::ptr<const rendered_frame>& most_recent
     // Call swap buffers; when vsync is enabled, this will return to the
     // CPU thread once the buffers have been successfully swapped.
     [[maybe_unused]] time_point time_before_swap = clock_->now();
-#if defined(_WIN32) || defined(_WIN64)
+    #if defined(_WIN32) || defined(_WIN64)
     SwapBuffers(hdc_);
-#else
+    #else
     glXSwapBuffers(display_, root_window_);
-#endif
+    #endif
 
     // The swap time needs to be obtained and published as soon as possible
     time_last_swap_                             = clock_->now();
