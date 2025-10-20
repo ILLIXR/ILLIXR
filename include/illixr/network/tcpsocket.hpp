@@ -43,8 +43,10 @@ public:
         }
 #endif
         fd_ = socket(AF_INET, SOCK_STREAM, 0);
+#if defined(_WIN32) || defined(_WIN64)
         if (fd_ == INVALID_SOCKET)
             throw std::runtime_error("startup failed");
+#endif
     }
 
     [[maybe_unused]] explicit TCPSocket(int fd) {
@@ -126,11 +128,11 @@ public:
     // Read data from the socket
     [[nodiscard]] std::string read_data(const size_t limit = BUFFER_SIZE) const {
         char    buffer[BUFFER_SIZE];
-        BYTE_TYPE bytes_read = 
+        BYTE_TYPE bytes_read =
 #if defined(_WIN32) || defined(_WIN64)
             recv(fd_, buffer, static_cast<int>(min(BUFFER_SIZE, limit)), 0);
 #else
-            read(fd_, buffer, static_cast<int>(min(BUFFER_SIZE, limit)));
+            read(fd_, buffer, static_cast<int>(std::min(BUFFER_SIZE, limit)));
 #endif
         if (bytes_read <= 0)
             return {};
