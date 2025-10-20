@@ -5,7 +5,7 @@ fetch_git(NAME InfiniTAM_ext
           TAG dc3c2841a6137c05cf0aef52f1d051c86f3f7b8b
 )
 set(ILLIXR_ROOT ${CMAKE_SOURCE_DIR}/include)
-configure_target(InfiniTAM_ext)
+configure_target(NAME InfiniTAM_ext)
 
 if(TARGET draco_static)
     add_dependencies(plugin.ada.infinitam${ILLIXR_BUILD_SUFFIX} draco_static)

@@ -11,7 +11,7 @@ if (NOT draco_illixr_FOUND)
               TAG 4dae9f429fa4c98aab907350de7e8d8c2c878817
     )
     set(DRACO_TRANSCODER_SUPPORTED ON)
-    configure_target(Draco_ILLIXR)
+    configure_target(NAME Draco_ILLIXR)
     unset(DRACO_TRANSCODER_SUPPORT)
     set(Draco_EXTERNAL Yes)      # Mark that this module is being built
 else()
