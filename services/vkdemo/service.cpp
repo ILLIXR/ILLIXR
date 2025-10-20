@@ -188,11 +188,11 @@ void vkdemo::create_descriptor_set_layout() {
     };
 
     VkDescriptorSetLayoutBinding sampled_image_layout_binding{
-        2,                                      // binding
-        VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,       // descriptorType
+        2,                                              // binding
+        VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,               // descriptorType
         static_cast<unsigned int>(texture_map_.size()), // descriptorCount
-        VK_SHADER_STAGE_FRAGMENT_BIT,           // stageFlags
-        nullptr                                 // pImmutableSamplers
+        VK_SHADER_STAGE_FRAGMENT_BIT,                   // stageFlags
+        nullptr                                         // pImmutableSamplers
     };
 
     VkDescriptorSetLayoutCreateInfo layout_info{
@@ -518,12 +518,13 @@ void vkdemo::image_layout_transition(VkImage image, [[maybe_unused]] VkFormat fo
         VK_QUEUE_FAMILY_IGNORED,                // dstQueueFamilyIndex
         image,                                  // image
         {
-            (new_layout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL) ? static_cast<VkImageAspectFlags>(VK_IMAGE_ASPECT_DEPTH_BIT)
-                                                                             : static_cast<VkImageAspectFlags>(VK_IMAGE_ASPECT_COLOR_BIT), // aspectMask
-            0,                                                                                            // baseMipLevel
-            1,                                                                                            // levelCount
-            0,                                                                                            // baseArrayLayer
-            1                                                                                             // layerCount
+            (new_layout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)
+                ? static_cast<VkImageAspectFlags>(VK_IMAGE_ASPECT_DEPTH_BIT)
+                : static_cast<VkImageAspectFlags>(VK_IMAGE_ASPECT_COLOR_BIT), // aspectMask
+            0,                                                                // baseMipLevel
+            1,                                                                // levelCount
+            0,                                                                // baseArrayLayer
+            1                                                                 // layerCount
         } // subresourceRange
     };
 

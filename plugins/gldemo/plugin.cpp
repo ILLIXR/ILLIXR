@@ -1,15 +1,14 @@
 #if defined(_WIN32) || defined(_WIN64)
-#include <windows.h>
+    #include <windows.h>
 #endif
 // clang-format off
 #include <GL/glew.h> // GLEW has to be loaded before other GL libraries
 // clang-format on
 
-#include "plugin.hpp"
-
 #include "illixr/error_util.hpp"
 #include "illixr/global_module_defs.hpp"
 #include "illixr/math_util.hpp"
+#include "plugin.hpp"
 
 #include <array>
 #include <chrono>
@@ -258,7 +257,7 @@ void gldemo::start() {
                               display_params::fov_y / 2.0f, display_params::fov_y / 2.0f, rendering_params::near_z,
                               rendering_params::far_z);
 
-    [[maybe_unused]] const bool gl_result_1 = 
+    [[maybe_unused]] const bool gl_result_1 =
 #if defined(_WIN32) || defined(_WIN64)
         static_cast<bool>(wglMakeCurrent(ext_window_->hdc_, ext_window_->context_));
 #else

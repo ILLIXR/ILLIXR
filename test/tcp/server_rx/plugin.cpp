@@ -32,7 +32,6 @@ void tcp_server_rx::_p_one_iteration() {
     }
 }
 
-
 void tcp_server_rx::receive_message(const input_proto::Vec3& vec) {
     spdlog::get("illixr")->info("Server Received {} {} {} {}", frame_count_, vec.x(), vec.y(), vec.z());
     frame_count_++;

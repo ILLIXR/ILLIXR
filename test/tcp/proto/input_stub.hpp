@@ -34,4 +34,4 @@ public:
         return "";
     }
 };
-}
+} // namespace input_proto

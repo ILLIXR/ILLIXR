@@ -20,12 +20,11 @@ public:
 private:
     void receive_message(const input_proto::Vec3& vec);
 
-    const std::shared_ptr<switchboard>    switchboard_;
-    const std::shared_ptr<relative_clock> clock_;
+    const std::shared_ptr<switchboard>                                    switchboard_;
+    const std::shared_ptr<relative_clock>                                 clock_;
     switchboard::buffered_reader<switchboard::event_wrapper<std::string>> reader_;
     std::string                                                           buffer_str_;
     unsigned int                                                          frame_count_ = 0;
-    const std::string delimiter_ = "EEND!";
-    
+    const std::string                                                     delimiter_   = "EEND!";
 };
-}
+} // namespace ILLIXR

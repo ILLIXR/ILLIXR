@@ -3,9 +3,9 @@
 #include "error_util.hpp"
 
 #if defined(_WIN32) || defined(_WIN64)
-#include <Windows.h>
+    #include <Windows.h>
 #else
-#include <dlfcn.h>
+    #include <dlfcn.h>
 #endif
 #include <functional>
 #include <iostream>
@@ -61,8 +61,7 @@ public:
         if (!handle) {
             DWORD error = GetLastError();
             spdlog::get("illixr")->error(error);
-            throw std::runtime_error("LoadLibrary(\"" + std::string{path} +
-                                     "\"): " + std::to_string(error));
+            throw std::runtime_error("LoadLibrary(\"" + std::string{path} + "\"): " + std::to_string(error));
         }
 #else
         // dlopen man page says that it can set errno sp
@@ -76,14 +75,14 @@ public:
                                      "\"): " + (error == nullptr ? "NULL" : std::string{error})};
         }
 #endif
-        return dynamic_lib{
+        return dynamic_lib {
             void_ptr{handle,
                      [](void* handle) {
                          RAC_ERRNO();
 #if defined(_WIN32) || defined(_WIN64)
                          int ret = FreeLibrary(static_cast<HMODULE>(handle));
                          if (ret == 0) {
-                             DWORD error = GetLastError();
+                             DWORD             error = GetLastError();
                              const std::string msg_error{"dlclose(): " + std::to_string(error)};
 
 #else
@@ -96,7 +95,9 @@ public:
                              throw std::runtime_error{msg_error};
                          }
                      }},
-            std::string{path} /// Keep the dynamic lib name for debugging
+                std::string {
+                path
+            } /// Keep the dynamic lib name for debugging
         };
     }
 

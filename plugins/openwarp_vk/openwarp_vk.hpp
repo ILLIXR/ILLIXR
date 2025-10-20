@@ -8,7 +8,7 @@
 #include "illixr/vk/render_pass.hpp"
 
 #if defined(_WIN32) || defined(_WIN64)
-#include <windows.h>
+    #include <windows.h>
 #endif
 
 #define GLM_FORCE_RADIANS

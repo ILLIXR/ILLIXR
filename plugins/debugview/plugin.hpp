@@ -3,7 +3,7 @@
 #include <eigen3/Eigen/Core>
 #include <eigen3/Eigen/Geometry>
 #if defined(_WIN32) || defined(_WIN64)
-#include <windows.h>
+    #include <windows.h>
 #endif
 
 // clang-format off

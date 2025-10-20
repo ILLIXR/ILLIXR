@@ -13,8 +13,8 @@
 #include <cstdlib>
 #include <iostream>
 #ifdef __linux__
-#include <pwd.h>
-#include <unistd.h>
+    #include <pwd.h>
+    #include <unistd.h>
 #endif
 #include <sstream>
 #include <stdexcept>
@@ -223,19 +223,19 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
         /// Enable using the ILLIXR_ENABLE_PRE_SLEEP environment variable (see 'runner/runner/main.py:load_tests')
         const bool enable_pre_sleep = switchboard_->get_env_bool("ILLIXR_ENABLE_PRE_SLEEP", "False");
         if (enable_pre_sleep) {
-#if defined(_WIN32) || defined(_WIN64)
+    #if defined(_WIN32) || defined(_WIN64)
             DWORD pid = GetCurrentProcessId();
-#else
+    #else
             const pid_t pid = getpid();
-#endif
+    #endif
             spdlog::get("illixr")->info("[main] Pre-sleep enabled.");
             spdlog::get("illixr")->info("[main] PID: {}", pid);
             spdlog::get("illixr")->info("[main] Sleeping for {} seconds...", ILLIXR_PRE_SLEEP_DURATION);
-#if defined(_WIN32) || defined(_WIN64)
+    #if defined(_WIN32) || defined(_WIN64)
             Sleep(ILLIXR_PRE_SLEEP_DURATION * 1000);
-#else
+    #else
             sleep(ILLIXR_PRE_SLEEP_DURATION);
-#endif
+    #endif
             spdlog::get("illixr")->info("[main] Resuming...");
         }
 #endif /// NDEBUG

@@ -10,7 +10,7 @@
 namespace output_proto {
 class Quat {
 public:
-    void set_w(double) {}
+    void set_w(double) { }
 
     void set_x(double) { }
 
@@ -37,9 +37,9 @@ public:
 
 class Rot {
 public:
-    void set_theta(double) {}
+    void set_theta(double) { }
 
-    void set_rho(double) {}
+    void set_rho(double) { }
 
     double theta() const {
         return 0;
@@ -60,9 +60,9 @@ public:
         return {};
     }
 
-    void set_allocated_rotation(Rot*) {}
+    void set_allocated_rotation(Rot*) { }
 
-    void set_allocated_quat(Quat*) {}
+    void set_allocated_quat(Quat*) { }
 
     bool ParseFromString(std::string) {
         return {};
@@ -73,4 +73,4 @@ public:
     }
 };
 
-}
+} // namespace output_proto

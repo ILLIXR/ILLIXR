@@ -14,16 +14,16 @@
 #include <utility>
 
 #if defined(_WIN32) || defined(_WIN64)
-#include <Windows.h>
-#include <time.h>
-#include <atomic>
-#include <cstdlib>
-#ifndef CLOCK_MONOTONIC
-#define CLOCK_MONOTINIC 1
-#endif
-#ifndef CLOCK_THREAD_CPUTIME_ID
-#define CLOCK_THREAD_CPUTIME_ID 3
-#endif
+    #include <atomic>
+    #include <cstdlib>
+    #include <time.h>
+    #include <Windows.h>
+    #ifndef CLOCK_MONOTONIC
+        #define CLOCK_MONOTINIC 1
+    #endif
+    #ifndef CLOCK_THREAD_CPUTIME_ID
+        #define CLOCK_THREAD_CPUTIME_ID 3
+    #endif
 
 typedef int clockid_t;
 
@@ -52,10 +52,10 @@ static int illixr_clock_gettime(clockid_t clock_id, timespec* ts) {
             return -1;
 
         ULARGE_INTEGER ktime, utime;
-        ktime.LowPart = kernel_time.dwLowDateTime;
+        ktime.LowPart  = kernel_time.dwLowDateTime;
         ktime.HighPart = kernel_time.dwHighDateTime;
 
-        utime.LowPart = user_time.dwLowDateTime;
+        utime.LowPart  = user_time.dwLowDateTime;
         utime.HighPart = user_time.dwHighDateTime;
 
         uint64_t total_time_100ns = ktime.QuadPart + utime.QuadPart;
@@ -84,12 +84,12 @@ static inline std::chrono::nanoseconds cpp_clock_get_time(clockid_t clock_id) {
     RAC_ERRNO_MSG("cpu_timer before clock_get_time");
 #if defined(_WIN32) || defined(_WIN64)
     _ReadWriteBarrier();
-    #else
+#else
     asm volatile(""
                  : /* OutputOperands */
                  : /* InputOperands */
                  : "memory" /* Clobbers */);
-    #endif
+#endif
 
     if (clock_gettime(clock_id, &time_spec)) {
         throw std::runtime_error{std::string{"clock_get_time returned "} + strerror(errno)};

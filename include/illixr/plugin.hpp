@@ -135,10 +135,10 @@ protected:
     std::shared_ptr<spdlog::logger>      plugin_logger_;
 };
 
-#define PLUGIN_MAIN(PLUGIN_CLASS)                           \
+#define PLUGIN_MAIN(PLUGIN_CLASS)                                         \
     extern "C" MY_EXPORT_API plugin* this_plugin_factory(phonebook* pb) { \
-        auto* obj = new PLUGIN_CLASS{#PLUGIN_CLASS, pb};    \
-        return obj;                                         \
+        auto* obj = new PLUGIN_CLASS{#PLUGIN_CLASS, pb};                  \
+        return obj;                                                       \
     }
 
 } // namespace ILLIXR
