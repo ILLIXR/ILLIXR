@@ -1,4 +1,4 @@
-#include "video_decoder.hpp"
+#include "illixr/video_decoder.hpp"
 
 using namespace ILLIXR;
 

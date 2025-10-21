@@ -94,7 +94,7 @@ if(UNIX)
     list(REVERSE LINK_LIBS)
 
     add_library(video_encoder_ada OBJECT
-                video_encoder.hpp
+                ${CMAKE_SOURCE_DIR}/include/illixr/video_encoder.hpp
                 video_encoder.cpp
     )
 
@@ -111,7 +111,7 @@ if(UNIX)
     target_compile_definitions(video_encoder_ada PUBLIC ADA)
 
     add_library(video_decoder_ada OBJECT
-                video_decoder.hpp
+                ${CMAKE_SOURCE_DIR}/include/illixr/video_decoder.hpp
                 video_decoder.cpp
     )
 
@@ -128,7 +128,7 @@ if(UNIX)
 
 
     add_library(video_encoder_vio OBJECT
-                video_encoder.hpp
+                ${CMAKE_SOURCE_DIR}/include/illixr/video_encoder.hpp
                 video_encoder.cpp
     )
 
@@ -145,7 +145,7 @@ if(UNIX)
     target_compile_definitions(video_encoder_vio PUBLIC VIO)
 
     add_library(video_decoder_vio OBJECT
-                video_decoder.hpp
+                ${CMAKE_SOURCE_DIR}/include/illixr/video_decoder.hpp
                 video_decoder.cpp
     )
 
