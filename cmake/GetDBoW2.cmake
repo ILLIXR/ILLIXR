@@ -4,16 +4,18 @@
 find_package(DBoW2_OS3 QUIET)
 list(APPEND EXTERNAL_PROJECTS DBoW2_OS3)
 
+set(DBOW_CMAKE_ARGS "")
+
 if(DBoW2_OS3_LIBRARIES)
     set(DBoW2_VERSION "OS3" PARENT_SCOPE)   # set current version (no known version in this case)
 else()
-    if(WIN32 OR MSVC)
-        message(FATAL_ERROR "DBoW2 should be installed with vcpkg")
-    endif()
-    fetch_git(NAME DBoW2_OS3
-              REPO https://github.com/ILLIXR/DBoW2_OS3.git
-              TAG 3cb52aa1162cd07354f75512454b0dea75cce7c1
+    EXTERNALPROJECT_ADD(DBoW2_OS3
+                        GIT_REPOSITORY https://github.com/ILLIXR/DBoW2_OS3.git # Git repo for source code
+                        GIT_TAG 3cb52aa1162cd07354f75512454b0dea75cce7c1       # sha5 hash for specific commit to pull (if there is no specific tag to use)
+                        PREFIX ${CMAKE_BINARY_DIR}/_deps/DBoW2_OS3             # the build directory
+                        #arguments to pass to CMake
+                        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=Release ${DBOW_CMAKE_ARGS}  -DCMAKE_POLICY_VERSION_MINIMUM=3.5
     )
-    configure_target(NAME DBoW2_OS3)
+    set(DBoW2_DEP_STR "DBoW2_OS3")   # Dependency string for other modules that depend on this one
+    set(DBoW2_EXTERNAL Yes)      # Mark that this module is being built
 endif()
-set(EXTERNAL_PROJECTS ${EXTERNAL_PROJECTS} PARENT_SCOPE)
