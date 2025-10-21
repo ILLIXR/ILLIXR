@@ -94,8 +94,8 @@ void gldemo::_p_thread_setup() {
 
     // Note: glXMakeContextCurrent must be called from the thread which will be using it.
 #if defined(_WIN32) || defined(_WIN64)
-    HGLRC                ctx = wglGetCurrentContext();
-    HDC                  dcx = wglGetCurrentDC();
+    HGLRC ctx = wglGetCurrentContext();
+    HDC   dcx = wglGetCurrentDC();
 #endif
     [[maybe_unused]] int gl_result =
 #if defined(_WIN32) || defined(_WIN64)
