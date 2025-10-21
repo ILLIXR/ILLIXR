@@ -374,7 +374,7 @@ If you want to add your own plugin, see [Writing Your Plugin][I11].
          document.getElementById("offload_vio.device_rx").checked ||
           document.getElementById("offload_vio.server_tx").checked ||
            document.getElementById("offload_vio.server_rx").checked)) {
-            pkgnotes += "<P><br>For the offload_vio plugins it is strongly recommended to install DeepStream. Please see the installation instructions <a href=\"https://docs.nvidia.com/metropolis/deepstream/dev-guide/text/DS_Installation.html#dgpu-setup-for-ubuntu">here</a>.";
+            pkgnotes += "<P><br>For the offload_vio plugins it is strongly recommended to install DeepStream. Please see the installation instructions <a href=\"https://docs.nvidia.com/metropolis/deepstream/dev-guide/text/DS_Installation.html#dgpu-setup-for-ubuntu\">here</a>.";
         }
 
         depinstall.innerHTML = pkgnotes;

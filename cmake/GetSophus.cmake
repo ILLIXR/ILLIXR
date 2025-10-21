@@ -10,7 +10,7 @@ if (NOT Sophus_FOUND)
             GIT_TAG 1.22.10                                         # sha5 hash for specific commit to pull (if there is no specific tag to use)
             PREFIX ${CMAKE_BINARY_DIR}/_deps/Sophus                 # the build directory
             # arguments to pass to CMake
-            CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_CXX_FLAGS="-L${CMAKE_INSTALL_PREFIX}/lib" -DCMAKE_BUILD_TYPE=Release -DBUILD_SOPHUS_TESTS=OFF -DBUILD_SOPHUS_EXAMPLES=OFF -DCMAKE_INSTALL_LIBDIR=lib -DCMAKE_CXX_COMPILER=${CLANG_CXX_EXE} -DCMAKE_C_COMPILER=${CLANG_EXE}
+            CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_CXX_FLAGS="-L${CMAKE_INSTALL_PREFIX}/lib" -DCMAKE_BUILD_TYPE=Release -DBUILD_SOPHUS_TESTS=OFF -DBUILD_SOPHUS_EXAMPLES=OFF -DCMAKE_INSTALL_LIBDIR=lib -DCMAKE_CXX_COMPILER=${CLANG_CXX_EXE} -DCMAKE_C_COMPILER=${CLANG_EXE} -DCMAKE_POLICY_VERSION_MINIMUM=3.5
             )
     # set variables for use by modules that depend on this one
     set(Sophus_DEP_STR "Sophus")   # Dependency string for other modules that depend on this one
