@@ -3,15 +3,20 @@
 ILLIXR is configured and built via CMake. The CMake system checks for required dependencies,
 builds each requested plugin, builds the main ILLIXR binary, and (optionally) installs these components.
 
-ILLIXR currently only builds on Linux systems, and has been tested on the following configurations:
+ILLIXR currently builds on Linux and Windows systems, and has been tested on the following configurations:
 
 - Ubuntu
     - 22.04
     - 24.04
 - Fedora[^1]
     - 38+
+- Windows[^2]
+    - 11
 
 [^1]: Primary development is aimed at Ubuntu systems, full support for Fedora may require extra work on the users part.
+
+[^2]: At the current time only a subset of plugins are available for Windows. More will be added in the future.
+
 
 Other versions of these operating systems may work, but will likely require some manual installation of dependencies.
 For other Linux distributions (e.g. RHEL) it will require significant manual installation of dependencies as many
@@ -34,48 +39,57 @@ required only for specific plugins.
 
 #### Select your operating system and version
 
-<table id="operating_system" style="border-spacing: 20px; border: 1px solid black;"></table>
+=== "Linux"
 
-ILLIXR may compile with other versions of the above operating systems, but some of the necessary prerequisite packages are not supplied by the OS repos and will need to be compiled by hand. You should be able to use the package and cmake commands for other versions of the same OS (other than the missing packages) to compile ILLIXR. RHEL is not supported at this time as many of the prerequisite packages are not natively available. You will also need to have a C++ compiler
-installed as well as a generator (make, ninja, etc.) and CMake 3.24 or newer (installation is os dependent). We recommend the [clang](https://clang.llvm.org/) compiler, as some plugin dependencies require it to build.
+    <table id="operating_system" style="border-spacing: 20px; border: 1px solid black;"></table>
+
+    ILLIXR may compile with other versions of the above operating systems, but some of the necessary prerequisite packages are not supplied by the OS repos and will need to be compiled by hand. You should be able to use the package and cmake commands for other versions of the same OS (other than the missing packages) to compile ILLIXR. RHEL is not supported at this time as many of the prerequisite packages are not natively available. You will also need to have a C++ compiler installed as well as a generator (make, ninja, etc.) and CMake 3.24 or newer (installation is os dependent). We recommend the [clang](https://clang.llvm.org/) compiler, as some plugin dependencies require it to build.
+
+=== "Windows"
+
+    Currently the Windows build has been tested using Microsoft Visual Studio. Most of the dependencies will automatiaclly install using vcpkg, but there are a few you will need to manually install beforehand:
+
+    - [Microsoft Visual Studio](https://visualstudio.microsoft.com/) we tested version 17.14.13
+    - [Git](https://git-scm.com/)
+    - [CMake](https://cmake.org/download/) version 3.24 or newer
+    - [vcpkg](https://learn.microsoft.com/en-us/vcpkg/get_started/get-started-vs?pivots=shell-powershell) you will only need to do step 1 "Set up vcpkg"
 
 #### Pick the ILLIXR plugins you want to use
 
-<table id="profile_table" style="border-spacing: 8px; border: 1px solid black;"></table>
-<table id="listing_table" style="border-spacing: 8px; border: 1px solid black;"></table>
+=== "Linux"
 
-<table style="border-spacing: 20px; border: 1px solid black;">
-    <tr><td>Include virtualization support: <input type="checkbox" id="withVirt" onclick="updateChecked();"><br>See <a class="reference internal" href="../virtualization/">ILLIXR Under Virtualization</a> for details.</td></tr>
-</table>
+    <table id="profile_table" style="border-spacing: 8px; border: 1px solid black;"></table>
+    <table id="listing_table" style="border-spacing: 8px; border: 1px solid black;"></table>
 
-<div id="notes"></div>
+    <table style="border-spacing: 20px; border: 1px solid black;">
+        <tr><td>Include virtualization support: <input type="checkbox" id="withVirt" onclick="updateChecked();"><br>See <a class="reference internal" href="../virtualization/">ILLIXR Under Virtualization</a> for details.</td></tr>
+    </table>
 
-Use the following to install the dependencies for the selected plugins:
+    <div id="notes"></div>
 
-<div class="code-box-copy">
+    Use the following to install the dependencies for the selected plugins:
 
-    <button class="code-box-copy__btn" data-clipboard-target="#output" title="Copy"></button>
-    <pre class="language-shell" id="output" style="white-space:pre-wrap;"></pre>
+    <div class="code-box-copy">
 
-</div>
+        <button class="code-box-copy__btn" data-clipboard-target="#output" title="Copy"></button>
+        <pre class="language-shell" id="output" style="white-space:pre-wrap;"></pre>
 
-<div id="depinstall">
-</div>
+    </div>
+
+    <div id="depinstall">
+    </div>
 
 
-<div id="postnotes">
-</div>
+    <div id="postnotes">
+    </div>
+
+=== "Windows"
+
+    <table id="listing_table_windows" style="border-spacing: 8px; border: 1px solid black;"></table>
 
 <br>
 
 #### Build command
-
-Use the following to build and install ILLIXR. You can specify the install location by giving the path to `CMAKE_INSTALL_PREFIX`.
-If you want the default install path then do not add the option to the command line.
-
-!!! warning
-
-    If your install prefix requires sudo privileges then you will need to run both the build and install under sudo (this is due to the way cmake builds and installs some of the pre-packaged dependencies during the build phase).
 
 Some ILLIXR plugins rely on code that falls under the <a href="https://opensource.org/license/gpl-3-0">GNU General Public License (GPL) v3.0</a>
 or <a href="https://opensource.org/license/lgpl-2-1">GNU Lesser General Public License (LGPL) v2.1</a>. If you do not wish to build
@@ -85,36 +99,88 @@ the same for NO_GPL).
 <input type="checkbox" onclick="updateGPL();" id="no_gpl">No GPL code<br>
 <input type="checkbox" onclick="updateLGPL();" id="no_lgpl">No LGPL code
 
-<div id="cmake" class="code-box-copy">
-    <button class="code-box-copy__btn" data-clipboard-target="#cmakeoutput" title="Copy"></button>
-    <pre class="language-shell" id="cmakeoutput"></pre>
-</div>
+=== "Linux"
 
-Common CMake command line arguments (always prepend with a `-D`):
+    Use the following to build and install ILLIXR. You can specify the install location by giving the path to `CMAKE_INSTALL_PREFIX`.
+    If you want the default install path then do not add the option to the command line.
 
--  ***CMAKE_INSTALL_PREFIX***
-   The root path to install the libraries and binary to. This defaults to `/usr/local`.
--  ***CMAKE_BUILD_TYPE***
-   The build type to do: Debug, Release, RelWithDebInfo
--  ***YAML_FILE***
-   The [_profile_][G23] file of [plugins][G22] to build and install. The default is None, meaning plugins should be specified individually on the command line.
--  ***USE_&lt;PLUGIN_NAME&gt;=ON***
-   Build the specifically named [plugin][G22] (e.g `-DUSE_TIMEWARP_VK=ON` to build the timewarp_vk [plugin][G22]). Any number of [plugins][G22] can be specified on the command line in this fashion.
--  ***BUILD_DOCS***
-   Set to `ON` to enable building the documentation.
+    !!! warning
+
+        If your install prefix requires sudo privileges then you will need to run both the build and install under sudo (this is due to the way cmake builds and installs some of the pre-packaged dependencies during the build phase).
+
+    <div id="cmake" class="code-box-copy">
+        <button class="code-box-copy__btn" data-clipboard-target="#cmakeoutput" title="Copy"></button>
+        <pre class="language-shell" id="cmakeoutput"></pre>
+    </div>
+
+    Common CMake command line arguments (always prepend with a `-D`):
+
+    -  ***CMAKE_INSTALL_PREFIX***
+       The root path to install the libraries and binary to. This defaults to `/usr/local`.
+    -  ***CMAKE_BUILD_TYPE***
+       The build type to do: Debug, Release, RelWithDebInfo
+    -  ***YAML_FILE***
+       The [_profile_][G23] file of [plugins][G22] to build and install. The default is None, meaning plugins should be specified individually on the command line.
+    -  ***USE_&lt;PLUGIN_NAME&gt;=ON***
+       Build the specifically named [plugin][G22] (e.g `-DUSE_TIMEWARP_VK=ON` to build the timewarp_vk [plugin][G22]). Any number of [plugins][G22] can be specified on the command line in this fashion.
+    -  ***BUILD_DOCS***
+       Set to `ON` to enable building the documentation.
+
+=== "Windows"
+
+    To configure and build in Visual Studio, open the `CMakeSettings.json` file, or create one if it does not exist. Double clicking the file from the `Solution Explorer` will open it in an input mode, rather then a raw file. You will want to make sure the following entries are set:
+
+    -  ***Configuration type***
+       Pick the built type you want (`Debug`, `Release`, etc)
+    -  ***Toolset***
+       You will want it to match your machine architecture (e.g. `msvc_x64_x64`)
+    -  ***CMake toolchain file***
+       This should point to the CMake toolchain file provided by vcpkg, you may have to look around for it (e.g. `D:/Program Files/Microsoft Visual Studio/2022/Community/VC/vcpkg/scripts/buildsystems/vcpkg.cmake`)
+    -  ***CMake command arguments***
+       Here you should specify any arguments to be passed. Common ones are:
+
+        - ***YAML_FILE***
+           The [_profile_][G23] file of [plugins][G22] to build and install. The default is None, meaning plugins should be specified individually on the command line.
+        -  ***USE_&lt;PLUGIN_NAME&gt;=ON***
+           Build the specifically named [plugin][G22] (e.g `-DUSE_TIMEWARP_VK=ON` to build the timewarp_vk [plugin][G22]). Any number of [plugins][G22] can be specified on the command line in this fashion.
+        -  ***BUILD_DOCS***
+           Set to `ON` to enable building the documentation.
+
+    Baes on yout selection above, use the following as the basis for your ***CMake command arguments**
+
+    <div id="cmake_config" class="code-box-copy">
+        <button class="code-box-copy__btn" data-clipboard-target="#cmakeconfigoutput" title="Copy"></button>
+        <pre class="language-shell" id="cmakeoutput"></pre>
+    </div>
 
 !!! note "Documentation Prerequisites"
 
     Building the documentation requires [Doxygen][E14] and [mkdocs][E15](>= v1.5) to be installed, both of which are typically available from OS packages. Additionally, we utilize the [material][E16], [mkdocs-material-extensions][E19], [mkdocs-get-deps][E20], [mkdocs-include-markdown-plugin][E21], [PyMdown][E17], [Pygments][E18], [mkdoxy][E22], and [mkdocs-glightbox][E23] python packages, which can be installed via [pip][E24] using `docs/requirements.txt`.
 
 An alternate to specifying the plugins as command line arguments is to create a [_YAML_][G12] file which specifies the
-plugins to build. Using `-DYAML_FILE=&lt;FILE_NAME&gt;` as the command line argument specifying the [_YAML_][G12] file to use.
+plugins to build. Using `-DYAML_FILE=<FILE_NAME>` as the command line argument specifying the [_YAML_][G12] file to use.
 
 !!! note "You may need to specify the full path to the YAML_FILE"
 
     See [profile][G23] for the format.
 
-The current list of plugins is: @FULL_PLUGIN_LIST_STRING@
+The current list of plugins is:
+
+=== "Linux"
+
+    @FULL_PLUGIN_LIST_STRING@
+
+=== "Windows"
+
+    - native_renderer
+    - offline_cam
+    - offline_imu
+    - passthrough_integrator
+    - pose_lookup
+    - tcp_network_backend
+    - timewarp_vk
+    - timewarp_vk.monado
+    - vkdemo
 
 The CMake process will also create a [_YAML_][G12] file call `illixr.yaml` which can be used as input to the binary.
 
@@ -125,7 +191,7 @@ an infix specifying the build type, for `Debug` use `dbg`, for `Release` use `op
 
 - -p,--plugins=<>, comma separated list of plugins to use (case sensitive, all lowercase, no spaces)
 - -y,--yaml=<>, the [profile][G23] file to use which specifies some or all of the above arguments (e.g. the generated `illixr.yaml`)
-- --<ANY ENVIRONMENT VARIABLE NAME>, you can specify any variable the ILLIXR uses on the command line. Common ones are:
+- --&lt;ANY ENVIRONMENT VARIABLE NAME&gt;, you can specify any variable the ILLIXR uses on the command line. Common ones are:
   - --duration=<>, the duration to run for in seconds (default is 60)
   - --data=<>, the data file to use
   - --demo_data=<>, the demo data to use
@@ -135,9 +201,9 @@ an infix specifying the build type, for `Debug` use `dbg`, for `Release` use `op
   - --enable_pre_sleep, force ILLIXR to sleep for the given number of seconds before starting the plugins (this is useful for attaching a debugger)
 
 Regarding parameters for the binary, the following priority will be used:
-1. If the parameter is specified on the command line it will have the highest priority
-2. If the parameter has a value in the yaml file this value will only be used if it is not specified on the command line (second priority)
-3. If the parameter has a value as an environment variable this value will only be used if it is not specified on the command line nor yaml file
+1. If the parameter is specified on the command line, it will have the highest priority
+2. If the parameter has a value in the yaml file, this value will only be used if it is not specified on the command line (second priority)
+3. If the parameter has a value as an environment variable, this value will only be used if it is not specified on the command line nor yaml file
 
 Please refer to the [display backend][I12] for instructions on setting display-related environment variables.
 
@@ -170,9 +236,9 @@ Where the entries are defined as (* indicates required field):
 - install_prefix
 : The root path to where the compiled libraries and binaries should be installed. (e.g. specifying /home/user will install libraries in /home/user/lib and binaries in /home/user/bin).
 
-  !!! note
+    !!! note
 
-      The prefix is also used for installing any packages that were downloaded and build from external repositories (e.g. DBoW2, GTSAM, etc). At runtime this path is added to *LD_LIBRARY_PATH* to aid in finding the plugin libraries.
+        The prefix is also used for installing any packages that were downloaded and build from external repositories (e.g. DBoW2, GTSAM, etc). At runtime this path is added to *LD_LIBRARY_PATH* to aid in finding the plugin libraries.
 
 - env_vars
 : environment variables to use, any environment variable ILLIXR uses can be set here and will be valid during program execution.
@@ -214,7 +280,7 @@ Here, the keywords `plugins` and `enable_offload` are ignored, as they are expec
 : The duration to run ILLIXR for in seconds.
 
 - data
-: Path to the data file to download (build step) or use at runtime. If a URL is given (must start with http or https) the file will be downloaded and extracted; the path to the extracted data will be put in the illixr.yaml file.
+: Path to the data file to download (build step) or use at runtime. If a URL is given (must start with http or https), the file will be downloaded and extracted; the path to the extracted data will be put in the illixr.yaml file.
 
 - demo_data
 : The path to the demonstration data to use at runtime (ignored by build steps)
@@ -288,137 +354,163 @@ If you want to add your own plugin, see [Writing Your Plugin][I11].
     const plugs = {};
     const operatingSystems = {};
     const profiles = [];
-    var selectedOS = "";
+    let selectedOS = "";
     const plugins = new Set();
+    const plugins_windows = new Set();
+    let windows_build = false;
     const module_json = @MODULE_JSON@;
 
     function makeCopyable(code, name) {
         return "<div class=\"code-box-copy\">\n<button class=\"code-box-copy__btn\" data-clipboard-target=\"#" + name + "\" title=\"Copy\">\n</button>\n<pre class=\"language-shell\" id=\"" + name + "\">" + code + "</pre>\n</div>\n";
     }
 
-    function loadModules(){
-        for(let os of module_json["systems"]) {
+    function loadModules() {
+        for (let os of module_json["systems"]) {
             operatingSystems[os.name] = os.versions;
         }
 
-        for(let item of module_json["dependencies"]) {
+        for (let item of module_json["dependencies"]) {
             let nm = "";
-            for(let i in item){
+            for (let i in item) {
                 nm = i;
             }
-            dependencies[nm] = {'pkg': item[nm].pkg,
-                'plugins' : []};
+            dependencies[nm] = {
+                'pkg': item[nm].pkg,
+                'plugins': []
+            };
         }
-        for(let item of module_json["plugins"]) {
+        for (let item of module_json["plugins"]) {
             plugins.add(item.name);
             plugs[item.name] = item.cmake_flag;
-            for(let dep of item.dependencies) {
+            for (let dep of item.dependencies) {
                 dependencies[dep].plugins.push(item.name);
             }
+            if (item.OS.includes("windows")) {
+                plugins_windows.add(item.name);
+            }
         }
-        for(let grp of module_json["profiles"]) {
+        for (let grp of module_json["profiles"]) {
             profiles.push(grp.name);
             profiles[grp.name] = [];
-            for(let plug of grp.plugins) {
+            for (let plug of grp.plugins) {
                 profiles[grp.name].push(plug);
             }
         }
     }
 
     function updateSudo() {
-        let sudoLine = "";
-        let notes = document.getElementById("notes");
-        let pkgnotes = "";
-        let pkginfo = "";
-        let postnotes = document.getElementById("postnotes");
-        let depinstall = document.getElementById("depinstall");
-
-        notes.innerHTML = "";
-
-        if(selectedOS == "Ubuntu") {
-            sudoLine = "sudo apt-get install libglew-dev libglu1-mesa-dev libsqlite3-dev libx11-dev libgl-dev pkg-config libopencv-dev libeigen3-dev libc6-dev libspdlog-dev libboost-all-dev git cmake cmake-data";
-            postnotes.innerHTML = "";
-        } else {
-            sudoLine = "sudo dnf install glew-devel mesa-libGLU-devel sqlite-devel libX11-devel mesa-libGL-devel pkgconf-pkg-config opencv-devel eigen3-devel glibc-devel spdlog-devel boost-devel git cmake cmake-data";
-            postnotes.innerHTML = "Potential issues:<ul><li>If cmake is having trouble with some of the package-config (.pc) files used to locate packages you may need to run the following:" + makeCopyable("sudo sed -i 's/\^\[ \\t\]\*//g' /usr/lib64/pkgconfig/*", "postF") + "</li><li>If the build step is having issues finding some of the include files you may need the following:" + makeCopyable("sudo ln -s /usr/include /include", "post2F") + "</li></ul>";
-        }
-
-        for(let m in dependencies) {
-            let checked = false;
-            for(let p of dependencies[m].plugins) {
-                checked ||= document.getElementById(p).checked;
-            }
-            if(checked) {
-                sudoLine += " " + dependencies[m].pkg[selectedOS].pkg;
-                if(dependencies[m].pkg[selectedOS].postnotes !== "") {
-                    pkgnotes += "<P>" + dependencies[m].pkg[selectedOS].postnotes;
-                }
-                if(dependencies[m].pkg[selectedOS].notes !== "") {
-                    if(pkginfo !== "") {
-                        pkginfo += "<P>";
-                    }
-                    pkginfo +=  dependencies[m].pkg[selectedOS].notes;
-                }
-            }
-        }
-
-        if(document.getElementById("withVirt").checked) {
-            sudoLine += " " + dependencies["qemu"].pkg[selectedOS].pkg;
-        }
-
-        if(pkginfo !== "") {
-            notes.innerHTML = "<h3>Notes:</h3>" + pkginfo;
-        }
-
-        if(selectedOS == "Ubuntu" && (document.getElementById("offload_vio.device_tx").checked ||
-         document.getElementById("offload_vio.device_rx").checked ||
-          document.getElementById("offload_vio.server_tx").checked ||
-           document.getElementById("offload_vio.server_rx").checked)) {
-            pkgnotes += "<P><br>For the offload_vio plugins it is strongly recommended to install DeepStream. Please see the installation instructions <a href=\"https://docs.nvidia.com/metropolis/deepstream/dev-guide/text/DS_Installation.html#dgpu-setup-for-ubuntu">here</a>.";
-        }
-
-        depinstall.innerHTML = pkgnotes;
-
-        document.getElementById("output").innerHTML = sudoLine;
-
-        cmakeLine = "cd ILLIXR\nmkdir build\ncd build\ncmake .. -DCMAKE_INSTALL_PREFIX=&lt;LOCATION&gt;";
-        let profile_check = false;
-
-        for(let g of profiles) {
-            if(document.getElementById("profile_" + g).checked) {
-                cmakeLine += " -DYAML_FILE=profiles/" + g.toLowerCase() + ".yaml";
-                profile_check = true;
-                break;
-            }
-        }
-
-        if(!profile_check) {
-            for(let p of plugins) {
-                if(document.getElementById(p).checked) {
+        let cmakeLine;
+        if (windows_build) {
+            cmakeLine = "";
+            for (let p of plugins_windows) {
+                if (document.getElementById(p + "_win").checked) {
                     cmakeLine += " -D" + plugs[p];
                 }
             }
-        }
-        if(document.getElementById("no_gpl").checked) {
-            cmakeLine += " -DNO_GPL=ON";
-            if(document.getElementById("no_lgpl").checked) {
-                cmakeLine += " -DNO_LGPL=ON";
+            if (document.getElementById("no_gpl").checked) {
+                cmakeLine += " -DNO_GPL=ON";
+                if (document.getElementById("no_lgpl").checked) {
+                    cmakeLine += " -DNO_LGPL=ON";
+                }
             }
+
+            document.getElementById("cmake_config").innerHTML = makeCopyable(cmakeLine, "cmakeConfig");
+
+        } else {
+            let sudoLine = "";
+            let notes = document.getElementById("notes");
+            let pkgnotes = "";
+            let pkginfo = "";
+            let postnotes = document.getElementById("postnotes");
+            let depinstall = document.getElementById("depinstall");
+
+            notes.innerHTML = "";
+
+            if (selectedOS === "Ubuntu") {
+                sudoLine = "sudo apt-get install libglew-dev libglu1-mesa-dev libsqlite3-dev libx11-dev libgl-dev pkg-config libopencv-dev libeigen3-dev libc6-dev libspdlog-dev libboost-all-dev git cmake cmake-data";
+                postnotes.innerHTML = "";
+            } else {
+                sudoLine = "sudo dnf install glew-devel mesa-libGLU-devel sqlite-devel libX11-devel mesa-libGL-devel pkgconf-pkg-config opencv-devel eigen3-devel glibc-devel spdlog-devel boost-devel git cmake cmake-data";
+                postnotes.innerHTML = "Potential issues:<ul><li>If cmake is having trouble with some of the <package-confi></package-confi>g (.pc) files used to locate packages you may need to run the following:" + makeCopyable("sudo sed -i 's/\^\[ \\t\]\*//g' /usr/lib64/pkgconfig/*", "postF") + "</li><li>If the build step is having issues finding some of the include files, you may need the following:" + makeCopyable("sudo ln -s /usr/include /include", "post2F") + "</li></ul>";
+            }
+
+            for (let m in dependencies) {
+                let checked = false;
+                for (let p of dependencies[m].plugins) {
+                    checked ||= document.getElementById(p).checked;
+                }
+                if (checked) {
+                    sudoLine += " " + dependencies[m].pkg[selectedOS].pkg;
+                    if (dependencies[m].pkg[selectedOS].postnotes !== "") {
+                        pkgnotes += "<P>" + dependencies[m].pkg[selectedOS].postnotes;
+                    }
+                    if (dependencies[m].pkg[selectedOS].notes !== "") {
+                        if (pkginfo !== "") {
+                            pkginfo += "<P>";
+                        }
+                        pkginfo += dependencies[m].pkg[selectedOS].notes;
+                    }
+                }
+            }
+
+            if (document.getElementById("withVirt").checked) {
+                sudoLine += " " + dependencies["qemu"].pkg[selectedOS].pkg;
+            }
+
+            if (pkginfo !== "") {
+                notes.innerHTML = "<h3>Notes:</h3>" + pkginfo;
+            }
+
+            if (selectedOS === "Ubuntu" && (document.getElementById("offload_vio.device_tx").checked ||
+                document.getElementById("offload_vio.device_rx").checked ||
+                document.getElementById("offload_vio.server_tx").checked ||
+                document.getElementById("offload_vio.server_rx").checked)) {
+                pkgnotes += "<P><br>For the offload_vio plugins, it is strongly recommended to install DeepStream. Please see the installation instructions <a href=\"https://docs.nvidia.com/metropolis/deepstream/dev-guide/text/DS_Installation.html#dgpu-setup-for-ubuntu\">here</a>.";
+            }
+
+            depinstall.innerHTML = pkgnotes;
+
+            document.getElementById("output").innerHTML = sudoLine;
+
+            cmakeLine = "cd ILLIXR\nmkdir build\ncd build\ncmake .. -DCMAKE_INSTALL_PREFIX=&lt;LOCATION&gt;";
+            let profile_check = false;
+
+            for (let g of profiles) {
+                if (document.getElementById("profile_" + g).checked) {
+                    cmakeLine += " -DYAML_FILE=profiles/" + g.toLowerCase() + ".yaml";
+                    profile_check = true;
+                    break;
+                }
+            }
+
+            if (!profile_check) {
+                for (let p of plugins) {
+                    if (document.getElementById(p).checked) {
+                        cmakeLine += " -D" + plugs[p];
+                    }
+                }
+            }
+            if (document.getElementById("no_gpl").checked) {
+                cmakeLine += " -DNO_GPL=ON";
+                if (document.getElementById("no_lgpl").checked) {
+                    cmakeLine += " -DNO_LGPL=ON";
+                }
+            }
+            cmakeLine += "\ncmake --build . -j4\ncmake --build . -t docs   # if you want to build the documentation\ncmake --install .";
+            document.getElementById("cmake").innerHTML = makeCopyable(cmakeLine, "cmakeC");
         }
-        cmakeLine += "\ncmake --build . -j4\ncmake --build . -t docs   # if you want to build the documentation\ncmake --install .";
-        document.getElementById("cmake").innerHTML = makeCopyable(cmakeLine, "cmakeC");
         $('.code-box-copy').codeBoxCopy();
     }
 
     function updateGPL() {
-        if(!document.getElementById("no_gpl").checked) {
+        if (!document.getElementById("no_gpl").checked) {
             document.getElementById("no_lgpl").checked = false;
         }
         updateSudo();
     }
 
     function updateLGPL() {
-        if(document.getElementById("no_lgpl").checked) {
+        if (document.getElementById("no_lgpl").checked) {
             document.getElementById("no_gpl").checked = true;
         }
         updateSudo();
@@ -429,17 +521,19 @@ If you want to add your own plugin, see [Writing Your Plugin][I11].
         selectedOS = items[0];
         updateSudo();
     }
+
     function checkAll() {
-        for(let p of plugins) {
+        for (let p of plugins) {
             document.getElementById(p).checked = document.getElementById("ALL_plugins").checked;
         }
         updateSudo();
     }
+
     function checkProfile(profile_name) {
-        for(let p of plugins) {
+        for (let p of plugins) {
             let setChecked = false;
-            for(let pl of profiles[profile_name]) {
-                if(p == pl) {
+            for (let pl of profiles[profile_name]) {
+                if (p === pl) {
                     setChecked = true;
                     break;
                 }
@@ -449,17 +543,19 @@ If you want to add your own plugin, see [Writing Your Plugin][I11].
         updateSudo();
     }
 
-    function updateChecked() {
+    function updateChecked(loc) {
+        windows_build = loc === 1;
         document.getElementById("None_plugins").checked = true;
         updateSudo();
     }
+
     async function setUpPage() {
         loadModules();
         let osref = document.getElementById("operating_system");
         let osrow = osref.insertRow(-1);
-        for(let x in operatingSystems) {
+        for (let x in operatingSystems) {
             let txt = x + ":";
-            for(let ver of operatingSystems[x]) {
+            for (let ver of operatingSystems[x]) {
                 txt += "<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type='radio' id='" + x + "' name='os_choice' value='" + x + "' onclick='updateOS(this.value);'>" + ver;
             }
             let cell = osrow.insertCell(-1);
@@ -478,15 +574,15 @@ If you want to add your own plugin, see [Writing Your Plugin][I11].
         profilecell.setAttribute("colspan", profiles.length + 2);
         currentRow = tabRef.insertRow(-1);
 
-        for(let g of profiles) {
-            if(count >= 3) {
+        for (let g of profiles) {
+            if (count >= 3) {
                 currentRow = tabRef.insertRow(-1);
                 count = 0;
             }
             let cell = currentRow.insertCell(-1);
             let radio = document.createElement("INPUT");
             radio.setAttribute("type", "radio");
-            radio.setAttribute("onclick", "checkProfile('" +  g + "');");
+            radio.setAttribute("onclick", "checkProfile('" + g + "');");
             radio.setAttribute("id", "profile_" + g);
             radio.setAttribute("value", "profile_" + g);
             radio.setAttribute("name", "profile_selection");
@@ -514,18 +610,38 @@ If you want to add your own plugin, see [Writing Your Plugin][I11].
 
         tabRef = document.getElementById("listing_table");
         currentRow = tabRef.insertRow(-1);
-        for(const dep of plugins) {
-            if(count >= 3) {
+        for (const dep of plugins) {
+            if (count >= 3) {
                 currentRow = tabRef.insertRow(-1);
                 count = 0;
             }
             let cell = currentRow.insertCell(-1);
             let x = document.createElement("INPUT");
             x.setAttribute("type", "checkbox");
-            x.setAttribute("onclick", "updateChecked();");
+            x.setAttribute("onclick", "updateChecked(0);");
             x.setAttribute("id", dep);
             let y = document.createElement("LABEL");
             y.setAttribute("for", dep);
+            y.appendChild(document.createTextNode(dep));
+            cell.appendChild(x);
+            cell.appendChild(y);
+            count += 1;
+        }
+        let winRef = document.getElementById("listing_table_windows");
+        count = 0;
+        currentRow = winRef.insertRow(-1);
+        for (const dep of plugins_windows) {
+            if (count >= 3) {
+                currentRow = winRef.insertRow(-1);
+                count = 0;
+            }
+            let cell = currentRow.insertCell(-1);
+            let x = document.createElement("INPUT");
+            x.setAttribute("type", "checkbox");
+            x.setAttribute("onclick", "updateChecked(1);");
+            x.setAttribute("id", dep + "_win");
+            let y = document.createElement("LABEL");
+            y.setAttribute("for", dep + "_win");
             y.appendChild(document.createTextNode(dep));
             cell.appendChild(x);
             cell.appendChild(y);

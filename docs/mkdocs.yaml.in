@@ -23,6 +23,7 @@ theme:
     - search.suggest
     - content.code.annotate
     - content.footnote.tooltips
+    - content.tabs.link
     - navigation.indexes
   language: en
 site_dir: @MKDOCS_BUILD_DIR@
@@ -38,6 +39,8 @@ markdown_extensions:
   - pymdownx.inlinehilite
   - pymdownx.snippets
   - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
   - md_in_html
   - attr_list
 extra_css:

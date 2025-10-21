@@ -18,7 +18,7 @@ For releases, perform these steps from `master` once the desired features have b
 
 3. Push your tag upstream:
 
-    ```  { .bash .copy }```
+    ``` { .bash .copy }
     git push origin --tags
     ```
    

@@ -8,19 +8,19 @@ be configured through environment variables.
 ILLIXR supports three display backends:
 
 1. **GLFW** (Default)
-    - Standard windowed display using GLFW
-    - Best for desktop development and debugging
-    - Provides a resizable window interface
+   - Standard windowed display using GLFW
+   - Best for desktop development and debugging
+   - Provides a resizable window interface
 
-2. **X11 Direct Mode**
-    - Direct display mode using X11
-    - Provides lower latency by bypassing the window manager
-    - Useful for tethered headsets directly connected to the GPU using DisplayPort or HDMI
+2. **X11 Direct Mode** (Linux only)
+   - Direct display mode using X11
+   - Provides lower latency by bypassing the window manager
+   - Useful for tethered headsets directly connected to the GPU using DisplayPort or HDMI
 
 3. **Headless**
-    - No display output
-    - Useful for testing and benchmarking
-    - Can be used in environments without display hardware
+   - No display output
+   - Useful for testing and benchmarking
+   - Can be used in environments without display hardware
 
 ## Configuration
 
@@ -33,14 +33,28 @@ Controls which display backend to use.
 Possible values:
 
 - `glfw` (Default) - Use GLFW windowed mode
-- `x11_direct` - Use X11 direct mode
+- `x11_direct` - Use X11 direct mode (Linux only)
 - `headless` - Use headless mode
 
 Example:
 
-``` bash
-export ILLIXR_DISPLAY_MODE=glfw
-```
+=== "bash"
+
+    ``` bash
+    export ILLIXR_DISPLAY_MODE=glfw
+    ```
+
+=== "csh"
+
+    ``` csh
+    setenv ILLIXR_DISPLAY_MODE glfw
+    ```
+
+=== "Windows (powershell)"
+
+    ``` powershell
+    $Env:ILLIXR_DISPLAY_MODE = "glfw"
+    ```
 
 ### ILLIXR_VULKAN_SELECT_GPU
 
@@ -54,9 +68,24 @@ The available GPUs and their indices will be printed during startup.
 
 Example:
 
-``` bash
-export ILLIXR_VULKAN_SELECT_GPU=1 # Select the second GPU
-```
+=== "bash"
+
+    ``` bash
+    export ILLIXR_VULKAN_SELECT_GPU=1
+    ```
+
+=== "csh"
+
+    ``` csh
+    setenv ILLIXR_VULKAN_SELECT_GPU 1
+    ```
+
+=== "Windows (powershell)"
+
+    ``` powershell
+    $Env:ILLIXR_VULKAN_SELECT_GPU = "1"
+    ```
+
 
 ### ILLIXR_DIRECT_MODE_DISPLAY
 
@@ -73,20 +102,34 @@ this if you only have one display output connected to the GPU.
 
 Example:
 
-``` bash
-export ILLIXR_DIRECT_MODE_DISPLAY=0  # Use the first display
-```
+=== "bash"
+
+    ``` bash
+    export ILLIXR_DIRECT_MODE_DISPLAY=0
+    ```
+
+=== "csh"
+
+    ``` csh
+    setenv ILLIXR_DIRECT_MODE_DISPLAY 0
+    ```
+
+=== "Windows (powershell)"
+
+    ``` powershell
+    $Env:ILLIXR_DIRECT_MODE_DISPLAY = "0"
+    ```
 
 ## Display Selection Process
 
 1. The system will enumerate available displays and GPUs during startup
 2. For GPU selection:
-    - If `ILLIXR_VULKAN_SELECT_GPU` is not set, the first suitable GPU is selected
-    - If set, the specified GPU index is used
-    - The system will print available GPUs and their capabilities
+   - If `ILLIXR_VULKAN_SELECT_GPU` is not set, the first suitable GPU is selected
+   - If set, the specified GPU index is used
+   - The system will print available GPUs and their capabilities
 
 3. For X11 direct mode:
-    - The system will list available displays
-    - `ILLIXR_DIRECT_MODE_DISPLAY` must be set to a valid display index
-    - The selected display will be acquired for direct mode access
-    - The highest refresh rate mode will be automatically selected
+   - The system will list available displays
+   - `ILLIXR_DIRECT_MODE_DISPLAY` must be set to a valid display index
+   - The selected display will be acquired for direct mode access
+   - The highest refresh rate mode will be automatically selected
