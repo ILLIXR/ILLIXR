@@ -8,7 +8,7 @@ endif()
 externalproject_add(
         hand_tracking_dependencies${POSTFIX}
         GIT_REPOSITORY https://github.com/ILLIXR/hand_tracking_dependencies.git
-        GIT_TAG a422f847e9e85d8b77fabb07f6cbbc3af8c5ec32
+        GIT_TAG ff25f2712ddd16fc61215bd27ef91bde9db11238
         PREFIX ${CMAKE_BINARY_DIR}/_deps/hand_tracking_deps
         CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=Release -DENABLE_GPU=${HT_ENABLE_GPU} -DLIBRARY_POSTFIX=ht -DCMAKE_CXX_COMPILER=${CLANG_CXX_EXE} -DCMAKE_C_COMPILER=${CLANG_EXE}
         INSTALL_COMMAND ""

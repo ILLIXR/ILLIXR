@@ -1,7 +1,7 @@
 
 fetch_git(NAME OpenVINS
         REPO https://github.com/ILLIXR/open_vins.git
-        TAG 06146ec3be7167a2f4b519e104912ea814738e9a
+        TAG 489ee07f27e6ccdf8db0e734e54c2b9fc0061db9
 )
 
 set(TEMP_FLAGS ${CMAKE_CXX_FLAGS})

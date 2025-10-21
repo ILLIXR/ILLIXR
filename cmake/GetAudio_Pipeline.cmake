@@ -6,7 +6,7 @@ pkg_check_modules(SPATIALAUDIO REQUIRED spatialaudio)
 
 fetch_git(NAME Audio_Pipeline
           REPO https://github.com/ILLIXR/audio_pipeline.git
-          TAG f2603d835005250652634f7f25466e51d1b72892
+          TAG d433b071a3cf71643ad8438433271150e2721238
 )
 
 set(ILLIXR_INTEGRATION ON)
