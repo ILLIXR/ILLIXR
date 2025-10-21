@@ -18,9 +18,9 @@ except Exception as _:
 alias_re = re.compile(r"namespace (\S+)\s?=\s?(\S+);")
 build_re = re.compile(r"\S*build/_deps/([a-zA-Z0-9_]*)/\S+\.[ch]pp")
 class_end_re = re.compile(r"^\s*};")  # regex for class/struct ending
-class_re = re.compile(r"^\s*class ([a-zA-Z0-9_]+)")  # regex for the start of a class
+class_re = re.compile(r"^\s*class (?:MY_EXPORT_API )?([a-zA-Z0-9_]+)")  # regex for the start of a class
 comment_re = re.compile(r"(//.*)")  # regex for inline comments
-inh_class_re = re.compile(r"^\s*class ([a-zA-Z0-9_]+).*:.*public.*")  # regex for child class
+inh_class_re = re.compile(r"^\s*class (?:MY_EXPORT_API )?([a-zA-Z0-9_]+).*:.*public.*")  # regex for child class
 inh_class_sub_re = re.compile(r"public\s+([a-zA-Z0-9_:]+)")
 # inh_class_ml_re = re.compile(r"^\s*[:,].*public\s+([a-zA-Z0-9_:]+)\s*{?")  # regex for child class with multiline definition
 line_end_re = re.compile(r".*\s*;\s*(?:[^/]|//.*)$")  # regex for the end of a code line
@@ -37,7 +37,9 @@ version_re = re.compile(r"[><=]+")  # regex for version numbers
 skip_list = ['src/cxxopts.hpp',
              "plugins/zed/capture/cxxopts.hpp",
              "plugins/offload_vio/proto/output_stub.hpp",
-             "plugins/offload_vio/proto/input_stub.hpp"]  # files to skip when scanning for classes etc.
+             "plugins/offload_vio/proto/input_stub.hpp",
+             "plugins/ada/proto/input_stub.hpp",
+             "plugins/ada/proto/output_stub.hpp"]  # files to skip when scanning for classes etc.
 sep = '-' * 77                   # nominal width of output tables
 
 
