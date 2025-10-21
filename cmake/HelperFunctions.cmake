@@ -396,7 +396,7 @@ macro (report_build NAME)
 endmacro()
 
 function(fetch_git)
-    set(options PATCH RECURSE)
+    set(options PATCH RECURSE NO_OVERRIDE)
     set(oneValueArgs NAME REPO TAG SUBDIR)
     cmake_parse_arguments(fetch "${options}" "${oneValueArgs}" "" ${ARGV})
 
@@ -407,6 +407,12 @@ function(fetch_git)
     elseif(NOT fetch_TAG)
         message(FATAL_ERROR "TAG must be specified in calls to fetch_git.")
     endif()
+        if(NOT fetch_NO_OVERRIDE)
+        set(OVERRIDE_TEXT OVERRIDE_FIND_PACKAGE)
+    else()
+        set(OVERRIDE_TEXT "")
+    endif()
+
     report_build(${fetch_NAME})
     if (fetch_PATCH)
         if (fetch_SUBDIR)
@@ -417,7 +423,7 @@ function(fetch_git)
                                  GIT_SUBMODULES_RECURSE ${fetch_RECURSE}
                                  SOURCE_SUBDIR ${fetch_SUBDIR}
                                  PATCH_COMMAND ${CMAKE_CURRENT_LIST_DIR}/../do_patch.sh -p ${CMAKE_CURRENT_LIST_DIR}/${fetch_NAME}/${fetch_NAME}.patch
-                                 OVERRIDE_FIND_PACKAGE
+                                 ${OVERRIDE_TEXT}
             )
         else()
             FetchContent_Declare(${fetch_NAME}
@@ -426,7 +432,7 @@ function(fetch_git)
                                  GIT_SUBMODULES_RECURSE ${fetch_RECURSE}
                                  GIT_PROGRESS TRUE
                                  PATCH_COMMAND ${CMAKE_CURRENT_LIST_DIR}/../do_patch.sh -p ${CMAKE_CURRENT_LIST_DIR}/${fetch_NAME}/${fetch_NAME}.patch
-                                 OVERRIDE_FIND_PACKAGE
+                                 ${OVERRIDE_TEXT}
             )
         endif()
     else()
@@ -437,7 +443,7 @@ function(fetch_git)
                                  GIT_SUBMODULES_RECURSE ${fetch_RECURSE}
                                  GIT_PROGRESS TRUE
                                  SOURCE_SUBDIR ${fetch_SUBDIR}
-                                 OVERRIDE_FIND_PACKAGE
+                                 ${OVERRIDE_TEXT}
             )
         else()
             FetchContent_Declare(${fetch_NAME}
@@ -445,7 +451,7 @@ function(fetch_git)
                                  GIT_TAG ${fetch_TAG}
                                  GIT_SUBMODULES_RECURSE ${fetch_RECURSE}
                                  GIT_PROGRESS TRUE
-                                 OVERRIDE_FIND_PACKAGE
+                                 ${OVERRIDE_TEXT}
             )
         endif()
     endif()
@@ -453,7 +459,7 @@ function(fetch_git)
 endfunction()
 
 function(fetch_url)
-    set(options PATCH)
+    set(options PATCH NO_OVERRIDE)
     set(oneValueArgs NAME SRC_URL HASH)
     cmake_parse_arguments(fetch "${options}" "${oneValueArgs}" "" ${ARGV})
 
@@ -464,20 +470,24 @@ function(fetch_url)
     elseif(NOT fetch_HASH)
         message(FATAL_ERROR "HASH must be specified in calls to fetch_git.")
     endif()
-
+    if(NOT fetch_NO_OVERRIDE)
+        set(OVERRIDE_TEXT OVERRIDE_FIND_PACKAGE)
+    else()
+        set(OVERRIDE_TEXT "")
+    endif()
     report_build(${fetch_NAME})
     if (fetch_PATCH)
         FetchContent_Declare(${fetch_NAME}
                              URL ${fetch_SRC_URL}
                              URL_HASH ${fetch_HASH}
                              PATCH_COMMAND ${CMAKE_CURRENT_LIST_DIR}/../do_patch.sh -p ${CMAKE_CURRENT_LIST_DIR}/${fetch_NAME}/${fetch_NAME}.patch
-                             OVERRIDE_FIND_PACKAGE
+                             ${OVERRIDE_TEXT}
         )
     else()
         FetchContent_Declare(${fetch_NAME}
                              URL ${fetch_SRC_URL}
                              URL_HASH ${fetch_HASH}
-                             OVERRIDE_FIND_PACKAGE
+                             ${OVERRIDE_TEXT}
         )
     endif()
     message(STATUS "        complete.")

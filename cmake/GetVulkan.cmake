@@ -61,6 +61,7 @@ else()
     fetch_git(NAME vulkan
               REPO https://github.com/ILLIXR/ILLIXR-vulkan.git
               TAG 7901de80434662709e0357d1eac39376055b0b79
+              NO_OVERRIDE
     )
 
     configure_target(NAME vulkan
