@@ -17,7 +17,7 @@ else()
                         GIT_TAG ba944eb049337669d0e24d24619a03915eed31d6            # sha5 hash for specific commit to pull (if there is no specific tag to use)
                         PREFIX ${CMAKE_BINARY_DIR}/_deps/OpenXR_APP                 # the build directory
                         #arguments to pass to CMake
-                        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_CXX_COMPILER=${CLANG_CXX_EXE} -DCMAKE_C_COMPILER=${CLANG_EXE}
+                        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_CXX_COMPILER=${CLANG_CXX_EXE} -DCMAKE_C_COMPILER=${CLANG_EXE} -DCMAKE_POLICY_VERSION_MINIMUM=3.5
     )
     set(OpenXR_APP_EXTERNAL Yes)
 endif ()
