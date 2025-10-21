@@ -4344,29 +4344,6 @@ If you want to add your own plugin, see <a href="../working_with/writing_your_pl
       ]
     },
     {
-      "name": "infinitam",
-      "cmake_flag": "USE_INFINITAM=ON",
-      "dependencies": [
-        "PNG",
-        "GLUT",
-        "realsense",
-        "OpenMP",
-        "cuda-toolkit"
-      ]
-    },
-    {
-      "name": "scene_management",
-      "cmake_flag": "USE_SCENE_MANAGEMENT=ON",
-      "dependencies": [
-        "OpenMP"
-      ]
-    },
-    {
-      "name": "offline_scannet",
-      "cmake_flag": "USE_OFFLINE_SCANNET=ON",
-      "dependencies": []
-    },
-    {
       "name": "webcam",
       "cmake_flag": "USE_WEBCAM=ON",
       "dependencies": []
@@ -6084,7 +6061,7 @@ If you want to add your own plugin, see <a href="../working_with/writing_your_pl
          document.getElementById("offload_vio.device_rx").checked ||
           document.getElementById("offload_vio.server_tx").checked ||
            document.getElementById("offload_vio.server_rx").checked)) {
-            pkgnotes += "<P><br>For the offload_vio plugins it is strongly recommended to install DeepStream. Please see the installation instructions <a href=\"https://docs.nvidia.com/metropolis/deepstream/dev-guide/text/DS_Installation.html#dgpu-setup-for-ubuntu">here</a>.";
+            pkgnotes += "<P><br>For the offload_vio plugins it is strongly recommended to install DeepStream. Please see the installation instructions <a href=\"https://docs.nvidia.com/metropolis/deepstream/dev-guide/text/DS_Installation.html#dgpu-setup-for-ubuntu\">here</a>.";
         }
 
         depinstall.innerHTML = pkgnotes;
