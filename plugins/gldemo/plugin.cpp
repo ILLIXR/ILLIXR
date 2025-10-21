@@ -93,15 +93,17 @@ void gldemo::_p_thread_setup() {
     last_time_ = clock_->now();
 
     // Note: glXMakeContextCurrent must be called from the thread which will be using it.
+#if defined(_WIN32) || defined(_WIN64)
     HGLRC                ctx = wglGetCurrentContext();
     HDC                  dcx = wglGetCurrentDC();
+#endif
     [[maybe_unused]] int gl_result =
 #if defined(_WIN32) || defined(_WIN64)
         wglMakeCurrent(ext_window_->hdc_, ext_window_->context_);
+    DWORD error = GetLastError();
 #else
         static_cast<bool>(glXMakeCurrent(ext_window_->display_, ext_window_->window_, ext_window_->context_));
 #endif
-    DWORD error = GetLastError();
     assert(gl_result && "glXMakeCurrent should not fail");
 }
 
