@@ -1,5 +1,5 @@
 # This file was auto generated, take caution if manually editing.
-plugins: timewarp_vk,vkdemo,offlime_cam,offline_imu,rk4_integrator
+plugins: offline_cam,offline_imu,rk4_integrator,pose_prediction,timewarp_vk,vkdemo,native_renderer,openvins
 env_vars:
   ENABLE_OFFLOAD: False
   ENABLE_ALIGNMENT: False
