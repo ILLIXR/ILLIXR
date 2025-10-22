@@ -1,0 +1,7 @@
+# This file was auto generated, take caution if manually editing.
+plugins: tcp_network_backend,tcp.device_tx,tcp.device_rx,tcp.server_tx,tcp.server_rx,pose_lookup,timewarp_vk,vkdemo,native_renderer,timewarp_vk.monado,fauxpose,pose_prediction,passthrough_integrator,offline_cam,offline_imu,rk4_integrator,openvins
+env_vars:
+  ENABLE_OFFLOAD: False
+  ENABLE_ALIGNMENT: False
+  ENABLE_VERBOSE_ERRORS: False
+  ENABLE_PRE_SLEEP: False

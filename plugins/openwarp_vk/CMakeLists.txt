@@ -10,7 +10,11 @@ project(openwarp_vk)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(glm REQUIRED)
+if(WIN32 OR MSVC)
+    find_package(glm CONFIG REQUIRED)
+else()
+    find_package(glm REQUIRED)
+endif()
 
 if(NOT PLUGIN_NAME)
     set(PLUGIN_NAME "plugin.openwarp_vk${ILLIXR_BUILD_SUFFIX}")
@@ -76,8 +80,15 @@ add_dependencies(${PLUGIN_NAME} OpenWarp_VK_Shaders)
 
 set_target_properties(${PLUGIN_NAME} PROPERTIES OUTPUT_NAME ${PLUGIN_NAME})
 
-target_link_libraries(${PLUGIN_NAME} PUBLIC ${Vulkan_LIBRARIES} spdlog::spdlog)
-target_include_directories(${PLUGIN_NAME} PUBLIC ${Vulkan_INCLUDE_DIRS})
+target_link_libraries(${PLUGIN_NAME} PUBLIC spdlog::spdlog)
+
+if(WIN32 OR MSVC)
+    target_link_libraries(${PLUGIN_NAME} PUBLIC Vulkan::Vulkan glm::glm-header-only)
+else()
+    target_link_libraries(${PLUGIN_NAME} PUBLIC ${Vulkan_LIBRARIES})
+    target_include_directories(${PLUGIN_NAME} PUBLIC ${Vulkan_INCLUDE_DIRS})
+endif()
+
 target_include_directories(${PLUGIN_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${ILLIXR_SOURCE_DIR}/include)
 
 install_shaders(SPIRV_BINARY_FILES openwarp_vk ${PLUGIN_NAME})

@@ -7,7 +7,7 @@
 
 namespace ILLIXR {
 /// Create a "pose_prediction" type service
-class fauxpose_impl : public data_format::pose_prediction {
+class MY_EXPORT_API fauxpose_impl : public data_format::pose_prediction {
 public:
     explicit fauxpose_impl(const phonebook* pb);
     ~fauxpose_impl() override;

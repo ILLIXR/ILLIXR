@@ -3,7 +3,8 @@
 set(PLUGIN_NAME plugin.pose_lookup${ILLIXR_BUILD_SUFFIX})
 
 # source files, listed individually so that any changes will trigger a rebuild
-add_library(${PLUGIN_NAME} SHARED service.cpp
+add_library(${PLUGIN_NAME} SHARED
+            service.cpp
             service.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/data_loading.hpp
             utils.hpp

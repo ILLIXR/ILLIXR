@@ -1,6 +1,6 @@
 {
   "name": "illixr",
-  "version": "4.0.1",
+  "version": "4.1.1",
   "dependencies": [
     {
       "name": "opengl"
@@ -21,12 +21,12 @@
       "name": "glew"
     },
     {
-      "name": "opencv",
+      "name": "opencv4",
+      "version>=": "4.5.5",
       "features": [
+        "contrib",
         "eigen",
-        "fs",
         "opengl",
-        "thread",
         "jpeg",
         "png",
         "tiff"
@@ -662,5 +662,8 @@
       "name": "protobuf",
       "version": "3.21.12"
     }
-  ]
+    {
+      "name": "opencv4",
+      "version": "4.5.5"
+    }
 }

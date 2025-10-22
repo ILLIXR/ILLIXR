@@ -7,7 +7,7 @@
 #include "illixr/plugin.hpp"
 
 namespace ILLIXR {
-class pose_prediction_impl : public data_format::pose_prediction {
+class MY_EXPORT_API pose_prediction_impl : public data_format::pose_prediction {
 public:
     explicit pose_prediction_impl(const phonebook* const pb);
     data_format::fast_pose_type get_fast_pose() const override;
