@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../device_to_server_base.hpp"
+#include "../utils/device_to_server_base.hpp"
 #include "illixr/data_format/scene_reconstruction.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/switchboard.hpp"
@@ -11,7 +11,13 @@
 #else
     #include "../proto/input_stub.hpp"
 #endif
-#include "video_decoder.hpp"
+#ifdef USE_NVIDIA_CODEC
+    #include "video_decoder.hpp"
+    #define DECODER_TYPE ada_video_decoder
+#else
+    #include "../utils/decode_utils.hpp"
+    #define DECODER_TYPE encoding::rgb_decoder
+#endif
 
 #include <filesystem>
 
@@ -54,9 +60,10 @@ private:
     std::ofstream     receive_timestamp;
     std::ofstream     receive_size;
 
-    std::unique_ptr<ada_video_decoder> decoder_;
-    cv::Mat                            img0_dst_;
-    cv::Mat                            img1_dst_;
+    std::unique_ptr<DECODER_TYPE> decoder_;
+
+    cv::Mat img0_dst_;
+    cv::Mat img1_dst_;
 
     // preallocated
     cv::Mat msb_buf_; // CV_8UC1, 480x640
