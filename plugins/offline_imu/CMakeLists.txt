@@ -11,7 +11,8 @@ add_library(${PLUGIN_NAME} SHARED plugin.cpp
             ${CMAKE_SOURCE_DIR}/include/illixr/relative_clock.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/threadloop.hpp
-            ${CMAKE_SOURCE_DIR}/include/illixr/csv_iterator.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/iterators/csv_iterator.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/iterators/data_iterator.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/data_format/misc.hpp
 )
 

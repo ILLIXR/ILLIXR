@@ -10,8 +10,8 @@
 #include "illixr/stoplight.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/vk/vk_extension_request.hpp"
-//#include "stdout_record_logger.hpp"
-//#include "sqlite_record_logger.hpp"
+// #include "sqlite_record_logger.hpp"
+// #include "stdout_record_logger.hpp"
 #include "no_op_record_logger.hpp"
 #include "vulkan_display.hpp"
 

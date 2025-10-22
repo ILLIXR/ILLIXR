@@ -1,6 +1,7 @@
 #include "plugin.hpp"
 
 #include "illixr/data_loading.hpp"
+#include "illixr/iterators/csv_iterator.hpp"
 
 #include <chrono>
 #include <regex>

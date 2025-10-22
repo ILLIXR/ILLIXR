@@ -28,7 +28,7 @@ public:
 private:
     void receive_vio_input(const vio_input_proto::IMUCamVec& vio_input);
 
-    std::unique_ptr<video_decoder> decoder_;
+    std::unique_ptr<vio_video_decoder> decoder_;
 
     boost::lockfree::spsc_queue<uint64_t> queue_{1000};
     std::mutex                            mutex_;

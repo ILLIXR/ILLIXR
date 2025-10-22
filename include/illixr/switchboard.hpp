@@ -780,6 +780,27 @@ public:
         return strdup(val.c_str());
     }
 
+    [[maybe_unused]] long get_env_long(const std::string& var, const long _default = 0) {
+        std::string val = get_env(var, "");
+        if (val.empty())
+            return _default;
+        return std::stol(val);
+    }
+
+    [[maybe_unused]] ulong get_env_ulong(const std::string& var, const ulong _default = 0) {
+        std::string val = get_env(var, "");
+        if (val.empty())
+            return _default;
+        return std::stoul(val);
+    }
+
+    [[maybe_unused]] double get_env_double(const std::string& var, const double _default = 0.) {
+        std::string val = get_env(var, "");
+        if (val.empty())
+            return _default;
+        return std::stod(val);
+    }
+
     /**
      * @brief Schedules the callback @p fn every time an event is published to @p topic_name.
      *
