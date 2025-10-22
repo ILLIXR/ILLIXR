@@ -1,5 +1,7 @@
 #pragma once
+#if defined(_WIN32) || defined(_WIN64)
 #define _WINSOCKAPI_
+#endif
 #include <stdexcept>
 #if defined(_WIN32) || defined(_WIN64)
 #include <WinSock2.h>
