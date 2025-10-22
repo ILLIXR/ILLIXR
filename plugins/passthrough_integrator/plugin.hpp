@@ -6,7 +6,7 @@
 #include "illixr/switchboard.hpp"
 
 namespace ILLIXR {
-class passthrough_integrator : public plugin {
+class MY_EXPORT_API passthrough_integrator : public plugin {
 public:
     [[maybe_unused]] passthrough_integrator(const std::string& name, phonebook* pb);
 
