@@ -2,7 +2,7 @@
 
 set(PLUGIN_NAME plugin.fauxpose${ILLIXR_BUILD_SUFFIX})
 
-set(FAUXPOSE_SOURCES service.cpp
+set(FAUXPOSE_SOURCES SHARED service.cpp
     service.hpp
     ${CMAKE_SOURCE_DIR}/include/illixr/plugin.hpp
     ${CMAKE_SOURCE_DIR}/include/illixr/data_format/pose_prediction.hpp
@@ -12,7 +12,12 @@ set(FAUXPOSE_SOURCES service.cpp
 add_library(${PLUGIN_NAME} SHARED ${FAUXPOSE_SOURCES})
 
 target_include_directories(${PLUGIN_NAME} PRIVATE ${ILLIXR_SOURCE_DIR}/include)
-target_link_libraries(${PLUGIN_NAME} PUBLIC spdlog::spdlog)
+target_link_libraries(${PLUGIN_NAME} PUBLIC 
+        spdlog::spdlog
+        Boost::serialization
+)
 target_compile_features(${PLUGIN_NAME} PRIVATE cxx_std_17)
-
+if(WIN32 OR MSVC)
+    target_compile_definitions(${PLUGIN_NAME} PRIVATE BUILDING_LIBRARY)
+endif()
 install(TARGETS ${PLUGIN_NAME} DESTINATION lib)
