@@ -92,6 +92,7 @@ void rk4_integrator::propagate_imu_values(time_point real_time) {
     // Loop through all IMU messages, and use them to move the state forward in time
     // This uses the zero'th order quat, and then constant acceleration discrete
     if (prop_data.size() > 1) {
+        spdlog::get("illixr")->debug(std::to_string(real_time.time_since_epoch().count()) + " Integrating over " + std::to_string(prop_data.size()) + " values");
         for (size_t i = 0; i < prop_data.size() - 1; i++) {
             // Time elapsed over interval
             double dt = duration_to_double(prop_data[i + 1].time - prop_data[i].time);
@@ -111,7 +112,8 @@ void rk4_integrator::propagate_imu_values(time_point real_time) {
             curr_vel  = sp.velocity;
         }
     }
-
+    spdlog::get("illixr")->debug("  Pos " + std::to_string(curr_pos.x()) + ", " + std::to_string(curr_pos.y()) + ", " + std::to_string(curr_pos.z()));
+    spdlog::get("illixr")->debug("  Quat " + std::to_string(curr_quat.w()) + ", " + std::to_string(curr_quat.x()) + ", " + std::to_string(curr_quat.y()) + ", " + std::to_string(curr_quat.z()));
     imu_raw_.put(imu_raw_.allocate(w_hat, a_hat, w_hat2, a_hat2, curr_pos, curr_vel, curr_quat, real_time));
 }
 
