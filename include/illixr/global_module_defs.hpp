@@ -40,7 +40,7 @@ struct display_params {
     static constexpr float fov_y = 109.16f;
 
     // Meters per tangent angle at the center of the HMD (required by timewarp_gl's distortion correction)
-    static constexpr float meters_per_tan_angle = width_meters / (2.f * (fov_x * M_PI / 180.0f));
+    static constexpr float meters_per_tan_angle = static_cast<float>(width_meters / (2.f * (fov_x * M_PI / 180.0f)));
 
     // Inter-pupilary distance (ipd) in meters
     static constexpr float ipd = 0.064f;
