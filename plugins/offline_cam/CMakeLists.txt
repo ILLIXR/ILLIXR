@@ -26,6 +26,7 @@ target_link_libraries(${PLUGIN_NAME}
         Boost::serialization
         opencv_core
         opencv_imgproc
+        opencv_imgcodecs
         Eigen3::Eigen
 )
 
