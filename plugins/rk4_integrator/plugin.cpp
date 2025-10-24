@@ -39,15 +39,10 @@ void rk4_integrator::callback(const switchboard::ptr<const imu_type>& datum) {
 void rk4_integrator::clean_imu_vec(time_point timestamp) {
     auto it0 = imu_vec_.begin();
     while (it0 != imu_vec_.end()) {
-        spdlog::get("illixr")->debug(" ------------ " + std::to_string(timestamp.time_since_epoch().count()) + ", " +
-                                     std::to_string(it0->time.time_since_epoch().count()) + ", " +
-                                     std::to_string(IMU_SAMPLE_LIFETIME.count()));
         if (timestamp - it0->time < IMU_SAMPLE_LIFETIME) {
-            spdlog::get("illixr")->debug("         breaking " + std::to_string(imu_vec_.size()));
             break;
         }
         it0 = imu_vec_.erase(it0);
-        spdlog::get("illixr")->debug("         trimmed " + std::to_string(imu_vec_.size()));
     }
 }
 
@@ -87,7 +82,11 @@ void rk4_integrator::propagate_imu_values(time_point real_time) {
     // This is the last CAM time
     time_point time0 = input_values->last_cam_integration_time + last_imu_offset_;
     time_point time1 = real_time + t_off_new;
-
+    spdlog::get("illixr")->debug(
+        "------------- " + std::to_string(input_values->last_cam_integration_time.time_since_epoch().count()) + ", " +
+        std::to_string(last_imu_offset_.count()) + ", " + std::to_string(time0.time_since_epoch().count()) + ", " +
+        std::to_string(real_time.time_since_epoch().count()) + ", " + std::to_string(t_off_new.count()) + ", " +
+        std::to_string(time1.time_since_epoch().count()));
     std::vector<imu_type>       prop_data = select_imu_readings(imu_vec_, time0, time1);
     Eigen::Matrix<double, 3, 1> w_hat;
     Eigen::Matrix<double, 3, 1> a_hat;
@@ -137,6 +136,7 @@ std::vector<imu_type> rk4_integrator::select_imu_readings(const std::vector<imu_
     for (size_t i = 0; i < imu_data.size() - 1; i++) {
         // If time_begin comes inbetween two IMUs (A and B), interpolate A forward to time_begin
         if (imu_data[i + 1].time > time_begin && imu_data[i].time < time_begin) {
+            spdlog::get("illixr")->debug("    interpolating " + std::to_string(imu_data[i + 1].time.time_since_epoch().count()));
             imu_type data = interpolate_imu(imu_data[i], imu_data[i + 1], time_begin);
             prop_data.push_back(data);
             continue;
@@ -144,12 +144,17 @@ std::vector<imu_type> rk4_integrator::select_imu_readings(const std::vector<imu_
 
         // IMU is within time_begin and time_end
         if (imu_data[i].time >= time_begin && imu_data[i + 1].time <= time_end) {
+            spdlog::get("illixr")->debug("    adding " +
+                                         std::to_string(imu_data[i + 1].time.time_since_epoch().count()));
             prop_data.push_back(imu_data[i]);
             continue;
         }
 
         // IMU is past time_end
         if (imu_data[i + 1].time > time_end) {
+            spdlog::get("illixr")->debug("    adding break " +
+                                         std::to_string(imu_data[i + 1].time.time_since_epoch().count()));
+
             imu_type data = interpolate_imu(imu_data[i], imu_data[i + 1], time_end);
             prop_data.push_back(data);
             break;
@@ -159,7 +164,10 @@ std::vector<imu_type> rk4_integrator::select_imu_readings(const std::vector<imu_
     // Loop through and ensure we do not have zero dt values
     // This would cause the noise covariance to be Infinity
     for (int i = 0; i < int(prop_data.size()) - 1; i++) {
+        spdlog::get("illixr")->debug("     + checking " + std::to_string(i) + ": " + std::to_string(prop_data[i + 1].time.time_since_epoch().count()) + " " +
+                                     std::to_string(prop_data[i].time.time_since_epoch().count()) + " " + std::to_string((prop_data[i + 1].time - prop_data[i].time).count()));
         if (std::chrono::abs(prop_data[i + 1].time - prop_data[i].time) < std::chrono::nanoseconds{1}) {
+            spdlog::get("illixr")->debug("      dropping " + std::to_string(i));
             prop_data.erase(prop_data.begin() + i);
             i--; // i can be negative, so use type int
         }
