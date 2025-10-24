@@ -39,10 +39,15 @@ void rk4_integrator::callback(const switchboard::ptr<const imu_type>& datum) {
 void rk4_integrator::clean_imu_vec(time_point timestamp) {
     auto it0 = imu_vec_.begin();
     while (it0 != imu_vec_.end()) {
+        spdlog::get("illixr")->debug(" ------------ " + std::to_string(timestamp.time_since_epoch().count()) + ", " +
+                                     std::to_string(it0->time.time_since_epoch().count()) + ", " +
+                                     std::to_string(IMU_SAMPLE_LIFETIME.count()));
         if (timestamp - it0->time < IMU_SAMPLE_LIFETIME) {
+            spdlog::get("illixr")->debug("         breaking " + std::to_string(imu_vec_.size()));
             break;
         }
         it0 = imu_vec_.erase(it0);
+        spdlog::get("illixr")->debug("         trimmed " + std::to_string(imu_vec_.size()));
     }
 }
 
@@ -92,6 +97,8 @@ void rk4_integrator::propagate_imu_values(time_point real_time) {
     // Loop through all IMU messages, and use them to move the state forward in time
     // This uses the zero'th order quat, and then constant acceleration discrete
     if (prop_data.size() > 1) {
+        spdlog::get("illixr")->debug(std::to_string(real_time.time_since_epoch().count()) + " Integrating over " +
+                                     std::to_string(prop_data.size()) + " values");
         for (size_t i = 0; i < prop_data.size() - 1; i++) {
             // Time elapsed over interval
             double dt = duration_to_double(prop_data[i + 1].time - prop_data[i].time);
@@ -111,6 +118,10 @@ void rk4_integrator::propagate_imu_values(time_point real_time) {
             curr_vel  = sp.velocity;
         }
     }
+    spdlog::get("illixr")->debug("  Pos " + std::to_string(curr_pos.x()) + ", " + std::to_string(curr_pos.y()) + ", " +
+                                 std::to_string(curr_pos.z()));
+    spdlog::get("illixr")->debug("  Quat " + std::to_string(curr_quat.w()) + ", " + std::to_string(curr_quat.x()) + ", " +
+                                 std::to_string(curr_quat.y()) + ", " + std::to_string(curr_quat.z()));
 
     imu_raw_.put(imu_raw_.allocate(w_hat, a_hat, w_hat2, a_hat2, curr_pos, curr_vel, curr_quat, real_time));
 }
