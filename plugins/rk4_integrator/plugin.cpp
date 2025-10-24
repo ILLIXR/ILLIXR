@@ -16,6 +16,13 @@ using namespace ILLIXR::data_format;
 
 constexpr duration IMU_SAMPLE_LIFETIME{std::chrono::seconds{5}};
 
+std::string imu_string(const imu_type& imu) {
+    std::string imu_str = std::to_string(imu.time.time_since_epoch().count()) + ": " + std::to_string(imu.angular_v.x()) +
+        ", " + std::to_string(imu.angular_v.y()) + ", " + std::to_string(imu.angular_v.z()) + "; " + std::to_string(imu.linear_a.x()) +
+        ", " + std::to_string(imu.linear_a.y()) + ", " + std::to_string(imu.linear_a.z());
+    return imu_str;
+}
+
 [[maybe_unused]] rk4_integrator::rk4_integrator(const std::string& name, phonebook* pb)
     : plugin{name, pb}
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
@@ -144,17 +151,14 @@ std::vector<imu_type> rk4_integrator::select_imu_readings(const std::vector<imu_
 
         // IMU is within time_begin and time_end
         if (imu_data[i].time >= time_begin && imu_data[i + 1].time <= time_end) {
-            spdlog::get("illixr")->debug("    adding " +
-                                         std::to_string(imu_data[i + 1].time.time_since_epoch().count()));
+            spdlog::get("illixr")->debug("    adding " + imu_string(imu_data[i + 1]));
             prop_data.push_back(imu_data[i]);
             continue;
         }
 
         // IMU is past time_end
         if (imu_data[i + 1].time > time_end) {
-            spdlog::get("illixr")->debug("    adding break " +
-                                         std::to_string(imu_data[i + 1].time.time_since_epoch().count()));
-
+            spdlog::get("illixr")->debug("    adding break " + imu_string(imu_data[i + 1]));
             imu_type data = interpolate_imu(imu_data[i], imu_data[i + 1], time_end);
             prop_data.push_back(data);
             break;
@@ -167,7 +171,7 @@ std::vector<imu_type> rk4_integrator::select_imu_readings(const std::vector<imu_
         spdlog::get("illixr")->debug("     + checking " + std::to_string(i) + ": " + std::to_string(prop_data[i + 1].time.time_since_epoch().count()) + " " +
                                      std::to_string(prop_data[i].time.time_since_epoch().count()) + " " + std::to_string((prop_data[i + 1].time - prop_data[i].time).count()));
         if (std::chrono::abs(prop_data[i + 1].time - prop_data[i].time) < std::chrono::nanoseconds{1}) {
-            spdlog::get("illixr")->debug("      dropping " + std::to_string(i));
+            spdlog::get("illixr")->debug("      dropping " + std::to_string(i) + " -- " + imu_string(prop_data[i+1]));
             prop_data.erase(prop_data.begin() + i);
             i--; // i can be negative, so use type int
         }
