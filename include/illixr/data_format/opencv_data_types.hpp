@@ -5,7 +5,7 @@
 
 #include <fstream>
 #include <map>
-#include <opencv4/opencv2/core/mat.hpp>
+#include <opencv2/core/mat.hpp>
 #include <utility>
 
 namespace ILLIXR::data_format {
