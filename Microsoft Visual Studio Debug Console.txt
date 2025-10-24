@@ -1,0 +1,1009 @@
+[2025-10-24 11:01:14.499] [illixr] [debug] [phonebook] Register class ILLIXR::relative_clock
+[2025-10-24 11:01:14.499] [illixr] [debug] [phonebook] Register class ILLIXR::record_logger
+[2025-10-24 11:01:14.500] [illixr] [debug] [phonebook] Register class ILLIXR::gen_guid
+[2025-10-24 11:01:14.500] [illixr] [debug] [phonebook] Register class ILLIXR::switchboard
+[2025-10-24 11:01:14.500] [illixr] [debug] [phonebook] Register class ILLIXR::stoplight
+Reading profiles/mwt.yaml
+[2025-10-24 11:01:14.504] [illixr] [info] [main] Display mode not selected, defaulting to GLFW.
+[2025-10-24 11:01:14.518] [illixr] [info] Located plugin dependency map file (D:/ILLIXR/out/install/x64-Debug/share/illixr/profiles/plugin_deps.yaml), verifying plugin dependencies.
+[2025-10-24 11:01:14.572] [illixr] [debug] [phonebook] Register class ILLIXR::vulkan::display_provider
+[2025-10-24 11:01:14.573] [illixr] [debug] [switchboard] Creating: cam for struct ILLIXR::data_format::binocular_cam_type
+[2025-10-24 11:01:30.356] [illixr] [debug] [switchboard] Creating: imu for struct ILLIXR::data_format::imu_type
+[2025-10-24 11:01:30.357] [illixr] [debug] [switchboard] Creating: slow_pose for struct ILLIXR::data_format::pose_type
+[2025-10-24 11:01:30.357] [illixr] [debug] [switchboard] Creating: imu_integrator_input for struct ILLIXR::data_format::imu_integrator_input
+[2025-10-24 11:01:30.357] [illixr] [info] [switchboard] topic buffer created
+=======================================
+OPENVINS ON-MANIFOLD EKF IS STARTING
+=======================================
+ESTIMATOR PARAMETERS:
+        - use_fej: 1
+        - use_imuavg: 1
+        - use_rk4int: 1
+        - calib_cam_extrinsics: 1
+        - calib_cam_intrinsics: 1
+        - calib_cam_timeoffset: 1
+        - max_clones: 11
+        - max_slam: 50
+        - max_slam_in_update: 25
+        - max_msckf_in_update: 999
+        - max_aruco: 1024
+        - max_cameras: 2
+        - feat_rep_msckf: GLOBAL_3D
+        - feat_rep_slam: ANCHORED_FULL_INVERSE_DEPTH
+        - feat_rep_aruco: ANCHORED_FULL_INVERSE_DEPTH
+        - gravity: 0.000, 0.000, 9.810
+        - gravity: 3.0
+        - init_window_time: 0.75
+        - init_imu_thresh: 1.50
+        - record timing?: 0
+        - record timing filepath: ov_msckf_timing.txt
+NOISE PARAMETERS:
+        - gyroscope_noise_density: 0.000170
+        - accelerometer_noise_density: 0.00200
+        - gyroscope_random_walk: 0.0000194
+        - accelerometer_random_walk: 0.003000
+        Updater MSCKF Feats:
+        - chi2_multipler: 1
+        - sigma_pix: 1.00
+        Updater SLAM Feats:
+        - chi2_multipler: 1
+        - sigma_pix: 1.00
+        Updater ARUCO Tags:
+        - chi2_multipler: 5
+        - sigma_pix: 1.00
+STATE PARAMETERS:
+        - calib_camimu_dt: 0.0000
+cam_0_fisheye:0
+cam_0_wh:
+752 x 480
+cam_0_intrinsic(0:3):
+458.654 457.296 367.215 248.375
+cam_0_intrinsic(4:7):
+  -0.283408   0.0739591  0.00019359 1.76187e-05
+cam_0_extrinsic(0:3):
+-0.00770718   0.0104993    0.701753    0.712301
+cam_0_extrinsic(4:6):
+ 0.0652229 -0.0207064 -0.0080546
+T_C0toI:
+ 0.0148655  -0.999881  0.0041403 -0.0216401
+  0.999557  0.0149672  0.0257155  -0.064677
+-0.0257744 0.00375619   0.999661 0.00981073
+         0          0          0          1
+
+cam_1_fisheye:0
+cam_1_wh:
+752 x 480
+cam_1_intrinsic(0:3):
+457.587 456.134 379.999 255.238
+cam_1_intrinsic(4:7):
+   -0.283684    0.0745128  -0.00010473 -3.55591e-05
+cam_1_extrinsic(0:3):
+-0.00255024   0.0153239    0.702487    0.711527
+cam_1_extrinsic(4:6):
+  -0.044902  -0.0205698 -0.00863814
+T_C1toI:
+ 0.0125553  -0.999755  0.0182238 -0.0198436
+  0.999599  0.0130119  0.0251588  0.0453689
+-0.0253898  0.0179006   0.999517 0.00786212
+         0          0          0          1
+
+FEATURE TRACKING PARAMETERS:
+        - num_pts: 150
+        - use_stereo: 1
+        - max_runs: 20
+        - init_lamda: 0.001
+        - max_lamda: 10000000000.000
+        - min_dx: 0.0000010
+        - min_dcost: 0.0000010
+        - lam_mult: 10.000
+        - min_dist: 0.250
+        - max_dist: 40.000
+        - max_baseline: 40.000
+        - max_cond_number: 1000.000
+[2025-10-24 11:01:30.372] [illixr] [debug] [switchboard] Creating: imu_raw for struct ILLIXR::data_format::imu_raw_type
+[2025-10-24 11:01:30.372] [illixr] [debug] [switchboard] Creating: true_pose for struct ILLIXR::data_format::pose_type
+[2025-10-24 11:01:30.372] [illixr] [debug] [switchboard] Creating: ground_truth_offset for class ILLIXR::switchboard::event_wrapper<class Eigen::Matrix<float,3,1,0,3,1> >
+[2025-10-24 11:01:30.373] [illixr] [debug] [switchboard] Creating: vsync_estimate for class ILLIXR::switchboard::event_wrapper<class ILLIXR::time_point>
+[2025-10-24 11:01:30.373] [illixr] [debug] [phonebook] Register class ILLIXR::data_format::pose_prediction
+[2025-10-24 11:01:30.373] [illixr] [debug] [phonebook] Register class ILLIXR::vulkan::timewarp
+[2025-10-24 11:01:30.373] [illixr] [debug] [phonebook] Register class ILLIXR::vulkan::app
+[2025-10-24 11:01:30.374] [native_renderer] [warning] Please define ILLIXR_WIDTH and ILLIXR_HEIGHT. Default values used.
+[2025-10-24 11:01:30.374] [illixr] [info] [vulkan_display] Selected GLFW for display backend
+[2025-10-24 11:01:31.627] [illixr] [info] [vulkan_display] Enabled instance extensions:
+[2025-10-24 11:01:31.627] [illixr] [info]        VK_KHR_surface
+[2025-10-24 11:01:31.628] [illixr] [info]        VK_KHR_win32_surface
+[2025-10-24 11:01:31.679] [illixr] [info] [vulkan_display] Found 2 Vulkan devices
+[2025-10-24 11:01:31.680] [illixr] [info]       [0] Intel(R) UHD Graphics
+[2025-10-24 11:01:31.680] [illixr] [info]       [1] NVIDIA GeForce RTX 3050 Laptop GPU
+[2025-10-24 11:01:31.680] [illixr] [info] [vulkan_display] Selected device: NVIDIA GeForce RTX 3050 Laptop GPU
+[2025-10-24 11:01:31.680] [illixr] [info] [vulkan_display] Enabled instance extensions:
+[2025-10-24 11:01:31.681] [illixr] [info]        VK_KHR_synchronization2
+[2025-10-24 11:01:31.681] [illixr] [info]        VK_KHR_swapchain
+[2025-10-24 11:01:31.747] [illixr] [info] [vulkan_display] Using VK_FORMAT_B8G8R8A8_UNORM (direct mode)
+[2025-10-24 11:01:32.519] [illixr] [debug] [vkdemo] Loaded texture D:\ILLIXR\demo_data/FloorBake.png with dimensions 1024x1024 and 3 channels
+[2025-10-24 11:01:33.435] [illixr] [debug] [vkdemo] Loaded texture D:\ILLIXR\demo_data/OUTPUT_light.png with dimensions4096x4096 and 3 channels
+[2025-10-24 11:01:33.723] [illixr] [debug] [vkdemo] Loaded texture D:\ILLIXR\demo_data/WallBake.png with dimensions 2048x2048 and 3 channels
+[2025-10-24 11:01:33.794] [illixr] [debug] [vkdemo] Loaded texture D:\ILLIXR\demo_data/LogoBake.png with dimensions 1024x1024 and 3 channels
+[2025-10-24 11:01:33.802] [illixr] [debug] [vkdemo] Loaded 5 textures_
+[ INFO:0@19.411] global registry_parallel.impl.hpp:96 cv::parallel::ParallelBackendRegistry::ParallelBackendRegistry core(parallel): Enabled backends(3, sorted by priority): ONETBB(1000); TBB(990); OPENMP(980)
+[ INFO:0@19.412] global plugin_loader.impl.hpp:67 cv::plugin::impl::DynamicLib::libraryLoad load D:\ILLIXR\out\build\x64-Debug\vcpkg_installed\x64-windows\debug\bin\opencv_core_parallel_onetbb470_64d.dll => FAILED
+[ INFO:0@19.413] global plugin_loader.impl.hpp:67 cv::plugin::impl::DynamicLib::libraryLoad load opencv_core_parallel_onetbb470_64d.dll => FAILED
+[ INFO:0@19.413] global plugin_loader.impl.hpp:67 cv::plugin::impl::DynamicLib::libraryLoad load D:\ILLIXR\out\build\x64-Debug\vcpkg_installed\x64-windows\debug\bin\opencv_core_parallel_tbb470_64d.dll => FAILED
+[ INFO:0@19.414] global plugin_loader.impl.hpp:67 cv::plugin::impl::DynamicLib::libraryLoad load opencv_core_parallel_tbb470_64d.dll => FAILED
+[ INFO:0@19.415] global plugin_loader.impl.hpp:67 cv::plugin::impl::DynamicLib::libraryLoad load D:\ILLIXR\out\build\x64-Debug\vcpkg_installed\x64-windows\debug\bin\opencv_core_parallel_openmp470_64d.dll => FAILED
+[ INFO:0@19.416] global plugin_loader.impl.hpp:67 cv::plugin::impl::DynamicLib::libraryLoad load opencv_core_parallel_openmp470_64d.dll => FAILED
+NOT ENOUGH POINTS -- Tracking failed
+[2025-10-24 11:01:33.988] [native_renderer] [info] FPS: 0
+NOT ENOUGH POINTS -- Tracking failed
+InertialInitializer::initialize_with_imu(): no IMU excitation, below threshold 0.0738 < 1.5000
+NOT ENOUGH POINTS -- Tracking failed
+InertialInitializer::initialize_with_imu(): no IMU excitation, below threshold 0.5304 < 1.5000
+NOT ENOUGH POINTS -- Tracking failed
+InertialInitializer::initialize_with_imu(): no IMU excitation, below threshold 0.5381 < 1.5000
+NOT ENOUGH POINTS -- Tracking failed
+InertialInitializer::initialize_with_imu(): no IMU excitation, below threshold 0.5482 < 1.5000
+NOT ENOUGH POINTS -- Tracking failed
+InertialInitializer::initialize_with_imu(): no IMU excitation, below threshold 0.5984 < 1.5000
+NOT ENOUGH POINTS -- Tracking failed
+InertialInitializer::initialize_with_imu(): no IMU excitation, below threshold 0.6648 < 1.5000
+NOT ENOUGH POINTS -- Tracking failed
+InertialInitializer::initialize_with_imu(): no IMU excitation, below threshold 0.7540 < 1.5000
+NOT ENOUGH POINTS -- Tracking failed
+InertialInitializer::initialize_with_imu(): no IMU excitation, below threshold 0.8381 < 1.5000
+NOT ENOUGH POINTS -- Tracking failed
+InertialInitializer::initialize_with_imu(): no IMU excitation, below threshold 0.8795 < 1.5000
+NOT ENOUGH POINTS -- Tracking failed
+InertialInitializer::initialize_with_imu(): no IMU excitation, below threshold 0.9019 < 1.5000
+NOT ENOUGH POINTS -- Tracking failed
+InertialInitializer::initialize_with_imu(): no IMU excitation, below threshold 0.9048 < 1.5000
+NOT ENOUGH POINTS -- Tracking failed
+InertialInitializer::initialize_with_imu(): no IMU excitation, below threshold 0.9167 < 1.5000
+NOT ENOUGH POINTS -- Tracking failed
+InertialInitializer::initialize_with_imu(): no IMU excitation, below threshold 0.9270 < 1.5000
+NOT ENOUGH POINTS -- Tracking failed
+InertialInitializer::initialize_with_imu(): no IMU excitation, below threshold 0.9237 < 1.5000
+NOT ENOUGH POINTS -- Tracking failed
+InertialInitializer::initialize_with_imu(): no IMU excitation, below threshold 0.9054 < 1.5000
+NOT ENOUGH POINTS -- Tracking failed
+InertialInitializer::initialize_with_imu(): no IMU excitation, below threshold 0.8935 < 1.5000
+NOT ENOUGH POINTS -- Tracking failed
+InertialInitializer::initialize_with_imu(): no IMU excitation, below threshold 0.9142 < 1.5000
+NOT ENOUGH POINTS -- Tracking failed
+InertialInitializer::initialize_with_imu(): no IMU excitation, below threshold 0.9877 < 1.5000
+NOT ENOUGH POINTS -- Tracking failed
+InertialInitializer::initialize_with_imu(): no IMU excitation, below threshold 1.2262 < 1.5000
+NOT ENOUGH POINTS -- Tracking failed
+[2025-10-24 11:01:34.992] [native_renderer] [info] FPS: 57
+InertialInitializer::initialize_with_imu(): no IMU excitation, below threshold 1.2910 < 1.5000
+NOT ENOUGH POINTS -- Tracking failed
+InertialInitializer::initialize_with_imu(): no IMU excitation, below threshold 1.3627 < 1.5000
+NOT ENOUGH POINTS -- Tracking failed
+InertialInitializer::initialize_with_imu(): no IMU excitation, below threshold 1.3348 < 1.5000
+NOT ENOUGH POINTS -- Tracking failed
+InertialInitializer::initialize_with_imu(): no IMU excitation, below threshold 1.3022 < 1.5000
+NOT ENOUGH POINTS -- Tracking failed
+InertialInitializer::initialize_with_imu(): no IMU excitation, below threshold 1.2886 < 1.5000
+NOT ENOUGH POINTS -- Tracking failed
+InertialInitializer::initialize_with_imu(): no IMU excitation, below threshold 1.3181 < 1.5000
+NOT ENOUGH POINTS -- Tracking failed
+InertialInitializer::initialize_with_imu(): no IMU excitation, below threshold 1.3292 < 1.5000
+NOT ENOUGH POINTS -- Tracking failed
+InertialInitializer::initialize_with_imu(): no IMU excitation, below threshold 1.3369 < 1.5000
+NOT ENOUGH POINTS -- Tracking failed
+InertialInitializer::initialize_with_imu(): no IMU excitation, below threshold 1.3658 < 1.5000
+NOT ENOUGH POINTS -- Tracking failed
+InertialInitializer::initialize_with_imu(): no IMU excitation, below threshold 1.3910 < 1.5000
+NOT ENOUGH POINTS -- Tracking failed
+InertialInitializer::initialize_with_imu(): no IMU excitation, below threshold 1.4251 < 1.5000
+NOT ENOUGH POINTS -- Tracking failed
+InertialInitializer::initialize_with_imu(): no IMU excitation, below threshold 1.4349 < 1.5000
+NOT ENOUGH POINTS -- Tracking failed
+InertialInitializer::initialize_with_imu(): no IMU excitation, below threshold 1.4893 < 1.5000
+NOT ENOUGH POINTS -- Tracking failed
+[INIT]: orientation = 0.8133, -0.0269, 0.5800, 0.0377
+[INIT]: bias gyro = -0.0021, 0.0072, 0.0774
+[INIT]: velocity = 0.0000, 0.0000, 0.0000
+[INIT]: bias accel = -0.0238, -0.0008, 0.0082
+[INIT]: position = 0.0000, 0.0000, 0.0000
+waiting for enough clone states (1 of 5)....
+[2025-10-24 11:01:35.770] [illixr] [debug] ------------- 955032576, 0, 955032576, 1100032512, 0, 1100032512
+[2025-10-24 11:01:35.771] [illixr] [debug]     interpolating 960000000
+[2025-10-24 11:01:35.771] [illixr] [debug]     adding 964999936
+[2025-10-24 11:01:35.772] [illixr] [debug]     adding 969999872
+[2025-10-24 11:01:35.772] [illixr] [debug]     adding 974999808
+[2025-10-24 11:01:35.772] [illixr] [debug]     adding 980000000
+[2025-10-24 11:01:35.772] [illixr] [debug]     adding 984999936
+[2025-10-24 11:01:35.773] [illixr] [debug]     adding 989999872
+[2025-10-24 11:01:35.773] [illixr] [debug]     adding 994999808
+[2025-10-24 11:01:35.773] [illixr] [debug]     adding 1000000000
+[2025-10-24 11:01:35.773] [illixr] [debug] [POSEPREDICTION] FAST POSE IS SLOW POSE!
+[2025-10-24 11:01:35.774] [illixr] [debug]     adding 1004999936
+[2025-10-24 11:01:35.775] [illixr] [debug]     adding 1009999872
+[2025-10-24 11:01:35.775] [illixr] [debug] [POSEPREDICTION] FAST POSE IS SLOW POSE!
+[2025-10-24 11:01:35.775] [illixr] [debug]     adding 1014999808
+[2025-10-24 11:01:35.775] [illixr] [debug]     adding 1020000000
+[2025-10-24 11:01:35.775] [illixr] [debug]     adding 1024999936
+[2025-10-24 11:01:35.775] [illixr] [debug]     adding 1029999872
+[2025-10-24 11:01:35.776] [illixr] [debug]     adding 1034999808
+[2025-10-24 11:01:35.776] [illixr] [debug]     adding 1040000000
+[2025-10-24 11:01:35.776] [illixr] [debug]     adding 1044999936
+[2025-10-24 11:01:35.776] [illixr] [debug]     adding 1049999872
+[2025-10-24 11:01:35.776] [illixr] [debug]     adding 1054999808
+[2025-10-24 11:01:35.776] [illixr] [debug]     adding 1060000000
+[2025-10-24 11:01:35.776] [illixr] [debug]     adding 1064999936
+[2025-10-24 11:01:35.776] [illixr] [debug]     adding 1069999872
+[2025-10-24 11:01:35.776] [illixr] [debug]     adding 1074999808
+[2025-10-24 11:01:35.776] [illixr] [debug]     adding 1080000000
+[2025-10-24 11:01:35.777] [illixr] [debug]     adding 1084999936
+[2025-10-24 11:01:35.777] [illixr] [debug]     adding 1089999872
+[2025-10-24 11:01:35.777] [illixr] [debug]     adding 1094999808
+[2025-10-24 11:01:35.777] [illixr] [debug]     adding 1100000000
+[2025-10-24 11:01:35.777] [illixr] [debug]     adding break 1104999936
+[2025-10-24 11:01:35.777] [illixr] [debug]      + checking 0: 960000000 955032576 4967424
+[2025-10-24 11:01:35.777] [illixr] [debug]      + checking 1: 964999936 960000000 4999936
+[2025-10-24 11:01:35.777] [illixr] [debug]      + checking 2: 969999872 964999936 4999936
+[2025-10-24 11:01:35.777] [illixr] [debug]      + checking 3: 974999808 969999872 4999936
+[2025-10-24 11:01:35.777] [illixr] [debug]      + checking 4: 980000000 974999808 5000192
+[2025-10-24 11:01:35.778] [illixr] [debug]      + checking 5: 984999936 980000000 4999936
+[2025-10-24 11:01:35.778] [illixr] [debug]      + checking 6: 989999872 984999936 4999936
+[2025-10-24 11:01:35.778] [illixr] [debug]      + checking 7: 994999808 989999872 4999936
+[2025-10-24 11:01:35.778] [illixr] [debug]      + checking 8: 1000000000 994999808 5000192
+[2025-10-24 11:01:35.778] [illixr] [debug]      + checking 9: 1004999936 1000000000 4999936
+[2025-10-24 11:01:35.778] [illixr] [debug]      + checking 10: 1009999872 1004999936 4999936
+[2025-10-24 11:01:35.778] [illixr] [debug]      + checking 11: 1014999808 1009999872 4999936
+[2025-10-24 11:01:35.778] [illixr] [debug]      + checking 12: 1020000000 1014999808 5000192
+[2025-10-24 11:01:35.778] [illixr] [debug]      + checking 13: 1024999936 1020000000 4999936
+[2025-10-24 11:01:35.778] [illixr] [debug]      + checking 14: 1029999872 1024999936 4999936
+[2025-10-24 11:01:35.778] [illixr] [debug]      + checking 15: 1034999808 1029999872 4999936
+[2025-10-24 11:01:35.778] [illixr] [debug]      + checking 16: 1040000000 1034999808 5000192
+[2025-10-24 11:01:35.778] [illixr] [debug]      + checking 17: 1044999936 1040000000 4999936
+[2025-10-24 11:01:35.779] [illixr] [debug]      + checking 18: 1049999872 1044999936 4999936
+[2025-10-24 11:01:35.779] [illixr] [debug]      + checking 19: 1054999808 1049999872 4999936
+[2025-10-24 11:01:35.779] [illixr] [debug]      + checking 20: 1060000000 1054999808 5000192
+[2025-10-24 11:01:35.779] [illixr] [debug]      + checking 21: 1064999936 1060000000 4999936
+[2025-10-24 11:01:35.779] [illixr] [debug]      + checking 22: 1069999872 1064999936 4999936
+[2025-10-24 11:01:35.779] [illixr] [debug]      + checking 23: 1074999808 1069999872 4999936
+[2025-10-24 11:01:35.779] [illixr] [debug]      + checking 24: 1080000000 1074999808 5000192
+[2025-10-24 11:01:35.779] [illixr] [debug]      + checking 25: 1084999936 1080000000 4999936
+[2025-10-24 11:01:35.779] [illixr] [debug]      + checking 26: 1089999872 1084999936 4999936
+[2025-10-24 11:01:35.779] [illixr] [debug]      + checking 27: 1094999808 1089999872 4999936
+[2025-10-24 11:01:35.779] [illixr] [debug]      + checking 28: 1100032512 1094999808 5032704
+[2025-10-24 11:01:35.779] [illixr] [debug] 1100032512 Integrating over 30 values
+[2025-10-24 11:01:35.782] [illixr] [debug]   Pos -0.022481, -0.004920, 0.002798
+[2025-10-24 11:01:35.782] [illixr] [debug]   Quat 0.023583, 0.809055, -0.006184, 0.587227
+[2025-10-24 11:01:35.783] [illixr] [debug] ------------- 955032576, 0, 955032576, 1105032704, 0, 1105032704
+[2025-10-24 11:01:35.784] [illixr] [debug]     interpolating 960000000
+[2025-10-24 11:01:35.784] [illixr] [debug]     adding 964999936
+[2025-10-24 11:01:35.784] [illixr] [debug]     adding 969999872
+[2025-10-24 11:01:35.784] [illixr] [debug]     adding 974999808
+[2025-10-24 11:01:35.785] [illixr] [debug]     adding 980000000
+[2025-10-24 11:01:35.787] [illixr] [debug]     adding 984999936
+[2025-10-24 11:01:35.789] [illixr] [debug]     adding 989999872
+[2025-10-24 11:01:35.789] [illixr] [debug]     adding 994999808
+[2025-10-24 11:01:35.790] [illixr] [debug]     adding 1000000000
+[2025-10-24 11:01:35.790] [illixr] [debug]     adding 1004999936
+[2025-10-24 11:01:35.790] [illixr] [debug]     adding 1009999872
+[2025-10-24 11:01:35.790] [illixr] [debug]     adding 1014999808
+[2025-10-24 11:01:35.790] [illixr] [debug]     adding 1020000000
+[2025-10-24 11:01:35.790] [illixr] [debug]     adding 1024999936
+[2025-10-24 11:01:35.790] [illixr] [debug]     adding 1029999872
+[2025-10-24 11:01:35.791] [illixr] [debug]     adding 1034999808
+[2025-10-24 11:01:35.791] [illixr] [debug]     adding 1040000000
+[2025-10-24 11:01:35.792] [illixr] [debug]     adding 1044999936
+[2025-10-24 11:01:35.793] [illixr] [debug]     adding 1049999872
+[2025-10-24 11:01:35.794] [illixr] [debug]     adding 1054999808
+[2025-10-24 11:01:35.795] [illixr] [debug]     adding 1060000000
+[2025-10-24 11:01:35.796] [illixr] [debug]     adding 1064999936
+[2025-10-24 11:01:35.797] [illixr] [debug]     adding 1069999872
+[2025-10-24 11:01:35.797] [illixr] [debug]     adding 1074999808
+[2025-10-24 11:01:35.797] [illixr] [debug]     adding 1080000000
+[2025-10-24 11:01:35.797] [illixr] [debug]     adding 1084999936
+[2025-10-24 11:01:35.797] [illixr] [debug]     adding 1089999872
+[2025-10-24 11:01:35.798] [illixr] [debug]     adding 1094999808
+[2025-10-24 11:01:35.798] [illixr] [debug]     adding 1100000000
+[2025-10-24 11:01:35.798] [illixr] [debug]     adding 1104999936
+[2025-10-24 11:01:35.798] [illixr] [debug]     adding break 1109999872
+[2025-10-24 11:01:35.803] [illixr] [debug]      + checking 0: 960000000 955032576 4967424
+[2025-10-24 11:01:35.803] [illixr] [debug]      + checking 1: 964999936 960000000 4999936
+[2025-10-24 11:01:35.804] [illixr] [debug]      + checking 2: 969999872 964999936 4999936
+[2025-10-24 11:01:35.804] [illixr] [debug]      + checking 3: 974999808 969999872 4999936
+[2025-10-24 11:01:35.805] [illixr] [debug]      + checking 4: 980000000 974999808 5000192
+[2025-10-24 11:01:35.805] [illixr] [debug]      + checking 5: 984999936 980000000 4999936
+[2025-10-24 11:01:35.805] [illixr] [debug]      + checking 6: 989999872 984999936 4999936
+[2025-10-24 11:01:35.805] [illixr] [debug]      + checking 7: 994999808 989999872 4999936
+[2025-10-24 11:01:35.805] [illixr] [debug]      + checking 8: 1000000000 994999808 5000192
+[2025-10-24 11:01:35.805] [illixr] [debug]      + checking 9: 1004999936 1000000000 4999936
+[2025-10-24 11:01:35.805] [illixr] [debug]      + checking 10: 1009999872 1004999936 4999936
+[2025-10-24 11:01:35.805] [illixr] [debug]      + checking 11: 1014999808 1009999872 4999936
+[2025-10-24 11:01:35.806] [illixr] [debug]      + checking 12: 1020000000 1014999808 5000192
+[2025-10-24 11:01:35.806] [illixr] [debug]      + checking 13: 1024999936 1020000000 4999936
+[2025-10-24 11:01:35.806] [illixr] [debug]      + checking 14: 1029999872 1024999936 4999936
+[2025-10-24 11:01:35.806] [illixr] [debug]      + checking 15: 1034999808 1029999872 4999936
+[2025-10-24 11:01:35.806] [illixr] [debug]      + checking 16: 1040000000 1034999808 5000192
+[2025-10-24 11:01:35.806] [illixr] [debug]      + checking 17: 1044999936 1040000000 4999936
+[2025-10-24 11:01:35.806] [illixr] [debug]      + checking 18: 1049999872 1044999936 4999936
+[2025-10-24 11:01:35.806] [illixr] [debug]      + checking 19: 1054999808 1049999872 4999936
+[2025-10-24 11:01:35.806] [illixr] [debug]      + checking 20: 1060000000 1054999808 5000192
+[2025-10-24 11:01:35.806] [illixr] [debug]      + checking 21: 1064999936 1060000000 4999936
+[2025-10-24 11:01:35.806] [illixr] [debug]      + checking 22: 1069999872 1064999936 4999936
+[2025-10-24 11:01:35.806] [illixr] [debug]      + checking 23: 1074999808 1069999872 4999936
+[2025-10-24 11:01:35.807] [illixr] [debug]      + checking 24: 1080000000 1074999808 5000192
+[2025-10-24 11:01:35.807] [illixr] [debug]      + checking 25: 1084999936 1080000000 4999936
+[2025-10-24 11:01:35.807] [illixr] [debug]      + checking 26: 1089999872 1084999936 4999936
+[2025-10-24 11:01:35.807] [illixr] [debug]      + checking 27: 1094999808 1089999872 4999936
+[2025-10-24 11:01:35.807] [illixr] [debug]      + checking 28: 1100000000 1094999808 5000192
+[2025-10-24 11:01:35.807] [illixr] [debug]      + checking 29: 1105032704 1100000000 5032704
+[2025-10-24 11:01:35.807] [illixr] [debug] 1105032704 Integrating over 31 values
+[2025-10-24 11:01:35.810] [illixr] [debug]   Pos -0.022825, -0.004975, 0.002731
+[2025-10-24 11:01:35.810] [illixr] [debug]   Quat 0.023622, 0.809349, -0.005993, 0.586822
+[2025-10-24 11:01:35.810] [illixr] [debug] ------------- 955032576, 0, 955032576, 1110032640, 0, 1110032640
+[2025-10-24 11:01:35.810] [illixr] [debug]     interpolating 960000000
+[2025-10-24 11:01:35.810] [illixr] [debug]     adding 964999936
+[2025-10-24 11:01:35.810] [illixr] [debug]     adding 969999872
+[2025-10-24 11:01:35.810] [illixr] [debug]     adding 974999808
+[2025-10-24 11:01:35.810] [illixr] [debug]     adding 980000000
+[2025-10-24 11:01:35.811] [illixr] [debug]     adding 984999936
+[2025-10-24 11:01:35.811] [illixr] [debug]     adding 989999872
+[2025-10-24 11:01:35.811] [illixr] [debug]     adding 994999808
+[2025-10-24 11:01:35.811] [illixr] [debug]     adding 1000000000
+[2025-10-24 11:01:35.811] [illixr] [debug]     adding 1004999936
+[2025-10-24 11:01:35.811] [illixr] [debug]     adding 1009999872
+[2025-10-24 11:01:35.811] [illixr] [debug]     adding 1014999808
+[2025-10-24 11:01:35.811] [illixr] [debug]     adding 1020000000
+[2025-10-24 11:01:35.811] [illixr] [debug]     adding 1024999936
+[2025-10-24 11:01:35.811] [illixr] [debug]     adding 1029999872
+[2025-10-24 11:01:35.811] [illixr] [debug]     adding 1034999808
+[2025-10-24 11:01:35.811] [illixr] [debug]     adding 1040000000
+[2025-10-24 11:01:35.812] [illixr] [debug]     adding 1044999936
+[2025-10-24 11:01:35.812] [illixr] [debug]     adding 1049999872
+[2025-10-24 11:01:35.812] [illixr] [debug]     adding 1054999808
+[2025-10-24 11:01:35.812] [illixr] [debug]     adding 1060000000
+[2025-10-24 11:01:35.812] [illixr] [debug]     adding 1064999936
+[2025-10-24 11:01:35.812] [illixr] [debug]     adding 1069999872
+[2025-10-24 11:01:35.812] [illixr] [debug]     adding 1074999808
+[2025-10-24 11:01:35.812] [illixr] [debug]     adding 1080000000
+[2025-10-24 11:01:35.812] [illixr] [debug]     adding 1084999936
+[2025-10-24 11:01:35.812] [illixr] [debug]     adding 1089999872
+[2025-10-24 11:01:35.812] [illixr] [debug]     adding 1094999808
+[2025-10-24 11:01:35.813] [illixr] [debug]     adding 1100000000
+[2025-10-24 11:01:35.813] [illixr] [debug]     adding 1104999936
+[2025-10-24 11:01:35.813] [illixr] [debug]     adding 1109999872
+[2025-10-24 11:01:35.813] [illixr] [debug]     adding break 1114999808
+[2025-10-24 11:01:35.813] [illixr] [debug]      + checking 0: 960000000 955032576 4967424
+[2025-10-24 11:01:35.813] [illixr] [debug]      + checking 1: 964999936 960000000 4999936
+[2025-10-24 11:01:35.813] [illixr] [debug]      + checking 2: 969999872 964999936 4999936
+[2025-10-24 11:01:35.813] [illixr] [debug]      + checking 3: 974999808 969999872 4999936
+[2025-10-24 11:01:35.813] [illixr] [debug]      + checking 4: 980000000 974999808 5000192
+[2025-10-24 11:01:35.814] [illixr] [debug]      + checking 5: 984999936 980000000 4999936
+[2025-10-24 11:01:35.814] [illixr] [debug]      + checking 6: 989999872 984999936 4999936
+[2025-10-24 11:01:35.814] [illixr] [debug]      + checking 7: 994999808 989999872 4999936
+[2025-10-24 11:01:35.814] [illixr] [debug]      + checking 8: 1000000000 994999808 5000192
+[2025-10-24 11:01:35.814] [illixr] [debug]      + checking 9: 1004999936 1000000000 4999936
+[2025-10-24 11:01:35.814] [illixr] [debug]      + checking 10: 1009999872 1004999936 4999936
+[2025-10-24 11:01:35.814] [illixr] [debug]      + checking 11: 1014999808 1009999872 4999936
+[2025-10-24 11:01:35.814] [illixr] [debug]      + checking 12: 1020000000 1014999808 5000192
+[2025-10-24 11:01:35.814] [illixr] [debug]      + checking 13: 1024999936 1020000000 4999936
+[2025-10-24 11:01:35.815] [illixr] [debug]      + checking 14: 1029999872 1024999936 4999936
+[2025-10-24 11:01:35.815] [illixr] [debug]      + checking 15: 1034999808 1029999872 4999936
+[2025-10-24 11:01:35.815] [illixr] [debug]      + checking 16: 1040000000 1034999808 5000192
+[2025-10-24 11:01:35.815] [illixr] [debug]      + checking 17: 1044999936 1040000000 4999936
+[2025-10-24 11:01:35.815] [illixr] [debug]      + checking 18: 1049999872 1044999936 4999936
+[2025-10-24 11:01:35.815] [illixr] [debug]      + checking 19: 1054999808 1049999872 4999936
+[2025-10-24 11:01:35.815] [illixr] [debug]      + checking 20: 1060000000 1054999808 5000192
+[2025-10-24 11:01:35.815] [illixr] [debug]      + checking 21: 1064999936 1060000000 4999936
+[2025-10-24 11:01:35.815] [illixr] [debug]      + checking 22: 1069999872 1064999936 4999936
+[2025-10-24 11:01:35.815] [illixr] [debug]      + checking 23: 1074999808 1069999872 4999936
+[2025-10-24 11:01:35.815] [illixr] [debug]      + checking 24: 1080000000 1074999808 5000192
+[2025-10-24 11:01:35.816] [illixr] [debug]      + checking 25: 1084999936 1080000000 4999936
+[2025-10-24 11:01:35.816] [illixr] [debug]      + checking 26: 1089999872 1084999936 4999936
+[2025-10-24 11:01:35.816] [illixr] [debug]      + checking 27: 1094999808 1089999872 4999936
+[2025-10-24 11:01:35.816] [illixr] [debug]      + checking 28: 1100000000 1094999808 5000192
+[2025-10-24 11:01:35.816] [illixr] [debug]      + checking 29: 1104999936 1100000000 4999936
+[2025-10-24 11:01:35.816] [illixr] [debug]      + checking 30: 1110032640 1104999936 5032704
+[2025-10-24 11:01:35.816] [illixr] [debug] 1110032640 Integrating over 32 values
+[2025-10-24 11:01:35.819] [illixr] [debug]   Pos -0.023178, -0.005041, 0.002665
+[2025-10-24 11:01:35.819] [illixr] [debug]   Quat 0.023319, 0.810061, -0.006099, 0.585849
+[2025-10-24 11:01:35.819] [illixr] [debug] ------------- 955032576, 0, 955032576, 1115032576, 0, 1115032576
+[2025-10-24 11:01:35.819] [illixr] [debug]     interpolating 960000000
+[2025-10-24 11:01:35.819] [illixr] [debug]     adding 964999936
+[2025-10-24 11:01:35.819] [illixr] [debug]     adding 969999872
+[2025-10-24 11:01:35.819] [illixr] [debug]     adding 974999808
+[2025-10-24 11:01:35.819] [illixr] [debug]     adding 980000000
+[2025-10-24 11:01:35.819] [illixr] [debug]     adding 984999936
+[2025-10-24 11:01:35.819] [illixr] [debug]     adding 989999872
+[2025-10-24 11:01:35.820] [illixr] [debug]     adding 994999808
+waiting for enough clone states (2 of 5)....
+[2025-10-24 11:01:35.820] [illixr] [debug]     adding 1000000000
+[2025-10-24 11:01:35.820] [illixr] [debug]     adding 1004999936
+[2025-10-24 11:01:35.820] [illixr] [debug]     adding 1009999872
+[2025-10-24 11:01:35.820] [illixr] [debug]     adding 1014999808
+[2025-10-24 11:01:35.820] [illixr] [debug]     adding 1020000000
+[2025-10-24 11:01:35.820] [illixr] [debug]     adding 1024999936
+[2025-10-24 11:01:35.820] [illixr] [debug]     adding 1029999872
+[2025-10-24 11:01:35.820] [illixr] [debug]     adding 1034999808
+[2025-10-24 11:01:35.820] [illixr] [debug]     adding 1040000000
+[2025-10-24 11:01:35.820] [illixr] [debug]     adding 1044999936
+[2025-10-24 11:01:35.821] [illixr] [debug]     adding 1049999872
+[2025-10-24 11:01:35.821] [illixr] [debug]     adding 1054999808
+[2025-10-24 11:01:35.821] [illixr] [debug]     adding 1060000000
+[2025-10-24 11:01:35.821] [illixr] [debug]     adding 1064999936
+[2025-10-24 11:01:35.821] [illixr] [debug]     adding 1069999872
+[2025-10-24 11:01:35.821] [illixr] [debug]     adding 1074999808
+[2025-10-24 11:01:35.821] [illixr] [debug]     adding 1080000000
+[2025-10-24 11:01:35.821] [illixr] [debug]     adding 1084999936
+[2025-10-24 11:01:35.821] [illixr] [debug]     adding 1089999872
+[2025-10-24 11:01:35.821] [illixr] [debug]     adding 1094999808
+[2025-10-24 11:01:35.821] [illixr] [debug]     adding 1100000000
+[2025-10-24 11:01:35.822] [illixr] [debug]     adding 1104999936
+[2025-10-24 11:01:35.822] [illixr] [debug]     adding 1109999872
+[2025-10-24 11:01:35.822] [illixr] [debug]     adding 1114999808
+[2025-10-24 11:01:35.822] [illixr] [debug]     adding break 1120000000
+[2025-10-24 11:01:35.822] [illixr] [debug]      + checking 0: 960000000 955032576 4967424
+[2025-10-24 11:01:35.822] [illixr] [debug]      + checking 1: 964999936 960000000 4999936
+[2025-10-24 11:01:35.822] [illixr] [debug]      + checking 2: 969999872 964999936 4999936
+[2025-10-24 11:01:35.822] [illixr] [debug]      + checking 3: 974999808 969999872 4999936
+[2025-10-24 11:01:35.822] [illixr] [debug]      + checking 4: 980000000 974999808 5000192
+[2025-10-24 11:01:35.822] [illixr] [debug]      + checking 5: 984999936 980000000 4999936
+[2025-10-24 11:01:35.822] [illixr] [debug]      + checking 6: 989999872 984999936 4999936
+[2025-10-24 11:01:35.823] [illixr] [debug]      + checking 7: 994999808 989999872 4999936
+[2025-10-24 11:01:35.823] [illixr] [debug]      + checking 8: 1000000000 994999808 5000192
+[2025-10-24 11:01:35.823] [illixr] [debug]      + checking 9: 1004999936 1000000000 4999936
+[2025-10-24 11:01:35.823] [illixr] [debug]      + checking 10: 1009999872 1004999936 4999936
+[2025-10-24 11:01:35.823] [illixr] [debug]      + checking 11: 1014999808 1009999872 4999936
+[2025-10-24 11:01:35.823] [illixr] [debug]      + checking 12: 1020000000 1014999808 5000192
+[2025-10-24 11:01:35.823] [illixr] [debug]      + checking 13: 1024999936 1020000000 4999936
+[2025-10-24 11:01:35.823] [illixr] [debug]      + checking 14: 1029999872 1024999936 4999936
+[2025-10-24 11:01:35.824] [illixr] [debug]      + checking 15: 1034999808 1029999872 4999936
+[2025-10-24 11:01:35.824] [illixr] [debug]      + checking 16: 1040000000 1034999808 5000192
+[2025-10-24 11:01:35.824] [illixr] [debug]      + checking 17: 1044999936 1040000000 4999936
+[2025-10-24 11:01:35.825] [illixr] [debug]      + checking 18: 1049999872 1044999936 4999936
+[2025-10-24 11:01:35.825] [illixr] [debug]      + checking 19: 1054999808 1049999872 4999936
+[2025-10-24 11:01:35.826] [illixr] [debug]      + checking 20: 1060000000 1054999808 5000192
+[2025-10-24 11:01:35.826] [illixr] [debug]      + checking 21: 1064999936 1060000000 4999936
+[2025-10-24 11:01:35.826] [illixr] [debug]      + checking 22: 1069999872 1064999936 4999936
+[2025-10-24 11:01:35.826] [illixr] [debug]      + checking 23: 1074999808 1069999872 4999936
+[2025-10-24 11:01:35.827] [illixr] [debug]      + checking 24: 1080000000 1074999808 5000192
+[2025-10-24 11:01:35.827] [illixr] [debug]      + checking 25: 1084999936 1080000000 4999936
+[2025-10-24 11:01:35.827] [illixr] [debug]      + checking 26: 1089999872 1084999936 4999936
+[2025-10-24 11:01:35.827] [illixr] [debug]      + checking 27: 1094999808 1089999872 4999936
+[2025-10-24 11:01:35.828] [illixr] [debug]      + checking 28: 1100000000 1094999808 5000192
+[2025-10-24 11:01:35.828] [illixr] [debug]      + checking 29: 1104999936 1100000000 4999936
+[2025-10-24 11:01:35.828] [illixr] [debug]      + checking 30: 1109999872 1104999936 4999936
+[2025-10-24 11:01:35.828] [illixr] [debug]      + checking 31: 1115032576 1109999872 5032704
+[2025-10-24 11:01:35.828] [illixr] [debug] 1115032576 Integrating over 33 values
+[2025-10-24 11:01:35.830] [illixr] [debug]   Pos -0.023532, -0.005095, 0.002603
+[2025-10-24 11:01:35.830] [illixr] [debug]   Quat 0.023579, 0.810504, -0.006503, 0.585222
+[2025-10-24 11:01:35.830] [illixr] [debug] ------------- 1005032704, 0, 1005032704, 1120032512, 0, 1120032512
+[2025-10-24 11:01:35.830] [illixr] [debug]     interpolating 1009999872
+[2025-10-24 11:01:35.831] [illixr] [debug]     adding 1014999808
+[2025-10-24 11:01:35.831] [illixr] [debug]     adding 1020000000
+[2025-10-24 11:01:35.831] [illixr] [debug]     adding 1024999936
+[2025-10-24 11:01:35.831] [illixr] [debug]     adding 1029999872
+[2025-10-24 11:01:35.833] [illixr] [debug]     adding 1034999808
+[2025-10-24 11:01:35.833] [illixr] [debug]     adding 1040000000
+[2025-10-24 11:01:35.834] [illixr] [debug]     adding 1044999936
+[2025-10-24 11:01:35.834] [illixr] [debug]     adding 1049999872
+[2025-10-24 11:01:35.835] [illixr] [debug]     adding 1054999808
+[2025-10-24 11:01:35.835] [illixr] [debug]     adding 1060000000
+[2025-10-24 11:01:35.837] [illixr] [debug]     adding 1064999936
+[2025-10-24 11:01:35.837] [illixr] [debug]     adding 1069999872
+[2025-10-24 11:01:35.838] [illixr] [debug]     adding 1074999808
+[2025-10-24 11:01:35.839] [illixr] [debug]     adding 1080000000
+[2025-10-24 11:01:35.839] [illixr] [debug]     adding 1084999936
+[2025-10-24 11:01:35.839] [illixr] [debug]     adding 1089999872
+[2025-10-24 11:01:35.839] [illixr] [debug]     adding 1094999808
+[2025-10-24 11:01:35.840] [illixr] [debug]     adding 1100000000
+[2025-10-24 11:01:35.840] [illixr] [debug]     adding 1104999936
+[2025-10-24 11:01:35.841] [illixr] [debug]     adding 1109999872
+[2025-10-24 11:01:35.841] [illixr] [debug]     adding 1114999808
+[2025-10-24 11:01:35.843] [illixr] [debug]     adding 1120000000
+[2025-10-24 11:01:35.843] [illixr] [debug]     adding break 1124999936
+[2025-10-24 11:01:35.845] [illixr] [debug]      + checking 0: 1009999872 1005032704 4967168
+[2025-10-24 11:01:35.845] [illixr] [debug]      + checking 1: 1014999808 1009999872 4999936
+[2025-10-24 11:01:35.847] [illixr] [debug]      + checking 2: 1020000000 1014999808 5000192
+[2025-10-24 11:01:35.847] [illixr] [debug]      + checking 3: 1024999936 1020000000 4999936
+[2025-10-24 11:01:35.847] [illixr] [debug]      + checking 4: 1029999872 1024999936 4999936
+[2025-10-24 11:01:35.848] [illixr] [debug]      + checking 5: 1034999808 1029999872 4999936
+[2025-10-24 11:01:35.848] [illixr] [debug]      + checking 6: 1040000000 1034999808 5000192
+[2025-10-24 11:01:35.848] [illixr] [debug]      + checking 7: 1044999936 1040000000 4999936
+[2025-10-24 11:01:35.848] [illixr] [debug]      + checking 8: 1049999872 1044999936 4999936
+[2025-10-24 11:01:35.852] [illixr] [debug]      + checking 9: 1054999808 1049999872 4999936
+[2025-10-24 11:01:35.852] [illixr] [debug]      + checking 10: 1060000000 1054999808 5000192
+[2025-10-24 11:01:35.853] [illixr] [debug]      + checking 11: 1064999936 1060000000 4999936
+[2025-10-24 11:01:35.853] [illixr] [debug]      + checking 12: 1069999872 1064999936 4999936
+[2025-10-24 11:01:35.853] [illixr] [debug]      + checking 13: 1074999808 1069999872 4999936
+[2025-10-24 11:01:35.853] [illixr] [debug]      + checking 14: 1080000000 1074999808 5000192
+[2025-10-24 11:01:35.853] [illixr] [debug]      + checking 15: 1084999936 1080000000 4999936
+[2025-10-24 11:01:35.854] [illixr] [debug]      + checking 16: 1089999872 1084999936 4999936
+[2025-10-24 11:01:35.854] [illixr] [debug]      + checking 17: 1094999808 1089999872 4999936
+[2025-10-24 11:01:35.854] [illixr] [debug]      + checking 18: 1100000000 1094999808 5000192
+[2025-10-24 11:01:35.854] [illixr] [debug]      + checking 19: 1104999936 1100000000 4999936
+[2025-10-24 11:01:35.854] [illixr] [debug]      + checking 20: 1109999872 1104999936 4999936
+[2025-10-24 11:01:35.854] [illixr] [debug]      + checking 21: 1114999808 1109999872 4999936
+[2025-10-24 11:01:35.854] [illixr] [debug]      + checking 22: 1120032512 1114999808 5032704
+[2025-10-24 11:01:35.854] [illixr] [debug] 1120032512 Integrating over 24 values
+[2025-10-24 11:01:35.856] [illixr] [debug]   Pos -0.023819, -0.005359, 0.003924
+[2025-10-24 11:01:35.856] [illixr] [debug]   Quat 0.023676, 0.810944, -0.006893, 0.584604
+[2025-10-24 11:01:35.857] [illixr] [debug] ------------- 1005032704, 0, 1005032704, 1125032704, 0, 1125032704
+[2025-10-24 11:01:35.857] [illixr] [debug]     interpolating 1009999872
+[2025-10-24 11:01:35.857] [illixr] [debug]     adding 1014999808
+[2025-10-24 11:01:35.857] [illixr] [debug]     adding 1020000000
+[2025-10-24 11:01:35.857] [illixr] [debug]     adding 1024999936
+[2025-10-24 11:01:35.858] [illixr] [debug]     adding 1029999872
+[2025-10-24 11:01:35.858] [illixr] [debug]     adding 1034999808
+[2025-10-24 11:01:35.858] [illixr] [debug]     adding 1040000000
+[2025-10-24 11:01:35.858] [illixr] [debug]     adding 1044999936
+[2025-10-24 11:01:35.858] [illixr] [debug]     adding 1049999872
+[2025-10-24 11:01:35.858] [illixr] [debug]     adding 1054999808
+[2025-10-24 11:01:35.858] [illixr] [debug]     adding 1060000000
+[2025-10-24 11:01:35.859] [illixr] [debug]     adding 1064999936
+[2025-10-24 11:01:35.859] [illixr] [debug]     adding 1069999872
+[2025-10-24 11:01:35.859] [illixr] [debug]     adding 1074999808
+[2025-10-24 11:01:35.859] [illixr] [debug]     adding 1080000000
+[2025-10-24 11:01:35.859] [illixr] [debug]     adding 1084999936
+[2025-10-24 11:01:35.859] [illixr] [debug]     adding 1089999872
+[2025-10-24 11:01:35.859] [illixr] [debug]     adding 1094999808
+[2025-10-24 11:01:35.859] [illixr] [debug]     adding 1100000000
+[2025-10-24 11:01:35.859] [illixr] [debug]     adding 1104999936
+[2025-10-24 11:01:35.859] [illixr] [debug]     adding 1109999872
+[2025-10-24 11:01:35.860] [illixr] [debug]     adding 1114999808
+[2025-10-24 11:01:35.860] [illixr] [debug]     adding 1120000000
+[2025-10-24 11:01:35.860] [illixr] [debug]     adding 1124999936
+[2025-10-24 11:01:35.860] [illixr] [debug]     adding break 1129999872
+[2025-10-24 11:01:35.860] [illixr] [debug]      + checking 0: 1009999872 1005032704 4967168
+[2025-10-24 11:01:35.860] [illixr] [debug]      + checking 1: 1014999808 1009999872 4999936
+[2025-10-24 11:01:35.860] [illixr] [debug]      + checking 2: 1020000000 1014999808 5000192
+[2025-10-24 11:01:35.860] [illixr] [debug]      + checking 3: 1024999936 1020000000 4999936
+[2025-10-24 11:01:35.861] [illixr] [debug]      + checking 4: 1029999872 1024999936 4999936
+[2025-10-24 11:01:35.861] [illixr] [debug]      + checking 5: 1034999808 1029999872 4999936
+[2025-10-24 11:01:35.861] [illixr] [debug]      + checking 6: 1040000000 1034999808 5000192
+[2025-10-24 11:01:35.861] [illixr] [debug]      + checking 7: 1044999936 1040000000 4999936
+[2025-10-24 11:01:35.861] [illixr] [debug]      + checking 8: 1049999872 1044999936 4999936
+[2025-10-24 11:01:35.861] [illixr] [debug]      + checking 9: 1054999808 1049999872 4999936
+[2025-10-24 11:01:35.861] [illixr] [debug]      + checking 10: 1060000000 1054999808 5000192
+[2025-10-24 11:01:35.861] [illixr] [debug]      + checking 11: 1064999936 1060000000 4999936
+[2025-10-24 11:01:35.862] [illixr] [debug]      + checking 12: 1069999872 1064999936 4999936
+[2025-10-24 11:01:35.862] [illixr] [debug]      + checking 13: 1074999808 1069999872 4999936
+[2025-10-24 11:01:35.862] [illixr] [debug]      + checking 14: 1080000000 1074999808 5000192
+[2025-10-24 11:01:35.862] [illixr] [debug]      + checking 15: 1084999936 1080000000 4999936
+[2025-10-24 11:01:35.862] [illixr] [debug]      + checking 16: 1089999872 1084999936 4999936
+[2025-10-24 11:01:35.862] [illixr] [debug]      + checking 17: 1094999808 1089999872 4999936
+[2025-10-24 11:01:35.862] [illixr] [debug]      + checking 18: 1100000000 1094999808 5000192
+[2025-10-24 11:01:35.863] [illixr] [debug]      + checking 19: 1104999936 1100000000 4999936
+[2025-10-24 11:01:35.863] [illixr] [debug]      + checking 20: 1109999872 1104999936 4999936
+[2025-10-24 11:01:35.863] [illixr] [debug]      + checking 21: 1114999808 1109999872 4999936
+[2025-10-24 11:01:35.863] [illixr] [debug]      + checking 22: 1120000000 1114999808 5000192
+[2025-10-24 11:01:35.863] [illixr] [debug]      + checking 23: 1125032704 1120000000 5032704
+[2025-10-24 11:01:35.863] [illixr] [debug] 1125032704 Integrating over 25 values
+[2025-10-24 11:01:35.865] [illixr] [debug]   Pos -0.024167, -0.005355, 0.003867
+[2025-10-24 11:01:35.865] [illixr] [debug]   Quat 0.023460, 0.810133, -0.006988, 0.585735
+[2025-10-24 11:01:35.865] [illixr] [debug] ------------- 1005032704, 0, 1005032704, 1130032640, 0, 1130032640
+[2025-10-24 11:01:35.865] [illixr] [debug]     interpolating 1009999872
+[2025-10-24 11:01:35.866] [illixr] [debug]     adding 1014999808
+[2025-10-24 11:01:35.866] [illixr] [debug]     adding 1020000000
+[2025-10-24 11:01:35.866] [illixr] [debug]     adding 1024999936
+[2025-10-24 11:01:35.866] [illixr] [debug]     adding 1029999872
+[2025-10-24 11:01:35.866] [illixr] [debug]     adding 1034999808
+[2025-10-24 11:01:35.866] [illixr] [debug]     adding 1040000000
+[2025-10-24 11:01:35.866] [illixr] [debug]     adding 1044999936
+[2025-10-24 11:01:35.866] [illixr] [debug]     adding 1049999872
+[2025-10-24 11:01:35.866] [illixr] [debug]     adding 1054999808
+[2025-10-24 11:01:35.866] [illixr] [debug]     adding 1060000000
+[2025-10-24 11:01:35.867] [illixr] [debug]     adding 1064999936
+[2025-10-24 11:01:35.867] [illixr] [debug]     adding 1069999872
+[2025-10-24 11:01:35.867] [illixr] [debug]     adding 1074999808
+[2025-10-24 11:01:35.867] [illixr] [debug]     adding 1080000000
+[2025-10-24 11:01:35.867] [illixr] [debug]     adding 1084999936
+[2025-10-24 11:01:35.867] [illixr] [debug]     adding 1089999872
+[2025-10-24 11:01:35.867] [illixr] [debug]     adding 1094999808
+[2025-10-24 11:01:35.867] [illixr] [debug]     adding 1100000000
+[2025-10-24 11:01:35.867] [illixr] [debug]     adding 1104999936
+[2025-10-24 11:01:35.867] [illixr] [debug]     adding 1109999872
+[2025-10-24 11:01:35.868] [illixr] [debug]     adding 1114999808
+[2025-10-24 11:01:35.868] [illixr] [debug]     adding 1120000000
+[2025-10-24 11:01:35.868] [illixr] [debug]     adding 1124999936
+[2025-10-24 11:01:35.868] [illixr] [debug]     adding 1129999872
+[2025-10-24 11:01:35.868] [illixr] [debug]     adding break 1134999808
+[2025-10-24 11:01:35.868] [illixr] [debug]      + checking 0: 1009999872 1005032704 4967168
+[2025-10-24 11:01:35.868] [illixr] [debug]      + checking 1: 1014999808 1009999872 4999936
+[2025-10-24 11:01:35.868] [illixr] [debug]      + checking 2: 1020000000 1014999808 5000192
+[2025-10-24 11:01:35.868] [illixr] [debug]      + checking 3: 1024999936 1020000000 4999936
+[2025-10-24 11:01:35.868] [illixr] [debug]      + checking 4: 1029999872 1024999936 4999936
+[2025-10-24 11:01:35.869] [illixr] [debug]      + checking 5: 1034999808 1029999872 4999936
+[2025-10-24 11:01:35.869] [illixr] [debug]      + checking 6: 1040000000 1034999808 5000192
+[2025-10-24 11:01:35.869] [illixr] [debug]      + checking 7: 1044999936 1040000000 4999936
+[2025-10-24 11:01:35.869] [illixr] [debug]      + checking 8: 1049999872 1044999936 4999936
+[2025-10-24 11:01:35.869] [illixr] [debug]      + checking 9: 1054999808 1049999872 4999936
+[2025-10-24 11:01:35.869] [illixr] [debug]      + checking 10: 1060000000 1054999808 5000192
+[2025-10-24 11:01:35.869] [illixr] [debug]      + checking 11: 1064999936 1060000000 4999936
+[2025-10-24 11:01:35.869] [illixr] [debug]      + checking 12: 1069999872 1064999936 4999936
+[2025-10-24 11:01:35.869] [illixr] [debug]      + checking 13: 1074999808 1069999872 4999936
+[2025-10-24 11:01:35.869] [illixr] [debug]      + checking 14: 1080000000 1074999808 5000192
+[2025-10-24 11:01:35.869] [illixr] [debug]      + checking 15: 1084999936 1080000000 4999936
+[2025-10-24 11:01:35.870] [illixr] [debug]      + checking 16: 1089999872 1084999936 4999936
+[2025-10-24 11:01:35.870] [illixr] [debug]      + checking 17: 1094999808 1089999872 4999936
+[2025-10-24 11:01:35.870] [illixr] [debug]      + checking 18: 1100000000 1094999808 5000192
+[2025-10-24 11:01:35.870] [illixr] [debug]      + checking 19: 1104999936 1100000000 4999936
+[2025-10-24 11:01:35.870] [illixr] [debug]      + checking 20: 1109999872 1104999936 4999936
+[2025-10-24 11:01:35.870] [illixr] [debug]      + checking 21: 1114999808 1109999872 4999936
+[2025-10-24 11:01:35.870] [illixr] [debug]      + checking 22: 1120000000 1114999808 5000192
+[2025-10-24 11:01:35.870] [illixr] [debug]      + checking 23: 1124999936 1120000000 4999936
+[2025-10-24 11:01:35.870] [illixr] [debug]      + checking 24: 1130032640 1124999936 5032704
+[2025-10-24 11:01:35.870] [illixr] [debug] 1130032640 Integrating over 26 values
+[2025-10-24 11:01:35.872] [illixr] [debug]   Pos -0.024511, -0.005340, 0.003811
+[2025-10-24 11:01:35.872] [illixr] [debug]   Quat 0.023877, 0.809200, -0.006898, 0.587008
+[2025-10-24 11:01:35.872] [illixr] [debug] ------------- 1005032704, 0, 1005032704, 1135032576, 0, 1135032576
+[2025-10-24 11:01:35.873] [illixr] [debug]     interpolating 1009999872
+[2025-10-24 11:01:35.873] [illixr] [debug]     adding 1014999808
+[2025-10-24 11:01:35.873] [illixr] [debug]     adding 1020000000
+[2025-10-24 11:01:35.873] [illixr] [debug]     adding 1024999936
+[2025-10-24 11:01:35.873] [illixr] [waiting for enough clone states (3 of 5)....
+debug]     adding 1029999872
+[2025-10-24 11:01:35.873] [illixr] [debug]     adding 1034999808
+[2025-10-24 11:01:35.873] [illixr] [debug]     adding 1040000000
+[2025-10-24 11:01:35.874] [illixr] [debug]     adding 1044999936
+[2025-10-24 11:01:35.874] [illixr] [debug]     adding 1049999872
+[2025-10-24 11:01:35.874] [illixr] [debug]     adding 1054999808
+[2025-10-24 11:01:35.874] [illixr] [debug]     adding 1060000000
+[2025-10-24 11:01:35.874] [illixr] [debug]     adding 1064999936
+[2025-10-24 11:01:35.874] [illixr] [debug]     adding 1069999872
+[2025-10-24 11:01:35.874] [illixr] [debug]     adding 1074999808
+[2025-10-24 11:01:35.874] [illixr] [debug]     adding 1080000000
+[2025-10-24 11:01:35.874] [illixr] [debug]     adding 1084999936
+[2025-10-24 11:01:35.875] [illixr] [debug]     adding 1089999872
+[2025-10-24 11:01:35.875] [illixr] [debug]     adding 1094999808
+[2025-10-24 11:01:35.875] [illixr] [debug]     adding 1100000000
+[2025-10-24 11:01:35.875] [illixr] [debug]     adding 1104999936
+[2025-10-24 11:01:35.875] [illixr] [debug]     adding 1109999872
+[2025-10-24 11:01:35.875] [illixr] [debug]     adding 1114999808
+[2025-10-24 11:01:35.875] [illixr] [debug]     adding 1120000000
+[2025-10-24 11:01:35.875] [illixr] [debug]     adding 1124999936
+[2025-10-24 11:01:35.875] [illixr] [debug]     adding 1129999872
+[2025-10-24 11:01:35.876] [illixr] [debug]     adding 1134999808
+[2025-10-24 11:01:35.876] [illixr] [debug]     adding break 1140000000
+[2025-10-24 11:01:35.876] [illixr] [debug]      + checking 0: 1009999872 1005032704 4967168
+[2025-10-24 11:01:35.876] [illixr] [debug]      + checking 1: 1014999808 1009999872 4999936
+[2025-10-24 11:01:35.876] [illixr] [debug]      + checking 2: 1020000000 1014999808 5000192
+[2025-10-24 11:01:35.876] [illixr] [debug]      + checking 3: 1024999936 1020000000 4999936
+[2025-10-24 11:01:35.876] [illixr] [debug]      + checking 4: 1029999872 1024999936 4999936
+[2025-10-24 11:01:35.876] [illixr] [debug]      + checking 5: 1034999808 1029999872 4999936
+[2025-10-24 11:01:35.877] [illixr] [debug]      + checking 6: 1040000000 1034999808 5000192
+[2025-10-24 11:01:35.877] [illixr] [debug]      + checking 7: 1044999936 1040000000 4999936
+[2025-10-24 11:01:35.877] [illixr] [debug]      + checking 8: 1049999872 1044999936 4999936
+[2025-10-24 11:01:35.877] [illixr] [debug]      + checking 9: 1054999808 1049999872 4999936
+[2025-10-24 11:01:35.877] [illixr] [debug]      + checking 10: 1060000000 1054999808 5000192
+[2025-10-24 11:01:35.878] [illixr] [debug]      + checking 11: 1064999936 1060000000 4999936
+[2025-10-24 11:01:35.878] [illixr] [debug]      + checking 12: 1069999872 1064999936 4999936
+[2025-10-24 11:01:35.878] [illixr] [debug]      + checking 13: 1074999808 1069999872 4999936
+[2025-10-24 11:01:35.879] [illixr] [debug]      + checking 14: 1080000000 1074999808 5000192
+[2025-10-24 11:01:35.879] [illixr] [debug]      + checking 15: 1084999936 1080000000 4999936
+[2025-10-24 11:01:35.880] [illixr] [debug]      + checking 16: 1089999872 1084999936 4999936
+[2025-10-24 11:01:35.880] [illixr] [debug]      + checking 17: 1094999808 1089999872 4999936
+[2025-10-24 11:01:35.880] [illixr] [debug]      + checking 18: 1100000000 1094999808 5000192
+[2025-10-24 11:01:35.881] [illixr] [debug]      + checking 19: 1104999936 1100000000 4999936
+[2025-10-24 11:01:35.881] [illixr] [debug]      + checking 20: 1109999872 1104999936 4999936
+[2025-10-24 11:01:35.881] [illixr] [debug]      + checking 21: 1114999808 1109999872 4999936
+[2025-10-24 11:01:35.881] [illixr] [debug]      + checking 22: 1120000000 1114999808 5000192
+[2025-10-24 11:01:35.881] [illixr] [debug]      + checking 23: 1124999936 1120000000 4999936
+[2025-10-24 11:01:35.881] [illixr] [debug]      + checking 24: 1129999872 1124999936 4999936
+[2025-10-24 11:01:35.881] [illixr] [debug]      + checking 25: 1135032576 1129999872 5032704
+[2025-10-24 11:01:35.881] [illixr] [debug] 1135032576 Integrating over 27 values
+[2025-10-24 11:01:35.883] [illixr] [debug]   Pos -0.024861, -0.005344, 0.003747
+[2025-10-24 11:01:35.883] [illixr] [debug]   Quat 0.023636, 0.808686, -0.006465, 0.587731
+[2025-10-24 11:01:35.884] [illixr] [debug] ------------- 1055032576, 0, 1055032576, 1140032512, 0, 1140032512
+[2025-10-24 11:01:35.884] [illixr] [debug]     interpolating 1060000000
+[2025-10-24 11:01:35.884] [illixr] [debug]     adding 1064999936
+[2025-10-24 11:01:35.884] [illixr] [debug]     adding 1069999872
+[2025-10-24 11:01:35.884] [illixr] [debug]     adding 1074999808
+[2025-10-24 11:01:35.884] [illixr] [debug]     adding 1080000000
+[2025-10-24 11:01:35.884] [illixr] [debug]     adding 1084999936
+[2025-10-24 11:01:35.885] [illixr] [debug]     adding 1089999872
+[2025-10-24 11:01:35.885] [illixr] [debug]     adding 1094999808
+[2025-10-24 11:01:35.885] [illixr] [debug]     adding 1100000000
+[2025-10-24 11:01:35.886] [illixr] [debug]     adding 1104999936
+[2025-10-24 11:01:35.887] [illixr] [debug]     adding 1109999872
+[2025-10-24 11:01:35.887] [illixr] [debug]     adding 1114999808
+[2025-10-24 11:01:35.887] [illixr] [debug]     adding 1120000000
+[2025-10-24 11:01:35.887] [illixr] [debug]     adding 1124999936
+[2025-10-24 11:01:35.887] [illixr] [debug]     adding 1129999872
+[2025-10-24 11:01:35.888] [illixr] [debug]     adding 1134999808
+[2025-10-24 11:01:35.888] [illixr] [debug]     adding 1140000000
+[2025-10-24 11:01:35.889] [illixr] [debug]     adding break 1144999936
+[2025-10-24 11:01:35.890] [illixr] [debug]      + checking 0: 1060000000 1055032576 4967424
+[2025-10-24 11:01:35.891] [illixr] [debug]      + checking 1: 1064999936 1060000000 4999936
+[2025-10-24 11:01:35.892] [illixr] [debug]      + checking 2: 1069999872 1064999936 4999936
+[2025-10-24 11:01:35.893] [illixr] [debug]      + checking 3: 1074999808 1069999872 4999936
+[2025-10-24 11:01:35.893] [illixr] [debug]      + checking 4: 1080000000 1074999808 5000192
+[2025-10-24 11:01:35.893] [illixr] [debug]      + checking 5: 1084999936 1080000000 4999936
+[2025-10-24 11:01:35.893] [illixr] [debug]      + checking 6: 1089999872 1084999936 4999936
+[2025-10-24 11:01:35.894] [illixr] [debug]      + checking 7: 1094999808 1089999872 4999936
+[2025-10-24 11:01:35.894] [illixr] [debug]      + checking 8: 1100000000 1094999808 5000192
+[2025-10-24 11:01:35.896] [illixr] [debug]      + checking 9: 1104999936 1100000000 4999936
+[2025-10-24 11:01:35.897] [illixr] [debug]      + checking 10: 1109999872 1104999936 4999936
+[2025-10-24 11:01:35.898] [illixr] [debug]      + checking 11: 1114999808 1109999872 4999936
+[2025-10-24 11:01:35.898] [illixr] [debug]      + checking 12: 1120000000 1114999808 5000192
+[2025-10-24 11:01:35.899] [illixr] [debug]      + checking 13: 1124999936 1120000000 4999936
+[2025-10-24 11:01:35.899] [illixr] [debug]      + checking 14: 1129999872 1124999936 4999936
+[2025-10-24 11:01:35.900] [illixr] [debug]      + checking 15: 1134999808 1129999872 4999936
+[2025-10-24 11:01:35.900] [illixr] [debug]      + checking 16: 1140032512 1134999808 5032704
+[2025-10-24 11:01:35.900] [illixr] [debug] 1140032512 Integrating over 18 values
+[2025-10-24 11:01:35.902] [illixr] [debug]   Pos -0.025148, -0.005441, 0.004877
+[2025-10-24 11:01:35.902] [illixr] [debug]   Quat 0.023417, 0.808812, -0.005801, 0.587572
+[2025-10-24 11:01:35.903] [illixr] [debug] ------------- 1055032576, 0, 1055032576, 1145032704, 0, 1145032704
+[2025-10-24 11:01:35.904] [illixr] [debug]     interpolating 1060000000
+[2025-10-24 11:01:35.904] [illixr] [debug]     adding 1064999936
+[2025-10-24 11:01:35.905] [illixr] [debug]     adding 1069999872
+[2025-10-24 11:01:35.905] [illixr] [debug]     adding 1074999808
+[2025-10-24 11:01:35.906] [illixr] [debug]     adding 1080000000
+[2025-10-24 11:01:35.906] [illixr] [debug]     adding 1084999936
+[2025-10-24 11:01:35.906] [illixr] [debug]     adding 1089999872
+[2025-10-24 11:01:35.906] [illixr] [debug]     adding 1094999808
+[2025-10-24 11:01:35.906] [illixr] [debug]     adding 1100000000
+[2025-10-24 11:01:35.906] [illixr] [debug]     adding 1104999936
+[2025-10-24 11:01:35.907] [illixr] [debug]     adding 1109999872
+[2025-10-24 11:01:35.907] [illixr] [debug]     adding 1114999808
+[2025-10-24 11:01:35.907] [illixr] [debug]     adding 1120000000
+[2025-10-24 11:01:35.907] [illixr] [debug]     adding 1124999936
+[2025-10-24 11:01:35.907] [illixr] [debug]     adding 1129999872
+[2025-10-24 11:01:35.908] [illixr] [debug]     adding 1134999808
+[2025-10-24 11:01:35.908] [illixr] [debug]     adding 1140000000
+[2025-10-24 11:01:35.908] [illixr] [debug]     adding 1144999936
+[2025-10-24 11:01:35.908] [illixr] [debug]     adding break 1149999872
+[2025-10-24 11:01:35.908] [illixr] [debug]      + checking 0: 1060000000 1055032576 4967424
+[2025-10-24 11:01:35.908] [illixr] [debug]      + checking 1: 1064999936 1060000000 4999936
+[2025-10-24 11:01:35.908] [illixr] [debug]      + checking 2: 1069999872 1064999936 4999936
+[2025-10-24 11:01:35.908] [illixr] [debug]      + checking 3: 1074999808 1069999872 4999936
+[2025-10-24 11:01:35.909] [illixr] [debug]      + checking 4: 1080000000 1074999808 5000192
+[2025-10-24 11:01:35.909] [illixr] [debug]      + checking 5: 1084999936 1080000000 4999936
+[2025-10-24 11:01:35.909] [illixr] [debug]      + checking 6: 1089999872 1084999936 4999936
+[2025-10-24 11:01:35.909] [illixr] [debug]      + checking 7: 1094999808 1089999872 4999936
+[2025-10-24 11:01:35.909] [illixr] [debug]      + checking 8: 1100000000 1094999808 5000192
+[2025-10-24 11:01:35.910] [illixr] [debug]      + checking 9: 1104999936 1100000000 4999936
+[2025-10-24 11:01:35.910] [illixr] [debug]      + checking 10: 1109999872 1104999936 4999936
+[2025-10-24 11:01:35.910] [illixr] [debug]      + checking 11: 1114999808 1109999872 4999936
+[2025-10-24 11:01:35.910] [illixr] [debug]      + checking 12: 1120000000 1114999808 5000192
+[2025-10-24 11:01:35.910] [illixr] [debug]      + checking 13: 1124999936 1120000000 4999936
+[2025-10-24 11:01:35.910] [illixr] [debug]      + checking 14: 1129999872 1124999936 4999936
+[2025-10-24 11:01:35.910] [illixr] [debug]      + checking 15: 1134999808 1129999872 4999936
+[2025-10-24 11:01:35.910] [illixr] [debug]      + checking 16: 1140000000 1134999808 5000192
+[2025-10-24 11:01:35.910] [illixr] [debug]      + checking 17: 1145032704 1140000000 5032704
+[2025-10-24 11:01:35.910] [illixr] [debug] 1145032704 Integrating over 19 values
+[2025-10-24 11:01:35.912] [illixr] [debug]   Pos -0.025513, -0.005512, 0.004813
+[2025-10-24 11:01:35.912] [illixr] [debug]   Quat 0.023383, 0.809376, -0.005848, 0.586796
+[2025-10-24 11:01:35.912] [illixr] [debug] ------------- 1055032576, 0, 1055032576, 1150032640, 0, 1150032640
+[2025-10-24 11:01:35.912] [illixr] [debug]     interpolating 1060000000
+[2025-10-24 11:01:35.912] [illixr] [debug]     adding 1064999936
+[2025-10-24 11:01:35.913] [illixr] [debug]     adding 1069999872
+[2025-10-24 11:01:35.913] [illixr] [debug]     adding 1074999808
+[2025-10-24 11:01:35.913] [illixr] [debug]     adding 1080000000
+[2025-10-24 11:01:35.913] [illixr] [debug]     adding 1084999936
+[2025-10-24 11:01:35.913] [illixr] [debug]     adding 1089999872
+[2025-10-24 11:01:35.913] [illixr] [debug]     adding 1094999808
+[2025-10-24 11:01:35.913] [illixr] [debug]     adding 1100000000
+[2025-10-24 11:01:35.913] [illixr] [debug]     adding 1104999936
+[2025-10-24 11:01:35.913] [illixr] [debug]     adding 1109999872
+[2025-10-24 11:01:35.913] [illixr] [debug]     adding 1114999808
+[2025-10-24 11:01:35.914] [illixr] [debug]     adding 1120000000
+[2025-10-24 11:01:35.914] [illixr] [debug]     adding 1124999936
+[2025-10-24 11:01:35.914] [illixr] [debug]     adding 1129999872
+[2025-10-24 11:01:35.914] [illixr] [debug]     adding 1134999808
+[2025-10-24 11:01:35.914] [illixr] [debug]     adding 1140000000
+[2025-10-24 11:01:35.914] [illixr] [debug]     adding 1144999936
+[2025-10-24 11:01:35.914] [illixr] [debug]     adding 1149999872
+[2025-10-24 11:01:35.914] [illixr] [debug]     adding break 1154999808
+[2025-10-24 11:01:35.914] [illixr] [debug]      + checking 0: 1060000000 1055032576 4967424
+[2025-10-24 11:01:35.915] [illixr] [debug]      + checking 1: 1064999936 1060000000 4999936
+[2025-10-24 11:01:35.915] [illixr] [debug]      + checking 2: 1069999872 1064999936 4999936
+[2025-10-24 11:01:35.915] [illixr] [debug]      + checking 3: 1074999808 1069999872 4999936
+[2025-10-24 11:01:35.915] [illixr] [debug]      + checking 4: 1080000000 1074999808 5000192
+[2025-10-24 11:01:35.915] [illixr] [debug]      + checking 5: 1084999936 1080000000 4999936
+[2025-10-24 11:01:35.915] [illixr] [debug]      + checking 6: 1089999872 1084999936 4999936
+[2025-10-24 11:01:35.915] [illixr] [debug]      + checking 7: 1094999808 1089999872 4999936
+[2025-10-24 11:01:35.915] [illixr] [debug]      + checking 8: 1100000000 1094999808 5000192
+[2025-10-24 11:01:35.915] [illixr] [debug]      + checking 9: 1104999936 1100000000 4999936
+[2025-10-24 11:01:35.916] [illixr] [debug]      + checking 10: 1109999872 1104999936 4999936
+[2025-10-24 11:01:35.916] [illixr] [debug]      + checking 11: 1114999808 1109999872 4999936
+[2025-10-24 11:01:35.916] [illixr] [debug]      + checking 12: 1120000000 1114999808 5000192
+[2025-10-24 11:01:35.916] [illixr] [debug]      + checking 13: 1124999936 1120000000 4999936
+[2025-10-24 11:01:35.916] [illixr] [debug]      + checking 14: 1129999872 1124999936 4999936
+[2025-10-24 11:01:35.916] [illixr] [debug]      + checking 15: 1134999808 1129999872 4999936
+[2025-10-24 11:01:35.916] [illixr] [debug]      + checking 16: 1140000000 1134999808 5000192
+[2025-10-24 11:01:35.917] [illixr] [debug]      + checking 17: 1144999936 1140000000 4999936
+[2025-10-24 11:01:35.917] [illixr] [debug]      + checking 18: 1150032640 1144999936 5032704
+[2025-10-24 11:01:35.917] [illixr] [debug] 1150032640 Integrating over 20 values
+[2025-10-24 11:01:35.919] [illixr] [debug]   Pos -0.025884, -0.005595, 0.004753
+[2025-10-24 11:01:35.919] [illixr] [debug]   Quat 0.023567, 0.809653, -0.006048, 0.586404
+[2025-10-24 11:01:35.919] [illixr] [debug] ------------- 1055032576, 0, 1055032576, 1155032576, 0, 1155032576
+[2025-10-24 11:01:35.919] [illixr] [debug]     interpolating 1060000000
+[2025-10-24 11:01:35.919] [illixr] [debug]     adding 1064999936
+[2025-10-24 11:01:35.919] [illixr] [debug]     adding 1069999872
+[2025-10-24 11:01:35.919] [illixr] [debug]     adding 1074999808
+[2025-10-24 11:01:35.920] [illixr] [debug]     adding 1080000000
+[2025-10-24 11:01:35.920] [illixr] [debug]     adding 1084999936
+[2025-10-24 11:01:35.920] [illixr] [debug]     adding 1089999872
+[2025-10-24 11:01:35.920] [illixr] [debug]     adding 1094999808
+[2025-10-24 11:01:35.920] [illixr] [debug]     adding 1100000000
+[2025-10-24 11:01:35.920] [illixr] [debug]     adding 1104999936
+[2025-10-24 11:01:35.920] [illixr] [debug]     adding 1109999872
+[2025-10-24 11:01:35.920] [illixr] [debug]     adding 1114999808
+[2025-10-24 11:01:35.920] [illixr] [debug]     adding 1120000000
+[2025-10-24 11:01:35.920] [illixr] [debug]     adding 1124999936
+[2025-10-24 11:01:35.921] [illixr] [debug]     adding 1129999872
+[2025-10-24 11:01:35.921] [illixr] [debug]     adding 1134999808
+[2025-10-24 11:01:35.921] [illixr] [debug]     adding 1140000000
+[2025-10-24 11:01:35.921] [illixr] [debug]     adding 1144999936
+[2025-10-24 11:01:35.921] [illixr] [debug]     adding 1149999872
+[2025-10-24 11:01:35.921] [illixr] [debug]     adding 1154999808
+[2025-10-24 11:01:35.921] [illixr] [debug]     adding break 1160000000
+[2025-10-24 11:01:35.921] [illixr] [debug]      + checking 0: 1060000000 1055032576 4967424
+[2025-10-24 11:01:35.921] [illixr] [debug]      + checking 1: 1064999936 1060000000 4999936
+[2025-10-24 11:01:35.921] [illixr] [debug]      + checking 2: 1069999872 1064999936 4999936
+[2025-10-24 11:01:35.921] [illixr] [debug]      + checking 3: 1074999808 1069999872 4999936
+[2025-10-24 11:01:35.921] [illixr] [debug]      + checking 4: 1080000000 1074999808 5000192
+[2025-10-24 11:01:35.922] [illixr] [debug]      + checking 5: 1084999936 1080000000 4999936
+[2025-10-24 11:01:35.922] [illixr] [debug]      + checking 6: 1089999872 1084999936 4999936
+[2025-10-24 11:01:35.922] [illixr] [debug]      + checking 7: 1094999808 1089999872 4999936
+[2025-10-24 11:01:35.922] [illixr] [debug]      + checking 8: 1100000000 1094999808 5000192
+[2025-10-24 11:01:35.922] [illixr] [debug]      + checking 9: 1104999936 1100000000 4999936
+[2025-10-24 11:01:35.922] [illixr] [debug]      + checking 10: 1109999872 1104999936 4999936
+[2025-10-24 11:01:35.922] [illixr] [debug]      + checking 11: 1114999808 1109999872 4999936
+[2025-10-24 11:01:35.922] [illixr] [debug]      + checking 12: 1120000000 1114999808 5000192
+[2025-10-24 11:01:35.922] [illixr] [debug]      + checking 13: 1124999936 1120000000 4999936
+[2025-10-24 11:01:35.922] [illixr] [debug]      + checking 14: 1129999872 1124999936 4999936
+[2025-10-24 11:01:35.922] [illixr] [debug]      + checking 15: 1134999808 1129999872 4999936
+[2025-10-24 11:01:35.923] [illixr] [debug]      + checking 16: 1140000000 1134999808 5000192
+[2025-10-24 11:01:35.923] [illixr] [debug]      + checking 17: 1144999936 1140000000 4999936
+[2025-10-24 11:01:35.923] [illixr] [debug]      + checking 18: 1149999872 1144999936 4999936
+[2025-10-24 11:01:35.923] [illixr] [debugwaiting for enough clone states (4 of 5)....
+]      + checking 19: 1155032576 1149999872 5032704
+[2025-10-24 11:01:35.923] [illixr] [debug] 1155032576 Integrating over 21 values
+[2025-10-24 11:01:35.925] [illixr] [debug]   Pos -0.026264, -0.005681, 0.004694
+[2025-10-24 11:01:35.925] [illixr] [debug]   Quat 0.023430, 0.810057, -0.006331, 0.585849
+[2025-10-24 11:01:35.925] [illixr] [debug] ------------- 1105032704, 0, 1105032704, 1160032512, 0, 1160032512
+[2025-10-24 11:01:35.925] [illixr] [debug]     interpolating 1109999872
+[2025-10-24 11:01:35.925] [illixr] [debug]     adding 1114999808
+[2025-10-24 11:01:35.925] [illixr] [debug]     adding 1120000000
+[2025-10-24 11:01:35.925] [illixr] [debug]     adding 1124999936
+[2025-10-24 11:01:35.926] [illixr] [debug]     adding 1129999872
+[2025-10-24 11:01:35.926] [illixr] [debug]     adding 1134999808
+[2025-10-24 11:01:35.926] [illixr] [debug]     adding 1140000000
+[2025-10-24 11:01:35.926] [illixr] [debug]     adding 1144999936
+[2025-10-24 11:01:35.926] [illixr] [debug]     adding 1149999872
+[2025-10-24 11:01:35.926] [illixr] [debug]     adding 1154999808
+[2025-10-24 11:01:35.926] [illixr] [debug]     adding 1160000000
+[2025-10-24 11:01:35.926] [illixr] [debug]     adding break 1164999936
+[2025-10-24 11:01:35.926] [illixr] [debug]      + checking 0: 1109999872 1105032704 4967168
+[2025-10-24 11:01:35.926] [illixr] [debug]      + checking 1: 1114999808 1109999872 4999936
+[2025-10-24 11:01:35.927] [illixr] [debug]      + checking 2: 1120000000 1114999808 5000192
+[2025-10-24 11:01:35.927] [illixr] [debug]      + checking 3: 1124999936 1120000000 4999936
+[2025-10-24 11:01:35.927] [illixr] [debug]      + checking 4: 1129999872 1124999936 4999936
+[2025-10-24 11:01:35.927] [illixr] [debug]      + checking 5: 1134999808 1129999872 4999936
+[2025-10-24 11:01:35.927] [illixr] [debug]      + checking 6: 1140000000 1134999808 5000192
+[2025-10-24 11:01:35.927] [illixr] [debug]      + checking 7: 1144999936 1140000000 4999936
+[2025-10-24 11:01:35.927] [illixr] [debug]      + checking 8: 1149999872 1144999936 4999936
+[2025-10-24 11:01:35.927] [illixr] [debug]      + checking 9: 1154999808 1149999872 4999936
+[2025-10-24 11:01:35.927] [illixr] [debug]      + checking 10: 1160032512 1154999808 5032704
+[2025-10-24 11:01:35.928] [illixr] [debug] 1160032512 Integrating over 12 values
+[2025-10-24 11:01:35.929] [illixr] [debug]   Pos -0.026634, -0.005842, 0.005905
+[2025-10-24 11:01:35.929] [illixr] [debug]   Quat 0.023957, 0.810295, -0.006912, 0.585491
+[2025-10-24 11:01:35.929] [illixr] [debug] ------------- 1105032704, 0, 1105032704, 1165032704, 0, 1165032704
+[2025-10-24 11:01:35.929] [illixr] [debug]     interpolating 1109999872
+[2025-10-24 11:01:35.930] [illixr] [debug]     adding 1114999808
+[2025-10-24 11:01:35.930] [illixr] [debug]     adding 1120000000
+[2025-10-24 11:01:35.930] [illixr] [debug]     adding 1124999936
+[2025-10-24 11:01:35.930] [illixr] [debug]     adding 1129999872
+[2025-10-24 11:01:35.931] [illixr] [debug]     adding 1134999808
+[2025-10-24 11:01:35.932] [illixr] [debug]     adding 1140000000
+[2025-10-24 11:01:35.932] [illixr] [debug]     adding 1144999936
+[2025-10-24 11:01:35.933] [illixr] [debug]     adding 1149999872
+[2025-10-24 11:01:35.933] [illixr] [debug]     adding 1154999808
+[2025-10-24 11:01:35.933] [illixr] [debug]     adding 1160000000
+[2025-10-24 11:01:35.933] [illixr] [debug]     adding 1164999936
+[2025-10-24 11:01:35.933] [illixr] [debug]     adding break 1169999872
+[2025-10-24 11:01:35.934] [illixr] [debug]      + checking 0: 1109999872 1105032704 4967168
+[2025-10-24 11:01:35.934] [illixr] [debug]      + checking 1: 1114999808 1109999872 4999936
+[2025-10-24 11:01:35.934] [illixr] [debug]      + checking 2: 1120000000 1114999808 5000192
+[2025-10-24 11:01:35.934] [illixr] [debug]      + checking 3: 1124999936 1120000000 4999936
+[2025-10-24 11:01:35.934] [illixr] [debug]      + checking 4: 1129999872 1124999936 4999936
+[2025-10-24 11:01:35.934] [illixr] [debug]      + checking 5: 1134999808 1129999872 4999936
+[2025-10-24 11:01:35.934] [illixr] [debug]      + checking 6: 1140000000 1134999808 5000192
+[2025-10-24 11:01:35.934] [illixr] [debug]      + checking 7: 1144999936 1140000000 4999936
+[2025-10-24 11:01:35.934] [illixr] [debug]      + checking 8: 1149999872 1144999936 4999936
+[2025-10-24 11:01:35.934] [illixr] [debug]      + checking 9: 1154999808 1149999872 4999936
+[2025-10-24 11:01:35.934] [illixr] [debug]      + checking 10: 1160000000 1154999808 5000192
+[2025-10-24 11:01:35.935] [illixr] [debug]      + checking 11: 1165032704 1160000000 5032704
+[2025-10-24 11:01:35.935] [illixr] [debug] 1165032704 Integrating over 13 values
+[2025-10-24 11:01:35.936] [illixr] [debug]   Pos -0.027010, -0.005900, 0.005844
+[2025-10-24 11:01:35.936] [illixr] [debug]   Quat 0.024023, 0.810182, -0.006726, 0.585647
+[2025-10-24 11:01:35.936] [illixr] [debug] ------------- 1105032704, 0, 1105032704, 1170032640, 0, 1170032640
+[2025-10-24 11:01:35.936] [illixr] [debug]     interpolating 1109999872
+[2025-10-24 11:01:35.936] [illixr] [debug]     adding 1114999808
+[2025-10-24 11:01:35.936] [illixr] [debug]     adding 1120000000
+[2025-10-24 11:01:35.936] [illixr] [debug]     adding 1124999936
+[2025-10-24 11:01:35.937] [illixr] [debug]     adding 1129999872
+[2025-10-24 11:01:35.937] [illixr] [debug]     adding 1134999808
+[2025-10-24 11:01:35.937] [illixr] [debug]     adding 1140000000
+[2025-10-24 11:01:35.940] [illixr] [debug]     adding 1144999936
+[2025-10-24 11:01:35.940] [illixr] [debug]     adding 1149999872
+[2025-10-24 11:01:35.940] [illixr] [debug]     adding 1154999808
+[2025-10-24 11:01:35.941] [illixr] [debug]     adding 1160000000
+[2025-10-24 11:01:35.941] [illixr] [debug]     adding 1164999936
+[2025-10-24 11:01:35.942] [illixr] [debug]     adding 1169999872
+[2025-10-24 11:01:35.943] [illixr] [debug]     adding break 1174999808
+[2025-10-24 11:01:35.945] [illixr] [debug]      + checking 0: 1109999872 1105032704 4967168
+[2025-10-24 11:01:35.945] [illixr] [debug]      + checking 1: 1114999808 1109999872 4999936
+[2025-10-24 11:01:35.945] [illixr] [debug]      + checking 2: 1120000000 1114999808 5000192
+[2025-10-24 11:01:35.945] [illixr] [debug]      + checking 3: 1124999936 1120000000 4999936
+[2025-10-24 11:01:35.945] [illixr] [debug]      + checking 4: 1129999872 1124999936 4999936
+[2025-10-24 11:01:35.945] [illixr] [debug]      + checking 5: 1134999808 1129999872 4999936
+[2025-10-24 11:01:35.945] [illixr] [debug]      + checking 6: 1140000000 1134999808 5000192
+[2025-10-24 11:01:35.946] [illixr] [debug]      + checking 7: 1144999936 1140000000 4999936
+[2025-10-24 11:01:35.947] [illixr] [debug]      + checking 8: 1149999872 1144999936 4999936
+[2025-10-24 11:01:35.948] [illixr] [debug]      + checking 9: 1154999808 1149999872 4999936
+[2025-10-24 11:01:35.949] [illixr] [debug]      + checking 10: 1160000000 1154999808 5000192
+[2025-10-24 11:01:35.950] [illixr] [debug]      + checking 11: 1164999936 1160000000 4999936
+[2025-10-24 11:01:35.951] [illixr] [debug]      + checking 12: 1170032640 1164999936 5032704
+[2025-10-24 11:01:35.951] [illixr] [debug] 1170032640 Integrating over 14 values
+[2025-10-24 11:01:35.953] [illixr] [debug]   Pos -0.027389, -0.005942, 0.005781
+[2025-10-24 11:01:35.953] [illixr] [debug]   Quat 0.023675, 0.810157, -0.006786, 0.585696
+[2025-10-24 11:01:35.953] [illixr] [debug] ------------- 1105032704, 0, 1105032704, 1175032576, 0, 1175032576
+[2025-10-24 11:01:35.956] [illixr] [debug]     interpolating 1109999872
+[2025-10-24 11:01:35.958] [illixr] [debug]     adding 1114999808
+[2025-10-24 11:01:35.958] [illixr] [debug]     adding 1120000000
+[2025-10-24 11:01:35.958] [illixr] [debug]     adding 1124999936
+[2025-10-24 11:01:35.958] [illixr] [debug]     adding 1129999872
+[2025-10-24 11:01:35.958] [illixr] [debug]     adding 1134999808
+[2025-10-24 11:01:35.958] [illixr] [debug]     adding 1140000000
+[2025-10-24 11:01:35.958] [illixr] [debug]     adding 1144999936
+[2025-10-24 11:01:35.959] [illixr] [debug]     adding 1149999872
+[2025-10-24 11:01:35.959] [illixr] [debug]     adding 1154999808
+[2025-10-24 11:01:35.959] [illixr] [debug]     adding 1160000000
+[2025-10-24 11:01:35.959] [illixr] [debug]     adding 1164999936
+[2025-10-24 11:01:35.959] [illixr] [debug]     adding 1169999872
+[2025-10-24 11:01:35.959] [illixr] [debug]     adding 1174999808
+[2025-10-24 11:01:35.959] [illixr] [debug]     adding break 1180000000
+[2025-10-24 11:01:35.959] [illixr] [debug]      + checking 0: 1109999872 1105032704 4967168
+[2025-10-24 11:01:35.959] [illixr] [debug]      + checking 1: 1114999808 1109999872 4999936
+[2025-10-24 11:01:35.959] [illixr] [debug]      + checking 2: 1120000000 1114999808 5000192
+[2025-10-24 11:01:35.959] [illixr] [debug]      + checking 3: 1124999936 1120000000 4999936
+[2025-10-24 11:01:35.960] [illixr] [debug]      + checking 4: 1129999872 1124999936 4999936
+[2025-10-24 11:01:35.960] [illixr] [debug]      + checking 5: 1134999808 1129999872 4999936
+[2025-10-24 11:01:35.960] [illixr] [debug]      + checking 6: 1140000000 1134999808 5000192
+[2025-10-24 11:01:35.960] [illixr] [debug]      + checking 7: 1144999936 1140000000 4999936
+[2025-10-24 11:01:35.960] [illixr] [debug]      + checking 8: 1149999872 1144999936 4999936
+[2025-10-24 11:01:35.960] [illixr] [debug]      + checking 9: 1154999808 1149999872 4999936
+[2025-10-24 11:01:35.960] [illixr] [debug]      + checking 10: 1160000000 1154999808 5000192
+[2025-10-24 11:01:35.960] [illixr] [debug]      + checking 11: 1164999936 1160000000 4999936
+[2025-10-24 11:01:35.960] [illixr] [debug]      + checking 12: 1169999872 1164999936 4999936
+[2025-10-24 11:01:35.960] [illixr] [debug]      + checking 13: 1175032576 1169999872 5032704
+[2025-10-24 11:01:35.961] [illixr] [debug] 1175032576 Integrating over 15 values
+[2025-10-24 11:01:35.962] [illixr] [debug]   Pos -0.027766, -0.005970, 0.005719
+[2025-10-24 11:01:35.962] [illixr] [debug]   Quat 0.023761, 0.810103, -0.006483, 0.585770
+[TIME]: 39.5570 ms for tracking
+[TIME]: 7.9940 ms for propagation
+[TIME]: 45.8500 ms for MSCKF update (1 features)
+[TIME]: 0.0000 ms for SLAM update (0 feats)
+[TIME]: 0.0000 ms for SLAM delayed init (0 feats)
+[TIME]: 9.0850 ms for marginalization (5 clones in state)
+[TIME]: 102.4860 ms for total
+[AVG-TIME]: 39.5570 ms for tracking
+[AVG-TIME]: 62.9290 ms for filter
+[AVG-TIME]: 102.4860 ms for total
+q_GtoI = 0.794,0.000,0.605,0.063 | p_IinG = -0.204,0.285,0.007 | dist = 0.00 (meters)
+bg = -0.0108,-0.0072,0.0984 | ba = -0.0231,0.0048,0.0123
+camera-imu timeoffset = -0.00326
+cam0 intrinsics = 458.660,457.293,367.206,248.357 | -0.283,0.074,0.000,-0.000
+cam1 intrinsics = 457.580,456.137,380.009,255.256 | -0.284,0.074,0.000,0.000
+cam0 extrinsics = -0.008,0.010,0.702,0.712 | 0.065,-0.021,-0.008
+cam1 extrinsics = -0.003,0.015,0.702,0.712 | -0.045,-0.020,-0.009
+[2025-10-24 11:01:36.264] [illixr] [debug] [dynamic_lib] Destructing library : plugin.offline_cam.dbg.dll
+[2025-10-24 11:01:36.265] [illixr] [debug] [dynamic_lib] Destructing library : plugin.offline_imu.dbg.dll
+[2025-10-24 11:01:36.265] [illixr] [debug] [dynamic_lib] Destructing library : plugin.openvins.dbg.dll
+[2025-10-24 11:01:36.269] [illixr] [debug] [dynamic_lib] Destructing library : plugin.rk4_integrator.dbg.dll
+[2025-10-24 11:01:36.269] [illixr] [debug] [dynamic_lib] Destructing library : plugin.pose_prediction.dbg.dll
+[2025-10-24 11:01:36.270] [illixr] [debug] [dynamic_lib] Destructing library : plugin.timewarp_vk.dbg.dll
+[2025-10-24 11:01:36.270] [illixr] [debug] [dynamic_lib] Destructing library : plugin.vkdemo.dbg.dll
+[2025-10-24 11:01:36.270] [illixr] [debug] [dynamic_lib] Destructing library : plugin.native_renderer.dbg.dll
+
+D:\ILLIXR\out\install\x64-Debug\bin\main.dbg.exe (process 26392) exited with code -1073741819 (0xc0000005).
+Press any key to close this window . . .
