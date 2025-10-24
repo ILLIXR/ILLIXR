@@ -22,10 +22,12 @@
     },
     {
       "name": "opencv4",
-      "version>=": "4.5.5",
+      "version>=": "4.7.0",
       "features": [
         "contrib",
         "eigen",
+        "freetype",
+        "gstreamer",
         "opengl",
         "jpeg",
         "png",
@@ -106,7 +108,7 @@
   "overrides": [
     {
       "name": "opencv4",
-      "version": "4.5.5"
+      "version": "4.7.0"
     }
   ]
 }
