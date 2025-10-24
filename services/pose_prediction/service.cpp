@@ -26,8 +26,10 @@ fast_pose_type pose_prediction_impl::get_fast_pose() const {
     switchboard::ptr<const switchboard::event_wrapper<time_point>> vsync_estimate = vsync_estimate_.get_ro_nullable();
 
     if (vsync_estimate == nullptr) {
+        spdlog::get("illixr")->debug("    now " + std::to_string(clock_->now().time_since_epoch().count()));
         return get_fast_pose(clock_->now());
     } else {
+        spdlog::get("illixr")->debug("    vse " + std::to_string(vsync_estimate.get()->operator time_point().time_since_epoch().count()));
         return get_fast_pose(vsync_estimate.get()->operator time_point());
     }
 }
