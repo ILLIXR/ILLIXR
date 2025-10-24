@@ -9,6 +9,7 @@
 #include "illixr/vk/ffmpeg_utils.hpp"
 #include "illixr/vk/render_pass.hpp"
 #include "illixr/vk/vulkan_utils.hpp"
+#include "NvencEncoder.hpp"
 #undef DOUBLE_INCLUDE
 
 namespace ILLIXR {
@@ -221,6 +222,8 @@ private:
      */
     void ffmpeg_init_encoder();
 
+    CUcontext get_cucontext_from_ffmpeg(AVBufferRef* cuda_device_ctx);
+
     std::shared_ptr<spdlog::logger>                                   log_;
     std::shared_ptr<vulkan::display_provider>                         display_provider_;
     std::shared_ptr<switchboard>                                      switchboard_;
@@ -259,5 +262,7 @@ private:
     uint16_t last_frame_ind_ = -1;
 
     std::atomic<bool> ready_{false};
+
+    std::unique_ptr<NvencEncoder> enc_color_[2]; // left/right
 };
 } // namespace ILLIXR

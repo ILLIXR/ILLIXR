@@ -1,4 +1,6 @@
 #include "offload_rendering_server.hpp"
+#include <libavutil/hwcontext_cuda.h>
+#include "NvencEncoder.hpp"
 
 using namespace ILLIXR;
 using namespace ILLIXR::data_format;
@@ -105,7 +107,22 @@ void offload_rendering_server::setup(VkRenderPass render_pass, uint32_t subpass,
     ffmpeg_init_frame_ctx();
     ffmpeg_init_cuda_frame_ctx();
     ffmpeg_init_buffer_pool();
-    ffmpeg_init_encoder();
+    // ffmpeg_init_encoder();
+
+    // Initialize NVENC encoders
+    bool is_hevc = strcmp(OFFLOAD_RENDERING_FFMPEG_ENCODER_NAME, "hevc_nvenc") == 0;
+    CUcontext cuCtx = get_cucontext_from_ffmpeg(cuda_device_ctx_);
+    NvencParams pColor{
+        .width  = (int)buffer_pool_->image_pool[0][0].image_info.extent.width,
+        .height = (int)buffer_pool_->image_pool[0][0].image_info.extent.height,
+        .fps    = framerate_,
+        .bitrate= (int64_t)color_bitrate_,
+        .is_hevc= is_hevc,
+    };
+    for (int eye = 0; eye < 2; ++eye) {
+        enc_color_[eye] = std::make_unique<NvencEncoder>();
+        enc_color_[eye]->init(cuCtx, pColor);
+    }
 
     // Allocate output packets for encoded frames
     for (auto eye = 0; eye < 2; eye++) {
@@ -191,8 +208,61 @@ void offload_rendering_server::_p_one_iteration() {
     auto copy_end_time = std::chrono::high_resolution_clock::now();
     buffer_pool_->post_processing_release_image(ind);
 
+    // if (pose.pose.position.x() == 0.0f && pose.pose.position.y() == 0.0f && pose.pose.position.z() == 0.0f) {
+    //     // No projection layer, skip encoding
+    //     log_->info("pose is zero, skipping encoding");
+    //     return;
+    // }
+
     // Record encode operation timing
     auto encode_start_time = std::chrono::high_resolution_clock::now();
+
+    // AVPacket* msg_pkt_color[2] = {nullptr, nullptr};
+
+    // Encode frames with NVENC
+    for (int eye = 0; eye < 2; ++eye) {
+        // After av_hwframe_transfer_data(...) filled encode_src_color_frames_[eye]
+        AVFrame* f = encode_src_color_frames_[eye];
+    
+        CUdeviceptr dev_ptr = reinterpret_cast<CUdeviceptr>(f->data[0]);
+        uint32_t    pitch   = (uint32_t)f->linesize[0];
+    
+        // Compute gaze in pixel coords for this eye (you already have pose; map gaze->pix)
+        // Example placeholders; wire to your eye-tracker / prediction:
+        float gaze_x_px = 0.5f * f->width;
+        float gaze_y_px = 0.5f * f->height;
+    
+        // Radii in pixels (convert from degrees if you prefer): r0 ≈ fovea 2-3°, r1 ≈ 8-12°
+        float r0 = 0.07f * std::min(f->width, f->height);  // ~strong fovea
+        float r1 = 0.25f * std::min(f->width, f->height);  // mid ring
+    
+        // QP deltas (negative = better quality)
+        int8_t dq0 = -6, dq1 = -3, dq2 = 0;
+    
+        auto bitstream = enc_color_[eye]->encode_with_qp_map(dev_ptr, pitch,
+                            /*pts*/ (int64_t)frame_count_,
+                            gaze_x_px, gaze_y_px, r0, r1, dq0, dq1, dq2);
+    
+        // Wrap into your network message. If your "compressed_frame" expects AVPacket,
+        // you can create a shallow wrapper struct carrying raw NALUs:
+        // Here: repurpose your encode_out_color_packets_[eye] or add a side-channel.
+        // For simplicity, stash into a std::shared_ptr<std::vector<uint8_t>> you carry in compressed_frame.
+        // (Or extend compressed_frame to accept raw bytes for each eye.)
+        // ...
+        av_packet_unref(encode_out_color_packets_[eye]);                  // drop previous data if any
+        av_new_packet(encode_out_color_packets_[eye], (int)bitstream.size());    // alloc buffer & set size
+        memcpy(encode_out_color_packets_[eye]->data, bitstream.data(), bitstream.size());
+        std::cout << "Encoded eye " << eye << " frame size: " << encode_out_color_packets_[eye]->size << " bytes" << std::endl;
+        // ... set pts/dts/flags ...
+        encode_out_color_packets_[eye]->pts = static_cast<int64_t>(frame_count_);
+        encode_out_color_packets_[eye]->dts = static_cast<int64_t>(frame_count_);
+        encode_out_color_packets_[eye]->duration = 1;
+        encode_out_color_packets_[eye]->flags = AV_PKT_FLAG_KEY;
+        // FIXME: Will this cause any race condition?
+        // msg_pkt_color[eye] = av_packet_clone(encode_out_color_packets_[eye]);  // hand off
+        // keep encode_out_color_packets_[eye] for next frame
+    }
+/*
 
     // Encode frames for both eyes
     for (auto eye = 0; eye < 2; eye++) {
@@ -231,6 +301,7 @@ void offload_rendering_server::_p_one_iteration() {
             AV_ASSERT_SUCCESS(ret);
         }
     }
+*/
     auto encode_end_time = std::chrono::high_resolution_clock::now();
 
     // Calculate timing metrics
@@ -616,4 +687,10 @@ void offload_rendering_server::ffmpeg_init_encoder() {
         ret = avcodec_open2(codec_depth_ctx_, encoder, nullptr);
         AV_ASSERT_SUCCESS(ret);
     }
+}
+
+CUcontext offload_rendering_server::get_cucontext_from_ffmpeg(AVBufferRef* cuda_device_ctx) {
+    auto dev = reinterpret_cast<AVHWDeviceContext*>(cuda_device_ctx->data);
+    auto cu  = reinterpret_cast<AVCUDADeviceContext*>(dev->hwctx);
+    return cu->cuda_ctx; // FFmpeg-managed CUcontext
 }
