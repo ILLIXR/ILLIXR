@@ -168,7 +168,11 @@ void timewarp_vk::update_uniforms(const pose_type& render_pose) {
         : (next_vsync == nullptr ? pose_prediction_->get_fast_pose().pose : pose_prediction_->get_fast_pose(**next_vsync).pose);
 
     view_matrix_begin.block(0, 0, 3, 3) = latest_pose.orientation.toRotationMatrix();
-
+    spdlog::get("illixr")->debug(" ========= Tw " + std::to_string(latest_pose.position.x()) + ", " +
+                                 std::to_string(latest_pose.position.y()) + ", " + std::to_string(latest_pose.position.z()) +
+                                 "; " + std::to_string(latest_pose.orientation.w()) + ", " +
+        std::to_string(latest_pose.orientation.x()) + ", " + std::to_string(latest_pose.orientation.y()) + ", " +
+        std::to_string(latest_pose.orientation.z()));
     // TODO: We set the "end" pose to the same as the beginning pose, but this really should be the pose for
     // `display_period` later
     view_matrix_end = view_matrix_begin;
