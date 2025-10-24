@@ -83,6 +83,8 @@ fast_pose_type pose_prediction_impl::get_fast_pose(time_point future_timestamp) 
     // slow_pose and imu_raw, do pose prediction
 
     double     dt      = duration_to_double(future_timestamp - imu_raw->imu_time);
+    spdlog::get("illixr")->debug("   ''''''''' " + std::to_string(future_timestamp.time_since_epoch().count()) + ", " +
+                                 std::to_string(imu_raw->imu_time.time_since_epoch().count()) + ",   " + std::to_string(dt));
     state_plus state_p = ::ILLIXR::predict_mean_rk4(dt, state_plus(imu_raw->quat, imu_raw->vel, imu_raw->pos), imu_raw->w_hat,
                                                     imu_raw->a_hat, imu_raw->w_hat2, imu_raw->a_hat2);
 

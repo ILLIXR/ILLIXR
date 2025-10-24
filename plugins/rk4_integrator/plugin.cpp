@@ -130,7 +130,11 @@ void rk4_integrator::propagate_imu_values(time_point real_time) {
                                  std::to_string(curr_pos.z()));
     spdlog::get("illixr")->debug("  Quat " + std::to_string(curr_quat.w()) + ", " + std::to_string(curr_quat.x()) + ", " +
                                  std::to_string(curr_quat.y()) + ", " + std::to_string(curr_quat.z()));
-
+    spdlog::get("illixr")->debug("  w_hat " + std::to_string(w_hat[0]) + ", " + std::to_string(w_hat[1]) + ", " + std::to_string(w_hat[2])); 
+    spdlog::get("illixr")->debug("  a_hat " + std::to_string(a_hat[0]) + ", " + std::to_string(a_hat[1]) + ", " +
+                                 std::to_string(a_hat[2]));
+    spdlog::get("illixr")->debug("  w_hat2 " + std::to_string(w_hat2[0]) + ", " + std::to_string(w_hat2[1]) + ", " +
+                                 std::to_string(w_hat2[2]));
     imu_raw_.put(imu_raw_.allocate(w_hat, a_hat, w_hat2, a_hat2, curr_pos, curr_vel, curr_quat, real_time));
 }
 
@@ -173,7 +177,7 @@ std::vector<imu_type> rk4_integrator::select_imu_readings(const std::vector<imu_
         //spdlog::get("illixr")->debug("     + checking " + std::to_string(i) + ": " + std::to_string(prop_data[i + 1].time.time_since_epoch().count()) + " " +
         //                             std::to_string(prop_data[i].time.time_since_epoch().count()) + " " + std::to_string((prop_data[i + 1].time - prop_data[i].time).count()));
         if (std::chrono::abs(prop_data[i + 1].time - prop_data[i].time) < std::chrono::nanoseconds{1}) {
-            spdlog::get("illixr")->debug("      dropping " + std::to_string(i) + " -- " + imu_string(prop_data[i+1]));
+            //spdlog::get("illixr")->debug("      dropping " + std::to_string(i) + " -- " + imu_string(prop_data[i+1]));
             prop_data.erase(prop_data.begin() + i);
             i--; // i can be negative, so use type int
         }
