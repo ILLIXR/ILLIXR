@@ -91,7 +91,7 @@ void offline_cam::_p_one_iteration() {
         auto img1 = nearest_row->second.cam1.load();
 
         time_point expected_real_time_given_dataset_time(
-            std::chrono::duration<long, std::nano>{nearest_row->first - dataset_first_time_});
+            std::chrono::duration<long long, std::nano>{nearest_row->first - dataset_first_time_});
         cam_publisher_.put(cam_publisher_.allocate<binocular_cam_type>(binocular_cam_type{
             expected_real_time_given_dataset_time,
             img0,
