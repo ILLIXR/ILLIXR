@@ -127,7 +127,7 @@
     }
   ],
   "features": {
-    "plugin_ada.device_rx" : {
+    "plugin-ada-device-rx" : {
       "description": "",
       "dependencies": [
         {
@@ -153,7 +153,7 @@
         }
       ]
     },
-    "plugin_ada.device_tx" : {
+    "plugin-ada-device-tx" : {
       "description": "",
       "dependencies": [
         {
@@ -187,7 +187,7 @@
         }
       ]
     },
-    "plugin_ada.infinitam" : {
+    "plugin-ada-infinitam" : {
       "description": "",
       "dependencies": [
         {
@@ -201,7 +201,7 @@
         }
       ]
     },
-    "plugin_ada.mesh_compression" : {
+    "plugin-ada-mesh-compression" : {
       "description": "",
       "dependencies": [
         {
@@ -209,7 +209,7 @@
         }
       ]
     },
-    "plugin_ada.mesh_decompression_grey" : {
+    "plugin-ada-mesh-decompression-grey" : {
       "description": "",
       "dependencies": [
         {
@@ -217,7 +217,7 @@
         }
       ]
     },
-    "plugin_ada.offline_scannet" : {
+    "plugin-ada-offline-scannet" : {
       "description": "",
       "dependencies": [
         {
@@ -225,7 +225,7 @@
         }
       ]
     },
-    "plugin_ada.scene_management" : {
+    "plugin-ada-scene-management" : {
       "description": "",
       "dependencies": [
         {
@@ -236,7 +236,7 @@
         }
       ]
     },
-    "plugin_ada.server_rx" : {
+    "plugin-ada-server-rx" : {
       "description": "",
       "dependencies": [
         {
@@ -270,7 +270,7 @@
         }
       ]
     },
-    "plugin_ada.server_tx" : {
+    "plugin-ada-server-tx" : {
       "description": "",
       "dependencies": [
         {
@@ -284,7 +284,7 @@
         }
       ]
     },
-    "plugin_audio_pipeline" : {
+    "plugin-audio-pipeline" : {
       "description": "",
       "dependencies": [
         {
@@ -295,7 +295,7 @@
         }
       ]
     },
-    "plugin_debugview" : {
+    "plugin-debugview" : {
       "description": "",
       "dependencies": [
         {
@@ -309,7 +309,7 @@
         }
       ]
     },
-    "plugin_depthai" : {
+    "plugin-depthai" : {
       "description": "",
       "dependencies": [
         {
@@ -317,15 +317,15 @@
         }
       ]
     },
-    "plugin_gldemo" : {
+    "plugin-gldemo" : {
       "description": "",
       "dependencies": []
     },
-    "plugin_ground_truth_slam" : {
+    "plugin-ground-truth-slam" : {
       "description": "",
       "dependencies": []
     },
-    "plugin_gtsam_integrator" : {
+    "plugin-gtsam-integrator" : {
       "description": "",
       "dependencies": [
         {
@@ -333,7 +333,7 @@
         }
       ]
     },
-    "plugin_hand_tracking" : {
+    "plugin-hand-tracking" : {
       "description": "",
       "dependencies": [
         {
@@ -348,7 +348,7 @@
         }
       ]
     },
-    "plugin_hand_tracking_gpu" : {
+    "plugin-hand-tracking-gpu" : {
       "description": "",
       "dependencies": [
         {
@@ -362,7 +362,7 @@
         }
       ]
     },
-    "plugin_hand_tracking.viewer" : {
+    "plugin-hand-tracking-viewer" : {
       "description": "",
       "dependencies": [
         {
@@ -376,7 +376,7 @@
         }
       ]
     },
-    "plugin_lighthouse" : {
+    "plugin-lighthouse" : {
       "description": "",
       "dependencies": [
         {
@@ -384,23 +384,23 @@
         }
       ]
     },
-    "plugin_native_renderer" : {
+    "plugin-native-renderer" : {
       "description": "",
       "dependencies": []
     },
-    "plugin_offline_cam" : {
+    "plugin-offline-cam" : {
       "description": "",
       "dependencies": []
     },
-    "plugin_offline_imu" : {
+    "plugin-offline-imu" : {
       "description": "",
       "dependencies": []
     },
-    "plugin_offload_data" : {
+    "plugin-offload-data" : {
       "description": "",
       "dependencies": []
     },
-    "plugin_offload_rendering_server" : {
+    "plugin-offload-rendering-server" : {
       "description": "",
       "dependencies": [
         {
@@ -454,7 +454,7 @@
         }
       ]
     },
-    "plugin_offliad_rendering_client" : {
+    "plugin-offliad-rendering-client" : {
       "description": "",
       "dependencies": [
         {
@@ -511,7 +511,7 @@
         }
       ]
     },
-    "plugin_offload_vio.device_rx" : {
+    "plugin-offload-vio-device-rx" : {
       "description": "",
       "dependencies": [
         {
@@ -519,25 +519,25 @@
         }
       ]
     },
-    "plugin_offload_vio_device_tx" : {
+    "plugin-offload-vio-device-tx" : {
       "description": "",
       "dependencies": [{
         "name": "protobuf"
       }]
     },
-    "plugin_offload_server_rx" : {
+    "plugin-offload-server-rx" : {
       "description": "",
       "dependencies": [{
         "name": "protobuf"
       }]
     },
-    "plugin_offload_server_tx" : {
+    "plugin-offload-server-tx" : {
       "description": "",
       "dependencies": [{
         "name": "protobuf"
       }]
     },
-    "plugin_openni" : {
+    "plugin-openni" : {
       "description": "",
       "dependencies": [
         {
@@ -545,15 +545,15 @@
         }
       ]
     },
-    "plugin_openvins" : {
+    "plugin-openvins" : {
       "description": "",
       "dependencies": []
     },
-    "plugin_openwarp_vk" : {
+    "plugin-openwarp-vk" : {
       "description": "",
       "dependencies": []
     },
-    "plugin_openwarp_vk_monado" : {
+    "plugin-openwarp-vk-monado" : {
       "description": "",
       "dependencies": [
         {
@@ -571,7 +571,7 @@
       ]
     },
 
-    "plugin_orb_slam3" : {
+    "plugin-orb-slam3" : {
       "description": "",
       "dependencies": [
         {
@@ -590,11 +590,11 @@
         }
       ]
     },
-    "plugin_passthrough_integrator" : {
+    "plugin-passthrough-integrator" : {
       "description": "",
       "dependencies": []
     },
-    "plugin_realsense" : {
+    "plugin-realsense" : {
       "description": "",
       "dependencies": [
         {
@@ -607,27 +607,27 @@
         }
       ]
     },
-    "plugin_record_cam_imu" : {
+    "plugin-record-cam-imu" : {
       "description": "",
       "dependencies": []
     },
-    "plugin_rk4_integrator" : {
+    "plugin-rk4-integrator" : {
       "description": "",
       "dependencies": []
     },
-    "plugin_tcp_network_backend" : {
+    "plugin-tcp-network-backend" : {
       "description": "",
       "dependencies": []
     },
-    "plugin_timewarp_gl" : {
+    "plugin-timewarp-gl" : {
       "description": "",
       "dependencies": []
     },
-    "plugin_timewarp_vk" : {
+    "plugin-timewarp-vk" : {
       "description": "",
       "dependencies": []
     },
-    "plugin_timewarp_gl.monado" : {
+    "plugin-timewarp-gl-monado" : {
       "description": "",
       "dependencies": [
         {
@@ -644,7 +644,7 @@
         }
       ]
     },
-    "plugin_timewarp_vk.monado" : {
+    "plugin-timewarp-vk-monado" : {
       "description": "",
       "dependencies": [
         {
@@ -661,37 +661,37 @@
         }
       ]
     },
-    "plugin_webcam" : {
+    "plugin-webcam" : {
       "description": "",
       "dependencies": []
     },
-    "plugin_zed" : {
+    "plugin-zed" : {
       "description": "",
       "dependencies": [
         "cuda"
       ]
     },
-    "plugin_zed.data_injection" : {
+    "plugin-zed-data-injection" : {
       "description": "",
       "dependencies": []
     },
-    "plugin_zed.capture" : {
+    "plugin-zed-capture" : {
       "description": "",
       "dependencies": []
     },
-    "plugin_fauxpose" : {
+    "plugin-fauxpose" : {
       "description": "",
       "dependencies": []
     },
-    "plugin_pose_lookup" : {
+    "plugin-pose-lookup" : {
       "description": "",
       "dependencies": []
     },
-    "plugin_pose_prediction" : {
+    "plugin-pose-prediction" : {
       "description": "",
       "dependencies": []
     },
-    "plugin_vkdemo" : {
+    "plugin-vkdemo" : {
       "description": "",
       "dependencies": []
     }
