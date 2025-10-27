@@ -1,7 +1,7 @@
 #include "illixr/hmd.hpp"
-#if defined(_WIN32) || defined(_WIN64)
-    #include <cstdlib>
-#endif
+//#if defined(_WIN32) || defined(_WIN64)
+//#include <cstdlib>
+//#endif
 #include <cmath>
 
 float HMD::max_float(const float x, const float y) {

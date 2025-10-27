@@ -84,7 +84,6 @@ include(ExternalProject)
 include(FetchContent)
 include(CMakeDependentOption)
 
-
 # check for the Jetson platform
 if (CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64" AND EXISTS "/etc/nv_tegra_release")
     set(ON_JETSON_PLATFORM YES)
@@ -201,7 +200,6 @@ if(BUILD_DOCS)
     set(DOCS_EXCLUDE_LIST "${CMAKE_SOURCE_DIR}/include/illixr/vk/vk_extension_request.hpp")
 endif()
 
-
 if(NO_GPL)
     if(NO_LGPL)
         foreach(ITEM IN LISTS LGPL_LICENSED_CODE)
@@ -248,8 +246,8 @@ if(WIN32 OR MSVC)
     set(CMAKE_CXX_FLAGS_DEBUG "/Zi /Od /MDd")
     set(CMAKE_EXE_LINKER_FLAGS_DEBUG "/DEBUG")
     set(CMAKE_SHARED_LINKER_FLAGS_DEBUG "/DEBUG /STACK:8388608")
-    set(CMAKE_CXX_FLAGS_RELEASE "/O3 /DNDEBUG")
-    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "/Zi /O3")
+    set(CMAKE_CXX_FLAGS_RELEASE "/O2 /DNDEBUG")
+    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "/Zi /O2")
 else()
     set(CMAKE_CXX_FLAGS_DEBUG "-ggdb -Wall -Wextra -Wno-attributes -Wno-unknown-pragmas -fPIC")
     set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG -Wall -Wextra -Wno-attributes -Wno-unknown-pragmas -fPIC")
@@ -261,7 +259,12 @@ endif()
 link_directories(BEFORE ${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_INSTALL_PREFIX}/lib64)
 include_directories(BEFORE ${CMAKE_SOURCE_DIR}/include)
 
-find_package(PkgConfig REQUIRED)
+if(WIN32 OR MSVC)
+    set(PKG_CONFIG_EXECUTABLE "${CMAKE_BINARY_DIR}/vcpkg_installed/${VCPKG_TARGET_TRIPLET}/tools/pkgconf/pkgconf.exe")
+    find_package(PkgConfig REQUIRED)
+else()
+    find_package(PkgConfig REQUIRED)
+endif()
 
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH};${PROJECT_SOURCE_DIR}/cmake;${CMAKE_INSTALL_PREFIX}/lib/cmake;${CMAKE_INSTALL_PREFIX}/share/cmake)

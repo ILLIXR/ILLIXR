@@ -44,7 +44,7 @@ static int illixr_clock_gettime(clockid_t clock_id, timespec* ts) {
 
         LONGLONG diff = current_ticks.QuadPart - start_ticks.QuadPart;
         ts->tv_sec    = diff / frequency.QuadPart;
-        ts->tv_nsec   = static_cast<long>(((diff % frequency.QuadPart) * 1000000000.0) / frequency.QuadPart);
+        ts->tv_nsec   = static_cast<long>(((diff % frequency.QuadPart) * 1000000000) / frequency.QuadPart);
         return 0;
     } else if (clock_id == CLOCK_THREAD_CPUTIME_ID) {
         FILETIME creation_time, exit_time, kernel_time, user_time;

@@ -50,7 +50,7 @@ ILLIXR::threadloop::skip_option offline_imu::_p_should_skip() {
 
 void offline_imu::_p_one_iteration() {
     assert(sensor_data_it_ != sensor_data_.end());
-    time_point          real_now(std::chrono::duration<long, std::nano>{dataset_now_ - dataset_first_time_});
+    time_point          real_now(std::chrono::duration<long long, std::nano>{dataset_now_ - dataset_first_time_});
     const sensor_types& sensor_datum = sensor_data_it_->second;
 
     imu_.put(imu_.allocate<imu_type>(imu_type{real_now, (sensor_datum.imu0.angular_v), (sensor_datum.imu0.linear_a)}));

@@ -27,6 +27,10 @@ public:
      */
     managed_thread() noexcept = default;
 
+    managed_thread& operator=(const managed_thread& other) = delete;
+
+    managed_thread(const managed_thread& other) = delete;
+
     /**
      * @brief Constructs a startable thread
      *
