@@ -3,22 +3,28 @@
   "version": "4.1.1",
   "dependencies": [
     {
-      "name": "opengl"
+      "name": "opengl",
+      "version>=": "2022-12-04"
     },
     {
-      "name": "eigen3"
+      "name": "eigen3",
+      "version>=": "3.4.1-250818"
     },
     {
-      "name": "boost"
+      "name": "boost",
+      "version>=": "1.88.0"
     },
     {
-      "name": "glm"
+      "name": "glm",
+      "version>=": "1.0.1"
     },
     {
-      "name": "glfw3"
+      "name": "glfw3",
+      "version>=": "3.4"
     },
     {
-      "name": "glew"
+      "name": "glew",
+      "version>=": "2.2.0"
     },
     {
       "name": "opencv4",
@@ -35,80 +41,191 @@
       ]
     },
     {
-      "name": "sqlite3"
+      "name": "sqlite3",
+      "version>=": "3.50.4"
     },
     {
-      "name": "spdlog"
+      "name": "spdlog",
+      "version>=": "1.15.3"
     },
     {
-      "name": "vulkan"
+      "name": "vulkan",
+      "version>=": "2023-12-17"
     },
     {
-      "name": "vulkan-validationlayers"
+      "name": "vulkan-validationlayers",
+      "version>=": "1.4.309.0"
     },
     {
-      "name": "vulkan-utility-libraries"
+      "name": "vulkan-utility-libraries",
+      "version>=": "1.4.309.0"
     },
     {
-      "name": "vulkan-memory-allocator"
+      "name": "vulkan-memory-allocator",
+      "version>=": "3.3.0"
     },
     {
-      "name": "vulkan-memory-allocator-hpp"
+      "name": "vulkan-memory-allocator-hpp",
+      "version>=": "3.1.0"
     },
     {
       "name": "glslang",
+      "version>=": "15.1.0",
       "features": [
         "tools"
       ]
     },
     {
-      "name": "spirv-headers"
+      "name": "spirv-headers",
+      "version>=": "1.4.309.0"
     },
     {
       "name": "spirv-tools",
+      "version>=": "1.4.309.0",
       "features": [
         "tools"
       ]
     },
     {
-      "name": "vulkan-sdk-components"
+      "name": "vulkan-sdk-components",
+      "version>=": "1.4.309.0"
     },
     {
-      "name": "libx11"
+      "name": "libx11",
+      "version>=": "1.8.1"
     },
     {
-      "name": "libxrandr"
+      "name": "libxrandr",
+      "version>=": "1.5.2"
     },
     {
-      "name": "protobuf"
+      "name": "protobuf",
+      "version>=": "5.29.5"
     },
     {
       "name": "openxr-loader",
+      "version>=": "1.1.45",
       "features": [
         "vulkan"
       ]
     },
     {
       "name": "sdl2",
+      "version>=": "2.32.10",
       "features": [
         "vulkan"
       ]
     },
     {
-      "name": "pkgconf"
+      "name": "pkgconf",
+      "version>=": "2.5.1"
     },
     {
-      "name": "libusb"
-    },
-    {
-      "name": "libxrandr"
+      "name": "libusb",
+      "version>=": "1.0.29"
     }
   ],
   "builtin-baseline": "e6e4bc74aaf5c63dfc358810594f662f7e9bc4d4",
   "overrides": [
     {
+      "name": "opengl",
+      "version": "2022-12-04"
+    },
+    {
+      "name": "eigen3",
+      "version": "3.4.1-250818"
+    },
+    {
+      "name": "boost",
+      "version": "1.88.0"
+    },
+    {
+      "name": "glm",
+      "version": "1.0.1"
+    },
+    {
+      "name": "glfw3",
+      "version": "3.4"
+    },
+    {
+      "name": "glew",
+      "version": "2.2.0"
+    },
+    {
       "name": "opencv4",
       "version": "4.7.0"
+    },
+    {
+      "name": "sqlite3",
+      "version": "3.50.4"
+    },
+    {
+      "name": "spdlog",
+      "version": "1.15.3"
+    },
+    {
+      "name": "vulkan",
+      "version": "2023-12-17"
+    },
+    {
+      "name": "vulkan-validationlayers",
+      "version": "1.4.309.0"
+    },
+    {
+      "name": "vulkan-utility-libraries",
+      "version": "1.4.309.0"
+    },
+    {
+      "name": "vulkan-memory-allocator",
+      "version": "3.3.0"
+    },
+    {
+      "name": "vulkan-memory-allocator-hpp",
+      "version": "3.1.0"
+    },
+    {
+      "name": "glslang",
+      "version": "15.1.0"
+    },
+    {
+      "name": "spirv-headers",
+      "version": "1.4.309.0"
+    },
+    {
+      "name": "spirv-tools",
+      "version": "1.4.309.0"
+    },
+    {
+      "name": "vulkan-sdk-components",
+      "version": "1.4.309.0"
+    },
+    {
+      "name": "libx11",
+      "version": "1.8.1"
+    },
+    {
+      "name": "libxrandr",
+      "version": "1.5.2"
+    },
+    {
+      "name": "protobuf",
+      "version": "5.29.5"
+    },
+    {
+      "name": "openxr-loader",
+      "version": "1.1.45"
+    },
+    {
+      "name": "sdl2",
+      "version": "2.32.10"
+    },
+    {
+      "name": "pkgconf",
+      "version": "2.5.1"
+    },
+    {
+      "name": "libusb",
+      "version": "1.0.29"
     }
   ]
 }
