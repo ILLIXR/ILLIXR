@@ -53,7 +53,7 @@ endif()
 set(GPL_LICENSED_CODE "openvins;orb_slam3;offload_rendering_server;offload_rendering_client")
 set(LGPL_LICENSED_CODE "audio_pipeline")
 
-set(yaml-cpp_DIR "D:/ILLIXR/out/install/x64-Debug/lib/cmake/yaml-cpp") 
+#set(yaml-cpp_DIR "${CMAKE_SOURCE_DIR}/out/install/x64-Debug/lib/cmake/yaml-cpp") 
 
 if(PACKAGE_VERSION_LABEL)
     set(PACKAGE_VERSION "${PACKAGE_VERSION_MAJOR}.${PACKAGE_VERSION_MINOR}.${PACKAGE_VERSION_PATCH}-${PACKAGE_VERSION_LABEL}")

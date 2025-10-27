@@ -15,16 +15,14 @@
       "version>=": "1.88.0"
     },
     {
-      "name": "glm",
-      "version>=": "1.0.1"
+      "name": "glm"
     },
     {
       "name": "glfw3",
       "version>=": "3.4"
     },
     {
-      "name": "glew",
-      "version>=": "2.2.0"
+      "name": "glew"
     },
     {
       "name": "opencv4",
@@ -140,16 +138,8 @@
       "version": "1.88.0"
     },
     {
-      "name": "glm",
-      "version": "1.0.1"
-    },
-    {
       "name": "glfw3",
       "version": "3.4"
-    },
-    {
-      "name": "glew",
-      "version": "2.2.0"
     },
     {
       "name": "opencv4",
