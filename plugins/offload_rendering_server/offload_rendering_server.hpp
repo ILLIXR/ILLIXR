@@ -254,6 +254,7 @@ private:
     std::array<AVPacket*, 2> encode_out_depth_packets_{};
 
     uint64_t frame_count_ = 0;
+    uint64_t encoded_size_ = 0;
 
     double                                         fps_counter_    = 0;
     std::chrono::high_resolution_clock::time_point fps_start_time_ = std::chrono::high_resolution_clock::now();

@@ -208,16 +208,8 @@ void offload_rendering_server::_p_one_iteration() {
     auto copy_end_time = std::chrono::high_resolution_clock::now();
     buffer_pool_->post_processing_release_image(ind);
 
-    // if (pose.pose.position.x() == 0.0f && pose.pose.position.y() == 0.0f && pose.pose.position.z() == 0.0f) {
-    //     // No projection layer, skip encoding
-    //     log_->info("pose is zero, skipping encoding");
-    //     return;
-    // }
-
     // Record encode operation timing
     auto encode_start_time = std::chrono::high_resolution_clock::now();
-
-    // AVPacket* msg_pkt_color[2] = {nullptr, nullptr};
 
     // Encode frames with NVENC
     for (int eye = 0; eye < 2; ++eye) {
@@ -233,22 +225,20 @@ void offload_rendering_server::_p_one_iteration() {
         float gaze_y_px = 0.5f * f->height;
     
         // Radii in pixels (convert from degrees if you prefer): r0 ≈ fovea 2-3°, r1 ≈ 8-12°
-        float r0 = 0.07f * std::min(f->width, f->height);  // ~strong fovea
-        float r1 = 0.25f * std::min(f->width, f->height);  // mid ring
+        // float r0 = 0.07f * std::min(f->width, f->height);  // ~strong fovea
+        // float r1 = 0.25f * std::min(f->width, f->height);  // mid ring
+        // inner radius ~9 degree, mid radius ~30 degree
+        float r0 = 60.0f;
+        float r1 = 200.0f;
     
         // QP deltas (negative = better quality)
-        int8_t dq0 = -6, dq1 = -3, dq2 = 0;
+        int8_t dq0 = -6, dq1 = -2, dq2 = 4;
     
         auto bitstream = enc_color_[eye]->encode_with_qp_map(dev_ptr, pitch,
                             /*pts*/ (int64_t)frame_count_,
                             gaze_x_px, gaze_y_px, r0, r1, dq0, dq1, dq2);
     
-        // Wrap into your network message. If your "compressed_frame" expects AVPacket,
-        // you can create a shallow wrapper struct carrying raw NALUs:
-        // Here: repurpose your encode_out_color_packets_[eye] or add a side-channel.
-        // For simplicity, stash into a std::shared_ptr<std::vector<uint8_t>> you carry in compressed_frame.
-        // (Or extend compressed_frame to accept raw bytes for each eye.)
-        // ...
+        // Wrap into network message (i.e. AVPacket)
         av_packet_unref(encode_out_color_packets_[eye]);                  // drop previous data if any
         av_new_packet(encode_out_color_packets_[eye], (int)bitstream.size());    // alloc buffer & set size
         memcpy(encode_out_color_packets_[eye]->data, bitstream.data(), bitstream.size());
@@ -262,7 +252,13 @@ void offload_rendering_server::_p_one_iteration() {
         // msg_pkt_color[eye] = av_packet_clone(encode_out_color_packets_[eye]);  // hand off
         // keep encode_out_color_packets_[eye] for next frame
     }
-/*
+    encoded_size_ += encode_out_color_packets_[0]->size + encode_out_color_packets_[1]->size;
+    if (frame_count_ % framerate_ == 0) {
+        std::cout << "Average encoded frame size: " << encoded_size_ / framerate_ << " bytes" << std::endl;
+        encoded_size_ = 0;
+    }
+
+/* Encoding using FFmpeg encoders - replaced by NVENC encoding above
 
     // Encode frames for both eyes
     for (auto eye = 0; eye < 2; eye++) {
@@ -317,6 +313,7 @@ void offload_rendering_server::_p_one_iteration() {
 
     // Send encoded frame to client
     enqueue_for_network_send(pose);
+    std::cout << "Encoding time " << encode_time << " ms" << std::endl;
 
     // Log performance metrics every second
     if (std::chrono::duration_cast<std::chrono::seconds>(std::chrono::high_resolution_clock::now() - fps_start_time_).count() >=

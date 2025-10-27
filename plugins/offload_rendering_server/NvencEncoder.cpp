@@ -30,8 +30,10 @@ void NvencEncoder::init(CUcontext cu_ctx, const NvencParams& p) {
     if (hevc_) { mb_w_ = 32; mb_h_ = 32; } 
     else { mb_w_ = 16; mb_h_ = 16; }
 
+    // Our Vulkan frames are in BGRA, byte-order.
+    // NVENC represents format in word-order, so ARGB matches Vulkan BGRA on little-endian.
     enc_ = new NvEncoderCuda(cu_ctx_, W_, H_,
-                             NV_ENC_BUFFER_FORMAT_ABGR); // FIXME: the FFMPEG cuda buffer is in BGRA format
+                             NV_ENC_BUFFER_FORMAT_ARGB); 
 
     // Fill defaults then override what we need.
     memset(&init_, 0, sizeof(init_));
@@ -51,15 +53,16 @@ void NvencEncoder::init(CUcontext cu_ctx, const NvencParams& p) {
     init_.frameRateDen = 1;
     init_.encodeWidth  = W_;
     init_.encodeHeight = H_;
-
-    init_.enablePTD = 1; // Picture Type Decision
+    init_.enablePTD = 1; // Picture Type Decision - enable the encoder to decide IDR/P/B frames
 
     // Rate control (e.g., CBR low-latency)
     cfg_.rcParams.rateControlMode = NV_ENC_PARAMS_RC_CBR;
     cfg_.rcParams.averageBitRate  = (uint32_t)std::max<int64_t>(p.bitrate, 100000);
     cfg_.rcParams.maxBitRate      = cfg_.rcParams.averageBitRate;
-    cfg_.rcParams.vbvBufferSize   = cfg_.rcParams.averageBitRate / 8; // 1 second buffer
-    cfg_.rcParams.vbvInitialDelay = cfg_.rcParams.vbvBufferSize;
+    // Video buffering verifier (VBV) settings
+    // Controls the variability in encoded bitrate and how long before decoding can start
+    cfg_.rcParams.vbvBufferSize   = cfg_.rcParams.averageBitRate / 8; // 1 second buffer (in bits)
+    cfg_.rcParams.vbvInitialDelay = cfg_.rcParams.vbvBufferSize / 10; // start at 10% full for low latency
 
     // Ultra-low latency, no B-frames, short GOP
     cfg_.gopLength = 15;
@@ -121,7 +124,7 @@ std::vector<uint8_t> NvencEncoder::encode_with_qp_map(CUdeviceptr dev_ptr, uint3
         /*height*/      H_,
         /*srcMemType*/  CU_MEMORYTYPE_DEVICE,
         // /*bufferFormat*/in->bufferFormat,        // must match your init (e.g., ABGR)
-        NV_ENC_BUFFER_FORMAT_ABGR,
+        NV_ENC_BUFFER_FORMAT_ARGB,
         // /*chromaOffsets*/in->chromaOffsets,
         // /*numChromaPlanes*/in->numChromaPlanes
         0, 0
@@ -134,7 +137,7 @@ std::vector<uint8_t> NvencEncoder::encode_with_qp_map(CUdeviceptr dev_ptr, uint3
     pic.inputBuffer     = in->inputPtr;
     pic.inputPitch      = in->pitch;
     // pic.bufferFmt       = in->bufferFormat;
-    pic.bufferFmt       = NV_ENC_BUFFER_FORMAT_ABGR;
+    pic.bufferFmt       = NV_ENC_BUFFER_FORMAT_ARGB;
     pic.inputWidth      = W_;
     pic.inputHeight     = H_;
     pic.pictureStruct   = NV_ENC_PIC_STRUCT_FRAME;
