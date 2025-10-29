@@ -1,0 +1,11 @@
+--- a/subprojects/gst-plugins-base/ext/gl/meson.build
++++ b/subprojects/gst-plugins-base/ext/gl/meson.build
+@@ -157,7 +157,7 @@
+   endif
+ endif
+ 
+-if x11_dep.found()
++if 0
+   # for XInitThreads()
+   optional_deps += x11_dep
+ endif

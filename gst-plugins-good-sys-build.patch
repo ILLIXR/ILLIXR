@@ -1,0 +1,12 @@
+--- a/subprojects/gst-plugins-good/sys/meson.build
++++ b/subprojects/gst-plugins-good/sys/meson.build
+@@ -1,9 +0,0 @@
+-subdir('directsound')
+-subdir('oss')
+-subdir('oss4')
+-subdir('osxaudio')
+-subdir('osxvideo')
+-subdir('rpicamsrc')
+-subdir('v4l2')
+-subdir('waveform')
+-subdir('ximage')

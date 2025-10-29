@@ -1,0 +1,10 @@
+--- a/subprojects/gstreamer-vaapi/meson_options.txt
++++ b/subprojects/gstreamer-vaapi/meson_options.txt
+@@ -1,6 +1,6 @@
+ option('encoders', type : 'feature', value : 'auto')
+ option('drm', type : 'feature', value : 'auto')
+-option('x11', type : 'feature', value : 'auto')
++option('x11', type : 'feature', value : 'disabled')
+ option('glx', type : 'feature', value : 'auto')
+ option('wayland', type : 'feature', value : 'auto')
+ option('egl', type : 'feature', value : 'auto')

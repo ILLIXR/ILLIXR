@@ -1,0 +1,10 @@
+--- a/subprojects/gst-plugins-good/meson.build
++++ b/subprojects/gst-plugins-good/meson.build
+@@ -370,6 +370,7 @@
+   foreach ws : ['x11', 'wayland', 'android', 'cocoa', 'eagl', 'win32', 'dispmanx']
+     set_variable('gst_gl_have_window_@0@'.format(ws), gst_gl_winsys.contains(ws))
+   endforeach
++  gst_gl_have_window_x11 = 0
+   # Handling viv-fb separately, because the winsys is called "viv-fb", but the
+   # variable suffix must be "viv_fb" (dashes are not allowed in variable names).
+   set_variable('gst_gl_have_window_viv_fb', gst_gl_winsys.contains('viv-fb'))

@@ -1,0 +1,11 @@
+--- a/subprojects/gst-plugins-bad/meson_options.txt
++++ b/subprojects/gst-plugins-bad/meson_options.txt
+@@ -82,7 +82,7 @@
+ option('drm', type : 'feature', value : 'auto', description: 'libdrm support in the GstVA library')
+ option('udev', type : 'feature', value : 'auto', description: 'gudev support in the new VA-API plugin')
+ option('wayland', type : 'feature', value : 'auto', description : 'Wayland plugin/library, support in the Vulkan plugin')
+-option('x11', type : 'feature', value : 'auto', description : 'X11 support in Vulkan, GL and rfb plugins')
++option('x11', type : 'feature', value : 'disabled', description : 'X11 support in Vulkan, GL and rfb plugins')
+ 
+ # Feature options for plugins that need external deps
+ option('aes', type : 'feature', value : 'auto', description : 'AES encryption/decryption plugin')

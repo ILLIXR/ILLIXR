@@ -1,0 +1,10 @@
+--- a/subprojects/gst-plugins-base/gst-libs/gst/gl/gstglconfig.h.meson
++++ b/subprojects/gst-plugins-base/gst-libs/gst/gl/gstglconfig.h.meson
+@@ -14,7 +14,6 @@
+ #mesondefine GST_GL_HAVE_GLES3
+ #mesondefine GST_GL_HAVE_GLES3EXT3_H
+ 
+-#mesondefine GST_GL_HAVE_WINDOW_X11
+ #mesondefine GST_GL_HAVE_WINDOW_COCOA
+ #mesondefine GST_GL_HAVE_WINDOW_WIN32
+ #mesondefine GST_GL_HAVE_WINDOW_WINRT

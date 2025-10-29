@@ -1,0 +1,11 @@
+--- a/subprojects/gstreamer-vaapi/meson.build
++++ b/subprojects/gstreamer-vaapi/meson.build
+@@ -141,7 +141,7 @@
+     and wayland_protocols_dep.found()
+     and wayland_scanner_bin.found()
+     and libdrm_dep.found())
+-USE_X11 = (libva_x11_dep.found() and x11_dep.found())
++USE_X11 = 0
+ USE_GLX = (USE_X11 and gl_dep.found() and libdl_dep.found())
+ 
+ if not (USE_DRM or USE_X11 or USE_WAYLAND)

@@ -1,0 +1,25 @@
+--- a/subprojects/gst-plugins-good/meson_options.txt
++++ b/subprojects/gst-plugins-good/meson_options.txt
+@@ -97,16 +97,16 @@
+        yield: true, description: 'Method to use to find Qt')
+ option('qt-egl', type: 'feature', value: 'auto', description: 'EGLFS support in the Qt plugins')
+ option('qt-wayland', type: 'feature', value: 'auto', description: 'Wayland support in the Qt plugins')
+-option('qt-x11', type: 'feature', value: 'auto', description: 'X11 support in the Qt plugins')
++option('qt-x11', type: 'feature', value: 'disabled', description: 'X11 support in the Qt plugins')
+ option('qt5', type : 'feature', value : 'auto', yield : true, description : 'Qt5 QML video sink plugin')
+ option('qt6', type : 'feature', value : 'auto', yield : true, description : 'Qt6 QML video sink plugin')
+ 
+ # ximagesrc plugin options
+-option('ximagesrc', type : 'feature', value : 'auto', description : 'X11 ximagesrc plugin')
+-option('ximagesrc-xshm', type : 'feature', value : 'auto', description : 'X11 ximagesrc plugin (XSHM support)')
+-option('ximagesrc-xfixes', type : 'feature', value : 'auto', description : 'X11 ximagesrc plugin (XFixes support)')
+-option('ximagesrc-xdamage', type : 'feature', value : 'auto', description : 'X11 ximagesrc plugin (XDamage support)')
+-option('ximagesrc-navigation', type : 'feature', value : 'auto', description : 'X11 ximagesrc plugin (Navigation support)')
++option('ximagesrc', type : 'feature', value : 'disabled', description : 'X11 ximagesrc plugin')
++option('ximagesrc-xshm', type : 'feature', value : 'disabled', description : 'X11 ximagesrc plugin (XSHM support)')
++option('ximagesrc-xfixes', type : 'feature', value : 'disabled', description : 'X11 ximagesrc plugin (XFixes support)')
++option('ximagesrc-xdamage', type : 'feature', value : 'disabled', description : 'X11 ximagesrc plugin (XDamage support)')
++option('ximagesrc-navigation', type : 'feature', value : 'disabled', description : 'X11 ximagesrc plugin (Navigation support)')
+ 
+ # v4l2 plugin options
+ option('v4l2', type : 'feature', value : 'auto', description : 'Build video4linux2 source/sink plugin')

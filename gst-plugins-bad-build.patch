@@ -1,0 +1,19 @@
+--- a/subprojects/gst-plugins-bad/meson.build
++++ b/subprojects/gst-plugins-bad/meson.build
+@@ -361,6 +361,7 @@
+   foreach ws : ['x11', 'wayland', 'android', 'cocoa', 'eagl', 'win32', 'dispmanx']
+     set_variable('gst_gl_have_window_@0@'.format(ws), gst_gl_winsys.contains(ws))
+   endforeach
++  gst_gl_have_window_x11 = 0
+   # Handling viv-fb separately, because the winsys is called "viv-fb", but the
+   # variable suffix must be "viv_fb" (dashes are not allowed in variable names).
+   set_variable('gst_gl_have_window_viv_fb', gst_gl_winsys.contains('viv-fb'))
+@@ -403,7 +404,7 @@
+ # Optional dep of ext/gl and gst/librfb
+ x11_dep = dependency('x11', required : get_option('x11'))
+ if x11_dep.found()
+-  cdata.set('HAVE_X11', 1)
++  cdata.set('HAVE_X11', 0)
+ endif
+ 
+ # Optional dep of msdk and va
