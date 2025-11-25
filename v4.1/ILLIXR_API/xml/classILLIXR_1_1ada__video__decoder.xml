@@ -1,0 +1,79 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classILLIXR_1_1ada__video__decoder" kind="class" language="C++" prot="public">
+    <compoundname>ILLIXR::ada_video_decoder</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">ILLIXR::video_decoder</basecompoundref>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classILLIXR_1_1ada__video__decoder_1a9ce30279136bc2ba61d03984aa3aa724" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::ada_video_decoder::ada_video_decoder</definition>
+        <argsstring>(DecodeCallback callback)</argsstring>
+        <name>ada_video_decoder</name>
+        <qualifiedname>ILLIXR::ada_video_decoder::ada_video_decoder</qualifiedname>
+        <param>
+          <type>DecodeCallback</type>
+          <declname>callback</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/tmp/ILLIXR/plugins/ada/server_rx/video_decoder.hpp" line="14" column="14" bodyfile="/home/friedel/tmp/ILLIXR/plugins/ada/server_rx/video_decoder.hpp" bodystart="14" bodyend="15"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1ada__video__decoder_1ad7ef7bfd15ad5d4daa370208ba22596b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void ada_video_decoder::enqueue</definition>
+        <argsstring>(std::string &amp;img0, std::string &amp;img1) override</argsstring>
+        <name>enqueue</name>
+        <qualifiedname>ILLIXR::ada_video_decoder::enqueue</qualifiedname>
+        <param>
+          <type>std::string &amp;</type>
+          <declname>img0</declname>
+        </param>
+        <param>
+          <type>std::string &amp;</type>
+          <declname>img1</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/tmp/ILLIXR/plugins/ada/server_rx/video_decoder.hpp" line="17" column="10" bodyfile="/home/friedel/tmp/ILLIXR/plugins/ada/server_rx/video_decoder.cpp" bodystart="8" bodyend="21"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/tmp/ILLIXR/plugins/ada/server_rx/video_decoder.hpp" line="12" column="1" bodyfile="/home/friedel/tmp/ILLIXR/plugins/ada/server_rx/video_decoder.hpp" bodystart="12" bodyend="23"/>
+    <listofallmembers>
+      <member refid="classILLIXR_1_1ada__video__decoder_1a9ce30279136bc2ba61d03984aa3aa724" prot="public" virt="non-virtual"><scope>ILLIXR::ada_video_decoder</scope><name>ada_video_decoder</name></member>
+      <member refid="classILLIXR_1_1video__decoder_1a78fa682973893847ffec9f02b696dc2b" prot="protected" virt="non-virtual"><scope>ILLIXR::ada_video_decoder</scope><name>appsink_img0_</name></member>
+      <member refid="classILLIXR_1_1video__decoder_1a15629d3131a31908bec1ddc8af35eaf1" prot="protected" virt="non-virtual"><scope>ILLIXR::ada_video_decoder</scope><name>appsink_img1_</name></member>
+      <member refid="classILLIXR_1_1video__decoder_1a3e4c1cdabe9246fa7a73c2e976fd9e7d" prot="protected" virt="non-virtual"><scope>ILLIXR::ada_video_decoder</scope><name>appsrc_img0_</name></member>
+      <member refid="classILLIXR_1_1video__decoder_1ad20de51d3e908bd9075384cc0d9b6274" prot="protected" virt="non-virtual"><scope>ILLIXR::ada_video_decoder</scope><name>appsrc_img1_</name></member>
+      <member refid="classILLIXR_1_1video__decoder_1a835edfc4bfa56044603641010a658ce6" prot="protected" virt="non-virtual"><scope>ILLIXR::ada_video_decoder</scope><name>callback_</name></member>
+      <member refid="classILLIXR_1_1video__decoder_1ac84a2ee1a493af097c772506b915a6e1" prot="public" virt="non-virtual"><scope>ILLIXR::ada_video_decoder</scope><name>cb_appsink</name></member>
+      <member refid="classILLIXR_1_1video__decoder_1aeb55e7653921cc00c12398f09fb05422" prot="public" virt="non-virtual"><scope>ILLIXR::ada_video_decoder</scope><name>cb_appsink</name></member>
+      <member refid="classILLIXR_1_1video__decoder_1a1d97a3fddc031f807b350551dc081b2c" prot="protected" virt="non-virtual"><scope>ILLIXR::ada_video_decoder</scope><name>create_pipelines</name></member>
+      <member refid="classILLIXR_1_1video__decoder_1a42f16531aca6667ff5fce8fd831761fd" prot="protected" virt="non-virtual"><scope>ILLIXR::ada_video_decoder</scope><name>create_pipelines</name></member>
+      <member refid="classILLIXR_1_1ada__video__decoder_1ad7ef7bfd15ad5d4daa370208ba22596b" prot="public" virt="non-virtual"><scope>ILLIXR::ada_video_decoder</scope><name>enqueue</name></member>
+      <member refid="classILLIXR_1_1video__decoder_1a3177a66c9381d02ec2096c14b152af0c" prot="protected" virt="non-virtual"><scope>ILLIXR::ada_video_decoder</scope><name>img0_map_</name></member>
+      <member refid="classILLIXR_1_1video__decoder_1a395433dd0e2ba9e7cd012dcb6e1cd6ea" prot="protected" virt="non-virtual"><scope>ILLIXR::ada_video_decoder</scope><name>img0_ready_</name></member>
+      <member refid="classILLIXR_1_1video__decoder_1a4fa32b862d9e15fcb945d32627a773dd" prot="protected" virt="non-virtual"><scope>ILLIXR::ada_video_decoder</scope><name>img1_map_</name></member>
+      <member refid="classILLIXR_1_1video__decoder_1ab324a2c10eaea92ca6643da6ababf47c" prot="protected" virt="non-virtual"><scope>ILLIXR::ada_video_decoder</scope><name>img1_ready_</name></member>
+      <member refid="classILLIXR_1_1video__decoder_1a1ad99b28ba310fd4e86e4359239ecb89" prot="public" virt="non-virtual"><scope>ILLIXR::ada_video_decoder</scope><name>init</name></member>
+      <member refid="classILLIXR_1_1video__decoder_1a1ad99b28ba310fd4e86e4359239ecb89" prot="public" virt="non-virtual"><scope>ILLIXR::ada_video_decoder</scope><name>init</name></member>
+      <member refid="classILLIXR_1_1video__decoder_1aae0ebc33c475610afa4dbaedc572e30f" prot="protected" virt="non-virtual"><scope>ILLIXR::ada_video_decoder</scope><name>pipeline_img0_</name></member>
+      <member refid="classILLIXR_1_1video__decoder_1a54370ecbe8d56884707fc7d07f952bb3" prot="protected" virt="non-virtual"><scope>ILLIXR::ada_video_decoder</scope><name>pipeline_img1_</name></member>
+      <member refid="classILLIXR_1_1video__decoder_1ad8724910ab3e7231c34d2adc327004f6" prot="protected" virt="non-virtual"><scope>ILLIXR::ada_video_decoder</scope><name>pipeline_sync_</name></member>
+      <member refid="classILLIXR_1_1video__decoder_1ace1f0a33edd8c2e4289a11d4d704e603" prot="protected" virt="non-virtual"><scope>ILLIXR::ada_video_decoder</scope><name>pipeline_sync_mutex_</name></member>
+      <member refid="classILLIXR_1_1video__decoder_1ae80f27093b632e6ee5dcdb6d3346accd" prot="public" virt="non-virtual"><scope>ILLIXR::ada_video_decoder</scope><name>video_decoder</name></member>
+      <member refid="classILLIXR_1_1video__decoder_1ae80f27093b632e6ee5dcdb6d3346accd" prot="public" virt="non-virtual"><scope>ILLIXR::ada_video_decoder</scope><name>video_decoder</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

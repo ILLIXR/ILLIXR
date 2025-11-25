@@ -1,0 +1,145 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structILLIXR_1_1sensor__types" kind="struct" language="C++" prot="public">
+    <compoundname>ILLIXR::sensor_types</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structILLIXR_1_1sensor__types_1a2ab514fe632d76cb6861ec5b6b8a9bb3" prot="public" static="no" mutable="no">
+        <type><ref refid="structILLIXR_1_1data__format_1_1pose__type" kindref="compound">data_format::pose_type</ref></type>
+        <definition>data_format::pose_type ILLIXR::sensor_types::pose</definition>
+        <argsstring></argsstring>
+        <name>pose</name>
+        <qualifiedname>ILLIXR::sensor_types::pose</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/tmp/ILLIXR/plugins/ada/offline_scannet/plugin.hpp" line="53" column="28" bodyfile="/home/friedel/tmp/ILLIXR/plugins/ada/offline_scannet/plugin.hpp" bodystart="53" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1sensor__types_1a6bee56a07db6406428c3f6bf3f1f9e5b" prot="public" static="no" mutable="no">
+        <type>lazy_load_image</type>
+        <definition>lazy_load_image ILLIXR::sensor_types::depth_cam</definition>
+        <argsstring></argsstring>
+        <name>depth_cam</name>
+        <qualifiedname>ILLIXR::sensor_types::depth_cam</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/tmp/ILLIXR/plugins/ada/offline_scannet/plugin.hpp" line="54" column="28" bodyfile="/home/friedel/tmp/ILLIXR/plugins/ada/offline_scannet/plugin.hpp" bodystart="54" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1sensor__types_1afdbc6108256a8fd0a78d669a8d4310eb" prot="public" static="no" mutable="no">
+        <type>lazy_load_image</type>
+        <definition>lazy_load_image ILLIXR::sensor_types::color_cam</definition>
+        <argsstring></argsstring>
+        <name>color_cam</name>
+        <qualifiedname>ILLIXR::sensor_types::color_cam</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/tmp/ILLIXR/plugins/ada/offline_scannet/plugin.hpp" line="55" column="28" bodyfile="/home/friedel/tmp/ILLIXR/plugins/ada/offline_scannet/plugin.hpp" bodystart="55" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1sensor__types_1a92660670b2c7bcc044fc5cd198b4faeb" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool ILLIXR::sensor_types::last_frame</definition>
+        <argsstring></argsstring>
+        <name>last_frame</name>
+        <qualifiedname>ILLIXR::sensor_types::last_frame</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/tmp/ILLIXR/plugins/ada/offline_scannet/plugin.hpp" line="56" column="12" bodyfile="/home/friedel/tmp/ILLIXR/plugins/ada/offline_scannet/plugin.hpp" bodystart="56" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1sensor__types_1a5899523bff0409add5e76a84a221f8e8" prot="public" static="no" mutable="no">
+        <type>lazy_load_image</type>
+        <definition>lazy_load_image ILLIXR::sensor_types::cam0</definition>
+        <argsstring></argsstring>
+        <name>cam0</name>
+        <qualifiedname>ILLIXR::sensor_types::cam0</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/tmp/ILLIXR/plugins/offline_cam/plugin.hpp" line="47" column="21" bodyfile="/home/friedel/tmp/ILLIXR/plugins/offline_cam/plugin.hpp" bodystart="47" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1sensor__types_1a81aa2b3164d8dbf554c8d87ce156c84b" prot="public" static="no" mutable="no">
+        <type>lazy_load_image</type>
+        <definition>lazy_load_image ILLIXR::sensor_types::cam1</definition>
+        <argsstring></argsstring>
+        <name>cam1</name>
+        <qualifiedname>ILLIXR::sensor_types::cam1</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/tmp/ILLIXR/plugins/offline_cam/plugin.hpp" line="48" column="21" bodyfile="/home/friedel/tmp/ILLIXR/plugins/offline_cam/plugin.hpp" bodystart="48" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1sensor__types_1a6ce1ddcba478ae9b78acdaa420f00d03" prot="public" static="no" mutable="no">
+        <type>raw_imu_type</type>
+        <definition>raw_imu_type ILLIXR::sensor_types::imu0</definition>
+        <argsstring></argsstring>
+        <name>imu0</name>
+        <qualifiedname>ILLIXR::sensor_types::imu0</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/tmp/ILLIXR/plugins/offline_imu/plugin.hpp" line="21" column="18" bodyfile="/home/friedel/tmp/ILLIXR/plugins/offline_imu/plugin.hpp" bodystart="21" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="4">
+        <label>ILLIXR::data_format::pose_data</label>
+        <link refid="structILLIXR_1_1data__format_1_1pose__data"/>
+      </node>
+      <node id="2">
+        <label>ILLIXR::data_format::pose_type</label>
+        <link refid="structILLIXR_1_1data__format_1_1pose__type"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>ILLIXR::sensor_types</label>
+        <childnode refid="2" relation="usage">
+          <edgelabel>pose</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>ILLIXR::switchboard::event</label>
+        <link refid="classILLIXR_1_1switchboard_1_1event"/>
+      </node>
+    </collaborationgraph>
+    <location file="/home/friedel/tmp/ILLIXR/plugins/ada/offline_scannet/plugin.hpp" line="51" column="1" bodyfile="/home/friedel/tmp/ILLIXR/plugins/ada/offline_scannet/plugin.hpp" bodystart="51" bodyend="57"/>
+    <listofallmembers>
+      <member refid="structILLIXR_1_1sensor__types_1a5899523bff0409add5e76a84a221f8e8" prot="public" virt="non-virtual"><scope>ILLIXR::sensor_types</scope><name>cam0</name></member>
+      <member refid="structILLIXR_1_1sensor__types_1a81aa2b3164d8dbf554c8d87ce156c84b" prot="public" virt="non-virtual"><scope>ILLIXR::sensor_types</scope><name>cam1</name></member>
+      <member refid="structILLIXR_1_1sensor__types_1afdbc6108256a8fd0a78d669a8d4310eb" prot="public" virt="non-virtual"><scope>ILLIXR::sensor_types</scope><name>color_cam</name></member>
+      <member refid="structILLIXR_1_1sensor__types_1a6bee56a07db6406428c3f6bf3f1f9e5b" prot="public" virt="non-virtual"><scope>ILLIXR::sensor_types</scope><name>depth_cam</name></member>
+      <member refid="structILLIXR_1_1sensor__types_1a6ce1ddcba478ae9b78acdaa420f00d03" prot="public" virt="non-virtual"><scope>ILLIXR::sensor_types</scope><name>imu0</name></member>
+      <member refid="structILLIXR_1_1sensor__types_1a92660670b2c7bcc044fc5cd198b4faeb" prot="public" virt="non-virtual"><scope>ILLIXR::sensor_types</scope><name>last_frame</name></member>
+      <member refid="structILLIXR_1_1sensor__types_1a2ab514fe632d76cb6861ec5b6b8a9bb3" prot="public" virt="non-virtual"><scope>ILLIXR::sensor_types</scope><name>pose</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

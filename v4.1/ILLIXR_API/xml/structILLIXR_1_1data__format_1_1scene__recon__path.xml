@@ -1,0 +1,148 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structILLIXR_1_1data__format_1_1scene__recon__path" kind="struct" language="C++" prot="public">
+    <compoundname>ILLIXR::data_format::scene_recon_path</compoundname>
+    <basecompoundref refid="classILLIXR_1_1switchboard_1_1event" prot="public" virt="non-virtual">ILLIXR::switchboard::event</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1scene__recon__path_1a0d1a6a37a5b6129d4b3776b77c9565a6" prot="public" static="no" mutable="no">
+        <type>time_point</type>
+        <definition>time_point ILLIXR::data_format::scene_recon_path::time</definition>
+        <argsstring></argsstring>
+        <name>time</name>
+        <qualifiedname>ILLIXR::data_format::scene_recon_path::time</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/tmp/ILLIXR/include/illixr/data_format/scene_reconstruction.hpp" line="12" column="17" bodyfile="/home/friedel/tmp/ILLIXR/include/illixr/data_format/scene_reconstruction.hpp" bodystart="12" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1scene__recon__path_1abd19155622da4a7dfd6c8559ead0910b" prot="public" static="no" mutable="no">
+        <type><ref refid="structILLIXR_1_1data__format_1_1pose__type" kindref="compound">pose_type</ref></type>
+        <definition>pose_type ILLIXR::data_format::scene_recon_path::pose</definition>
+        <argsstring></argsstring>
+        <name>pose</name>
+        <qualifiedname>ILLIXR::data_format::scene_recon_path::pose</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/tmp/ILLIXR/include/illixr/data_format/scene_reconstruction.hpp" line="13" column="33" bodyfile="/home/friedel/tmp/ILLIXR/include/illixr/data_format/scene_reconstruction.hpp" bodystart="13" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1scene__recon__path_1a8f6a529983f134bba23a55f1c67ad02a" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string ILLIXR::data_format::scene_recon_path::depth_path</definition>
+        <argsstring></argsstring>
+        <name>depth_path</name>
+        <qualifiedname>ILLIXR::data_format::scene_recon_path::depth_path</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/tmp/ILLIXR/include/illixr/data_format/scene_reconstruction.hpp" line="14" column="33" bodyfile="/home/friedel/tmp/ILLIXR/include/illixr/data_format/scene_reconstruction.hpp" bodystart="14" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1scene__recon__path_1afcfaeb8665dbff71f786ccfeeb17d80a" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string ILLIXR::data_format::scene_recon_path::rgb_path</definition>
+        <argsstring></argsstring>
+        <name>rgb_path</name>
+        <qualifiedname>ILLIXR::data_format::scene_recon_path::rgb_path</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/tmp/ILLIXR/include/illixr/data_format/scene_reconstruction.hpp" line="15" column="33" bodyfile="/home/friedel/tmp/ILLIXR/include/illixr/data_format/scene_reconstruction.hpp" bodystart="15" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1scene__recon__path_1ab5a0d48cce868cbce1f9aba96f7f3e19" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::scene_recon_path::scene_recon_path</definition>
+        <argsstring>(time_point camera_time, pose_type pose_, std::string depth_path_, std::string rgb_path_)</argsstring>
+        <name>scene_recon_path</name>
+        <qualifiedname>ILLIXR::data_format::scene_recon_path::scene_recon_path</qualifiedname>
+        <param>
+          <type>time_point</type>
+          <declname>camera_time</declname>
+        </param>
+        <param>
+          <type><ref refid="structILLIXR_1_1data__format_1_1pose__type" kindref="compound">pose_type</ref></type>
+          <declname>pose_</declname>
+        </param>
+        <param>
+          <type>std::string</type>
+          <declname>depth_path_</declname>
+        </param>
+        <param>
+          <type>std::string</type>
+          <declname>rgb_path_</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/tmp/ILLIXR/include/illixr/data_format/scene_reconstruction.hpp" line="17" column="6" bodyfile="/home/friedel/tmp/ILLIXR/include/illixr/data_format/scene_reconstruction.hpp" bodystart="17" bodyend="21"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>ILLIXR::data_format::scene_recon_path</label>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ILLIXR::switchboard::event</label>
+        <link refid="classILLIXR_1_1switchboard_1_1event"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="4">
+        <label>ILLIXR::data_format::pose_data</label>
+        <link refid="structILLIXR_1_1data__format_1_1pose__data"/>
+      </node>
+      <node id="3">
+        <label>ILLIXR::data_format::pose_type</label>
+        <link refid="structILLIXR_1_1data__format_1_1pose__type"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>ILLIXR::data_format::scene_recon_path</label>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>pose</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ILLIXR::switchboard::event</label>
+        <link refid="classILLIXR_1_1switchboard_1_1event"/>
+      </node>
+    </collaborationgraph>
+    <location file="/home/friedel/tmp/ILLIXR/include/illixr/data_format/scene_reconstruction.hpp" line="11" column="1" bodyfile="/home/friedel/tmp/ILLIXR/include/illixr/data_format/scene_reconstruction.hpp" bodystart="11" bodyend="22"/>
+    <listofallmembers>
+      <member refid="structILLIXR_1_1data__format_1_1scene__recon__path_1a8f6a529983f134bba23a55f1c67ad02a" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::scene_recon_path</scope><name>depth_path</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1scene__recon__path_1abd19155622da4a7dfd6c8559ead0910b" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::scene_recon_path</scope><name>pose</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1scene__recon__path_1afcfaeb8665dbff71f786ccfeeb17d80a" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::scene_recon_path</scope><name>rgb_path</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1scene__recon__path_1ab5a0d48cce868cbce1f9aba96f7f3e19" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::scene_recon_path</scope><name>scene_recon_path</name></member>
+      <member refid="classILLIXR_1_1switchboard_1_1event_1a55399aaf47bc0d3943fd89d7afb55624" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::scene_recon_path</scope><name>serialize</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1scene__recon__path_1a0d1a6a37a5b6129d4b3776b77c9565a6" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::scene_recon_path</scope><name>time</name></member>
+      <member refid="classILLIXR_1_1switchboard_1_1event_1a01fb51a03e9025d71087de76823e449e" prot="public" virt="virtual"><scope>ILLIXR::data_format::scene_recon_path</scope><name>~event</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,6 @@
+var searchData=
+[
+  ['hand_5fpoints_0',['hand_points',['../structILLIXR_1_1data__format_1_1ht_1_1hand__points.html#a1b39bb019260ea44e0bdc2ffd1b30924',1,'ILLIXR::data_format::ht::hand_points::hand_points(units::measurement_unit unit_=units::UNSET)'],['../structILLIXR_1_1data__format_1_1ht_1_1hand__points.html#a21a177054d47511a40c0d30466c85f71',1,'ILLIXR::data_format::ht::hand_points::hand_points(std::vector&lt; point_with_validity &gt; &amp;pnts, units::measurement_unit unit_=units::UNSET)'],['../structILLIXR_1_1data__format_1_1ht_1_1hand__points.html#a304de31465d73e764b30e5e13be78bd3',1,'ILLIXR::data_format::ht::hand_points::hand_points(std::vector&lt; point &gt; &amp;pnts, units::measurement_unit unit_=units::UNSET, bool valid_=true)']]],
+  ['ht_5fdetection_1',['ht_detection',['../structILLIXR_1_1data__format_1_1ht_1_1ht__detection.html#a022e2a37d8806edd4f819701892874de',1,'ILLIXR::data_format::ht::ht_detection::ht_detection()'],['../structILLIXR_1_1data__format_1_1ht_1_1ht__detection.html#a384bd09b44d755e5d76df81739f6478b',1,'ILLIXR::data_format::ht::ht_detection::ht_detection(size_t ptime, rect *lp, rect *rp, rect *lh, rect *rh, float lc, float rc, hand_points *lhp, hand_points *rhp)']]],
+  ['ht_5fframe_2',['ht_frame',['../structILLIXR_1_1data__format_1_1ht_1_1ht__frame.html#a061f4ae1d54043d663f20a91cd073766',1,'ILLIXR::data_format::ht::ht_frame']]]
+];

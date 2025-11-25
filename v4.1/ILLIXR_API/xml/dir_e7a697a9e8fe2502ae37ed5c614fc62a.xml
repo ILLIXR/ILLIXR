@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_e7a697a9e8fe2502ae37ed5c614fc62a" kind="dir">
+    <compoundname>/home/friedel/tmp/ILLIXR/plugins/ada/mesh_decompression_grey</compoundname>
+    <innerfile refid="plugins_2ada_2mesh__decompression__grey_2plugin_8cpp">plugin.cpp</innerfile>
+    <innerfile refid="plugins_2ada_2mesh__decompression__grey_2plugin_8hpp">plugin.hpp</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/tmp/ILLIXR/plugins/ada/mesh_decompression_grey/"/>
+  </compounddef>
+</doxygen>

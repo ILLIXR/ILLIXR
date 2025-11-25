@@ -1,0 +1,193 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="plugins_2ada_2server__rx_2video__decoder_8cpp" kind="file" language="C++">
+    <compoundname>video_decoder.cpp</compoundname>
+    <includes refid="plugins_2ada_2server__rx_2video__decoder_8hpp" local="yes">video_decoder.hpp</includes>
+    <includes local="no">cstring</includes>
+    <includes local="no">gst/app/gstappsrc.h</includes>
+    <incdepgraph>
+      <node id="5">
+        <label>illixr/error_util.hpp</label>
+        <link refid="error__util_8hpp_source"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>global_module_defs.hpp</label>
+        <link refid="global__module__defs_8hpp_source"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>phonebook.hpp</label>
+        <link refid="phonebook_8hpp_source"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>relative_clock.hpp</label>
+        <link refid="relative__clock_8hpp_source"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>illixr/video_decoder.hpp</label>
+        <link refid="include_2illixr_2video__decoder_8hpp_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>/home/friedel/tmp/ILLIXR/plugins/ada/server_rx/video_decoder.cpp</label>
+        <link refid="plugins_2ada_2server__rx_2video__decoder_8cpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>video_decoder.hpp</label>
+        <link refid="plugins_2ada_2server__rx_2video__decoder_8hpp_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+      </node>
+      <node id="20">
+        <label>algorithm</label>
+      </node>
+      <node id="9">
+        <label>cassert</label>
+      </node>
+      <node id="18">
+        <label>chrono</label>
+      </node>
+      <node id="21">
+        <label>cmath</label>
+      </node>
+      <node id="23">
+        <label>condition_variable</label>
+      </node>
+      <node id="26">
+        <label>cstring</label>
+      </node>
+      <node id="24">
+        <label>functional</label>
+      </node>
+      <node id="27">
+        <label>gst/app/gstappsrc.h</label>
+      </node>
+      <node id="4">
+        <label>gst/gst.h</label>
+      </node>
+      <node id="16">
+        <label>iostream</label>
+      </node>
+      <node id="10">
+        <label>memory</label>
+      </node>
+      <node id="11">
+        <label>mutex</label>
+      </node>
+      <node id="25">
+        <label>opencv2/core/mat.hpp</label>
+      </node>
+      <node id="19">
+        <label>ratio</label>
+      </node>
+      <node id="12">
+        <label>shared_mutex</label>
+      </node>
+      <node id="17">
+        <label>spdlog/spdlog.h</label>
+      </node>
+      <node id="13">
+        <label>stdexcept</label>
+      </node>
+      <node id="22">
+        <label>string</label>
+      </node>
+      <node id="14">
+        <label>typeindex</label>
+      </node>
+      <node id="15">
+        <label>unordered_map</label>
+      </node>
+    </incdepgraph>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#include<sp/>&quot;video_decoder.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstring&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;gst/app/gstappsrc.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceILLIXR" kindref="compound">ILLIXR</ref>;</highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>ada_video_decoder::enqueue(std::string&amp;<sp/>img0,<sp/>std::string&amp;<sp/>img1)<sp/>{</highlight></codeline>
+<codeline lineno="9"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/>img0_size<sp/><sp/><sp/>=<sp/>img0.size();</highlight></codeline>
+<codeline lineno="10"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/>img1_size<sp/><sp/><sp/>=<sp/>img1.size();</highlight></codeline>
+<codeline lineno="11"><highlight class="normal"><sp/><sp/><sp/><sp/>GstBuffer*<sp/>buffer_img0<sp/>=<sp/>gst_buffer_new_allocate(</highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">,<sp/>img0_size,<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="12"><highlight class="normal"><sp/><sp/><sp/><sp/>GstBuffer*<sp/>buffer_img1<sp/>=<sp/>gst_buffer_new_allocate(</highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">,<sp/>img1_size,<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="13"><highlight class="normal"><sp/><sp/><sp/><sp/>gst_buffer_fill(buffer_img0,<sp/>0,<sp/>img0.data(),<sp/>img0_size);</highlight></codeline>
+<codeline lineno="14"><highlight class="normal"><sp/><sp/><sp/><sp/>gst_buffer_fill(buffer_img1,<sp/>0,<sp/>img1.data(),<sp/>img1_size);</highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>ret_img0<sp/>=<sp/>gst_app_src_push_buffer(GST_APP_SRC(appsrc_img0_),<sp/>buffer_img0);</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>ret_img1<sp/>=<sp/>gst_app_src_push_buffer(GST_APP_SRC(appsrc_img1_),<sp/>buffer_img1);</highlight></codeline>
+<codeline lineno="18"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(ret_img0<sp/>!=<sp/>GST_FLOW_OK<sp/>||<sp/>ret_img1<sp/>!=<sp/>GST_FLOW_OK)<sp/>{</highlight></codeline>
+<codeline lineno="19"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a0f43f628688a8968a09a358bfa012a22" kindref="member">abort</ref>(</highlight><highlight class="stringliteral">&quot;Failed<sp/>to<sp/>push<sp/>buffer&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="21"><highlight class="normal">}</highlight></codeline>
+    </programlisting>
+    <location file="/home/friedel/tmp/ILLIXR/plugins/ada/server_rx/video_decoder.cpp"/>
+  </compounddef>
+</doxygen>

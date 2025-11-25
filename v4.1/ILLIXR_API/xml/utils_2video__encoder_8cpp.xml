@@ -1,0 +1,288 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="utils_2video__encoder_8cpp" kind="file" language="C++">
+    <compoundname>video_encoder.cpp</compoundname>
+    <includes refid="utils_2video__encoder_8hpp" local="yes">video_encoder.hpp</includes>
+    <incdepgraph>
+      <node id="4">
+        <label>illixr/error_util.hpp</label>
+        <link refid="error__util_8hpp_source"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>global_module_defs.hpp</label>
+        <link refid="global__module__defs_8hpp_source"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>phonebook.hpp</label>
+        <link refid="phonebook_8hpp_source"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>relative_clock.hpp</label>
+        <link refid="relative__clock_8hpp_source"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>/home/friedel/tmp/ILLIXR/utils/video_encoder.cpp</label>
+        <link refid="utils_2video__encoder_8cpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>video_encoder.hpp</label>
+        <link refid="utils_2video__encoder_8hpp_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+      </node>
+      <node id="19">
+        <label>algorithm</label>
+      </node>
+      <node id="8">
+        <label>cassert</label>
+      </node>
+      <node id="17">
+        <label>chrono</label>
+      </node>
+      <node id="20">
+        <label>cmath</label>
+      </node>
+      <node id="22">
+        <label>functional</label>
+      </node>
+      <node id="3">
+        <label>gst/gst.h</label>
+      </node>
+      <node id="15">
+        <label>iostream</label>
+      </node>
+      <node id="9">
+        <label>memory</label>
+      </node>
+      <node id="10">
+        <label>mutex</label>
+      </node>
+      <node id="23">
+        <label>opencv2/core/mat.hpp</label>
+      </node>
+      <node id="18">
+        <label>ratio</label>
+      </node>
+      <node id="11">
+        <label>shared_mutex</label>
+      </node>
+      <node id="16">
+        <label>spdlog/spdlog.h</label>
+      </node>
+      <node id="12">
+        <label>stdexcept</label>
+      </node>
+      <node id="21">
+        <label>string</label>
+      </node>
+      <node id="13">
+        <label>typeindex</label>
+      </node>
+      <node id="14">
+        <label>unordered_map</label>
+      </node>
+    </incdepgraph>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#include<sp/>&quot;video_encoder.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceILLIXR" kindref="compound">ILLIXR</ref>;</highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>video_encoder::create_pipelines()<sp/>{</highlight></codeline>
+<codeline lineno="6"><highlight class="normal"><sp/><sp/><sp/><sp/>gst_init(</highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">,<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>ADA:<sp/>0<sp/>MSB<sp/>image<sp/>encoding<sp/>pipeline</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>ADA:<sp/>1<sp/>LSB<sp/>image<sp/>encoding<sp/>pipeline</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"><sp/><sp/><sp/><sp/>appsrc_img0_<sp/><sp/>=<sp/>gst_element_factory_make(</highlight><highlight class="stringliteral">&quot;appsrc&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;appsrc_img0&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="11"><highlight class="normal"><sp/><sp/><sp/><sp/>appsrc_img1_<sp/><sp/>=<sp/>gst_element_factory_make(</highlight><highlight class="stringliteral">&quot;appsrc&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;appsrc_img1&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="12"><highlight class="normal"><sp/><sp/><sp/><sp/>appsink_img0_<sp/>=<sp/>gst_element_factory_make(</highlight><highlight class="stringliteral">&quot;appsink&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;appsink_img0&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="13"><highlight class="normal"><sp/><sp/><sp/><sp/>appsink_img1_<sp/>=<sp/>gst_element_factory_make(</highlight><highlight class="stringliteral">&quot;appsink&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;appsink_img1&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>encoder_img0<sp/>=<sp/>gst_element_factory_make(ILLIXR_ENCODING,<sp/></highlight><highlight class="stringliteral">&quot;encoder_img0&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="16"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>encoder_img1<sp/>=<sp/>gst_element_factory_make(ILLIXR_ENCODING,<sp/></highlight><highlight class="stringliteral">&quot;encoder_img1&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>caps_8uc1<sp/>=</highlight></codeline>
+<codeline lineno="19"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>gst_caps_new_simple(</highlight><highlight class="stringliteral">&quot;video/x-raw&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;format&quot;</highlight><highlight class="normal">,<sp/>G_TYPE_STRING,<sp/></highlight><highlight class="stringliteral">&quot;GRAY8&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;framerate&quot;</highlight><highlight class="normal">,<sp/>GST_TYPE_FRACTION,<sp/>TYPE_FRACTION,<sp/>1,</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;width&quot;</highlight><highlight class="normal">,<sp/>G_TYPE_INT,<sp/>IMG_WIDTH,<sp/></highlight><highlight class="stringliteral">&quot;height&quot;</highlight><highlight class="normal">,<sp/>G_TYPE_INT,<sp/>IMG_HEIGHT,<sp/>NULL);</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"><sp/><sp/><sp/><sp/>g_object_set(G_OBJECT(appsrc_img0_),<sp/></highlight><highlight class="stringliteral">&quot;caps&quot;</highlight><highlight class="normal">,<sp/>caps_8uc1,<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/>g_object_set(G_OBJECT(appsrc_img1_),<sp/></highlight><highlight class="stringliteral">&quot;caps&quot;</highlight><highlight class="normal">,<sp/>caps_8uc1,<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/>gst_caps_unref(caps_8uc1);</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>set<sp/>bitrate<sp/>from<sp/>environment<sp/>variables</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>g_object_set(G_OBJECT(encoder_img0),<sp/>&quot;bitrate&quot;,<sp/>std::stoi(sb-&gt;get_env(&quot;ILLIXR_BITRATE&quot;)),<sp/>nullptr,<sp/>10);</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>g_object_set(G_OBJECT(encoder_img1),<sp/>&quot;bitrate&quot;,<sp/>std::stoi(sb-&gt;get_env(&quot;ILLIXR_BITRATE&quot;)),<sp/>nullptr,<sp/>10);</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>set<sp/>bitrate<sp/>from<sp/>defined<sp/>variables</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/>g_object_set(G_OBJECT(encoder_img1),<sp/></highlight><highlight class="stringliteral">&quot;bitrate&quot;</highlight><highlight class="normal">,<sp/>ILLIXR_BITRATE,<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>defined<sp/>VIO</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>nvvideoconvert_0<sp/>=<sp/>gst_element_factory_make(</highlight><highlight class="stringliteral">&quot;nvvideoconvert&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;nvvideoconvert0&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>nvvideoconvert_1<sp/>=<sp/>gst_element_factory_make(</highlight><highlight class="stringliteral">&quot;nvvideoconvert&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;nvvideoconvert1&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/>g_object_set(G_OBJECT(encoder_img0),<sp/></highlight><highlight class="stringliteral">&quot;bitrate&quot;</highlight><highlight class="normal">,<sp/>ILLIXR_BITRATE,<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/>g_object_set(G_OBJECT(appsrc_img0_),<sp/></highlight><highlight class="stringliteral">&quot;stream-type&quot;</highlight><highlight class="normal">,<sp/>0,<sp/></highlight><highlight class="stringliteral">&quot;format&quot;</highlight><highlight class="normal">,<sp/>GST_FORMAT_BYTES,<sp/></highlight><highlight class="stringliteral">&quot;is-live&quot;</highlight><highlight class="normal">,<sp/>TRUE,<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/>g_object_set(G_OBJECT(appsrc_img1_),<sp/></highlight><highlight class="stringliteral">&quot;stream-type&quot;</highlight><highlight class="normal">,<sp/>0,<sp/></highlight><highlight class="stringliteral">&quot;format&quot;</highlight><highlight class="normal">,<sp/>GST_FORMAT_BYTES,<sp/></highlight><highlight class="stringliteral">&quot;is-live&quot;</highlight><highlight class="normal">,<sp/>TRUE,<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight><highlight class="preprocessor">#elif<sp/>defined<sp/>ADA</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>CPU<sp/>colorspace<sp/>(system<sp/>memory)<sp/>→<sp/>I420</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>vc_sys0<sp/>=<sp/>gst_element_factory_make(</highlight><highlight class="stringliteral">&quot;videoconvert&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;videoconvert_sys0&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"></highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>nvvideoconvert_0<sp/><sp/>=<sp/>gst_element_factory_make(</highlight><highlight class="stringliteral">&quot;nvvidconv&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;nvvideoconvert0&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>nvvideoconvert_1<sp/><sp/>=<sp/>gst_element_factory_make(</highlight><highlight class="stringliteral">&quot;nvvidconv&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;nvvideoconvert1&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>nvvideoconvert_0a<sp/>=<sp/>gst_element_factory_make(</highlight><highlight class="stringliteral">&quot;nvvidconv&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;nvvideoconvert0a&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>parse0<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>gst_element_factory_make(</highlight><highlight class="stringliteral">&quot;h265parse&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;h265parse0&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>parse1<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>gst_element_factory_make(</highlight><highlight class="stringliteral">&quot;h265parse&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;h265parse1&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"></highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>cf_i420_sys0<sp/><sp/><sp/><sp/><sp/>=<sp/>gst_element_factory_make(</highlight><highlight class="stringliteral">&quot;capsfilter&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;cf_i420_sys0&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>cap_cf_i420_sys0<sp/>=<sp/>gst_caps_new_simple(</highlight><highlight class="stringliteral">&quot;video/x-raw&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;format&quot;</highlight><highlight class="normal">,<sp/>G_TYPE_STRING,<sp/></highlight><highlight class="stringliteral">&quot;I420&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"></highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/>g_object_set(G_OBJECT(cf_i420_sys0),<sp/></highlight><highlight class="stringliteral">&quot;caps&quot;</highlight><highlight class="normal">,<sp/>cap_cf_i420_sys0,<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/>gst_caps_unref(cap_cf_i420_sys0);</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"></highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/>cf_i420_nvmm0<sp/>=<sp/>gst_element_factory_make(</highlight><highlight class="stringliteral">&quot;capsfilter&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;cf_i420_nvmm0&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/>GstCaps*<sp/>cap_i420<sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>gst_caps_from_string(</highlight><highlight class="stringliteral">&quot;video/x-raw(memory:NVMM),<sp/>format=I420&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/>g_object_set(G_OBJECT(cf_i420_nvmm0),<sp/></highlight><highlight class="stringliteral">&quot;caps&quot;</highlight><highlight class="normal">,<sp/>cap_i420,<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/>gst_caps_unref(cap_i420);</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"></highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/>cf_nv24_nvmm0<sp/>=<sp/>gst_element_factory_make(</highlight><highlight class="stringliteral">&quot;capsfilter&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;cf_nv24_nvmm0&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/>GstCaps*<sp/>cap_nv24<sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>gst_caps_from_string(</highlight><highlight class="stringliteral">&quot;video/x-raw(memory:NVMM),<sp/>format=NV24&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/>g_object_set(G_OBJECT(cf_nv24_nvmm0),<sp/></highlight><highlight class="stringliteral">&quot;caps&quot;</highlight><highlight class="normal">,<sp/>cap_nv24,<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/>gst_caps_unref(cap_nv24);</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"></highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>flag<sp/>for<sp/>orin</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/>g_object_set(G_OBJECT(encoder_img0),<sp/></highlight><highlight class="stringliteral">&quot;enable-lossless&quot;</highlight><highlight class="normal">,<sp/>TRUE,<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"></highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>pyh:<sp/>Set<sp/>to<sp/>a<sp/>large<sp/>value<sp/>to<sp/>avoid<sp/>periodic<sp/>latency<sp/>spikes<sp/>from<sp/>keyframe<sp/>insertion.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>should<sp/>be<sp/>safe<sp/>for<sp/>our<sp/>use<sp/>case<sp/>because<sp/>we<sp/>don&apos;t<sp/>need<sp/>random<sp/>access<sp/>to<sp/>old<sp/>frames.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/>g_object_set(G_OBJECT(encoder_img0),<sp/></highlight><highlight class="stringliteral">&quot;idrinterval&quot;</highlight><highlight class="normal">,<sp/>25600,<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/>g_object_set(G_OBJECT(encoder_img1),<sp/></highlight><highlight class="stringliteral">&quot;idrinterval&quot;</highlight><highlight class="normal">,<sp/>25600,<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"></highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/>g_object_set(G_OBJECT(encoder_img0),<sp/></highlight><highlight class="stringliteral">&quot;iframeinterval&quot;</highlight><highlight class="normal">,<sp/>25600,<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/>g_object_set(G_OBJECT(encoder_img1),<sp/></highlight><highlight class="stringliteral">&quot;iframeinterval&quot;</highlight><highlight class="normal">,<sp/>25600,<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"></highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/>g_object_set(G_OBJECT(appsrc_img0_),<sp/></highlight><highlight class="stringliteral">&quot;is-live&quot;</highlight><highlight class="normal">,<sp/>TRUE,<sp/></highlight><highlight class="stringliteral">&quot;format&quot;</highlight><highlight class="normal">,<sp/>GST_FORMAT_TIME,<sp/></highlight><highlight class="stringliteral">&quot;do-timestamp&quot;</highlight><highlight class="normal">,<sp/>FALSE,<sp/></highlight><highlight class="stringliteral">&quot;block&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>TRUE,<sp/></highlight><highlight class="comment">//<sp/>backpressure<sp/>instead<sp/>of<sp/>queue<sp/>explosion</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/>g_object_set(G_OBJECT(appsrc_img1_),<sp/></highlight><highlight class="stringliteral">&quot;is-live&quot;</highlight><highlight class="normal">,<sp/>TRUE,<sp/></highlight><highlight class="stringliteral">&quot;format&quot;</highlight><highlight class="normal">,<sp/>GST_FORMAT_TIME,<sp/></highlight><highlight class="stringliteral">&quot;do-timestamp&quot;</highlight><highlight class="normal">,<sp/>FALSE,<sp/></highlight><highlight class="stringliteral">&quot;block&quot;</highlight><highlight class="normal">,<sp/>TRUE,</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/>g_object_set(appsink_img0_,<sp/></highlight><highlight class="stringliteral">&quot;emit-signals&quot;</highlight><highlight class="normal">,<sp/>TRUE,<sp/></highlight><highlight class="stringliteral">&quot;sync&quot;</highlight><highlight class="normal">,<sp/>FALSE,<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/>g_object_set(appsink_img1_,<sp/></highlight><highlight class="stringliteral">&quot;emit-signals&quot;</highlight><highlight class="normal">,<sp/>TRUE,<sp/></highlight><highlight class="stringliteral">&quot;sync&quot;</highlight><highlight class="normal">,<sp/>FALSE,<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"></highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/>g_signal_connect(appsink_img0_,<sp/></highlight><highlight class="stringliteral">&quot;new-sample&quot;</highlight><highlight class="normal">,<sp/>G_CALLBACK(cb_new_sample_0),<sp/></highlight><highlight class="keyword">this</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/>g_signal_connect(appsink_img1_,<sp/></highlight><highlight class="stringliteral">&quot;new-sample&quot;</highlight><highlight class="normal">,<sp/>G_CALLBACK(cb_new_sample_1),<sp/></highlight><highlight class="keyword">this</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"></highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/>pipeline_img0_<sp/>=<sp/>gst_pipeline_new(</highlight><highlight class="stringliteral">&quot;pipeline_img0&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/>pipeline_img1_<sp/>=<sp/>gst_pipeline_new(</highlight><highlight class="stringliteral">&quot;pipeline_img1&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"></highlight></codeline>
+<codeline lineno="91"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>defined<sp/>VIO</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/>gst_bin_add_many(GST_BIN(pipeline_img0_),<sp/>appsrc_img0_,<sp/>nvvideoconvert_0,<sp/>encoder_img0,<sp/>appsink_img0_,<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/>gst_bin_add_many(GST_BIN(pipeline_img1_),<sp/>appsrc_img1_,<sp/>nvvideoconvert_1,<sp/>encoder_img1,<sp/>appsink_img1_,<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"></highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>link<sp/>elements</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!gst_element_link_many(appsrc_img0_,<sp/>nvvideoconvert_0,<sp/>encoder_img0,<sp/>appsink_img0_,<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">)<sp/>||</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>!gst_element_link_many(appsrc_img1_,<sp/>nvvideoconvert_1,<sp/>encoder_img1,<sp/>appsink_img1_,<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">))<sp/>{</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a0f43f628688a8968a09a358bfa012a22" kindref="member">abort</ref>(</highlight><highlight class="stringliteral">&quot;Failed<sp/>to<sp/>link<sp/>elements&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"></highlight><highlight class="preprocessor">#elif<sp/>defined<sp/>ADA</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/>gst_bin_add_many(GST_BIN(pipeline_img0_),<sp/>appsrc_img0_,<sp/>vc_sys0,<sp/>cf_i420_sys0,<sp/>nvvideoconvert_0,<sp/>cf_i420_nvmm0,</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>nvvideoconvert_0a,<sp/>cf_nv24_nvmm0,<sp/>encoder_img0,<sp/>parse0,<sp/>appsink_img0_,<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"></highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/>gst_bin_add_many(GST_BIN(pipeline_img1_),<sp/>appsrc_img1_,<sp/>nvvideoconvert_1,<sp/>encoder_img1,<sp/>parse1,<sp/>appsink_img1_,<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"></highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>ok<sp/><sp/>=<sp/>gst_element_link_many(appsrc_img0_,<sp/>vc_sys0,<sp/>cf_i420_sys0,<sp/>nvvideoconvert_0,<sp/>cf_i420_nvmm0,<sp/>nvvideoconvert_0a,</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cf_nv24_nvmm0,<sp/>encoder_img0,<sp/>parse0,<sp/>appsink_img0_,<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>ok1<sp/>=<sp/>gst_element_link_many(appsrc_img1_,<sp/>nvvideoconvert_1,<sp/>encoder_img1,<sp/>parse1,<sp/>appsink_img1_,<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>auto<sp/>L<sp/>=<sp/>[](GstElement*<sp/>a,<sp/>GstElement*<sp/>b,<sp/>const<sp/>char*<sp/>an,<sp/>const<sp/>char*<sp/>bn)<sp/>{</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>gboolean<sp/>ok<sp/>=<sp/>gst_element_link(a,<sp/>b);</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>if<sp/>(!ok)<sp/>{</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>g_printerr(&quot;LINK<sp/>FAIL:<sp/>%s<sp/>→<sp/>%s\n&quot;,<sp/>an,<sp/>bn);</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="113"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>}</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>return<sp/>ok;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>};</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="116"><highlight class="normal"></highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>bool<sp/>ok<sp/>=<sp/>true;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>ok<sp/>=<sp/>ok<sp/>&amp;&amp;<sp/>L(appsrc_img0_,<sp/>vc_sys0,<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;appsrc0&quot;,<sp/>&quot;videoconvert_sys0&quot;);</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="119"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>ok<sp/>=<sp/>ok<sp/>&amp;&amp;<sp/>L(vc_sys0,<sp/><sp/><sp/><sp/><sp/><sp/><sp/>cf_i420_sys0,<sp/><sp/><sp/><sp/><sp/><sp/>&quot;videoconvert_sys0&quot;,<sp/>&quot;cf_i420_sys0&quot;);</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>ok<sp/>=<sp/>ok<sp/>&amp;&amp;<sp/>L(cf_i420_sys0,<sp/><sp/>nvvideoconvert_0,<sp/><sp/>&quot;cf_i420_sys0&quot;,<sp/>&quot;nvvideoconvert0&quot;);</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>ok<sp/>=<sp/>ok<sp/>&amp;&amp;<sp/>L(nvvideoconvert_0,<sp/>cf_i420_nvmm0,<sp/><sp/>&quot;nvvideoconvert0&quot;,<sp/>&quot;cf_i420_nvmm0&quot;);</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>ok<sp/>=<sp/>ok<sp/>&amp;&amp;<sp/>L(cf_i420_nvmm0,<sp/>nvvideoconvert_0a,<sp/>&quot;cf_i420_nvmm0&quot;,<sp/>&quot;nvvideoconvert0a&quot;);</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>ok<sp/>=<sp/>ok<sp/>&amp;&amp;<sp/>L(nvvideoconvert_0a,<sp/>cf_nv24_nvmm0,<sp/>&quot;nvvideoconvert0a&quot;,<sp/>&quot;cf_nv24_nvmm0&quot;);</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>ok<sp/>=<sp/>ok<sp/>&amp;&amp;<sp/>L(cf_nv24_nvmm0,<sp/>encoder_img0,<sp/><sp/><sp/><sp/><sp/><sp/>&quot;cf_nv24_nvmm0&quot;,<sp/>&quot;encoder_img0&quot;);</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>ok<sp/>=<sp/>ok<sp/>&amp;&amp;<sp/>L(encoder_img0,<sp/><sp/>parse0,<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;encoder_img0&quot;,<sp/>&quot;h265parse0&quot;);</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>ok<sp/>=<sp/>ok<sp/>&amp;&amp;<sp/>L(parse0,<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>appsink_img0_,<sp/><sp/><sp/><sp/><sp/>&quot;h265parse0&quot;,<sp/>&quot;appsink0&quot;);</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="127"><highlight class="normal"></highlight></codeline>
+<codeline lineno="128"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>if<sp/>(!ok)<sp/>abort(&quot;Failed<sp/>to<sp/>link<sp/>elements<sp/>(ADA<sp/>pipeline,<sp/>MSB).&quot;);</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!ok<sp/>||<sp/>!ok1)<sp/>{</highlight></codeline>
+<codeline lineno="130"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!ok)<sp/>{</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>printf(</highlight><highlight class="stringliteral">&quot;Failed<sp/>to<sp/>link<sp/>elements<sp/>pipeline<sp/>0\n&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!ok1)<sp/>{</highlight></codeline>
+<codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>printf(</highlight><highlight class="stringliteral">&quot;Failed<sp/>to<sp/>link<sp/>elements<sp/>pipeline<sp/>1\n&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a0f43f628688a8968a09a358bfa012a22" kindref="member">abort</ref>(</highlight><highlight class="stringliteral">&quot;can&apos;t<sp/>link&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="139"><highlight class="normal"><sp/><sp/><sp/><sp/>gst_element_set_state(pipeline_img0_,<sp/>GST_STATE_PLAYING);</highlight></codeline>
+<codeline lineno="140"><highlight class="normal"><sp/><sp/><sp/><sp/>gst_element_set_state(pipeline_img1_,<sp/>GST_STATE_PLAYING);</highlight></codeline>
+<codeline lineno="141"><highlight class="normal">}</highlight></codeline>
+    </programlisting>
+    <location file="/home/friedel/tmp/ILLIXR/utils/video_encoder.cpp"/>
+  </compounddef>
+</doxygen>

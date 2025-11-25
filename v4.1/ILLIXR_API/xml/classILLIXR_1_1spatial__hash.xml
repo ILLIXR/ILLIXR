@@ -1,0 +1,317 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classILLIXR_1_1spatial__hash" kind="class" language="C++" prot="public">
+    <compoundname>ILLIXR::spatial_hash</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1spatial__hash_1a3a7b964107a43ff9561d4d2744f1b230" prot="public" static="no" mutable="no">
+        <type>std::unordered_map&lt; unsigned, std::vector&lt; Vector_range &gt; &gt;</type>
+        <definition>std::unordered_map&lt;unsigned, std::vector&lt;Vector_range&gt; &gt; ILLIXR::spatial_hash::map_VB_to_range_</definition>
+        <argsstring></argsstring>
+        <name>map_VB_to_range_</name>
+        <qualifiedname>ILLIXR::spatial_hash::map_VB_to_range_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/tmp/ILLIXR/plugins/ada/scene_management/spatial_hash.hpp" line="39" column="24" bodyfile="/home/friedel/tmp/ILLIXR/plugins/ada/scene_management/spatial_hash.hpp" bodystart="39" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1spatial__hash_1a1074635890c2ed21525c105eef04332e" prot="public" static="no" mutable="no">
+        <type>std::unordered_map&lt; unsigned, std::vector&lt; NewVB &gt; &gt;</type>
+        <definition>std::unordered_map&lt;unsigned, std::vector&lt;NewVB&gt; &gt; ILLIXR::spatial_hash::allocate_new_VB_</definition>
+        <argsstring></argsstring>
+        <name>allocate_new_VB_</name>
+        <qualifiedname>ILLIXR::spatial_hash::allocate_new_VB_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/tmp/ILLIXR/plugins/ada/scene_management/spatial_hash.hpp" line="41" column="24" bodyfile="/home/friedel/tmp/ILLIXR/plugins/ada/scene_management/spatial_hash.hpp" bodystart="41" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1spatial__hash_1ae4150041460a18152fb33e4684fbd5d6" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::pair&lt; int, int &gt; &gt;</type>
+        <definition>std::vector&lt;std::pair&lt;int, int&gt; &gt; ILLIXR::spatial_hash::deleted_ranges_</definition>
+        <argsstring></argsstring>
+        <name>deleted_ranges_</name>
+        <qualifiedname>ILLIXR::spatial_hash::deleted_ranges_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/tmp/ILLIXR/plugins/ada/scene_management/spatial_hash.hpp" line="44" column="17" bodyfile="/home/friedel/tmp/ILLIXR/plugins/ada/scene_management/spatial_hash.hpp" bodystart="44" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1spatial__hash_1a7c829d93e56d84d395bfa030cae501b9" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; Eigen::Vector3d &gt;</type>
+        <definition>std::vector&lt;Eigen::Vector3d&gt; ILLIXR::spatial_hash::vertices_</definition>
+        <argsstring></argsstring>
+        <name>vertices_</name>
+        <qualifiedname>ILLIXR::spatial_hash::vertices_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/tmp/ILLIXR/plugins/ada/scene_management/spatial_hash.hpp" line="47" column="17" bodyfile="/home/friedel/tmp/ILLIXR/plugins/ada/scene_management/spatial_hash.hpp" bodystart="47" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1spatial__hash_1a967f56da7cdc9caefd8adb0a0e6f0fde" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; int &gt;</type>
+        <definition>std::vector&lt;int&gt; ILLIXR::spatial_hash::faces_</definition>
+        <argsstring></argsstring>
+        <name>faces_</name>
+        <qualifiedname>ILLIXR::spatial_hash::faces_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/tmp/ILLIXR/plugins/ada/scene_management/spatial_hash.hpp" line="50" column="17" bodyfile="/home/friedel/tmp/ILLIXR/plugins/ada/scene_management/spatial_hash.hpp" bodystart="50" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1spatial__hash_1a1fb9cb4f0b55ad2219c5cd5cf811a852" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; Nullified_Ranges &gt;</type>
+        <definition>std::vector&lt;Nullified_Ranges&gt; ILLIXR::spatial_hash::nullified_ranges</definition>
+        <argsstring></argsstring>
+        <name>nullified_ranges</name>
+        <qualifiedname>ILLIXR::spatial_hash::nullified_ranges</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/tmp/ILLIXR/plugins/ada/scene_management/spatial_hash.hpp" line="53" column="17" bodyfile="/home/friedel/tmp/ILLIXR/plugins/ada/scene_management/spatial_hash.hpp" bodystart="53" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1spatial__hash_1a1eddaad5cc46707f5e685fab26df4aa4" prot="public" static="no" mutable="no">
+        <type>std::set&lt; std::tuple&lt; int, int, int, int &gt; &gt;</type>
+        <definition>std::set&lt;std::tuple&lt;int, int, int, int&gt; &gt; ILLIXR::spatial_hash::older_scene_vb_list</definition>
+        <argsstring></argsstring>
+        <name>older_scene_vb_list</name>
+        <qualifiedname>ILLIXR::spatial_hash::older_scene_vb_list</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/tmp/ILLIXR/plugins/ada/scene_management/spatial_hash.hpp" line="56" column="14" bodyfile="/home/friedel/tmp/ILLIXR/plugins/ada/scene_management/spatial_hash.hpp" bodystart="56" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1spatial__hash_1a670b321b2e3454d4d0436e15b22c894f" prot="public" static="no" mutable="no">
+        <type>unsigned</type>
+        <definition>unsigned ILLIXR::spatial_hash::delete_counter_</definition>
+        <argsstring></argsstring>
+        <name>delete_counter_</name>
+        <qualifiedname>ILLIXR::spatial_hash::delete_counter_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/tmp/ILLIXR/plugins/ada/scene_management/spatial_hash.hpp" line="58" column="14" bodyfile="/home/friedel/tmp/ILLIXR/plugins/ada/scene_management/spatial_hash.hpp" bodystart="58" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1spatial__hash_1a3ce7087c511c557d142bc31dfc1f3a35" prot="public" static="no" mutable="no">
+        <type>unsigned</type>
+        <definition>unsigned ILLIXR::spatial_hash::VB_skipped_</definition>
+        <argsstring></argsstring>
+        <name>VB_skipped_</name>
+        <qualifiedname>ILLIXR::spatial_hash::VB_skipped_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/tmp/ILLIXR/plugins/ada/scene_management/spatial_hash.hpp" line="59" column="14" bodyfile="/home/friedel/tmp/ILLIXR/plugins/ada/scene_management/spatial_hash.hpp" bodystart="59" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1spatial__hash_1adbfce2a05542a013f5c3749c3e346891" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; int &gt;</type>
+        <definition>std::vector&lt;int&gt; ILLIXR::spatial_hash::faces_base_</definition>
+        <argsstring></argsstring>
+        <name>faces_base_</name>
+        <qualifiedname>ILLIXR::spatial_hash::faces_base_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/tmp/ILLIXR/plugins/ada/scene_management/spatial_hash.hpp" line="62" column="17" bodyfile="/home/friedel/tmp/ILLIXR/plugins/ada/scene_management/spatial_hash.hpp" bodystart="62" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classILLIXR_1_1spatial__hash_1a6be291465b5a9447a717e296bedfc3e5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>spatial_hash::spatial_hash</definition>
+        <argsstring>()</argsstring>
+        <name>spatial_hash</name>
+        <qualifiedname>ILLIXR::spatial_hash::spatial_hash</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/tmp/ILLIXR/plugins/ada/scene_management/spatial_hash.hpp" line="21" column="5" bodyfile="/home/friedel/tmp/ILLIXR/plugins/ada/scene_management/spatial_hash.cpp" bodystart="8" bodyend="31"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1spatial__hash_1a791a268be13741f2af530b832abf3a76" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void spatial_hash::clean_mesh_vb_redesign_with_list</definition>
+        <argsstring>(const std::set&lt; std::tuple&lt; int, int, int &gt; &gt; &amp;vb_lists)</argsstring>
+        <name>clean_mesh_vb_redesign_with_list</name>
+        <qualifiedname>ILLIXR::spatial_hash::clean_mesh_vb_redesign_with_list</qualifiedname>
+        <param>
+          <type>const std::set&lt; std::tuple&lt; int, int, int &gt; &gt; &amp;</type>
+          <declname>vb_lists</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/tmp/ILLIXR/plugins/ada/scene_management/spatial_hash.hpp" line="23" column="11" bodyfile="/home/friedel/tmp/ILLIXR/plugins/ada/scene_management/spatial_hash.cpp" bodystart="59" bodyend="134"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1spatial__hash_1a7db12e575fbb3d8635aaa6e1028d1d0f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void spatial_hash::deleted_ranges_processing</definition>
+        <argsstring>()</argsstring>
+        <name>deleted_ranges_processing</name>
+        <qualifiedname>ILLIXR::spatial_hash::deleted_ranges_processing</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/tmp/ILLIXR/plugins/ada/scene_management/spatial_hash.hpp" line="25" column="10" bodyfile="/home/friedel/tmp/ILLIXR/plugins/ada/scene_management/spatial_hash.cpp" bodystart="136" bodyend="175"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1spatial__hash_1a192a380380150b6d2df672fbaa15bb44" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void spatial_hash::append_mesh_allocate</definition>
+        <argsstring>(const std::unordered_map&lt; unsigned, std::vector&lt; NewVB &gt; &gt; &amp;inputSceneUpdateMap)</argsstring>
+        <name>append_mesh_allocate</name>
+        <qualifiedname>ILLIXR::spatial_hash::append_mesh_allocate</qualifiedname>
+        <param>
+          <type>const std::unordered_map&lt; unsigned, std::vector&lt; NewVB &gt; &gt; &amp;</type>
+          <declname>inputSceneUpdateMap</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/tmp/ILLIXR/plugins/ada/scene_management/spatial_hash.hpp" line="28" column="10" bodyfile="/home/friedel/tmp/ILLIXR/plugins/ada/scene_management/spatial_hash.cpp" bodystart="177" bodyend="215"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1spatial__hash_1a2942aa82a4edb2b9df946ffb17208a3d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>unsigned</type>
+        <definition>unsigned spatial_hash::append_mesh_match_and_insert</definition>
+        <argsstring>(bool merge)</argsstring>
+        <name>append_mesh_match_and_insert</name>
+        <qualifiedname>ILLIXR::spatial_hash::append_mesh_match_and_insert</qualifiedname>
+        <param>
+          <type>bool</type>
+          <declname>merge</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/tmp/ILLIXR/plugins/ada/scene_management/spatial_hash.hpp" line="30" column="21" bodyfile="/home/friedel/tmp/ILLIXR/plugins/ada/scene_management/spatial_hash.cpp" bodystart="218" bodyend="551"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1spatial__hash_1abd5142a2ee9c0f4643f9bd5c7ef2e196" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void spatial_hash::restore_deleted_faces</definition>
+        <argsstring>()</argsstring>
+        <name>restore_deleted_faces</name>
+        <qualifiedname>ILLIXR::spatial_hash::restore_deleted_faces</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/tmp/ILLIXR/plugins/ada/scene_management/spatial_hash.hpp" line="33" column="10" bodyfile="/home/friedel/tmp/ILLIXR/plugins/ada/scene_management/spatial_hash.cpp" bodystart="48" bodyend="57"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1spatial__hash_1ad5255734eee3d8105a69a0426f11dfba" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void spatial_hash::print_mesh_as_obj</definition>
+        <argsstring>(unsigned frame_id, unsigned type, const std::string &amp;tr)</argsstring>
+        <name>print_mesh_as_obj</name>
+        <qualifiedname>ILLIXR::spatial_hash::print_mesh_as_obj</qualifiedname>
+        <param>
+          <type>unsigned</type>
+          <declname>frame_id</declname>
+        </param>
+        <param>
+          <type>unsigned</type>
+          <declname>type</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>tr</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/tmp/ILLIXR/plugins/ada/scene_management/spatial_hash.hpp" line="36" column="11" bodyfile="/home/friedel/tmp/ILLIXR/plugins/ada/scene_management/spatial_hash.cpp" bodystart="554" bodyend="570"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classILLIXR_1_1spatial__hash_1a3b3be4db6953c9a8d0d9448162c8df20" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>unsigned</type>
+        <definition>unsigned spatial_hash::hash_vb</definition>
+        <argsstring>(const VoxelBlockIndex &amp;Index)</argsstring>
+        <name>hash_vb</name>
+        <qualifiedname>ILLIXR::spatial_hash::hash_vb</qualifiedname>
+        <param>
+          <type>const VoxelBlockIndex &amp;</type>
+          <declname>Index</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/tmp/ILLIXR/plugins/ada/scene_management/spatial_hash.hpp" line="31" column="21" bodyfile="/home/friedel/tmp/ILLIXR/plugins/ada/scene_management/spatial_hash.cpp" bodystart="33" bodyend="38"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/tmp/ILLIXR/plugins/ada/scene_management/spatial_hash.hpp" line="19" column="1" bodyfile="/home/friedel/tmp/ILLIXR/plugins/ada/scene_management/spatial_hash.hpp" bodystart="19" bodyend="63"/>
+    <listofallmembers>
+      <member refid="classILLIXR_1_1spatial__hash_1a1074635890c2ed21525c105eef04332e" prot="public" virt="non-virtual"><scope>ILLIXR::spatial_hash</scope><name>allocate_new_VB_</name></member>
+      <member refid="classILLIXR_1_1spatial__hash_1a192a380380150b6d2df672fbaa15bb44" prot="public" virt="non-virtual"><scope>ILLIXR::spatial_hash</scope><name>append_mesh_allocate</name></member>
+      <member refid="classILLIXR_1_1spatial__hash_1a2942aa82a4edb2b9df946ffb17208a3d" prot="public" virt="non-virtual"><scope>ILLIXR::spatial_hash</scope><name>append_mesh_match_and_insert</name></member>
+      <member refid="classILLIXR_1_1spatial__hash_1a791a268be13741f2af530b832abf3a76" prot="public" virt="non-virtual"><scope>ILLIXR::spatial_hash</scope><name>clean_mesh_vb_redesign_with_list</name></member>
+      <member refid="classILLIXR_1_1spatial__hash_1a670b321b2e3454d4d0436e15b22c894f" prot="public" virt="non-virtual"><scope>ILLIXR::spatial_hash</scope><name>delete_counter_</name></member>
+      <member refid="classILLIXR_1_1spatial__hash_1ae4150041460a18152fb33e4684fbd5d6" prot="public" virt="non-virtual"><scope>ILLIXR::spatial_hash</scope><name>deleted_ranges_</name></member>
+      <member refid="classILLIXR_1_1spatial__hash_1a7db12e575fbb3d8635aaa6e1028d1d0f" prot="public" virt="non-virtual"><scope>ILLIXR::spatial_hash</scope><name>deleted_ranges_processing</name></member>
+      <member refid="classILLIXR_1_1spatial__hash_1a967f56da7cdc9caefd8adb0a0e6f0fde" prot="public" virt="non-virtual"><scope>ILLIXR::spatial_hash</scope><name>faces_</name></member>
+      <member refid="classILLIXR_1_1spatial__hash_1adbfce2a05542a013f5c3749c3e346891" prot="public" virt="non-virtual"><scope>ILLIXR::spatial_hash</scope><name>faces_base_</name></member>
+      <member refid="classILLIXR_1_1spatial__hash_1a3b3be4db6953c9a8d0d9448162c8df20" prot="public" virt="non-virtual"><scope>ILLIXR::spatial_hash</scope><name>hash_vb</name></member>
+      <member refid="classILLIXR_1_1spatial__hash_1a3a7b964107a43ff9561d4d2744f1b230" prot="public" virt="non-virtual"><scope>ILLIXR::spatial_hash</scope><name>map_VB_to_range_</name></member>
+      <member refid="classILLIXR_1_1spatial__hash_1a1fb9cb4f0b55ad2219c5cd5cf811a852" prot="public" virt="non-virtual"><scope>ILLIXR::spatial_hash</scope><name>nullified_ranges</name></member>
+      <member refid="classILLIXR_1_1spatial__hash_1a1eddaad5cc46707f5e685fab26df4aa4" prot="public" virt="non-virtual"><scope>ILLIXR::spatial_hash</scope><name>older_scene_vb_list</name></member>
+      <member refid="classILLIXR_1_1spatial__hash_1ad5255734eee3d8105a69a0426f11dfba" prot="public" virt="non-virtual"><scope>ILLIXR::spatial_hash</scope><name>print_mesh_as_obj</name></member>
+      <member refid="classILLIXR_1_1spatial__hash_1abd5142a2ee9c0f4643f9bd5c7ef2e196" prot="public" virt="non-virtual"><scope>ILLIXR::spatial_hash</scope><name>restore_deleted_faces</name></member>
+      <member refid="classILLIXR_1_1spatial__hash_1a6be291465b5a9447a717e296bedfc3e5" prot="public" virt="non-virtual"><scope>ILLIXR::spatial_hash</scope><name>spatial_hash</name></member>
+      <member refid="classILLIXR_1_1spatial__hash_1a3ce7087c511c557d142bc31dfc1f3a35" prot="public" virt="non-virtual"><scope>ILLIXR::spatial_hash</scope><name>VB_skipped_</name></member>
+      <member refid="classILLIXR_1_1spatial__hash_1a7c829d93e56d84d395bfa030cae501b9" prot="public" virt="non-virtual"><scope>ILLIXR::spatial_hash</scope><name>vertices_</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
