@@ -45,9 +45,10 @@ component. ILLIXR currently contains the following [plugins][P66] and [services]
     - [realsense][P36] supporting [Intel RealSense][E41]
     - [webcam][P37]
 - Scene provisioning
-    - [Ada (scene provisioning)][P69]: collection of plugins for real-time scene provisioning: InfiniTAM-based
-      scene reconstruction and delivery of mesh-based scene data to applications or other XR
-      runtime components during runtime.
+    - [Ada (scene provisioning)][P69]: collection of plugins that implement scene provisioning—combining InfiniTAM-based real-time scene reconstruction with delivery of mesh-based scene data to XR applications and other scene-consuming spatial computing components.
+
+
+      
 
 
 ### Visual
