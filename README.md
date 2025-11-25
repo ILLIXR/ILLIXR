@@ -44,6 +44,11 @@ component. ILLIXR currently contains the following [plugins][P66] and [services]
     - [zed][P35] supporting [ZED Mini][E42]
     - [realsense][P36] supporting [Intel RealSense][E41]
     - [webcam][P37]
+- Scene provisioning
+    - [Ada (scene provisioning)][P69]: collection of plugins for real-time scene provisioning: InfiniTAM-based
+      scene reconstruction and delivery of mesh-based scene data to applications or other XR
+      runtime components during runtime.
+
 
 ### Visual
 
@@ -85,11 +90,13 @@ component. ILLIXR currently contains the following [plugins][P66] and [services]
 - [offload_rendering_client_jetson][P62]
 - [offload_rendering_server][P63]
 - [tcp_network_backend][P64]
-- [ada][P69]
+- [Ada (scene provisioning)][P69] – supports distributed execution of the
+  scene provisioning system, allowing reconstruction to run on a server and meshes
+  to be delivered to the XR device over the network.
 
 [^1]: Source is hosted in an external repository under the [ILLIXR project][E7].
 
-Some components, such as eye tracking and reconstruction are available as standalone components and are in the process
+Some components, such as eye tracking, are available as standalone components and are in the process
 of being integrated.
 
 We continue to refine and add new components and implementations. Many of the current components of ILLIXR were
