@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package rendered_frame_proto;
+
+message Frame {
+     bytes left_eye = 1;
+     bytes right_eye = 2;
+     int32 rows = 3;
+     int32 columns = 4;
+}
+
+message CompressedFrame {
+     fixed64 timestamp = 1;
+     bytes left_eye = 2;
+     bytes right_eye = 3;
+     int32 left_eye_size = 4;
+     int32 right_eye_size = 5;
+     int32 rows = 6;
+     int32 columns = 7;
+}

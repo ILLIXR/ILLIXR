@@ -667,6 +667,45 @@ public:
         network::topic_config         config_;
     };
 
+    template<typename Serializable_event>
+    class local_writer : public writer<Serializable_event> {
+    public:
+        explicit local_writer(topic& topic, ptr<network::local_network_backend> backend = nullptr,
+                              const network::topic_config& config = {})
+            : writer<Serializable_event>{topic}
+            , backend_{std::move(backend)}
+            , config_{config} { }
+
+        void put(ptr<Serializable_event>&& this_specific_event) override {
+            if (backend_->is_topic_networked(this->topic_.name())) {
+                if (config_.serialization_method == network::topic_config::SerializationMethod::BOOST) {
+                    auto base_event = std::dynamic_pointer_cast<event>(std::move(this_specific_event));
+                    assert(base_event && "Event is not derived from switchboard::event");
+                    // Default serialization method - Boost
+                    std::vector<char>                                                                        buffer;
+                    boost::iostreams::back_insert_device<std::vector<char>>                                  inserter{buffer};
+                    boost::iostreams::stream_buffer<boost::iostreams::back_insert_device<std::vector<char>>> stream{inserter};
+                    boost::archive::binary_oarchive                                                          oa{stream};
+                    oa << base_event;
+                    // flush
+                    stream.pubsync();
+                    backend_->topic_send(this->topic_.name(), std::move(std::string(buffer.begin(), buffer.end())));
+                } else {
+                    // PROTOBUF - this_specific_event will be a string
+                    auto        message_ptr = std::dynamic_pointer_cast<event_wrapper<std::string>>(this_specific_event);
+                    std::string message     = **message_ptr;
+                    backend_->topic_send(this->topic_.name(), std::move(message));
+                }
+            } else {
+                writer<Serializable_event>::put(std::move(this_specific_event));
+            }
+        }
+
+    private:
+        ptr<network::local_network_backend> backend_;
+        network::topic_config         config_;
+    };
+
 public:
     /**
      * If @p pb is null, then logging is disabled.
@@ -837,6 +876,15 @@ public:
             backend->topic_create(topic_name, config);
         }
         return network_writer<Specific_event>{try_register_topic<Specific_event>(topic_name), backend, config};
+    }
+
+    template<typename Specific_event>
+    local_writer<Specific_event> get_local_network_writer(const std::string& topic_name, network::topic_config config = {}) {
+        auto backend = phonebook_->lookup_impl<network::local_network_backend>();
+        if (registry_.find(topic_name) == registry_.end()) {
+            backend->topic_create(topic_name, config);
+        }
+        return local_writer<Specific_event>{try_register_topic<Specific_event>(topic_name), backend, config};
     }
 
     /**

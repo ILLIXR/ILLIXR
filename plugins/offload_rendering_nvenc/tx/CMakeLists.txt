@@ -1,0 +1,34 @@
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+set(PLUGIN_NAME plugin.offload_rendering_nvenc.tx${ILLIXR_BUILD_SUFFIX})
+
+find_package(Protobuf REQUIRED)
+find_package(CUDAToolkit REQUIRED)
+
+PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS ${CMAKE_CURRENT_SOURCE_DIR}/../proto/rendered_frame.proto)
+
+add_library(${PLUGIN_NAME} SHARED
+            plugin.hpp
+            plugin.cpp
+            nvenc_encoder.hpp
+            nvenc_encoder.cpp
+            ${PROTO_SRCS}
+            ${PROTO_HDRS}
+)
+
+target_include_directories(${PLUGIN_NAME} PUBLIC
+                           ${CMAKE_CURRENT_BINARY_DIR}
+                           ${OpenCV_INCLUDE_DIRS}
+                           /home/friedel/Downloads/Video_Codec_SDK_12.0.16/Interface
+)
+
+target_link_libraries(${PLUGIN_NAME} PUBLIC
+                      CUDA::cudart
+                      cuda
+                      ${OpenCV_LIBS}
+                      protobuf::libprotobuf
+                      spdlog::spdlog
+)
+
+install(TARGETS ${PLUGIN_NAME} DESTINATION lib)
