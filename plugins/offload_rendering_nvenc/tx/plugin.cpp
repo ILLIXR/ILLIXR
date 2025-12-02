@@ -76,9 +76,9 @@ void rendered_frame_tx::compress_frame(const rendered_frame_proto::Frame& frame)
 #endif
     compressed_frame.set_rows(left_eye.rows);
     compressed_frame.set_columns(left_eye.cols);
-    cv::imwrite("frame_" + std::to_string(count) + "_left.png", left_eye);
-    cv::imwrite("frame_" + std::to_string(count) + "_right.png", right_eye);
-    std::string data_buffer = compressed_frame.SerializeAsString();
+    //cv::imwrite("frame_" + std::to_string(count) + "_left.png", left_eye);
+    //cv::imwrite("frame_" + std::to_string(count) + "_right.png", right_eye);
+    //std::string data_buffer = compressed_frame.SerializeAsString();
     count++;
     // encoded_writer_.put(std::make_shared<switchboard::event_wrapper<std::string>>(data_buffer + delimiter_));
 }

@@ -223,7 +223,7 @@ profiles:
 # unity
 
   - unity_server:
-    plugins: local_communication,tcp_network_backend,quest3.head_pose.rx,offload_rendering_nvenc.tx
+    plugins: tcp_network_backend,local_communication,quest3.head_pose.rx,offload_rendering_nvenc.tx
     env_vars:
       enable_offload: false
       enable_alignment: false

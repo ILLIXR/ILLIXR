@@ -1,5 +1,5 @@
 # This file was auto generated, take caution if manually editing.
-plugins: local_communication,tcp_network_backend,quest3.head_pose.rx,offload_rendering_nvenc.tx
+plugins: tcp_network_backend,local_communication,quest3.head_pose.rx,offload_rendering_nvenc.tx
 env_vars:
   ENABLE_OFFLOAD: false
   ENABLE_ALIGNMENT: false

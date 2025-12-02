@@ -23,6 +23,6 @@ private:
     switchboard::local_writer<switchboard::event_wrapper<std::string>>    pose_writer_;
     //float height = 1.5;
     //int count = 0;
-    const std::string delimiter_ = "END!";
+    const std::string delimiter_ = "EEND!";
 };
 } // namespace ILLIXR
