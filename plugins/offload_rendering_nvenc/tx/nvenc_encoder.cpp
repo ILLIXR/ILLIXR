@@ -38,6 +38,22 @@ static const char* getPresetName(const GUID& guid) {
         return memcmp(&a, &b, sizeof(GUID)) == 0;
     };
 
+    if (guidEquals(guid, NV_ENC_CODEC_PROFILE_AUTOSELECT_GUID)) return "NV_ENC_CODEC_PROFILE_AUTOSELECT_GUID";
+    if (guidEquals(guid, NV_ENC_H264_PROFILE_BASELINE_GUID)) return "NV_ENC_H264_PROFILE_BASELINE_GUID";
+    if (guidEquals(guid, NV_ENC_H264_PROFILE_MAIN_GUID)) return "NV_ENC_H264_PROFILE_MAIN_GUID";
+    if (guidEquals(guid, NV_ENC_H264_PROFILE_HIGH_GUID)) return "NV_ENC_H264_PROFILE_HIGH_GUID";
+    if (guidEquals(guid, NV_ENC_H264_PROFILE_HIGH_444_GUID)) return "NV_ENC_H264_PROFILE_HIGH_444_GUID";
+    if (guidEquals(guid, NV_ENC_H264_PROFILE_STEREO_GUID)) return "NV_ENC_H264_PROFILE_STEREO_GUID";
+    if (guidEquals(guid, NV_ENC_H264_PROFILE_PROGRESSIVE_HIGH_GUID)) return "NV_ENC_H264_PROFILE_PROGRESSIVE_HIGH_GUID";
+    if (guidEquals(guid, NV_ENC_H264_PROFILE_CONSTRAINED_HIGH_GUID)) return "NV_ENC_H264_PROFILE_CONSTRAINED_HIGH_GUID";
+    if (guidEquals(guid, NV_ENC_HEVC_PROFILE_MAIN_GUID)) return "NV_ENC_HEVC_PROFILE_MAIN_GUID";
+    if (guidEquals(guid, NV_ENC_HEVC_PROFILE_MAIN10_GUID)) return "NV_ENC_HEVC_PROFILE_MAIN10_GUID";
+    if (guidEquals(guid, NV_ENC_HEVC_PROFILE_FREXT_GUID)) return "NV_ENC_HEVC_PROFILE_FREXT_GUID";
+    if (guidEquals(guid, NV_ENC_AV1_PROFILE_MAIN_GUID)) return "NV_ENC_AV1_PROFILE_MAIN_GUID";
+
+    if (guidEquals(guid, NV_ENC_CODEC_H264_GUID)) return "H264";
+    if (guidEquals(guid, NV_ENC_CODEC_HEVC_GUID)) return "HVEC";
+    if (guidEquals(guid, NV_ENC_CODEC_AV1_GUID)) return "AV1";
     // Modern presets (SDK 10.0+)
     if (guidEquals(guid, NV_ENC_PRESET_P1_GUID)) return "P1 (Highest Quality)";
     if (guidEquals(guid, NV_ENC_PRESET_P2_GUID)) return "P2 (High Quality)";
@@ -68,6 +84,9 @@ static const char* getPresetName(const GUID& guid) {
 
     CUdevice cu_device;
     check_cuda(cuDeviceGet(&cu_device, 0), "Get CUDA device failed");
+    char szDeviceName[80];
+    check_cuda(cuDeviceGetName(szDeviceName, sizeof(szDeviceName), cu_device), "");
+    spdlog::get("illixr")->debug("GPU in use: {}", szDeviceName);
     check_cuda(cuCtxCreate(&cu_context_, 0, cu_device), "Create CUDA context failed");
 
     // Load NVENC library
@@ -96,11 +115,18 @@ static const char* getPresetName(const GUID& guid) {
     if (!createInstance) {
         throw std::runtime_error("Failed to get NvEncodeAPICreateInstance");
     }
-
+    memset(&nvenc_, 0, sizeof(NV_ENCODE_API_FUNCTION_LIST));
+    nvenc_.version = NV_ENCODE_API_FUNCTION_LIST_VER;
     check_nvenc(createInstance(&nvenc_), "Create NVENC instance failed");
 
+    if (!nvenc_.nvEncOpenEncodeSessionEx) {
+        cuCtxDestroy(current);
+        throw std::runtime_error("nvEncOpenEncodeSessionEx not available");
+    }
+
     // Open encode session
-    NV_ENC_OPEN_ENCODE_SESSION_EX_PARAMS session_params;
+    NV_ENC_OPEN_ENCODE_SESSION_EX_PARAMS session_params = {};
+    memset(&session_params, 0, sizeof(NV_ENC_OPEN_ENCODE_SESSION_EX_PARAMS));
     session_params.version    = NV_ENC_OPEN_ENCODE_SESSION_EX_PARAMS_VER;
     session_params.device     = cu_context_;
     session_params.deviceType = NV_ENC_DEVICE_TYPE_CUDA;
@@ -109,66 +135,84 @@ static const char* getPresetName(const GUID& guid) {
     check_nvenc(nvenc_.nvEncOpenEncodeSessionEx(&session_params, &encoder_), "Open encode session failed");
 
     // Initialize encoder
-    NV_ENC_INITIALIZE_PARAMS init_params;
-    NV_ENC_CONFIG            encode_config;
-    encode_config.version = NV_ENC_CONFIG_VER;
-    GUID presetGUIDs[32];
-    uint32_t count_p = 0;
-    check_nvenc(nvenc_.nvEncGetEncodePresetGUIDs(encoder_, NV_ENC_CODEC_H264_GUID, presetGUIDs, 32, &count_p), "Preset failed");
-
-    printf("Available presets: %d\n", count_p);
-    for (uint32_t i = 0; i < count_p; i++) {
-        const char* presetName = getPresetName(presetGUIDs[i]);
-        printf("  Preset %d: %s\n", i, presetName);
-    }
+    NV_ENC_INITIALIZE_PARAMS init_params = {};
+    memset(&init_params, 0, sizeof(NV_ENC_INITIALIZE_PARAMS));
     init_params.version = NV_ENC_INITIALIZE_PARAMS_VER;
-    // init_params.encodeConfig = &encode_config;
+
+    NV_ENC_CONFIG encode_config = {};
+    memset(&encode_config, 0, sizeof(NV_ENC_CONFIG));
+    encode_config.version = NV_ENC_CONFIG_VER;
+
     init_params.encodeGUID   = NV_ENC_CODEC_H264_GUID;
-    init_params.presetGUID   = NV_ENC_PRESET_DEFAULT_GUID;
+    init_params.presetGUID   = NV_ENC_PRESET_P6_GUID;
     init_params.encodeWidth  = width_;
     init_params.encodeHeight = height_;
     init_params.darWidth     = width_;
     init_params.darHeight    = height_;
     init_params.frameRateNum = 30;
     init_params.frameRateDen = 1;
-    init_params.enablePTD    = 1;
+    init_params.enablePTD    = 0;
 
-    NV_ENC_PRESET_CONFIG preset_config;
+    NV_ENC_PRESET_CONFIG preset_config = {};
+    memset(&preset_config, 0, sizeof(NV_ENC_PRESET_CONFIG));
     preset_config.version           = NV_ENC_PRESET_CONFIG_VER;
     preset_config.presetCfg.version = NV_ENC_CONFIG_VER;
 
-    NVENCSTATUS presetStatus = nvenc_.nvEncGetEncodePresetConfigEx(encoder_, NV_ENC_CODEC_H264_GUID, NV_ENC_PRESET_DEFAULT_GUID,
-                                                                   NV_ENC_TUNING_INFO_ULTRA_LOW_LATENCY, &preset_config);
-    if (presetStatus != NV_ENC_SUCCESS) {
-        // Fallback for older SDK versions
-        preset_config.version           = NV_ENC_PRESET_CONFIG_VER;
-        preset_config.presetCfg.version = NV_ENC_CONFIG_VER;
-        NVENCSTATUS old_preset_status =
-            nvenc_.nvEncGetEncodePresetConfig(encoder_, NV_ENC_CODEC_H264_GUID, NV_ENC_PRESET_P4_GUID, &preset_config);
-        if (old_preset_status != NV_ENC_SUCCESS) {
-            // Manual configuration as a last resort
-            encode_config.version                                = NV_ENC_CONFIG_VER;
-            encode_config.gopLength                              = NVENC_INFINITE_GOPLENGTH;
-            encode_config.frameIntervalP                         = 1;
-            encode_config.profileGUID                            = NV_ENC_H264_PROFILE_MAIN_GUID;
-            encode_config.rcParams.rateControlMode               = NV_ENC_PARAMS_RC_CBR;
-            encode_config.rcParams.averageBitRate                = 5000000;
-            encode_config.rcParams.vbvBufferSize                 = 5000000;
-            encode_config.rcParams.maxBitRate                    = 5000000;
-            encode_config.encodeCodecConfig.h264Config.idrPeriod = NVENC_INFINITE_GOPLENGTH;
-        } else {
-            memcpy(&encode_config, &preset_config.presetCfg, sizeof(NV_ENC_CONFIG));
-            encode_config.profileGUID              = NV_ENC_H264_PROFILE_MAIN_GUID;
-            encode_config.rcParams.rateControlMode = NV_ENC_PARAMS_RC_CBR;
-            encode_config.rcParams.averageBitRate  = 5000000;
-        }
-    } else {
-        memcpy(&encode_config, &preset_config.presetCfg, sizeof(NV_ENC_CONFIG));
+    NVENCSTATUS presetStatus = nvenc_.nvEncGetEncodePresetConfigEx(encoder_, NV_ENC_CODEC_H264_GUID, NV_ENC_PRESET_P6_GUID,
+                                                                  NV_ENC_TUNING_INFO_ULTRA_LOW_LATENCY, &preset_config);
+    spdlog::get("illixr")->info("Preset status: {}", presetStatus);
+    spdlog::get("illixr")->info("Using preset config from: {}",
+                                presetStatus == NV_ENC_SUCCESS ? "nvEncGetEncodePresetConfigEx" : "fallback");
+
+/*    uint32_t ex_count = 0;
+    check_nvenc(nvenc_.nvEncGetEncodeGUIDCount(encoder_, &ex_count), "");
+    GUID presetGUIDs[ex_count];
+    uint32_t count_p = 0;
+    check_nvenc(nvenc_.nvEncGetEncodeGUIDs(encoder_, presetGUIDs, ex_count, &count_p), "Preset failed");
+
+    printf("Available presets: %d\n", count_p);
+    for (uint32_t i = 0; i < count_p; i++) {
+        const char* presetName = getPresetName(presetGUIDs[i]);
+        printf("  Preset %d: %s\n", i, presetName);
+    }
+    NV_ENC_CAPS_PARAM par_v = {};
+    par_v.version =  NV_ENC_CAPS_PARAM_VER;
+    par_v.capsToQuery = NV_ENC_CAPS_SUPPORTED_RATECONTROL_MODES;
+    int ret;
+    check_nvenc(nvenc_.nvEncGetEncodeCaps(encoder_, NV_ENC_CODEC_H264_GUID, &par_v, &ret), "");
+    uint32_t pc, pco;
+    check_nvenc(nvenc_.nvEncGetEncodeProfileGUIDCount(encoder_, NV_ENC_CODEC_H264_GUID, &pc), "");
+    GUID prf[pc];
+    check_nvenc(nvenc_.nvEncGetEncodeProfileGUIDs(encoder_, NV_ENC_CODEC_H264_GUID, prf, pc, &pco), "");
+    for (uint32_t i = 0; i < pco; i++) {
+        const char* presetName = getPresetName(prf[i]);
+        printf("  Preset %d: %s\n", i, presetName);
+    }*/
+    if (presetStatus == NV_ENC_SUCCESS) {
+
+        //memcpy(&encode_config, &preset_config.presetCfg, sizeof(NV_ENC_CONFIG));
+        encode_config.gopLength      = preset_config.presetCfg.gopLength;
+        encode_config.frameIntervalP = preset_config.presetCfg.frameIntervalP;
+        encode_config.profileGUID    = NV_ENC_H264_PROFILE_MAIN_GUID;
+
+        encode_config.rcParams.rateControlMode = NV_ENC_PARAMS_RC_CBR;
+        encode_config.rcParams.averageBitRate  = 5000000;
+        encode_config.rcParams.maxBitRate      = 5000000;
+        encode_config.rcParams.vbvBufferSize   = encode_config.rcParams.averageBitRate;
+
+        // Copy H.264 specific config
+        encode_config.encodeCodecConfig.h264Config = preset_config.presetCfg.encodeCodecConfig.h264Config;
         encode_config.profileGUID              = NV_ENC_H264_PROFILE_MAIN_GUID;
         encode_config.rcParams.rateControlMode = NV_ENC_PARAMS_RC_CBR;
         encode_config.rcParams.averageBitRate  = 5000000;
+    } else {
+        spdlog::get("illixr")->error("Failed");
     }
+
     init_params.encodeConfig = &encode_config;
+    //spdlog::get("illixr")->info("gopLength: {}", encode_config.gopLength);
+    //spdlog::get("illixr")->info("frameIntervalP: {}", encode_config.frameIntervalP);
+    //spdlog::get("illixr")->info("width: {}, height: {}", width_, height_);
     check_nvenc(nvenc_.nvEncInitializeEncoder(encoder_, &init_params), "Initialize encoder failed");
 
     // Create the input buffer

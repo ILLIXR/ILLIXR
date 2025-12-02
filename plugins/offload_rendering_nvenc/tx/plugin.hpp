@@ -15,7 +15,7 @@
 #define WIDTH  2064
 #define HEIGHT 2208
 
-// #define USE_COMPRESSION
+#define USE_COMPRESSION
 
 namespace ILLIXR {
 class rendered_frame_tx : public threadloop {
