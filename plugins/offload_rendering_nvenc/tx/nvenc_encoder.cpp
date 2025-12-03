@@ -144,7 +144,7 @@ static const char* getPresetName(const GUID& guid) {
     encode_config.version = NV_ENC_CONFIG_VER;
 
     init_params.encodeGUID   = NV_ENC_CODEC_H264_GUID;
-    init_params.presetGUID   = NV_ENC_PRESET_P6_GUID;
+    init_params.presetGUID   = NV_ENC_PRESET_DEFAULT_GUID;
     init_params.encodeWidth  = width_;
     init_params.encodeHeight = height_;
     init_params.darWidth     = width_;
@@ -158,7 +158,7 @@ static const char* getPresetName(const GUID& guid) {
     preset_config.version           = NV_ENC_PRESET_CONFIG_VER;
     preset_config.presetCfg.version = NV_ENC_CONFIG_VER;
 
-    NVENCSTATUS presetStatus = nvenc_.nvEncGetEncodePresetConfigEx(encoder_, NV_ENC_CODEC_H264_GUID, NV_ENC_PRESET_P6_GUID,
+    NVENCSTATUS presetStatus = nvenc_.nvEncGetEncodePresetConfigEx(encoder_, NV_ENC_CODEC_H264_GUID, NV_ENC_PRESET_DEFAULT_GUID,
                                                                   NV_ENC_TUNING_INFO_ULTRA_LOW_LATENCY, &preset_config);
     spdlog::get("illixr")->info("Preset status: {}", presetStatus);
     spdlog::get("illixr")->info("Using preset config from: {}",
@@ -216,11 +216,12 @@ static const char* getPresetName(const GUID& guid) {
     check_nvenc(nvenc_.nvEncInitializeEncoder(encoder_, &init_params), "Initialize encoder failed");
 
     // Create the input buffer
-    NV_ENC_CREATE_INPUT_BUFFER create_input_buffer;
+    NV_ENC_CREATE_INPUT_BUFFER create_input_buffer = {}
+    memset(&create_input_buffer, 0, sizeof(NV_ENC_CREATE_INPUT_BUFFER));
     create_input_buffer.version   = NV_ENC_CREATE_INPUT_BUFFER_VER;
     create_input_buffer.width     = width_;
     create_input_buffer.height    = height_;
-    create_input_buffer.bufferFmt = NV_ENC_BUFFER_FORMAT_ARGB;
+    create_input_buffer.bufferFmt = NV_ENC_BUFFER_FORMAT_NV12;
 
     check_nvenc(nvenc_.nvEncCreateInputBuffer(encoder_, &create_input_buffer), "Create input buffer failed");
     input_buffer_ = create_input_buffer.inputBuffer;
@@ -253,7 +254,8 @@ std::vector<uint8_t> nvenc_encoder::encode(const cv::Mat& frame) {
     }
 
     // Lock input buffer and copy frame data
-    NV_ENC_LOCK_INPUT_BUFFER lock_input_buffer;
+    NV_ENC_LOCK_INPUT_BUFFER lock_input_buffer = {};
+    memset(&lock_input_buffer, 0, sizeof(NV_ENC_LOCK_INPUT_BUFFER));
     lock_input_buffer.version     = NV_ENC_LOCK_INPUT_BUFFER_VER;
     lock_input_buffer.inputBuffer = input_buffer_;
 
@@ -266,19 +268,24 @@ std::vector<uint8_t> nvenc_encoder::encode(const cv::Mat& frame) {
     check_nvenc(nvenc_.nvEncUnlockInputBuffer(encoder_, input_buffer_), "Unlock input buffer failed");
 
     // Encode frame
-    NV_ENC_PIC_PARAMS pic_params;
+    NV_ENC_PIC_PARAMS pic_params = {};
+    memset(&pic_params, 0, sizeof(NV_ENC_PIC_PARAMS));
     pic_params.version         = NV_ENC_PIC_PARAMS_VER;
     pic_params.inputBuffer     = input_buffer_;
-    pic_params.bufferFmt       = NV_ENC_BUFFER_FORMAT_ARGB;
+    //pic_params.bufferFmt       = NV_ENC_BUFFER_FORMAT_ARGB;
     pic_params.inputWidth      = width_;
     pic_params.inputHeight     = height_;
     pic_params.outputBitstream = output_bit_stream_;
     pic_params.pictureStruct   = NV_ENC_PIC_STRUCT_FRAME;
+    pic_params.inputTimeStamp  = 0;  // Add this
+    pic_params.inputDuration   = 0;  // Add this
+    pic_params.completionEvent = nullptr;  // Add this
 
     check_nvenc(nvenc_.nvEncEncodePicture(encoder_, &pic_params), "Encode picture failed");
 
     // Lock output bitstream and copy encoded data
-    NV_ENC_LOCK_BITSTREAM lock_bit_stream;
+    NV_ENC_LOCK_BITSTREAM lock_bit_stream = {};
+    memset(&lock_bit_stream, 0, sizeof(NV_ENC_LOCK_BITSTREAM));
     lock_bit_stream.version         = NV_ENC_LOCK_BITSTREAM_VER;
     lock_bit_stream.outputBitstream = output_bit_stream_;
 

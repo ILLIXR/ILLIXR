@@ -35,11 +35,11 @@ void quest_head_pose_rx::_p_one_iteration() {
     // std::this_thread::sleep_for (std::chrono::seconds(1));
     // height += 0.02;
     if (pose_reader_.size() > 0) {
-        spdlog::get("illixr")->debug("Have pose");
+        //spdlog::get("illixr")->debug("Have pose");
         auto                   buffer_ptr   = pose_reader_.dequeue();
         std::string            buffer_str   = **buffer_ptr;
         std::string::size_type end_position = buffer_str.find(delimiter_);
-        spdlog::get("illixr")->debug("Pose size: {}", end_position);
+        //spdlog::get("illixr")->debug("Pose size: {}", end_position);
         unity_pose_proto::Pose upo;
         if (upo.ParseFromString(buffer_str.substr(0, end_position))) {
             // unity_pose_proto::Pose*     upo = new unity_pose_proto::Pose();
@@ -58,9 +58,9 @@ void quest_head_pose_rx::_p_one_iteration() {
             std::string pose_buf = upo.SerializeAsString();
 
             pose_writer_.put(std::make_shared<switchboard::event_wrapper<std::string>>(pose_buf));
-            spdlog::get("illixr")->debug("sent pose");
-            spdlog::get("illixr")->debug("Sent Pose: {},{},{}: {},{},{},{}", upo.pos().x(),upo.pos().y(),upo.pos().z(),
-                                         upo.quat().w(),upo.quat().x(),upo.quat().y(),upo.quat().z());
+            //spdlog::get("illixr")->debug("sent pose");
+            //spdlog::get("illixr")->debug("Sent Pose: {},{},{}: {},{},{},{}", upo.pos().x(),upo.pos().y(),upo.pos().z(),
+            //                             upo.quat().w(),upo.quat().x(),upo.quat().y(),upo.quat().z());
         } else {
             spdlog::get("illixr")->debug("Failed to parse pose");
         }

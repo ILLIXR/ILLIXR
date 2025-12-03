@@ -9,9 +9,9 @@ using namespace ILLIXR;
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
     , clock_{phonebook_->lookup_impl<relative_clock>()}
     , frame_reader_{switchboard_->get_buffered_reader<switchboard::event_wrapper<std::string>>("rendered_frames")}
-//, encoded_writer_{switchboard_->get_network_writer<switchboard::event_wrapper<std::string>>(
-//      "compressed_frame",
-//      network::topic_config{.serialization_method = network::topic_config::SerializationMethod::PROTOBUF})}
+    , encoded_writer_{switchboard_->get_network_writer<switchboard::event_wrapper<std::string>>(
+          "compressed_frame",
+          network::topic_config{.serialization_method = network::topic_config::SerializationMethod::PROTOBUF})}
 #ifdef USE_COMPRESSION
     , left_encoder_(std::make_unique<nvenc_encoder>(WIDTH, HEIGHT))
     , right_encoder_(std::make_unique<nvenc_encoder>(WIDTH, HEIGHT))
@@ -78,9 +78,9 @@ void rendered_frame_tx::compress_frame(const rendered_frame_proto::Frame& frame)
     compressed_frame.set_columns(left_eye.cols);
     //cv::imwrite("frame_" + std::to_string(count) + "_left.png", left_eye);
     //cv::imwrite("frame_" + std::to_string(count) + "_right.png", right_eye);
-    //std::string data_buffer = compressed_frame.SerializeAsString();
+    std::string data_buffer = compressed_frame.SerializeAsString();
     count++;
-    // encoded_writer_.put(std::make_shared<switchboard::event_wrapper<std::string>>(data_buffer + delimiter_));
+    encoded_writer_.put(std::make_shared<switchboard::event_wrapper<std::string>>(data_buffer + delimiter_));
 }
 
 ILLIXR::threadloop::skip_option rendered_frame_tx::_p_should_skip() {
