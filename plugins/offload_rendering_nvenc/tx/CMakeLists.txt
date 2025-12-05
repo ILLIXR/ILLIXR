@@ -20,7 +20,7 @@ add_library(${PLUGIN_NAME} SHARED
 target_include_directories(${PLUGIN_NAME} PUBLIC
                            ${CMAKE_CURRENT_BINARY_DIR}
                            ${OpenCV_INCLUDE_DIRS}
-                           /home/friedel/Downloads/Video_Codec_SDK_12.0.16/Interface
+                           /home/friedel/Downloads/Video_Codec_SDK_12.2.72/Interface
 )
 
 target_link_libraries(${PLUGIN_NAME} PUBLIC

@@ -26,6 +26,7 @@ public:
 private:
     static void check_nvenc(NVENCSTATUS status, const char* msg);
     static void check_cuda(CUresult result, const char* msg);
+    std::vector<uint8_t> extract_sps_pps(const std::vector<uint8_t>& data);
 
     void*                       encoder_           = nullptr;
     NV_ENCODE_API_FUNCTION_LIST nvenc_             = {NV_ENCODE_API_FUNCTION_LIST_VER};
@@ -34,5 +35,9 @@ private:
     CUcontext                   cu_context_        = nullptr;
     int                         width_, height_;
     bool                        initialized_       = false;
+    std::vector<uint8_t> sps_pps_data_;
+    bool has_sps_pps_ = false;
+    // NAL unit start code
+    static const uint8_t NAL_START_CODE[4];
 };
 } // namespace ILLIXR

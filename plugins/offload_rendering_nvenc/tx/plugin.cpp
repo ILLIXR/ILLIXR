@@ -13,8 +13,8 @@ using namespace ILLIXR;
           "compressed_frame",
           network::topic_config{.serialization_method = network::topic_config::SerializationMethod::PROTOBUF})}
 #ifdef USE_COMPRESSION
-    , left_encoder_(std::make_unique<nvenc_encoder>(WIDTH, HEIGHT))
-    , right_encoder_(std::make_unique<nvenc_encoder>(WIDTH, HEIGHT))
+    , left_encoder_(std::make_unique<nvenc_encoder>(WIDTH/2, HEIGHT/2))
+    , right_encoder_(std::make_unique<nvenc_encoder>(WIDTH/2, HEIGHT/2))
 #else
     , left_encoder_(nullptr)
     , right_encoder_(nullptr)
@@ -35,9 +35,6 @@ void rendered_frame_tx::_p_one_iteration() {
         } else {
             spdlog::get("illixr")->error("Cannot parse rendered frame data");
         }
-        // convert to opencv
-        // enqueue and wait
-        // package and transmit
     }
 }
 
@@ -45,9 +42,13 @@ void rendered_frame_tx::compress_frame(const rendered_frame_proto::Frame& frame)
     auto left_eye_raw  = std::string(frame.left_eye());
     auto right_eye_raw = std::string(frame.right_eye());
 
-    cv::Mat left_eye(frame.rows(), frame.columns(), CV_8UC3, left_eye_raw.data());
-    cv::Mat right_eye(frame.rows(), frame.columns(), CV_8UC3, left_eye_raw.data());
+    cv::Mat left_eye_temp(frame.rows(), frame.columns(), CV_8UC3, left_eye_raw.data());
+    cv::Mat right_eye_temp(frame.rows(), frame.columns(), CV_8UC3, left_eye_raw.data());
 
+    cv::Mat left_eye;
+    cv::Mat right_eye;
+    cv::resize(left_eye_temp, left_eye, cv::Size(), 0.5, 0.5);
+    cv::resize(right_eye_temp, right_eye, cv::Size(), 0.5, 0.5);
     //cv::cvtColor(left_eye, left_eye, cv::COLOR_RGB2BGR);
     //cv::cvtColor(right_eye, right_eye, cv::COLOR_RGB2BGR);
 #ifdef USE_COMPRESSION
@@ -59,6 +60,7 @@ void rendered_frame_tx::compress_frame(const rendered_frame_proto::Frame& frame)
     auto left_encoded  = future_left.get();
     auto right_encoded = future_right.get();
     lock.unlock();
+    spdlog::get("illixr")->debug("done compress");
 #else
 
 #endif
