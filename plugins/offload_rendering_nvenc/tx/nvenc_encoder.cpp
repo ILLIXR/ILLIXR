@@ -1,12 +1,14 @@
 #include "nvenc_encoder.hpp"
 
-#include <memory>
+#include <cuda_runtime.h>
+#include <future>
+#include <nvEncodeAPI.h>
+#include <opencv2/opencv.hpp>
 #include <spdlog/spdlog.h>
 #include <stdexcept>
+#include <vector>
 
 using namespace ILLIXR;
-
-const uint8_t nvenc_encoder::NAL_START_CODE[4] = {0x00, 0x00, 0x00, 0x01};
 
 void nvenc_encoder::check_nvenc(NVENCSTATUS status, const char* msg) {
     if (status != NV_ENC_SUCCESS) {
@@ -22,158 +24,72 @@ void nvenc_encoder::check_cuda(CUresult result, const char* msg) {
     }
 }
 
-#include <opencv2/opencv.hpp>
-#include <cuda_runtime.h>
-#include <nvEncodeAPI.h>
-#include <vector>
-#include <memory>
-#include <future>
-#include <stdexcept>
 
 // Load NVENC API functions
 typedef NVENCSTATUS (NVENCAPI* PNVENCODEAPICREATEINSTANCE)(NV_ENCODE_API_FUNCTION_LIST*);
 
-// Helper function to identify preset GUIDs
-static const char* getPresetName(const GUID& guid) {
-    // Compare GUIDs
-    auto guidEquals = [](const GUID& a, const GUID& b) {
-        return memcmp(&a, &b, sizeof(GUID)) == 0;
-    };
 
-    if (guidEquals(guid, NV_ENC_CODEC_PROFILE_AUTOSELECT_GUID)) return "NV_ENC_CODEC_PROFILE_AUTOSELECT_GUID";
-    if (guidEquals(guid, NV_ENC_H264_PROFILE_BASELINE_GUID)) return "NV_ENC_H264_PROFILE_BASELINE_GUID";
-    if (guidEquals(guid, NV_ENC_H264_PROFILE_MAIN_GUID)) return "NV_ENC_H264_PROFILE_MAIN_GUID";
-    if (guidEquals(guid, NV_ENC_H264_PROFILE_HIGH_GUID)) return "NV_ENC_H264_PROFILE_HIGH_GUID";
-    if (guidEquals(guid, NV_ENC_H264_PROFILE_HIGH_444_GUID)) return "NV_ENC_H264_PROFILE_HIGH_444_GUID";
-    if (guidEquals(guid, NV_ENC_H264_PROFILE_STEREO_GUID)) return "NV_ENC_H264_PROFILE_STEREO_GUID";
-    if (guidEquals(guid, NV_ENC_H264_PROFILE_PROGRESSIVE_HIGH_GUID)) return "NV_ENC_H264_PROFILE_PROGRESSIVE_HIGH_GUID";
-    if (guidEquals(guid, NV_ENC_H264_PROFILE_CONSTRAINED_HIGH_GUID)) return "NV_ENC_H264_PROFILE_CONSTRAINED_HIGH_GUID";
-    if (guidEquals(guid, NV_ENC_HEVC_PROFILE_MAIN_GUID)) return "NV_ENC_HEVC_PROFILE_MAIN_GUID";
-    if (guidEquals(guid, NV_ENC_HEVC_PROFILE_MAIN10_GUID)) return "NV_ENC_HEVC_PROFILE_MAIN10_GUID";
-    if (guidEquals(guid, NV_ENC_HEVC_PROFILE_FREXT_GUID)) return "NV_ENC_HEVC_PROFILE_FREXT_GUID";
-    if (guidEquals(guid, NV_ENC_AV1_PROFILE_MAIN_GUID)) return "NV_ENC_AV1_PROFILE_MAIN_GUID";
+[[maybe_unused]] nvenc_encoder::nvenc_encoder(int w, int h, int bitrate)
+    : width_{w}
+    , height_{h}
+    , bitrate_{bitrate} {
+    // Align dimensions to 32 for HEVC (more strict than H.264)
+    aligned_width_ = (w + 31) & ~31;
+    aligned_height_ = (h + 31) & ~31;
 
-    if (guidEquals(guid, NV_ENC_CODEC_H264_GUID)) return "H264";
-    if (guidEquals(guid, NV_ENC_CODEC_HEVC_GUID)) return "HVEC";
-    if (guidEquals(guid, NV_ENC_CODEC_AV1_GUID)) return "AV1";
-    // Modern presets (SDK 10.0+)
-    if (guidEquals(guid, NV_ENC_PRESET_P1_GUID)) return "P1 (Highest Quality)";
-    if (guidEquals(guid, NV_ENC_PRESET_P2_GUID)) return "P2 (High Quality)";
-    if (guidEquals(guid, NV_ENC_PRESET_P3_GUID)) return "P3 (Quality)";
-    if (guidEquals(guid, NV_ENC_PRESET_P4_GUID)) return "P4 (Balanced)";
-    if (guidEquals(guid, NV_ENC_PRESET_P5_GUID)) return "P5 (Fast)";
-    if (guidEquals(guid, NV_ENC_PRESET_P6_GUID)) return "P6 (Faster)";
-    if (guidEquals(guid, NV_ENC_PRESET_P7_GUID)) return "P7 (Fastest)";
+    spdlog::get("illixr")->info("HEVC encoder: input {}x{}, aligned {}x{}",
+                                width_, height_, aligned_width_, aligned_height_);
 
-    // Legacy presets
-    //if (guidEquals(guid, NV_ENC_PRESET_DEFAULT_GUID)) return "Default";
-    //if (guidEquals(guid, NV_ENC_PRESET_HP_GUID)) return "High Performance (Legacy)";
-    //if (guidEquals(guid, NV_ENC_PRESET_HQ_GUID)) return "High Quality (Legacy)";
-    //if (guidEquals(guid, NV_ENC_PRESET_BD_GUID)) return "Bluray Disk (Legacy)";
-    //if (guidEquals(guid, NV_ENC_PRESET_LOW_LATENCY_DEFAULT_GUID)) return "Low Latency Default (Legacy)";
-    //if (guidEquals(guid, NV_ENC_PRESET_LOW_LATENCY_HQ_GUID)) return "Low Latency HQ (Legacy)";
-    //if (guidEquals(guid, NV_ENC_PRESET_LOW_LATENCY_HP_GUID)) return "Low Latency HP (Legacy)";
-    //if (guidEquals(guid, NV_ENC_PRESET_LOSSLESS_DEFAULT_GUID)) return "Lossless Default (Legacy)";
-    //if (guidEquals(guid, NV_ENC_PRESET_LOSSLESS_HP_GUID)) return "Lossless HP (Legacy)";
-
-    return "Unknown Preset";
+    init_cuda();
+    init_nvenc();
+    query_capabilities();  // Check what's actually supported
+    init_encoder();
+    create_buffers();
+        
+    spdlog::get("illixr")->info("HEVC encoder initialized: {}x{} @ {} bps", 
+                                width_, height_, bitrate_);
 }
 
-// Helper function to find NAL units
-std::vector<uint8_t> nvenc_encoder::extract_sps_pps(const std::vector<uint8_t>& data) {
-    std::vector<uint8_t> headers;
-
-    for (size_t i = 0; i < data.size() - 4; i++) {
-        // Look for start code (0x00 0x00 0x00 0x01 or 0x00 0x00 0x01)
-        bool found_start = false;
-        size_t nal_start = 0;
-
-        if (i < data.size() - 3 &&
-            data[i] == 0 && data[i+1] == 0 && data[i+2] == 0 && data[i+3] == 1) {
-            found_start = true;
-            nal_start = i + 4;
-            } else if (i < data.size() - 2 &&
-                       data[i] == 0 && data[i+1] == 0 && data[i+2] == 1) {
-                found_start = true;
-                nal_start = i + 3;
-                       }
-
-        if (found_start && nal_start < data.size()) {
-            uint8_t nal_header = data[nal_start];
-            uint8_t nal_type = nal_header & 0x1F;
-
-            spdlog::get("illixr")->debug("Found NAL at {}, header: 0x{:02x}, type: {}",
-                                         i, nal_header, nal_type);
-
-            // NAL type 7 = SPS, 8 = PPS, 5 = IDR slice
-            if (nal_type == 7 || nal_type == 8) {
-                spdlog::get("illixr")->info("Found {} at position {}",
-                                           nal_type == 7 ? "SPS" : "PPS", i);
-
-                // Find next start code or end of data
-                size_t end = nal_start;
-                while (end < data.size() - 3) {
-                    if ((data[end] == 0 && data[end+1] == 0 && data[end+2] == 0 && data[end+3] == 1) ||
-                        (data[end] == 0 && data[end+1] == 0 && data[end+2] == 1)) {
-                        break;
-                        }
-                    end++;
-                }
-                if (end >= data.size() - 3) end = data.size();
-
-                // Copy this NAL unit (including start code)
-                headers.insert(headers.end(), data.begin() + i, data.begin() + end);
-
-                // Skip past this NAL unit
-                i = end - 1;
-            }
-        }
-    }
-
-    return headers;
-}
-[[maybe_unused]] nvenc_encoder::nvenc_encoder(int w, int h)
-    : width_(w)
-    , height_(h) {
+void nvenc_encoder::init_cuda() {
     // Initialize CUDA
     check_cuda(cuInit(0), "CUDA init failed");
 
     CUdevice cu_device;
     check_cuda(cuDeviceGet(&cu_device, 0), "Get CUDA device failed");
-    char szDeviceName[80];
-    check_cuda(cuDeviceGetName(szDeviceName, sizeof(szDeviceName), cu_device), "");
-    spdlog::get("illixr")->debug("GPU in use: {}", szDeviceName);
+    char device_name[256];
+    check_cuda(cuDeviceGetName(device_name, sizeof(device_name), cu_device), "");
+    spdlog::get("illixr")->debug("GPU in use: {}", device_name);
     check_cuda(cuCtxCreate(&cu_context_, 0, cu_device), "Create CUDA context failed");
+}
 
+void nvenc_encoder::init_nvenc() {
     // Load NVENC library
-    uint32_t version = 0;
-    uint32_t currentVersion = (NVENCAPI_MAJOR_VERSION << 4) | NVENCAPI_MINOR_VERSION;
     printf("NVENC API version: %d.%d\n", NVENCAPI_MAJOR_VERSION, NVENCAPI_MINOR_VERSION);
     CUcontext current;
     cuCtxGetCurrent(&current);
     printf("CUDA context: %p\n", current);
-#ifdef _WIN32
+    #ifdef _WIN32
     HMODULE nvenc_lib = LoadLibrary(TEXT("nvEncodeAPI64.dll"));
-#else
+    #else
     void* nvenc_lib = dlopen("libnvidia-encode.so.1", RTLD_LAZY);
-#endif
+    #endif
     if (!nvenc_lib) {
         throw std::runtime_error("Failed to load NVENC library");
     }
 
-    auto createInstance = (PNVENCODEAPICREATEINSTANCE)
+    auto create_instance = (PNVENCODEAPICREATEINSTANCE)
 #ifdef _WIN32
         GetProcAddress(nvenc_lib, "NvEncodeAPICreateInstance");
-#else
-        dlsym(nvenc_lib, "NvEncodeAPICreateInstance");
-#endif
+    #else
+    dlsym(nvenc_lib, "NvEncodeAPICreateInstance");
+    #endif
 
-    if (!createInstance) {
+    if (!create_instance) {
         throw std::runtime_error("Failed to get NvEncodeAPICreateInstance");
     }
     memset(&nvenc_, 0, sizeof(NV_ENCODE_API_FUNCTION_LIST));
     nvenc_.version = NV_ENCODE_API_FUNCTION_LIST_VER;
-    check_nvenc(createInstance(&nvenc_), "Create NVENC instance failed");
+    check_nvenc(create_instance(&nvenc_), "Create NVENC instance failed");
 
     if (!nvenc_.nvEncOpenEncodeSessionEx) {
         cuCtxDestroy(current);
@@ -189,160 +105,274 @@ std::vector<uint8_t> nvenc_encoder::extract_sps_pps(const std::vector<uint8_t>& 
     session_params.apiVersion = NVENCAPI_VERSION;
 
     check_nvenc(nvenc_.nvEncOpenEncodeSessionEx(&session_params, &encoder_), "Open encode session failed");
+}
 
-    // Initialize encoder
-    NV_ENC_INITIALIZE_PARAMS init_params = {};
-    memset(&init_params, 0, sizeof(NV_ENC_INITIALIZE_PARAMS));
-    init_params.version = NV_ENC_INITIALIZE_PARAMS_VER;
+void nvenc_encoder::query_capabilities() {
+    // Query supported codecs
+    uint32_t codec_count = 0;
+    nvenc_.nvEncGetEncodeGUIDCount(encoder_, &codec_count);
 
-    init_params.encodeGUID   = NV_ENC_CODEC_H264_GUID;
-    init_params.presetGUID   = NV_ENC_PRESET_P4_GUID;
-    init_params.encodeWidth  = width_;
-    init_params.encodeHeight = height_;
-    init_params.darWidth     = width_;
-    init_params.darHeight    = height_;
-    init_params.frameRateNum = 30;
-    init_params.frameRateDen = 1;
-    init_params.enablePTD    = 0;
-    init_params.tuningInfo   = NV_ENC_TUNING_INFO_LOW_LATENCY;  // Add tuning info
-    init_params.encodeConfig = nullptr;  // Use preset defaults
+    std::vector<GUID> codecs(codec_count);
+    nvenc_.nvEncGetEncodeGUIDs(encoder_, codecs.data(), codec_count, &codec_count);
 
+    bool hevc_supported = false;
+    for (const auto& guid : codecs) {
+        if (memcmp(&guid, &NV_ENC_CODEC_HEVC_GUID, sizeof(GUID)) == 0) {
+            hevc_supported = true;
+            spdlog::get("illixr")->info("HEVC encoding supported");
+            break;
+        }
+    }
 
+    if (!hevc_supported) {
+        throw std::runtime_error("HEVC encoding not supported on this GPU");
+    }
+
+    // Query supported presets for HEVC
+    uint32_t preset_count = 0;
+    nvenc_.nvEncGetEncodePresetCount(encoder_, NV_ENC_CODEC_HEVC_GUID, &preset_count);
+    spdlog::get("illixr")->info("HEVC preset count: {}", preset_count);
+
+    // Query supported profiles for HEVC
+    uint32_t profile_count = 0;
+    nvenc_.nvEncGetEncodeProfileGUIDCount(encoder_, NV_ENC_CODEC_HEVC_GUID, &profile_count);
+    spdlog::get("illixr")->info("HEVC profile count: {}", profile_count);
+
+    std::vector<GUID> profiles(profile_count);
+    nvenc_.nvEncGetEncodeProfileGUIDs(encoder_, NV_ENC_CODEC_HEVC_GUID, profiles.data(), profile_count, &profile_count);
+
+    for (uint32_t i = 0; i < profile_count; i++) {
+        const char* name = "Unknown";
+        if (memcmp(&profiles[i], &NV_ENC_HEVC_PROFILE_MAIN_GUID, sizeof(GUID)) == 0) {
+            name = "Main";
+        } else if (memcmp(&profiles[i], &NV_ENC_HEVC_PROFILE_MAIN10_GUID, sizeof(GUID)) == 0) {
+            name = "Main10";
+        } else if (memcmp(&profiles[i], &NV_ENC_HEVC_PROFILE_FREXT_GUID, sizeof(GUID)) == 0) {
+            name = "FREXT";
+        }
+        spdlog::get("illixr")->info("Profile {}: {}", i, name);
+    }
+}
+
+void nvenc_encoder::init_encoder() {
     // Get preset config as base
     NV_ENC_PRESET_CONFIG preset_config = {};
     memset(&preset_config, 0, sizeof(NV_ENC_PRESET_CONFIG));
     preset_config.version = NV_ENC_PRESET_CONFIG_VER;
     preset_config.presetCfg.version = NV_ENC_CONFIG_VER;
 
-    NVENCSTATUS preset_status = nvenc_.nvEncGetEncodePresetConfigEx(
-        encoder_,
-        NV_ENC_CODEC_H264_GUID,
-        NV_ENC_PRESET_P4_GUID,
-        NV_ENC_TUNING_INFO_LOW_LATENCY,  // Required for Ex version
-        &preset_config
-    );
-    if (preset_status != NV_ENC_SUCCESS) {
-        spdlog::get("illixr")->error("Failed to get preset: {}", preset_status);
-        throw std::runtime_error("Preset config failed");
-    }
+    check_nvenc(nvenc_.nvEncGetEncodePresetConfigEx(encoder_, NV_ENC_CODEC_HEVC_GUID, NV_ENC_PRESET_P4_GUID,
+                                                    NV_ENC_TUNING_INFO_LOW_LATENCY,  // Required for Ex version
+                                                    &preset_config),"Failed to get preset: {}");
 
     // Copy preset as base
     NV_ENC_CONFIG encode_config = {};
     memcpy(&encode_config, &preset_config.presetCfg, sizeof(NV_ENC_CONFIG));
 
-    // FORCE Main profile
-    encode_config.profileGUID = NV_ENC_H264_PROFILE_MAIN_GUID;
+    encode_config.version = NV_ENC_CONFIG_VER;
+    // HEVC Main profile (8-bit, 4:2:0) - Quest 3 compatible
+    encode_config.profileGUID = NV_ENC_HEVC_PROFILE_MAIN_GUID;
 
-    // CRITICAL: Force 8-bit depth (prevents High 10)
-    encode_config.encodeCodecConfig.h264Config.inputBitDepth = NV_ENC_BIT_DEPTH_8;   // 0 = 8-bit
-    encode_config.encodeCodecConfig.h264Config.outputBitDepth = NV_ENC_BIT_DEPTH_8;  // 0 = 8-bit
+    encode_config.encodeCodecConfig.hevcConfig.chromaFormatIDC = 1;  // 4:2:0
+    encode_config.encodeCodecConfig.hevcConfig.repeatSPSPPS = 1;  // Include headers with each IDR
+    //encode_config.encodeCodecConfig.hevcConfig.outputAUD = 1;
 
-    // Force Main profile compatible settings
-    encode_config.encodeCodecConfig.h264Config.chromaFormatIDC = 1;  // 4:2:0
-    encode_config.encodeCodecConfig.h264Config.entropyCodingMode = NV_ENC_H264_ENTROPY_CODING_MODE_CAVLC;
-    encode_config.encodeCodecConfig.h264Config.maxNumRefFrames = 1;
-    encode_config.encodeCodecConfig.h264Config.level = NV_ENC_LEVEL_H264_41;  // Lower level
-
-    // Disable High/High10 features
-    encode_config.encodeCodecConfig.h264Config.bdirectMode = NV_ENC_H264_BDIRECT_MODE_DISABLE;
-    encode_config.encodeCodecConfig.h264Config.adaptiveTransformMode = NV_ENC_H264_ADAPTIVE_TRANSFORM_DISABLE;
-    encode_config.encodeCodecConfig.h264Config.fmoMode = NV_ENC_H264_FMO_DISABLE;
+    // Disable features that might cause issues
+    encode_config.encodeCodecConfig.hevcConfig.enableAlphaLayerEncoding = 0;
 
     // Rate control
     encode_config.rcParams.rateControlMode = NV_ENC_PARAMS_RC_CBR;
-    encode_config.rcParams.averageBitRate = 5000000;
-    encode_config.rcParams.maxBitRate = 5000000;
-    encode_config.rcParams.vbvBufferSize = 5000000;
+    encode_config.rcParams.averageBitRate = bitrate_;
+    encode_config.rcParams.maxBitRate = bitrate_;
+    //encode_config.rcParams.vbvBufferSize = bitrate_ / 30;  // ~1 frame
 
-    encode_config.encodeCodecConfig.h264Config.repeatSPSPPS = 1;
+    // GOP settings
+    encode_config.gopLength = 30;
+    encode_config.frameIntervalP = 1;  // No B-frames for low latency
 
+    // Initialize encoder
+    NV_ENC_INITIALIZE_PARAMS init_params = {};
+    memset(&init_params, 0, sizeof(NV_ENC_INITIALIZE_PARAMS));
+    init_params.version = NV_ENC_INITIALIZE_PARAMS_VER;
+
+    init_params.encodeGUID   = NV_ENC_CODEC_HEVC_GUID;
+    init_params.presetGUID   = NV_ENC_PRESET_P4_GUID;
+    init_params.tuningInfo = NV_ENC_TUNING_INFO_LOW_LATENCY;
+    init_params.encodeWidth  = aligned_width_;
+    init_params.encodeHeight = aligned_height_;
+    init_params.darWidth     = aligned_width_;
+    init_params.darHeight    = aligned_height_;
+    init_params.frameRateNum = 72;
+    init_params.frameRateDen = 1;
+    init_params.enablePTD    = 1;
     init_params.encodeConfig = &encode_config;
 
-    check_nvenc(nvenc_.nvEncInitializeEncoder(encoder_, &init_params), "Initialize encoder failed");
+    spdlog::get("illixr")->info("Attempting encoder init...");
+    spdlog::get("illixr")->info("  Size: {}x{}", aligned_width_, aligned_height_);
+    spdlog::get("illixr")->info("  Bitrate: {}", bitrate_);
 
-    // Get sequence headers (SPS/PPS)
+    auto status = nvenc_.nvEncInitializeEncoder(encoder_, &init_params);
+    if (status != NV_ENC_SUCCESS) {
+        spdlog::get("illixr")->warn("Init with config failed ({}), trying with preset defaults...", status);
+
+        // Try with NO custom config - just use preset defaults
+        init_params.encodeConfig = nullptr;
+        status = nvenc_.nvEncInitializeEncoder(encoder_, &init_params);
+    }
+
+    if (status != NV_ENC_SUCCESS) {
+        throw std::runtime_error("Encoder init failed: " + std::to_string(status));
+    }
+
+    spdlog::get("illixr")->info("Encoder initialized successfully!");
+
+    // Get VPS/SPS/PPS
+    get_sequence_headers();
+
+    initialized_ = true;
+}
+
+void nvenc_encoder::get_sequence_headers() {
+    // Get sequence headers (VPS/SPS/PPS)
     NV_ENC_SEQUENCE_PARAM_PAYLOAD seq_params = {};
     memset(&seq_params, 0, sizeof(NV_ENC_SEQUENCE_PARAM_PAYLOAD));
     seq_params.version = NV_ENC_SEQUENCE_PARAM_PAYLOAD_VER;
 
     // Allocate a reasonable buffer upfront
-    std::vector<uint8_t> temp_buffer(1024);  // SPS/PPS are usually < 100 bytes
-    seq_params.spsppsBuffer = temp_buffer.data();
-    seq_params.inBufferSize = temp_buffer.size();
+    std::vector<uint8_t> buffer(1024);
+    seq_params.spsppsBuffer = buffer.data();
+    seq_params.inBufferSize = buffer.size();
 
     uint32_t actual_size = 0;
     seq_params.outSPSPPSPayloadSize = &actual_size;
 
-    NVENCSTATUS status;
-    if ((status = nvenc_.nvEncGetSequenceParams(encoder_, &seq_params)) == NV_ENC_SUCCESS) {
-        sps_pps_data_.assign(temp_buffer.begin(), temp_buffer.begin() + actual_size);
-        has_sps_pps_ = true;
+    check_nvenc(nvenc_.nvEncGetSequenceParams(encoder_, &seq_params), "Could not get HEVC headers");
+    if (actual_size > 0) {
+        vps_sps_pps_.assign(buffer.begin(), buffer.begin() + actual_size);
+        spdlog::get("illixr")->info("Got HEVC headers: {} bytes", actual_size);
 
-        if (actual_size > 4) {
-            uint8_t profile_idc = temp_buffer[4];
-            const char* profile_name = "Unknown";
-            if (profile_idc == 66) profile_name = "Baseline";
-            else if (profile_idc == 77) profile_name = "Main";
-            else if (profile_idc == 100) profile_name = "High";
-            else if (profile_idc == 83) profile_name = "Scalable High (bad)";
-            else if (profile_idc == 86) profile_name = "Scalable High (bad)";
-            else if (profile_idc == 103) profile_name = "High 10 Intra (bad)";
-            else if (profile_idc == 110) profile_name = "High 10 (bad)";
+        // Log NAL types for debugging
+        log_hevc_profile();
+    }
+}
 
-            spdlog::get("illixr")->info("ACTUAL encoder profile: {} (IDC: {})", profile_name, profile_idc);
+void nvenc_encoder::log_hevc_profile() {
+    // Parse HEVC SPS to get profile
+    // VPS is NAL type 32, SPS is NAL type 33, PPS is NAL type 34
+    for (size_t i = 0; i < vps_sps_pps_.size() - 5; i++) {
+        if (vps_sps_pps_[i] == 0 && vps_sps_pps_[i+1] == 0 &&
+            vps_sps_pps_[i+2] == 0 && vps_sps_pps_[i+3] == 1) {
 
-            if (profile_idc != 77 && profile_idc != 66) {
-                spdlog::get("illixr")->error("ERROR: Encoder is NOT using Main/Baseline Profile!");
-                spdlog::get("illixr")->error("This WILL NOT work on Quest 3!");
-                spdlog::get("illixr")->error("Profile IDC should be 77 (Main) or 66 (Baseline), got {}", profile_idc);
+            uint8_t nal_type = (vps_sps_pps_[i+4] >> 1) & 0x3F;
+
+            if (nal_type == 33) {  // SPS
+                // Profile is in profile_tier_level structure
+                // For Main profile: general_profile_idc = 1
+                // For Main10: general_profile_idc = 2
+                spdlog::get("illixr")->info("Found HEVC SPS at offset {}", i);
+
+                // The profile info is a bit complex to parse in HEVC
+                // For now just log raw bytes after NAL header
+                if (i + 10 < vps_sps_pps_.size()) {
+                    spdlog::get("illixr")->info("SPS bytes: {:02X} {:02X} {:02X} {:02X} {:02X} {:02X}",
+                        vps_sps_pps_[i+4], vps_sps_pps_[i+5], vps_sps_pps_[i+6],
+                        vps_sps_pps_[i+7], vps_sps_pps_[i+8], vps_sps_pps_[i+9]);
+                }
             }
         }
-
-        // Debug: print SPS/PPS hex
-        spdlog::get("illixr")->info("Got SPS/PPS: {} bytes", actual_size);
-        std::string hex_dump;
-        for (size_t i = 0; i < std::min<size_t>(32, actual_size); i++) {
-            char buf[8];
-            snprintf(buf, sizeof(buf), "%02x ", sps_pps_data_[i]);
-            hex_dump += buf;
-        }
-        spdlog::get("illixr")->info("SPS/PPS hex: {}", hex_dump);
-    } else {
-        spdlog::get("illixr")->error("Failed to get sequence params: {}", status);
     }
+}
 
-
+void nvenc_encoder::create_buffers() {
     // Create the input buffer
     NV_ENC_CREATE_INPUT_BUFFER create_input_buffer = {};
     memset(&create_input_buffer, 0, sizeof(NV_ENC_CREATE_INPUT_BUFFER));
     create_input_buffer.version   = NV_ENC_CREATE_INPUT_BUFFER_VER;
-    create_input_buffer.width     = width_;
-    create_input_buffer.height    = height_;
+    create_input_buffer.width     = aligned_width_;
+    create_input_buffer.height    = aligned_height_;
     create_input_buffer.bufferFmt = NV_ENC_BUFFER_FORMAT_NV12;
 
     check_nvenc(nvenc_.nvEncCreateInputBuffer(encoder_, &create_input_buffer), "Create input buffer failed");
     input_buffer_ = create_input_buffer.inputBuffer;
 
-    // Create the output bitstream
-    NV_ENC_CREATE_BITSTREAM_BUFFER create_bitstream_buffer;
-    create_bitstream_buffer.version = NV_ENC_CREATE_BITSTREAM_BUFFER_VER;
-    check_nvenc(nvenc_.nvEncCreateBitstreamBuffer(encoder_, &create_bitstream_buffer), "Create bitstream buffer failed");
-    output_bit_stream_ = create_bitstream_buffer.bitstreamBuffer;
+    // Output buffer
+    NV_ENC_CREATE_BITSTREAM_BUFFER create_output = {};
+    create_output.version = NV_ENC_CREATE_BITSTREAM_BUFFER_VER;
 
-    initialized_ = true;
+    check_nvenc(nvenc_.nvEncCreateBitstreamBuffer(encoder_, &create_output), "Create output buffer");
+    output_buffer_ = create_output.bitstreamBuffer;
+
+    spdlog::get("illixr")->info("Created input/output buffers");
 }
 
 nvenc_encoder::~nvenc_encoder() {
     if (initialized_) {
-        if (output_bit_stream_)
-            nvenc_.nvEncDestroyBitstreamBuffer(encoder_, output_bit_stream_);
+        if (output_buffer_)
+            nvenc_.nvEncDestroyBitstreamBuffer(encoder_, output_buffer_);
         if (input_buffer_)
             nvenc_.nvEncDestroyInputBuffer(encoder_, input_buffer_);
         if (encoder_)
             nvenc_.nvEncDestroyEncoder(encoder_);
-        if (cu_context_)
-            cuCtxDestroy(cu_context_);
     }
+    if (cu_context_)
+        cuCtxDestroy(cu_context_);
+}
+
+void nvenc_encoder::convert_bgr_to_nv12(const cv::Mat& bgr, uint8_t* nv12, uint32_t pitch) const {
+    // Handle size mismatch
+    cv::Mat input = bgr;
+    if (bgr.cols != width_ || bgr.rows != height_) {
+        cv::resize(bgr, input, cv::Size(width_, height_));
+    }
+
+    // Convert BGR to YUV I420
+    cv::Mat yuv;
+    cv::cvtColor(bgr, yuv, cv::COLOR_BGR2YUV_I420);
+    // Copy Y plane with pitch
+    for (int y = 0; y < height_; y++) {
+        memcpy(nv12 + y * pitch, yuv.data + y * width_, width_);
+    }
+
+    // Pad Y plane if needed
+    if (aligned_height_ > height_) {
+        for (int y = height_; y < aligned_height_; y++) {
+            memset(nv12 + y * pitch, 16, pitch);  // Black in Y
+        }
+    }
+
+    // Interleave U and V into UV plane
+    uint8_t* uv_dst = nv12 + pitch * aligned_height_;
+    uint8_t* u_src = yuv.data + width_ * height_;
+    uint8_t* v_src = u_src + (width_ * height_ / 4);
+
+    for (int y = 0; y < height_ / 2; y++) {
+        for (int x = 0; x < width_ / 2; x++) {
+            int src_idx = y * (width_ / 2) + x;
+            int dst_idx = y * pitch + x * 2;
+            uv_dst[dst_idx] = u_src[src_idx];
+            uv_dst[dst_idx + 1] = v_src[src_idx];
+        }
+        // Pad UV row if needed
+        if (aligned_width_ > width_) {
+            for (int x = width_; x < aligned_width_; x += 2) {
+                int dst_idx = y * pitch + x;
+                uv_dst[dst_idx] = 128;      // Neutral U
+                uv_dst[dst_idx + 1] = 128;  // Neutral V
+            }
+        }
+    }
+
+    // Pad UV rows if needed
+    if (aligned_height_ > height_) {
+        for (int y = height_ / 2; y < aligned_height_ / 2; y++) {
+            for (int x = 0; x < aligned_width_; x += 2) {
+                int dst_idx = y * pitch + x;
+                uv_dst[dst_idx] = 128;
+                uv_dst[dst_idx + 1] = 128;
+            }
+        }
+    }
+
 }
 
 std::vector<uint8_t> nvenc_encoder::encode(const cv::Mat& frame) {
@@ -356,6 +386,7 @@ std::vector<uint8_t> nvenc_encoder::encode(const cv::Mat& frame) {
         throw std::runtime_error("Frame size mismatch");
     }
     spdlog::get("illixr")->debug("Compressing");
+
     // Lock input buffer and copy frame data
     NV_ENC_LOCK_INPUT_BUFFER lock_input_buffer = {};
     memset(&lock_input_buffer, 0, sizeof(NV_ENC_LOCK_INPUT_BUFFER));
@@ -364,32 +395,10 @@ std::vector<uint8_t> nvenc_encoder::encode(const cv::Mat& frame) {
 
     check_nvenc(nvenc_.nvEncLockInputBuffer(encoder_, &lock_input_buffer), "Lock input buffer failed");
 
-    // Convert BGR to NV12 (YUV 4:2:0)
-    //cv::Mat nv12(height_ * 3 / 2, width_, CV_8UC1);
-    //cv::cvtColor(frame, nv12, cv::COLOR_BGR2YUV_NV12);
-    //memcpy(lock_input_buffer.bufferDataPtr, nv12.data, width_ * height_ * 3 / 2);
+    // Convert BGR to NV12
+    convert_bgr_to_nv12(frame, static_cast<uint8_t*>(lock_input_buffer.bufferDataPtr), lock_input_buffer.pitch);
 
-    // Convert BGR to NV12 (YUV 4:2:0)
-    cv::Mat yuv;
-    cv::cvtColor(frame, yuv, cv::COLOR_BGR2YUV_I420);
-
-    // NV12 format: Y plane followed by interleaved UV plane
-    // I420 is planar (Y, U, V separate), need to convert to NV12 (Y, UV interleaved)
-    uint8_t* dst = static_cast<uint8_t*>(lock_input_buffer.bufferDataPtr);
-
-    // Copy Y plane
-    memcpy(dst, yuv.data, width_ * height_);
-
-    // Interleave U and V planes into UV plane for NV12
-    uint8_t* uv_dst = dst + width_ * height_;
-    uint8_t* u_src = yuv.data + width_ * height_;
-    uint8_t* v_src = yuv.data + width_ * height_ + (width_ * height_ / 4);
-
-    for (int i = 0; i < (width_ * height_ / 4); i++) {
-        uv_dst[i * 2]     = u_src[i];
-        uv_dst[i * 2 + 1] = v_src[i];
-    }
-    check_nvenc(nvenc_.nvEncUnlockInputBuffer(encoder_, input_buffer_), "Unlock input buffer failed");
+    check_nvenc(nvenc_.nvEncUnlockInputBuffer(encoder_, input_buffer_), "Unlock input");
 
     // Encode frame
     NV_ENC_PIC_PARAMS pic_params = {};
@@ -397,10 +406,11 @@ std::vector<uint8_t> nvenc_encoder::encode(const cv::Mat& frame) {
     pic_params.version         = NV_ENC_PIC_PARAMS_VER;
     pic_params.inputBuffer     = input_buffer_;
     pic_params.bufferFmt       = NV_ENC_BUFFER_FORMAT_NV12;
-    pic_params.inputWidth      = width_;
-    pic_params.inputHeight     = height_;
-    pic_params.outputBitstream = output_bit_stream_;
+    pic_params.inputWidth      = aligned_width_;
+    pic_params.inputHeight     = aligned_height_;
+    pic_params.outputBitstream = output_buffer_;
     pic_params.pictureStruct   = NV_ENC_PIC_STRUCT_FRAME;
+    pic_params.inputTimeStamp  = frame_count_++;
 
     check_nvenc(nvenc_.nvEncEncodePicture(encoder_, &pic_params), "Encode picture failed");
 
@@ -408,30 +418,25 @@ std::vector<uint8_t> nvenc_encoder::encode(const cv::Mat& frame) {
     NV_ENC_LOCK_BITSTREAM lock_bit_stream = {};
     memset(&lock_bit_stream, 0, sizeof(NV_ENC_LOCK_BITSTREAM));
     lock_bit_stream.version         = NV_ENC_LOCK_BITSTREAM_VER;
-    lock_bit_stream.outputBitstream = output_bit_stream_;
+    lock_bit_stream.outputBitstream = output_buffer_;
 
     check_nvenc(nvenc_.nvEncLockBitstream(encoder_, &lock_bit_stream), "Lock bitstream failed");
 
-    // Get frame data
-    uint8_t* frame_data = static_cast<uint8_t*>(lock_bit_stream.bitstreamBufferPtr);
-    size_t frame_size = lock_bit_stream.bitstreamSizeInBytes;
-
+    // Copy encoded data
     std::vector<uint8_t> encoded_data;
+    const auto           data = static_cast<uint8_t*>(lock_bit_stream.bitstreamBufferPtr);
+    const size_t size = lock_bit_stream.bitstreamSizeInBytes;
 
-    // Prepend SPS/PPS to every IDR frame
-    bool is_idr = (lock_bit_stream.pictureType == NV_ENC_PIC_TYPE_IDR);
-
-    if (is_idr && has_sps_pps_) {
-        encoded_data.reserve(sps_pps_data_.size() + frame_size);
-        encoded_data.insert(encoded_data.end(), sps_pps_data_.begin(), sps_pps_data_.end());
-        spdlog::get("illixr")->debug("Prepended SPS/PPS to IDR frame");
+    // Prepend VPS/SPS/PPS to IDR frames
+    if (lock_bit_stream.pictureType == NV_ENC_PIC_TYPE_IDR && !vps_sps_pps_.empty()) {
+        encoded_data.reserve(vps_sps_pps_.size() + size);
+        encoded_data.insert(encoded_data.end(), vps_sps_pps_.begin(), vps_sps_pps_.end());
     }
 
-    // Append frame data
-    encoded_data.insert(encoded_data.end(), frame_data, frame_data + frame_size);
+    encoded_data.insert(encoded_data.end(), data, data + size);
 
-    check_nvenc(nvenc_.nvEncUnlockBitstream(encoder_, output_bit_stream_), "Unlock bitstream failed");
-    spdlog::get("illixr")->debug("Compressed frame {}x{}", width_, height_);
+    check_nvenc(nvenc_.nvEncUnlockBitstream(encoder_, output_buffer_), "Unlock bitstream");
+
     return encoded_data;
 }
 

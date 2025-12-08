@@ -8,13 +8,13 @@ using namespace ILLIXR;
     : threadloop{name, pb}
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
     , clock_{phonebook_->lookup_impl<relative_clock>()}
-    , frame_reader_{switchboard_->get_buffered_reader<switchboard::event_wrapper<std::string>>("rendered_frames")}
-    , encoded_writer_{switchboard_->get_network_writer<switchboard::event_wrapper<std::string>>(
-          "compressed_frame",
-          network::topic_config{.serialization_method = network::topic_config::SerializationMethod::PROTOBUF})}
+    //, frame_reader_{switchboard_->get_buffered_reader<switchboard::event_wrapper<std::string>>("rendered_frames")}
+    //, encoded_writer_{switchboard_->get_network_writer<switchboard::event_wrapper<std::string>>(
+    //      "compressed_frame",
+    //      network::topic_config{.serialization_method = network::topic_config::SerializationMethod::PROTOBUF})}
 #ifdef USE_COMPRESSION
-    , left_encoder_(std::make_unique<nvenc_encoder>(WIDTH/2, HEIGHT/2))
-    , right_encoder_(std::make_unique<nvenc_encoder>(WIDTH/2, HEIGHT/2))
+    , left_encoder_(std::make_unique<nvenc_encoder>(WIDTH, HEIGHT))
+    , right_encoder_(std::make_unique<nvenc_encoder>(WIDTH, HEIGHT))
 #else
     , left_encoder_(nullptr)
     , right_encoder_(nullptr)
@@ -23,7 +23,7 @@ using namespace ILLIXR;
 }
 
 void rendered_frame_tx::_p_one_iteration() {
-    if (frame_reader_.size() > 0) {
+    /*if (frame_reader_.size() > 0) {
         auto                   buffer_ptr   = frame_reader_.dequeue();
         std::string            buffer_str   = **buffer_ptr;
         std::string::size_type end_position = buffer_str.find(delimiter_);
@@ -35,7 +35,7 @@ void rendered_frame_tx::_p_one_iteration() {
         } else {
             spdlog::get("illixr")->error("Cannot parse rendered frame data");
         }
-    }
+    }*/
 }
 
 void rendered_frame_tx::compress_frame(const rendered_frame_proto::Frame& frame) {
@@ -47,8 +47,8 @@ void rendered_frame_tx::compress_frame(const rendered_frame_proto::Frame& frame)
 
     cv::Mat left_eye;
     cv::Mat right_eye;
-    cv::resize(left_eye_temp, left_eye, cv::Size(), 0.5, 0.5);
-    cv::resize(right_eye_temp, right_eye, cv::Size(), 0.5, 0.5);
+    //cv::resize(left_eye_temp, left_eye, cv::Size(), 0.5, 0.5);
+    //cv::resize(right_eye_temp, right_eye, cv::Size(), 0.5, 0.5);
     //cv::cvtColor(left_eye, left_eye, cv::COLOR_RGB2BGR);
     //cv::cvtColor(right_eye, right_eye, cv::COLOR_RGB2BGR);
 #ifdef USE_COMPRESSION
@@ -78,11 +78,11 @@ void rendered_frame_tx::compress_frame(const rendered_frame_proto::Frame& frame)
 #endif
     compressed_frame.set_rows(left_eye.rows);
     compressed_frame.set_columns(left_eye.cols);
-    //cv::imwrite("frame_" + std::to_string(count) + "_left.png", left_eye);
-    //cv::imwrite("frame_" + std::to_string(count) + "_right.png", right_eye);
+    cv::imwrite("frame_" + std::to_string(count) + "_left.png", left_eye);
+    cv::imwrite("frame_" + std::to_string(count) + "_right.png", right_eye);
     std::string data_buffer = compressed_frame.SerializeAsString();
     count++;
-    encoded_writer_.put(std::make_shared<switchboard::event_wrapper<std::string>>(data_buffer + delimiter_));
+    //encoded_writer_.put(std::make_shared<switchboard::event_wrapper<std::string>>(data_buffer + delimiter_));
 }
 
 ILLIXR::threadloop::skip_option rendered_frame_tx::_p_should_skip() {
