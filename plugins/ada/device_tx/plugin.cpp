@@ -48,6 +48,7 @@ using namespace ILLIXR::data_format;
 void device_tx::start() {
     threadloop::start();
 
+#ifdef USE_NVIDIA_CODEC
     encoder_ = std::make_unique<ada_video_encoder>(
         // First callback for img0 and img1
         [this](const GstMapInfo& img0, const GstMapInfo& img1) {
@@ -58,7 +59,9 @@ void device_tx::start() {
             cond_var_.notify_one();
         });
     encoder_->init();
-
+#else
+    encoder_ = std::make_unique<encoding::rgb_encoder>();
+#endif
     switchboard_->schedule<scene_recon_type>(id_, "ScanNet_Data",
                                              [this](switchboard::ptr<const scene_recon_type> datum, std::size_t) {
                                                  this->send_scene_recon_data(datum);
@@ -98,6 +101,7 @@ void device_tx::send_scene_recon_data(switchboard::ptr<const scene_recon_type> d
     cv::Mat cur_depth = datum->depth;
 
     sr_input_proto::ImgData* depth_img_msb = outgoing_payload->mutable_depth_img_msb_data();
+#ifdef USE_NVIDIA_CODEC
     sr_input_proto::ImgData* depth_img_lsb = outgoing_payload->mutable_depth_img_lsb_data();
 
     depth_img_msb->set_rows(cur_depth.rows);
@@ -141,6 +145,19 @@ void device_tx::send_scene_recon_data(switchboard::ptr<const scene_recon_type> d
     frame_send_timing_ << "Encode " << (static_cast<double>(duration_depth_encoding) / 1000.0) << " " << depth_img_msb->size()
                        << " " << depth_img_lsb->size() << "\n";
 
+#else
+    depth_img_msb->set_rows(cur_depth.rows);
+    depth_img_msb->set_columns(cur_depth.cols);
+    cv::Mat rgb;
+    float   zmin, zmax;
+    encoder_->depth2rgb(cur_depth, rgb, zmin, zmax);
+    msb_bytes_.assign(reinterpret_cast<const char*>(rgb.data), cur_depth.rows * cur_depth.cols);
+    depth_img_msb->mutable_img_data()->swap(msb_bytes_);
+    depth_img_msb->set_size(static_cast<int64_t>(depth_img_msb->img_data().size()));
+    outgoing_payload->set_zmin(zmin);
+    outgoing_payload->set_zmax(zmax);
+#endif
+
     outgoing_payload->set_id(static_cast<int>(frame_id_));
 
     // serialize protobuf directly into place (no temporary std::string)
@@ -156,7 +173,9 @@ void device_tx::send_scene_recon_data(switchboard::ptr<const scene_recon_type> d
     {
         std::lock_guard<std::mutex> lk{mutex_};
         depth_img_msb->mutable_img_data()->swap(msb_bytes_);
+#ifdef USE_NVIDIA_CODEC
         depth_img_lsb->mutable_img_data()->swap(lsb_bytes_);
+#endif
     }
 
     auto fullframe          = std::chrono::high_resolution_clock::now();

@@ -14,16 +14,26 @@ add_library(${PLUGIN_NAME} SHARED
             plugin.hpp
             video_decoder.cpp
             video_decoder.hpp
-            $<TARGET_OBJECTS:video_decoder_ada>
-            ${CMAKE_CURRENT_SOURCE_DIR}/../device_to_server_base.hpp
+            ../utils/device_to_server_base.hpp
             ${PROTO_SRCS}
             ${PROTO_HDRS}
             ${ILLIXR_SOURCE_DIR}/include/illixr/data_format/scene_reconstruction.hpp
             ${ILLIXR_SOURCE_DIR}/include/illixr/phonebook.hpp
             ${ILLIXR_SOURCE_DIR}/include/illixr/switchboard.hpp
             ${ILLIXR_SOURCE_DIR}/include/illixr/threadloop.hpp
-            $<TARGET_OBJECTS:video_decoder_ada>
 )
+
+if (ADA_USE_NVIDIA_CODEC)
+    target_compile_definitions(${PLUGIN_NAME} PUBLIC USE_NVIDIA_CODEC)
+    target_sources(${PLUGIN_NAME} PUBLIC $<TARGET_OBJECTS:video_decoder_ada>)
+else()
+    if (NOT TARGET encode_decode_common)
+        include(../utils/CMakeLists.txt)
+    endif()
+
+    target_sources(${PLUGIN_NAME} PUBLIC $<TARGET_OBJECTS:decode_utils> $<TARGET_OBJECTS:encode_decode_common>)
+endif()
+
 
 find_package(PkgConfig)
 pkg_search_module(GLIB REQUIRED glib-2.0)
