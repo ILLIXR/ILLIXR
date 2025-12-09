@@ -189,6 +189,7 @@ void nvenc_encoder::init_encoder() {
     // GOP settings
     encode_config.gopLength = 30;
     encode_config.frameIntervalP = 1;  // No B-frames for low latency
+    //encode_config.encodeCodecConfig.hevcConfig.idrPeriod = 30;
 
     // Initialize encoder
     NV_ENC_INITIALIZE_PARAMS init_params = {};
@@ -327,7 +328,7 @@ void nvenc_encoder::convert_bgr_to_nv12(const cv::Mat& bgr, uint8_t* nv12, uint3
 
     // Convert BGR to YUV I420
     cv::Mat yuv;
-    cv::cvtColor(bgr, yuv, cv::COLOR_BGR2YUV_I420);
+    cv::cvtColor(bgr, yuv, cv::COLOR_RGB2YUV_I420);
     // Copy Y plane with pitch
     for (int y = 0; y < height_; y++) {
         memcpy(nv12 + y * pitch, yuv.data + y * width_, width_);
