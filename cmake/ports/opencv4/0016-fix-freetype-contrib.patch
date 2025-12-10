@@ -11,6 +11,6 @@
 +  find_package(HARFBUZZ NAMES harfbuzz REQUIRED)
 +  set(HARFBUZZ_LIBRARIES harfbuzz::harfbuzz)
 +endif()
-
+ 
  if(OPENCV_INITIAL_PASS)
    if(NOT FREETYPE_FOUND)
