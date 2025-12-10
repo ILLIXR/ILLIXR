@@ -12,11 +12,11 @@ cmake_minimum_required(VERSION 3.22)
 set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
 # since several plugins now require clang to compile themselves or their dependencies
 # clang is now a required dependency
-find_program(CLANG_EXE clang REQUIRED)
-find_program(CLANG_CXX_EXE clang++ REQUIRED NAMES clang-cpp clang++)
+#find_program(CLANG_EXE clang REQUIRED)
+#find_program(CLANG_CXX_EXE clang++ REQUIRED NAMES clang-cpp clang++)
 
-set(CMAKE_C_COMPILER ${CLANG_EXE} CACHE FILEPATH "" FORCE)
-set(CMAKE_CXX_COMPILER ${CLANG_CXX_EXE} CACHE FILEPATH "" FORCE)
+#set(CMAKE_C_COMPILER ${CLANG_EXE} CACHE FILEPATH "" FORCE)
+#set(CMAKE_CXX_COMPILER ${CLANG_CXX_EXE} CACHE FILEPATH "" FORCE)
 
 if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
     message(FATAL_ERROR "In-source build prohibited.")

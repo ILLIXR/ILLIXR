@@ -1,5 +1,23 @@
 ![ILLIXR logo](docs/docs/images/LogoWithHeader.png)
 
+This repo is the initial version of ILLIXR-net. It is designed to run on Windows, although it should run on Linux as well.
+This code contains more parts thatn are currently needed by ILLIXR-net. The relevant plugins that are used in this setup are
+
+- local_communication (this is temporary and will be going away once the OpenXR, it is used to send poses to and receive rendered images from Unity)
+- offline_rendering_nvenc/tx (this plugin encodes the images produced by Unity, using h.265)
+- quest3/head_pose/rx (this plugin receives the current head pose from the Quest 3 headset over wifi, via ILLIXR-net running there)
+- tcp_network_backend (this plugin transmits to and receives messages from ILLIXR-net on the headset)
+
+Below is a 
+┌─────────────────────────────────────────────────────────────────┐
+│                    egl_context_manager (singleton)              │
+│                                                                 │
+│   PRIMARY CONTEXT ←──────────── shared ──────────→ SECONDARY    │
+│   (OpenXR thread)                                  (Decoder     │
+│                                                     thread)     │
+│   Resources (textures, buffers) are SHARED between contexts     │
+└─────────────────────────────────────────────────────────────────┘
+
 [![NCSA licensed](https://img.shields.io/badge/license-NCSA-blue.svg)](LICENSE)
 [![ILLIXR CI](https://github.com/ILLIXR/ILLIXR/actions/workflows/ci.yaml/badge.svg)](https://github.com/ILLIXR/ILLIXR/actions/workflows/ci.yaml)
 [![Discord](https://img.shields.io/discord/830812443189444698?logo=discord&logoColor=white&label=Discord)][E47]
