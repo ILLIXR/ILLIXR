@@ -1,18 +1,20 @@
 #pragma once
 #if defined(_WIN32) || defined(_WIN64)
 #define _WINSOCKAPI_
+#define WIN32_LEAN_AND_MEAN
 #endif
 #include <stdexcept>
 #if defined(_WIN32) || defined(_WIN64)
-    #include <icmpapi.h>
-    #include <iphlpapi.h>
-    #include <mstcpip.h>
-    #include <nldef.h>
-    #include <windns.h>
-    #include <WinSock2.h>
+    #include <WinSock2.h>  // Must come FIRST
     #include <ws2def.h>
     #include <ws2tcpip.h>
-    // #pragma comment(lib, "Ws2_32.lib")
+    #include <mstcpip.h>
+    #include <WindNS.h>
+    #include <iphlpapi.h>
+    #include <icmpapi.h>
+    #include <nldef.h>
+    #pragma comment(lib, "Ws2_32.lib")
+    #pragma comment(lib, "Iphlpapi.lib")
     #define BYTE_TYPE   int
     #define SOCKET_TYPE SOCKET
 #else
