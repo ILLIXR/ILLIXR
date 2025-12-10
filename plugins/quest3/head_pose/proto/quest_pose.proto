@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package unity_pose_proto;
+
+message Position {
+  double x = 1;
+  double y = 2;
+  double z = 3;
+}
+
+message Quaternion {
+  double w = 1;
+  double x = 2;
+  double y = 3;
+  double z = 4;
+}
+
+
+message Pose {
+    fixed64 timestamp = 1;
+    Position pos = 2;
+    Quaternion quat =3;
+}
