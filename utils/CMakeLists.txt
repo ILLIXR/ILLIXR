@@ -25,6 +25,7 @@ target_link_libraries(illixr_vulkan_utils PUBLIC
 )
 if(WIN32 OR MSVC)
     target_link_libraries(illixr_vulkan_utils PUBLIC Vulkan::Vulkan GPUOpen::VulkanMemoryAllocator)
+    target_compile_options(illixr_vulkan_utils PRIVATE /EHsc)
 endif()
 if(UNIX)
     find_package(OpenGL REQUIRED)

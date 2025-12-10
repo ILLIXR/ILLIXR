@@ -39,6 +39,8 @@ add_library(plugin.main${ILLIXR_BUILD_SUFFIX} SHARED
 
 if(WIN32 OR MSVC)
     target_compile_definitions(plugin.main${ILLIXR_BUILD_SUFFIX} PRIVATE BUILDING_LIBRARY)
+    target_compile_options(plugin.main${ILLIXR_BUILD_SUFFIX} PRIVATE /EHsc)
+    target_compile_options(${EXE_NAME} PRIVATE /EHsc)
 endif()
 ##############
 # yaml parser
