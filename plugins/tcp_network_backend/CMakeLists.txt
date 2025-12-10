@@ -26,6 +26,7 @@ target_link_libraries(${PLUGIN_NAME}
 if (WIN32 OR MSVC)
     target_link_libraries(${PLUGIN_NAME} ws2_32)
     target_compile_definitions(${PLUGIN_NAME} PRIVATE BUILDING_LIBRARY)
+    target_compile_options(plugin.tcp_network_backend.dbg PRIVATE /EHsc)
 endif()
 
 target_include_directories(${PLUGIN_NAME} PUBLIC ${ILLIXR_SOURCE_DIR}/include)
