@@ -49,13 +49,14 @@ void rendered_frame_tx::compress_frame(const rendered_frame_proto::Frame& frame)
     auto left_eye_raw  = std::string(frame.left_eye());
     auto right_eye_raw = std::string(frame.right_eye());
 
-    cv::Mat left_eye(frame.rows(), frame.columns(), CV_8UC3, left_eye_raw.data());
-    cv::Mat right_eye(frame.rows(), frame.columns(), CV_8UC3, left_eye_raw.data());
+    cv::Mat left_eye_temp(frame.rows(), frame.columns(), CV_8UC3, left_eye_raw.data());
+    cv::Mat right_eye_temp(frame.rows(), frame.columns(), CV_8UC3, right_eye_raw.data());
 
-    // cv::Mat left_eye;
-    // cv::Mat right_eye;
-    // cv::resize(left_eye_temp, left_eye, cv::Size(), 0.5, 0.5);
-    // cv::resize(right_eye_temp, right_eye, cv::Size(), 0.5, 0.5);
+    cv::Mat left_eye;
+    cv::Mat right_eye;
+    cv::Size new_size(1680, 1760);
+    cv::resize(left_eye_temp, left_eye, new_size);
+    cv::resize(right_eye_temp, right_eye, new_size);
     // cv::cvtColor(left_eye, left_eye, cv::COLOR_RGB2BGR);
     // cv::cvtColor(right_eye, right_eye, cv::COLOR_RGB2BGR);
 #ifdef USE_COMPRESSION
