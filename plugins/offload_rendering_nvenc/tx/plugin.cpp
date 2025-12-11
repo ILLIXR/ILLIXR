@@ -77,9 +77,9 @@ void rendered_frame_tx::compress_frame(const rendered_frame_proto::Frame& frame)
         std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 #ifdef USE_COMPRESSION
     compressed_frame.set_left_eye((void*) left_encoded.data(), left_encoded.size());
-    compressed_frame.set_left_eye_size(left_encoded.size());
+    compressed_frame.set_left_eye_size(static_cast<int>(left_encoded.size()));
     compressed_frame.set_right_eye((void*) right_encoded.data(), right_encoded.size());
-    compressed_frame.set_right_eye_size(right_encoded.size());
+    compressed_frame.set_right_eye_size(static_cast<int>(right_encoded.size()));
 #else
     compressed_frame.set_left_eye((void*) left_eye.data, left_eye.rows * left_eye.cols);
     compressed_frame.set_right_eye((void*) right_eye.data, right_eye.rows * right_eye.cols);

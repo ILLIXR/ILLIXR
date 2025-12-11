@@ -13,14 +13,14 @@ using namespace ILLIXR;
 
 void nvenc_encoder::check_nvenc(NVENCSTATUS status, const char* msg) {
     if (status != NV_ENC_SUCCESS) {
-        //spdlog::get("illixr")->error(std::string(msg) + " Error: " + std::to_string(status));
+        spdlog::get("illixr")->error(std::string(msg) + " Error: " + std::to_string(status));
         throw std::runtime_error(std::string(msg) + " Error: " + std::to_string(status));
     }
 }
 
 void nvenc_encoder::check_cuda(CUresult result, const char* msg) {
     if (result != CUDA_SUCCESS) {
-        //spdlog::get("illixr")->error(std::string(msg) + " Error: " + std::to_string(result));
+        spdlog::get("illixr")->error(std::string(msg) + " Error: " + std::to_string(result));
         throw std::runtime_error(std::string(msg) + " Error: " + std::to_string(result));
     }
 }
@@ -32,7 +32,7 @@ typedef NVENCSTATUS(NVENCAPI* PNVENCODEAPICREATEINSTANCE)(NV_ENCODE_API_FUNCTION
     : width_{w}
     , height_{h}
     , bitrate_{bitrate} {
-    // Align dimensions to 32 for HEVC (more strict than H.264)
+    // Align dimensions to 32 for HEVC
     aligned_width_  = (w + 31) & ~31;
     aligned_height_ = (h + 31) & ~31;
 
@@ -61,10 +61,10 @@ void nvenc_encoder::init_cuda() {
 
 void nvenc_encoder::init_nvenc() {
     // Load NVENC library
-    printf("NVENC API version: %d.%d\n", NVENCAPI_MAJOR_VERSION, NVENCAPI_MINOR_VERSION);
+    //printf("NVENC API version: %d.%d\n", NVENCAPI_MAJOR_VERSION, NVENCAPI_MINOR_VERSION);
     CUcontext current;
     cuCtxGetCurrent(&current);
-    printf("CUDA context: %p\n", current);
+    //printf("CUDA context: %p\n", current);
 #ifdef _WIN32
     HMODULE nvenc_lib = LoadLibrary(TEXT("nvEncodeAPI64.dll"));
 #else
@@ -159,7 +159,7 @@ void nvenc_encoder::init_encoder() {
     preset_config.presetCfg.version = NV_ENC_CONFIG_VER;
 
     check_nvenc(nvenc_.nvEncGetEncodePresetConfigEx(encoder_, NV_ENC_CODEC_HEVC_GUID, NV_ENC_PRESET_P4_GUID,
-                                                    NV_ENC_TUNING_INFO_LOW_LATENCY, // Required for Ex version
+                                                    NV_ENC_TUNING_INFO_LOW_LATENCY,
                                                     &preset_config),
                 "Failed to get preset: {}");
 
@@ -266,7 +266,7 @@ void nvenc_encoder::log_hevc_profile() {
                 // Profile is in profile_tier_level structure
                 // For Main profile: general_profile_idc = 1
                 // For Main10: general_profile_idc = 2
-                //spdlog::get("illixr")->info("Found HEVC SPS at offset {}", i);
+                spdlog::get("illixr")->info("Found HEVC SPS at offset {}", i);
 
                 // The profile info is a bit complex to parse in HEVC
                 // For now just log raw bytes after NAL header
@@ -299,7 +299,7 @@ void nvenc_encoder::create_buffers() {
     check_nvenc(nvenc_.nvEncCreateBitstreamBuffer(encoder_, &create_output), "Create output buffer");
     output_buffer_ = create_output.bitstreamBuffer;
 
-    //spdlog::get("illixr")->info("Created input/output buffers");
+    spdlog::get("illixr")->info("Created input/output buffers");
 }
 
 nvenc_encoder::~nvenc_encoder() {
@@ -345,14 +345,14 @@ void nvenc_encoder::convert_bgr_to_nv12(const cv::Mat& bgr, uint8_t* nv12, uint3
     for (int y = 0; y < height_ / 2; y++) {
         for (int x = 0; x < width_ / 2; x++) {
             int src_idx         = y * (width_ / 2) + x;
-            int dst_idx         = y * pitch + x * 2;
+            int dst_idx         = static_cast<int>(y * pitch + x * 2);
             uv_dst[dst_idx]     = u_src[src_idx];
             uv_dst[dst_idx + 1] = v_src[src_idx];
         }
         // Pad UV row if needed
         if (aligned_width_ > width_) {
             for (int x = width_; x < aligned_width_; x += 2) {
-                int dst_idx         = y * pitch + x;
+                int dst_idx         = static_cast<int>(y * pitch + x);
                 uv_dst[dst_idx]     = 128; // Neutral U
                 uv_dst[dst_idx + 1] = 128; // Neutral V
             }
@@ -363,7 +363,7 @@ void nvenc_encoder::convert_bgr_to_nv12(const cv::Mat& bgr, uint8_t* nv12, uint3
     if (aligned_height_ > height_) {
         for (int y = height_ / 2; y < aligned_height_ / 2; y++) {
             for (int x = 0; x < aligned_width_; x += 2) {
-                int dst_idx         = y * pitch + x;
+                int dst_idx         = static_cast<int>(y * pitch + x);
                 uv_dst[dst_idx]     = 128;
                 uv_dst[dst_idx + 1] = 128;
             }
@@ -380,9 +380,10 @@ std::vector<uint8_t> nvenc_encoder::encode(const cv::Mat& frame) {
         //spdlog::get("illixr")->error("Frame size mismatch {}x{} should be {} {}", frame.cols, frame.rows, width_, height_);
         throw std::runtime_error("Frame size mismatch");
     }
-    //spdlog::get("illixr")->debug("Compressing");
+
     cv::Mat frame_to_encode = frame;
 #ifdef _WIN32
+    // need to flip the images for windows
     cv::Mat flipped;
     cv::flip(frame, flipped, 0); // 0 = flip vertically
     frame_to_encode = flipped;
