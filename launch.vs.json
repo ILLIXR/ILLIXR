@@ -16,7 +16,8 @@
         "ILLIXR_TCP_SERVER_PORT": "9001",
         "ILLIXR_IS_LOCAL_CLIENT": 0,
         "ILLIXR_IS_CLIENT": 0,
-        "ILLIXR_DISPLAY_MODE": "none"
+        "ILLIXR_DISPLAY_MODE": "none",
+        "ILLIXR_RUN_DURATION": "10000"
       }
     }
   ]
