@@ -1,22 +1,99 @@
 ![ILLIXR logo](docs/docs/images/LogoWithHeader.png)
 
 This repo is the initial version of ILLIXR-net. It is designed to run on Windows, although it should run on Linux as well.
-This code contains more parts thatn are currently needed by ILLIXR-net. The relevant plugins that are used in this setup are
+This code contains more parts than are currently needed by ILLIXR-net. The relevant plugins that are used in this setup are:
 
-- local_communication (this is temporary and will be going away once the OpenXR, it is used to send poses to and receive rendered images from Unity)
-- offline_rendering_nvenc/tx (this plugin encodes the images produced by Unity, using h.265)
-- quest3/head_pose/rx (this plugin receives the current head pose from the Quest 3 headset over wifi, via ILLIXR-net running there)
-- tcp_network_backend (this plugin transmits to and receives messages from ILLIXR-net on the headset)
+- `local_communication` (this is temporary and will be going away once the OpenXR, it is used to send poses to and receive rendered images from Unity)
+- `offline_rendering_nvenc/tx` (this plugin encodes the images produced by Unity, using h.265)
+- `quest3/head_pose/rx` (this plugin receives the current head pose from the Quest 3 headset over wifi, via ILLIXR-net running there)
+- `tcp_network_backend` (this plugin transmits to and receives messages from ILLIXR-net on the headset)
 
-Below is a 
-┌─────────────────────────────────────────────────────────────────┐
-│                    egl_context_manager (singleton)              │
-│                                                                 │
-│   PRIMARY CONTEXT ←──────────── shared ──────────→ SECONDARY    │
-│   (OpenXR thread)                                  (Decoder     │
-│                                                     thread)     │
-│   Resources (textures, buffers) are SHARED between contexts     │
-└─────────────────────────────────────────────────────────────────┘
+Below is a schematic of the server side architecture
+
+``` mermaid
+flowchart TD
+    H[Headset]
+    subgraph Server
+    subgraph ILLIXR-net
+    T[tcp_network_backend]
+    L[local_communication]
+    O[offload_rendering_nvenc.tx]
+    Q[quest3.head_pose.rx]
+    S[switchboard]
+    T -->|head pose| S
+    S -->|head pose| Q
+    Q -->|head_pose| L
+    L -->|frames| S
+    S -->|frames| O
+    O -->|compressed frames| S
+    S -->|compressed frames| T
+    end
+    U[Unity App]
+    end
+   L -.->|head pose| U
+   U -.->|frames| L
+   H -.->|head pose| T
+   T -.->|compressed frames| H
+```
+
+## Building Instructions
+
+### Requirements
+
+- NVIDIA GPU with onboard encoder: most of their recent cards fit this, but see [here](https://developer.nvidia.com/video-encode-decode-support-matrix) for compatability; initial testing was done with a GeForce RTX 4090
+- Recent drivers for the GPU
+- CUDA toolkit installed: this can be downloaded from [here](https://developer.nvidia.com/cuda-downloads)
+- NVIDIA video codec SDK: this can be downloaded from [here](https://developer.nvidia.com/nvidia-video-codec-sdk/download); this SDK is just some headers, so when you unzip the archive, note the location of the files.
+- Visual Studio 2022 (not Visual Studio Code): used for the development platform, I am exploring using other platforms like CLion as well; be sure `vcpkg` is installed as well, either as part of VS or separately
+
+!!! note
+    
+    Please be sure to match the version od the SDK's with the CUDA version and driver versions. For the NVIDIA SDK there is a system requirements section on the page stating the minimum driver version. Older version of the NVIDIA SDK can be found under the "Additional Resources" section on the page.
+
+### Configuring
+
+ILLIXR-net is a CMake-based C++ project. You will need to edit a few files before it will configure properly.
+
+- `CMakePresets.json`: edit the `CMAKE_TOOLCHAIN_FILE` entry to point to your `vcpkg` toolchain file
+- `plugins/offload_rendering_nvenc/tx/CMakeLists.txt`: edit the last line of the `target_include_directories` command to point to you NVIDIA SDK header location
+- `launch.vs.json`: edit the `PATH` entry to point to your current repo (you need to change the `D:\ILLIXR` to wherever you clone the repo to); edit the `ILLIXR_TCP_CLIENT_IP` entry to be the IP address of the headset; edit the `ILLIXR_TCP_SERVER_IP` entry to be the IP address of the Windows machine
+
+That should be all you need to do.
+
+!!! note
+
+    The first time you configure the project (or open it in Visual Studio) it will take a long time to compile and install the dependency libraries, likely this will take an hour or more.
+
+### Building
+
+If the configuration is successful, then click on `Build` and `Install`.
+
+### Running
+
+Select the `main.exe` profile before launching ILLIXR-net. This will ensure the proper environment variables are set.
+
+!!! note
+
+    Currently, there is a specific order you must launch each of the components in:
+    
+    1. ILLIXR-net on the server (available at: )
+    2. ILLIXR-net on the headset (available at: )
+    3. Unity App (available at: )
+
+    It can take a bit before images start flowing as things are getting configured.
+
+!!! warning
+
+    There are a few known issues with the current setup:
+
+    1. When running in Debug mode on the server, the encoder can get behind quickly
+    2. The images displayed on the headset will make you feel like you are crosseyed, this is due to some transform being applied when it should not. This likely won't be tracked down and fixed (see below)
+
+    Both of these issues should be addressed when ILLIXR-net on the server is using an OpenXR interface instead of getting frames driectly from the Unity App. OpenXR will enforce the cadence of the images, and images submitted to the swapchain will be in the proper format for the headset to display properly. 
+
+
+
+
 
 [![NCSA licensed](https://img.shields.io/badge/license-NCSA-blue.svg)](LICENSE)
 [![ILLIXR CI](https://github.com/ILLIXR/ILLIXR/actions/workflows/ci.yaml/badge.svg)](https://github.com/ILLIXR/ILLIXR/actions/workflows/ci.yaml)
