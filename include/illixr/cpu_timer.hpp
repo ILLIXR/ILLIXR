@@ -90,8 +90,11 @@ static inline std::chrono::nanoseconds cpp_clock_get_time(clockid_t clock_id) {
                  : /* InputOperands */
                  : "memory" /* Clobbers */);
 #endif
-
+#if defined(_WIN32) || defined(_WIN64)
     if (illixr_clock_gettime(clock_id, &time_spec)) {
+#else
+    if (clock_gettime(clock_id, &time_spec)) {
+#endif
         throw std::runtime_error{std::string{"clock_get_time returned "} + strerror(errno)};
     }
     RAC_ERRNO_MSG("cpu_timer after clock_get_time");
@@ -269,11 +272,11 @@ private:
 };
 
 #define PRINT_CPU_TIME_FOR_THIS_BLOCK(name) \
-    print_timer<decltype((thread_cpu_time))> PRINT_CPU_TIME_FOR_THIS_BLOCK{name, thread_cpu_time};
+        print_timer<decltype((thread_cpu_time))> PRINT_CPU_TIME_FOR_THIS_BLOCK{name, thread_cpu_time};
 
 #define PRINT_WALL_TIME_FOR_THIS_BLOCK(name)                                                         \
-    print_timer<decltype((std::chrono::high_resolution_clock::now))> PRINT_WALL_TIME_FOR_THIS_BLOCK{ \
-        name, std::chrono::high_resolution_clock::now};
+        print_timer<decltype((std::chrono::high_resolution_clock::now))> PRINT_WALL_TIME_FOR_THIS_BLOCK{ \
+            name, std::chrono::high_resolution_clock::now};
 
 #define PRINT_RECORD_FOR_THIS_BLOCK(name) print_timer2 PRINT_RECORD_FOR_THIS_BLOCK_timer{name};
 
