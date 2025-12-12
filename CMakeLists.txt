@@ -10,13 +10,15 @@
 
 cmake_minimum_required(VERSION 3.22)
 set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
-# since several plugins now require clang to compile themselves or their dependencies
-# clang is now a required dependency
-find_program(CLANG_EXE clang REQUIRED)
-find_program(CLANG_CXX_EXE clang++ REQUIRED NAMES clang-cpp clang++)
+if(UNIX)
+    # since several plugins now require clang to compile themselves or their dependencies
+    # clang is now a required dependency
+    find_program(CLANG_EXE clang REQUIRED)
+    find_program(CLANG_CXX_EXE clang++ REQUIRED NAMES clang-cpp clang++)
 
-set(CMAKE_C_COMPILER ${CLANG_EXE} CACHE FILEPATH "" FORCE)
-set(CMAKE_CXX_COMPILER ${CLANG_CXX_EXE} CACHE FILEPATH "" FORCE)
+    set(CMAKE_C_COMPILER ${CLANG_EXE} CACHE FILEPATH "" FORCE)
+    set(CMAKE_CXX_COMPILER ${CLANG_CXX_EXE} CACHE FILEPATH "" FORCE)
+endif()
 
 if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
     message(FATAL_ERROR "In-source build prohibited.")
@@ -72,7 +74,7 @@ endif()
 set(GPL_LICENSED_CODE "openvins;orb_slam3;offload_rendering_server;offload_rendering_client")
 set(LGPL_LICENSED_CODE "audio_pipeline")
 
-#set(yaml-cpp_DIR "${CMAKE_SOURCE_DIR}/out/install/x64-Debug/lib/cmake/yaml-cpp") 
+#set(yaml-cpp_DIR "${CMAKE_SOURCE_DIR}/out/install/x64-Debug/lib/cmake/yaml-cpp")
 
 if(PACKAGE_VERSION_LABEL)
     set(PACKAGE_VERSION "${PACKAGE_VERSION_MAJOR}.${PACKAGE_VERSION_MINOR}.${PACKAGE_VERSION_PATCH}-${PACKAGE_VERSION_LABEL}")

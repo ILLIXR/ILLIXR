@@ -1,0 +1,23 @@
+{
+  "version": "4.1.1",
+  "defaults": {},
+  "configurations": [
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "main.dbg.exe",
+      "name": "main.exe",
+      "args": [ "-y profiles/unity_server.yaml" ],
+      "env": {
+        "PATH": "D:/ILLIXR/out/install/x64-Debug/lib;D:\\ILLIXR\\out\\build\\x64-Debug\\vcpkg_installed\\x64-windows\\debug\\bin;%PATH%",
+        "ILLIXR_TCP_CLIENT_PORT": "9000",
+        "ILLIXR_TCP_CLIENT_IP": "10.195.222.227",
+        "ILLIXR_TCP_SERVER_IP": "10.192.88.249",
+        "ILLIXR_TCP_SERVER_PORT": "9001",
+        "ILLIXR_IS_LOCAL_CLIENT": 0,
+        "ILLIXR_IS_CLIENT": 0,
+        "ILLIXR_DISPLAY_MODE": "none"
+      }
+    }
+  ]
+}
