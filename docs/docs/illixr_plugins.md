@@ -2,7 +2,7 @@
 
 This page details the structure of ILLIXR's [_plugins_][G18] and how they interact with each other.
 
-## ada
+## Ada
 
 Ada’s distributed design relies on **four communication plugins** that coordinate data transfer between the **device** and **server** for remote scene provisioning.
 
