@@ -63,10 +63,13 @@ public:
     }
 
     // Read data from the socket
-    [[nodiscard]] string read_data(const size_t limit = BUFFER_SIZE) const {
-        char    buffer[BUFFER_SIZE];
-        ssize_t bytes_read = read(fd_, buffer, min(BUFFER_SIZE, limit));
-        return string(buffer, bytes_read);
+    [[nodiscard]] string read_data(const size_t limit) {
+#ifdef ILLIXR_ANDROID_BUILD
+        ssize_t bytes_read = read(fd_, static_cast<void* const>(buffer_), min(BUFFER_SIZE, limit));
+#else
+        ssize_t bytes_read = read(fd_, buffer_, min(BUFFER_SIZE, limit));
+#endif
+        return string(buffer_, bytes_read);
     }
 
     // Write data to the socket
@@ -112,6 +115,7 @@ private:
     int fd_;
     /* maximum size of a read */
     static constexpr size_t BUFFER_SIZE = 1024 * 1024;
+    char buffer_[BUFFER_SIZE];
 };
 
 } // namespace ILLIXR::network

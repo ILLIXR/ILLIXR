@@ -1,7 +1,7 @@
 #pragma once
 
 #ifdef Success
-    #undef Success // For 'Success' conflict
+#undef Success // For 'Success' conflict
 #endif
 
 #include "illixr/data_format/pose.hpp"
@@ -9,7 +9,11 @@
 
 #include <array>
 #include <boost/serialization/export.hpp>
+#ifdef ILLIXR_ANDROID_BUILD
+#include <GLES/gl.h>
+#else
 #include <GL/gl.h>
+#endif
 
 #ifdef ILLIXR_LIBAV
 extern "C" {

@@ -245,38 +245,6 @@ public:
     }
 };
 
-/**
- * @brief This class generates unique IDs
- *
- * If you need unique IDs (e.g. for each component), have each component call this class through
- * Phonebook. It returns unique IDs.
- *
- * You can use namespaces to express logical containment. The return value will be unique
- * _between other `get` calls to the same namespace_. This is useful for components and
- * sub-components. For example, If component with id_ 0 has 3 subcomponents, one might call
- * get(0) to name_ each of them. Then, suppose component with id_ 1 has 2 subcomponents, one might
- * call get(1) twice to name_ those. The subcomponent IDs could be reused (non-unique), but tuple
- * (component id_, subcomponent id_) will still be unique. You can also just use the global
- * namespace for everything, if you do not care about generating small integers for the IDs.
- *
- */
-class gen_guid : public phonebook::service {
-public:
-    /**
-     * @brief Generate a number, unique from other calls to the same namespace/sub-namespace/sub-sub-namespace.
-     */
-    std::size_t get(std::size_t namespace_ = 0, std::size_t sub_namespace = 0, std::size_t sub_sub_namespace = 0) {
-        if (guid_starts_[namespace_][sub_namespace].count(sub_sub_namespace) == 0) {
-            guid_starts_[namespace_][sub_namespace][sub_sub_namespace].store(1);
-        }
-        return guid_starts_[namespace_][sub_namespace][sub_sub_namespace]++;
-    }
-
-private:
-    std::unordered_map<std::size_t, std::unordered_map<std::size_t, std::unordered_map<std::size_t, std::atomic<std::size_t>>>>
-        guid_starts_;
-};
-
 static std::chrono::milliseconds LOG_BUFFER_DELAY{1000};
 
 /**

@@ -5,34 +5,34 @@
 
 #include <fstream>
 #include <map>
-#include <opencv4/opencv2/core/mat.hpp>
+#include <opencv2/core/mat.hpp>
 #include <utility>
 
 namespace ILLIXR::data_format {
 namespace image {
-    /**
-     * Enumeration of image type
-     */
-    enum image_type { LEFT_EYE, RIGHT_EYE, RGB, DEPTH, LEFT_EYE_PROCESSED, RIGHT_EYE_PROCESSED, RGB_PROCESSED, CONFIDENCE };
+/**
+ * Enumeration of image type
+ */
+enum image_type { LEFT_EYE, RIGHT_EYE, RGB, DEPTH, LEFT_EYE_PROCESSED, RIGHT_EYE_PROCESSED, RGB_PROCESSED, CONFIDENCE };
 
-    /**
-     * Mapping of `image_type` to a string representation.
-     */
-    const std::map<image_type, const std::string> image_type_map = {{LEFT_EYE, "LEFT_EYE"},
-                                                                    {RIGHT_EYE, "RIGHT_EYE"},
-                                                                    {RGB, "RGB"},
-                                                                    {DEPTH, "DEPTH"},
-                                                                    {LEFT_EYE_PROCESSED, "LEFT_EYE_PROCESSED"},
-                                                                    {RIGHT_EYE_PROCESSED, "RIGHT_EYE_PROCESSED"},
-                                                                    {RGB_PROCESSED, "RGB_PROCESSED"},
-                                                                    {CONFIDENCE, "CONFIDENCE"}};
+/**
+ * Mapping of `image_type` to a string representation.
+ */
+const std::map<image_type, const std::string> image_type_map = {{LEFT_EYE, "LEFT_EYE"},
+                                                                {RIGHT_EYE, "RIGHT_EYE"},
+                                                                {RGB, "RGB"},
+                                                                {DEPTH, "DEPTH"},
+                                                                {LEFT_EYE_PROCESSED, "LEFT_EYE_PROCESSED"},
+                                                                {RIGHT_EYE_PROCESSED, "RIGHT_EYE_PROCESSED"},
+                                                                {RGB_PROCESSED, "RGB_PROCESSED"},
+                                                                {CONFIDENCE, "CONFIDENCE"}};
 } // namespace image
 
 /**
  * Enumeration of camera types
  */
 namespace camera {
-    enum cam_type { BINOCULAR, MONOCULAR, RGB_DEPTH, DEPTH, ZED };
+enum cam_type { BINOCULAR, MONOCULAR, RGB_DEPTH, DEPTH, ZED };
 }
 
 /**

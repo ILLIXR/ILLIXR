@@ -6,7 +6,11 @@
 #include <memory>
 #include <spdlog/common.h>
 #include <spdlog/sinks/basic_file_sink.h>
+#ifdef ILLIXR_ANDROID_BUILD
+#include <spdlog/sinks/android_sink.h>
+#else
 #include <spdlog/sinks/stdout_color_sinks.h>
+#endif
 #include <spdlog/spdlog.h>
 #include <string>
 #include <typeinfo>
@@ -48,8 +52,7 @@ public:
         : name_{std::move(name)}
         , phonebook_{pb}
         , record_logger_{phonebook_->lookup_impl<record_logger>()}
-        , gen_guid_{phonebook_->lookup_impl<gen_guid>()}
-        , id_{gen_guid_->get()} { }
+        , id_{pb->get_next_id()} { }
 
     virtual ~plugin() = default;
 
@@ -98,10 +101,14 @@ public:
 #endif
         }
         std::vector<spdlog::sink_ptr> sinks;
+#ifdef ILLIXR_ANDROID_BUILD
+        auto                          main_sink = std::make_shared<spdlog::sinks::android_sink_mt>();
+#else
         auto                          file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>("logs/" + name_ + ".log");
-        auto                          console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+        auto                          main_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
         sinks.push_back(file_sink);
-        sinks.push_back(console_sink);
+#endif
+        sinks.push_back(main_sink);
         if (spdlog::get(name_) == nullptr) {
             plugin_logger_ = std::make_shared<spdlog::logger>(name_, begin(sinks), end(sinks));
             plugin_logger_->set_level(spdlog::level::from_str(log_level));
@@ -129,7 +136,6 @@ protected:
     std::string                          name_;
     const phonebook*                     phonebook_;
     const std::shared_ptr<record_logger> record_logger_;
-    const std::shared_ptr<gen_guid>      gen_guid_;
     const std::size_t                    id_;
     std::shared_ptr<spdlog::logger>      plugin_logger_;
 };

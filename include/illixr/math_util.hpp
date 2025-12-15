@@ -1,12 +1,12 @@
 #pragma once
 #ifndef _USE_MATH_DEFINES
-    #define _USE_MATH_DEFINES
+#define _USE_MATH_DEFINES
 #endif
 #include "data_format/point.hpp"
 #include "data_format/pose.hpp"
 
 #include <cmath>
-#include <eigen3/Eigen/Core>
+#include <Eigen/Core>
 
 namespace ILLIXR::math_util {
 /// Calculates a projection matrix with the given tangent angles and clip planes

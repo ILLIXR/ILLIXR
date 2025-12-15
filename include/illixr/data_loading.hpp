@@ -4,7 +4,7 @@
 #include "illixr/error_util.hpp"
 #include "illixr/switchboard.hpp"
 
-#include <eigen3/Eigen/Dense>
+#include <Eigen/Dense>
 #include <fstream>
 #include <iostream>
 #include <map>

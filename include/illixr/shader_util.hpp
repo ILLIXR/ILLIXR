@@ -1,13 +1,16 @@
 #pragma once
 
 #include "error_util.hpp"
-
-#include <cassert>
-#include <cstring>
+#ifdef ILLIXR_ANDROID_BUILD
+#include "EGL/egl.h"
+#else
 // clang-format off
 #include <GL/glew.h>
 #include <GL/gl.h>
 // clang-format on
+#endif
+#include <cassert>
+#include <cstring>
 #include <spdlog/spdlog.h>
 #include <string>
 #include <vector>
@@ -16,6 +19,7 @@ using namespace ILLIXR;
 
 static constexpr std::size_t GL_MAX_LOG_LENGTH = 4096U;
 
+#ifndef ILLIXR_ANDROID_BUILD
 static void GLAPIENTRY message_callback([[maybe_unused]] GLenum source, [[maybe_unused]] GLenum type,
                                         [[maybe_unused]] GLuint id, [[maybe_unused]] GLenum severity,
                                         [[maybe_unused]] GLsizei length, [[maybe_unused]] const GLchar* message,
@@ -35,10 +39,12 @@ static void GLAPIENTRY message_callback([[maybe_unused]] GLenum source, [[maybe_
     } /// else => severity level low and medium are non-fatal.
 #endif
 }
+#endif
 
 static GLuint init_and_link(const char* vertex_shader, const char* fragment_shader) {
     // GL handles for intermediary objects.
-    GLint result, vertex_shader_handle, fragment_shader_handle, shader_program;
+    GLint result;
+    GLuint fragment_shader_handle, vertex_shader_handle, shader_program;
 
     vertex_shader_handle = glCreateShader(GL_VERTEX_SHADER);
     auto vert_shader_len = static_cast<GLint>(strlen(vertex_shader));
@@ -52,7 +58,9 @@ static GLuint init_and_link(const char* vertex_shader, const char* fragment_shad
 
         glGetShaderInfoLog(vertex_shader_handle, GL_MAX_LOG_LENGTH * sizeof(GLchar), &length, gl_buf_log.data());
         const std::string msg{gl_buf_log.begin(), gl_buf_log.end()};
+#ifndef ILLIXR_ANDROID_BUILD
         assert(length == static_cast<GLsizei>(msg.size()) && "Length of log should match GLchar vector contents");
+#endif
         ILLIXR::abort("[shader_util] Failed to get vertex_shader_handle: " + msg);
     }
 

@@ -4,7 +4,7 @@
 #include "illixr/data_format/template.hpp"
 #include "illixr/data_format/unit.hpp"
 
-#include <eigen3/Eigen/Dense>
+#include <Eigen/Dense>
 
 namespace ILLIXR::data_format {
 //**********************************************************************************

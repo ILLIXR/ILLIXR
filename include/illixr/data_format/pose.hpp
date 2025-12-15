@@ -4,20 +4,19 @@
 #include "illixr/data_format/unit.hpp"
 #include "illixr/switchboard.hpp"
 
-#include <eigen3/Eigen/Dense>
+#include <Eigen/Dense>
 
 namespace ILLIXR::data_format {
 /**
  * struct containing basic pose data
  */
 struct pose_data {
-    Eigen::Vector3f         position;    //!< x, y, and z of the translation
-    Eigen::Quaternionf      orientation; //!< quaternion representing the rotation of the pose from the reference frame origin
-    float                   confidence;  //!< confidence rating of the pose data 0. - 1. with 1. being 100%
-    units::measurement_unit unit;        //!< units for the translation portion of the pose
-    coordinates::frame      co_frame;    //!< the coordinate reference frame (e.g. left handed y up)
-    coordinates::reference_space
-         ref_space; //!< the reference space (VIEWER = origin is camera, WORLD = origin is specified at startup of system
+    Eigen::Vector3f              position;    //!< x, y, and z of the translation
+    Eigen::Quaternionf           orientation; //!< quaternion representing the rotation of the pose from the reference frame origin
+    float                        confidence;  //!< confidence rating of the pose data 0. - 1. with 1. being 100%
+    units::measurement_unit      unit;        //!< units for the translation portion of the pose
+    coordinates::frame           co_frame;    //!< the coordinate reference frame (e.g. left handed y up)
+    coordinates::reference_space ref_space; //!< the reference space (VIEWER = origin is camera, WORLD = origin is specified at startup of system
     bool valid;     //!< whether the pose contains valid data
 
     /**

@@ -4,7 +4,7 @@
 #include "illixr/phonebook.hpp"
 #include "illixr/relative_clock.hpp"
 
-#include <eigen3/Eigen/Geometry>
+#include <Eigen/Geometry>
 
 namespace ILLIXR::data_format {
 

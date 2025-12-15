@@ -1,7 +1,7 @@
 #pragma once
 
 #ifndef NDEBUG
-    #include <spdlog/spdlog.h>
+#include <spdlog/spdlog.h>
 #endif
 
 #include "illixr/data_format/template.hpp"

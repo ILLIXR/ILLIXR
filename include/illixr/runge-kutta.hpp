@@ -1,7 +1,7 @@
 #pragma once
 #include "data_format/proper_quaternion.hpp"
 
-#include <eigen3/Eigen/Dense>
+#include <Eigen/Dense>
 #include <iostream>
 
 namespace ILLIXR {

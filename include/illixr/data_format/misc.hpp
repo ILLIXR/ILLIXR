@@ -1,8 +1,12 @@
 #pragma once
 
 #include "illixr/switchboard.hpp"
-
+#ifdef ILLIXR_ANDROID_BUILD
+#include <android/hardware_buffer.h>
+#include <GLES/gl.h>
+#else
 #include <GL/glu.h>
+#endif
 
 // Tell gldemo and timewarp_gl to use two texture handle for left and right eye
 #define USE_ALT_EYE_FORMAT
@@ -39,6 +43,22 @@ typedef struct vk_image_handle {
         , height{height_} { }
 } vk_image_handle;
 
+#ifdef ILLIXR_ANDROID_BUILD
+    typedef struct vk_buffer_handle {
+        AHardwareBuffer  *ahardware_buffer;
+        int64_t  format;
+        size_t   allocation_size;
+        uint32_t width;
+        uint32_t height;
+
+        vk_buffer_handle(AHardwareBuffer *ahardware_buffer_, int64_t format_, size_t alloc_size, uint32_t width_, uint32_t height_)
+                : ahardware_buffer{ahardware_buffer_}
+                , format{format_}
+                , allocation_size{alloc_size}
+                , width{width_}
+                , height{height_} { }
+    } vk_buffer_handle;
+#endif
 // This is used to share swapchain images between ILLIXR and Monado.
 // When Monado uses its GL pipeline, it's enough to just share a context during creation.
 // Otherwise, file descriptors are needed to share the images.
@@ -46,8 +66,11 @@ struct [[maybe_unused]] image_handle : public switchboard::event {
     graphics_api type;
 
     union {
-        GLuint          gl_handle{};
-        vk_image_handle vk_handle;
+        GLuint           gl_handle{};
+        vk_image_handle  vk_handle;
+#ifdef ILLIXR_ANDROID_BUILD
+        vk_buffer_handle vk_buffer_handle;
+#endif
     };
 
     uint32_t        num_images;
@@ -71,6 +94,14 @@ struct [[maybe_unused]] image_handle : public switchboard::event {
         , vk_handle{vk_fd_, format, alloc_size, width_, height_}
         , num_images{num_images_}
         , usage{usage_} { }
+#ifdef ILLIXR_ANDROID_BUILD
+    image_handle(AHardwareBuffer *ahardware_buffer, int64_t format, size_t alloc_size, uint32_t width_, uint32_t height_, uint32_t num_images_,
+                 swapchain_usage usage_)
+            : type{graphics_api::VULKAN}
+            , vk_buffer_handle{ahardware_buffer, format, alloc_size, width_, height_}
+            , num_images{num_images_}
+            , usage{usage_} { }
+#endif
 };
 
 struct [[maybe_unused]] hologram_input : public switchboard::event {
@@ -113,4 +144,30 @@ inline bool compare(const std::string& input, const std::string& val) {
     return v1 == v2;
 }
 
+#ifdef ILLIXR_ANDROID_BUILD
+// Used to identify which graphics API is being used (for swapchain construction)
+enum class semaphore_usage { LEFT_RENDER_COMPLETE, RIGHT_RENDER_COMPLETE, NA };
+
+struct semaphore_handle : public switchboard::event {
+    int vk_handle;
+    semaphore_usage usage;
+
+    semaphore_handle()
+            : vk_handle{0}
+            , usage{semaphore_usage::NA} {}
+
+    semaphore_handle(int vk_handle_, semaphore_usage usage_)
+            : vk_handle{vk_handle_}
+            , usage{usage_} {}
+};
+
+struct [[maybe_unused]] illixr_signal : public switchboard::event {
+    int illixr_ready;
+    illixr_signal()
+            : illixr_ready(false) {}
+
+    explicit illixr_signal(int illixr_ready_)
+            : illixr_ready(illixr_ready_) {}
+};
+#endif
 } // namespace ILLIXR::data_format

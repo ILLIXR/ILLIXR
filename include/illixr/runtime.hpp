@@ -5,6 +5,9 @@
 
 #include <string>
 #include <vector>
+#ifdef ILLIXR_ANDROID_BUILD
+#include <EGL/egl.h>
+#endif
 
 namespace ILLIXR {
 class plugin;
@@ -43,6 +46,10 @@ protected:
     std::shared_ptr<switchboard> switchboard_;
 };
 
+#if defined(ILLIXR_ANDROID_BUILD) && !defined(ENABLE_MONADO)
+extern "C" runtime* runtime_factory(EGLContext appGLCtx, ANativeWindow *window);
+#else
 extern "C" runtime* runtime_factory();
+#endif
 
 } // namespace ILLIXR

@@ -13,10 +13,18 @@ namespace ILLIXR {
 /// Display parameters
 struct display_params {
     // Display width in pixels
+#ifdef ILLIXR_ANDROID_BUILD
+    static constexpr unsigned width_pixels = 1080*2;
+#else
     static constexpr unsigned width_pixels = 2880;
+#endif
 
     // Display height in pixels
+#ifdef ILLIXR_ANDROID_BUILD
+    static constexpr unsigned height_pixels = 2400;
+#else
     static constexpr unsigned height_pixels = 1600;
+#endif
 
     // Display width in meters
     static constexpr float width_meters = 0.11047f;
@@ -25,16 +33,28 @@ struct display_params {
     static constexpr float height_meters = 0.06214f;
 
     // Separation between lens centers in meters
+#ifdef ILLIXR_ANDROID_BUILD
+    static constexpr float lens_separation = width_meters / 2.0f;
+#else
     static constexpr float lens_separation = 0.05;
+#endif
 
     // Vertical position of the lens in meters
     [[maybe_unused]] static constexpr float lens_vertical_position = height_meters / 2.0f;
 
     // Display horizontal field-of-view in degrees
+#ifdef ILLIXR_ANDROID_BUILD
+    static constexpr float fov_x = 90.0f;
+#else
     static constexpr float fov_x = 108.06f;
+#endif
 
     // Display vertical field-of-view in degrees
+#ifdef ILLIXR_ANDROID_BUILD
+    static constexpr float fov_y = 90.0f;
+#else
     static constexpr float fov_y = 109.16f;
+#endif
 
     // Meters per tangent angle at the center of the HMD (required by timewarp_gl's distortion correction)
     static constexpr float meters_per_tan_angle = width_meters / (2 * (fov_x * M_PI / 180.0f));
@@ -43,7 +63,11 @@ struct display_params {
     static constexpr float ipd = 0.064f;
 
     // Display refresh rate in Hz
+#ifdef ILLIXR_ANDROID_BUILD
+    static constexpr float frequency = 120.0f;
+#else
     static constexpr float frequency = 144.0f;
+#endif
 
     // Display period in nanoseconds
     static constexpr duration period = freq_to_period(frequency);

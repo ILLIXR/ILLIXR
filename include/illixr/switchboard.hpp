@@ -11,8 +11,8 @@
     #undef Success // For 'Success' conflict
 #endif
 
-#include <eigen3/Eigen/Core>
-#include <eigen3/Eigen/Geometry>
+#include <Eigen/Core>
+#include <Eigen/Geometry>
 #include <iostream>
 #include <list>
 #include <mutex>

@@ -2,7 +2,7 @@
 
 #include "illixr/switchboard.hpp"
 
-#include <eigen3/Eigen/Dense>
+#include <Eigen/Dense>
 
 namespace ILLIXR::data_format {
 /**
