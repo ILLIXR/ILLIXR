@@ -8,18 +8,24 @@
 #include "illixr/record_logger.hpp"
 #include "illixr/stoplight.hpp"
 #include "illixr/switchboard.hpp"
+#ifdef ILLIXR_ANDROID_BUILD
+#include "noop_record_logger.hpp"
+#else
 #include "illixr/vk/vk_extension_request.hpp"
-// #include "sqlite_record_logger.hpp"
-// #include "stdout_record_logger.hpp"
 #include "no_op_record_logger.hpp"
 #include "vulkan_display.hpp"
-
+#endif
+//#include "sqlite_record_logger.hpp"
+//#include "stdout_record_logger.hpp"
 #include <algorithm>
 #include <memory>
 #include <set>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
+#ifdef ILLIXR_ANDROID_BUILD
+#include <spdlog/sinks/android_sink.h>
+#endif
 #include <string>
 #include <vector>
 
@@ -35,8 +41,12 @@ void spdlogger(const std::string& name, const char* log_level) {
 #endif
     }
     std::vector<spdlog::sink_ptr> sinks;
+#ifdef ILLIXR_ANDROID_BUILD
+    sinks.push_back(std::make_shared<spdlog::sinks::android_sink_mt>());
+#else
     sinks.push_back(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
     sinks.push_back(std::make_shared<spdlog::sinks::basic_file_sink_mt>("logs/" + name + ".log"));
+#endif
     auto logger = std::make_shared<spdlog::logger>(name, begin(sinks), end(sinks));
     logger->set_level(spdlog::level::from_str(log_level));
     spdlog::register_logger(logger);
@@ -44,14 +54,23 @@ void spdlogger(const std::string& name, const char* log_level) {
 
 class runtime_impl : public runtime {
 public:
-    explicit runtime_impl() {
+    explicit runtime_impl(
+#if defiend(ILLIXR_ANDROID_BUILD) && !defined(ENABLE_MONADO)
+            EGLContext appGLCtx,
+            ANativeWindow *window
+#endif
+) {
         spdlogger("illixr", std::getenv("ILLIXR_LOG_LEVEL")); // can't use switchboard interface here
         phonebook_.register_impl<relative_clock>(std::make_shared<relative_clock>());
         phonebook_.register_impl<record_logger>(std::make_shared<no_op_record_logger>());
-        phonebook_.register_impl<gen_guid>(std::make_shared<gen_guid>());
         phonebook_.register_impl<switchboard>(std::make_shared<switchboard>(&phonebook_));
-        switchboard_   = phonebook_.lookup_impl<switchboard>();
+#if defined(ILLIXR_ANDROID_BUILD) && !defined(ENABLE_MONADO)
+        phonebook_.register_impl<xlib_gl_extended_window>(
+                std::make_shared<xlib_gl_extended_window>(display_params::width_pixels, display_params::height_pixels, appGLCtx, window));
+#else
         enable_monado_ = false;
+#endif
+        switchboard_   = phonebook_.lookup_impl<switchboard>();
         phonebook_.register_impl<stoplight>(std::make_shared<stoplight>());
     }
 
@@ -62,9 +81,12 @@ public:
             RAC_ERRNO_MSG("runtime_impl before creating the dynamic library");
             return dynamic_lib::create(so_path);
         });
+
+#ifndef ILLIXR_ANDROID_BUILD
         for (auto& i : libraries_) {
             enable_monado_ = enable_monado_ || i.get<n_monado_t>("needs_monado")();
         }
+#endif
         RAC_ERRNO_MSG("runtime_impl after creating the dynamic libraries");
 
         std::vector<plugin_factory> plugin_factories;
@@ -72,6 +94,7 @@ public:
             return lib.template get<plugin* (*) (phonebook*)>("this_plugin_factory");
         });
 
+#ifndef ILLIXR_ANDROID_BUILD
         if (!enable_monado_) {
             // get env var ILLIXR_DISPLAY_MODE
             std::string display_mode =
@@ -79,17 +102,23 @@ public:
             if (display_mode != "none")
                 phonebook_.register_impl<vulkan::display_provider>(std::make_shared<display_vk>(&phonebook_));
         }
+#endif
 
         RAC_ERRNO_MSG("runtime_impl after generating plugin factories");
 
         std::transform(plugin_factories.cbegin(), plugin_factories.cend(), std::back_inserter(plugins_),
                        [this](const auto& plugin_factory) {
                            RAC_ERRNO_MSG("runtime_impl before building the plugin");
-                           return std::unique_ptr<plugin>{plugin_factory(&phonebook_)};
+                           try {
+                               return std::unique_ptr<plugin>{plugin_factory(&phonebook_)};
+                           } catch (std::exception& ex) {
+                               spdlog::get("illixr")->error(ex.what());
+                               throw;
+                           }
                        });
 
         phonebook_.lookup_impl<relative_clock>()->start();
-
+#ifndef ILLIXR_ANDROID_BUILD
         if (!enable_monado_) {
             const std::string display_mode =
                 switchboard_->get_env_char("ILLIXR_DISPLAY_MODE") ? switchboard_->get_env_char("ILLIXR_DISPLAY_MODE") : "glfw";
@@ -112,7 +141,7 @@ public:
                 display->start(instance_extensions, device_extensions);
             }
         }
-
+#endif 
         std::for_each(plugins_.cbegin(), plugins_.cend(), [](const auto& plugin) {
             // Well-behaved plugins_ (any derived from threadloop) start there threads here, and then wait on the Stoplight.
             plugin->start();
@@ -185,7 +214,14 @@ private:
     std::vector<std::shared_ptr<plugin>> plugins_;
 };
 
+#if defined(ILLIXR_ANDROID_BUILD) && !defined(ENABLE_MONADO)
+extern "C" runtime* runtime_factory(EGLContext appGLCtx, ANativeWindow *window) {
+    RAC_ERRNO_MSG("runtime_impl before creating the runtime");
+    return new runtime_impl{appGLCtx, window};
+#else
 extern "C" [[maybe_unused]] runtime* runtime_factory() {
     RAC_ERRNO_MSG("runtime_impl before creating the runtime");
     return new runtime_impl{};
 }
+#endif
+

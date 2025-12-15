@@ -8,9 +8,9 @@
 #include <sstream>
 
 namespace ILLIXR {
-class stdout_record_logger : public record_logger {
+class [[maybe_unused]] stdout_record_logger : public record_logger {
 protected:
-    virtual void log(const record& r) override {
+    void log(const record& r) override {
         const record_header& rh = r.get_record_header();
         for (unsigned i = 0; i < rh.get_columns(); ++i) {
             std::cout << rh.get_column_name(i) << ',';

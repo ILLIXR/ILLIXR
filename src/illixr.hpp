@@ -1,6 +1,8 @@
 #pragma once
 
+#ifndef ILLIXR_ANDROID_BUILD
 #include "cxxopts.hpp"
+#endif
 #include "illixr/runtime.hpp"
 
 #include <atomic>
@@ -9,6 +11,9 @@
 #include <thread>
 #include <vector>
 
+#ifdef ILLIXR_ANDROID_BUILD
+#include <android/native_window_jni.h>
+#else
 #define GET_STRING(NAME, ENV)                                                     \
     if (options.count(#NAME)) {                                                   \
         switchboard_->set_env(#ENV, options[#NAME].as<std::string>());            \
@@ -32,21 +37,28 @@
     }
 #define _STR(y)      #y
 #define STRINGIZE(x) _STR(x)
+#endif
 
 constexpr std::chrono::seconds          ILLIXR_RUN_DURATION_DEFAULT{60};
 [[maybe_unused]] constexpr unsigned int ILLIXR_PRE_SLEEP_DURATION{10};
 
+#ifndef ILLIXR_ANDROID_BUILD
 template<typename T>
 std::vector<T> operator+(const std::vector<T>& a, const std::vector<T>& b) {
     std::vector<T> c = a;
     c.insert(c.end(), b.begin(), b.end());
     return c;
 }
+#endif
 
 extern ILLIXR::runtime* runtime_;
 
 namespace ILLIXR {
+#ifdef ILLIXR_ANDROID_BUILD
+int run(const std::vector<std::string>& plugins, ANativeWindow *window);
+#else
 int run(const cxxopts::ParseResult& options);
+#endif
 
 class cancellable_sleep {
 public:

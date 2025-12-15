@@ -1,5 +1,6 @@
 #pragma once
 
+#ifndef ILLIXR_ANDROID_BUILD
 #include "illixr/concurrentqueue/blockingconcurrentqueue.hpp"
 #include "illixr/error_util.hpp"
 #include "illixr/global_module_defs.hpp"
@@ -230,4 +231,4 @@ private:
     std::shared_mutex                              registry_lock_;
 };
 
-} // namespace ILLIXR
+} // namespace ILLIXR#endif

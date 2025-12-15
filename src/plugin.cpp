@@ -1,7 +1,13 @@
 #include "illixr.hpp"
+
+#ifdef ILLIXR_ANDROID_BUILD
+#include <EGL/egl.h>
+#include <csignal>
+#else
 #include "illixr/error_util.hpp"
 #include "illixr/switchboard.hpp"
-
+#define _STR(y)      #y
+#define STRINGIZE(x) _STR(x)
 #ifndef ILLIXR_INSTALL_PATH
     #error "ILLIXR_INSTALL_PATH must be defined"
 #endif
@@ -15,9 +21,12 @@
 #include <pwd.h>
 #include <sstream>
 #include <stdexcept>
-#include <unistd.h>
 #include <yaml-cpp/yaml.h>
+#endif
+#include <unistd.h>
 
+
+#ifndef ILLIXR_ANDROID_BUILD
 namespace ILLIXR {
 struct Dependency {
     std::string                                     name;
@@ -72,11 +81,11 @@ struct convert<ILLIXR::Dependency> {
     }
 };
 } // namespace YAML
-
+#endif
 ILLIXR::runtime* runtime_ = nullptr;
 
 using namespace ILLIXR;
-
+#ifndef ILLIXR_ANDROID_BUILD
 /*std::string get_exec_path() {
     char        result[PATH_MAX];
     ssize_t     count = readlink("/proc/self/exe", result, PATH_MAX);
@@ -148,18 +157,30 @@ void check_plugins(std::vector<std::string>& plugins, const std::vector<ILLIXR::
     if (modified)
         plugins = ordered_plugins;
 }
+#endif
 
+#ifdef ILLIXR_ANDROID_BUILD
+int ILLIXR::run(const std::vector<std::string>& plugins, ANativeWindow* window) {
+#else
 int ILLIXR::run(const cxxopts::ParseResult& options) {
+#endif
     std::chrono::seconds     run_duration;
+#ifndef ILLIXR_ANDROID_BUILD
     std::vector<std::string> plugins;
+#endif
     try {
+#if defined(ILLIXR_ANDROID_BUILD) && !defined(ENABLE_MONADO)
+        runtime_ = ILLIXR::runtime_factory(EGL_NO_CONTEXT, window);
+#else
         runtime_ = ILLIXR::runtime_factory();
+#endif
         // set internal env_vars
         // const std::shared_ptr<switchboard> sb = r->get_switchboard();
 
         // set internal env_vars
         std::shared_ptr<switchboard> switchboard_ = runtime_->get_switchboard();
 
+#ifndef ILLIXR_ANDROID_BUILD
         // read in yaml config file
         YAML::Node config;
         // std::string exec_path = get_exec_path();
@@ -210,7 +231,7 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
                 setenv(ad.arg_name.c_str(), ad.value.c_str(), 1); // env vars from command line take precedence
             }
         }
-
+#endif
 #ifndef NDEBUG
         /// Activate sleeping at application start for attaching gdb. Disables 'catchsegv'.
         /// Enable using the ILLIXR_ENABLE_PRE_SLEEP environment variable (see 'runner/runner/main.py:load_tests')
@@ -225,6 +246,11 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
         }
 #endif /// NDEBUG
 
+#ifdef ILLIXR_ANDROID_BUILD
+        run_duration = (!switchboard_->get_env("ILLIXR_RUN_DURATION").empty())
+                       ? std::chrono::seconds{std::stol(std::string{switchboard_->get_env("ILLIXR_RUN_DURATION")})}
+                       : ILLIXR_RUN_DURATION_DEFAULT;
+#else
         if (options.count("duration")) {
             run_duration = std::chrono::seconds{options["duration"].as<long>()};
         } else if (config["env_vars"]["duration"]) {
@@ -307,7 +333,7 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
 
         // prevent double free
         switchboard_.reset();
-
+#endif
         RAC_ERRNO_MSG("main after creating runtime");
 
         std::vector<std::string> lib_paths;
