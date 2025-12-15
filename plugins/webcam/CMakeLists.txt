@@ -1,4 +1,7 @@
 set(PLUGIN_NAME plugin.webcam${ILLIXR_BUILD_SUFFIX})
+if (ANDROID)
+    message(FATAL_ERROR "${PLUGIN_NAME} is not for Android systems yet.")
+endif()
 
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
             plugin.hpp

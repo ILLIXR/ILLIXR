@@ -1,6 +1,9 @@
 pkg_check_modules(libopenni2 REQUIRED libopenni2)
 
 set(PLUGIN_NAME plugin.openni${ILLIXR_BUILD_SUFFIX})
+if (ANDROID)
+    message(FATAL_ERROR "${PLUGIN_NAME} is not for Android systems yet.")
+endif()
 
 set(OPENNI_SOURCES plugin.cpp
     plugin.hpp

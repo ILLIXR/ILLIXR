@@ -1,6 +1,9 @@
 # module to build and install the record_imu_cam ILLIXR plugin
 
 set(PLUGIN_NAME plugin.record_imu_cam${ILLIXR_BUILD_SUFFIX})
+if (ANDROID)
+    message(FATAL_ERROR "${PLUGIN_NAME} is not for Android systems yet.")
+endif()
 
 # source files, listed individually so that any changes will trigger a rebuild
 add_library(${PLUGIN_NAME} SHARED plugin.cpp

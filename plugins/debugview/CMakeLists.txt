@@ -2,6 +2,9 @@
 
 
 set(PLUGIN_NAME plugin.debugview${ILLIXR_BUILD_SUFFIX})
+if (ANDROID)
+    message(FATAL_ERROR "Debugview cannot be used on Android systems.")
+endif()
 
 # source files, listed individually so that any changes will trigger a rebuild
 set(DEBUGVIEW_SOURCES plugin.cpp

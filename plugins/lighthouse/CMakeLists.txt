@@ -5,6 +5,9 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.16)
 
 set(PLUGIN_NAME plugin.lighthouse${ILLIXR_BUILD_SUFFIX})
+if (ANDROID)
+    message(FATAL_ERROR "${PLUGIN_NAME} is not for Android systems yet.")
+endif()
 
 SET(THREADS_PREFER_PTHREAD_FLAG TRUE)
 

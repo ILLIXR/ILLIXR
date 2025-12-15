@@ -3,6 +3,9 @@ cmake_minimum_required(VERSION 3.16)
 project(offload_rendering_client)
 
 set(PLUGIN_NAME plugin.offload_rendering_client${ILLIXR_BUILD_SUFFIX})
+if (ANDROID)
+    message(FATAL_ERROR "${PLUGIN_NAME} is not for Android systems yet.")
+endif()
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

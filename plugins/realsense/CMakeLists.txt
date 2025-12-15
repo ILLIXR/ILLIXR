@@ -1,6 +1,9 @@
 # module to build and install the realsense ILLIXR plugin
 
 set(PLUGIN_NAME plugin.realsense${ILLIXR_BUILD_SUFFIX})
+if (ANDROID)
+    message(FATAL_ERROR "${PLUGIN_NAME} is not for Android systems.")
+endif()
 
 find_package(realsense2 REQUIRED)
 find_package(realsense2-gl REQUIRED)

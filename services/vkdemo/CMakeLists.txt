@@ -3,6 +3,9 @@ cmake_minimum_required(VERSION 3.22)
 project(vkdemo)
 
 set(PLUGIN_NAME plugin.vkdemo${ILLIXR_BUILD_SUFFIX})
+if (ANDROID)
+    message(FATAL_ERROR "${PLUGIN_NAME} is not for Android systems yet.")
+endif()
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

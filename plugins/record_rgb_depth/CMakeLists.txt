@@ -1,5 +1,8 @@
 
 set(PLUGIN_NAME plugin.record_rgb_depth${ILLIXR_BUILD_SUFFIX})
+if (ANDROID)
+    message(FATAL_ERROR "${PLUGIN_NAME} is not for Android systems yet.")
+endif()
 
 set(RECORD_RGB_SOURCES plugin.cpp
     plugin.hpp

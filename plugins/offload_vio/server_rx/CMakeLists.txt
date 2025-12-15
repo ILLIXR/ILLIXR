@@ -5,6 +5,9 @@ find_package(Protobuf REQUIRED)
 include(../protoc_generate_cpp.cmake)
 
 set(PLUGIN_NAME plugin.offload_vio.server_rx${ILLIXR_BUILD_SUFFIX})
+if (ANDROID)
+        message(FATAL_ERROR "${PLUGIN_NAME} is not for Android systems yet.")
+endif()
 
 # source files, listed individually so that any changes will trigger a rebuild
 add_library(${PLUGIN_NAME} SHARED plugin.cpp

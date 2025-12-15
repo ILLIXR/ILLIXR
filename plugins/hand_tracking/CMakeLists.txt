@@ -1,2 +1,5 @@
+if (ANDROID)
+    message(FATAL_ERROR "Hand tracking is not for Android systems yet.")
+endif()
 set(HT_ENABLE_GPU OFF)
 include(GetHandTracking)

@@ -1,4 +1,7 @@
 cmake_minimum_required(VERSION 3.22)
+if (ANDROID)
+    message(FATAL_ERROR "${PLUGIN_NAME} is not for Android systems yet.")
+endif()
 
 set(PLUGIN_NAME plugin.ada.mesh_decompression_grey${ILLIXR_BUILD_SUFFIX})
 

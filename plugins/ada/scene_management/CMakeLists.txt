@@ -3,6 +3,9 @@ cmake_minimum_required(VERSION 3.16)
 set(CMAKE_CXX_STANDARD 17)
 
 set(PLUGIN_NAME plugin.ada.scene_management${ILLIXR_BUILD_SUFFIX})
+if (ANDROID)
+    message(FATAL_ERROR "${PLUGIN_NAME} is not for Android systems yet.")
+endif()
 
 # Find OpenMP
 find_package(OpenMP REQUIRED)

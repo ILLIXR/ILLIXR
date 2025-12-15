@@ -13,6 +13,9 @@ if(NOT PLUGIN_NAME)
     set(OW_PREFIX "")
     set(OW_POSTFIX "")
 endif()
+if (ANDROID)
+    message(FATAL_ERROR "${PLUGIN_NAME} is not for Android systems yet.")
+endif()
 
 file(GLOB_RECURSE GLSL_SOURCE_FILES
      "${OW_PREFIX}shaders/*.frag"

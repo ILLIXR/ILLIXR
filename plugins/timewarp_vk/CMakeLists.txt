@@ -13,6 +13,9 @@ if(NOT PLUGIN_NAME)
     set(TW_PREFIX "")
     set(TW_POSTFIX "")
 endif()
+if (ANDROID)
+    message(FATAL_ERROR "${PLUGIN_NAME} is not for Android systems yet.")
+endif()
 
 file(GLOB_RECURSE GLSL_SOURCE_FILES
      "${TW_PREFIX}shaders/*.frag"

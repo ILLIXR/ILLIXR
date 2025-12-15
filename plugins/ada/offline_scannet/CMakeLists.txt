@@ -1,4 +1,7 @@
 set(PLUGIN_NAME plugin.ada.offline_scannet${ILLIXR_BUILD_SUFFIX})
+if (ANDROID)
+    message(FATAL_ERROR "${PLUGIN_NAME} is not for Android systems yet.")
+endif()
 
 # this is for the conversion script
 find_package(Python3 REQUIRED COMPONENTS Interpreter)
