@@ -31,8 +31,8 @@
 #include "service.hpp"
 
 #include <cstdlib>
-#include <eigen3/Eigen/Core>
-#include <eigen3/Eigen/Geometry>
+#include <Eigen/Core>
+#include <Eigen/Geometry>
 #include <memory>
 #include <mutex>
 
