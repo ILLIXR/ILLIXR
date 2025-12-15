@@ -98,7 +98,8 @@ component. ILLIXR currently contains the following [plugins][P66] and [services]
 [^1]: Source is hosted in an external repository under the [ILLIXR project][E7].
 
 Some components, such as eye tracking, are available as standalone components and are in the process
-of being integrated.
+of being integrated. Also, not every plugin is available on every platform. Please check the overview documentation for the [plugins][I10]
+and [services][I11] for details.
 
 We continue to refine and add new components and implementations. Many of the current components of ILLIXR were
 developed by domain experts and obtained from publicly available repositories. They were modified for one or more of the
@@ -436,6 +437,12 @@ request!
 [P68]:   https://github.com/ILLIXR/ILLIXR
 
 [P69]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#ada
+
+[//]: # (- Internal Links -)
+
+[I10]:  https://illixr.github.io/ILLIXR/illixr_plugins
+
+[I11]:  https://illixr.github.io/ILLIXR/illixr_services
 
 [//]: # (- Third Party Packages -)
 
