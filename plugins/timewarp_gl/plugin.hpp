@@ -1,11 +1,17 @@
 #pragma once
+#ifndef ILLIXR_ANDROID_BUILD
 #define VULKAN_REQUIRED
+#endif
 
 #include "illixr/data_format/frame.hpp"
 #include "illixr/data_format/misc.hpp"
 #include "illixr/data_format/pose.hpp"
 #include "illixr/data_format/pose_prediction.hpp"
+#ifdef ILLIXR_ANDROID_BUILD
+#include "illixr/common_lock.hpp"
+#else
 #include "illixr/extended_window.hpp"
+#endif
 #include "illixr/hmd.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/relative_clock.hpp"
@@ -13,6 +19,20 @@
 #include "illixr/threadloop.hpp"
 
 namespace ILLIXR {
+
+#ifdef ILLIXR_ANDROID_BUILD
+#define EGL_EGLEXT_PROTOTYPES 1
+#define GL_GLEXT_PROTOTYPES
+#include <EGL/egl.h>
+
+typedef EGLDisplay TW_DISPLAY;
+typedef ANativeWindow* TW_WINDOW;
+typedef EGLContext TW_GL_CONTEXT;
+#else
+typedef Display* TW_DISPLAY;
+typedef Window TW_WINDOW;
+typedef GLXContext TW_GL_CONTEXT;
+#endif
 
 #ifdef ENABLE_MONADO
 typedef plugin timewarp_type;
@@ -38,8 +58,14 @@ public:
 
 private:
     GLubyte*      read_texture_image();
-    static GLuint convert_vk_format_to_GL(int64_t vk_format);
-    void          import_vulkan_image(const data_format::vk_image_handle& vk_handle, data_format::swapchain_usage usage);
+    static GLuint convert_vk_format_to_gl(int64_t vk_format
+#ifdef ILLIXR_ANDROID_BUILD
+        , GLint swizzle_mask[]
+#endif
+    );
+
+    void import_vulkan_image(const data_format::vk_image_handle& vk_handle, data_format::swapchain_usage usage);
+
     void          build_timewarp(HMD::hmd_info_t& hmd_info);
     static void   calculate_time_warp_transform(Eigen::Matrix4f& transform, const Eigen::Matrix4f& render_projection_matrix,
                                                 const Eigen::Matrix4f& render_view_matrix,
@@ -47,16 +73,26 @@ private:
 #ifndef ENABLE_MONADO
     [[nodiscard]] time_point                get_next_swap_time_estimate() const;
     [[maybe_unused]] [[nodiscard]] duration estimate_time_to_sleep(double frame_percentage) const;
+#elif defined(ILLIXR_ANDROID_BUILD)
+    void import_vulkan_semaphore(const data_format::semaphore_handle& vk_handle);
 #endif
 
     const std::shared_ptr<switchboard>                  switchboard_;
     const std::shared_ptr<data_format::pose_prediction> pose_prediction_;
+#ifdef ILLIXR_ANDROID_BUILD
+    const std::shared_ptr<common_lock>                  lock_;
+#endif
     const std::shared_ptr<const relative_clock>         clock_;
 
     // OpenGL objects
-    Display*   display_;
-    Window     root_window_;
-    GLXContext context_;
+    TW_DISPLAY display_;
+#ifndef ENABLE_MONADO
+    TW_WINDOW root_window_;
+#endif
+#ifdef ILLIXR_ANDROID_BUILD
+    EGLSurface surface_;
+#endif
+    TW_GL_CONTEXT context_;
 
     // Shared objects between ILLIXR and the application (either gldemo or Monado)
     bool                      rendering_ready_;
@@ -77,14 +113,16 @@ private:
 
     // Synchronization helper for Monado
     switchboard::writer<data_format::signal_to_quad> signal_quad_;
-
+#ifdef ILLIXR_ANDROID_BUILD
+    ullong signal_quad_seq_{0};
+#endif
     // When using Monado, timewarp is a plugin and not a threadloop, but we still keep track of the iteration number
     std::size_t iteration_no = 0;
 #else
-    // Note: 0.9 works fine without hologram, but we need a larger safety net with hologram enabled
+    // Note: 0.9 works fine without a hologram, but we need a larger safety net with hologram enabled
     static constexpr double DELAY_FRACTION = 0.9;
 
-    // Switchboard plug for application eye buffer.
+    // Switchboard plug for the application eye buffer.
     switchboard::reader<data_format::rendered_frame> eyebuffer_;
 
     // Switchboard plug for publishing vsync estimates
@@ -145,7 +183,6 @@ private:
 
     // Hologram call data
     ullong hologram_seq_{0};
-    ullong signal_quad_seq_{0};
 
     bool disable_warp_;
 
