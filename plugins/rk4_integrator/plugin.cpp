@@ -6,7 +6,7 @@
 #include "illixr/runge-kutta.hpp"
 
 #include <chrono>
-#include <eigen3/Eigen/Dense>
+#include <Eigen/Dense>
 #include <iomanip>
 #include <memory>
 #include <vector>

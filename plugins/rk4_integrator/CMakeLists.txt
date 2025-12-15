@@ -11,7 +11,23 @@ add_library(${PLUGIN_NAME} SHARED plugin.cpp
 )
 
 target_include_directories(${PLUGIN_NAME} PRIVATE ${ILLIXR_SOURCE_DIR}/include)
-target_link_libraries(${PLUGIN_NAME} Eigen3::Eigen)
+if (ANDROID)
+    target_include_directories(${PLUGIN_NAME} PRIVATE
+                               ${jnigraphics-lib}
+                               ${ANDROID_NDK}/sources/android/native_app_glue
+    )
+endif()
+
+target_link_libraries(${PLUGIN_NAME} PUBLIC Eigen3::Eigen)
+if (ANDROID)
+    target_link_libraries(${PLUGIN_NAME} PUBLIC
+                          EGL
+                          GLESv3
+                          spdlog::spdlog_android
+    )
+endif()
 target_compile_features(${PLUGIN_NAME} PRIVATE cxx_std_17)
 
-install(TARGETS ${PLUGIN_NAME} DESTINATION lib)
+if (NOT ANDROID)
+    install(TARGETS ${PLUGIN_NAME} DESTINATION lib)
+endif()
