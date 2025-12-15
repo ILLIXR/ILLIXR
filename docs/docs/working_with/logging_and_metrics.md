@@ -5,8 +5,8 @@ its execution.
 
 ## Logging
 
-ILLIXR uses the [spdlog](https://github.com/gabime/spdlog) library for logging. Logging goes to both `STDOUT` and one or
-more log files in `$ILLIXR_ROOT/logs/`
+ILLIXR uses the [spdlog](https://github.com/gabime/spdlog) library for logging. If running on Linux, logging goes to both `STDOUT` and one or
+more log files in `$ILLIXR_ROOT/logs/`. On Android, log messages are sent to the system logs and can be viewed with logcat.
 
 Available levels, from low to high are: `trace`, `debug`, `info`, `warn`, `error`, `critical`, `off`.
 
@@ -20,12 +20,28 @@ of `<PLUGIN_NAME>_LOG_LEVEL`, e.g.,
 # Each will log to the console, with color (actual colors dependent on the terminal settings)
 # Each log will write to $ILLIXR_ROOT/logs/<plugin_name>.log
 # Each log can have a different level.
+```
+=== "bash"
 
-export GROUND_TRUTH_SLAM_LOG_LEVEL=debug
-export ILLIXR_LOG_LEVEL=warn
+    ``` { .bash .copy }
+    export GROUND_TRUTH_SLAM_LOG_LEVEL=debug
+    export ILLIXR_LOG_LEVEL=warn
 
-main.dbg.exe -yaml=profiles/native_gl.yaml
-``` 
+    main.dbg.exe -yaml=profiles/native_gl.yaml
+    ```
+
+=== "csh"
+
+    ``` { .csh .copy }
+    setenv GROUND_TRUTH_SLAM_LOG_LEVEL debug
+    setenv ILLIXR_LOG_LEVEL warn
+
+    main.dbg.exe -yaml=profiles/native_gl.yaml
+    ```
+
+=== "Android"
+
+    The logging level is currently compiled into the `apk`. Changing the level will require re-compilation.
 
 When writing a new plugin, the `plugin.spdlogger(std::string log_level)` method should be called, e.g., using
 `switchboard->get_env("<PLUGIN_NAME>_LOG_LEVEL")` This creates a logger with two sinks (console and file). This logger
@@ -34,7 +50,7 @@ is then registered in the global spdlog registry.
 To log inside a plugin method, use the plugin's name attribute to get the particular logger from the registry and call
 the desired log level method, e.g.
 
-```
+``` C++
 spdlog::get(name)->info("informative message");
 ```
 
