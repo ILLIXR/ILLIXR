@@ -10,14 +10,39 @@
 
 cmake_minimum_required(VERSION 3.22)
 
-# since several plugins now require clang to compile themselves or their dependencies
-# clang is now a required dependency
-find_program(CLANG_EXE clang REQUIRED)
-find_program(CLANG_CXX_EXE clang++ REQUIRED NAMES clang-cpp clang++)
+if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
+    message(FATAL_ERROR "In-source build prohibited.")
+endif("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
 
-set(CMAKE_C_COMPILER ${CLANG_EXE} CACHE FILEPATH "" FORCE)
-set(CMAKE_CXX_COMPILER ${CLANG_CXX_EXE} CACHE FILEPATH "" FORCE)
+if(UNIX)
+    # since several plugins now require clang to compile themselves or their dependencies
+    # clang is now a required dependency
+    find_program(CLANG_EXE clang REQUIRED)
+    find_program(CLANG_CXX_EXE clang++ REQUIRED NAMES clang-cpp clang++)
 
+    set(CMAKE_C_COMPILER ${CLANG_EXE} CACHE FILEPATH "" FORCE)
+    set(CMAKE_CXX_COMPILER ${CLANG_CXX_EXE} CACHE FILEPATH "" FORCE)
+elseif(ANDROID)
+    set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE BOTH)
+    set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)
+
+    if(NOT THIRD_PARTY_DIR)
+        message(FATAL_ERROR "The THIRD_PARTY_DIR must be specified")
+    endif()
+    set(OpenCV_DIR "${THIRD_PARTY_DIR}/sdk/native/jni" CACHE PATH "Path to OpenCV cmake configuration files")
+    set(Boost_DIR "${THIRD_PARTY_DIR}/lib/${ANDROID_ABI}/cmake/Boost-1.72.0" CACHE PATH "Path to Boost cmake configuration files")
+    set(spdlog_android_DIR "${THIRD_PARTY_DIR}/lib/${ANDROID_ABI}/cmake/spdlog_android" CACHE PATH "Path to spdlog cmake configuration files")
+    set(Boost_USE_STATIC_LIBS ON)
+
+    set(ILLIXR_INTEGRATION 1)
+
+elseif(WIN32)
+    message(FATAL_ERROR "Windows is currently not supported")
+elseif(APPLE)
+    message(FATAL_ERROR "MacOS is currently not supported")
+else()
+    message(FATAL_ERROR "Unknown operating system")
+endif()
 set(CMAKE_VERBOSE_MAKEFILE True)
 
 if (POLICY CMP0048)
@@ -44,14 +69,6 @@ set(PACKAGE_VERSION_LABEL "")
 set(GPL_LICENSED_CODE "openvins;orb_slam3;offload_rendering_server;offload_rendering_client")
 set(LGPL_LICENSED_CODE "audio_pipeline")
 
-if(WIN32)
-    message(FATAL_ERROR "Windows is currently not supported")
-elseif(APPLE)
-    message(FATAL_ERROR "MacOS is currently not supported")
-elif(NOT UNIX)
-    message(FATAL_ERROR "Unknown operating system")
-endif()
-
 if(PACKAGE_VERSION_LABEL)
     set(PACKAGE_VERSION "${PACKAGE_VERSION_MAJOR}.${PACKAGE_VERSION_MINOR}.${PACKAGE_VERSION_PATCH}-${PACKAGE_VERSION_LABEL}")
 else()
@@ -73,6 +90,11 @@ add_compile_definitions(VK_ENABLE_BETA_EXTENSIONS)
 set(CMAKE_CXX_FLAGS_DEBUG "-ggdb -Wall -Wextra -rdynamic -Wno-attributes -Wno-unknown-pragmas -fPIC")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG -Wall -Wextra -Wno-attributes -Wno-unknown-pragmas -fPIC")
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-ggdb -O3 -Wall -Wextra -Wno-attributes -Wno-unknown-pragmas -fPIC")
+
+if (ANDROID)
+    set(CMAKE_SHARED_LINKER_FLAGS
+        "${CMAKE_SHARED_LINKER_FLAGS}  -latomic -u ANativeActivity_onCreate -v -fvisibility=hidden")
+endif()
 
 # check for the Jetson platform
 if (CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64" AND EXISTS "/etc/nv_tegra_release")
@@ -144,8 +166,6 @@ include(cmake/HelperFunctions.cmake)
 generate_yaml()
 check_plugins()
 
-set(CORE_PLUGINS OFF)
-set(RT_SLAM_PLUGINS OFF)
 if(YAML_FILE)
     read_yaml(${YAML_FILE})
     string(REGEX MATCH "/all.yaml" MATCH_FOUND ${YAML_FILE})
@@ -179,16 +199,12 @@ elseif(lower_type MATCHES "relwithdebinfo")
     set(ILLIXR_BUILD_SUFFIX ".optdbg")
 endif()
 
-set(ENV{PKG_CONFIG_PATH} "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig:${CMAKE_INSTALL_PREFIX}/lib64/pkgconfig")
-
-link_directories(BEFORE ${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_INSTALL_PREFIX}/lib64)
+if (NOT ANDROID)
+    set(ENV{PKG_CONFIG_PATH} "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig:${CMAKE_INSTALL_PREFIX}/lib64/pkgconfig")
+    link_directories(BEFORE ${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_INSTALL_PREFIX}/lib64)
+endif()
 include_directories(BEFORE ${CMAKE_SOURCE_DIR}/include)
 
-find_package(PkgConfig REQUIRED)
-
-if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
-    message(FATAL_ERROR "In-source build prohibited.")
-endif("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH};${PROJECT_SOURCE_DIR}/cmake;${CMAKE_INSTALL_PREFIX}/lib/cmake;${CMAKE_INSTALL_PREFIX}/share/cmake)
 
@@ -198,35 +214,46 @@ add_definitions(-DILLIXR_BUILD_SUFFIX=${ILLIXR_BUILD_SUFFIX})
 ##############
 set(EXTERNAL_LIBRARIES "")
 
-find_package(OpenCV 4 REQUIRED)
-
-find_package(GLEW REQUIRED)
-
-pkg_check_modules(glu REQUIRED glu)
-
-find_package(SQLite3 REQUIRED)
-
-find_package(X11 REQUIRED)
-
-pkg_check_modules(gl REQUIRED gl)
-
-find_package(Eigen3 REQUIRED CONFIG)
-
-get_external(Vulkan)
-
 #############
 # plugin specific dependencies that are used by several plugins
 #############
 
+find_package(Eigen3 REQUIRED CONFIG)
 find_package(Git REQUIRED)
-if (CMAKE_VERSION VERSION_LESS "3.30.0")
-    find_package(Boost REQUIRED COMPONENTS filesystem serialization iostreams)
+
+if (ANDROID)
+    find_package(OpenCV 4.5.5 REQUIRED CONFIG COMPONENTS opencv_java)
+    include_directories(${OpenCV_INCLUDE_DIRS})
+    find_package(Boost 1.72 REQUIRED CONFIG COMPONENTS chrono thread filesystem atomic iostreams serialization)
+    include_directories(${Boost_INCLUDE_DIRS})
+    link_libraries(Boost::serialization)
+    find_package(spdlog_android 1.15.3 REQUIRED)
 else()
-    find_package(Boost REQUIRED COMPONENTS filesystem serialization iostreams CONFIG)
+    find_package(OpenCV 4 REQUIRED)
+    if (CMAKE_VERSION VERSION_LESS "3.30.0")
+        find_package(Boost REQUIRED COMPONENTS filesystem serialization iostreams)
+    else()
+        find_package(Boost REQUIRED COMPONENTS filesystem serialization iostreams CONFIG)
+    endif()
+    find_package(spdlog REQUIRED)
+    add_definitions(-DFMT_HEADER_ONLY)
+    find_package(PkgConfig REQUIRED)
+    find_package(GLEW REQUIRED)
+    pkg_check_modules(glu REQUIRED glu)
+    find_package(SQLite3 REQUIRED)
+    find_package(X11 REQUIRED)
+    pkg_check_modules(gl REQUIRED gl)
+    get_external(Vulkan)
 endif()
 
-find_package(spdlog REQUIRED)
-add_definitions(-DFMT_HEADER_ONLY)
+if (ANDROID)
+    add_library(native_app_glue STATIC
+                ${ANDROID_NDK}/sources/android/native_app_glue/android_native_app_glue.c
+    )
+
+    add_definitions(-DVK_USE_PLATFORM_ANDROID_KHR=1)
+    add_compile_definitions(ILLIXR_ANDROID_BUILD)
+endif()
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads)
@@ -267,6 +294,21 @@ add_subdirectory(utils)
 if(BUILD_DOCS)
     set(DOCS_LIST "${CMAKE_SOURCE_DIR}/include/illixr;${CMAKE_SOURCE_DIR}/include/illixr/data_format;${CMAKE_SOURCE_DIR}/include/illixr/network;${CMAKE_SOURCE_DIR}/include/illixr/vk;${CMAKE_SOURCE_DIR}/plugins/hand_tracking/viewer;${CMAKE_SOURCE_DIR}/plugins/zed/data_injection;${CMAKE_SOURCE_DIR}/plugins/zed/capture;${CMAKE_SOURCE_DIR}/src;${CMAKE_SOURCE_DIR}/src/display;${CMAKE_SOURCE_DIR}/utils")
     set(DOCS_EXCLUDE_LIST "${CMAKE_SOURCE_DIR}/include/illixr/vk/vk_extension_request.hpp")
+endif()
+
+if (ANDROID)  # this method needs to be refined
+    add_subdirectory(services/common_lock)
+    set(USE_POSE_PREDICTION ON)
+    set(USE_POSE_LOOKUP ON)
+    set(USE_FAUXPOSE ON)
+    set(USE_OFFLINE_CAM ON)
+    set(USE_OFFLINE_IMU ON)
+    set(USE_OPENVINS ON)
+    set(USE_ANDROID_DATA ON)
+    set(USE_GLDEMO ON)
+    set(USE_RK4_INTEGRATOR ON)
+    set(USE_TIMEWARP_GL ON)
+    set(USE_TCP_NETWORK_BACKEND ON)
 endif()
 foreach(ITEM IN LISTS PLUGIN_LIST)
     string(TOUPPER "USE_${ITEM}" ITEM_UPPER)
