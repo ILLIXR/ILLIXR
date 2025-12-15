@@ -1,6 +1,10 @@
+#ifdef ILLIXR_ANDROID_BUILD
+#include <EGL/egl.h>
+#else
 // clang-format off
 #include <GL/glew.h> // GLEW has to be loaded before other GL libraries
 // clang-format on
+#endif
 
 #include "plugin.hpp"
 
@@ -11,9 +15,11 @@
 #include <array>
 #include <chrono>
 #include <cmath>
-#include <eigen3/Eigen/Core>
+#include <Eigen/Core>
 #include <future>
+#ifndef #include <EGL/egl.h>
 #include <iostream>
+#endif
 #include <thread>
 
 using namespace ILLIXR;
@@ -24,9 +30,16 @@ static constexpr std::chrono::milliseconds VSYNC_SAFETY_DELAY{1};
 
 [[maybe_unused]] gldemo::gldemo(const std::string& name, phonebook* pb)
     : threadloop{name, pb}
+#ifdef ILLIXR_ANDROID_BUILD
+    , ext_window_{phonebook_->lookup_impl<xlib_gl_extended_window>()}
+#else
     , ext_window_{new xlib_gl_extended_window{1, 1, phonebook_->lookup_impl<xlib_gl_extended_window>()->context_}}
+#endif
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
     , pose_prediction_{phonebook_->lookup_impl<pose_prediction>()}
+#ifdef ILLIXR_ANDROID_BUILD
+    , lock_{phonebook_->lookup_impl<common_lock>()}
+#endif
     , clock_{phonebook_->lookup_impl<relative_clock>()}
     , vsync_{switchboard_->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")}
     , image_handle_{switchboard_->get_writer<image_handle>("image_handle")}
@@ -89,17 +102,28 @@ void gldemo::wait_vsync() {
 
 void gldemo::_p_thread_setup() {
     last_time_ = clock_->now();
-
+#ifndef ILLIXR_ANDROID_BUILD
     // Note: glXMakeContextCurrent must be called from the thread which will be using it.
     [[maybe_unused]] const bool gl_result =
         static_cast<bool>(glXMakeCurrent(ext_window_->display_, ext_window_->window_, ext_window_->context_));
     assert(gl_result && "glXMakeCurrent should not fail");
+#endif
 }
 
 void gldemo::_p_one_iteration() {
+#ifdef ILLIXR_ANDROID_BUILD
+    auto start = std::chrono::high_resolution_clock::now();
+#endif
     // Essentially, XRWaitFrame.
     wait_vsync();
-
+#ifdef ILLIXR_ANDROID_BUILD
+    lock_->get_lock();
+    [[maybe_unused]] const bool gl_result = static_cast<bool>(eglMakeCurrent(ext_window_->display,
+                                                                             ext_window_->surface,
+                                                                             ext_window_->surface,
+                                                                             ext_window_->context));
+    assert(gl_result && "eglMakeCurrent should not fail");
+#endif
     glUseProgram(demo_shader_program_);
     glBindFramebuffer(GL_FRAMEBUFFER, eye_texture_FBO_);
 
@@ -110,7 +134,11 @@ void gldemo::_p_one_iteration() {
     glEnable(GL_CULL_FACE);
     glEnable(GL_DEPTH_TEST);
 
+#ifdef ILLIXR_ANDROID_BUILD
+    glClearDepthf(1);
+#else
     glClearDepth(1);
+#endif
 
     Eigen::Matrix4f model_matrix = Eigen::Matrix4f::Identity();
 
@@ -147,7 +175,11 @@ void gldemo::_p_one_iteration() {
         glUniformMatrix4fv(static_cast<GLint>(projection_), 1, GL_FALSE, (GLfloat*) (basic_projection_.data()));
 
         glBindTexture(GL_TEXTURE_2D, eye_textures_[eye_idx]);
+#ifdef ILLIXR_ANDROID_BUILD
+        glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, eye_textures_[eye_idx], 0);
+#else
         glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, eye_textures_[eye_idx], 0);
+#endif
         glBindTexture(GL_TEXTURE_2D, 0);
         glClearColor(0.9f, 0.9f, 0.9f, 1.0f);
 
@@ -181,6 +213,16 @@ void gldemo::_p_one_iteration() {
 
     which_buffer_ = !which_buffer_;
 
+#ifdef ILLIXR_ANDROID_BUILD
+    [[maybe_unused]] const bool gl_result_1 = static_cast<bool>(eglMakeCurrent(ext_window_->display,
+                                                                               nullptr, nullptr,
+                                                                               nullptr));
+    assert(gl_result_1 && "glXMakeCurrent should not fail");
+    lock_->release_lock();
+    auto stop = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+    spdlog::get("illixr")->debug("duration: %f", duration_to_double(duration));
+#endif
 #ifndef NDEBUG
     if (log_count_ > LOG_PERIOD) {
         log_count_ = 0;
@@ -192,11 +234,20 @@ void gldemo::_p_one_iteration() {
 
 // We override start() to control our own lifecycle
 void gldemo::start() {
+#ifdef ILLIXR_ANDROID_BUILD
+    lock_->get_lock();
+    [[maybe_unused]] const bool gl_result_0 = static_cast<bool>(eglMakeCurrent(ext_window_->display,
+                                                                               ext_window_->surface,
+                                                                               ext_window_->surface,
+                                                                               ext_window_->context));
+#else
     [[maybe_unused]] const bool gl_result_0 =
         static_cast<bool>(glXMakeCurrent(ext_window_->display_, ext_window_->window_, ext_window_->context_));
+#endif
     assert(gl_result_0 && "glXMakeCurrent should not fail");
 
     // Init and verify GLEW
+#ifndef ILLIXR_ANDROID_BUILD
     const GLenum glew_err = glewInit();
     if (glew_err != GLEW_OK) {
         spdlog::get(name_)->error("GLEW Error: {}", (void*) glewGetErrorString(glew_err));
@@ -205,7 +256,7 @@ void gldemo::start() {
 
     glEnable(GL_DEBUG_OUTPUT);
     glDebugMessageCallback(message_callback, nullptr);
-
+#endif
     // Create two shared textures, one for each eye.
     create_shared_eyebuffer(&(eye_textures_[0]));
     image_handle_.put(image_handle_.allocate<image_handle>(image_handle{eye_textures_[0], 1, swapchain_usage::LEFT_SWAPCHAIN}));
@@ -224,12 +275,15 @@ void gldemo::start() {
 #ifndef NDEBUG
     spdlog::get(name_)->debug("Demo app shader program is program {}", demo_shader_program_);
 #endif
-
+#ifndef ILLIXR_ANDROID_BUILD
     vertex_position_ = glGetAttribLocation(demo_shader_program_, "vertexPosition");
     vertex_normal_   = glGetAttribLocation(demo_shader_program_, "vertexNormal");
+#endif
     model_view_      = glGetUniformLocation(demo_shader_program_, "u_modelview");
     projection_      = glGetUniformLocation(demo_shader_program_, "u_projection");
+#ifndef ILLIXR_ANDROID_BUILD
     color_uniform_   = glGetUniformLocation(demo_shader_program_, "u_color");
+#endif
 
     // Load/initialize the demo scene
     const char* obj_dir = switchboard_->get_env_char("ILLIXR_DEMO_DATA");
@@ -244,9 +298,17 @@ void gldemo::start() {
                               display_params::fov_y / 2.0f, display_params::fov_y / 2.0f, rendering_params::near_z,
                               rendering_params::far_z);
 
+#ifdef ILLIXR_ANDROID_BUILD
+    [[maybe_unused]] const bool gl_result_1 = static_cast<bool>(eglMakeCurrent(ext_window_->display,
+                                                                               nullptr, nullptr,
+                                                                               nullptr));
+#else
     [[maybe_unused]] const bool gl_result_1 = static_cast<bool>(glXMakeCurrent(ext_window_->display_, None, nullptr));
+#endif
     assert(gl_result_1 && "glXMakeCurrent should not fail");
-
+#ifdef ILLIXR_ANDROID_BUILD
+    lock_->release_lock();
+#endif
     // Effectively, last vsync was at zero.
     // Try to run gldemo right away.
     threadloop::start();
@@ -261,8 +323,13 @@ void gldemo::create_shared_eyebuffer(GLuint* texture_handle) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+#ifdef ILLIXR_ANDROID_BUILD
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+#else
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+#endif
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, display_params::width_pixels, display_params::height_pixels, 0, GL_RGB,
                  GL_UNSIGNED_BYTE, nullptr);
 
@@ -278,7 +345,11 @@ void gldemo::create_FBO(const GLuint* texture_handle, GLuint* fbo, GLuint* depth
     glBindFramebuffer(GL_FRAMEBUFFER, *fbo);
     glGenRenderbuffers(1, depth_target);
     glBindRenderbuffer(GL_RENDERBUFFER, *depth_target);
+#ifdef ILLIXR_ANDROID_BUILD
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, display_params::width_pixels, display_params::height_pixels);
+#else
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, display_params::width_pixels, display_params::height_pixels);
+#endif
     // glRenderbufferStorageMultisample(GL_RENDERBUFFER, fboSampleCount, GL_DEPTH_COMPONENT, display_params::width_pixels,
     // display_params::height_pixels);
 
@@ -288,7 +359,11 @@ void gldemo::create_FBO(const GLuint* texture_handle, GLuint* fbo, GLuint* depth
     spdlog::get(name_)->info("About to bind eyebuffer texture, texture handle: {}", *texture_handle);
 
     glBindTexture(GL_TEXTURE_2D, *texture_handle);
+#ifdef ILLIXR_ANDROID_BUILD
+    glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, *texture_handle, 0);
+#else
     glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, *texture_handle, 0);
+#endif
     glBindTexture(GL_TEXTURE_2D, 0);
 
     // attach a renderbuffer to depth attachment point

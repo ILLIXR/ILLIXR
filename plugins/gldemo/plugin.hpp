@@ -3,6 +3,9 @@
 #include "illixr/data_format/frame.hpp"
 #include "illixr/data_format/misc.hpp"
 #include "illixr/data_format/pose_prediction.hpp"
+#ifdef ILLIXR_ANDROID_BUILD
+#include "illixr/common_lock.hpp"
+#endif
 #include "illixr/extended_window.hpp"
 #include "illixr/gl_util/obj.hpp"
 #include "illixr/phonebook.hpp"
@@ -37,6 +40,9 @@ private:
     const std::unique_ptr<const xlib_gl_extended_window>              ext_window_;
     const std::shared_ptr<switchboard>                                switchboard_;
     const std::shared_ptr<data_format::pose_prediction>               pose_prediction_;
+#ifdef ILLIXR_ANDROID_BUILD
+    const std::shared_ptr<common_lock>                                lock_;
+#endif
     const std::shared_ptr<const relative_clock>                       clock_;
     const switchboard::reader<switchboard::event_wrapper<time_point>> vsync_;
 
