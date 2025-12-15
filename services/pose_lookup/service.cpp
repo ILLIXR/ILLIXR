@@ -9,7 +9,8 @@
 using namespace ILLIXR;
 using namespace ILLIXR::data_format;
 
-inline std::map<ullong, pose_type> read_data(std::ifstream& gt_file, const std::string& file_name) {
+namespace lookup_data {
+std::map<ullong, pose_type> read_data(std::ifstream& gt_file, const std::string& file_name) {
     (void) file_name;
     std::map<ullong, pose_type> data;
 
@@ -21,11 +22,12 @@ inline std::map<ullong, pose_type> read_data(std::ifstream& gt_file, const std::
     }
     return data;
 }
+}
 
 pose_lookup_impl::pose_lookup_impl(const phonebook* const pb)
     : switchboard_{pb->lookup_impl<switchboard>()}
     , clock_{pb->lookup_impl<relative_clock>()}
-    , sensor_data_{load_data<pose_type>("state_groundtruth_estimate0", "pose_lookup", &read_data, switchboard_)}
+    , sensor_data_{load_data<pose_type>("state_groundtruth_estimate0", "pose_lookup", &lookup_data::read_data, switchboard_)}
     , sensor_data_it_{sensor_data_.cbegin()}
     , dataset_first_time_{sensor_data_it_->first}
     , vsync_estimate_{switchboard_->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")}
