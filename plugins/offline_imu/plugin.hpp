@@ -40,7 +40,9 @@ private:
     // Current IMU timestamp
     ullong dataset_now_;
 
+#ifndef ILLIXR_ANDROID_BUILD
     record_coalescer imu_cam_log_;
+#endif
 
     std::shared_ptr<relative_clock> clock_;
 };
