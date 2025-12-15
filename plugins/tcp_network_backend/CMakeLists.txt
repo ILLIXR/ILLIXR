@@ -19,7 +19,18 @@ add_library(${PLUGIN_NAME} SHARED plugin.cpp
 
 set_target_properties(${PLUGIN_NAME} PROPERTIES OUTPUT_NAME ${PLUGIN_NAME})
 
-target_link_libraries(${PLUGIN_NAME} spdlog::spdlog)
+if (ANDROID)
+    target_link_libraries(${PLUGIN_NAME} PUBLIC
+                          spdlog::spdlog_android
+                          Boost::serialization
+                          Eigen3::Eigen
+    )
+else()
+    target_link_libraries(${PLUGIN_NAME} PUBLIC spdlog::spdlog)
+endif()
+
 target_include_directories(${PLUGIN_NAME} PUBLIC ${ILLIXR_SOURCE_DIR}/include)
 
-install(TARGETS ${PLUGIN_NAME} DESTINATION lib)
+if (NOT ANDROID)
+    install(TARGETS ${PLUGIN_NAME} DESTINATION lib)
+endif()

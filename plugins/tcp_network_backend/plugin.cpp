@@ -29,6 +29,8 @@ tcp_network_backend::tcp_network_backend(const std::string& name_, phonebook* pb
     if (switchboard_->get_env_char("ILLIXR_IS_CLIENT")) {
         is_client_ = std::stoi(switchboard_->get_env_char("ILLIXR_IS_CLIENT"));
         spdlog::get("illixr")->info("[tcp_network_backend] Is client", is_client_);
+    } else {
+        is_client_ = 0;
     }
 
     if (is_client_) {
@@ -90,7 +92,11 @@ void tcp_network_backend::read_loop(network::TCPSocket* socket) {
         // read from socket
         // packet are in the format
         // total_length:4bytes|topic_name_length:4bytes|topic_name|message
+#ifdef ILLIXR_ANDROID_BUILD
+        std::string packet = socket->read_data(10000);
+#else
         std::string packet = socket->read_data();
+#endif
         buffer += packet;
 
         // check if we have a complete packet
