@@ -2,7 +2,7 @@
 
 #include "illixr/runge-kutta.hpp"
 
-#include <eigen3/Eigen/Dense>
+#include <Eigen/Dense>
 #include <filesystem>
 #include <shared_mutex>
 
@@ -17,7 +17,11 @@ pose_prediction_impl::pose_prediction_impl(const phonebook* const pb)
     , true_pose_{switchboard_->get_reader<pose_type>("true_pose")}
     , ground_truth_offset_{switchboard_->get_reader<switchboard::event_wrapper<Eigen::Vector3f>>("ground_truth_offset")}
     , vsync_estimate_{switchboard_->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")}
+#ifdef ILLIXR_ANDROID_BUILD
+    , using_lighthouse_{false} { }
+#else
     , using_lighthouse_{switchboard_->get_env_bool("ILLIXR_LIGHTHOUSE")} { }
+#endif
 
 // No parameter get_fast_pose() should just predict to the next vsync
 // However, we don't have vsync estimation yet.
