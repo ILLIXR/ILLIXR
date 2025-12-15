@@ -5,12 +5,18 @@
 #include <vector>
 
 #ifdef USE_GL
-    #include <GL/gl.h>
+    #ifdef ILLIXR_ANDROID_BUILD
+        #include <EGL/egl.h>
+        #include <GLES/gl.h>
+    #else // ILLIXR_ANDROID_BUILD
+        #include <GL/gl.h>
+    #endif // ILLIXR_ANDROID_BUILD
     #define FLOAT GLfloat
 #else
     #define FLOAT float
 #endif
-// HMD utility class for warp mesh structs, spline math, etc
+namespace ILLIXR {
+// HMD utility class for warp mesh structs, spline math, etc.
 class HMD {
 public:
     static constexpr int NUM_EYES           = 2;
@@ -61,3 +67,4 @@ public:
     build_distortion_meshes(std::array<std::array<std::vector<mesh_coord2d_t>, NUM_COLOR_CHANNELS>, NUM_EYES>& distort_coords,
                             hmd_info_t&                                                                        hmd_info);
 };
+} // namespace ILLIXR

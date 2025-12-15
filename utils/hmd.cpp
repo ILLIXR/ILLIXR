@@ -2,6 +2,8 @@
 
 #include <cmath>
 
+using namespace ILLIXR;
+
 float HMD::max_float(const float x, const float y) {
     return (x > y) ? x : y;
 }
