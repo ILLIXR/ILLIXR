@@ -17,8 +17,41 @@ add_library(${PLUGIN_NAME} SHARED plugin.cpp
             ${CMAKE_SOURCE_DIR}/include/illixr/data_format/misc.hpp
 )
 
-target_include_directories(${PLUGIN_NAME} PRIVATE ${OpenCV_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR}/include)
-target_link_libraries(${PLUGIN_NAME} ${OpenCV_LIBRARIES} Eigen3::Eigen spdlog::spdlog)
+if (ANDROID)
+    target_include_directories(${PLUGIN_NAME} PRIVATE
+                               ${ILLIXR_SOURCE_DIR}/include
+                               ${OpenCV_LIBS}
+                               ${jnigraphics-lib}
+                               ${ANDROID_NDK}/sources/android/native_app_glue
+    )
+else()
+    target_include_directories(${PLUGIN_NAME} PRIVATE
+                               ${OpenCV_INCLUDE_DIRS}
+                               ${ILLIXR_SOURCE_DIR}/include
+    )
+endif()
+
+if (ANDROID)
+    target_link_libraries(${PLUGIN_NAME} PUBLIC
+                          EGL
+                          GLESv3
+                          opencv_core
+                          opencv_imgproc
+                          opencv_highgui
+                          opencv_imgcodecs
+                          Eigen3::Eigen
+                          spdlog::spdlog_android
+    )
+else()
+    target_link_libraries(${PLUGIN_NAME} PUBLIC
+                          ${OpenCV_LIBRARIES}
+                          Eigen3::Eigen
+                          spdlog::spdlog
+    )
+endif()
+
 target_compile_features(${PLUGIN_NAME} PRIVATE cxx_std_17)
 
-install(TARGETS ${PLUGIN_NAME} DESTINATION lib)
+if (NOT ANDROID)
+    install(TARGETS ${PLUGIN_NAME} DESTINATION lib)
+endif()

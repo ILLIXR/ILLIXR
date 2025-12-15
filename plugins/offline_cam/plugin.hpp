@@ -18,6 +18,12 @@ namespace ILLIXR {
  */
 // #define LAZY
 
+#ifdef ILLIXR_ANDROID_BUILD
+#define LLI lazy_load_image*
+#else
+#define LLI lazy_load_image
+#endif
+
 class lazy_load_image {
 public:
     lazy_load_image() = default;
@@ -39,13 +45,25 @@ public:
     }
 
 private:
-    std::string path_;
-    cv::Mat     mat_;
+    std::string path_{};
+    cv::Mat     mat_{};
 };
 
 typedef struct {
-    lazy_load_image cam0;
-    lazy_load_image cam1;
+#ifdef ILLIXR_ANDROID_BUILD
+    LLI cam0 = nullptr;
+    LLI cam1 = nullptr;
+#else
+    LLI cam0;
+    LLI cam1;
+#endif
+
+#ifdef ILLIXR_ANDROID_BUILD
+    ~sensor_types() {
+        delete cam0;
+        delete cam1;
+}
+#endif
 } sensor_types;
 
 class offline_cam : public threadloop {
