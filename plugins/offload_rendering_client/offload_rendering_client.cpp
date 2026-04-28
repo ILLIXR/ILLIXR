@@ -12,7 +12,7 @@ offload_rendering_client::offload_rendering_client(const std::string& name, phon
     , log_{spdlogger(nullptr)}
     , display_provider_{pb->lookup_impl<vulkan::display_provider>()}
     , frames_reader_{switchboard_->get_buffered_reader<compressed_frame>("compressed_frames")}
-    , pose_writer_{switchboard_->get_network_writer<fast_pose_type>("render_pose", {})}
+    , pose_writer_{switchboard_->get_network_writer<pose::fast_head_pose_type>("render_pose", {})}
     , pose_prediction_{pb->lookup_impl<pose_prediction>()}
     , clock_{pb->lookup_impl<relative_clock>()} {
     display_provider_ffmpeg = display_provider_;
@@ -29,7 +29,7 @@ void offload_rendering_client::start() {
 }
 
 void offload_rendering_client::setup(VkRenderPass render_pass, uint32_t subpass,
-                                     std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> buffer_pool) {
+                                     std::shared_ptr<vulkan::buffer_pool<pose::fast_head_pose_type>> buffer_pool) {
     (void) render_pass;
     (void) subpass;
     this->buffer_pool_ = buffer_pool;
@@ -492,7 +492,7 @@ void offload_rendering_client::push_pose() {
     current_pose.predict_target_time   = now;
     current_pose.predict_computed_time = now;
     std::cout << "Pushing new pose" << std::endl;
-    pose_writer_.put(std::make_shared<fast_pose_type>(current_pose));
+    pose_writer_.put(std::make_shared<pose::fast_head_pose_type>(current_pose));
 }
 
 bool offload_rendering_client::network_receive() {

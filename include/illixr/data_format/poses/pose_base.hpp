@@ -1,217 +1,86 @@
 #pragma once
 
-#include "illixr/data_format/coordinate.hpp"
-#include "illixr/data_format/unit.hpp"
-#include "illixr/switchboard.hpp"
+#ifdef USING_OPENXR
+#ifdef ENABLE_MONADO
+#include "xrt/xrt_defines.h"
+#define POSE_DATA_TYPE xrt_pose
+#else
+    #include <openxr/openxr.h>
+#define POSE_DATA_TYPE XrPosef
+#endif
+#else
+#include <Eigen/Dense>
+#endif  // USING_OPENXR
 
-#include <eigen3/Eigen/Dense>
+namespace ILLIXR::data_format::pose {
+/** @brief Distinguishes the left and right hand. */
+enum hand : int { LEFT = 0, RIGHT = 1 };
 
-namespace ILLIXR::data_format {
 /**
- * struct containing basic pose data
+ * @brief Base struct for all pose types in ILLIXR.
+ *
+ * Captures the common 6-DOF pose fields (position, orientation) together with
+ * the metadata that every derived pose needs: measurement units, coordinate
+ * frame, reference space, confidence, and validity.  Derived structs should
+ * inherit from this type rather than duplicating these fields.
  */
-struct pose_data {
-    Eigen::Vector3f         position;    //!< x, y, and z of the translation
-    Eigen::Quaternionf      orientation; //!< quaternion representing the rotation of the pose from the reference frame origin
-    float                   confidence;  //!< confidence rating of the pose data 0. - 1. with 1. being 100%
-    units::measurement_unit unit;        //!< units for the translation portion of the pose
-    coordinates::frame      co_frame;    //!< the coordinate reference frame (e.g. left handed y up)
-    coordinates::reference_space
-         ref_space; //!< the reference space (VIEWER = origin is camera, WORLD = origin is specified at startup of system
-    bool valid;     //!< whether the pose contains valid data
+#ifdef USING_OPENXR
+struct pose_base : POSE_DATA_TYPE {
+#else
+struct pose_base {
+    Eigen::Vector3f              position;    //!< Translation component of the pose (x, y, z)
+    Eigen::Quaternionf           orientation; //!< Rotation component of the pose as a unit quaternion
+    float                        confidence;  //!< Confidence in the pose estimate in [0, 1], where 1 is highest confidence
+    bool                         valid;    //!< Whether this pose contains valid, usable data
+#endif
 
+#ifdef USING_OPENXR
+    pose_base() : POSE_DATA_TYPE{} {}
+
+    explicit pose_base(POSE_DATA_TYPE pose) : POSE_DATA_TYPE{pose} {}
+
+    pose_base(const pose_base& base) {
+        position = base.position;
+        orientation = base.orientation;
+    }
+
+#else
     /**
-     * Basic constructor
+     * @brief Default constructor. Produces an invalid, zero-translation, identity-rotation pose.
      */
-    pose_data()
-        : position{0., 0., 0.}
-        , orientation{1., 0., 0., 0.}
-        , confidence{0}
-        , unit{units::UNSET}
-        , co_frame{coordinates::RIGHT_HANDED_Y_UP}
-        , ref_space{coordinates::VIEWER}
+    pose_base()
+        : position{0.f, 0.f, 0.f}
+        , orientation{1.f, 0.f, 0.f, 0.f}
+        , confidence{0.f}
         , valid{false} { }
 
     /**
-     * Create an instance based on the given data
-     * @param position_ The positional part of the pose
-     * @param orientation_ RThe rotational part of the pose
-     * @param unit_ The units for the pose, default is UNSET
-     * @param frm The reference frame, default is RIGHT_HANDED_Y_UP
-     * @param ref The reference space, default is VIEWER
-     * @param confidence_ The confidence of the pose (0..1, where 0 means no confidence)
-     * @param valid_ The validity of the pose
+     * @brief Construct a pose from explicit components.
+     * @param position_    Translation component of the pose
+     * @param orientation_ Rotation component of the pose (must be unit quaternion)
+     * @param confidence_  Confidence value in [0, 1], defaults to 0
+     * @param valid_       Whether the pose is valid, defaults to true
      */
-    pose_data(Eigen::Vector3f position_, Eigen::Quaternionf orientation_, units::measurement_unit unit_ = units::UNSET,
-              coordinates::frame frm = coordinates::RIGHT_HANDED_Y_UP, coordinates::reference_space ref = coordinates::VIEWER,
-              const float confidence_ = 0., bool valid_ = true)
+
+    pose_base(Eigen::Vector3f position_, Eigen::Quaternionf orientation_,
+              float confidence_ = 0.f, bool valid_ = true)
         : position{std::move(position_)}
         , orientation{std::move(orientation_)}
-        , confidence(confidence_)
-        , unit{unit_}
-        , co_frame{frm}
-        , ref_space{ref}
+        , confidence{confidence_}
         , valid{valid_} { }
-};
-
-/**
- * struct of a pose_data along with a timestamp
- */
-struct [[maybe_unused]] pose_type
-    : public switchboard::event
-    , public pose_data {
-    time_point sensor_time; //!< Recorded time of sensor data ingestion
-
-    /**
-     * Basic constructor
-     */
-    pose_type()
-        : pose_data()
-        , sensor_time{time_point{}} { }
-
-    /**
-     * Construct an instance based on the given data
-     * @param sensor_time_ Time associated with htese data
-     * @param position_ The positional part of the pose
-     * @param orientation_ RThe rotational part of the pose
-     * @param unit_ The units for the pose, default is UNSET
-     * @param frm The reference frame, default is RIGHT_HANDED_Y_UP
-     * @param ref The reference space, default is VIEWER
-     * @param confidence_ The confidence of the pose (0..1, where 0 means no confidence)
-     */
-    pose_type(time_point sensor_time_, Eigen::Vector3f& position_, Eigen::Quaternionf& orientation_,
-              units::measurement_unit unit_ = units::UNSET, coordinates::frame frm = coordinates::RIGHT_HANDED_Y_UP,
-              coordinates::reference_space ref = coordinates::VIEWER, const float confidence_ = 0.)
-        : pose_data{position_, orientation_, unit_, frm, ref, confidence_}
-        , sensor_time{sensor_time_} { }
-
-    /**
-     * Construct an instance based on the given data
-     * @param sensor_time_ Time associated with htese data
-     * @param position_ The positional part of the pose
-     * @param orientation_ RThe rotational part of the pose
-     * @param unit_ The units for the pose, default is UNSET
-     * @param frm The reference frame, default is RIGHT_HANDED_Y_UP
-     * @param ref The reference space, default is VIEWER
-     * @param confidence_ The confidence of the pose (0..1, where 0 means no confidence)
-     */
-    pose_type(time_point sensor_time_, const Eigen::Vector3f& position_, const Eigen::Quaternionf& orientation_,
-              units::measurement_unit unit_ = units::UNSET, coordinates::frame frm = coordinates::RIGHT_HANDED_Y_UP,
-              coordinates::reference_space ref = coordinates::VIEWER, const float confidence_ = 0.)
-        : pose_data{position_, orientation_, unit_, frm, ref, confidence_}
-        , sensor_time{sensor_time_} { }
-
-    /**
-     * Construct an instance using the given pose
-     * @param sensor_time_ The timne associated with the pose
-     * @param other The pose to use
-     */
-    pose_type(time_point sensor_time_, pose_data& other)
-        : pose_data{other.position, other.orientation, other.unit, other.co_frame, other.ref_space, other.confidence}
-        , sensor_time{sensor_time_} { }
-};
-
-/**
- * Fast pose
- */
-struct fast_pose_type : public switchboard::event {
-    pose_type  pose;                  //!< The pose data
-    time_point predict_computed_time; //!< Time at which the prediction was computed
-    time_point predict_target_time;   //!< Time that prediction targeted.
-
-    /**
-     * Basic constructor
-     */
-    fast_pose_type()
-        : pose{}
-        , predict_computed_time{time_point{}}
-        , predict_target_time{time_point{}} { }
-
-    /**
-     * Construct an instance using the given data
-     * @param pose_ The pose to use
-     * @param predict_computed_time_ The computed time
-     * @param predict_target_time_ The target time
-     */
-    fast_pose_type(pose_type pose_, time_point predict_computed_time_, time_point predict_target_time_)
-        : pose{std::move(pose_)}
-        , predict_computed_time{predict_computed_time_}
-        , predict_target_time{predict_target_time_} { }
-};
-
-struct [[maybe_unused]] texture_pose : public switchboard::event {
-    duration           offload_duration{};
-    unsigned char*     image{};
-    time_point         pose_time{};
-    Eigen::Vector3f    position;
-    Eigen::Quaternionf latest_quaternion;
-    Eigen::Quaternionf render_quaternion;
-
-    texture_pose() = default;
-
-    texture_pose(duration offload_duration_, unsigned char* image_, time_point pose_time_, Eigen::Vector3f position_,
-                 Eigen::Quaternionf latest_quaternion_, Eigen::Quaternionf render_quaternion_)
-        : offload_duration{offload_duration_}
-        , image{image_}
-        , pose_time{pose_time_}
-        , position{std::move(position_)}
-        , latest_quaternion{std::move(latest_quaternion_)}
-        , render_quaternion{std::move(render_quaternion_)} { }
-};
-
-[[maybe_unused]] typedef std::map<units::eyes, pose_type> multi_pose_map;
-
-#ifdef ENABLE_OXR
-/**
- * This struct is utilized when working with OpenXR. The internal variables are in a basic form since OpenXR uses
- * C, rather than C++ (e.g. pose contains just floats, instead of Eigen::Vector and Eigen::Quaternion)
- */
-struct raw_pose {
-    float x;     //!< x-coordinate
-    float y;     //!< y-coordinate
-    float z;     //!< z-coordinate
-    float w;     //!< quaternion w
-    float wx;    //!< quaternion x
-    float wy;    //!< quaternion y
-    float wz;    //!< quaternion z
-    bool  valid; //!< validity flag
-
-    /**
-     * Basic constructor
-     */
-    raw_pose()
-        : x{0.f}
-        , y{0.f}
-        , z{0.f}
-        , w{0.f}
-        , wx{0.f}
-        , wy{0.f}
-        , wz{0.f}
-        , valid{false} { }
-
-    /**
-     * Create an instance using the given pose
-     * @param pd The pose to use
-     */
-    explicit raw_pose(const pose_data& pd) {
-        copy(pd);
-    }
-
-    /**
-     * Copy a pose into this structure
-     * @param pd The pose to copy
-     */
-    void copy(const pose_data& pd) {
-        x     = pd.position.x();
-        y     = pd.position.y();
-        z     = pd.position.z();
-        w     = pd.orientation.w();
-        wx    = pd.orientation.x();
-        wy    = pd.orientation.y();
-        wz    = pd.orientation.z();
-        valid = pd.valid;
-    }
-};
-
 #endif
+
+#ifdef USING_OPENXR
+
+    void update(POSE_DATA_TYPE pose) {
+        position = pose.position;
+        orientation = pose.orientation;
+    }
+#else
+    void update(Eigen::Vector3f position_, Eigen::Quaternionf orientation_) {
+        position = position_;
+        orientation = orientation_;
+    }
+#endif
+};
 } // namespace ILLIXR::data_format

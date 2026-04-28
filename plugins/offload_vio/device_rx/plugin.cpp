@@ -12,11 +12,11 @@ using namespace ILLIXR::data_format;
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
     , clock_{phonebook_->lookup_impl<relative_clock>()}
     , vio_pose_reader_{switchboard_->get_buffered_reader<switchboard::event_wrapper<std::string>>("vio_pose")}
-    , pose_{switchboard_->get_writer<pose_type>("slow_pose")}
+    , pose_{switchboard_->get_writer<pose::head_pose_type>("slow_pose")}
     , imu_integrator_input_{switchboard_->get_writer<imu_integrator_input>("imu_integrator_input")} {
     spdlogger(switchboard_->get_env_char("OFFLOAD_VIO_LOG_LEVEL"));
-    pose_type                   datum_pose_tmp{time_point{}, Eigen::Vector3f{0, 0, 0}, Eigen::Quaternionf{1, 0, 0, 0}};
-    switchboard::ptr<pose_type> datum_pose = pose_.allocate<pose_type>(std::move(datum_pose_tmp));
+    pose::head_pose_type                   datum_pose_tmp{time_point{}, Eigen::Vector3f{0, 0, 0}, Eigen::Quaternionf{1, 0, 0, 0}};
+    switchboard::ptr<pose::head_pose_type> datum_pose = pose_.allocate<pose::head_pose_type>(std::move(datum_pose_tmp));
     pose_.put(std::move(datum_pose));
 }
 
@@ -43,14 +43,14 @@ void offload_reader::_p_one_iteration() {
 void offload_reader::receive_vio_output(const vio_output_proto::VIOOutput& vio_output) {
     const vio_output_proto::SlowPose& slow_pose = vio_output.slow_pose();
 
-    pose_type datum_pose_tmp{
+    pose::head_pose_type datum_pose_tmp{
         time_point{std::chrono::nanoseconds{slow_pose.timestamp()}},
         Eigen::Vector3f{static_cast<float>(slow_pose.position().x()), static_cast<float>(slow_pose.position().y()),
                         static_cast<float>(slow_pose.position().z())},
         Eigen::Quaternionf{static_cast<float>(slow_pose.rotation().w()), static_cast<float>(slow_pose.rotation().x()),
                            static_cast<float>(slow_pose.rotation().y()), static_cast<float>(slow_pose.rotation().z())}};
 
-    switchboard::ptr<pose_type> datum_pose = pose_.allocate<pose_type>(std::move(datum_pose_tmp));
+    switchboard::ptr<pose::head_pose_type> datum_pose = pose_.allocate<pose::head_pose_type>(std::move(datum_pose_tmp));
     pose_.put(std::move(datum_pose));
 
     const vio_output_proto::IMUIntInput& imu_int_input = vio_output.imu_int_input();

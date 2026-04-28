@@ -1,7 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
 
-project(native_renderer)
-
 set(PLUGIN_NAME plugin.native_renderer${ILLIXR_BUILD_SUFFIX})
 
 set(CMAKE_CXX_STANDARD 17)

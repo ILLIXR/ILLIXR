@@ -109,7 +109,7 @@ int capture::get_data() {
         sl::POSITIONAL_TRACKING_STATE state = camera_->getPosition(pose, sl::REFERENCE_FRAME::WORLD);
         if (state == sl::POSITIONAL_TRACKING_STATE::OK) {
             timepoint_ = pose.timestamp.getNanoseconds();
-            data_format::pose_type poseData(
+            data_format::pose::head_pose_type poseData(
                 time_point(clock_duration_{timepoint_}),
                 {pose.getTranslation().tx, pose.getTranslation().ty, pose.getTranslation().tz},
                 {pose.getOrientation().w, pose.getOrientation().x, pose.getOrientation().y, pose.getOrientation().z});

@@ -143,7 +143,7 @@ void server_rx::receive_sr_input(const sr_input_proto::SRSendData& sr_input) {
         static_cast<float>(sr_input.input_pose().o_w()), static_cast<float>(sr_input.input_pose().o_x()),
         static_cast<float>(sr_input.input_pose().o_y()), static_cast<float>(sr_input.input_pose().o_z())};
 
-    pose_type pose = {time_point{}, incoming_position, incoming_orientation};
+    pose::head_pose_type pose = {time_point{}, incoming_position, incoming_orientation};
 
     // Must do a deep copy of the received data (in the form of a string of bytes)
     auto msb = const_cast<std::string&>(sr_input.depth_img_msb_data().img_data());

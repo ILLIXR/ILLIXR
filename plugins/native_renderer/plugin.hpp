@@ -153,6 +153,6 @@ private:
     switchboard::reader<switchboard::event_wrapper<time_point>> vsync_;
     time_point                                                  last_fps_update_;
 
-    std::shared_ptr<vulkan::buffer_pool<data_format::fast_pose_type>> buffer_pool_;
+    std::shared_ptr<vulkan::buffer_pool<data_format::pose::fast_head_pose_type>> buffer_pool_;
 };
 } // namespace ILLIXR

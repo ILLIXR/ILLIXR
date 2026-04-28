@@ -8,20 +8,20 @@
 
 namespace ILLIXR {
 
-typedef data_format::pose_type sensor_types;
+typedef data_format::pose::head_pose_type sensor_types;
 
 class MY_EXPORT_API pose_lookup_impl : public data_format::pose_prediction {
 public:
     explicit pose_lookup_impl(const phonebook* const pb);
-    data_format::fast_pose_type get_fast_pose() const override;
-    data_format::pose_type      get_true_pose() const override;
-    bool                        fast_pose_reliable() const override;
-    bool                        true_pose_reliable() const override;
-    Eigen::Quaternionf          get_offset() override;
-    data_format::pose_type      correct_pose(const data_format::pose_type& pose) const override;
-    void                        set_offset(const Eigen::Quaternionf& raw_o_times_offset) override;
-    Eigen::Quaternionf          apply_offset(const Eigen::Quaternionf& orientation) const;
-    data_format::fast_pose_type get_fast_pose(time_point time) const override;
+    data_format::pose::fast_head_pose_type get_fast_pose() const override;
+    data_format::pose::head_pose_type      get_true_pose() const override;
+    bool                                   fast_pose_reliable() const override;
+    bool                                   true_pose_reliable() const override;
+    Eigen::Quaternionf                     get_offset() override;
+    data_format::pose::head_pose_type      correct_pose(const data_format::pose::head_pose_type& pose) const override;
+    void                                   set_offset(const Eigen::Quaternionf& raw_o_times_offset) override;
+    Eigen::Quaternionf                     apply_offset(const Eigen::Quaternionf& orientation) const;
+    data_format::pose::fast_head_pose_type get_fast_pose(time_point time) const override;
 
 private:
     const std::shared_ptr<switchboard>          switchboard_;

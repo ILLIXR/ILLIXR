@@ -1,6 +1,6 @@
 #include "files.hpp"
 
-#include "illixr/data_format/pose.hpp"
+#include "illixr/data_format/poses/head_pose.hpp"
 
 #include <boost/filesystem.hpp>
 #include <sstream>
@@ -66,7 +66,7 @@ files::files(const std::string& rt, const std::string& sub_path) {
     // boost::filesystem::create_directories(conf_path);
 }
 
-std::ostream& operator<<(std::ostream& os, const ILLIXR::data_format::pose_type& dt) {
+std::ostream& operator<<(std::ostream& os, const ILLIXR::data_format::pose::head_pose_type& dt) {
     os << dt.sensor_time.time_since_epoch().count() << COMMA << dt.position.x() << COMMA << dt.position.y() << COMMA
        << dt.position.z() << COMMA << dt.orientation.w() << COMMA << dt.orientation.x() << COMMA << dt.orientation.y() << COMMA
        << dt.orientation.z();

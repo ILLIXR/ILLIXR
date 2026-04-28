@@ -69,13 +69,13 @@ void zed_camera_thread::_p_one_iteration() {
         //     throw std::runtime_error("Tracking failed");
         sl::Pose zed_pose_right{zed_pose_left};
         transform_zed_pose(zed_pose_left.pose_data, zed_pose_right.pose_data, zed_cam_->getBaseline());
-        pose_type left_eye_pose{
+        pose::head_pose_type left_eye_pose{
             time_point(clock_duration_(zed_pose_left.timestamp.getNanoseconds())),
             {zed_pose_left.getTranslation().tx, zed_pose_left.getTranslation().ty, zed_pose_left.getTranslation().tz},
             {zed_pose_left.getOrientation().w, zed_pose_left.getOrientation().x, zed_pose_left.getOrientation().y,
              zed_pose_left.getOrientation().z},
             units::UNITS};
-        pose_type right_eye_pose{
+        pose::head_pose_type right_eye_pose{
             time_point(clock_duration_(zed_pose_right.timestamp.getNanoseconds())),
             {zed_pose_right.getTranslation().tx, zed_pose_right.getTranslation().ty, zed_pose_right.getTranslation().tz},
             {zed_pose_right.getOrientation().w, zed_pose_right.getOrientation().x, zed_pose_right.getOrientation().y,

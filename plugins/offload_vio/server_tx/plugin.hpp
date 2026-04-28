@@ -2,7 +2,7 @@
 
 #include "illixr/data_format/imu.hpp"
 #include "illixr/data_format/misc.hpp"
-#include "illixr/data_format/pose.hpp"
+#include "illixr/data_format/poses/head_pose.hpp"
 #include "illixr/network/tcpsocket.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/plugin.hpp"
@@ -13,7 +13,7 @@ class server_writer : public plugin {
 public:
     [[maybe_unused]] server_writer(const std::string& name, phonebook* pb);
     void start() override;
-    void send_vio_output(const switchboard::ptr<const data_format::pose_type>& datum);
+    void send_vio_output(const switchboard::ptr<const data_format::pose::head_pose_type>& datum);
 
 private:
     const std::shared_ptr<switchboard>                                   switchboard_;

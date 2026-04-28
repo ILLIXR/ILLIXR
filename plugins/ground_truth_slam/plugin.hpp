@@ -1,7 +1,7 @@
 #pragma once
 
 #include "illixr/data_format/imu.hpp"
-#include "illixr/data_format/pose.hpp"
+#include "illixr/data_format/poses/head_pose.hpp"
 #include "illixr/data_loading.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/plugin.hpp"
@@ -16,7 +16,7 @@ namespace ILLIXR {
 #define ViconRoom2Medium    1413393885975760384
 #define ViconRoom2Hard      1413394881555760384
 
-typedef data_format::pose_type sensor_types;
+typedef data_format::pose::head_pose_type sensor_types;
 
 class ground_truth_slam : public plugin {
 public:
@@ -26,7 +26,7 @@ public:
 
 private:
     const std::shared_ptr<switchboard>          switchboard_;
-    switchboard::writer<data_format::pose_type> true_pose_;
+    switchboard::writer<data_format::pose::head_pose_type> true_pose_;
 
     switchboard::writer<switchboard::event_wrapper<Eigen::Vector3f>> ground_truth_offset_;
     const std::map<ullong, sensor_types>                             sensor_data_;

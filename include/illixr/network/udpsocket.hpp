@@ -76,7 +76,7 @@ public:
     void socket_set_reuseaddr() const {
 #if defined(_WIN32) || defined(_WIN64)
         int enable = 1;
-        // Use SO_EXCLUSIVEADDRUSE on Windows — SO_REUSEADDR has unsafe semantics there
+        // Use SO_EXCLUSIVEADDRUSE on Windows â€” SO_REUSEADDR has unsafe semantics there
         if (setsockopt(fd_, SOL_SOCKET, SO_EXCLUSIVEADDRUSE, reinterpret_cast<const char*>(&enable), sizeof(enable)) < 0)
             throw std::runtime_error("SO_EXCLUSIVEADDRUSE failed");
 #else

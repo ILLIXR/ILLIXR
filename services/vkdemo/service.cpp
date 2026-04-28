@@ -85,11 +85,11 @@ void vkdemo::initialize() {
     }
 }
 
-void vkdemo::setup(VkRenderPass render_pass, uint32_t subpass, std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> _) {
+void vkdemo::setup(VkRenderPass render_pass, uint32_t subpass, std::shared_ptr<vulkan::buffer_pool<pose::fast_head_pose_type>> _) {
     create_pipeline(render_pass, subpass);
 }
 
-void vkdemo::update_uniforms(const pose_type& fp) {
+void vkdemo::update_uniforms(const pose::head_pose_type& fp) {
     update_uniform(fp, 0);
     update_uniform(fp, 1);
 }
@@ -124,7 +124,7 @@ void vkdemo::destroy() {
     }
 }
 
-void vkdemo::update_uniform(const pose_type& pose, int eye) {
+void vkdemo::update_uniform(const pose::head_pose_type& pose, int eye) {
     Eigen::Matrix4f model_matrix = Eigen::Matrix4f::Identity();
 
     Eigen::Matrix3f head_rotation_matrix = pose.orientation.toRotationMatrix();

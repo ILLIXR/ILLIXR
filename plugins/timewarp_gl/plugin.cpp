@@ -596,7 +596,7 @@ void timewarp_gl::warp(const switchboard::ptr<const rendered_frame>& most_recent
     Eigen::Matrix4f view_matrix_begin = Eigen::Matrix4f::Identity();
     Eigen::Matrix4f view_matrix_end   = Eigen::Matrix4f::Identity();
 
-    const fast_pose_type latest_pose    = disable_warp_ ? most_recent_frame->render_pose : pose_prediction_->get_fast_pose();
+    const pose::fast_head_pose_type latest_pose    = disable_warp_ ? most_recent_frame->render_pose : pose_prediction_->get_fast_pose();
     view_matrix_begin.block(0, 0, 3, 3) = latest_pose.pose.orientation.toRotationMatrix();
 
     // TODO: We set the "end" pose to the same as the beginning pose, but this really should be the pose for

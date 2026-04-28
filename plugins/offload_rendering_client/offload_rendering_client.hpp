@@ -67,7 +67,7 @@ public:
      * @param buffer_pool The buffer pool for frame data
      */
     void setup(VkRenderPass render_pass, uint32_t subpass,
-               std::shared_ptr<vulkan::buffer_pool<data_format::fast_pose_type>> buffer_pool) override;
+               std::shared_ptr<vulkan::buffer_pool<data_format::pose::fast_head_pose_type>> buffer_pool) override;
 
     /**
      * @brief Record command buffer (no-op in this implementation)
@@ -82,7 +82,7 @@ public:
     /**
      * @brief Update uniforms (no-op in this implementation)
      */
-    void update_uniforms(const data_format::pose_type& render_pose) override {
+    void update_uniforms(const data_format::pose::head_pose_type& render_pose) override {
         (void) render_pose;
     }
 
@@ -201,11 +201,11 @@ private:
     std::shared_ptr<spdlog::logger>                             log_;
     std::shared_ptr<vulkan::display_provider>                   display_provider_;
     switchboard::buffered_reader<data_format::compressed_frame> frames_reader_;
-    switchboard::network_writer<data_format::fast_pose_type>    pose_writer_;
+    switchboard::network_writer<data_format::pose::fast_head_pose_type>    pose_writer_;
     std::shared_ptr<data_format::pose_prediction>               pose_prediction_;
     std::atomic<bool>                                           ready_ = false;
 
-    std::shared_ptr<vulkan::buffer_pool<data_format::fast_pose_type>> buffer_pool_;
+    std::shared_ptr<vulkan::buffer_pool<data_format::pose::fast_head_pose_type>> buffer_pool_;
     bool                                                              use_depth_ = false;
     std::vector<std::array<vulkan::ffmpeg_utils::ffmpeg_vk_frame, 2>> avvk_color_frames_;
     std::vector<std::array<vulkan::ffmpeg_utils::ffmpeg_vk_frame, 2>> avvk_depth_frames_;
@@ -227,7 +227,7 @@ private:
     std::array<AVFrame*, 2>  decode_out_depth_frames_       = {nullptr, nullptr};
     std::array<AVFrame*, 2>  decode_converted_depth_frames_ = {nullptr, nullptr};
 
-    data_format::fast_pose_type decoded_frame_pose_;
+    data_format::pose::fast_head_pose_type decoded_frame_pose_;
 
     VkCommandPool command_pool{};
     Npp8u*        yuv420_y_plane_ = nullptr;

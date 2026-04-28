@@ -73,7 +73,7 @@ void udp_network_backend::start_client() {
     peer_socket_ = socket;
 
     spdlog::get("illixr")->info("[udp_network_backend] Connecting to {}:{}", server_ip_, server_port_);
-    // UDP is connectionless — set_peer() is sufficient; no connect() needed
+    // UDP is connectionless â€” set_peer() is sufficient; no connect() needed
     spdlog::get("illixr")->info("[udp_network_backend] Client ready");
 
     ready_ = true;
@@ -95,7 +95,7 @@ void udp_network_backend::start_server() {
 void udp_network_backend::read_loop(network::UDPSocket* socket) {
     std::string buffer;
     while (running_) {
-        // Each recvfrom() returns exactly one datagram — no partial-read reassembly needed
+        // Each recvfrom() returns exactly one datagram â€” no partial-read reassembly needed
         sockaddr_in src_addr{};
         std::string packet = socket->read_data(&src_addr);
         if (packet.empty())
