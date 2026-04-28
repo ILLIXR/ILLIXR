@@ -356,6 +356,14 @@ private:
     // Thread safety
     std::mutex encode_mutex_;
 
+    // Handle to the dynamically loaded NVENC library.
+    // Stored so the destructor can release it via FreeLibrary (Windows) or dlclose (Linux).
+#ifdef _WIN32
+    HMODULE nvenc_lib_ = nullptr;
+#else
+    void* nvenc_lib_ = nullptr;
+#endif
+
     #ifdef DUMP_FRAMES
     // Frame saving (debug) - enabled via ILLIXR_SAVE_FRAMES=1 environment variable
     std::unique_ptr<frame_saver> frame_saver_;

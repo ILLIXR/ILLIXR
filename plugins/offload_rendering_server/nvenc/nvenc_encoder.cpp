@@ -48,6 +48,18 @@ nvenc_encoder::~nvenc_encoder() {
         nvenc_.nvEncDestroyEncoder(encoder_);
         encoder_ = nullptr;
     }
+    // Unload the NVENC library now that no encoder session is open
+#ifdef _WIN32
+    if (nvenc_lib_) {
+        FreeLibrary(nvenc_lib_);
+        nvenc_lib_ = nullptr;
+    }
+#else
+    if (nvenc_lib_) {
+        dlclose(nvenc_lib_);
+        nvenc_lib_ = nullptr;
+    }
+#endif
     // Free CUDA buffers
     if (cuda_nv12_buffer_) {
         cuMemFree(cuda_nv12_buffer_);
@@ -137,19 +149,19 @@ void nvenc_encoder::init_nvenc() {
 
     // Load NVENC library
 #ifdef _WIN32
-    HMODULE nvenc_lib = LoadLibrary(TEXT("nvEncodeAPI64.dll"));
+    nvenc_lib_ = LoadLibrary(TEXT("nvEncodeAPI64.dll"));
 #else
-    void* nvenc_lib = dlopen("libnvidia-encode.so.1", RTLD_LAZY);
+    nvenc_lib_ = dlopen("libnvidia-encode.so.1", RTLD_LAZY);
 #endif
-    if (!nvenc_lib) {
+    if (!nvenc_lib_) {
         throw std::runtime_error("Failed to load NVENC library");
     }
 
     auto create_instance = reinterpret_cast<PNVENCODEAPICREATEINSTANCE>(
 #ifdef _WIN32
-        GetProcAddress(nvenc_lib, "NvEncodeAPICreateInstance")
+        GetProcAddress(nvenc_lib_, "NvEncodeAPICreateInstance")
 #else
-        dlsym(nvenc_lib, "NvEncodeAPICreateInstance")
+        dlsym(nvenc_lib_, "NvEncodeAPICreateInstance")
 #endif
     );
 
