@@ -1,5 +1,5 @@
 #pragma once
-
+#define MONADO_IS_SOURCE
 #define DOUBLE_INCLUDE
 #include "illixr/data_format/pose_prediction.hpp"
 #include "illixr/data_format/serializable_data.hpp"
@@ -23,7 +23,7 @@ namespace ILLIXR {
  * 3. Network transmission of encoded frames
  * 4. Pose synchronization with the client
  */
-class offload_rendering_server
+class MY_EXPORT_API offload_rendering_server
     : public threadloop
     , public vulkan::timewarp
     , public data_format::pose_prediction
