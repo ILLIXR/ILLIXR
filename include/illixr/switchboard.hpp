@@ -840,12 +840,47 @@ public:
         return writer<Specific_event>{try_register_topic<Specific_event>(topic_name)};
     }
 
+    /**
+     * @brief Obtain a network_writer for the given topic.
+     *
+     * Selects the backend based on config.transport_method:
+     *   - TransportMethod::TCP  -> looks up tcp_network_backend_tag
+     *   - TransportMethod::UDP  -> looks up udp_network_backend_tag
+     *
+     * If the requested backend has not been registered (e.g., the UDP plugin
+     * was not loaded) a runtime_error is thrown with a descriptive message.
+     *
+     * @tparam Specific_event  The event type to be transported.
+     * @param  topic_name      Name of the switchboard topic.
+     * @param  config          Transport and serialization configuration.
+     *                         Defaults to TCP + Boost serialization.
+     */
     template<typename Specific_event>
     network_writer<Specific_event> get_network_writer(const std::string& topic_name, network::topic_config config = {}) {
-        auto backend = phonebook_->lookup_impl<network::network_backend>();
-        if (registry_.find(topic_name) == registry_.end()) {
-            backend->topic_create(topic_name, config);
+        ptr<network::network_backend> backend;
+
+        switch (config.transport_method) {
+        case network::topic_config::TransportMethod::UDP:
+            backend = phonebook_->lookup_impl<network::udp_backend>();
+            if (!backend) {
+                throw std::runtime_error("[switchboard] UDP transport requested for topic '" + topic_name +
+                                         "' but no UDP network backend is registered in the phonebook. "
+                                         "Ensure the udp_network_backend plugin is loaded before this writer is constructed.");
+            }
+            break;
+        case network::topic_config::TransportMethod::TCP:
+        default:
+            backend = phonebook_->lookup_impl<network::tcp_backend>();
+            if (!backend) {
+                throw std::runtime_error("[switchboard] TCP transport requested for topic '" + topic_name +
+                                         "' but no TCP network backend is registered in the phonebook.");
+            }
+            break;
         }
+
+        if (registry_.find(topic_name) == registry_.end())
+            backend->topic_create(topic_name, config);
+
         return network_writer<Specific_event>{try_register_topic<Specific_event>(topic_name), backend, config};
     }
 

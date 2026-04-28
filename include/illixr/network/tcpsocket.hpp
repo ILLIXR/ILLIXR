@@ -119,7 +119,7 @@ public:
     void socket_set_reuseaddr() const {
 #if defined(_WIN32) || defined(_WIN64)
         int enable = 1;
-        if (int ret = setsockopt(fd_, SOL_SOCKET, SO_REUSEADDR, (char*) &enable, sizeof(enable)) < 0) {
+        if (setsockopt(fd_, SOL_SOCKET, SO_REUSEADDR, (char*) &enable, sizeof(enable)) < 0) {
             int err = WSAGetLastError();
             throw std::runtime_error("Reuseaddr failed");
         }
@@ -155,7 +155,7 @@ public:
     void enable_no_delay() const {
 #if defined(_WIN32) || defined(_WIN64)
         int enable = 1;
-        if (int ret = setsockopt(fd_, IPPROTO_TCP, TCP_NODELAY, (char*) &enable, sizeof(enable)) < 0)
+        if (setsockopt(fd_, IPPROTO_TCP, TCP_NODELAY, (char*) &enable, sizeof(enable)) < 0)
             throw std::runtime_error("No delay failed");
 #else
         const int enable = 1;
@@ -191,6 +191,18 @@ public:
 #endif
         int peer_port = ntohs(peer_address.sin_port);
         return std::string(peer_ip) + ":" + std::to_string(peer_port);
+    }
+
+    [[nodiscard]] bool is_no_delay() const {
+        int val = 0;
+#if defined(_WIN32) || defined(_WIN64)
+        int len = sizeof(val);
+        getsockopt(fd_, IPPROTO_TCP, TCP_NODELAY, (char*) &val, &len);
+#else
+        socklen_t len = sizeof(val);
+        getsockopt(fd_, IPPROTO_TCP, TCP_NODELAY, &val, &len);
+#endif
+        return val != 0;
     }
 
 private:
