@@ -4,7 +4,7 @@
 # This will compile the main ILLIXR binary along with any requested plugins.
 #
 # See the documentation at https://illixr.github.io/ILLIXR/getting_started/
-# for complete build instructions.#
+# for complete build instructions.
 #
 ########################################################################################
 
@@ -73,8 +73,6 @@ endif()
 
 set(GPL_LICENSED_CODE "openvins;orb_slam3;offload_rendering_server;offload_rendering_client")
 set(LGPL_LICENSED_CODE "audio_pipeline")
-
-#set(yaml-cpp_DIR "${CMAKE_SOURCE_DIR}/out/install/x64-Debug/lib/cmake/yaml-cpp")
 
 if(PACKAGE_VERSION_LABEL)
     set(PACKAGE_VERSION "${PACKAGE_VERSION_MAJOR}.${PACKAGE_VERSION_MINOR}.${PACKAGE_VERSION_PATCH}-${PACKAGE_VERSION_LABEL}")
@@ -229,7 +227,7 @@ if(WIN32 OR MSVC)
             string(TOLOWER ${ITEM} ITEM_LOWER)
             string(REPLACE "." "-" ITEM_LOWER_TMP ${ITEM_LOWER})
             string(REPLACE "_" "-" ITEM_LOWER_REP ${ITEM_LOWER_TMP})
-            list(APPEND VCPKG_MANIFEST_FEATURES "plugin_${ITEM_LOWER_REP}")
+            list(APPEND VCPKG_MANIFEST_FEATURES "plugin-${ITEM_LOWER_REP}")
             unset(ITEM_LOWER)
         endif()
         unset(ITEM_UPPER)
@@ -237,7 +235,47 @@ if(WIN32 OR MSVC)
 endif()
 
 
-project(ILLIXR VERSION 4.1.0)
+project(ILLIXR VERSION 4.1.0 LANGUAGES CXX)
+
+if(WIN32 OR MSVC)
+    if(CMAKE_BUILD_TYPE MATCHES Debug)
+        set(MSVC_RUNTIME_FLAG "/MDd")
+    else()
+        set(MSVC_RUNTIME_FLAG "/MD")
+    endif()
+    
+    # Set this so Boost won't override it
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
+    
+    # CRITICAL: Prevent it from affecting CUDA
+    set(CMAKE_CUDA_RUNTIME_LIBRARY "None" CACHE STRING "" FORCE)
+    
+    # Ensure C++ runtime is linked
+    if(CMAKE_BUILD_TYPE MATCHES Debug)
+        link_libraries(vcruntimed.lib msvcrtd.lib)
+    else()
+        link_libraries(vcruntime.lib msvcrt.lib)
+    endif()    
+    # Remove conflicting static runtime libraries
+    add_link_options(/NODEFAULTLIB:libcmt.lib /NODEFAULTLIB:libcmtd.lib)
+
+    set(CMAKE_CXX_FLAGS "/EHsc /W3 ${CMAKE_CXX_FLAGS}" CACHE STRING "" FORCE)
+    set(CMAKE_CXX_FLAGS_DEBUG "/EHsc /W3 ${CMAKE_CXX_FLAGS_DEBUG}" CACHE STRING "" FORCE)
+    set(CMAKE_CXX_FLAGS_RELEASE "/EHsc /W3 ${CMAKE_CXX_FLAGS_RELEASE}" CACHE STRING "" FORCE)
+
+    # Set CUDA flags manually
+    if(CMAKE_BUILD_TYPE MATCHES Debug)
+        set(RT_FLAG "/MDd")
+    else()
+        set(RT_FLAG "/MD")
+    endif()
+
+    set(CMAKE_CUDA_FLAGS "-D_WINDOWS --expt-relaxed-constexpr --use_fast_math -Xcompiler=/W3 -Xcompiler=/EHsc -Xcompiler=${RT_FLAG} -Xcompiler=/wd4005 -Xcompiler=/DNOMINMAX -Xcompiler=/DWIN32_LEAN_AND_MEAN" CACHE STRING "" FORCE)
+    set(CMAKE_CUDA_FLAGS_DEBUG "-G -Xcompiler=/Zi -Xcompiler=/Od" CACHE STRING "" FORCE)
+    set(CMAKE_CUDA_FLAGS_RELEASE "-O3 -Xcompiler=/O2" CACHE STRING "" FORCE)
+
+    message(STATUS "CMAKE_CUDA_RUNTIME_LIBRARY = ${CMAKE_CUDA_RUNTIME_LIBRARY}")
+endif()
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -250,7 +288,7 @@ if(WIN32 OR MSVC)
     set(CMAKE_CXX_FLAGS_DEBUG "/Zi /Od /MDd")
     set(CMAKE_EXE_LINKER_FLAGS_DEBUG "/DEBUG")
     set(CMAKE_SHARED_LINKER_FLAGS_DEBUG "/DEBUG /STACK:8388608")
-    set(CMAKE_CXX_FLAGS_RELEASE "/O2 /DNDEBUG")
+    set(CMAKE_CXX_FLAGS_RELEASE "/O2 /MD /DNDEBUG")
     set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "/Zi /O2")
 else()
     set(CMAKE_CXX_FLAGS_DEBUG "-ggdb -Wall -Wextra -Wno-attributes -Wno-unknown-pragmas -fPIC")

@@ -40,4 +40,4 @@ out/
 vcpkg_*
 .vs/
 .vscode/
-local.properties
+*.bak

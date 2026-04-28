@@ -1,3 +1,94 @@
+# Check if we're running in a capable terminal
+if(NOT DEFINED ENV{NO_COLOR})  # Respect NO_COLOR environment variable
+    if(WIN32)
+        # On Windows, we need to check if VT processing is enabled
+        # Test by checking WT_SESSION (Windows Terminal) or trying to detect VT support
+        if(DEFINED ENV{WT_SESSION} OR DEFINED ENV{WT_PROFILE_ID})
+            # Windows Terminal always supports ANSI
+            set(COLOR_OUTPUT ON)
+        else()
+            # For other terminals (PowerShell, cmd), try to detect VT support
+            # Check if running in ConEmu, which supports ANSI
+            if(DEFINED ENV{ConEmuANSI})
+                set(COLOR_OUTPUT ON)
+            else()
+                # Try to enable VT processing via a test script
+                # This creates a temporary PowerShell script that enables VT and tests it
+                set(TEST_SCRIPT "${CMAKE_BINARY_DIR}/test_ansi.ps1")
+                file(WRITE ${TEST_SCRIPT} 
+"$hasVT = $false
+try {
+    # Try to enable Virtual Terminal Processing
+    $kernel32 = Add-Type -MemberDefinition @'
+[DllImport(\"kernel32.dll\", SetLastError = true)]
+public static extern IntPtr GetStdHandle(int nStdHandle);
+[DllImport(\"kernel32.dll\", SetLastError = true)]
+public static extern bool GetConsoleMode(IntPtr hConsoleHandle, out uint lpMode);
+[DllImport(\"kernel32.dll\", SetLastError = true)]
+public static extern bool SetConsoleMode(IntPtr hConsoleHandle, uint dwMode);
+'@ -Name 'Kernel32' -Namespace 'Win32' -PassThru -ErrorAction SilentlyContinue
+
+    $handle = $kernel32::GetStdHandle(-11) # STD_OUTPUT_HANDLE
+    $mode = 0
+    if ($kernel32::GetConsoleMode($handle, [ref]$mode)) {
+        $newMode = $mode -bor 0x0004  # ENABLE_VIRTUAL_TERMINAL_PROCESSING
+        if ($kernel32::SetConsoleMode($handle, $newMode)) {
+            $hasVT = $true
+        }
+    }
+} catch {
+    $hasVT = $false
+}
+if ($hasVT) { exit 0 } else { exit 1 }
+")
+                execute_process(
+                    COMMAND powershell -NoProfile -ExecutionPolicy Bypass -File ${TEST_SCRIPT}
+                    RESULT_VARIABLE VT_TEST_RESULT
+                    OUTPUT_QUIET
+                    ERROR_QUIET
+                )
+                file(REMOVE ${TEST_SCRIPT})
+                
+                if(VT_TEST_RESULT EQUAL 0)
+                    set(COLOR_OUTPUT ON)
+                endif()
+            endif()
+        endif()
+    elseif(UNIX)
+        # On Unix-like systems, check if stdout is a terminal
+        execute_process(
+            COMMAND test -t 1
+            RESULT_VARIABLE IS_TTY
+        )
+        if(IS_TTY EQUAL 0)
+            set(COLOR_OUTPUT ON)
+        endif()
+    endif()
+    
+    # Additional check: see if TERM variable suggests color support
+    if(DEFINED ENV{TERM})
+        string(REGEX MATCH "color|ansi|xterm|screen|tmux|rxvt" TERM_SUPPORTS_COLOR "$ENV{TERM}")
+        if(NOT TERM_SUPPORTS_COLOR)
+            # If TERM is "dumb" or similar, disable colors
+            string(REGEX MATCH "dumb|emacs" TERM_NO_COLOR "$ENV{TERM}")
+            if(TERM_NO_COLOR)
+                set(COLOR_OUTPUT OFF)
+            endif()
+        endif()
+    endif()
+endif()
+
+# Allow manual override via CMake option
+option(FORCE_COLORED_OUTPUT "Always produce ANSI-colored output." OFF)
+if(FORCE_COLORED_OUTPUT)
+    set(COLOR_OUTPUT ON)
+endif()
+
+option(NO_COLORED_OUTPUT "Never produce ANSI-colored output." OFF)
+if(NO_COLORED_OUTPUT)
+    set(COLOR_OUTPUT OFF)
+endif()
+
 # formatting definitions
 if(COLOR_OUTPUT)
     string(ASCII 27 ESC)

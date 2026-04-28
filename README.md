@@ -1,5 +1,67 @@
 ![ILLIXR logo](docs/docs/images/LogoWithHeader.png)
 
+This repo is the initial version of ILLIXR-net. It is designed to run on Windows, although it should run on Linux as well.
+This code contains more parts than are currently needed by ILLIXR-net. The relevant plugins that are used in this setup are:
+
+- `offline_rendering_server/tx` (this plugin encodes the images produced by Unity, using h.265)
+- `network_latency.rx` (this plugin is an OS agnostic way to measure latenct over the network, it does not fully work yet, but is needed)
+- `tcp_network_backend` (this plugin transmits to and receives messages from ILLIXR-net on the headset)
+
+Below is a schematic of the server side architecture
+
+
+
+## Building Instructions
+
+### Requirements
+
+- NVIDIA GPU with onboard encoder: most of their recent cards fit this, but see [here](https://developer.nvidia.com/video-encode-decode-support-matrix) for compatability; initial testing was done with a GeForce RTX 4090, but a GeForce RTX 5090 or equivalent will likely be required to get good performance
+- Recent drivers for the GPU
+- CUDA toolkit installed: this can be downloaded from [here](https://developer.nvidia.com/cuda-downloads)
+- NVIDIA video codec SDK: this can be downloaded from [here](https://developer.nvidia.com/nvidia-video-codec-sdk/download); this SDK is just some headers, so when you unzip the archive, note the location of the files.
+- Visual Studio 2022 (not Visual Studio Code): used for the development platform, I am exploring using other platforms like CLion as well
+  - You will need to have [vcpkg](https://learn.microsoft.com/en-us/vcpkg/get_started/overview) and `CMake` installed as well, either as part of VS or separately
+  - For this project you need to change one of the settings in Visual studio. Under Tools, open the Options item. Then select CMake in the left hand panel. There should be an option titled 'CMake configuration file', select 'Never use CMake Presets'
+
+!!! note
+    
+    Please be sure to match the version od the SDK's with the CUDA version and driver versions. For the NVIDIA SDK there is a system requirements section on the page stating the minimum driver version. Older version of the NVIDIA SDK can be found under the "Additional Resources" section on the page.
+
+### Configuring
+
+ILLIXR-net is a CMake-based C++ project. You will need to edit a few files before it will configure properly.
+
+- `CMakePresets.json`: edit the `CMAKE_TOOLCHAIN_FILE` entry to point to your `vcpkg` toolchain file
+- `CMakeSettings.json`: edit the `CMake command arguments` entry, changing the `-DVIDEO_CODEC_SDK_PATH` argument to point to your NVIDIA video codec SDK installation
+- `launch.vs.json`: edit the following
+  - The `PATH`, `ILLIXR_PATH`, `ILLIXR_COMP`, and `XR_RUNTIME_JSON` entries to point to your current repo (you need to change the `D:\ILLIXR` to wherever you clone the repo to)
+  - The `ILLIXR_TCP_CLIENT_IP` entry to be the IP address of the headset
+  - The `ILLIXR_TCP_SERVER_IP` entry to be the IP address of the Windows machine
+
+That should be all you need to do.
+
+!!! note
+
+    The first time you configure the project (or open it in Visual Studio) it will take a long time to compile and install the dependency libraries, likely this will take an hour or more.
+
+### Building
+
+If the configuration is successful, then click on `Build` and `Install`.
+
+### Running
+
+Select one of the `monado service`(dedbug mode) or `monado service release` (release mode) profile before launching. This will ensure the proper environment variables are set.
+
+!!! note
+
+    Currently, there is a specific order you must launch each of the components in:
+    
+    1. Monado-ILLIXR (monado_vk-service.exe) on the server (this repo, baseline_system branch)
+    2. ILLIXR-net on the headset (available at: [https://github.com/NSF-Breaking-Low-Agora/ILLIXR-net-Android.git], baseline system branch)
+    3. Unity App (available at: [https://github.com/NSF-Breaking-Low-Agora/Unity_toy_app.git])
+
+    It can take a bit before images start flowing as things are getting configured.
+
 [![NCSA licensed](https://img.shields.io/badge/license-NCSA-blue.svg)](LICENSE)
 [![ILLIXR CI](https://github.com/ILLIXR/ILLIXR/actions/workflows/ci.yaml/badge.svg)](https://github.com/ILLIXR/ILLIXR/actions/workflows/ci.yaml)
 [![Discord](https://img.shields.io/discord/830812443189444698?logo=discord&logoColor=white&label=Discord)][E47]

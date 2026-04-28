@@ -5,6 +5,8 @@
     #else
         #define MY_EXPORT_API __declspec(dllimport)
     #endif
-#else
+#elif defined(__GNUC__) || defined(__clang__)
     #define MY_EXPORT_API __attribute__((visibility("default")))
+#else
+    #define MY_EXPORT_API
 #endif
