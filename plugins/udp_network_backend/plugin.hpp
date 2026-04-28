@@ -15,9 +15,8 @@ class MY_EXPORT_API udp_network_backend
 public:
     explicit udp_network_backend(const std::string& name_, phonebook* pb_);
     ~udp_network_backend() override;
-
-    void start_client();
-    void start_server();
+    void start_client() override;
+    void start_server() override;
     void read_loop(network::UDPSocket* socket);
     void topic_create(std::string topic_name, network::topic_config& config) override;
     bool is_topic_networked(std::string topic_name) override;

@@ -6,12 +6,12 @@ udp_network_backend::udp_network_backend(const std::string& name_, phonebook* pb
     : plugin(name_, pb_)
     , switchboard_{pb_->lookup_impl<switchboard>()} {
     // read environment variables
-    if (switchboard_->get_env_char("ILLIXR_UDP_SERVER_IP")) {
+    if (switchboard_->get_env_char("ILLIXR_SERVER_IP")) {
+        server_ip_ = switchboard_->get_env_char("ILLIXR_SERVER_IP");
+        spdlog::get("illixr")->info("[udp_network_backend] Using server IP {}", server_ip_);
+    } else if (switchboard_->get_env_char("ILLIXR_UDP_SERVER_IP")) {
         server_ip_ = switchboard_->get_env_char("ILLIXR_UDP_SERVER_IP");
         spdlog::get("illixr")->info("[udp_network_backend] Using UDP server IP {}", server_ip_);
-    } else if (switchboard_->get_env_char("ILLIXR_TCP_SERVER_IP")) {
-        server_ip_ = switchboard_->get_env_char("ILLIXR_TCP_SERVER_IP");
-        spdlog::get("illixr")->info("[udp_network_backend] Using TCP server IP {}", server_ip_);
     }
 
     if (switchboard_->get_env_char("ILLIXR_UDP_SERVER_PORT")) {
@@ -19,10 +19,14 @@ udp_network_backend::udp_network_backend(const std::string& name_, phonebook* pb
         spdlog::get("illixr")->info("[udp_network_backend] Using UDP server port {}", server_port_);
     }
 
-    if (switchboard_->get_env_char("ILLIXR_UDP_CLIENT_IP")) {
+    if (switchboard_->get_env_char("ILLIXR_CLIENT_IP")) {
+        client_ip_ = switchboard_->get_env_char("ILLIXR_CLIENT_IP");
+        spdlog::get("illixr")->info("[udp_network_backend] Using client IP {}", client_ip_);
+    } else if (switchboard_->get_env_char("ILLIXR_UDP_CLIENT_IP")) {
         client_ip_ = switchboard_->get_env_char("ILLIXR_UDP_CLIENT_IP");
         spdlog::get("illixr")->info("[udp_network_backend] Using UDP client IP {}", client_ip_);
     }
+
 
     if (switchboard_->get_env_char("ILLIXR_UDP_CLIENT_PORT")) {
         client_port_ = std::stoi(switchboard_->get_env_char("ILLIXR_UDP_CLIENT_PORT"));
