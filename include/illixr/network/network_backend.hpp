@@ -37,9 +37,11 @@ public:
      */
     virtual void topic_send(std::string topic_name, std::string&& message) = 0;
 
-    virtual ~network_backend() = default;
+    virtual void start_client() = 0;
 
-    virtual network::topic_config::TransportMethod transport_method() const = 0;
+    virtual void start_server() = 0;
+
+    [[nodiscard]] virtual network::topic_config::TransportMethod transport_method() const = 0;
 };
 
 /**
