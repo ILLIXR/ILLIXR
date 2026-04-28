@@ -14,8 +14,8 @@ class MY_EXPORT_API tcp_network_backend
     , public network::tcp_backend {
 public:
     explicit tcp_network_backend(const std::string& name_, phonebook* pb_);
-    void start_client();
-    void start_server();
+    void start_client() override;
+    void start_server() override;
     void read_loop(network::TCPSocket* socket);
     void topic_create(std::string topic_name, network::topic_config& config) override;
     bool is_topic_networked(std::string topic_name) override;
