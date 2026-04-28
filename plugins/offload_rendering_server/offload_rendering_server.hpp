@@ -1,15 +1,32 @@
 #pragma once
 #define MONADO_IS_SOURCE
 #define DOUBLE_INCLUDE
-#include "illixr/data_format/pose_prediction.hpp"
-#include "illixr/data_format/serializable_data.hpp"
-#include "illixr/switchboard.hpp"
-#include "illixr/threadloop.hpp"
+
 #include "illixr/vk/display_provider.hpp"
-#include "illixr/vk/ffmpeg_utils.hpp"
 #include "illixr/vk/render_pass.hpp"
 #include "illixr/vk/vulkan_utils.hpp"
+
+#include "drivers/illixr/illixr_framebuffer.h"
+
+#include "illixr/data_format/poses/combined_pose.hpp"
+
+#include "illixr/data_format/hmd_config.hpp"
+#include "illixr/data_format/pose_prediction.hpp"
+#include "illixr/data_format/frame.hpp"
+#include "illixr/data_format/serialization/head_pose.hpp"
+#include "illixr/data_format/pose_id.hpp"
+#include "illixr/switchboard.hpp"
+#include "illixr/threadloop.hpp"
+
+#include "pose_relay.hpp"
+
+#include "illixr/vk/vulkan_utils.hpp"
 #undef DOUBLE_INCLUDE
+
+#include <condition_variable>
+#include <deque>
+#include <mutex>
+#include <thread>
 
 namespace ILLIXR {
 
@@ -36,6 +53,7 @@ public:
      */
     offload_rendering_server(const std::string& name, phonebook* pb);
     void start() override;
+    void stop() override;
     void _p_thread_setup() override;
 
     /**
@@ -64,29 +82,28 @@ public:
 
     /**
      * @brief Get the latest pose for rendering
+     *
+     * Extracts the head pose from the most recent pose_with_hands data
+     * received from the client. Also forwards hand tracking data to the
+     * switchboard for Monado (only once per new data arrival).
      */
-    POSE_TYPE get_fast_pose() const override;
-
-    /**
-     * @brief Get the true pose (same as fast pose in this implementation)
-     */
-    data_format::pose_type get_true_pose() const override {
-        return get_fast_pose().pose;
+    POSE_TYPE get_fast_pose() const override {
+        return pose_relay_->get_pose();
     }
+
 
     /**
      * @brief Get predicted pose for a future time point (returns current pose)
      */
-    POSE_TYPE get_fast_pose(time_point future_time) const override {
-        (void) future_time;
-        return get_fast_pose();
+    POSE_TYPE get_fast_pose(POSE_TIME_TYPE future_time) const override {
+        return pose_relay_->get_pose(future_time);
     }
 
     /**
      * @brief Check if fast pose data is reliable
      */
     bool fast_pose_reliable() const override {
-        return render_pose_.get_ro_nullable() != nullptr;
+        return pose_relay_->fast_pose_reliable();
     }
 
     /**
@@ -139,7 +156,7 @@ protected:
     /**
      * @brief Determines if the current iteration should be skipped
      */
-    skip_option _p_should_skip() override {
+    threadloop::skip_option _p_should_skip() override {
         return threadloop::_p_should_skip();
     }
 
@@ -159,7 +176,7 @@ private:
      * @brief Sends encoded frame data to the client
      * @param pose The pose data associated with the frame
      */
-    void enqueue_for_network_send(BUFFER_TYPE& pose);
+    void enqueue_for_network_send(BUFFER_TYPE& pose, uint64_t pose_id);
 
     /**
      * @brief Initializes the FFmpeg Vulkan device context
@@ -206,6 +223,7 @@ private:
      * frames if depth transmission is enabled.
      */
     void ffmpeg_init_encoder();
+    void sender_loop();
 
     std::shared_ptr<spdlog::logger>                                   log_;
     std::shared_ptr<vulkan::display_provider>                         display_provider_;
@@ -242,7 +260,17 @@ private:
     std::map<std::string, uint32_t>                metrics_;
 
     uint16_t last_frame_ind_ = -1;
+    std::shared_ptr<pose_relay> pose_relay_;
 
     std::atomic<bool> ready_{false};
+    uint64_t          frame_number_{0};
+
+    std::deque<std::shared_ptr<data_format::compressed_frame>> send_queue_;
+
+    std::mutex                send_queue_mutex_;
+    std::condition_variable   send_queue_cv_;
+    std::thread               sender_thread_;
+    static constexpr size_t   MAX_QUEUE_DEPTH = 6;
+    std::atomic<bool>         sender_running_{false};
 };
 } // namespace ILLIXR

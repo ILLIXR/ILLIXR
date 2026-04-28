@@ -1,5 +1,7 @@
 #include "offload_rendering_server.hpp"
 
+#include "illixr/global_module_defs.hpp"
+
 using namespace ILLIXR;
 using namespace ILLIXR::data_format;
 using namespace vulkan::ffmpeg_utils;
@@ -10,6 +12,7 @@ offload_rendering_server::offload_rendering_server(const std::string& name, phon
     , switchboard_{pb->lookup_impl<switchboard>()}
     , frames_topic_{switchboard_->get_network_writer<compressed_frame>("compressed_frames", {})}
     , render_pose_{switchboard_->get_reader<fast_pose_type>("render_pose")} {
+    , pose_relay_{std::make_shared<pose_relay>(name, pb)} {
     // Only encode and pass depth if requested - otherwise skip it.
     use_pass_depth_ = switchboard_->get_env_char("ILLIXR_USE_DEPTH_IMAGES") != nullptr &&
         std::stoi(switchboard_->get_env_char("ILLIXR_USE_DEPTH_IMAGES"));
@@ -29,7 +32,21 @@ offload_rendering_server::offload_rendering_server(const std::string& name, phon
 }
 
 void offload_rendering_server::start() {
+    pose_relay_->start();
+    sender_running_ = true;
+    sender_thread_ = std::thread([this]() {
+        sender_loop();
+    });
     threadloop::start();
+}
+
+void offload_rendering_server::stop() {
+    pose_relay_->stop();
+    sender_running_ = false;
+    send_queue_cv_.notify_all();
+    if (sender_thread_.joinable())
+        sender_thread_.join();
+    threadloop::stop();
 }
 
 void offload_rendering_server::_p_thread_setup() {
@@ -602,5 +619,37 @@ void offload_rendering_server::ffmpeg_init_encoder() {
 
         ret = avcodec_open2(codec_depth_ctx_, encoder, nullptr);
         AV_ASSERT_SUCCESS(ret);
+    }
+}
+
+
+void offload_rendering_server::sender_loop() {
+    while (sender_running_) {
+        std::shared_ptr<data_format::compressed_frame> frame;
+        {
+            std::unique_lock<std::mutex> lock(send_queue_mutex_);
+            send_queue_cv_.wait(lock, [this] {
+                return !send_queue_.empty() || !sender_running_;
+            });
+            if (!sender_running_ && send_queue_.empty())
+                break;
+            frame = std::move(send_queue_.front());
+            send_queue_.pop_front();
+        }
+        if (pose_usage_.count(frame->pose_id) == 0) {
+            pose_usage_[frame->pose_id] = 1;
+        } else {
+            pose_usage_[frame->pose_id]++;
+        }
+        if (frame->pose_id > 0) {
+            auto now = std::chrono::steady_clock::now();
+            auto pose_time =
+                std::chrono::duration_cast<std::chrono::microseconds>(now - pose_relay_->get_pose_time(frame->pose_id)).count();
+            auto pose_delta = (double) pose_time / 1000.;
+            auto frame_t =
+                std::chrono::duration_cast<std::chrono::microseconds>(now - frame_timing_[frame->frame_number]).count();
+            auto frame_delta = (double) frame_t / 1000.;
+        }
+        frames_topic_.put(std::move(frame));
     }
 }
