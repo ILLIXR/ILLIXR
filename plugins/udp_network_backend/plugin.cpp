@@ -27,7 +27,6 @@ udp_network_backend::udp_network_backend(const std::string& name_, phonebook* pb
         spdlog::get("illixr")->info("[udp_network_backend] Using UDP client IP {}", client_ip_);
     }
 
-
     if (switchboard_->get_env_char("ILLIXR_UDP_CLIENT_PORT")) {
         client_port_ = std::stoi(switchboard_->get_env_char("ILLIXR_UDP_CLIENT_PORT"));
         spdlog::get("illixr")->info("[udp_network_backend] Using UDP client port {}", client_port_);
