@@ -440,8 +440,8 @@ private:
                 // TODO: Need to differentiate and support protobuf deserialization
                 boost::iostreams::stream<boost::iostreams::array_source> stream{buffer.data(), buffer.size()};
                 // Use no_header for cross-platform compatibility (sizeof(long) differs between Windows and Linux)
-                boost::archive::binary_iarchive                          ia{stream, boost::archive::no_header};
-                ptr<event>                                               this_event;
+                boost::archive::binary_iarchive ia{stream, boost::archive::no_header};
+                ptr<event>                      this_event;
                 ia >> this_event;
                 put(std::move(this_event));
             } else {
@@ -650,7 +650,7 @@ public:
                     boost::iostreams::back_insert_device<std::vector<char>>                                  inserter{buffer};
                     boost::iostreams::stream_buffer<boost::iostreams::back_insert_device<std::vector<char>>> stream{inserter};
                     // Use no_header for cross-platform compatibility (sizeof(long) differs between Windows and Linux)
-                    boost::archive::binary_oarchive                                                          oa{stream, boost::archive::no_header};
+                    boost::archive::binary_oarchive oa{stream, boost::archive::no_header};
                     oa << base_event;
                     // flush
                     stream.pubsync();

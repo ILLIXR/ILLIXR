@@ -3,7 +3,7 @@
 #include "illixr/data_format/poses/hand_interaction_pose.hpp"
 #include "illixr/data_format/serialization/pose_base.hpp"
 
-namespace boost::serialization { 
+namespace boost::serialization {
 
 #ifdef USING_OPENXR
 template<class Archive>
@@ -47,7 +47,7 @@ void serialize(Archive& ar, ILLIXR::data_format::pose::hand_interaction_poses_pa
 
 #endif
 
-}
+} // namespace boost::serialization
 
 #ifdef USING_OPENXR
 BOOST_CLASS_EXPORT_KEY(ILLIXR::data_format::pose::hand_interaction_poses_pair)

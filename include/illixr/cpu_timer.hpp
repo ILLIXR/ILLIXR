@@ -272,11 +272,11 @@ private:
 };
 
 #define PRINT_CPU_TIME_FOR_THIS_BLOCK(name) \
-        print_timer<decltype((thread_cpu_time))> PRINT_CPU_TIME_FOR_THIS_BLOCK{name, thread_cpu_time};
+    print_timer<decltype((thread_cpu_time))> PRINT_CPU_TIME_FOR_THIS_BLOCK{name, thread_cpu_time};
 
 #define PRINT_WALL_TIME_FOR_THIS_BLOCK(name)                                                         \
-        print_timer<decltype((std::chrono::high_resolution_clock::now))> PRINT_WALL_TIME_FOR_THIS_BLOCK{ \
-            name, std::chrono::high_resolution_clock::now};
+    print_timer<decltype((std::chrono::high_resolution_clock::now))> PRINT_WALL_TIME_FOR_THIS_BLOCK{ \
+        name, std::chrono::high_resolution_clock::now};
 
 #define PRINT_RECORD_FOR_THIS_BLOCK(name) print_timer2 PRINT_RECORD_FOR_THIS_BLOCK_timer{name};
 

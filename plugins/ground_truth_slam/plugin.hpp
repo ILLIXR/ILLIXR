@@ -25,7 +25,7 @@ public:
     void feed_ground_truth(const switchboard::ptr<const data_format::imu_type>& datum);
 
 private:
-    const std::shared_ptr<switchboard>          switchboard_;
+    const std::shared_ptr<switchboard>                     switchboard_;
     switchboard::writer<data_format::pose::head_pose_type> true_pose_;
 
     switchboard::writer<switchboard::event_wrapper<Eigen::Vector3f>> ground_truth_offset_;

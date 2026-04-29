@@ -45,7 +45,7 @@ void serialize(Archive& ar, ILLIXR::data_format::pose::hand_joint_poses_pair& da
     //              static_cast<long long>(data.sensor_time.time_since_epoch().count()));
 }
 #endif
-}
+} // namespace boost::serialization
 
 #ifdef USING_OPENXR
 BOOST_CLASS_EXPORT_KEY(ILLIXR::data_format::pose::hand_joint_poses_pair)

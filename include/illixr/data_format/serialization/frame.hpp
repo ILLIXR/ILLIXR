@@ -1,8 +1,8 @@
 #pragma once
 
 #include "illixr/data_format/frame.hpp"
-#include "misc.hpp"
 #include "illixr/data_format/serialization/head_pose.hpp"
+#include "misc.hpp"
 
 #include <boost/serialization/binary_object.hpp>
 #include <boost/serialization/split_free.hpp>
@@ -18,7 +18,7 @@ extern "C" {
 // Packet helpers - identical logic to the member functions in frame.hpp but
 // as free functions so they can be used from the non-member serializers below.
 // ---------------------------------------------------------------------------
-namespace ILLIXR::detail { 
+namespace ILLIXR::detail {
 
 #ifdef ILLIXR_LIBAV
 template<class Archive>
@@ -146,9 +146,9 @@ void save(Archive& ar, const ILLIXR::data_format::compressed_frame& f, const uns
             ILLIXR::detail::save_packet(ar, f.left_motion_vec);
             ILLIXR::detail::save_packet(ar, f.right_motion_vec);
         }
-        #ifdef ILLIXR_LIBAV
+    #ifdef ILLIXR_LIBAV
     }
-#endif
+    #endif
 #else
     static_assert(false, "Not compiled with libav or NVENC/NVDEC");
 #endif
@@ -236,7 +236,7 @@ void load(Archive& ar, ILLIXR::data_format::compressed_frame& f, const unsigned 
         ar >> f.pose[1];
     }
 #else
-    ar >> f.pose;
+        ar >> f.pose;
 #endif
 
     ar >> f.near_z;

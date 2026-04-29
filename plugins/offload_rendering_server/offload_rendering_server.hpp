@@ -45,9 +45,8 @@ public:
      * @param _buffer_pool Buffer pool for frame management
      * @param input_texture_vulkan_coordinates Whether input textures use Vulkan coordinates
      */
-    void setup(VkRenderPass render_pass, uint32_t subpass,
-               std::shared_ptr<vulkan::buffer_pool<BUFFER_TYPE>> _buffer_pool,
-               bool                                                              input_texture_vulkan_coordinates) override;
+    void setup(VkRenderPass render_pass, uint32_t subpass, std::shared_ptr<vulkan::buffer_pool<BUFFER_TYPE>> _buffer_pool,
+               bool input_texture_vulkan_coordinates) override;
 
     /**
      * @brief Indicates this sink does not make use of the rendering pipeline in order for the access masks of the layout
@@ -211,7 +210,7 @@ private:
     std::shared_ptr<vulkan::display_provider>                         display_provider_;
     std::shared_ptr<switchboard>                                      switchboard_;
     switchboard::network_writer<data_format::compressed_frame>        frames_topic_;
-    switchboard::reader<BUFFER_TYPE>                  render_pose_;
+    switchboard::reader<BUFFER_TYPE>                                  render_pose_;
     std::shared_ptr<vulkan::buffer_pool<data_format::fast_pose_type>> buffer_pool_;
     std::vector<std::array<vulkan::ffmpeg_utils::ffmpeg_vk_frame, 2>> avvk_color_frames_;
     std::vector<std::array<vulkan::ffmpeg_utils::ffmpeg_vk_frame, 2>> avvk_depth_frames_;
@@ -227,12 +226,12 @@ private:
     AVBufferRef* frame_ctx_       = nullptr;
     AVBufferRef* cuda_frame_ctx_  = nullptr;
 
-    AVCodecContext*          codec_color_ctx_ = nullptr;
-    std::array<AVFrame*, 2>  encode_src_color_frames_{};
+    AVCodecContext*            codec_color_ctx_ = nullptr;
+    std::array<AVFrame*, 2>    encode_src_color_frames_{};
     std::array<PACKET_TYPE, 2> encode_out_color_packets_{};
 
-    AVCodecContext*          codec_depth_ctx_ = nullptr;
-    std::array<AVFrame*, 2>  encode_src_depth_frames_{};
+    AVCodecContext*            codec_depth_ctx_ = nullptr;
+    std::array<AVFrame*, 2>    encode_src_depth_frames_{};
     std::array<PACKET_TYPE, 2> encode_out_depth_packets_{};
 
     uint64_t frame_count_ = 0;
