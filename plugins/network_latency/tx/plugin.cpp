@@ -13,12 +13,12 @@ using namespace ILLIXR::data_format;
 static constexpr int DEFAULT_PING_INTERVAL_MS = 100;
 
 [[maybe_unused]] network_latency_tx::network_latency_tx(const std::string& name, phonebook* pb)
-        : threadloop{name, pb}
-        , switchboard_{pb->lookup_impl<switchboard>()}
-        , ping_writer_{switchboard_->get_network_writer<latency_ping>("latency_ping")}
-        , pong_rx_{std::make_shared<network_latency_pong_rx>(name, pb)}
-        , sequence_number_{0}
-        , last_ping_time_{std::chrono::steady_clock::now()} {
+    : threadloop{name, pb}
+    , switchboard_{pb->lookup_impl<switchboard>()}
+    , ping_writer_{switchboard_->get_network_writer<latency_ping>("latency_ping")}
+    , pong_rx_{std::make_shared<network_latency_pong_rx>(name, pb)}
+    , sequence_number_{0}
+    , last_ping_time_{std::chrono::steady_clock::now()} {
     // Read ping interval from environment
     int interval_ms = switchboard_->get_env_int("NETWORK_LATENCY_INTERVAL_MS", DEFAULT_PING_INTERVAL_MS);
     ping_interval_  = std::chrono::milliseconds(interval_ms);

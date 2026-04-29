@@ -5,7 +5,6 @@
 #include "illixr/phonebook.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
-
 #include "pong_rx/plugin.hpp"
 
 #include <atomic>
@@ -44,6 +43,7 @@ public:
 
     void start() override;
     void stop() override;
+
 protected:
     /**
      * @brief Determines if the iteration should be skipped.
@@ -57,7 +57,6 @@ protected:
     void _p_one_iteration() override;
 
 private:
-
     /**
      * @brief Get current timestamp in nanoseconds.
      * @return Current time in nanoseconds since epoch
