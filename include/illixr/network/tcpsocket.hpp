@@ -1,7 +1,7 @@
 #pragma once
 #if defined(_WIN32) || defined(_WIN64)
-#define _WINSOCKAPI_
-#define WIN32_LEAN_AND_MEAN
+    #define _WINSOCKAPI_
+    #define WIN32_LEAN_AND_MEAN
 #endif
 #include <stdexcept>
 #if defined(_WIN32) || defined(_WIN64)
