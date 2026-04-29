@@ -5,6 +5,7 @@
 #endif
 #include <stdexcept>
 #if defined(_WIN32) || defined(_WIN64)
+// clang-format off
     #include <WinSock2.h>  // Must come FIRST
     #include <ws2def.h>
     #include <ws2tcpip.h>
@@ -13,6 +14,7 @@
     #include <iphlpapi.h>
     #include <icmpapi.h>
     #include <nldef.h>
+// clang-format on
     #pragma comment(lib, "Ws2_32.lib")
     #pragma comment(lib, "Iphlpapi.lib")
     #define BYTE_TYPE   int
