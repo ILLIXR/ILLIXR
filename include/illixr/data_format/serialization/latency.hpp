@@ -1,8 +1,7 @@
 #pragma once
 
-#include "misc.hpp"
-
 #include "illixr/data_format/latency_data.hpp"
+#include "misc.hpp"
 
 #include <boost/serialization/binary_object.hpp>
 
@@ -18,11 +17,11 @@ template<class Archive>
 
 template<class Archive>
 [[maybe_unused]] void serialize(Archive& ar, ILLIXR::data_format::latency_pong& pong, const unsigned int version) {
-    (void)version;
+    (void) version;
     ar& boost::serialization::base_object<ILLIXR::switchboard::event>(pong);
-    ar& pong.sequence_number;
-    ar& pong.client_timestamp_ns;
-    ar& pong.server_timestamp_ns;
+    ar & pong.sequence_number;
+    ar & pong.client_timestamp_ns;
+    ar & pong.server_timestamp_ns;
 }
 
 } // namespace boost::serialization

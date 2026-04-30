@@ -30,7 +30,7 @@
     #include <unistd.h>
 #endif
 #ifdef DUMP_FRAMES
-#include "frame_saver.hpp"
+    #include "frame_saver.hpp"
 #endif
 
 #include <atomic>
@@ -74,10 +74,9 @@ cudaError_t launch_bgra_texture_to_nv12_scaled(cudaTextureObject_t tex_obj, uint
 /// @param dst_eye_width  Per-eye output width in pixels (half of total combined width).
 /// @param dst_height     Output height in pixels.
 /// @param aligned_height NVENC-aligned height used to locate the UV plane.
-cudaError_t launch_bgra_stereo_to_nv12(cudaTextureObject_t left_tex, cudaTextureObject_t right_tex,
-                                        uint8_t* dst_nv12, size_t dst_pitch,
-                                        uint32_t dst_eye_width, uint32_t dst_height,
-                                        uint32_t aligned_height, cudaStream_t stream);
+cudaError_t launch_bgra_stereo_to_nv12(cudaTextureObject_t left_tex, cudaTextureObject_t right_tex, uint8_t* dst_nv12,
+                                       size_t dst_pitch, uint32_t dst_eye_width, uint32_t dst_height, uint32_t aligned_height,
+                                       cudaStream_t stream);
 #endif // COMBINED_ENCODING
 
 cudaError_t launch_rg_depth_to_nv12_scaled(cudaTextureObject_t tex_obj, uint8_t* dst_nv12, size_t dst_pitch, uint32_t dst_width,
@@ -87,9 +86,8 @@ cudaError_t launch_rg_depth_to_nv12_scaled(cudaTextureObject_t tex_obj, uint8_t*
 /// R=Vx → Y plane, G=Vy → UV.U, B=Vz → UV.V (Vy/Vz at half resolution).
 /// Velocities are normalised from [-MV_MAX_VEL, +MV_MAX_VEL] to [0, 255].
 /// The texture object MUST be created with normalizedCoords=1 and linear filtering.
-cudaError_t launch_rgba16f_to_nv12_scaled(cudaTextureObject_t tex_obj, uint8_t* dst_nv12, size_t dst_pitch,
-                                          uint32_t dst_width, uint32_t dst_height, uint32_t aligned_height,
-                                          cudaStream_t stream);
+cudaError_t launch_rgba16f_to_nv12_scaled(cudaTextureObject_t tex_obj, uint8_t* dst_nv12, size_t dst_pitch, uint32_t dst_width,
+                                          uint32_t dst_height, uint32_t aligned_height, cudaStream_t stream);
 
 /// Motion-vector RGBA16F → P010 (10-bit YUV 4:2:0, MSB-packed uint16_t).
 /// R=Vx → Y plane, G=Vy → UV.U, B=Vz → UV.V (Vy/Vz at half resolution).
@@ -189,11 +187,11 @@ enum class encoder_mode {
 /// explicitly to the constructor if mixed-codec sessions are ever needed.
 enum class encoder_codec {
 #ifdef USE_AV1
-    av1,           ///< AV1 (requires Ada Lovelace / RTX 40-series or later)
+    av1, ///< AV1 (requires Ada Lovelace / RTX 40-series or later)
     hevc,
     default_codec = av1,
 #else
-    hevc,          ///< HEVC / H.265 (default)
+    hevc, ///< HEVC / H.265 (default)
     av1,
     default_codec = hevc,
 #endif
@@ -210,8 +208,7 @@ public:
     /// @param mode      Pixel-format conversion path (default: color)
     /// @param codec     Video codec to use (default: controlled by USE_AV1 define)
     nvenc_encoder(uint32_t width, uint32_t height, int64_t bitrate = 15000000, int framerate = 72,
-                  encoder_mode mode = encoder_mode::color,
-                  encoder_codec codec = encoder_codec::default_codec);
+                  encoder_mode mode = encoder_mode::color, encoder_codec codec = encoder_codec::default_codec);
 
     /// Destructor - releases all resources
     ~nvenc_encoder();
@@ -287,11 +284,11 @@ private:
     void get_sequence_headers();
     void send_startup_idrs(int count);
 
-    #ifdef DUMP_FRAMES
+#ifdef DUMP_FRAMES
     // Frame saving (debug)
     void init_frame_saver();
     void save_cuda_frame_to_disk(const cuda_imported_vulkan_image& imported);
-    #endif
+#endif
 
     // CUDA-Vulkan interop
     bool import_vulkan_memory(const vulkan_image_info& vk_image, cuda_imported_vulkan_image& imported);
@@ -304,8 +301,7 @@ private:
 #ifdef COMBINED_ENCODING
     /// GPU stereo blit: converts left and right eye textures into the combined NV12 buffer in
     /// one CUDA kernel launch.  width_ must equal the per-eye target width (half of the total).
-    void convert_stereo_to_nv12_gpu(const cuda_imported_vulkan_image& left,
-                                     const cuda_imported_vulkan_image& right);
+    void convert_stereo_to_nv12_gpu(const cuda_imported_vulkan_image& left, const cuda_imported_vulkan_image& right);
 #endif // COMBINED_ENCODING
 
     // Error checking
@@ -342,12 +338,12 @@ private:
 
     // State
     std::atomic<bool>    initialized_{false};
-    bool                 needs_downscale_      = false; ///< true when source images are larger than encode dims
+    bool                 needs_downscale_         = false; ///< true when source images are larger than encode dims
     bool                 last_frame_was_keyframe_ = false; ///< set after each encode() / encode_stereo() call
     std::vector<uint8_t> vps_sps_pps_;
     uint64_t             frame_count_ = 0;
 
-    encoder_mode mode_ = encoder_mode::color; ///< conversion path selected at construction
+    encoder_mode  mode_  = encoder_mode::color;          ///< conversion path selected at construction
     encoder_codec codec_ = encoder_codec::default_codec; ///< video codec selected at construction
 
     // Imported images cache
@@ -364,12 +360,12 @@ private:
     void* nvenc_lib_ = nullptr;
 #endif
 
-    #ifdef DUMP_FRAMES
+#ifdef DUMP_FRAMES
     // Frame saving (debug) - enabled via ILLIXR_SAVE_FRAMES=1 environment variable
     std::unique_ptr<frame_saver> frame_saver_;
-    #endif
+#endif
     std::vector<uint8_t> cuda_host_buffer_; // Host buffer for GPU readback
-    int current_eye_index_ = 0;
-    int pending_idrs_      = 0;
+    int                  current_eye_index_ = 0;
+    int                  pending_idrs_      = 0;
 };
 } // namespace ILLIXR

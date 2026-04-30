@@ -249,12 +249,10 @@ void nvenc_encoder::init_encoder() {
     // encode time at the cost of ~2-3% compression efficiency.
     // HEVC keeps P7 low-latency since it is less computationally expensive
     // and the extra quality is worthwhile there.
-    const GUID preset_guid  = use_av1 ? NV_ENC_PRESET_P5_GUID        : NV_ENC_PRESET_P7_GUID;
-    const auto tuning_info  = use_av1 ? NV_ENC_TUNING_INFO_ULTRA_LOW_LATENCY
-                                      : NV_ENC_TUNING_INFO_LOW_LATENCY;
+    const GUID preset_guid = use_av1 ? NV_ENC_PRESET_P5_GUID : NV_ENC_PRESET_P7_GUID;
+    const auto tuning_info = use_av1 ? NV_ENC_TUNING_INFO_ULTRA_LOW_LATENCY : NV_ENC_TUNING_INFO_LOW_LATENCY;
 
-    check_nvenc(nvenc_.nvEncGetEncodePresetConfigEx(encoder_, codec_guid, preset_guid,
-                                                    tuning_info, &preset_config),
+    check_nvenc(nvenc_.nvEncGetEncodePresetConfigEx(encoder_, codec_guid, preset_guid, tuning_info, &preset_config),
                 "Failed to get preset: {}");
 
     // Copy preset as base
@@ -278,8 +276,8 @@ void nvenc_encoder::init_encoder() {
             encode_config.encodeCodecConfig.av1Config.outputBitDepth = NV_ENC_BIT_DEPTH_8;
         }
 
-        encode_config.encodeCodecConfig.av1Config.chromaFormatIDC   = 1; // 4:2:0
-        encode_config.encodeCodecConfig.av1Config.repeatSeqHdr      = 1; // Include OBU headers with each key frame
+        encode_config.encodeCodecConfig.av1Config.chromaFormatIDC = 1; // 4:2:0
+        encode_config.encodeCodecConfig.av1Config.repeatSeqHdr    = 1; // Include OBU headers with each key frame
         // Single reference frame: sufficient for low-latency VR streaming and
         // reduces per-frame motion search work compared to 2 reference frames.
         encode_config.encodeCodecConfig.av1Config.maxNumRefFramesInDPB = 1;
@@ -297,7 +295,7 @@ void nvenc_encoder::init_encoder() {
         // 1-second GOP (framerate_ frames) limits the corruption window after
         // any stream discontinuity (e.g. Unity scene transitions) to at most
         // 1 second.  Longer GOPs improve compression but increase recovery time.
-        encode_config.gopLength                            = static_cast<uint32_t>(15);
+        encode_config.gopLength                             = static_cast<uint32_t>(15);
         encode_config.encodeCodecConfig.av1Config.idrPeriod = static_cast<uint32_t>(15);
         encode_config.frameIntervalP                        = 1; // No B-frames for low latency
     } else
@@ -308,13 +306,13 @@ void nvenc_encoder::init_encoder() {
         // extra precision that RGBA16F carries and avoids banding in near-zero-velocity
         // regions that would be visible at 8-bit quantisation.
         if (mode_ == encoder_mode::motion_vector) {
-            encode_config.profileGUID                                  = NV_ENC_HEVC_PROFILE_MAIN10_GUID;
-            encode_config.encodeCodecConfig.hevcConfig.inputBitDepth   = NV_ENC_BIT_DEPTH_10;
-            encode_config.encodeCodecConfig.hevcConfig.outputBitDepth  = NV_ENC_BIT_DEPTH_10;
+            encode_config.profileGUID                                 = NV_ENC_HEVC_PROFILE_MAIN10_GUID;
+            encode_config.encodeCodecConfig.hevcConfig.inputBitDepth  = NV_ENC_BIT_DEPTH_10;
+            encode_config.encodeCodecConfig.hevcConfig.outputBitDepth = NV_ENC_BIT_DEPTH_10;
         } else {
-            encode_config.profileGUID                                  = NV_ENC_HEVC_PROFILE_MAIN_GUID;
-            encode_config.encodeCodecConfig.hevcConfig.inputBitDepth   = NV_ENC_BIT_DEPTH_8;
-            encode_config.encodeCodecConfig.hevcConfig.outputBitDepth  = NV_ENC_BIT_DEPTH_8;
+            encode_config.profileGUID                                 = NV_ENC_HEVC_PROFILE_MAIN_GUID;
+            encode_config.encodeCodecConfig.hevcConfig.inputBitDepth  = NV_ENC_BIT_DEPTH_8;
+            encode_config.encodeCodecConfig.hevcConfig.outputBitDepth = NV_ENC_BIT_DEPTH_8;
         }
         encode_config.encodeCodecConfig.hevcConfig.chromaFormatIDC = 1; // 4:2:0
         encode_config.encodeCodecConfig.hevcConfig.repeatSPSPPS    = 1; // Include headers with each IDR
@@ -561,7 +559,7 @@ bool nvenc_encoder::import_vulkan_memory(const vulkan_image_info& vk_image, cuda
     rt_ext_mem_desc.size                         = vk_image.memory_size;
     rt_ext_mem_desc.flags                        = 0;
 
-#ifdef _WIN32
+    #ifdef _WIN32
     if (!vk_ctx_.vkGetMemoryWin32HandleKHR) {
         spdlog::get("illixr")->error("nvenc_encoder: vkGetMemoryWin32HandleKHR not available");
         return false;
@@ -598,7 +596,7 @@ bool nvenc_encoder::import_vulkan_memory(const vulkan_image_info& vk_image, cuda
     }
     spdlog::get("illixr")->debug("nvenc_encoder: Got Win32 handle: {:p}", imported.handle);
 
-#else // !_WIN32
+    #else  // !_WIN32
     if (!vk_ctx_.vkGetMemoryFdKHR) {
         spdlog::get("illixr")->error("nvenc_encoder: vkGetMemoryFdKHR not available");
         return false;
@@ -618,7 +616,7 @@ bool nvenc_encoder::import_vulkan_memory(const vulkan_image_info& vk_image, cuda
     rt_ext_mem_desc.type      = cudaExternalMemoryHandleTypeOpaqueFd;
     rt_ext_mem_desc.handle.fd = imported.fd;
     spdlog::get("illixr")->debug("nvenc_encoder: Got FD: {}", imported.fd);
-#endif // _WIN32
+    #endif // _WIN32
 
     spdlog::get("illixr")->debug("nvenc_encoder: Calling cudaImportExternalMemory (runtime path) with size={}",
                                  vk_image.memory_size);
@@ -694,7 +692,7 @@ bool nvenc_encoder::import_vulkan_memory(const vulkan_image_info& vk_image, cuda
     ext_mem_desc.size  = vk_image.memory_size;
     ext_mem_desc.flags = 0;
 
-#ifdef _WIN32
+    #ifdef _WIN32
     if (!vk_ctx_.vkGetMemoryWin32HandleKHR) {
         spdlog::get("illixr")->error("nvenc_encoder: vkGetMemoryWin32HandleKHR not available");
         return false;
@@ -733,7 +731,7 @@ bool nvenc_encoder::import_vulkan_memory(const vulkan_image_info& vk_image, cuda
     ext_mem_desc.handle.win32.handle = imported.handle;
     ext_mem_desc.handle.win32.name   = nullptr;
 
-#else // !_WIN32
+    #else  // !_WIN32
     if (!vk_ctx_.vkGetMemoryFdKHR) {
         spdlog::get("illixr")->error("nvenc_encoder: vkGetMemoryFdKHR not available");
         return false;
@@ -753,7 +751,7 @@ bool nvenc_encoder::import_vulkan_memory(const vulkan_image_info& vk_image, cuda
 
     ext_mem_desc.type      = CU_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD;
     ext_mem_desc.handle.fd = imported.fd;
-#endif // _WIN32
+    #endif // _WIN32
 
     spdlog::get("illixr")->debug("nvenc_encoder: Calling cuImportExternalMemory (driver path) with size={}", ext_mem_desc.size);
 
@@ -771,10 +769,10 @@ bool nvenc_encoder::import_vulkan_memory(const vulkan_image_info& vk_image, cuda
     }
 
     CUDA_EXTERNAL_MEMORY_MIPMAPPED_ARRAY_DESC mipmap_desc = {};
-    mipmap_desc.offset                = vk_image.memory_offset;
-    mipmap_desc.arrayDesc.Width       = vk_image.width;
-    mipmap_desc.arrayDesc.Height      = vk_image.height;
-    mipmap_desc.arrayDesc.Depth       = 0;
+    mipmap_desc.offset                                    = vk_image.memory_offset;
+    mipmap_desc.arrayDesc.Width                           = vk_image.width;
+    mipmap_desc.arrayDesc.Height                          = vk_image.height;
+    mipmap_desc.arrayDesc.Depth                           = 0;
     mipmap_desc.arrayDesc.Format      = imported.is_float16 ? CU_AD_FORMAT_HALF : CU_AD_FORMAT_UNSIGNED_INT8;
     mipmap_desc.arrayDesc.NumChannels = num_channels;
     mipmap_desc.arrayDesc.Flags       = 0;
@@ -1098,9 +1096,8 @@ std::vector<uint8_t> nvenc_encoder::encode(int imported_index) {
         // sync at every GOP boundary after the startup IDRs.
         // Do NOT add OUTPUT_SPSPPS — it is a no-op for AV1 and can corrupt output.
         const bool use_av1 = (codec_ == encoder_codec::av1);
-        pic_params.encodePicFlags = use_av1
-            ? NV_ENC_PIC_FLAG_FORCEIDR
-            : (NV_ENC_PIC_FLAG_FORCEIDR | NV_ENC_PIC_FLAG_OUTPUT_SPSPPS);
+        pic_params.encodePicFlags =
+            use_av1 ? NV_ENC_PIC_FLAG_FORCEIDR : (NV_ENC_PIC_FLAG_FORCEIDR | NV_ENC_PIC_FLAG_OUTPUT_SPSPPS);
 #else
         pic_params.encodePicFlags = NV_ENC_PIC_FLAG_FORCEIDR | NV_ENC_PIC_FLAG_OUTPUT_SPSPPS;
 #endif // USE_AV1
@@ -1130,8 +1127,8 @@ std::vector<uint8_t> nvenc_encoder::encode(int imported_index) {
     // Treating only IDR as a keyframe causes the decoder to lose the
     // AMEDIACODEC_BUFFER_FLAG_KEY_FRAME hint on auto-GOP boundaries, which makes
     // MediaCodec's internal error-recovery heuristics misfire.
-    const bool is_keyframe = (lock_bitstream.pictureType == NV_ENC_PIC_TYPE_IDR)
-                          || (lock_bitstream.pictureType == NV_ENC_PIC_TYPE_I);
+    const bool is_keyframe =
+        (lock_bitstream.pictureType == NV_ENC_PIC_TYPE_IDR) || (lock_bitstream.pictureType == NV_ENC_PIC_TYPE_I);
     last_frame_was_keyframe_ = is_keyframe;
 
     // For HEVC: prepend VPS/SPS/PPS to IDR frames (NVENC does not do this
@@ -1140,9 +1137,7 @@ std::vector<uint8_t> nvenc_encoder::encode(int imported_index) {
     // inside every keyframe bitstream automatically, so prepending vps_sps_pps_
     // again would double it and produce an invalid bitstream.
 #ifdef USE_AV1
-    const bool prepend_headers = (codec_ != encoder_codec::av1)
-        && is_keyframe
-        && !vps_sps_pps_.empty();
+    const bool prepend_headers = (codec_ != encoder_codec::av1) && is_keyframe && !vps_sps_pps_.empty();
 #else
     const bool prepend_headers = is_keyframe && !vps_sps_pps_.empty();
 #endif // USE_AV1
@@ -1219,8 +1214,8 @@ std::vector<uint8_t> nvenc_encoder::encode_stereo(int left_index, int right_inde
     if (!initialized_.load()) {
         throw std::runtime_error("Encoder not initialized");
     }
-    if (left_index  < 0 || left_index  >= static_cast<int>(imported_images_.size()) ||
-        right_index < 0 || right_index >= static_cast<int>(imported_images_.size())) {
+    if (left_index < 0 || left_index >= static_cast<int>(imported_images_.size()) || right_index < 0 ||
+        right_index >= static_cast<int>(imported_images_.size())) {
         throw std::runtime_error("Invalid imported image index in encode_stereo");
     }
 
@@ -1239,58 +1234,51 @@ std::vector<uint8_t> nvenc_encoder::encode_stereo(int left_index, int right_inde
     NV_ENC_MAP_INPUT_RESOURCE map_resource = {};
     map_resource.version                   = NV_ENC_MAP_INPUT_RESOURCE_VER;
     map_resource.registeredResource        = registered_nv12_;
-    check_nvenc(nvenc_.nvEncMapInputResource(encoder_, &map_resource),
-                "Map input resource failed (encode_stereo)");
+    check_nvenc(nvenc_.nvEncMapInputResource(encoder_, &map_resource), "Map input resource failed (encode_stereo)");
 
-    NV_ENC_PIC_PARAMS pic_params  = {};
-    pic_params.version            = NV_ENC_PIC_PARAMS_VER;
-    pic_params.inputBuffer        = map_resource.mappedResource;
-    pic_params.bufferFmt          = map_resource.mappedBufferFmt;
-    pic_params.inputWidth         = aligned_width_;
-    pic_params.inputHeight        = aligned_height_;
-    pic_params.outputBitstream    = output_buffer_;
-    pic_params.pictureStruct      = NV_ENC_PIC_STRUCT_FRAME;
-    pic_params.inputTimeStamp     = frame_count_++;
-    pic_params.encodePicFlags     = 0;
+    NV_ENC_PIC_PARAMS pic_params = {};
+    pic_params.version           = NV_ENC_PIC_PARAMS_VER;
+    pic_params.inputBuffer       = map_resource.mappedResource;
+    pic_params.bufferFmt         = map_resource.mappedBufferFmt;
+    pic_params.inputWidth        = aligned_width_;
+    pic_params.inputHeight       = aligned_height_;
+    pic_params.outputBitstream   = output_buffer_;
+    pic_params.pictureStruct     = NV_ENC_PIC_STRUCT_FRAME;
+    pic_params.inputTimeStamp    = frame_count_++;
+    pic_params.encodePicFlags    = 0;
     if (pending_idrs_ > 0) {
-#ifdef USE_AV1
+    #ifdef USE_AV1
         const bool use_av1 = (codec_ == encoder_codec::av1);
-        pic_params.encodePicFlags = use_av1
-            ? NV_ENC_PIC_FLAG_FORCEIDR
-            : (NV_ENC_PIC_FLAG_FORCEIDR | NV_ENC_PIC_FLAG_OUTPUT_SPSPPS);
-#else
+        pic_params.encodePicFlags =
+            use_av1 ? NV_ENC_PIC_FLAG_FORCEIDR : (NV_ENC_PIC_FLAG_FORCEIDR | NV_ENC_PIC_FLAG_OUTPUT_SPSPPS);
+    #else
         pic_params.encodePicFlags = NV_ENC_PIC_FLAG_FORCEIDR | NV_ENC_PIC_FLAG_OUTPUT_SPSPPS;
-#endif // USE_AV1
+    #endif // USE_AV1
         pending_idrs_--;
     }
 
-    check_nvenc(nvenc_.nvEncEncodePicture(encoder_, &pic_params),
-                "Encode picture failed (encode_stereo)");
-    check_nvenc(nvenc_.nvEncUnmapInputResource(encoder_, map_resource.mappedResource),
-                "Unmap resource failed (encode_stereo)");
+    check_nvenc(nvenc_.nvEncEncodePicture(encoder_, &pic_params), "Encode picture failed (encode_stereo)");
+    check_nvenc(nvenc_.nvEncUnmapInputResource(encoder_, map_resource.mappedResource), "Unmap resource failed (encode_stereo)");
 
     // Lock bitstream and copy out.
     NV_ENC_LOCK_BITSTREAM lock_bitstream = {};
     lock_bitstream.version               = NV_ENC_LOCK_BITSTREAM_VER;
     lock_bitstream.outputBitstream       = output_buffer_;
-    check_nvenc(nvenc_.nvEncLockBitstream(encoder_, &lock_bitstream),
-                "Lock bitstream failed (encode_stereo)");
+    check_nvenc(nvenc_.nvEncLockBitstream(encoder_, &lock_bitstream), "Lock bitstream failed (encode_stereo)");
 
     std::vector<uint8_t> encoded_data;
-    const auto*  bitstream_data = static_cast<const uint8_t*>(lock_bitstream.bitstreamBufferPtr);
-    const size_t bitstream_size = lock_bitstream.bitstreamSizeInBytes;
+    const auto*          bitstream_data = static_cast<const uint8_t*>(lock_bitstream.bitstreamBufferPtr);
+    const size_t         bitstream_size = lock_bitstream.bitstreamSizeInBytes;
 
-    const bool is_keyframe = (lock_bitstream.pictureType == NV_ENC_PIC_TYPE_IDR)
-                          || (lock_bitstream.pictureType == NV_ENC_PIC_TYPE_I);
+    const bool is_keyframe =
+        (lock_bitstream.pictureType == NV_ENC_PIC_TYPE_IDR) || (lock_bitstream.pictureType == NV_ENC_PIC_TYPE_I);
     last_frame_was_keyframe_ = is_keyframe;
 
-#ifdef USE_AV1
-    const bool prepend_headers = (codec_ != encoder_codec::av1)
-        && is_keyframe
-        && !vps_sps_pps_.empty();
-#else
+    #ifdef USE_AV1
+    const bool prepend_headers = (codec_ != encoder_codec::av1) && is_keyframe && !vps_sps_pps_.empty();
+    #else
     const bool prepend_headers = is_keyframe && !vps_sps_pps_.empty();
-#endif // USE_AV1
+    #endif // USE_AV1
 
     if (prepend_headers) {
         encoded_data.reserve(vps_sps_pps_.size() + bitstream_size);
@@ -1298,8 +1286,7 @@ std::vector<uint8_t> nvenc_encoder::encode_stereo(int left_index, int right_inde
     }
     encoded_data.insert(encoded_data.end(), bitstream_data, bitstream_data + bitstream_size);
 
-    check_nvenc(nvenc_.nvEncUnlockBitstream(encoder_, output_buffer_),
-                "Unlock bitstream failed (encode_stereo)");
+    check_nvenc(nvenc_.nvEncUnlockBitstream(encoder_, output_buffer_), "Unlock bitstream failed (encode_stereo)");
 
     return encoded_data;
 }
@@ -1406,26 +1393,23 @@ void nvenc_encoder::save_cuda_frame_to_disk(const cuda_imported_vulkan_image& im
             cuda_host_buffer_.resize(required_size);
         }
 
-#if CUDA_VERSION >= 13000
+    #if CUDA_VERSION >= 13000
         if (imported.rt_array == nullptr) {
             spdlog::get("illixr")->warn("nvenc_encoder: imported.rt_array is NULL, cannot save");
             return;
         }
 
-        cudaError_t rt_err = cudaMemcpy2DFromArray(
-            cuda_host_buffer_.data(),
-            actual_width * 4,       // dst pitch
-            imported.rt_array,
-            0, 0,                   // src x, y offset
-            actual_width * 4,       // width in bytes
-            actual_height,
-            cudaMemcpyDeviceToHost);
+        cudaError_t rt_err = cudaMemcpy2DFromArray(cuda_host_buffer_.data(),
+                                                   actual_width * 4,        // dst pitch
+                                                   imported.rt_array, 0, 0, // src x, y offset
+                                                   actual_width * 4,        // width in bytes
+                                                   actual_height, cudaMemcpyDeviceToHost);
         if (rt_err != cudaSuccess) {
-            spdlog::get("illixr")->warn("nvenc_encoder: Failed to copy frame: {} (dims={}x{})",
-                                        cudaGetErrorString(rt_err), actual_width, actual_height);
+            spdlog::get("illixr")->warn("nvenc_encoder: Failed to copy frame: {} (dims={}x{})", cudaGetErrorString(rt_err),
+                                        actual_width, actual_height);
             return;
         }
-#else
+    #else
         if (imported.array == nullptr) {
             spdlog::get("illixr")->warn("nvenc_encoder: imported.array is NULL, cannot save");
             return;
@@ -1453,7 +1437,7 @@ void nvenc_encoder::save_cuda_frame_to_disk(const cuda_imported_vulkan_image& im
                                         (void*) imported.array);
             return;
         }
-#endif // CUDA_VERSION >= 13000
+    #endif // CUDA_VERSION >= 13000
 
         frame_saver_->save_bgra(cuda_host_buffer_.data(), actual_width, actual_height, 0, current_eye_index_, "color");
 

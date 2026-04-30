@@ -1,7 +1,7 @@
 #pragma once
 
 #ifdef Success
-#undef Success // For 'Success' conflict
+    #undef Success // For 'Success' conflict
 #endif
 
 #include "illixr/data_format/poses/head_pose.hpp"
@@ -11,16 +11,16 @@
 #include <boost/serialization/export.hpp>
 #include <cstdint>
 #ifdef __ANDROID__
-#include <GLES/gl.h>
+    #include <GLES/gl.h>
     #ifndef NVDEC_DECODER
         #define NVDEC_DECODER
     #endif
-#ifdef ILLIXR_VULKAN
-#include <android/hardware_buffer.h>
-#endif  // ILLIXR_VULKAN
+    #ifdef ILLIXR_VULKAN
+        #include <android/hardware_buffer.h>
+    #endif // ILLIXR_VULKAN
 #else
-#include <GL/gl.h>
-#endif  // __ANDROID__
+    #include <GL/gl.h>
+#endif // __ANDROID__
 
 // Define PACKET_TYPE based on available codec backends
 #ifdef ILLIXR_LIBAV
@@ -36,20 +36,20 @@ extern "C" {
 #elif defined(NVENC_ENCODER) || defined(NVDEC_DECODER)
 
     #define PACKET_TYPE std::vector<uint8_t>
-    #define PACKET_REF std::vector<uint8_t>&
+    #define PACKET_REF  std::vector<uint8_t>&
 
 #endif
 
 #ifndef BUFFER_TYPE
-#ifdef USING_OPENXR
-#ifdef ENABLE_MONADO
-#define BUFFER_TYPE std::array<xrt_pose, 2>
-#else
-#define BUFFER_TYPE std::array<XrPosef,2>
-#endif
-#else
-#define BUFFER_TYPE pose::fast_head_pose_type
-#endif
+    #ifdef USING_OPENXR
+        #ifdef ENABLE_MONADO
+            #define BUFFER_TYPE std::array<xrt_pose, 2>
+        #else
+            #define BUFFER_TYPE std::array<XrPosef, 2>
+        #endif
+    #else
+        #define BUFFER_TYPE pose::fast_head_pose_type
+    #endif
 #endif
 
 namespace ILLIXR::data_format {
@@ -68,20 +68,20 @@ struct [[maybe_unused]] rendered_frame : public switchboard::event {
 
     rendered_frame(std::array<GLuint, 2>&& swapchain_indices_, std::array<GLuint, 2>&& swap_indices_,
                    pose::fast_head_pose_type render_pose_, time_point sample_time_, time_point render_time_)
-            : swapchain_indices{swapchain_indices_}
-            , swap_indices{swap_indices_}
-            , render_pose(std::move(render_pose_))
-            , sample_time(sample_time_)
-            , render_time(render_time_) { }
+        : swapchain_indices{swapchain_indices_}
+        , swap_indices{swap_indices_}
+        , render_pose(std::move(render_pose_))
+        , sample_time(sample_time_)
+        , render_time(render_time_) { }
 };
 
 struct compressed_frame : public switchboard::event {
-    bool nalu_only;
-    char* left_color_nalu = nullptr;
-    char* right_color_nalu = nullptr;
-    char* left_depth_nalu = nullptr;
-    char* right_depth_nalu = nullptr;
-    int32_t left_color_nalu_size = 0;
+    bool    nalu_only;
+    char*   left_color_nalu       = nullptr;
+    char*   right_color_nalu      = nullptr;
+    char*   left_depth_nalu       = nullptr;
+    char*   right_depth_nalu      = nullptr;
+    int32_t left_color_nalu_size  = 0;
     int32_t right_color_nalu_size = 0;
     int32_t left_depth_nalu_size  = 0;
     int32_t right_depth_nalu_size = 0;
@@ -90,7 +90,7 @@ struct compressed_frame : public switchboard::event {
     bool use_motion_vectors;
 
     /// Tag type: disambiguates the color+motion_vec constructor from color+depth.
-    struct has_motion_vectors_tag {};
+    struct has_motion_vectors_tag { };
 #if defined(ILLIXR_LIBAV) || defined(NVENC_ENCODER) || defined(NVDEC_DECODER)
     PACKET_TYPE left_color;
     PACKET_TYPE right_color;
@@ -102,7 +102,6 @@ struct compressed_frame : public switchboard::event {
     PACKET_TYPE right_motion_vec;
 
 #endif
-
 
     BUFFER_TYPE pose;
 
@@ -124,27 +123,23 @@ struct compressed_frame : public switchboard::event {
     std::array<float, 2> fov_down  = {0.0f, 0.0f};
 #endif
 
-    uint64_t       sent_time;
-    uint64_t       frame_number;
-    uint64_t       pose_id{0}; ///< ID of the combined_pose used to generate this frame,
-                               ///< used to correlate rendered frames with headset pose measurements
-    double         encode_time = 0.;
+    uint64_t sent_time;
+    uint64_t frame_number;
+    uint64_t pose_id{0}; ///< ID of the combined_pose used to generate this frame,
+                         ///< used to correlate rendered frames with headset pose measurements
+    double encode_time = 0.;
     // True if the color bitstream for this frame is a keyframe (IDR / AV1 KEY_FRAME).
     // Set by the server from nvenc_encoder::last_frame_was_keyframe() immediately
     // after encoding, so the client never needs to parse OBU or NAL headers.
     bool    is_keyframe = false;
     int64_t magic       = 0; // Changed from long to int64_t for cross-platform compatibility
 
-
     compressed_frame() = default;
 
 #if defined(ILLIXR_LIBAV) || defined(NVENC_ENCODER) || defined(NVDEC_DECODER)
     /// Color-only constructor.
-    compressed_frame(PACKET_REF left_color, PACKET_REF right_color, 
-                     const BUFFER_TYPE& pose,
-                     uint64_t sent_time,
-                     uint64_t frame_no,
-                     bool nalu_only = false)
+    compressed_frame(PACKET_REF left_color, PACKET_REF right_color, const BUFFER_TYPE& pose, uint64_t sent_time,
+                     uint64_t frame_no, bool nalu_only = false)
         : nalu_only(nalu_only)
         , use_depth(false)
         , use_motion_vectors(false)
@@ -164,9 +159,7 @@ struct compressed_frame : public switchboard::event {
 
     /// Color + depth constructor.
     compressed_frame(PACKET_REF left_color, PACKET_REF right_color, PACKET_REF left_depth, PACKET_REF right_depth,
-                     const BUFFER_TYPE pose,
-                     uint64_t sent_time, uint64_t frame_no,
-                     float near_z, float far_z,
+                     const BUFFER_TYPE pose, uint64_t sent_time, uint64_t frame_no, float near_z, float far_z,
                      bool nalu_only = false)
         : nalu_only(nalu_only)
         , use_depth(true)
@@ -186,13 +179,9 @@ struct compressed_frame : public switchboard::event {
         , magic(0xdeadbeef) { }
 
     /// Color + depth + motion vectors constructor.
-    compressed_frame(PACKET_REF left_color, PACKET_REF right_color,
-                     PACKET_REF left_depth, PACKET_REF right_depth,
-                     PACKET_REF left_motion_vec, PACKET_REF right_motion_vec,
-                     const BUFFER_TYPE pose,
-                     uint64_t sent_time, uint64_t frame_no,
-                     float near_z, float far_z,
-                     bool nalu_only = false)
+    compressed_frame(PACKET_REF left_color, PACKET_REF right_color, PACKET_REF left_depth, PACKET_REF right_depth,
+                     PACKET_REF left_motion_vec, PACKET_REF right_motion_vec, const BUFFER_TYPE pose, uint64_t sent_time,
+                     uint64_t frame_no, float near_z, float far_z, bool nalu_only = false)
         : nalu_only(nalu_only)
         , use_depth(true)
         , use_motion_vectors(true)
@@ -225,11 +214,11 @@ struct compressed_frame : public switchboard::event {
 
 /// Decoded video frame data format
 enum class frame_format : uint8_t {
-    nv12,            ///< NV12 (Y plane + interleaved UV plane)
-    rgba8,           ///< RGBA 8-bit per channel
-    external_oes,    ///< GL_TEXTURE_EXTERNAL_OES handle (for zero-copy path)
+    nv12,         ///< NV12 (Y plane + interleaved UV plane)
+    rgba8,        ///< RGBA 8-bit per channel
+    external_oes, ///< GL_TEXTURE_EXTERNAL_OES handle (for zero-copy path)
 #ifdef __ANDROID__
-    hardware_buffer  ///< AHardwareBuffer handle (Vulkan zero-copy path, Android only)
+    hardware_buffer ///< AHardwareBuffer handle (Vulkan zero-copy path, Android only)
 #endif
 };
 
@@ -246,12 +235,8 @@ struct eye_frame {
 
     /// Texture transform matrix from SurfaceTexture (4x4, column-major)
     /// Only valid when format is external_oes
-    std::array<float, 16> texture_transform{    
-            1.0f, 0.0f, 0.0f, 0.0f,
-            0.0f, 1.0f, 0.0f, 0.0f,
-            0.0f, 0.0f, 1.0f, 0.0f,
-            0.0f, 0.0f, 0.0f, 1.0f
-    };
+    std::array<float, 16> texture_transform{1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+                                            0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f};
 #if defined(__ANDROID__) && defined(ILLIXR_VULKAN)
     /// Hardware buffer handle (used when format is hardware_buffer).
     /// Owned by the AImageReader inside frame_decoder; valid until the next
@@ -264,12 +249,12 @@ struct eye_frame {
 
     /// Construct with raw data
     explicit eye_frame(std::vector<uint8_t> raw_data)
-            : data{std::move(raw_data)}
-            , texture_id{0} {}
+        : data{std::move(raw_data)}
+        , texture_id{0} { }
 
     /// Construct with texture handle and transform
     eye_frame(GLuint tex_id, const float* transform)
-            : texture_id{tex_id} {
+        : texture_id{tex_id} {
         if (transform) {
             std::copy(transform, transform + 16, texture_transform.begin());
         }
@@ -277,8 +262,8 @@ struct eye_frame {
 #if defined(__ANDROID__) && defined(ILLIXR_VULKAN)
     /// Construct with hardware buffer (Vulkan zero-copy path)
     explicit eye_frame(AHardwareBuffer* buf)
-            : texture_id{0}
-            , hw_buffer{buf} {}
+        : texture_id{0}
+        , hw_buffer{buf} { }
 #endif
 
     /// Check if this frame has valid data
@@ -326,7 +311,7 @@ struct [[maybe_unused]] dual_frames : public switchboard::event {
     /// valid when has_valid_motion_vectors() is true)
     eye_frame left_motion_vec{};
     eye_frame right_motion_vec{};
-#endif  // defined(__ANDROID__) && defined(ILLIXR_VULKAN)
+#endif // defined(__ANDROID__) && defined(ILLIXR_VULKAN)
 
     int width{0};
     int height{0};
@@ -366,105 +351,96 @@ struct [[maybe_unused]] dual_frames : public switchboard::event {
     bool has_depth{false};
 #if defined(__ANDROID__) && defined(ILLIXR_VULKAN)
     bool has_motion_vectors{false};
-#endif  // defined(__ANDROID__) && defined(ILLIXR_VULKAN)
+#endif // defined(__ANDROID__) && defined(ILLIXR_VULKAN)
     dual_frames() = default;
 
     /// Construct with raw NV12 data
-    dual_frames(time_point tp, std::vector<uint8_t> left, std::vector<uint8_t> right,
-                int w, int h, uint64_t frame_num = 0, bool has_depth = false)
-            : left_eye{std::move(left)}
-            , right_eye{std::move(right)}
-            , width{w}
-            , height{h}
-            , format{frame_format::nv12}
-            , render_time{tp}
-            , frame_number{frame_num}
-            , has_depth{has_depth} {}
+    dual_frames(time_point tp, std::vector<uint8_t> left, std::vector<uint8_t> right, int w, int h, uint64_t frame_num = 0,
+                bool has_depth = false)
+        : left_eye{std::move(left)}
+        , right_eye{std::move(right)}
+        , width{w}
+        , height{h}
+        , format{frame_format::nv12}
+        , render_time{tp}
+        , frame_number{frame_num}
+        , has_depth{has_depth} { }
 
 #ifndef ILLIXR_VULKAN
     /// Construct with external OES texture handles (GL path)
-    dual_frames(time_point tp, GLuint left_tex, const float* left_transform,
-                GLuint right_tex, const float* right_transform,
+    dual_frames(time_point tp, GLuint left_tex, const float* left_transform, GLuint right_tex, const float* right_transform,
                 int w, int h, uint64_t frame_num = 0, bool has_depth = false)
-            : left_eye{left_tex, left_transform}
-            , right_eye{right_tex, right_transform}
-            , width{w}
-            , height{h}
-            , format{frame_format::external_oes}
-            , render_time{tp}
-            , frame_number{frame_num}
-            , has_depth{has_depth} {}
+        : left_eye{left_tex, left_transform}
+        , right_eye{right_tex, right_transform}
+        , width{w}
+        , height{h}
+        , format{frame_format::external_oes}
+        , render_time{tp}
+        , frame_number{frame_num}
+        , has_depth{has_depth} { }
 
     /// Construct with external OES texture handles for BOTH color and depth (GL path)
-    dual_frames(time_point tp,
-                GLuint left_tex, const float* left_transform,
-                GLuint right_tex, const float* right_transform,
-                GLuint left_depth_tex, const float* left_depth_transform,
-                GLuint right_depth_tex, const float* right_depth_transform,
-                int w, int h, uint64_t frame_num = 0)
-            : left_eye{left_tex, left_transform}
-            , right_eye{right_tex, right_transform}
-            , left_depth{left_depth_tex, left_depth_transform}
-            , right_depth{right_depth_tex, right_depth_transform}
-            , width{w}
-            , height{h}
-            , format{frame_format::external_oes}
-            , render_time{tp}
-            , frame_number{frame_num}
-            , has_depth{true} {}
+    dual_frames(time_point tp, GLuint left_tex, const float* left_transform, GLuint right_tex, const float* right_transform,
+                GLuint left_depth_tex, const float* left_depth_transform, GLuint right_depth_tex,
+                const float* right_depth_transform, int w, int h, uint64_t frame_num = 0)
+        : left_eye{left_tex, left_transform}
+        , right_eye{right_tex, right_transform}
+        , left_depth{left_depth_tex, left_depth_transform}
+        , right_depth{right_depth_tex, right_depth_transform}
+        , width{w}
+        , height{h}
+        , format{frame_format::external_oes}
+        , render_time{tp}
+        , frame_number{frame_num}
+        , has_depth{true} { }
 #endif
 
 #if defined(__ANDROID__) && defined(ILLIXR_VULKAN)
     /// Construct with AHardwareBuffer handles for color only (Vulkan zero-copy path)
-    dual_frames(time_point tp, AHardwareBuffer* left_buf, AHardwareBuffer* right_buf,
-                int w, int h, uint64_t frame_num = 0)
-            : left_eye{left_buf}
-            , right_eye{right_buf}
-            , width{w}
-            , height{h}
-            , format{frame_format::hardware_buffer}
-            , render_time{tp}
-            , frame_number{frame_num}
-            , has_depth{false}
-            , has_motion_vectors{false} { }
+    dual_frames(time_point tp, AHardwareBuffer* left_buf, AHardwareBuffer* right_buf, int w, int h, uint64_t frame_num = 0)
+        : left_eye{left_buf}
+        , right_eye{right_buf}
+        , width{w}
+        , height{h}
+        , format{frame_format::hardware_buffer}
+        , render_time{tp}
+        , frame_number{frame_num}
+        , has_depth{false}
+        , has_motion_vectors{false} { }
 
     /// Construct with AHardwareBuffer handles for color AND depth (Vulkan zero-copy path)
-    dual_frames(time_point tp,
-                AHardwareBuffer* left_color_buf, AHardwareBuffer* right_color_buf,
-                AHardwareBuffer* left_depth_buf, AHardwareBuffer* right_depth_buf,
-                int w, int h, uint64_t frame_num = 0)
-            : left_eye{left_color_buf}
-            , right_eye{right_color_buf}
-            , left_depth{left_depth_buf}
-            , right_depth{right_depth_buf}
-            , width{w}
-            , height{h}
-            , format{frame_format::hardware_buffer}
-            , render_time{tp}
-            , frame_number{frame_num}
-            , has_depth{true}
-            , has_motion_vectors{false} { }
+    dual_frames(time_point tp, AHardwareBuffer* left_color_buf, AHardwareBuffer* right_color_buf,
+                AHardwareBuffer* left_depth_buf, AHardwareBuffer* right_depth_buf, int w, int h, uint64_t frame_num = 0)
+        : left_eye{left_color_buf}
+        , right_eye{right_color_buf}
+        , left_depth{left_depth_buf}
+        , right_depth{right_depth_buf}
+        , width{w}
+        , height{h}
+        , format{frame_format::hardware_buffer}
+        , render_time{tp}
+        , frame_number{frame_num}
+        , has_depth{true}
+        , has_motion_vectors{false} { }
 
     /// Construct with AHardwareBuffer handles for color, depth, and motion vector (Vulkan zero-copy path)
-    dual_frames(time_point tp,
-                AHardwareBuffer* left_color_buf, AHardwareBuffer* right_color_buf,
-                AHardwareBuffer* left_depth_buf, AHardwareBuffer* right_depth_buf,
-                AHardwareBuffer* left_motion_buf, AHardwareBuffer* right_motion_buf,
-                int w, int h, uint64_t frame_num = 0)
-            : left_eye{left_color_buf}
-            , right_eye{right_color_buf}
-            , left_depth{left_depth_buf}
-            , right_depth{right_depth_buf}
-            , left_motion_vec{left_motion_buf}
-            , right_motion_vec{right_motion_buf}
-            , width{w}
-            , height{h}
-            , format{frame_format::hardware_buffer}
-            , render_time{tp}
-            , frame_number{frame_num}
-            , has_depth{true}
-            , has_motion_vectors{true} { }
-#endif  // defined(__ANDROID__) && defined(ILLIXR_VULKAN)
+    dual_frames(time_point tp, AHardwareBuffer* left_color_buf, AHardwareBuffer* right_color_buf,
+                AHardwareBuffer* left_depth_buf, AHardwareBuffer* right_depth_buf, AHardwareBuffer* left_motion_buf,
+                AHardwareBuffer* right_motion_buf, int w, int h, uint64_t frame_num = 0)
+        : left_eye{left_color_buf}
+        , right_eye{right_color_buf}
+        , left_depth{left_depth_buf}
+        , right_depth{right_depth_buf}
+        , left_motion_vec{left_motion_buf}
+        , right_motion_vec{right_motion_buf}
+        , width{w}
+        , height{h}
+        , format{frame_format::hardware_buffer}
+        , render_time{tp}
+        , frame_number{frame_num}
+        , has_depth{true}
+        , has_motion_vectors{true} { }
+#endif // defined(__ANDROID__) && defined(ILLIXR_VULKAN)
 
     /// Check if both eyes have valid data
     [[nodiscard]] bool is_valid() const {
@@ -480,7 +456,8 @@ struct [[maybe_unused]] dual_frames : public switchboard::event {
     }
 
     [[nodiscard]] bool has_valid_depth() const {
-        if (!has_depth) return false;
+        if (!has_depth)
+            return false;
 #if defined(__ANDROID__) && defined(ILLIXR_VULKAN)
         if (format == frame_format::hardware_buffer) {
             return left_depth.hw_buffer != nullptr && right_depth.hw_buffer != nullptr;
@@ -492,11 +469,8 @@ struct [[maybe_unused]] dual_frames : public switchboard::event {
 #if defined(__ANDROID__) && defined(ILLIXR_VULKAN)
     /// Check if both motion-vector eye images are populated and valid
     [[nodiscard]] bool has_valid_motion_vectors() const {
-        return has_motion_vectors
-               && left_motion_vec.hw_buffer  != nullptr
-               && right_motion_vec.hw_buffer != nullptr;
+        return has_motion_vectors && left_motion_vec.hw_buffer != nullptr && right_motion_vec.hw_buffer != nullptr;
     }
-#endif  // defined(__ANDROID__) && defined(ILLIXR_VULKAN)
+#endif // defined(__ANDROID__) && defined(ILLIXR_VULKAN)
 };
 } // namespace ILLIXR::data_format
-

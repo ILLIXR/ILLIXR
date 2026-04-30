@@ -7,23 +7,23 @@
 /// viewed with most image viewers and easily converted to PNG with ImageMagick:
 ///   convert frame_000010.ppm frame_000010.png
 
-#include <chrono>
-#include <cstdint>
-#include <cstring>
-#include <fstream>
-#include <iomanip>
-#include <sstream>
-#include <string>
-#include <vector>
-#include <spdlog/spdlog.h>
+    #include <chrono>
+    #include <cstdint>
+    #include <cstring>
+    #include <fstream>
+    #include <iomanip>
+    #include <spdlog/spdlog.h>
+    #include <sstream>
+    #include <string>
+    #include <vector>
 
-#ifdef _WIN32
-    #include <direct.h>
-    #define MKDIR(dir) _mkdir(dir)
-#else
-    #include <sys/stat.h>
-    #define MKDIR(dir) mkdir(dir, 0755)
-#endif
+    #ifdef _WIN32
+        #include <direct.h>
+        #define MKDIR(dir) _mkdir(dir)
+    #else
+        #include <sys/stat.h>
+        #define MKDIR(dir) mkdir(dir, 0755)
+    #endif
 
 namespace ILLIXR {
 
@@ -96,6 +96,7 @@ private:
     static void create_directory(const std::string& path) {
         MKDIR(path.c_str());
     }
+
     // Write PPM from BGRA data
     bool write_ppm_bgra(const std::string& filename, const uint8_t* data, uint32_t width, uint32_t height, size_t pitch);
 

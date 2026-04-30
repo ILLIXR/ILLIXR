@@ -1,9 +1,9 @@
 #include "pose_relay.hpp"
 
-#include <inttypes.h>
 #include <chrono>
 #include <Eigen/Core>
 #include <Eigen/Geometry>
+#include <inttypes.h>
 #include <spdlog/spdlog.h>
 
 using namespace ILLIXR;
@@ -114,22 +114,17 @@ static xrt_space_relation extrapolate_pose(const xrt_space_relation& relation, d
 
     // Extrapolate orientation by integrating angular velocity
     if (relation.relation_flags & XRT_SPACE_RELATION_ANGULAR_VELOCITY_VALID_BIT) {
-        Eigen::Vector3f ang_vel{relation.angular_velocity.x,
-                                relation.angular_velocity.y,
-                                relation.angular_velocity.z};
-        float angle = ang_vel.norm() * static_cast<float>(dt);
+        Eigen::Vector3f ang_vel{relation.angular_velocity.x, relation.angular_velocity.y, relation.angular_velocity.z};
+        float           angle = ang_vel.norm() * static_cast<float>(dt);
         if (angle > 1e-6f) {
-            Eigen::Quaternionf delta{
-                Eigen::AngleAxisf{angle, ang_vel.normalized()}};
-            Eigen::Quaternionf base{relation.pose.orientation.w,
-                                    relation.pose.orientation.x,
-                                    relation.pose.orientation.y,
+            Eigen::Quaternionf delta{Eigen::AngleAxisf{angle, ang_vel.normalized()}};
+            Eigen::Quaternionf base{relation.pose.orientation.w, relation.pose.orientation.x, relation.pose.orientation.y,
                                     relation.pose.orientation.z};
             Eigen::Quaternionf predicted = (delta * base).normalized();
-            result.pose.orientation.x = predicted.x();
-            result.pose.orientation.y = predicted.y();
-            result.pose.orientation.z = predicted.z();
-            result.pose.orientation.w = predicted.w();
+            result.pose.orientation.x    = predicted.x();
+            result.pose.orientation.y    = predicted.y();
+            result.pose.orientation.z    = predicted.z();
+            result.pose.orientation.w    = predicted.w();
         }
     }
 
@@ -145,23 +140,23 @@ pose_relay::pose_relay(const std::string& name, phonebook* pb)
     , hand_tracking_writer_{switchboard_->get_writer<pose::hand_joint_poses_pair>("hand_poses")}
     , hand_interaction_writer_{switchboard_->get_writer<pose::hand_interaction_poses_pair>("hand_interactions")}
     , palm_pose_writer_{switchboard_->get_writer<pose::palm_poses_pair>("palm_poses")} {
-#else 
+#else
     , render_pose_{switchboard_->get_reader<pose::fast_head_pose_type>("render_pose")} {
 #endif
 #ifdef USING_OPENXR
-    use_hand_tracking_     = switchboard_->get_env_bool("ILLIXR_USE_HAND_TRACKING",     "true");
-    use_palm_poses_        = switchboard_->get_env_bool("ILLIXR_USE_PALM_POSES",         "false");
-    use_hand_interactions_ = switchboard_->get_env_bool("ILLIXR_USE_HAND_INTERACTIONS",  "false");
+    use_hand_tracking_     = switchboard_->get_env_bool("ILLIXR_USE_HAND_TRACKING", "true");
+    use_palm_poses_        = switchboard_->get_env_bool("ILLIXR_USE_PALM_POSES", "false");
+    use_hand_interactions_ = switchboard_->get_env_bool("ILLIXR_USE_HAND_INTERACTIONS", "false");
 
     log_->info(use_hand_tracking_ ? "Hand tracking forwarding enabled" : "Hand tracking forwarding disabled");
     log_->info(use_palm_poses_ ? "Palm pose forwarding enabled" : "Palm pose forwarding disabled");
     log_->info(use_hand_interactions_ ? "Hand interaction forwarding enabled" : "Hand interaction forwarding disabled");
 #endif
-    do_pose_prediction_ = switchboard_->get_env_bool("ILLIXR_ENABLE_POSE_PREDICTION");
+    do_pose_prediction_   = switchboard_->get_env_bool("ILLIXR_ENABLE_POSE_PREDICTION");
     velocity_window_size_ = static_cast<int>(switchboard_->get_env_double("ILLIXR_VELOCITY_WINDOW", 8.));
     velocity_window_size_ = std::clamp(velocity_window_size_, 1, velocity_filter::MAX_WINDOW);
     log_->info("[pose_relay] velocity window size = {}", velocity_window_size_);
-    
+
     velocity_deadband_lin_ = static_cast<float>(switchboard_->get_env_double("ILLIXR_VELOCITY_DEADBAND_LIN", 0.05));
     velocity_deadband_ang_ = static_cast<float>(switchboard_->get_env_double("ILLIXR_VELOCITY_DEADBAND_ANG", 0.03));
     log_->info("[pose_relay] velocity deadband lin={:.3f} m/s ang={:.3f} rad/s", velocity_deadband_lin_,
@@ -186,13 +181,13 @@ void pose_relay::_p_one_iteration() {
     // Try to get the latest pose_with_hands data
     auto pose_data = combined_pose_.get_ro_nullable();
     if (pose_data == nullptr) {
-        //log_->debug("[pose_relay]  no new pose");
+        // log_->debug("[pose_relay]  no new pose");
         return;
     }
     if (pose_data->id == last_pose_id_) {
         return;
     }
-    last_pose_id_ = pose_data->id;
+    last_pose_id_             = pose_data->id;
     auto clock_now            = std::chrono::steady_clock::now();
     pose_time_[last_pose_id_] = clock_now;
     if (!monado_offset_calibrated_ || clock_now - last_offset_calibration_ > std::chrono::seconds(30)) {
@@ -218,29 +213,26 @@ void pose_relay::_p_one_iteration() {
     //   + smoothed_clock_offset_ns        → server system_clock (Unix epoch ns)
     //   - windows_epoch_offset_ns_        → Monado time (os_monotonic_get_ns)
     // ----------------------------------------------------------------
-    int64_t monado_time_ns =
-        pose_data->pose_xr_time_ns
-        + pose_data->xr_to_monotonic_offset_ns
-        + pose_data->monotonic_to_system_offset_ns
-        + static_cast<int64_t>(pose_data->smoothed_clock_offset_ns)
-        - windows_epoch_offset_ns_;
+    int64_t monado_time_ns = pose_data->pose_xr_time_ns + pose_data->xr_to_monotonic_offset_ns +
+        pose_data->monotonic_to_system_offset_ns + static_cast<int64_t>(pose_data->smoothed_clock_offset_ns) -
+        windows_epoch_offset_ns_;
 
     // Cache smoothed_rtt_ns for use in get_pose() without requiring
     // a reader access from within the mutex
     smoothed_rtt_ns_.store(pose_data->smoothed_rtt_ns);
-        
+
     // Store in bounded pose history, oldest to newest
     constexpr size_t MAX_POSE_HISTORY = 10;
     {
         std::lock_guard<std::mutex> lock(pose_mutex_);
-        pose_point pp;
+        pose_point                  pp;
         pp.time = static_cast<XrTime>(monado_time_ns);
         pp.id   = pose_data->id;
-#ifdef USING_OPENXR
+    #ifdef USING_OPENXR
         pp.pose = pose_data->head_pose.pose;
-#else
+    #else
         pp.pose = build_relation_from_pose(pose_data->head_pose);
-#endif
+    #endif
         // Compute dt from the previous pose for the filter time constant
         double filter_dt = 0.0;
         if (!current_poses_.empty()) {
@@ -275,7 +267,7 @@ void pose_relay::_p_one_iteration() {
         // Prune pose_map_ entries older than the oldest stored pose
         if (!current_poses_.empty()) {
             auto oldest = current_poses_.front().time;
-            for (auto it = pose_map_.begin(); it != pose_map_.end(); ) {
+            for (auto it = pose_map_.begin(); it != pose_map_.end();) {
                 if (it->first < oldest) {
                     it = pose_map_.erase(it);
                 } else {
@@ -286,8 +278,7 @@ void pose_relay::_p_one_iteration() {
     }
 
     // Forward hand tracking data to Monado (only for new data)
-    auto now =
-        time_point{std::chrono::duration<long, std::nano>{std::chrono::high_resolution_clock::now().time_since_epoch()}};
+    auto now = time_point{std::chrono::duration<long, std::nano>{std::chrono::high_resolution_clock::now().time_since_epoch()}};
 
     // Throttle debug logging to once every 300 new frames (~5 s at 60 Hz)
     static uint64_t log_frame_counter = 0;
@@ -385,7 +376,6 @@ void pose_relay::_p_one_iteration() {
                     }
                 }
             }
-
         }
     }
 #else
@@ -456,10 +446,7 @@ xrt_space_relation pose_relay::get_pose(XrTime future_time) const {
             log_->warn("[pose_relay] get_pose: dt={:.3f}ms out of range "
                        "(future_time={:.3f}ms best_pose_time={:.3f}ms "
                        "pipeline={:.3f}ms)",
-                       dt * 1000.0,
-                       future_time  / 1'000'000.0,
-                       best->time   / 1'000'000.0,
-                       pipeline_ns  / 1'000'000.0);
+                       dt * 1000.0, future_time / 1'000'000.0, best->time / 1'000'000.0, pipeline_ns / 1'000'000.0);
         }
         // Cache and return the best pose without extrapolation
         pose_map_[future_time] = {best->id, best->pose};
@@ -467,7 +454,7 @@ xrt_space_relation pose_relay::get_pose(XrTime future_time) const {
     }
     if (do_pose_prediction_) {
         xrt_space_relation p_pose = extrapolate_pose(best->pose, dt);
-        pose_map_[future_time] = {best->id, p_pose};
+        pose_map_[future_time]    = {best->id, p_pose};
         return p_pose;
     }
     return best->pose;
@@ -475,16 +462,14 @@ xrt_space_relation pose_relay::get_pose(XrTime future_time) const {
 
 #else
 
-data_format::pose::fast_head_pose_type
-pose_relay::get_pose(time_point future_time) const {
+data_format::pose::fast_head_pose_type pose_relay::get_pose(time_point future_time) const {
     if (current_poses_.empty()) {
         return {};
     }
     return current_poses_.back().pose;
 }
 
-data_format::pose::fast_head_pose_type
-pose_relay::get_pose() const {
+data_format::pose::fast_head_pose_type pose_relay::get_pose() const {
     if (current_poses_.empty()) {
         return {};
     }
@@ -515,10 +500,8 @@ void pose_relay::calibrate_monado_time_offset() {
         int64_t mono_ns = static_cast<int64_t>(os_monotonic_get_ns());
         auto    after   = std::chrono::system_clock::now();
 
-        int64_t before_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(
-                                before.time_since_epoch()).count();
-        int64_t after_ns  = std::chrono::duration_cast<std::chrono::nanoseconds>(
-                                after.time_since_epoch()).count();
+        int64_t before_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(before.time_since_epoch()).count();
+        int64_t after_ns  = std::chrono::duration_cast<std::chrono::nanoseconds>(after.time_since_epoch()).count();
         int64_t rtt       = after_ns - before_ns;
         int64_t mid_ns    = before_ns + rtt / 2;
 
@@ -534,7 +517,6 @@ void pose_relay::calibrate_monado_time_offset() {
     // Store: windows_unix_epoch_ns = qpc_ns + windows_epoch_offset_ns_
     windows_epoch_offset_ns_  = best_offset;
     monado_offset_calibrated_ = true;
-
 }
 
 uint64_t pose_relay::get_pose_id_for_time(XrTime at_time) const {

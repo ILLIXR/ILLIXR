@@ -65,13 +65,12 @@ offload_rendering_server::offload_rendering_server(const std::string& name, phon
 #else
     log_->info("Using FFmpeg encoder");
 #endif
-
 }
 
 void offload_rendering_server::start() {
     pose_relay_->start();
     sender_running_ = true;
-    sender_thread_ = std::thread([this]() {
+    sender_thread_  = std::thread([this]() {
         sender_loop();
     });
     threadloop::start();
@@ -88,7 +87,7 @@ void offload_rendering_server::stop() {
 
 void offload_rendering_server::_p_thread_setup() {
 #ifdef OPENXR_CLIENT
-    hmd_setup_.recommended_image_width = (uint32_t) (1680 * overscan_);
+    hmd_setup_.recommended_image_width  = (uint32_t) (1680 * overscan_);
     hmd_setup_.recommended_image_height = (uint32_t) (1760 * overscan_);
     for (int eye = 0; eye < 2; eye++) {
         hmd_setup_.fov_angle_left[eye]  = overscan_ * ILLIXR::server_params::fov_left[eye];
@@ -97,7 +96,7 @@ void offload_rendering_server::_p_thread_setup() {
         hmd_setup_.fov_angle_down[eye]  = overscan_ * ILLIXR::server_params::fov_down[eye];
     }
 #else
-    hmd_setup_.recommended_image_width = 1680;
+    hmd_setup_.recommended_image_width  = 1680;
     hmd_setup_.recommended_image_height = 1760;
     for (int eye = 0; eye < 2; eye++) {
         hmd_setup_.fov_angle_left[eye]  = ILLIXR::server_params::fov_left[eye];
@@ -249,10 +248,10 @@ void offload_rendering_server::_p_one_iteration() {
         static auto   last_iter_time = std::chrono::high_resolution_clock::now();
         static double iter_gap_acc   = 0.0;
         static int    iter_gap_count = 0;
-        const auto now     = std::chrono::high_resolution_clock::now();
-        const double gap_ms = std::chrono::duration<double, std::milli>(now - last_iter_time).count();
-        last_iter_time = now;
-        iter_gap_acc  += gap_ms;
+        const auto    now            = std::chrono::high_resolution_clock::now();
+        const double  gap_ms         = std::chrono::duration<double, std::milli>(now - last_iter_time).count();
+        last_iter_time               = now;
+        iter_gap_acc += gap_ms;
         iter_gap_count++;
         if (iter_gap_count >= 90) {
             iter_gap_acc   = 0.0;
@@ -397,8 +396,8 @@ void offload_rendering_server::_p_one_iteration() {
 
     // Detect keyframe from the AVPacket flags on eye 0. Both eyes share the same GOP
     // position so eye 0 is sufficient as the reference for the is_keyframe field.
-    color_frame_is_keyframe_ = (encode_out_color_packets_[0] != nullptr) &&
-                               (encode_out_color_packets_[0]->flags & AV_PKT_FLAG_KEY) != 0;
+    color_frame_is_keyframe_ =
+        (encode_out_color_packets_[0] != nullptr) && (encode_out_color_packets_[0]->flags & AV_PKT_FLAG_KEY) != 0;
 #endif
     auto encode_end_time = std::chrono::high_resolution_clock::now();
     buffer_pool_->post_processing_release_image(ind);
@@ -432,7 +431,7 @@ void offload_rendering_server::_p_one_iteration() {
 
     // Log accumulated metrics averages once per second.
     if (!fps_window_.empty()) {
-        const double fps = static_cast<double>(fps_window_.size());
+        const double fps              = static_cast<double>(fps_window_.size());
         static auto  last_metrics_log = std::chrono::high_resolution_clock::now();
         const auto   now_check        = std::chrono::high_resolution_clock::now();
         if (std::chrono::duration_cast<std::chrono::seconds>(now_check - last_metrics_log).count() >= 1) {
@@ -442,14 +441,12 @@ void offload_rendering_server::_p_one_iteration() {
             }
 #ifdef NVENC_ENCODER
             if (use_pass_depth_) {
-                log_->info("Depth frame sizes - Left: {} Right: {}",
-                           encode_out_depth_packets_[0].size(),
+                log_->info("Depth frame sizes - Left: {} Right: {}", encode_out_depth_packets_[0].size(),
                            encode_out_depth_packets_[1].size());
             }
 #else
             if (use_pass_depth_) {
-                log_->info("Depth frame sizes - Left: {} Right: {}",
-                           encode_out_depth_packets_[0]->size,
+                log_->info("Depth frame sizes - Left: {} Right: {}", encode_out_depth_packets_[0]->size,
                            encode_out_depth_packets_[1]->size);
             }
 #endif
@@ -475,49 +472,46 @@ void offload_rendering_server::enqueue_for_network_send(BUFFER_TYPE& pose, uint6
     // Default: two independent per-eye color bitstreams.
     std::shared_ptr<compressed_frame> frame;
     if (use_pass_motion_vectors_) {
-#ifdef COMBINED_ENCODING
-        frame = std::make_shared<compressed_frame>(
-            encode_out_combined_color_packet_, PACKET_TYPE{},
-            encode_out_depth_packets_[0], encode_out_depth_packets_[1],
-            encode_out_motion_vec_packets_[0], encode_out_motion_vec_packets_[1],
-            pose, timestamp, frame_number_, near_z_, far_z_, nalu_only_);
-#else
-        frame = std::make_shared<compressed_frame>(
-            encode_out_color_packets_[0], encode_out_color_packets_[1], encode_out_depth_packets_[0],
-            encode_out_depth_packets_[1], encode_out_motion_vec_packets_[0], encode_out_motion_vec_packets_[1], pose, timestamp,
-            frame_number_, near_z_, far_z_, nalu_only_);
-#endif // COMBINED_ENCODING
-    } else if (use_pass_depth_) {
-#ifdef COMBINED_ENCODING
-        frame = std::make_shared<compressed_frame>(
-            encode_out_combined_color_packet_, PACKET_TYPE{},
-            encode_out_depth_packets_[0], encode_out_depth_packets_[1],
-            pose, timestamp, frame_number_, near_z_, far_z_, nalu_only_);
-#else
+    #ifdef COMBINED_ENCODING
+        frame = std::make_shared<compressed_frame>(encode_out_combined_color_packet_, PACKET_TYPE{},
+                                                   encode_out_depth_packets_[0], encode_out_depth_packets_[1],
+                                                   encode_out_motion_vec_packets_[0], encode_out_motion_vec_packets_[1], pose,
+                                                   timestamp, frame_number_, near_z_, far_z_, nalu_only_);
+    #else
         frame = std::make_shared<compressed_frame>(encode_out_color_packets_[0], encode_out_color_packets_[1],
-                                                             encode_out_depth_packets_[0], encode_out_depth_packets_[1], pose,
-                                                             timestamp, frame_number_, near_z_, far_z_, nalu_only_);
-#endif // COMBINED_ENCODING
+                                                   encode_out_depth_packets_[0], encode_out_depth_packets_[1],
+                                                   encode_out_motion_vec_packets_[0], encode_out_motion_vec_packets_[1], pose,
+                                                   timestamp, frame_number_, near_z_, far_z_, nalu_only_);
+    #endif // COMBINED_ENCODING
+    } else if (use_pass_depth_) {
+    #ifdef COMBINED_ENCODING
+        frame = std::make_shared<compressed_frame>(encode_out_combined_color_packet_, PACKET_TYPE{},
+                                                   encode_out_depth_packets_[0], encode_out_depth_packets_[1], pose, timestamp,
+                                                   frame_number_, near_z_, far_z_, nalu_only_);
+    #else
+        frame = std::make_shared<compressed_frame>(encode_out_color_packets_[0], encode_out_color_packets_[1],
+                                                   encode_out_depth_packets_[0], encode_out_depth_packets_[1], pose, timestamp,
+                                                   frame_number_, near_z_, far_z_, nalu_only_);
+    #endif // COMBINED_ENCODING
     } else {
-#ifdef COMBINED_ENCODING
-        frame = std::make_shared<compressed_frame>(
-            encode_out_combined_color_packet_, PACKET_TYPE{},
-            pose, timestamp, frame_number_, nalu_only_);
-#else
-        frame = std::make_shared<compressed_frame>(encode_out_color_packets_[0], encode_out_color_packets_[1], pose,
-                                                             timestamp, frame_number_, nalu_only_);
-#endif // COMBINED_ENCODING
+    #ifdef COMBINED_ENCODING
+        frame = std::make_shared<compressed_frame>(encode_out_combined_color_packet_, PACKET_TYPE{}, pose, timestamp,
+                                                   frame_number_, nalu_only_);
+    #else
+        frame = std::make_shared<compressed_frame>(encode_out_color_packets_[0], encode_out_color_packets_[1], pose, timestamp,
+                                                   frame_number_, nalu_only_);
+    #endif // COMBINED_ENCODING
     }
-#ifdef OPENXR_CLIENT
+    #ifdef OPENXR_CLIENT
     // Forward render FOV to headset for correct timewarp with overdraw
     for (int eye = 0; eye < 2; eye++) {
-        frame->fov_left[eye]        = hmd_setup_.fov_angle_left[eye];
-        frame->fov_right[eye]       = hmd_setup_.fov_angle_right[eye];
-        frame->fov_up[eye]          = hmd_setup_.fov_angle_up[eye];
-        frame->fov_down[eye]        = hmd_setup_.fov_angle_down[eye];
+        frame->fov_left[eye]  = hmd_setup_.fov_angle_left[eye];
+        frame->fov_right[eye] = hmd_setup_.fov_angle_right[eye];
+        frame->fov_up[eye]    = hmd_setup_.fov_angle_up[eye];
+        frame->fov_down[eye]  = hmd_setup_.fov_angle_down[eye];
     }
-#endif
-    frame->pose_id = pose_id;
+    #endif
+    frame->pose_id     = pose_id;
     frame->is_keyframe = color_frame_is_keyframe_;
     frame->encode_time = current_encode_time_;
 
@@ -534,30 +528,27 @@ void offload_rendering_server::enqueue_for_network_send(BUFFER_TYPE& pose, uint6
     // through the send queue so the encoding thread is never blocked on network I/O.
     std::shared_ptr<compressed_frame> frame;
     if (use_pass_motion_vectors_) {
-        frame = std::make_shared<compressed_frame>(
-            encode_out_color_packets_[0], encode_out_color_packets_[1],
-            encode_out_depth_packets_[0], encode_out_depth_packets_[1],
-            encode_out_motion_vec_packets_[0], encode_out_motion_vec_packets_[1],
-            pose, timestamp, frame_number_, near_z_, far_z_, nalu_only_);
+        frame = std::make_shared<compressed_frame>(encode_out_color_packets_[0], encode_out_color_packets_[1],
+                                                   encode_out_depth_packets_[0], encode_out_depth_packets_[1],
+                                                   encode_out_motion_vec_packets_[0], encode_out_motion_vec_packets_[1], pose,
+                                                   timestamp, frame_number_, near_z_, far_z_, nalu_only_);
     } else if (use_pass_depth_) {
-        frame = std::make_shared<compressed_frame>(
-            encode_out_color_packets_[0], encode_out_color_packets_[1],
-            encode_out_depth_packets_[0], encode_out_depth_packets_[1],
-            pose, timestamp, frame_number_, near_z_, far_z_, nalu_only_);
+        frame = std::make_shared<compressed_frame>(encode_out_color_packets_[0], encode_out_color_packets_[1],
+                                                   encode_out_depth_packets_[0], encode_out_depth_packets_[1], pose, timestamp,
+                                                   frame_number_, near_z_, far_z_, nalu_only_);
     } else {
-        frame = std::make_shared<compressed_frame>(
-            encode_out_color_packets_[0], encode_out_color_packets_[1],
-            pose, timestamp, frame_number_, nalu_only_);
+        frame = std::make_shared<compressed_frame>(encode_out_color_packets_[0], encode_out_color_packets_[1], pose, timestamp,
+                                                   frame_number_, nalu_only_);
     }
 
-#ifdef OPENXR_CLIENT
+    #ifdef OPENXR_CLIENT
     for (int eye = 0; eye < 2; eye++) {
         frame->fov_left[eye]  = hmd_setup_.fov_angle_left[eye];
         frame->fov_right[eye] = hmd_setup_.fov_angle_right[eye];
         frame->fov_up[eye]    = hmd_setup_.fov_angle_up[eye];
         frame->fov_down[eye]  = hmd_setup_.fov_angle_down[eye];
     }
-#endif
+    #endif
     frame->pose_id     = pose_id;
     frame->is_keyframe = color_frame_is_keyframe_;
     frame->encode_time = current_encode_time_;
@@ -650,18 +641,16 @@ void offload_rendering_server::nvenc_init_encoders() {
     // single bitstream.  color_encoder_[1] is left null.
     //
     // Default: one encoder per eye at per-eye width.
-#ifdef COMBINED_ENCODING
+    #ifdef COMBINED_ENCODING
     {
         const uint32_t combined_width = encode_width * 2;
-        log_->info("NVENC: COMBINED_ENCODING — single color encoder {}x{}",
-                   combined_width, encode_height);
-        color_encoder_[0] = std::make_unique<nvenc_encoder>(
-            combined_width, encode_height, bitrate_, framerate_);
+        log_->info("NVENC: COMBINED_ENCODING — single color encoder {}x{}", combined_width, encode_height);
+        color_encoder_[0] = std::make_unique<nvenc_encoder>(combined_width, encode_height, bitrate_, framerate_);
         if (!color_encoder_[0]->initialize(vk_ctx_)) {
             throw std::runtime_error("Failed to initialize combined color encoder");
         }
     }
-#else
+    #else
     // Encoder dimensions are the target (native) resolution; the source (oversized)
     // Vulkan images are imported separately and the GPU kernel downsamples during
     // color conversion.
@@ -673,7 +662,7 @@ void offload_rendering_server::nvenc_init_encoders() {
             throw std::runtime_error("Failed to initialize " + eye_label + " color encoder");
         }
     }
-#endif // COMBINED_ENCODING
+    #endif // COMBINED_ENCODING
 
     if (use_pass_motion_vectors_) {
         // Motion vectors are encoded at a fixed 432x432 (the resolution produced by
@@ -767,11 +756,11 @@ void offload_rendering_server::nvenc_import_buffer_pool_images() {
             vk_image.format        = VK_FORMAT_R8G8B8A8_UNORM;
             vk_image.tiling        = VK_IMAGE_TILING_OPTIMAL;
 
-#ifdef COMBINED_ENCODING
+    #ifdef COMBINED_ENCODING
             int imported_idx = color_encoder_[0]->import_vulkan_image(vk_image);
-#else
+    #else
             int imported_idx = color_encoder_[eye]->import_vulkan_image(vk_image);
-#endif // COMBINED_ENCODING
+    #endif // COMBINED_ENCODING
             if (imported_idx >= 0) {
                 color_imported_indices_[buffer_idx][eye] = imported_idx;
                 log_->info("Imported color buffer {} eye {} -> encoder index {}", buffer_idx, eye, imported_idx);
@@ -849,20 +838,18 @@ void offload_rendering_server::nvenc_encode_frames(int ind) {
     // and is stored in encode_out_combined_color_packet_.
     //
     // Default: encode each eye independently into encode_out_color_packets_[eye].
-#ifdef COMBINED_ENCODING
+    #ifdef COMBINED_ENCODING
     {
         const int left_idx  = color_imported_indices_[ind][0];
         const int right_idx = color_imported_indices_[ind][1];
         if (left_idx < 0 || right_idx < 0) {
-            log_->warn("Buffer {} color not fully imported yet (left={} right={}), skipping",
-                       ind, left_idx, right_idx);
+            log_->warn("Buffer {} color not fully imported yet (left={} right={}), skipping", ind, left_idx, right_idx);
         } else {
-            encode_out_combined_color_packet_ =
-                color_encoder_[0]->encode_stereo(left_idx, right_idx);
-            color_frame_is_keyframe_ = color_encoder_[0]->last_frame_was_keyframe();
+            encode_out_combined_color_packet_ = color_encoder_[0]->encode_stereo(left_idx, right_idx);
+            color_frame_is_keyframe_          = color_encoder_[0]->last_frame_was_keyframe();
         }
     }
-#else
+    #else
     for (int eye = 0; eye < 2; eye++) {
         const int color_index = color_imported_indices_[ind][eye];
         if (color_index < 0) {
@@ -875,7 +862,7 @@ void offload_rendering_server::nvenc_encode_frames(int ind) {
             color_frame_is_keyframe_ = color_encoder_[0]->last_frame_was_keyframe();
         }
     }
-#endif // COMBINED_ENCODING
+    #endif // COMBINED_ENCODING
 
     // Depth and motion-vector encoding is unchanged by COMBINED_ENCODING
     // (they remain per-eye because the decoder still expects separate streams).

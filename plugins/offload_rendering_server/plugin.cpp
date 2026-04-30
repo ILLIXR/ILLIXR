@@ -13,6 +13,7 @@
  */
 
 #include "plugin.hpp"
+
 #include "illixr/data_format/pose_prediction.hpp"
 #include "illixr/vk/render_pass.hpp"
 

@@ -135,7 +135,7 @@ pose::fast_head_pose_type fauxpose_impl::get_fast_pose() const {
 
 pose::fast_head_pose_type fauxpose_impl::get_fast_pose(time_point time) const {
     pose::head_pose_type simulated_pose; /* The algorithmically calculated 6-DOF pose */
-    double    sim_time;       /* sim_time is used to regulate a consistent movement */
+    double               sim_time;       /* sim_time is used to regulate a consistent movement */
 
     RAC_ERRNO_MSG("[fauxpose] at start of _p_one_iteration");
 

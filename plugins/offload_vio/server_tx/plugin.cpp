@@ -31,9 +31,10 @@ using namespace ILLIXR::data_format;
 void server_writer::start() {
     plugin::start();
 
-    switchboard_->schedule<pose::head_pose_type>(id_, "slow_pose", [this](const switchboard::ptr<const pose::head_pose_type>& datum, std::size_t) {
-        this->send_vio_output(datum);
-    });
+    switchboard_->schedule<pose::head_pose_type>(
+        id_, "slow_pose", [this](const switchboard::ptr<const pose::head_pose_type>& datum, std::size_t) {
+            this->send_vio_output(datum);
+        });
 }
 
 void server_writer::send_vio_output(const switchboard::ptr<const pose::head_pose_type>& datum) {

@@ -1,16 +1,16 @@
 #pragma once
 
 #ifdef USING_OPENXR
-#ifdef ENABLE_MONADO
-#include "xrt/xrt_defines.h"
-#define POSE_DATA_TYPE xrt_pose
+    #ifdef ENABLE_MONADO
+        #include "xrt/xrt_defines.h"
+        #define POSE_DATA_TYPE xrt_pose
+    #else
+        #include <openxr/openxr.h>
+        #define POSE_DATA_TYPE XrPosef
+    #endif
 #else
-    #include <openxr/openxr.h>
-#define POSE_DATA_TYPE XrPosef
-#endif
-#else
-#include <Eigen/Dense>
-#endif  // USING_OPENXR
+    #include <Eigen/Dense>
+#endif // USING_OPENXR
 
 namespace ILLIXR::data_format::pose {
 /** @brief Distinguishes the left and right hand. */
@@ -28,19 +28,21 @@ enum hand : int { LEFT = 0, RIGHT = 1 };
 struct pose_base : POSE_DATA_TYPE {
 #else
 struct pose_base {
-    Eigen::Vector3f              position;    //!< Translation component of the pose (x, y, z)
-    Eigen::Quaternionf           orientation; //!< Rotation component of the pose as a unit quaternion
-    float                        confidence;  //!< Confidence in the pose estimate in [0, 1], where 1 is highest confidence
-    bool                         valid;    //!< Whether this pose contains valid, usable data
+    Eigen::Vector3f    position;    //!< Translation component of the pose (x, y, z)
+    Eigen::Quaternionf orientation; //!< Rotation component of the pose as a unit quaternion
+    float              confidence;  //!< Confidence in the pose estimate in [0, 1], where 1 is highest confidence
+    bool               valid;       //!< Whether this pose contains valid, usable data
 #endif
 
 #ifdef USING_OPENXR
-    pose_base() : POSE_DATA_TYPE{} {}
+    pose_base()
+        : POSE_DATA_TYPE{} { }
 
-    explicit pose_base(POSE_DATA_TYPE pose) : POSE_DATA_TYPE{pose} {}
+    explicit pose_base(POSE_DATA_TYPE pose)
+        : POSE_DATA_TYPE{pose} { }
 
     pose_base(const pose_base& base) {
-        position = base.position;
+        position    = base.position;
         orientation = base.orientation;
     }
 
@@ -62,8 +64,7 @@ struct pose_base {
      * @param valid_       Whether the pose is valid, defaults to true
      */
 
-    pose_base(Eigen::Vector3f position_, Eigen::Quaternionf orientation_,
-              float confidence_ = 0.f, bool valid_ = true)
+    pose_base(Eigen::Vector3f position_, Eigen::Quaternionf orientation_, float confidence_ = 0.f, bool valid_ = true)
         : position{std::move(position_)}
         , orientation{std::move(orientation_)}
         , confidence{confidence_}
@@ -73,14 +74,14 @@ struct pose_base {
 #ifdef USING_OPENXR
 
     void update(POSE_DATA_TYPE pose) {
-        position = pose.position;
+        position    = pose.position;
         orientation = pose.orientation;
     }
 #else
     void update(Eigen::Vector3f position_, Eigen::Quaternionf orientation_) {
-        position = position_;
+        position    = position_;
         orientation = orientation_;
     }
 #endif
 };
-} // namespace ILLIXR::data_format
+} // namespace ILLIXR::data_format::pose

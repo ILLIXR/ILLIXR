@@ -1,8 +1,8 @@
 #pragma once
 
-#include "misc.hpp"
 #include "illixr/data_format/poses/head_pose.hpp"
 #include "illixr/data_format/serialization/pose_base.hpp"
+#include "misc.hpp"
 
 // ---------------------------------------------------------------------------
 // Minimal file logger — thread-safe, header-only, no spdlog dependency
@@ -77,11 +77,10 @@ template<class Archive>
     ar & pose.pose;
     ar & pose.predict_computed_time;
     ar & pose.predict_target_time;
-    //SER_LOG_BOTH(ar, "  fast_head_pose_type: computed_time=%lld target_time=%lld",
-    //             static_cast<long long>(pose.predict_computed_time.time_since_epoch().count()),
-    //             static_cast<long long>(pose.predict_target_time));
+    // SER_LOG_BOTH(ar, "  fast_head_pose_type: computed_time=%lld target_time=%lld",
+    //              static_cast<long long>(pose.predict_computed_time.time_since_epoch().count()),
+    //              static_cast<long long>(pose.predict_target_time));
 }
-
 
 } // namespace boost::serialization
 

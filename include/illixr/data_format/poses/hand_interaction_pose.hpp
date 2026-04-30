@@ -1,15 +1,15 @@
 #pragma once
 #ifdef USING_OPENXR
-#include "illixr/data_format/poses/pose_base.hpp"
-#include "illixr/switchboard.hpp"
+    #include "illixr/data_format/poses/pose_base.hpp"
+    #include "illixr/switchboard.hpp"
 
-#include <map>
+    #include <map>
 
-#ifdef ENABLE_MONADO
-#define INTERACTION_POSE_TYPE xrt_pose
-#else
-#define INTERACTION_POSE_TYPE XrPosef
-#endif
+    #ifdef ENABLE_MONADO
+        #define INTERACTION_POSE_TYPE xrt_pose
+    #else
+        #define INTERACTION_POSE_TYPE XrPosef
+    #endif
 namespace ILLIXR::data_format::pose {
 
 /**
@@ -60,8 +60,8 @@ constexpr int NUM_INTERACTION_POSES = 4;
  * true and @c value crosses the application's chosen threshold.
  */
 struct hand_interaction_pose : xrt_space_relation {
-    float value; //!< Gesture-strength scalar in [0, 1]; see struct documentation for per-type semantics
-    bool  ready; //!< Whether the runtime considers the gesture activatable; see struct documentation
+    float   value; //!< Gesture-strength scalar in [0, 1]; see struct documentation for per-type semantics
+    bool    ready; //!< Whether the runtime considers the gesture activatable; see struct documentation
     int64_t predicted_time;
 
     /**
@@ -80,9 +80,8 @@ struct hand_interaction_pose : xrt_space_relation {
      * @param value_       Gesture-strength scalar in [0, 1], defaults to 0
      * @param ready_       Whether the gesture is activatable, defaults to false
      */
-    [[maybe_unused]]explicit hand_interaction_pose(INTERACTION_POSE_TYPE& in_pose,
-                                                   float value_ = 0.f, bool ready_ = false,
-                                                   int64_t p_time = 0)
+    [[maybe_unused]] explicit hand_interaction_pose(INTERACTION_POSE_TYPE& in_pose, float value_ = 0.f, bool ready_ = false,
+                                                    int64_t p_time = 0)
         : xrt_space_relation{}
         , value{value_}
         , ready{ready_}
@@ -90,31 +89,29 @@ struct hand_interaction_pose : xrt_space_relation {
         pose = in_pose;
     }
 
+    #ifndef ENABLE_MONADO
 
-#ifndef ENABLE_MONADO
-
-    [[maybe_unused]]explicit hand_interaction_pose(XrSpaceLocation& location,
-                                                   float value_ = 0.f, bool ready_ = false,
-                                                   XrTime p_time = 0)
-            : xrt_space_relation{}
-            , value{value_}
-            , ready{ready_}
-            , predicted_time{p_time} {
+    [[maybe_unused]] explicit hand_interaction_pose(XrSpaceLocation& location, float value_ = 0.f, bool ready_ = false,
+                                                    XrTime p_time = 0)
+        : xrt_space_relation{}
+        , value{value_}
+        , ready{ready_}
+        , predicted_time{p_time} {
         pose = location.pose;
         set_flags(location.locationFlags);
     }
 
     void update(XrSpaceLocation location, float val, bool rdy, XrTime p_time) {
-        pose = location.pose;
+        pose  = location.pose;
         value = val;
         ready = rdy;
         set_flags(location.locationFlags);
         predicted_time = p_time;
     }
-#endif
-    [[maybe_unused]]bool valid() const {
+    #endif
+    [[maybe_unused]] bool valid() const {
         return (relation_flags & XRT_SPACE_RELATION_POSITION_VALID_BIT) != 0u &&
-                (relation_flags & XRT_SPACE_RELATION_ORIENTATION_VALID_BIT) != 0u;
+            (relation_flags & XRT_SPACE_RELATION_ORIENTATION_VALID_BIT) != 0u;
     }
 };
 
@@ -127,18 +124,19 @@ struct hand_interaction_pose : xrt_space_relation {
  * semantically bound to their corresponding pose type.
  */
 struct hand_interaction_poses {
-    std::map<interaction_pose_type, hand_interaction_pose> poses;        //!< Interaction poses keyed by type
+    std::map<interaction_pose_type, hand_interaction_pose> poses; //!< Interaction poses keyed by type
 
     /**
      * @brief Default constructor. All poses default-constructed; hand is not tracked.
      */
     hand_interaction_poses()
         : poses{
-            {AIM,   hand_interaction_pose{}},
-            {GRIP,  hand_interaction_pose{}},
-            {PINCH, hand_interaction_pose{}},
-            {POKE,  hand_interaction_pose{}},
-          } {}
+              {AIM, hand_interaction_pose{}},
+              {GRIP, hand_interaction_pose{}},
+              {PINCH, hand_interaction_pose{}},
+              {POKE, hand_interaction_pose{}},
+          } { }
+
     /**
      * @brief Construct from explicit components.
      * @param poses_        Map from interaction type to pose data
@@ -199,8 +197,7 @@ struct hand_interaction_poses_pair : public switchboard::event {
     hand_interaction_poses& operator[](hand h) {
         return hands[h];
     }
-
 };
 
-} // namespace ILLIXR::data_format
+} // namespace ILLIXR::data_format::pose
 #endif

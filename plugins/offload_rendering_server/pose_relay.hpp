@@ -1,7 +1,7 @@
 #pragma once
 
 #ifndef ENABLE_MONADO
-#define ENABLE_MONADO
+    #define ENABLE_MONADO
 #endif
 
 #define DOUBLE_INCLUDE
@@ -13,16 +13,16 @@
 
 #include <map>
 
-
 #ifdef USING_OPENXR
-#include <openxr/openxr.h>
-#include "xrt/xrt_defines.h"
-#include "auxiliary/os/os_time.h"
-#define POSE_TIME_TYPE XrTime
+    #include "auxiliary/os/os_time.h"
+    #include "xrt/xrt_defines.h"
+
+    #include <openxr/openxr.h>
+    #define POSE_TIME_TYPE XrTime
     #define POSE_TYPE      xrt_space_relation
 #else
-#define POSE_TIME_TYPE time_point
-#define POSE_TYPE      data_format::pose::fast_head_pose_type
+    #define POSE_TIME_TYPE time_point
+    #define POSE_TYPE      data_format::pose::fast_head_pose_type
 #endif
 
 /// Entry stored in pose_map_, associating an extrapolated pose with the
@@ -34,11 +34,11 @@ struct pose_map_entry {
 
 struct pose_point {
 #ifdef USING_OPENXR
-    XrTime time;
+    XrTime             time;
     uint64_t           id; ///< combined_pose.id for this measurement
     xrt_space_relation pose;
 #else
-    time_point time;
+    time_point                             time;
     data_format::pose::fast_head_pose_type pose;
 #endif
 };
@@ -72,7 +72,7 @@ public:
     /// Used by illixr_src_release to tag released frames with their source pose id.
     uint64_t get_pose_id_for_time(XrTime at_time) const;
 
-     /// Search pose_map_ for the entry whose orientation most closely matches
+    /// Search pose_map_ for the entry whose orientation most closely matches
     /// the given quaternion (by absolute dot product). Returns the combined_pose
     /// id of the best match, or 0 if no match is found above the threshold.
     /// Used by offload_rendering_server to tag compressed_frame::pose_id.
@@ -143,7 +143,7 @@ private:
     /// holding pose_mutex_.
     mutable std::atomic<double> smoothed_rtt_ns_{0.0};
 
-    std::chrono::steady_clock::time_point last_offset_calibration_{};
+    std::chrono::steady_clock::time_point                     last_offset_calibration_{};
     std::map<uint64_t, std::chrono::steady_clock::time_point> pose_time_{};
 #ifdef USING_OPENXR
     bool use_hand_tracking_     = false;

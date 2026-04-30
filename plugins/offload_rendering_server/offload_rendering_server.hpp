@@ -2,22 +2,18 @@
 #define MONADO_IS_SOURCE
 #define DOUBLE_INCLUDE
 
+#include "drivers/illixr/illixr_framebuffer.h"
+#include "illixr/data_format/frame.hpp"
+#include "illixr/data_format/hmd_config.hpp"
+#include "illixr/data_format/pose_id.hpp"
+#include "illixr/data_format/pose_prediction.hpp"
+#include "illixr/data_format/poses/combined_pose.hpp"
+#include "illixr/data_format/serialization/head_pose.hpp"
+#include "illixr/switchboard.hpp"
+#include "illixr/threadloop.hpp"
 #include "illixr/vk/display_provider.hpp"
 #include "illixr/vk/render_pass.hpp"
 #include "illixr/vk/vulkan_utils.hpp"
-
-#include "drivers/illixr/illixr_framebuffer.h"
-
-#include "illixr/data_format/poses/combined_pose.hpp"
-
-#include "illixr/data_format/hmd_config.hpp"
-#include "illixr/data_format/pose_prediction.hpp"
-#include "illixr/data_format/frame.hpp"
-#include "illixr/data_format/serialization/head_pose.hpp"
-#include "illixr/data_format/pose_id.hpp"
-#include "illixr/switchboard.hpp"
-#include "illixr/threadloop.hpp"
-
 #include "pose_relay.hpp"
 
 #ifdef NVENC_ENCODER
@@ -76,12 +72,8 @@ public:
      * @param _buffer_pool Buffer pool for frame management
      * @param input_texture_vulkan_coordinates Whether input textures use Vulkan coordinates
      */
-    void setup(VkRenderPass render_pass,
-               uint32_t subpass,
-               std::shared_ptr<vulkan::buffer_pool<BUFFER_TYPE>> buffer_pool,
-               bool input_texture_vulkan_coordinates,
-               struct illixr_framebuffer* framebuffer_array,
-               VkExtent2D extent) override;
+    void setup(VkRenderPass render_pass, uint32_t subpass, std::shared_ptr<vulkan::buffer_pool<BUFFER_TYPE>> buffer_pool,
+               bool input_texture_vulkan_coordinates, struct illixr_framebuffer* framebuffer_array, VkExtent2D extent) override;
 
     /**
      * @brief Indicates this sink does not make use of the rendering pipeline in order for the access masks of the layout
@@ -106,7 +98,6 @@ public:
     POSE_TYPE get_fast_pose() const override {
         return pose_relay_->get_pose();
     }
-
 
     /**
      * @brief Get predicted pose for a future time point (returns current pose)
@@ -298,11 +289,11 @@ private:
 #else
     int framerate_ = 144;
 #endif
-    long bitrate_   = OFFLOAD_RENDERING_BITRATE;
+    long bitrate_ = OFFLOAD_RENDERING_BITRATE;
 
-    bool use_pass_depth_        = false;
+    bool use_pass_depth_          = false;
     bool use_pass_motion_vectors_ = false;
-    bool nalu_only_             = false;
+    bool nalu_only_               = false;
 
     std::atomic<bool> framebuffers_imported_{false};
 
@@ -331,13 +322,13 @@ private:
     // bitstream parsing on the client side.
     bool color_frame_is_keyframe_ = false;
 
-#ifdef COMBINED_ENCODING
+    #ifdef COMBINED_ENCODING
     // Under COMBINED_ENCODING a single encoder handles both eyes at double width.
     // color_encoder_[0] is used; color_encoder_[1] is unused.
     // encode_out_combined_color_packet_ carries the single combined bitstream;
     // encode_out_color_packets_ is not used for color in this mode.
     PACKET_TYPE encode_out_combined_color_packet_{};
-#endif // COMBINED_ENCODING
+    #endif // COMBINED_ENCODING
 
 #else
     // ========================================================================
@@ -352,13 +343,13 @@ private:
     AVBufferRef* frame_ctx_       = nullptr;
     AVBufferRef* cuda_frame_ctx_  = nullptr;
 
-    AVCodecContext*          codec_color_ctx_ = nullptr;
-    std::array<AVFrame*, 2>  encode_src_color_frames_{};
+    AVCodecContext*         codec_color_ctx_ = nullptr;
+    std::array<AVFrame*, 2> encode_src_color_frames_{};
 #endif
     std::array<PACKET_TYPE, 2> encode_out_color_packets_{};
 #ifndef NVENC_ENCODER
-    AVCodecContext*          codec_depth_ctx_ = nullptr;
-    std::array<AVFrame*, 2>  encode_src_depth_frames_{};
+    AVCodecContext*         codec_depth_ctx_ = nullptr;
+    std::array<AVFrame*, 2> encode_src_depth_frames_{};
 #endif
     std::array<PACKET_TYPE, 2> encode_out_depth_packets_{};
     std::array<PACKET_TYPE, 2> encode_out_motion_vec_packets_{};
@@ -370,7 +361,7 @@ private:
     // Boxcar FPS: timestamps of frames encoded within the last 1 second.
     // Updated every frame in _p_one_iteration(); get_fps() returns the count.
     std::deque<std::chrono::high_resolution_clock::time_point> fps_window_;
-    std::map<std::string, long long>                metrics_;
+    std::map<std::string, long long>                           metrics_;
 
     int32_t last_frame_ind_ = -1;
 #ifdef OPENXR_CLIENT
@@ -383,7 +374,7 @@ private:
     VkExtent2D                 extent_            = {0, 0};
 
     std::shared_ptr<pose_relay> pose_relay_;
-    hmd_config hmd_setup_;
+    hmd_config                  hmd_setup_;
 
     std::atomic<bool> ready_{false};
     uint64_t          frame_number_{0};
@@ -391,15 +382,15 @@ private:
 
     std::deque<std::shared_ptr<data_format::compressed_frame>> send_queue_;
 
-    std::mutex                send_queue_mutex_;
-    std::condition_variable   send_queue_cv_;
-    std::thread               sender_thread_;
-    static constexpr size_t   MAX_QUEUE_DEPTH = 6;
-    std::atomic<bool>         sender_running_{false};
-    std::map<uint64_t, uint8_t> pose_usage_{};
+    std::mutex                                                send_queue_mutex_;
+    std::condition_variable                                   send_queue_cv_;
+    std::thread                                               sender_thread_;
+    static constexpr size_t                                   MAX_QUEUE_DEPTH = 6;
+    std::atomic<bool>                                         sender_running_{false};
+    std::map<uint64_t, uint8_t>                               pose_usage_{};
     std::map<uint64_t, std::chrono::steady_clock::time_point> frame_timing_{};
 #ifdef OPENXR_CLIENT
-    float                     overscan_ = 1.f;
+    float overscan_ = 1.f;
 #endif
 };
 } // namespace ILLIXR

@@ -33,5 +33,4 @@ void serialize(Archive& ar, ILLIXR::data_format::pose::pose_base& pose, const un
 
 #endif
 
-
-}
+} // namespace boost::serialization

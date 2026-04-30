@@ -12,8 +12,8 @@
 // texture_fetch_functions.h, cuda_texture_types.h) are fully subsumed by
 // cuda_runtime.h and must NOT be included separately: they were deprecated in
 // CUDA 11 and removed in CUDA 13.
-#include <cuda_runtime.h>
 #include <cstdint>
+#include <cuda_runtime.h>
 
 // BT.709 coefficients for RGB to YUV conversion
 // Y  =  0.2126 * R + 0.7152 * G + 0.0722 * B
@@ -21,17 +21,17 @@
 // Cr =  0.5000 * R - 0.4542 * G - 0.0458 * B + 128
 
 // Scaled coefficients (multiplied by 256 for integer math)
-#define Y_R   54    // 0.2126 * 256
-#define Y_G  183    // 0.7152 * 256
-#define Y_B   18    // 0.0722 * 256
+#define Y_R 54  // 0.2126 * 256
+#define Y_G 183 // 0.7152 * 256
+#define Y_B 18  // 0.0722 * 256
 
-#define U_R  -29    // -0.1146 * 256
-#define U_G  -99    // -0.3854 * 256
-#define U_B  128    // 0.5000 * 256
+#define U_R -29 // -0.1146 * 256
+#define U_G -99 // -0.3854 * 256
+#define U_B 128 // 0.5000 * 256
 
-#define V_R  128    // 0.5000 * 256
-#define V_G -116    // -0.4542 * 256
-#define V_B  -12    // -0.0458 * 256
+#define V_R 128  // 0.5000 * 256
+#define V_G -116 // -0.4542 * 256
+#define V_B -12  // -0.0458 * 256
 
 // Device-side min/max to avoid conflicts with Windows macros
 __device__ __forceinline__ int device_min(int a, int b) {
@@ -58,14 +58,8 @@ __device__ __forceinline__ int device_clamp(int val, int lo, int hi) {
  * @param width Image width
  * @param height Image height
  */
-__global__ void bgra_to_y_kernel(
-    const uint8_t* __restrict__ src,
-    uint8_t* __restrict__ dst,
-    size_t src_pitch,
-    size_t dst_pitch,
-    uint32_t width,
-    uint32_t height)
-{
+__global__ void bgra_to_y_kernel(const uint8_t* __restrict__ src, uint8_t* __restrict__ dst, size_t src_pitch, size_t dst_pitch,
+                                 uint32_t width, uint32_t height) {
     const uint32_t x = blockIdx.x * blockDim.x + threadIdx.x;
     const uint32_t y = blockIdx.y * blockDim.y + threadIdx.y;
 
@@ -74,10 +68,10 @@ __global__ void bgra_to_y_kernel(
     }
 
     // Read BGRA pixel
-    const size_t src_idx = y * src_pitch + x * 4;
-    const uint8_t b = src[src_idx + 0];
-    const uint8_t g = src[src_idx + 1];
-    const uint8_t r = src[src_idx + 2];
+    const size_t  src_idx = y * src_pitch + x * 4;
+    const uint8_t b       = src[src_idx + 0];
+    const uint8_t g       = src[src_idx + 1];
+    const uint8_t r       = src[src_idx + 2];
     // Alpha (src[src_idx + 3]) is ignored
 
     // Convert to Y using BT.709 coefficients
@@ -105,16 +99,10 @@ __global__ void bgra_to_y_kernel(
  * @param width Image width (full resolution)
  * @param height Image height (full resolution)
  */
-__global__ void bgra_to_uv_kernel(
-    const uint8_t* __restrict__ src,
-    uint8_t* __restrict__ dst,
-    size_t src_pitch,
-    size_t dst_pitch,
-    uint32_t width,
-    uint32_t height)
-{
-    const uint32_t x = blockIdx.x * blockDim.x + threadIdx.x;  // UV x coordinate
-    const uint32_t y = blockIdx.y * blockDim.y + threadIdx.y;  // UV y coordinate
+__global__ void bgra_to_uv_kernel(const uint8_t* __restrict__ src, uint8_t* __restrict__ dst, size_t src_pitch,
+                                  size_t dst_pitch, uint32_t width, uint32_t height) {
+    const uint32_t x = blockIdx.x * blockDim.x + threadIdx.x; // UV x coordinate
+    const uint32_t y = blockIdx.y * blockDim.y + threadIdx.y; // UV y coordinate
 
     // UV plane is half resolution
     if (x >= width / 2 || y >= height / 2) {
@@ -155,8 +143,8 @@ __global__ void bgra_to_uv_kernel(
 
     // Write UV pair (NV12 format: U, V interleaved)
     const size_t dst_idx = y * dst_pitch + x * 2;
-    dst[dst_idx + 0] = static_cast<uint8_t>(u_val);
-    dst[dst_idx + 1] = static_cast<uint8_t>(v_val);
+    dst[dst_idx + 0]     = static_cast<uint8_t>(u_val);
+    dst[dst_idx + 1]     = static_cast<uint8_t>(v_val);
 }
 
 /**
@@ -177,14 +165,8 @@ __global__ void bgra_to_uv_kernel(
  * @param width     Image width  (source == destination for this 1:1 kernel)
  * @param height    Image height (source == destination for this 1:1 kernel)
  */
-__global__ void bgra_texture_to_nv12_kernel(
-    cudaTextureObject_t tex_obj,
-    uint8_t* __restrict__ y_dst,
-    uint8_t* __restrict__ uv_dst,
-    size_t dst_pitch,
-    uint32_t width,
-    uint32_t height)
-{
+__global__ void bgra_texture_to_nv12_kernel(cudaTextureObject_t tex_obj, uint8_t* __restrict__ y_dst,
+                                            uint8_t* __restrict__ uv_dst, size_t dst_pitch, uint32_t width, uint32_t height) {
     const uint32_t x = blockIdx.x * blockDim.x + threadIdx.x;
     const uint32_t y = blockIdx.y * blockDim.y + threadIdx.y;
 
@@ -208,7 +190,7 @@ __global__ void bgra_texture_to_nv12_kernel(
     const int b = static_cast<int>(pixel.z * 255.0f + 0.5f);
 
     // Convert to Y
-    int y_val = ((Y_R * r + Y_G * g + Y_B * b + 128) >> 8);
+    int y_val                = ((Y_R * r + Y_G * g + Y_B * b + 128) >> 8);
     y_val                    = device_clamp(y_val, 0, 255);
     y_dst[y * dst_pitch + x] = static_cast<uint8_t>(y_val);
 
@@ -230,9 +212,7 @@ __global__ void bgra_texture_to_nv12_kernel(
             b_sum += static_cast<int>(p2.z * 255.0f + 0.5f);
         }
         if (x + 1 < width && y + 1 < height) {
-            float4 p3 = tex2D<float4>(tex_obj,
-                                      (static_cast<float>(x) + 1.5f) * inv_w,
-                                      (static_cast<float>(y) + 1.5f) * inv_h);
+            float4 p3 = tex2D<float4>(tex_obj, (static_cast<float>(x) + 1.5f) * inv_w, (static_cast<float>(y) + 1.5f) * inv_h);
             r_sum += static_cast<int>(p3.x * 255.0f + 0.5f);
             g_sum += static_cast<int>(p3.y * 255.0f + 0.5f);
             b_sum += static_cast<int>(p3.z * 255.0f + 0.5f);
@@ -250,11 +230,11 @@ __global__ void bgra_texture_to_nv12_kernel(
         v_val     = device_clamp(v_val, 0, 255);
 
         // Write UV pair
-        const size_t uv_x = x >> 1;
-        const size_t uv_y = y >> 1;
+        const size_t uv_x   = x >> 1;
+        const size_t uv_y   = y >> 1;
         const size_t uv_idx = uv_y * dst_pitch + uv_x * 2;
-        uv_dst[uv_idx + 0] = static_cast<uint8_t>(u_val);
-        uv_dst[uv_idx + 1] = static_cast<uint8_t>(v_val);
+        uv_dst[uv_idx + 0]  = static_cast<uint8_t>(u_val);
+        uv_dst[uv_idx + 1]  = static_cast<uint8_t>(v_val);
     }
 }
 
@@ -285,14 +265,9 @@ __global__ void bgra_texture_to_nv12_kernel(
  * @param dst_width  Width  of the desired output image in pixels
  * @param dst_height Height of the desired output image in pixels
  */
-__global__ void bgra_texture_to_nv12_scaled_kernel(
-    cudaTextureObject_t tex_obj,
-    uint8_t* __restrict__ y_dst,
-    uint8_t* __restrict__ uv_dst,
-    size_t dst_pitch,
-    uint32_t dst_width,
-    uint32_t dst_height)
-{
+__global__ void bgra_texture_to_nv12_scaled_kernel(cudaTextureObject_t tex_obj, uint8_t* __restrict__ y_dst,
+                                                   uint8_t* __restrict__ uv_dst, size_t dst_pitch, uint32_t dst_width,
+                                                   uint32_t dst_height) {
     const uint32_t x = blockIdx.x * blockDim.x + threadIdx.x;
     const uint32_t y = blockIdx.y * blockDim.y + threadIdx.y;
 
@@ -318,7 +293,7 @@ __global__ void bgra_texture_to_nv12_scaled_kernel(
     const int b = static_cast<int>(pixel.z * 255.0f + 0.5f);
 
     // Convert to Y
-    int y_val = ((Y_R * r + Y_G * g + Y_B * b + 128) >> 8);
+    int y_val                = ((Y_R * r + Y_G * g + Y_B * b + 128) >> 8);
     y_val                    = device_clamp(y_val, 0, 255);
     y_dst[y * dst_pitch + x] = static_cast<uint8_t>(y_val);
 
@@ -341,9 +316,7 @@ __global__ void bgra_texture_to_nv12_scaled_kernel(
             b_sum += static_cast<int>(p2.z * 255.0f + 0.5f);
         }
         if (x + 1 < dst_width && y + 1 < dst_height) {
-            float4 p3 = tex2D<float4>(tex_obj,
-                                      (static_cast<float>(x) + 1.5f) * inv_w,
-                                      (static_cast<float>(y) + 1.5f) * inv_h);
+            float4 p3 = tex2D<float4>(tex_obj, (static_cast<float>(x) + 1.5f) * inv_w, (static_cast<float>(y) + 1.5f) * inv_h);
             r_sum += static_cast<int>(p3.x * 255.0f + 0.5f);
             g_sum += static_cast<int>(p3.y * 255.0f + 0.5f);
             b_sum += static_cast<int>(p3.z * 255.0f + 0.5f);
@@ -378,32 +351,20 @@ extern "C" {
 /**
  * @brief Launch BGRA to NV12 conversion from linear memory
  */
-cudaError_t launch_bgra_to_nv12(
-    const uint8_t* src_bgra,
-    uint8_t* dst_nv12,
-    size_t src_pitch,
-    size_t dst_pitch,
-    uint32_t width,
-    uint32_t height,
-    uint32_t aligned_height,
-    cudaStream_t stream)
-{
+cudaError_t launch_bgra_to_nv12(const uint8_t* src_bgra, uint8_t* dst_nv12, size_t src_pitch, size_t dst_pitch, uint32_t width,
+                                uint32_t height, uint32_t aligned_height, cudaStream_t stream) {
     // Y plane kernel
     dim3 block_y(16, 16);
-    dim3 grid_y((width + block_y.x - 1) / block_y.x,
-                (height + block_y.y - 1) / block_y.y);
+    dim3 grid_y((width + block_y.x - 1) / block_y.x, (height + block_y.y - 1) / block_y.y);
 
-    bgra_to_y_kernel<<<grid_y, block_y, 0, stream>>>(
-        src_bgra, dst_nv12, src_pitch, dst_pitch, width, height);
+    bgra_to_y_kernel<<<grid_y, block_y, 0, stream>>>(src_bgra, dst_nv12, src_pitch, dst_pitch, width, height);
 
     // UV plane kernel (half resolution)
     uint8_t* uv_plane = dst_nv12 + dst_pitch * aligned_height;
-    dim3 block_uv(16, 16);
-    dim3 grid_uv((width / 2 + block_uv.x - 1) / block_uv.x,
-                 (height / 2 + block_uv.y - 1) / block_uv.y);
+    dim3     block_uv(16, 16);
+    dim3     grid_uv((width / 2 + block_uv.x - 1) / block_uv.x, (height / 2 + block_uv.y - 1) / block_uv.y);
 
-    bgra_to_uv_kernel<<<grid_uv, block_uv, 0, stream>>>(
-        src_bgra, uv_plane, src_pitch, dst_pitch, width, height);
+    bgra_to_uv_kernel<<<grid_uv, block_uv, 0, stream>>>(src_bgra, uv_plane, src_pitch, dst_pitch, width, height);
 
     return cudaGetLastError();
 }
@@ -415,24 +376,15 @@ cudaError_t launch_bgra_to_nv12(
  * filtering so that pixel-center coordinates are expressed as
  * (x + 0.5) / width rather than x + 0.5.
  */
-cudaError_t launch_bgra_texture_to_nv12(
-    cudaTextureObject_t tex_obj,
-    uint8_t* dst_nv12,
-    size_t dst_pitch,
-    uint32_t width,
-    uint32_t height,
-    uint32_t aligned_height,
-    cudaStream_t stream)
-{
-    uint8_t* y_plane = dst_nv12;
+cudaError_t launch_bgra_texture_to_nv12(cudaTextureObject_t tex_obj, uint8_t* dst_nv12, size_t dst_pitch, uint32_t width,
+                                        uint32_t height, uint32_t aligned_height, cudaStream_t stream) {
+    uint8_t* y_plane  = dst_nv12;
     uint8_t* uv_plane = dst_nv12 + dst_pitch * aligned_height;
 
     dim3 block(16, 16);
-    dim3 grid((width + block.x - 1) / block.x,
-              (height + block.y - 1) / block.y);
+    dim3 grid((width + block.x - 1) / block.x, (height + block.y - 1) / block.y);
 
-    bgra_texture_to_nv12_kernel<<<grid, block, 0, stream>>>(
-        tex_obj, y_plane, uv_plane, dst_pitch, width, height);
+    bgra_texture_to_nv12_kernel<<<grid, block, 0, stream>>>(tex_obj, y_plane, uv_plane, dst_pitch, width, height);
 
     return cudaGetLastError();
 }
@@ -451,24 +403,17 @@ cudaError_t launch_bgra_texture_to_nv12(
  * The texture object must be created with normalizedCoords=1 and bilinear
  * filtering (cudaFilterModeLinear).
  */
-cudaError_t launch_bgra_texture_to_nv12_scaled(
-    cudaTextureObject_t tex_obj,
-    uint8_t* dst_nv12,
-    size_t dst_pitch,
-    uint32_t dst_width,
-    uint32_t dst_height,
-    uint32_t aligned_height,
-    cudaStream_t stream)
-{
+cudaError_t launch_bgra_texture_to_nv12_scaled(cudaTextureObject_t tex_obj, uint8_t* dst_nv12, size_t dst_pitch,
+                                               uint32_t dst_width, uint32_t dst_height, uint32_t aligned_height,
+                                               cudaStream_t stream) {
     uint8_t* y_plane  = dst_nv12;
     uint8_t* uv_plane = dst_nv12 + dst_pitch * aligned_height;
 
     dim3 block(16, 16);
-    dim3 grid((dst_width  + block.x - 1) / block.x,
-              (dst_height + block.y - 1) / block.y);
+    dim3 grid((dst_width + block.x - 1) / block.x, (dst_height + block.y - 1) / block.y);
 
-    bgra_texture_to_nv12_scaled_kernel<<<grid, block, 0, stream>>>(
-        tex_obj, y_plane, uv_plane, dst_pitch, dst_width, dst_height);
+    bgra_texture_to_nv12_scaled_kernel<<<grid, block, 0, stream>>>(tex_obj, y_plane, uv_plane, dst_pitch, dst_width,
+                                                                   dst_height);
 
     return cudaGetLastError();
 }
@@ -476,22 +421,17 @@ cudaError_t launch_bgra_texture_to_nv12_scaled(
 // RG depth to NV12 kernel - preserves both depth bytes
 // R channel → Y plane (high byte)
 // G channel → UV plane (low byte)
-__global__ void rg_depth_to_nv12_scaled_kernel(
-    cudaTextureObject_t tex,
-    uint8_t* __restrict__ dst_nv12,
-    size_t dst_pitch,
-    uint32_t dst_width,
-    uint32_t dst_height,
-    uint32_t aligned_height
-) {
+__global__ void rg_depth_to_nv12_scaled_kernel(cudaTextureObject_t tex, uint8_t* __restrict__ dst_nv12, size_t dst_pitch,
+                                               uint32_t dst_width, uint32_t dst_height, uint32_t aligned_height) {
     uint32_t x = blockIdx.x * blockDim.x + threadIdx.x;
     uint32_t y = blockIdx.y * blockDim.y + threadIdx.y;
 
-    if (x >= dst_width || y >= dst_height) return;
+    if (x >= dst_width || y >= dst_height)
+        return;
 
     // Sample RG texture with normalized coordinates
-    float u = (x + 0.5f) / dst_width;
-    float v = (y + 0.5f) / dst_height;
+    float  u     = (x + 0.5f) / dst_width;
+    float  v     = (y + 0.5f) / dst_height;
     float4 pixel = tex2D<float4>(tex, u, v);
 
     // For RG depth: pixel = (R, G, 0, 0) or (R, G, 0, 1)
@@ -499,38 +439,29 @@ __global__ void rg_depth_to_nv12_scaled_kernel(
     // G = low byte of 16-bit depth
 
     // Store R channel (high byte) in Y plane
-    uint8_t high_byte = (uint8_t)(pixel.x * 255.0f);
+    uint8_t high_byte           = (uint8_t) (pixel.x * 255.0f);
     dst_nv12[y * dst_pitch + x] = high_byte;
 
     // Store G channel (low byte) in UV plane
     // Use 2x2 chroma subsampling like standard NV12
     if ((x & 1) == 0 && (y & 1) == 0) {
-        uint32_t uv_y = y / 2;
+        uint32_t uv_y      = y / 2;
         uint32_t uv_offset = aligned_height * dst_pitch + uv_y * dst_pitch + x;
 
-        uint8_t low_byte = (uint8_t)(pixel.y * 255.0f);
+        uint8_t low_byte = (uint8_t) (pixel.y * 255.0f);
 
         // Store G in both U and V channels for reconstruction
-        dst_nv12[uv_offset] = low_byte;      // U channel
-        dst_nv12[uv_offset + 1] = low_byte;  // V channel
+        dst_nv12[uv_offset]     = low_byte; // U channel
+        dst_nv12[uv_offset + 1] = low_byte; // V channel
     }
 }
 
-cudaError_t launch_rg_depth_to_nv12_scaled(
-    cudaTextureObject_t tex,
-    uint8_t* dst_nv12,
-    size_t dst_pitch,
-    uint32_t dst_width,
-    uint32_t dst_height,
-    uint32_t aligned_height,
-    cudaStream_t stream
-) {
+cudaError_t launch_rg_depth_to_nv12_scaled(cudaTextureObject_t tex, uint8_t* dst_nv12, size_t dst_pitch, uint32_t dst_width,
+                                           uint32_t dst_height, uint32_t aligned_height, cudaStream_t stream) {
     dim3 block(16, 16);
     dim3 grid((dst_width + 15) / 16, (dst_height + 15) / 16);
 
-    rg_depth_to_nv12_scaled_kernel<<<grid, block, 0, stream>>>(
-        tex, dst_nv12, dst_pitch, dst_width, dst_height, aligned_height
-    );
+    rg_depth_to_nv12_scaled_kernel<<<grid, block, 0, stream>>>(tex, dst_nv12, dst_pitch, dst_width, dst_height, aligned_height);
 
     return cudaGetLastError();
 }
@@ -556,7 +487,7 @@ cudaError_t launch_rg_depth_to_nv12_scaled(
 
 __device__ __forceinline__ uint8_t quantise_velocity(float v) {
     // Map [-MV_MAX_VEL, +MV_MAX_VEL] → [0, 255]
-    float normalised = (v / MV_MAX_VEL) * 0.5f + 0.5f;  // [0, 1]
+    float normalised = (v / MV_MAX_VEL) * 0.5f + 0.5f; // [0, 1]
     int   quantised  = __float2int_rn(normalised * 255.0f);
     return (uint8_t) device_clamp(quantised, 0, 255);
 }
@@ -566,14 +497,8 @@ __device__ __forceinline__ uint8_t quantise_velocity(float v) {
 /// The texture object must be created with normalizedCoords=1 and bilinear
 /// filtering (cudaFilterModeLinear) so that the kernel can downscale from
 /// the source Vulkan image size to dst_width x dst_height in one pass.
-__global__ void rgba16f_to_nv12_scaled_kernel(
-    cudaTextureObject_t tex,
-    uint8_t* __restrict__  dst_nv12,
-    size_t   dst_pitch,
-    uint32_t dst_width,
-    uint32_t dst_height,
-    uint32_t aligned_height)
-{
+__global__ void rgba16f_to_nv12_scaled_kernel(cudaTextureObject_t tex, uint8_t* __restrict__ dst_nv12, size_t dst_pitch,
+                                              uint32_t dst_width, uint32_t dst_height, uint32_t aligned_height) {
     const uint32_t x = blockIdx.x * blockDim.x + threadIdx.x;
     const uint32_t y = blockIdx.y * blockDim.y + threadIdx.y;
 
@@ -582,9 +507,9 @@ __global__ void rgba16f_to_nv12_scaled_kernel(
     }
 
     // Sample with normalised coordinates so downscaling is free.
-    const float u      = (x + 0.5f) / static_cast<float>(dst_width);
-    const float v_coord = (y + 0.5f) / static_cast<float>(dst_height);
-    const float4 pixel = tex2D<float4>(tex, u, v_coord);
+    const float  u       = (x + 0.5f) / static_cast<float>(dst_width);
+    const float  v_coord = (y + 0.5f) / static_cast<float>(dst_height);
+    const float4 pixel   = tex2D<float4>(tex, u, v_coord);
 
     // Y plane: quantised Vx (full resolution).
     dst_nv12[y * dst_pitch + x] = quantise_velocity(pixel.x);
@@ -593,8 +518,8 @@ __global__ void rgba16f_to_nv12_scaled_kernel(
     if ((x & 1) == 0 && (y & 1) == 0) {
         const uint32_t uv_row    = y / 2;
         const uint32_t uv_offset = aligned_height * dst_pitch + uv_row * dst_pitch + x;
-        dst_nv12[uv_offset]     = quantise_velocity(pixel.y);  // U = Vy
-        dst_nv12[uv_offset + 1] = quantise_velocity(pixel.z);  // V = Vz
+        dst_nv12[uv_offset]      = quantise_velocity(pixel.y); // U = Vy
+        dst_nv12[uv_offset + 1]  = quantise_velocity(pixel.z); // V = Vz
     }
 }
 
@@ -607,20 +532,12 @@ __global__ void rgba16f_to_nv12_scaled_kernel(
 /// @param dst_height   Output height in pixels (must be even).
 /// @param aligned_height  NVENC-aligned height used to locate the UV plane.
 /// @param stream       CUDA stream.
-cudaError_t launch_rgba16f_to_nv12_scaled(
-    cudaTextureObject_t tex,
-    uint8_t*            dst_nv12,
-    size_t              dst_pitch,
-    uint32_t            dst_width,
-    uint32_t            dst_height,
-    uint32_t            aligned_height,
-    cudaStream_t        stream)
-{
+cudaError_t launch_rgba16f_to_nv12_scaled(cudaTextureObject_t tex, uint8_t* dst_nv12, size_t dst_pitch, uint32_t dst_width,
+                                          uint32_t dst_height, uint32_t aligned_height, cudaStream_t stream) {
     dim3 block(16, 16);
     dim3 grid((dst_width + 15) / 16, (dst_height + 15) / 16);
 
-    rgba16f_to_nv12_scaled_kernel<<<grid, block, 0, stream>>>(
-        tex, dst_nv12, dst_pitch, dst_width, dst_height, aligned_height);
+    rgba16f_to_nv12_scaled_kernel<<<grid, block, 0, stream>>>(tex, dst_nv12, dst_pitch, dst_width, dst_height, aligned_height);
 
     return cudaGetLastError();
 }
@@ -648,10 +565,10 @@ cudaError_t launch_rgba16f_to_nv12_scaled(
 
 __device__ __forceinline__ uint16_t quantise_velocity_10bit(float v) {
     // Map [-MV_MAX_VEL, +MV_MAX_VEL] → [0, 1023]
-    float normalised = (v / MV_MAX_VEL) * 0.5f + 0.5f;          // → [0, 1]
+    float normalised = (v / MV_MAX_VEL) * 0.5f + 0.5f; // → [0, 1]
     int   quantised  = __float2int_rn(normalised * 1023.0f);
     quantised        = device_clamp(quantised, 0, 1023);
-    return static_cast<uint16_t>(quantised << 6);                 // P010: value in MSBs
+    return static_cast<uint16_t>(quantised << 6); // P010: value in MSBs
 }
 
 /// @brief Encode RGBA16F motion vectors into P010 with optional downscale.
@@ -664,14 +581,8 @@ __device__ __forceinline__ uint16_t quantise_velocity_10bit(float v) {
 /// @param dst_width      Output width in pixels (must be even).
 /// @param dst_height     Output height in pixels (must be even).
 /// @param aligned_height NVENC-aligned height used to locate the UV plane.
-__global__ void rgba16f_to_p010_scaled_kernel(
-    cudaTextureObject_t tex,
-    uint16_t* __restrict__ dst_p010,
-    size_t   dst_pitch_bytes,
-    uint32_t dst_width,
-    uint32_t dst_height,
-    uint32_t aligned_height)
-{
+__global__ void rgba16f_to_p010_scaled_kernel(cudaTextureObject_t tex, uint16_t* __restrict__ dst_p010, size_t dst_pitch_bytes,
+                                              uint32_t dst_width, uint32_t dst_height, uint32_t aligned_height) {
     const uint32_t x = blockIdx.x * blockDim.x + threadIdx.x;
     const uint32_t y = blockIdx.y * blockDim.y + threadIdx.y;
 
@@ -680,9 +591,9 @@ __global__ void rgba16f_to_p010_scaled_kernel(
     }
 
     // Normalised sample coordinates (bilinear downscale is free via the texture unit).
-    const float  u      = (x + 0.5f) / static_cast<float>(dst_width);
+    const float  u       = (x + 0.5f) / static_cast<float>(dst_width);
     const float  v_coord = (y + 0.5f) / static_cast<float>(dst_height);
-    const float4 pixel  = tex2D<float4>(tex, u, v_coord);
+    const float4 pixel   = tex2D<float4>(tex, u, v_coord);
 
     // P010 row stride in uint16_t elements.
     const size_t stride = dst_pitch_bytes / 2;
@@ -693,30 +604,24 @@ __global__ void rgba16f_to_p010_scaled_kernel(
     // UV plane (half resolution): Vy → U, Vz → V.
     // One UV pair covers a 2×2 luma block; we write on even pixels of even rows.
     if ((x & 1) == 0 && (y & 1) == 0) {
-        const uint32_t uv_row    = y / 2;
+        const uint32_t uv_row = y / 2;
         // UV plane starts at aligned_height * dst_pitch_bytes bytes from the base.
-        const size_t   uv_base   = (static_cast<size_t>(aligned_height) * dst_pitch_bytes) / 2;
-        const size_t   uv_offset = uv_base + uv_row * stride + x;
+        const size_t uv_base    = (static_cast<size_t>(aligned_height) * dst_pitch_bytes) / 2;
+        const size_t uv_offset  = uv_base + uv_row * stride + x;
         dst_p010[uv_offset]     = quantise_velocity_10bit(pixel.y); // U = Vy
         dst_p010[uv_offset + 1] = quantise_velocity_10bit(pixel.z); // V = Vz
     }
 }
 
 /// @brief Launch motion-vector RGBA16F → P010 conversion from a texture.
-cudaError_t launch_rgba16f_to_p010_scaled(
-    cudaTextureObject_t tex,
-    uint16_t*           dst_p010,
-    size_t              dst_pitch_bytes,
-    uint32_t            dst_width,
-    uint32_t            dst_height,
-    uint32_t            aligned_height,
-    cudaStream_t        stream)
-{
+cudaError_t launch_rgba16f_to_p010_scaled(cudaTextureObject_t tex, uint16_t* dst_p010, size_t dst_pitch_bytes,
+                                          uint32_t dst_width, uint32_t dst_height, uint32_t aligned_height,
+                                          cudaStream_t stream) {
     dim3 block(16, 16);
     dim3 grid((dst_width + 15) / 16, (dst_height + 15) / 16);
 
-    rgba16f_to_p010_scaled_kernel<<<grid, block, 0, stream>>>(
-        tex, dst_p010, dst_pitch_bytes, dst_width, dst_height, aligned_height);
+    rgba16f_to_p010_scaled_kernel<<<grid, block, 0, stream>>>(tex, dst_p010, dst_pitch_bytes, dst_width, dst_height,
+                                                              aligned_height);
 
     return cudaGetLastError();
 }
@@ -741,15 +646,9 @@ cudaError_t launch_rgba16f_to_p010_scaled(
 
 #ifdef COMBINED_ENCODING
 
-__global__ void bgra_stereo_to_nv12_kernel(
-    cudaTextureObject_t  left_tex,
-    cudaTextureObject_t  right_tex,
-    uint8_t* __restrict__ y_dst,
-    uint8_t* __restrict__ uv_dst,
-    size_t   dst_pitch,
-    uint32_t dst_eye_width,
-    uint32_t dst_height)
-{
+__global__ void bgra_stereo_to_nv12_kernel(cudaTextureObject_t left_tex, cudaTextureObject_t right_tex,
+                                           uint8_t* __restrict__ y_dst, uint8_t* __restrict__ uv_dst, size_t dst_pitch,
+                                           uint32_t dst_eye_width, uint32_t dst_height) {
     // x spans the full combined width [0, dst_eye_width * 2).
     const uint32_t x = blockIdx.x * blockDim.x + threadIdx.x;
     const uint32_t y = blockIdx.y * blockDim.y + threadIdx.y;
@@ -766,19 +665,18 @@ __global__ void bgra_stereo_to_nv12_kernel(
     const float inv_w = 1.0f / static_cast<float>(dst_eye_width);
     const float inv_h = 1.0f / static_cast<float>(dst_height);
     const float u     = (static_cast<float>(local_x) + 0.5f) * inv_w;
-    const float v     = (static_cast<float>(y)        + 0.5f) * inv_h;
+    const float v     = (static_cast<float>(y) + 0.5f) * inv_h;
 
     // Sample from the appropriate eye texture.
     // Channel mapping .x=R .y=G .z=B matches bgra_texture_to_nv12_scaled_kernel.
-    float4 pixel = is_right ? tex2D<float4>(right_tex, u, v)
-                             : tex2D<float4>(left_tex,  u, v);
+    float4 pixel = is_right ? tex2D<float4>(right_tex, u, v) : tex2D<float4>(left_tex, u, v);
 
     const int r = static_cast<int>(pixel.x * 255.0f + 0.5f);
     const int g = static_cast<int>(pixel.y * 255.0f + 0.5f);
     const int b = static_cast<int>(pixel.z * 255.0f + 0.5f);
 
     // Write Y plane (full resolution).
-    int y_val = ((Y_R * r + Y_G * g + Y_B * b + 128) >> 8);
+    int y_val                = ((Y_R * r + Y_G * g + Y_B * b + 128) >> 8);
     y_val                    = device_clamp(y_val, 0, 255);
     y_dst[y * dst_pitch + x] = static_cast<uint8_t>(y_val);
 
@@ -792,8 +690,7 @@ __global__ void bgra_stereo_to_nv12_kernel(
         // Right neighbor — stays in the same eye half (dst_eye_width is even).
         if (local_x + 1 < dst_eye_width) {
             const float u1 = (static_cast<float>(local_x) + 1.5f) * inv_w;
-            float4 p1 = is_right ? tex2D<float4>(right_tex, u1, v)
-                                 : tex2D<float4>(left_tex,  u1, v);
+            float4      p1 = is_right ? tex2D<float4>(right_tex, u1, v) : tex2D<float4>(left_tex, u1, v);
             r_sum += static_cast<int>(p1.x * 255.0f + 0.5f);
             g_sum += static_cast<int>(p1.y * 255.0f + 0.5f);
             b_sum += static_cast<int>(p1.z * 255.0f + 0.5f);
@@ -802,8 +699,7 @@ __global__ void bgra_stereo_to_nv12_kernel(
         // Bottom neighbor.
         if (y + 1 < dst_height) {
             const float v1 = (static_cast<float>(y) + 1.5f) * inv_h;
-            float4 p2 = is_right ? tex2D<float4>(right_tex, u, v1)
-                                 : tex2D<float4>(left_tex,  u, v1);
+            float4      p2 = is_right ? tex2D<float4>(right_tex, u, v1) : tex2D<float4>(left_tex, u, v1);
             r_sum += static_cast<int>(p2.x * 255.0f + 0.5f);
             g_sum += static_cast<int>(p2.y * 255.0f + 0.5f);
             b_sum += static_cast<int>(p2.z * 255.0f + 0.5f);
@@ -812,9 +708,8 @@ __global__ void bgra_stereo_to_nv12_kernel(
         // Bottom-right neighbor.
         if (local_x + 1 < dst_eye_width && y + 1 < dst_height) {
             const float u1 = (static_cast<float>(local_x) + 1.5f) * inv_w;
-            const float v1 = (static_cast<float>(y)        + 1.5f) * inv_h;
-            float4 p3 = is_right ? tex2D<float4>(right_tex, u1, v1)
-                                 : tex2D<float4>(left_tex,  u1, v1);
+            const float v1 = (static_cast<float>(y) + 1.5f) * inv_h;
+            float4      p3 = is_right ? tex2D<float4>(right_tex, u1, v1) : tex2D<float4>(left_tex, u1, v1);
             r_sum += static_cast<int>(p3.x * 255.0f + 0.5f);
             g_sum += static_cast<int>(p3.y * 255.0f + 0.5f);
             b_sum += static_cast<int>(p3.z * 255.0f + 0.5f);
@@ -827,8 +722,8 @@ __global__ void bgra_stereo_to_nv12_kernel(
 
         int u_val = ((U_R * r_avg + U_G * g_avg + U_B * b_avg + 128) >> 8) + 128;
         int v_val = ((V_R * r_avg + V_G * g_avg + V_B * b_avg + 128) >> 8) + 128;
-        u_val = device_clamp(u_val, 0, 255);
-        v_val = device_clamp(v_val, 0, 255);
+        u_val     = device_clamp(u_val, 0, 255);
+        v_val     = device_clamp(v_val, 0, 255);
 
         // UV x is the absolute half-resolution column spanning both eyes.
         const size_t uv_x   = x >> 1;
@@ -839,26 +734,18 @@ __global__ void bgra_stereo_to_nv12_kernel(
     }
 }
 
-cudaError_t launch_bgra_stereo_to_nv12(
-    cudaTextureObject_t left_tex,
-    cudaTextureObject_t right_tex,
-    uint8_t*            dst_nv12,
-    size_t              dst_pitch,
-    uint32_t            dst_eye_width,
-    uint32_t            dst_height,
-    uint32_t            aligned_height,
-    cudaStream_t        stream)
-{
+cudaError_t launch_bgra_stereo_to_nv12(cudaTextureObject_t left_tex, cudaTextureObject_t right_tex, uint8_t* dst_nv12,
+                                       size_t dst_pitch, uint32_t dst_eye_width, uint32_t dst_height, uint32_t aligned_height,
+                                       cudaStream_t stream) {
     uint8_t* y_plane  = dst_nv12;
     uint8_t* uv_plane = dst_nv12 + dst_pitch * aligned_height;
 
     // Grid covers the full combined width (2 × dst_eye_width) × dst_height.
     dim3 block(16, 16);
-    dim3 grid(((dst_eye_width * 2) + block.x - 1) / block.x,
-              (dst_height          + block.y - 1) / block.y);
+    dim3 grid(((dst_eye_width * 2) + block.x - 1) / block.x, (dst_height + block.y - 1) / block.y);
 
-    bgra_stereo_to_nv12_kernel<<<grid, block, 0, stream>>>(
-        left_tex, right_tex, y_plane, uv_plane, dst_pitch, dst_eye_width, dst_height);
+    bgra_stereo_to_nv12_kernel<<<grid, block, 0, stream>>>(left_tex, right_tex, y_plane, uv_plane, dst_pitch, dst_eye_width,
+                                                           dst_height);
 
     return cudaGetLastError();
 }

@@ -6,34 +6,35 @@
 
 #include <eigen3/Eigen/Geometry>
 #ifndef USING_OPENXR
-#define USING_OPENXR
+    #define USING_OPENXR
 #endif
 
 #ifdef USING_OPENXR
-#include <openxr/openxr.h>
-#include "xrt/xrt_defines.h"
-#define POSE_TIME_TYPE XrTime
-#define POSE_TYPE      xrt_space_relation
+    #include "xrt/xrt_defines.h"
+
+    #include <openxr/openxr.h>
+    #define POSE_TIME_TYPE XrTime
+    #define POSE_TYPE      xrt_space_relation
 #else
-#define POSE_TIME_TYPE time_point
-#define POSE_TYPE      data_format::pose::fast_head_pose_type
+    #define POSE_TIME_TYPE time_point
+    #define POSE_TYPE      data_format::pose::fast_head_pose_type
 #endif
 
 namespace ILLIXR::data_format {
 
 class pose_prediction : public phonebook::service {
 public:
-    [[nodiscard]] virtual POSE_TYPE                           get_fast_pose() const                             = 0;
+    [[nodiscard]] virtual POSE_TYPE get_fast_pose() const = 0;
 #ifndef USING_OPENXR
-    [[nodiscard]] virtual pose::head_pose_type                get_true_pose() const                             = 0;
+    [[nodiscard]] virtual pose::head_pose_type get_true_pose() const = 0;
 #endif
-    [[nodiscard]] virtual POSE_TYPE                           get_fast_pose(POSE_TIME_TYPE future_time) const   = 0;
+    [[nodiscard]] virtual POSE_TYPE get_fast_pose(POSE_TIME_TYPE future_time) const = 0;
 
-    [[nodiscard]] virtual bool                                fast_pose_reliable() const                        = 0;
-    [[nodiscard]] virtual bool                                true_pose_reliable() const                        = 0;
-    virtual void                                              set_offset(const Eigen::Quaternionf& orientation) = 0;
-    [[maybe_unused]] [[nodiscard]] virtual Eigen::Quaternionf get_offset()                                      = 0;
-    [[nodiscard]] virtual pose::head_pose_type                correct_pose(const pose::head_pose_type& pose) const         = 0;
+    [[nodiscard]] virtual bool                                fast_pose_reliable() const                           = 0;
+    [[nodiscard]] virtual bool                                true_pose_reliable() const                           = 0;
+    virtual void                                              set_offset(const Eigen::Quaternionf& orientation)    = 0;
+    [[maybe_unused]] [[nodiscard]] virtual Eigen::Quaternionf get_offset()                                         = 0;
+    [[nodiscard]] virtual pose::head_pose_type                correct_pose(const pose::head_pose_type& pose) const = 0;
 
     ~pose_prediction() override = default;
 
