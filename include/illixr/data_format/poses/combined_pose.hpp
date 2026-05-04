@@ -1,16 +1,16 @@
 #pragma once
 #ifdef USING_OPENXR
-#include "illixr/data_format/poses/head_pose.hpp"
-#include "illixr/data_format/poses/hand_pose.hpp"
-#include "illixr/data_format/poses/palm_pose.hpp"
-#include "illixr/data_format/poses/hand_interaction_pose.hpp"
+    #include "illixr/data_format/poses/hand_interaction_pose.hpp"
+    #include "illixr/data_format/poses/hand_pose.hpp"
+    #include "illixr/data_format/poses/head_pose.hpp"
+    #include "illixr/data_format/poses/palm_pose.hpp"
 
 namespace ILLIXR::data_format::pose {
 
-constexpr std::uint8_t HEAD_TRACKED         { 0b0000'0001 };
-constexpr std::uint8_t HANDS_TRACKED        { 0b0000'0010 };
-constexpr std::uint8_t PALMS_TRACKED        { 0b0000'0100 };
-constexpr std::uint8_t INTERACTIONS_TRACKED { 0b0000'1000 };
+constexpr std::uint8_t HEAD_TRACKED{0b0000'0001};
+constexpr std::uint8_t HANDS_TRACKED{0b0000'0010};
+constexpr std::uint8_t PALMS_TRACKED{0b0000'0100};
+constexpr std::uint8_t INTERACTIONS_TRACKED{0b0000'1000};
 
 struct combined_pose : public switchboard::event {
     fast_head_pose_type         head_pose;
@@ -51,8 +51,9 @@ struct combined_pose : public switchboard::event {
     combined_pose() = default;
 
     combined_pose(fast_head_pose_type& head, hand_joint_poses_pair& hands, palm_poses_pair& palms,
-                  hand_interaction_poses_pair& hand_interactions, uint64_t fid, int64_t pose_xr_time = 0, int64_t xr_to_monotonic_offset = 0,
-                  int64_t monotinic_to_system_offset = 0, double smoothed_clock_offset = 0., double smoothed_rtt = 0.)
+                  hand_interaction_poses_pair& hand_interactions, uint64_t fid, int64_t pose_xr_time = 0,
+                  int64_t xr_to_monotonic_offset = 0, int64_t monotinic_to_system_offset = 0, double smoothed_clock_offset = 0.,
+                  double smoothed_rtt = 0.)
         : head_pose{head}
         , hand_poses{hands}
         , palm_poses{palms}
@@ -74,6 +75,6 @@ struct combined_pose : public switchboard::event {
     }
 };
 
-}
+} // namespace ILLIXR::data_format::pose
 
 #endif

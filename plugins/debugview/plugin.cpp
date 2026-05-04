@@ -331,9 +331,9 @@ void debugview::_p_one_iteration() {
 
     const pose::fast_head_pose_type predicted_pose = pose_prediction_->get_fast_pose();
     if (pose_prediction_->fast_pose_reliable()) {
-        const pose::head_pose_type    pose          = predicted_pose.pose;
-        Eigen::Quaternionf combined_quat = pose.orientation;
-        headset_pose                     = generate_headset_transform(pose.position, combined_quat, tracking_position_offset_);
+        const pose::head_pose_type pose          = predicted_pose.pose;
+        Eigen::Quaternionf         combined_quat = pose.orientation;
+        headset_pose = generate_headset_transform(pose.position, combined_quat, tracking_position_offset_);
     }
 
     Eigen::Matrix4f model_matrix = Eigen::Matrix4f::Identity();

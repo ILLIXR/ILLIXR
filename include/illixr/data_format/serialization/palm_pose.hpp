@@ -3,7 +3,7 @@
 #include "illixr/data_format/poses/palm_pose.hpp"
 #include "illixr/data_format/serialization/pose_base.hpp"
 
-namespace boost::serialization { 
+namespace boost::serialization {
 
 #ifdef USING_OPENXR
 template<class Archive>

@@ -1,10 +1,10 @@
 #pragma once
 
 #include "illixr/data_format/poses/combined_pose.hpp"
-#include "illixr/data_format/serialization/head_pose.hpp"
-#include "illixr/data_format/serialization/hand_pose.hpp"
-#include "illixr/data_format/serialization/palm_pose.hpp"
 #include "illixr/data_format/serialization/hand_interaction_pose.hpp"
+#include "illixr/data_format/serialization/hand_pose.hpp"
+#include "illixr/data_format/serialization/head_pose.hpp"
+#include "illixr/data_format/serialization/palm_pose.hpp"
 
 namespace boost::serialization {
 

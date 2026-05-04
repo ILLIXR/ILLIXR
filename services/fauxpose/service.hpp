@@ -1,7 +1,7 @@
 #pragma once
 
-#include "illixr/data_format/poses/head_pose.hpp"
 #include "illixr/data_format/pose_prediction.hpp"
+#include "illixr/data_format/poses/head_pose.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/plugin.hpp"
 

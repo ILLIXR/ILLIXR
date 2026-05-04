@@ -39,7 +39,7 @@ void data_injection::read_poses() {
         t = tt - base_time_;
         timepoints_.push_back(t);
         poses_[t] = new pose::head_pose_data(Eigen::Vector3f{tx, ty, tx}, Eigen::Quaternionf{w, x, y, z}, units::MILLIMETER,
-                                  coordinates::RIGHT_HANDED_Y_UP, coordinates::WORLD, 1.);
+                                             coordinates::RIGHT_HANDED_Y_UP, coordinates::WORLD, 1.);
     }
 }
 

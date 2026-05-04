@@ -5,9 +5,9 @@
 #include "illixr/switchboard.hpp"
 
 #ifdef USING_OPENXR
-#include "openxr_defines.hpp"
+    #include "openxr_defines.hpp"
 #else
-#include <Eigen/Dense>
+    #include <Eigen/Dense>
 #endif
 #include <map>
 
@@ -22,9 +22,10 @@ namespace ILLIXR::data_format::pose {
  */
 #ifdef USING_OPENXR
 typedef POSE_DATA_TYPE head_pose_data;
-#define TIME_POINT int64_t
+    #define TIME_POINT int64_t
 #else
-#define TIME_POINT time_point
+    #define TIME_POINT time_point
+
 struct head_pose_data : public pose_base {
     /**
      * @brief Default constructor. Produces an invalid, zero-translation, identity-rotation pose.
@@ -41,8 +42,7 @@ struct head_pose_data : public pose_base {
      * @param ref The reference space, default is VIEWER
      * @param confidence_ The confidence of the pose (0..1, where 0 means no confidence)
      */
-    head_pose_data(Eigen::Vector3f position_, Eigen::Quaternionf orientation_, bool valid_ = true,
-                   const float confidence_ = 0.)
+    head_pose_data(Eigen::Vector3f position_, Eigen::Quaternionf orientation_, bool valid_ = true, const float confidence_ = 0.)
         : pose_base{std::move(position_), std::move(orientation_), confidence_, valid_} { }
 };
 #endif
@@ -63,13 +63,13 @@ typedef xrt_space_relation head_pose_type;
 
 #else
 struct [[maybe_unused]] head_pose_type
-        : public switchboard::event
-        , public head_pose_data {
-    time_point      sensor_time;           //!< Recorded time of sensor data ingestion
-    Eigen::Vector3f linear_velocity;       //!< Linear velocity in m/s; zero if unavailable
-    Eigen::Vector3f angular_velocity;      //!< Angular velocity in rad/s; zero if unavailable
-    bool            linear_velocity_valid; //!< True when the runtime supplied a valid linear velocity
-    bool            angular_velocity_valid;//!< True when the runtime supplied a valid angular velocity
+    : public switchboard::event
+    , public head_pose_data {
+    time_point      sensor_time;            //!< Recorded time of sensor data ingestion
+    Eigen::Vector3f linear_velocity;        //!< Linear velocity in m/s; zero if unavailable
+    Eigen::Vector3f angular_velocity;       //!< Angular velocity in rad/s; zero if unavailable
+    bool            linear_velocity_valid;  //!< True when the runtime supplied a valid linear velocity
+    bool            angular_velocity_valid; //!< True when the runtime supplied a valid angular velocity
 
     /**
      * @brief Default constructor. Pose invalid; velocities zero and invalid.
@@ -96,10 +96,8 @@ struct [[maybe_unused]] head_pose_type
      */
     head_pose_type(time_point sensor_time_, Eigen::Vector3f& position_, Eigen::Quaternionf& orientation_,
                    Eigen::Vector3f linear_velocity_  = Eigen::Vector3f::Zero(),
-                   Eigen::Vector3f angular_velocity_ = Eigen::Vector3f::Zero(),
-                   bool linear_velocity_valid_  = false,
-                   bool angular_velocity_valid_ = false,
-                   bool valid_ = true, const float confidence_ = 0.)
+                   Eigen::Vector3f angular_velocity_ = Eigen::Vector3f::Zero(), bool linear_velocity_valid_ = false,
+                   bool angular_velocity_valid_ = false, bool valid_ = true, const float confidence_ = 0.)
         : head_pose_data{position_, orientation_, valid_, confidence_}
         , sensor_time{sensor_time_}
         , linear_velocity{std::move(linear_velocity_)}
@@ -121,10 +119,8 @@ struct [[maybe_unused]] head_pose_type
      */
     head_pose_type(time_point sensor_time_, const Eigen::Vector3f& position_, const Eigen::Quaternionf& orientation_,
                    Eigen::Vector3f linear_velocity_  = Eigen::Vector3f::Zero(),
-                   Eigen::Vector3f angular_velocity_ = Eigen::Vector3f::Zero(),
-                   bool linear_velocity_valid_  = false,
-                   bool angular_velocity_valid_ = false,
-                   bool valid_ = true, const float confidence_ = 0.)
+                   Eigen::Vector3f angular_velocity_ = Eigen::Vector3f::Zero(), bool linear_velocity_valid_ = false,
+                   bool angular_velocity_valid_ = false, bool valid_ = true, const float confidence_ = 0.)
         : head_pose_data{position_, orientation_, valid_, confidence_}
         , sensor_time{sensor_time_}
         , linear_velocity{std::move(linear_velocity_)}
@@ -158,38 +154,40 @@ struct fast_head_pose_type : public switchboard::event {
      * Basic constructor
      */
     fast_head_pose_type()
-            : pose{}
-            , predict_computed_time{time_point{}}
+        : pose{}
+        , predict_computed_time{time_point{}}
 #ifdef USING_OPENXR
-            , predict_target_time{0} { }
+        , predict_target_time{0} {}
 #else
-            , predict_target_time{time_point{}} { }
+        , predict_target_time{time_point{}} {
+    }
 #endif
 
-    /**
-     * Construct an instance using the given data
-     * @param pose_ The pose to use
-     * @param predict_computed_time_ The computed time
-     * @param predict_target_time_ The target time
-     */
-    fast_head_pose_type(head_pose_type pose_, time_point predict_computed_time_, TIME_POINT predict_target_time_)
+        /**
+         * Construct an instance using the given data
+         * @param pose_ The pose to use
+         * @param predict_computed_time_ The computed time
+         * @param predict_target_time_ The target time
+         */
+        fast_head_pose_type(head_pose_type pose_, time_point predict_computed_time_, TIME_POINT predict_target_time_)
 #ifdef USING_OPENXR
-            : pose{pose_}
+        : pose{pose_}
 #else
-            : pose{std::move(pose_)}
+        : pose{std::move(pose_)}
 #endif
-            , predict_computed_time{predict_computed_time_}
-            , predict_target_time{predict_target_time_} { }
+        , predict_computed_time{predict_computed_time_}
+        , predict_target_time{predict_target_time_} {
+    }
 
 #ifdef USING_OPENXR
     [[nodiscard]] bool is_valid() const {
-#ifdef ENABLE_MONADO
+    #ifdef ENABLE_MONADO
         return (pose.relation_flags & XRT_SPACE_RELATION_POSITION_VALID_BIT) != 0u &&
-               (pose.relation_flags & XRT_SPACE_RELATION_ORIENTATION_VALID_BIT) != 0u;
-#else
+            (pose.relation_flags & XRT_SPACE_RELATION_ORIENTATION_VALID_BIT) != 0u;
+    #else
         return (pose.relation_flags & XR_SPACE_LOCATION_POSITION_VALID_BIT) != 0u &&
-               (pose.relation_flags & XR_SPACE_LOCATION_ORIENTATION_VALID_BIT) != 0u;
-#endif
+            (pose.relation_flags & XR_SPACE_LOCATION_ORIENTATION_VALID_BIT) != 0u;
+    #endif
     }
 #else
     [[nodiscard]] bool is_valid() const {
@@ -226,12 +224,12 @@ struct [[maybe_unused]] texture_pose : public switchboard::event {
 
     texture_pose(duration offload_duration_, unsigned char* image_, time_point pose_time_, Eigen::Vector3f position_,
                  Eigen::Quaternionf latest_quaternion_, Eigen::Quaternionf render_quaternion_)
-            : offload_duration{offload_duration_}
-            , image{image_}
-            , pose_time{pose_time_}
-            , position{std::move(position_)}
-            , latest_quaternion{std::move(latest_quaternion_)}
-            , render_quaternion{std::move(render_quaternion_)} { }
+        : offload_duration{offload_duration_}
+        , image{image_}
+        , pose_time{pose_time_}
+        , position{std::move(position_)}
+        , latest_quaternion{std::move(latest_quaternion_)}
+        , render_quaternion{std::move(render_quaternion_)} { }
 };
 
 /**
@@ -239,4 +237,4 @@ struct [[maybe_unused]] texture_pose : public switchboard::event {
  */
 [[maybe_unused]] typedef std::map<units::eyes, head_pose_type> multi_pose_map;
 
-} // namespace ILLIXR::data_format
+} // namespace ILLIXR::data_format::pose

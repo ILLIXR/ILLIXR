@@ -85,7 +85,8 @@ void vkdemo::initialize() {
     }
 }
 
-void vkdemo::setup(VkRenderPass render_pass, uint32_t subpass, std::shared_ptr<vulkan::buffer_pool<pose::fast_head_pose_type>> _) {
+void vkdemo::setup(VkRenderPass render_pass, uint32_t subpass,
+                   std::shared_ptr<vulkan::buffer_pool<pose::fast_head_pose_type>> _) {
     create_pipeline(render_pass, subpass);
 }
 

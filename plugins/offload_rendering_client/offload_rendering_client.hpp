@@ -197,25 +197,25 @@ private:
      */
     void ffmpeg_init_decoder();
 
-    std::shared_ptr<switchboard>                                switchboard_;
-    std::shared_ptr<spdlog::logger>                             log_;
-    std::shared_ptr<vulkan::display_provider>                   display_provider_;
-    switchboard::buffered_reader<data_format::compressed_frame> frames_reader_;
-    switchboard::network_writer<data_format::pose::fast_head_pose_type>    pose_writer_;
-    std::shared_ptr<data_format::pose_prediction>               pose_prediction_;
-    std::atomic<bool>                                           ready_ = false;
+    std::shared_ptr<switchboard>                                        switchboard_;
+    std::shared_ptr<spdlog::logger>                                     log_;
+    std::shared_ptr<vulkan::display_provider>                           display_provider_;
+    switchboard::buffered_reader<data_format::compressed_frame>         frames_reader_;
+    switchboard::network_writer<data_format::pose::fast_head_pose_type> pose_writer_;
+    std::shared_ptr<data_format::pose_prediction>                       pose_prediction_;
+    std::atomic<bool>                                                   ready_ = false;
 
     std::shared_ptr<vulkan::buffer_pool<data_format::pose::fast_head_pose_type>> buffer_pool_;
-    bool                                                              use_depth_ = false;
-    std::vector<std::array<vulkan::ffmpeg_utils::ffmpeg_vk_frame, 2>> avvk_color_frames_;
-    std::vector<std::array<vulkan::ffmpeg_utils::ffmpeg_vk_frame, 2>> avvk_depth_frames_;
-    std::vector<std::array<VkCommandBuffer, 2>>                       layout_transition_start_cmd_bufs_;
-    std::vector<std::array<VkCommandBuffer, 2>>                       layout_transition_end_cmd_bufs_;
-    AVBufferRef*                                                      device_ctx_          = nullptr;
-    AVBufferRef*                                                      cuda_device_ctx_     = nullptr;
-    AVBufferRef*                                                      frame_ctx_           = nullptr;
-    AVBufferRef*                                                      cuda_nv12_frame_ctx_ = nullptr;
-    AVBufferRef*                                                      cuda_bgra_frame_ctx_ = nullptr;
+    bool                                                                         use_depth_ = false;
+    std::vector<std::array<vulkan::ffmpeg_utils::ffmpeg_vk_frame, 2>>            avvk_color_frames_;
+    std::vector<std::array<vulkan::ffmpeg_utils::ffmpeg_vk_frame, 2>>            avvk_depth_frames_;
+    std::vector<std::array<VkCommandBuffer, 2>>                                  layout_transition_start_cmd_bufs_;
+    std::vector<std::array<VkCommandBuffer, 2>>                                  layout_transition_end_cmd_bufs_;
+    AVBufferRef*                                                                 device_ctx_          = nullptr;
+    AVBufferRef*                                                                 cuda_device_ctx_     = nullptr;
+    AVBufferRef*                                                                 frame_ctx_           = nullptr;
+    AVBufferRef*                                                                 cuda_nv12_frame_ctx_ = nullptr;
+    AVBufferRef*                                                                 cuda_bgra_frame_ctx_ = nullptr;
 
     AVCodecContext*          codec_color_ctx_               = nullptr;
     std::array<AVPacket*, 2> decode_src_color_packets_      = {nullptr, nullptr};

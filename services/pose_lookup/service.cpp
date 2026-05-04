@@ -82,8 +82,8 @@ pose::head_pose_type pose_lookup_impl::correct_pose(const pose::head_pose_type& 
                                                pose.position(0) - init_pos_offset_(0),
                                                pose.position(1) - init_pos_offset_(1),
                                                pose.position(2) - init_pos_offset_(2),
-                                },
-                                pose.orientation};
+                                           },
+                                           pose.orientation};
 
     if (enable_alignment_) {
         // Step 2: Apply estimated alignment parameters
