@@ -89,6 +89,7 @@ component. ILLIXR currently contains the following [plugins][P66] and [services]
 - [offload_rendering_client_jetson][P62]
 - [offload_rendering_server][P63]
 - [tcp_network_backend][P64]
+- [udp_network_backend][P70]
 - [Ada (scene provisioning)][P69] – supports distributed execution of the
   scene provisioning system, allowing reconstruction to run on a server and meshes
   to be delivered to the XR device over the network.
@@ -434,6 +435,8 @@ request!
 [P68]:   https://github.com/ILLIXR/ILLIXR
 
 [P69]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#ada
+
+[P70]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#udp_network_backend
 
 [//]: # (- Third Party Packages -)
 
