@@ -80,8 +80,8 @@ private:
     switchboard::network_writer<data_format::latency_pong> pong_writer_;
 
     // State
-    std::atomic<uint64_t>     pings_received_;
-    std::optional<uint64_t>   last_received_seq_;  ///< Empty until first ping received
+    std::atomic<uint64_t>   pings_received_;
+    std::optional<uint64_t> last_received_seq_; ///< Empty until first ping received
 };
 
 } // namespace ILLIXR

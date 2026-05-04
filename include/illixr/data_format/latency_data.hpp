@@ -1,8 +1,8 @@
 #pragma once
 
 #include "illixr/switchboard.hpp"
-#include <cstdint>
 
+#include <cstdint>
 
 namespace ILLIXR::data_format {
 
@@ -31,19 +31,19 @@ struct latency_ping : public switchboard::event {
  * Contains the original ping data plus server processing timestamp.
  */
 struct latency_pong : public switchboard::event {
-    uint64_t sequence_number;      ///< Original sequence number from ping
-    uint64_t client_timestamp_ns;  ///< Original client timestamp from ping
-    uint64_t server_timestamp_ns;  ///< Server timestamp when pong was generated
+    uint64_t sequence_number;     ///< Original sequence number from ping
+    uint64_t client_timestamp_ns; ///< Original client timestamp from ping
+    uint64_t server_timestamp_ns; ///< Server timestamp when pong was generated
 
     latency_pong()
-            : sequence_number{0}
-            , client_timestamp_ns{0}
-            , server_timestamp_ns{0} { }
+        : sequence_number{0}
+        , client_timestamp_ns{0}
+        , server_timestamp_ns{0} { }
 
     latency_pong(uint64_t seq, uint64_t client_ts, uint64_t server_ts)
-            : sequence_number{seq}
-            , client_timestamp_ns{client_ts}
-            , server_timestamp_ns{server_ts} { }
+        : sequence_number{seq}
+        , client_timestamp_ns{client_ts}
+        , server_timestamp_ns{server_ts} { }
 };
 
 struct network_latency_result : public switchboard::event {

@@ -1,9 +1,8 @@
 #pragma once
 
-#include "illixr/network/udpsocket.hpp"
-
 #include "illixr/network/network_backend.hpp"
 #include "illixr/network/topic_config.hpp"
+#include "illixr/network/udpsocket.hpp"
 #include "illixr/plugin.hpp"
 #include "illixr/switchboard.hpp"
 

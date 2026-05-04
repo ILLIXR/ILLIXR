@@ -19,6 +19,9 @@
       "cmake_flag": "USE_ADA.DEVICE_RX=ON",
       "dependencies": [
         "deepstream"
+      ],
+      "OS": [
+        "linux"
       ]
     },
     {
@@ -27,33 +30,51 @@
       "dependencies": [
         "glib",
         "gstreamer"
+      ],
+      "OS": [
+        "linux"
       ]
     },
     {
       "name": "ada.infinitam",
       "cmake_flag": "USE_ADA.INFINITAM=ON",
-      "dependencies": []
+      "dependencies": [],
+      "OS": [
+        "linux"
+      ]
     },
     {
       "name": "ada.mesh_compression",
       "cmake_flag": "USE_ADA.MESH_COMPRESSION=ON",
-      "dependencies": []
+      "dependencies": [],
+      "OS": [
+        "linux"
+      ]
     },
     {
       "name": "ada.mesh_decompression_grey",
       "cmake_flag": "USE_ADA.MESH_DECOMPRESSION_GREY=ON",
-      "dependencies": []
+      "dependencies": [],
+      "OS": [
+        "linux"
+      ]
     },
     {
       "name": "ada.offline_scannet",
       "cmake_flag": "USE_ADA.OFFLINE_SCANNET=ON",
-      "dependencies": []
+      "dependencies": [],
+      "OS": [
+        "linux"
+      ]
     },
     {
       "name": "ada.scene_management",
       "cmake_flag": "USE_ADA.SCENE_MANAGEMENT=ON",
       "dependencies": [
         "OpenMP"
+      ],
+      "OS": [
+        "linux"
       ]
     },
     {
@@ -62,6 +83,9 @@
       "dependencies": [
         "glib",
         "gstreamer"
+      ],
+      "OS": [
+        "linux"
       ]
     },
     {
@@ -69,6 +93,9 @@
       "cmake_flag": "USE_ADA.SERVER_TX=ON",
       "dependencies": [
         "deepstream"
+      ],
+      "OS": [
+        "linux"
       ]
     },
     {
@@ -77,6 +104,9 @@
       "dependencies": [
         "portaudio",
         "spatialaudio"
+      ],
+      "OS": [
+        "linux"
       ]
     },
     {
@@ -84,32 +114,51 @@
       "cmake_flag": "USE_DEBUGVIEW=ON",
       "dependencies": [
         "glfw3"
+      ],
+      "OS": [
+        "linux"
       ]
     },
     {
       "name": "depthai",
       "cmake_flag": "USE_DEPTHAI=ON",
-      "dependencies": []
+      "dependencies": [],
+      "OS": [
+        "linux"
+      ]
     },
     {
       "name": "fauxpose",
       "cmake_flag": "USE_FAUXPOSE=ON",
-      "dependencies": []
+      "dependencies": [],
+      "OS": [
+        "linux",
+        "windows"
+      ]
     },
     {
       "name": "gldemo",
       "cmake_flag": "USE_GLDEMO=ON",
-      "dependencies": []
+      "dependencies": [],
+      "OS": [
+        "linux"
+      ]
     },
     {
       "name": "ground_truth_slam",
       "cmake_flag": "USE_GROUND_TRUTH_SLAM=ON",
-      "dependencies": []
+      "dependencies": [],
+      "OS": [
+        "linux"
+      ]
     },
     {
       "name": "gtsam_integrator",
       "cmake_flag": "USE_GTSAM_INTEGRATOR=ON",
-      "dependencies": []
+      "dependencies": [],
+      "OS": [
+        "linux"
+      ]
     },
     {
       "name": "hand_tracking",
@@ -119,6 +168,9 @@
         "libcpuinfo",
         "libgles",
         "fp16"
+      ],
+      "OS": [
+        "linux"
       ]
     },
     {
@@ -126,12 +178,18 @@
       "cmake_flag": "USE_HAND_TRACKING.VIEWER=ON",
       "dependencies": [
         "glfw3"
+      ],
+      "OS": [
+        "linux"
       ]
     },
     {
       "name": "webcam",
       "cmake_flag": "USE_WEBCAM=ON",
-      "dependencies": []
+      "dependencies": [],
+      "OS": [
+        "linux"
+      ]
     },
     {
       "name": "native_renderer",
@@ -153,22 +211,37 @@
         "xcb-randr",
         "xkbcommon",
         "SDL2"
+      ],
+      "OS": [
+        "linux",
+        "windows"
       ]
     },
     {
       "name": "offline_cam",
       "cmake_flag": "USE_OFFLINE_CAM=ON",
-      "dependencies": []
+      "dependencies": [],
+      "OS": [
+        "linux",
+        "windows"
+      ]
     },
     {
       "name": "offline_imu",
       "cmake_flag": "USE_OFFLINE_IMU=ON",
-      "dependencies": []
+      "dependencies": [],
+      "OS": [
+        "linux",
+        "windows"
+      ]
     },
     {
       "name": "offload_data",
       "cmake_flag": "USE_OFFLOAD_DATA=ON",
-      "dependencies": []
+      "dependencies": [],
+      "OS": [
+        "linux"
+      ]
     },
     {
       "name": "offload_rendering_client",
@@ -217,6 +290,9 @@
         "libmp3lame",
         "yasm",
         "cuda-cudart"
+      ],
+      "OS": [
+        "linux"
       ]
     },
     {
@@ -266,6 +342,9 @@
         "libmp3lame",
         "yasm",
         "cuda-cudart"
+      ],
+      "OS": [
+        "linux"
       ]
     },
     {
@@ -274,6 +353,9 @@
       "dependencies": [
         "ecal",
         "protobuf"
+      ],
+      "OS": [
+        "linux"
       ]
     },
     {
@@ -285,6 +367,9 @@
         "gstreamer",
         "ecal",
         "protobuf"
+      ],
+      "OS": [
+        "linux"
       ]
     },
     {
@@ -293,6 +378,9 @@
       "dependencies": [
         "ecal",
         "protobuf"
+      ],
+      "OS": [
+        "linux"
       ]
     },
     {
@@ -304,6 +392,9 @@
         "gstreamer",
         "ecal",
         "protobuf"
+      ],
+      "OS": [
+        "linux"
       ]
     },
     {
@@ -311,18 +402,28 @@
       "cmake_flag": "USE_OPENNI=ON",
       "dependencies": [
         "libopenni2"
+      ],
+      "OS": [
+        "linux"
       ]
     },
     {
       "name": "openvins",
       "cmake_flag": "USE_OPENVINS=ON",
-      "dependencies": []
+      "dependencies": [],
+      "OS": [
+        "linux",
+        "windows"
+      ]
     },
     {
       "name": "openwarp_vk",
       "cmake_flag": "USE_OPENWARP_VK=ON",
       "dependencies": [
         "glm"
+      ],
+      "OS": [
+        "linux"
       ]
     },
     {
@@ -330,49 +431,81 @@
       "cmake_flag": "USE_ORB_SLAM3=ON",
       "dependencies": [
         "fmt"
+      ],
+      "OS": [
+        "linux"
       ]
     },
     {
       "name": "passthrough_integrator",
       "cmake_flag": "USE_PASSTHROUGH_INTEGRATOR=ON",
-      "dependencies": []
+      "dependencies": [],
+      "OS": [
+        "linux",
+        "windows"
+      ]
     },
     {
       "name": "pose_lookup",
       "cmake_flag": "USE_POSE_LOOKUP=ON",
-      "dependencies": []
+      "dependencies": [],
+      "OS": [
+        "linux",
+        "windows"
+      ]
     },
     {
       "name": "pose_prediction",
       "cmake_flag": "USE_POSE_PREDICTION=ON",
-      "dependencies": []
+      "dependencies": [],
+      "OS": [
+        "linux",
+        "windows"
+      ]
     },
     {
       "name": "realsense",
       "cmake_flag": "USE_REALSENSE=ON",
       "dependencies": [
         "realsense"
+      ],
+      "OS": [
+        "linux"
       ]
     },
     {
       "name": "record_imu_cam",
       "cmake_flag": "USE_RECORD_IMU_CAM=ON",
-      "dependencies": []
+      "dependencies": [],
+      "OS": [
+        "linux"
+      ]
     },
     {
       "name": "record_rgb_depth",
       "cmake_flag": "USE_RECORD_RGB_DEPTH=ON",
-      "dependencies": []
+      "dependencies": [],
+      "OS": [
+        "linux"
+      ]
     },
     {
       "name": "rk4_integrator",
       "cmake_flag": "USE_RK4_INTEGRATOR=ON",
-      "dependencies": []
+      "dependencies": [],
+      "OS": [
+        "linux",
+        "windows"
+      ]
     },
     {
       "name": "tcp_network_backend",
       "cmake_flag": "USE_TCP_NETWORK_BACKEND=ON",
-      "dependencies": []
+      "dependencies": [],
+      "OS": [
+        "linux",
+        "windows"
+      ]
     },
     {
       "name": "timewarp_gl",
@@ -393,6 +526,9 @@
         "libusb",
         "libuvc",
         "SDL2"
+      ],
+      "OS": [
+        "linux"
       ]
     },
     {
@@ -415,6 +551,10 @@
         "xcb-randr",
         "xkbcommon",
         "SDL2"
+      ],
+      "OS": [
+        "linux",
+        "windows"
       ]
     },
     {
@@ -437,6 +577,10 @@
         "xcb-randr",
         "xkbcommon",
         "SDL2"
+      ],
+      "OS": [
+        "linux",
+        "windows"
       ]
     },
     {
@@ -444,6 +588,9 @@
       "cmake_flag": "USE_ZED=ON",
       "dependencies": [
         "zed_SDK"
+      ],
+      "OS": [
+        "linux"
       ]
     },
     {
@@ -451,6 +598,9 @@
       "cmake_flag": "USE_ZED.DATA_INJECTION=ON",
       "dependencies": [
         "zed_SDK"
+      ],
+      "OS": [
+        "linux"
       ]
     }
   ],
