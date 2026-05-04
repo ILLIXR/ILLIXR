@@ -2,7 +2,7 @@
 
 This page details the structure of ILLIXR's [_plugins_][G18] and how they interact with each other. Each plugin is labeled with the OSs they are supported on:
 
-|                                           |         |
+| Logo                                      | OS      |
 |-------------------------------------------|---------|
 | ![Linux Logo](images/tux-large.png)       | Linux   |
 | ![Windows Logo](images/windows-large.png) | Windows |
@@ -514,18 +514,18 @@ See [Writing Your Plugin][I10] to extend ILLIXR.
 Some plugins require other plugins to be loaded in order to work. The table below gives a listing of the plugin
 interdependencies.
 
-| Plugin          | Requires        | Provided by plugin                      |
-|:----------------|:----------------|:----------------------------------------|
+| Plugin          | Requires        | Provided by plugin                     |
+|:----------------|:----------------|:---------------------------------------|
 | debugview       | pose_prediction | fauxpose, pose_lookup, pose_prediction |
 | gldemo          | pose_prediction | fauxpose, pose_lookup, pose_prediction |
-| native_renderer | app             | vkdemo                                  |
-|                 | display_sink    | display_vk                              |
+| native_renderer | app             | vkdemo                                 |
+|                 | display_sink    | display_vk                             |
 |                 | pose_prediction | fauxpose, pose_lookup, pose_prediction |
-|                 | timewarp        | timewarp_vk                             |
+|                 | timewarp        | timewarp_vk                            |
 | timewarp_gl     | pose_prediction | fauxpose, pose_lookup, pose_prediction |
-| timewarp_vk     | display_sink    | display_vk                              |
+| timewarp_vk     | display_sink    | display_vk                             |
 |                 | pose_prediction | fauxpose, pose_lookup, pose_prediction |
-| vkdemo          | display_sink    | display_vk                              |
+| vkdemo          | display_sink    | display_vk                             |
 
 See [Getting Started][I11] for more information on adding plugins to a [_profile_][G17] file.
 

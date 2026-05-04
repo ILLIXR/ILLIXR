@@ -19,14 +19,14 @@
     {
       "type": "default",
       "project": "CMakeLists.txt",
-      "projectTarget": "main.opt.exe (Install) (bin\illixr.opt.exe)",
+      "projectTarget": "main.opt.exe (Install) (bin\\illixr.opt.exe)",
       "name": "illixr release",
       "program": "${workspaceRoot}\\launch\\launch_illixr_release.bat"
     },
     {
       "type": "default",
       "project": "CMakeLists.txt",
-      "projectTarget": "main.dbg.exe (Install) (bin\illixr.dbg.exe)",
+      "projectTarget": "main.dbg.exe (Install) (bin\\illixr.dbg.exe)",
       "name": "illixr debug",
       "program": "${workspaceRoot}\\launch\\launch_illixr_debug.bat"
     }
