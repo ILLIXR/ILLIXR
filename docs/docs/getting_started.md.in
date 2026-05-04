@@ -47,12 +47,15 @@ required only for specific plugins.
 
 === "Windows"
 
-    Currently the Windows build has been tested using Microsoft Visual Studio. Most of the dependencies will automatiaclly install using vcpkg, but there are a few you will need to manually install beforehand:
+    Currently the Windows build has been tested using Microsoft Visual Studio. Most of the dependencies will automatically install using vcpkg, but there are a few you will need to manually install beforehand:
 
-    - [Microsoft Visual Studio](https://visualstudio.microsoft.com/) we tested versions 2022
+    - [Microsoft Visual Studio](https://visualstudio.microsoft.com/) we tested version 2022
     - [Git](https://git-scm.com/)
     - [CMake](https://cmake.org/download/) version 3.24 or newer
     - [vcpkg](https://learn.microsoft.com/en-us/vcpkg/get_started/get-started-vs?pivots=shell-powershell) you will only need to do step 1 "Set up vcpkg"
+
+    You will need to change one of the settings in Visual Studio, otherwise the CMake generation will fail. Under Tools, open the Options item. Then select CMake in the left hand panel. There should be an option titled 'CMake configuration file', select 'Never use CMake Presets'.
+
 
 #### Pick the ILLIXR plugins you want to use
 
@@ -128,23 +131,20 @@ the same for NO_GPL).
 
 === "Windows"
 
-    To configure and build in Visual Studio, open the `CMakeSettings.json` file, or create one if it does not exist. Double clicking the file from the `Solution Explorer` will open it in an input mode, rather then a raw file. You will want to make sure the following entries are set:
+    To configure and build in Visual Studio, you will need to edit some configuration files:open the `CMakeSettings.json` file, or create one if it does not exist. Double clicking the file from the `Solution Explorer` will open it in an input mode, rather then a raw file. You will want to make sure the following entries are set:
 
-    -  ***Configuration type***
-       Pick the built type you want (`Debug`, `Release`, etc)
-    -  ***Toolset***
-       You will want it to match your machine architecture (e.g. `msvc_x64_x64`)
-    -  ***CMake toolchain file***
-       This should point to the CMake toolchain file provided by vcpkg, you may have to look around for it (e.g. `D:/Program Files/Microsoft Visual Studio/2022/Community/VC/vcpkg/scripts/buildsystems/vcpkg.cmake`)
-    -  ***CMake command arguments***
-       Here you should specify any arguments to be passed. Common ones are:
+    - `CMakePresets.json`: edit the `CMAKE_TOOLCHAIN_FILE` entry to point to your `vcpkg` toolchain file, you may have to look around for it (e.g. `D:/Program Files/Microsoft Visual Studio/2022/Community/VC/vcpkg/scripts/buildsystems/vcpkg.cmake`)
+    - `CMakeSettings.json`:
+        - If you are using the `offload_rendering_server` plugin, edit the `CMake command arguments` entry, changing the `-DVIDEO_CODEC_SDK_PATH` argument to point to your NVIDIA video codec SDK installation.
+        - If you want to use a [_profile_][G23] file of [plugins][G22] to specify the plugins to build, specify `-DYAML_FILE=<profile file>` (e.g., `-DYAML_FILE=profiles/native_timewarp_vk.yaml`)
+        - If you want to specify the individual plugins to build add a flag for each one (e.g `-DUSE_TIMEWARP_VK=ON` to build the timewarp_vk [plugin][G22]). Any number of [plugins][G22] can be specified on the command line in this fashion.
+    - `launch/*.bat`: These scripts are used to specify environment variables when launching ILLIXR. They can be used when launching from within Visual Studio by selecting the appropriate configuration from the drop down menu. They can also be used from the command line to launch ILLIXR.
+        - Edit the `ILLIXR_INSTALL` line to point to your ILLIXR install directory.
+        - Edit the `ILLIXR_BUILD` line to point to your ILLIXR source tree. Prepend your path to the existing `/out/build` (e.g., `ILLIXR_BUILD=D:/ILLIXR/out/build/x64-Debug`).
 
-        - ***YAML_FILE***
-           The [_profile_][G23] file of [plugins][G22] to build and install. The default is None, meaning plugins should be specified individually on the command line.
-        -  ***USE_&lt;PLUGIN_NAME&gt;=ON***
-           Build the specifically named [plugin][G22] (e.g `-DUSE_TIMEWARP_VK=ON` to build the timewarp_vk [plugin][G22]). Any number of [plugins][G22] can be specified on the command line in this fashion.
-        -  ***BUILD_DOCS***
-           Set to `ON` to enable building the documentation.
+    !!! note
+
+        The first time you configure the project (or open it in Visual Studio) it will take a long time to compile and install the dependency libraries, likely this will take several hours. Subsequent configurations will be quick, unless a new dependency needs to be installed.
 
 !!! note "Documentation Prerequisites"
 
