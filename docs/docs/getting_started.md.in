@@ -43,13 +43,13 @@ required only for specific plugins.
 
     <table id="operating_system" style="border-spacing: 20px; border: 1px solid black;"></table>
 
-    ILLIXR may compile with other versions of the above operating systems, but some of the necessary prerequisite packages are not supplied by the OS repos and will need to be compiled by hand. You should be able to use the package and cmake commands for other versions of the same OS (other than the missing packages) to compile ILLIXR. RHEL is not supported at this time as many of the prerequisite packages are not natively available. You will also need to have a C++ compiler installed as well as a generator (make, ninja, etc.) and CMake 3.24 or newer (installation is os dependent). We recommend the [clang](https://clang.llvm.org/) compiler, as some plugin dependencies require it to build.
+    ILLIXR may compile with other versions of the above operating systems, but some of the necessary prerequisite packages are not supplied by the OS repos and will need to be compiled by hand. You should be able to use the package and cmake commands for other versions of the same OS (other than the missing packages) to compile ILLIXR. RHEL is not supported at this time as many of the prerequisite packages are not natively available. You will also need to have a C++ compiler installed as well as a generator (make, ninja, etc.) and CMake 3.24 or newer (installation is OS dependent). We recommend the [clang](https://clang.llvm.org/) compiler, as some plugin dependencies require it to build.
 
 === "Windows"
 
     Currently the Windows build has been tested using Microsoft Visual Studio. Most of the dependencies will automatiaclly install using vcpkg, but there are a few you will need to manually install beforehand:
 
-    - [Microsoft Visual Studio](https://visualstudio.microsoft.com/) we tested version 17.14.13
+    - [Microsoft Visual Studio](https://visualstudio.microsoft.com/) we tested versions 2022
     - [Git](https://git-scm.com/)
     - [CMake](https://cmake.org/download/) version 3.24 or newer
     - [vcpkg](https://learn.microsoft.com/en-us/vcpkg/get_started/get-started-vs?pivots=shell-powershell) you will only need to do step 1 "Set up vcpkg"
@@ -145,13 +145,6 @@ the same for NO_GPL).
            Build the specifically named [plugin][G22] (e.g `-DUSE_TIMEWARP_VK=ON` to build the timewarp_vk [plugin][G22]). Any number of [plugins][G22] can be specified on the command line in this fashion.
         -  ***BUILD_DOCS***
            Set to `ON` to enable building the documentation.
-
-    Baes on yout selection above, use the following as the basis for your ***CMake command arguments**
-
-    <div id="cmake_config" class="code-box-copy">
-        <button class="code-box-copy__btn" data-clipboard-target="#cmakeconfigoutput" title="Copy"></button>
-        <pre class="language-shell" id="cmakeoutput"></pre>
-    </div>
 
 !!! note "Documentation Prerequisites"
 

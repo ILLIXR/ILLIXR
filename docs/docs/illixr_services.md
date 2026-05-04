@@ -2,7 +2,7 @@
 
 This page details the structure of ILLIXR's [_services_][58] and how they interact with each other. Each service is labeled with the OSs they are supported on:
 
-|                                           |         |
+| Logo                                      | OS      |
 |-------------------------------------------|---------|
 | ![Linux Logo](images/tux-large.png)       | Linux   |
 | ![Windows Logo](images/windows-large.png) | Windows |
