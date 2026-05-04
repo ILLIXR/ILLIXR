@@ -131,6 +131,7 @@ if(BUILD_DOCS)
     file(READ docs/modules.json MODULE_TEMP)
     string(REPLACE "||" "\n" MODULE_PLUGIN_JSON "${MODULE_PLUGINS}")
     string(REPLACE "@PROFILES@" "${MODULE_PLUGIN_JSON}" MODULE_JSON "${MODULE_TEMP}")
+    file(READ docs/js/illixr.js ILLIXR_JS_CONTENT)
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/docs/getting_started.md.in ${DOC_BUILD_DIR}/getting_started.md)
 
     # convert the index.md.in to index.md
