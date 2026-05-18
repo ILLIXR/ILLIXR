@@ -15,7 +15,7 @@ if(NOT DEFINED ENV{NO_COLOR})  # Respect NO_COLOR environment variable
                 # Try to enable VT processing via a test script
                 # This creates a temporary PowerShell script that enables VT and tests it
                 set(TEST_SCRIPT "${CMAKE_BINARY_DIR}/test_ansi.ps1")
-                file(WRITE ${TEST_SCRIPT} 
+                file(WRITE ${TEST_SCRIPT}
 "$hasVT = $false
 try {
     # Try to enable Virtual Terminal Processing
@@ -48,7 +48,7 @@ if ($hasVT) { exit 0 } else { exit 1 }
                     ERROR_QUIET
                 )
                 file(REMOVE ${TEST_SCRIPT})
-                
+
                 if(VT_TEST_RESULT EQUAL 0)
                     set(COLOR_OUTPUT ON)
                 endif()
@@ -64,7 +64,7 @@ if ($hasVT) { exit 0 } else { exit 1 }
             set(COLOR_OUTPUT ON)
         endif()
     endif()
-    
+
     # Additional check: see if TERM variable suggests color support
     if(DEFINED ENV{TERM})
         string(REGEX MATCH "color|ansi|xterm|screen|tmux|rxvt" TERM_SUPPORTS_COLOR "$ENV{TERM}")
@@ -378,7 +378,7 @@ report_value("Install location" "${CMAKE_INSTALL_PREFIX}")
 message("${COLOR_BLUE_BOLD}External Libraries${RESET_FORMAT}")
 foreach(ITEM IN LISTS EXTERNAL_LIBRARIES)
     if(${ITEM}_EXTERNAL)
-        report_value("${ITEM}" "${COLOR_CYAN}Download and Install${RESET_FORMAT}")
+        report_value("${ITEM}" "${COLOR_CYAN}Build and Install${RESET_FORMAT}")
     else()
         report_value("${ITEM}" "${COLOR_GREEN}Found version ${${ITEM}_VERSION}${RESET_FORMAT}")
     endif()

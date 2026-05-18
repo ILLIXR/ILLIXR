@@ -12,7 +12,7 @@ else()
                 plugin.hpp
                 ${CMAKE_SOURCE_DIR}/include/illixr/data_loading.hpp
                 ${CMAKE_SOURCE_DIR}/include/illixr/data_format/misc.hpp
-                ${CMAKE_SOURCE_DIR}/include/illixr/data_format/pose.hpp
+                ${CMAKE_SOURCE_DIR}/include/illixr/data_format/poses/head_pose.hpp
                 ${CMAKE_SOURCE_DIR}/include/illixr/data_format/scene_reconstruction.hpp
                 ${CMAKE_SOURCE_DIR}/include/illixr/iterators/ssv_iterator.hpp
                 ${CMAKE_SOURCE_DIR}/include/illixr/iterators/data_iterator.hpp
