@@ -1,6 +1,6 @@
 #pragma once
 
-#include "illixr/data_format/pose.hpp"
+#include "illixr/data_format/poses/head_pose.hpp"
 #include "illixr/error_util.hpp"
 #include "illixr/global_module_defs.hpp"
 #include "illixr/phonebook.hpp"
@@ -11,7 +11,7 @@ namespace ILLIXR {
 class offload_data : public plugin {
 public:
     [[maybe_unused]] offload_data(const std::string& name, phonebook* pb);
-    void callback(const switchboard::ptr<const data_format::texture_pose>& datum);
+    void callback(const switchboard::ptr<const data_format::pose::texture_pose>& datum);
     ~offload_data() override;
 
 private:
@@ -20,7 +20,7 @@ private:
 
     const std::shared_ptr<switchboard>                             switchboard_;
     std::vector<long>                                              time_seq_;
-    std::vector<switchboard::ptr<const data_format::texture_pose>> offload_data_container_;
+    std::vector<switchboard::ptr<const data_format::pose::texture_pose>> offload_data_container_;
 
     int         percent_;
     int         img_idx_;

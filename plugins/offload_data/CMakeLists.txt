@@ -10,7 +10,7 @@ else()
     add_library(${PLUGIN_NAME} SHARED plugin.cpp
                 plugin.hpp
                 ${CMAKE_SOURCE_DIR}/include/illixr/plugin.hpp
-                ${CMAKE_SOURCE_DIR}/include/illixr/data_format/pose.hpp
+                ${CMAKE_SOURCE_DIR}/include/illixr/data_format/poses/head_pose.hpp
                 ${CMAKE_SOURCE_DIR}/include/illixr/error_util.hpp
                 ${CMAKE_SOURCE_DIR}/include/illixr/global_module_defs.hpp
                 ${CMAKE_SOURCE_DIR}/include/illixr/phonebook.hpp
