@@ -21,7 +21,8 @@
 #define DOUBLE_INCLUDE
 // ILLIXR core headers
 #include "illixr/data_format/pose_prediction.hpp"
-#include "illixr/data_format/serializable_data.hpp"
+#include "illixr/data_format/frame.hpp"
+#include "illixr/data_format/serialization/frame.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
 #undef DOUBLE_INCLUDE
@@ -77,13 +78,6 @@ public:
         (void) framebuffer;
         (void) buffer_ind;
         (void) left;
-    }
-
-    /**
-     * @brief Update uniforms (no-op in this implementation)
-     */
-    void update_uniforms(const data_format::pose::head_pose_type& render_pose) override {
-        (void) render_pose;
     }
 
     /**
@@ -236,6 +230,7 @@ private:
     int           y_step_         = 0;
     int           u_step_         = 0;
     int           v_step_         = 0;
+    NppStreamContext npp_ctx_     = {};
 
     uint64_t frame_count_ = 0;
 
