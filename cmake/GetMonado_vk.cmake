@@ -1,6 +1,6 @@
 # module to download, build and install the Monado ILLIXR_vk plugin
 get_external_for_plugin(OpenXR_APP)
-list(APPEND EXTERNAL_PROJECTS Monado_vk)
+
 find_program(MONADO_VK_FOUND
              monado_vk-service
              HINTS ${CMAKE_INSTALL_PREFIX}/bin
@@ -69,5 +69,3 @@ else ()
 
 endif ()
 set(MONADO_RUNTIME "${CMAKE_INSTALL_PREFIX}/share/openxr/1/openxr_monado_vk.json" PARENT_SCOPE)
-
-set(EXTERNAL_PROJECTS ${EXTERNAL_PROJECTS} PARENT_SCOPE)
