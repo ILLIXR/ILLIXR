@@ -5,9 +5,6 @@
 #include "illixr/relative_clock.hpp"
 
 #include <eigen3/Eigen/Geometry>
-#ifndef USING_OPENXR
-    #define USING_OPENXR
-#endif
 
 #ifdef USING_OPENXR
     #include "xrt/xrt_defines.h"

@@ -1,10 +1,11 @@
 #pragma once
-#include "data_format/point.hpp"
-#include "data_format/pose.hpp"
 
 #include <cmath>
 #ifndef M_PI
     #define M_PI 3.14159265358979323846
+#endif
+#ifdef Success
+#undef Success
 #endif
 #include <eigen3/Eigen/Core>
 

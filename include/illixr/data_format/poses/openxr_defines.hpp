@@ -27,21 +27,23 @@ enum xrt_space_relation_flags : uint32_t {
     XRT_SPACE_RELATION_BITMASK_NONE = 0,
 };
 
-/*!
- * A relation with two spaces, includes velocity and acceleration.
+/**
+ * A pose with linear and angular velocities and validity flags
  *
- * @see xrt_quat
- * @see xrt_vec3
- * @see xrt_pose
+ * @see XrPosef
+ * @see XrVector3f
  * @see xrt_space_relation_flags
- * @ingroup xrt_iface math
  */
 struct xrt_space_relation {
-    uint32_t          relation_flags;
-    struct XrPosef    pose;
-    struct XrVector3f linear_velocity;
-    struct XrVector3f angular_velocity;
+    uint32_t          relation_flags;   //!< validity flags
+    struct XrPosef    pose;             //!< current pose
+    struct XrVector3f linear_velocity;  //!< instantaneous linear velocity of the pose
+    struct XrVector3f angular_velocity; //!< instantaneous angular velocity of the pose
 
+    /**
+     * Set the flags to the given value
+     * @param location_flags The value to set
+     */
     void set_flags(const XrSpaceLocationFlags location_flags) {
         relation_flags = XRT_SPACE_RELATION_BITMASK_NONE;
         if (location_flags & XR_SPACE_LOCATION_ORIENTATION_VALID_BIT)
@@ -54,6 +56,11 @@ struct xrt_space_relation {
             relation_flags |= XRT_SPACE_RELATION_POSITION_TRACKED_BIT;
     }
 
+    /**
+     * Set the flags from a combination of location and velocity based flags
+     * @param location_flags The location based flags to use
+     * @param velocity_flags The velocity based flags to use
+     */
     void set_flags(const XrSpaceLocationFlags location_flags, const XrSpaceVelocityFlags velocity_flags) {
         set_flags(location_flags);
         if (location_flags & XR_SPACE_LOCATION_ORIENTATION_VALID_BIT)
@@ -70,12 +77,20 @@ struct xrt_space_relation {
             relation_flags |= XRT_SPACE_RELATION_ANGULAR_VELOCITY_VALID_BIT;
     }
 
+    /**
+     * Default constructor
+     */
     xrt_space_relation()
         : relation_flags{XRT_SPACE_RELATION_BITMASK_NONE}
         , pose{}
         , linear_velocity{}
         , angular_velocity{} { }
 
+    /**
+     * Constructor
+     * @param location The location information to use
+     * @param velocity The velocity information to use
+     */
     [[maybe_unused]] xrt_space_relation(XrSpaceLocation location, XrSpaceVelocity velocity)
         : pose{location.pose}
         , linear_velocity{velocity.linearVelocity}
@@ -83,11 +98,15 @@ struct xrt_space_relation {
         set_flags(location.locationFlags, velocity.velocityFlags);
     }
 
+    /**
+     * Returns whether the location is considered valid
+     * @return Trtue if both position and orientation are valid, False otherwise.
+     */
     bool valid() const {
         return (relation_flags & XR_SPACE_LOCATION_POSITION_VALID_BIT) != 0u &&
             (relation_flags & XR_SPACE_LOCATION_ORIENTATION_VALID_BIT) != 0u;
     }
 };
-
+} // namespace ILLIXR::data_format::pose
     #endif
 #endif

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace ILLIXR::data_format::coordinates {
+namespace ILLIXR::coordinates {
 /**
  * Enumeration of the possible reference frames
  */

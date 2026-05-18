@@ -75,32 +75,46 @@ struct hand_interaction_pose : xrt_space_relation {
 
     /**
      * @brief Construct from explicit components.
-     * @param position_    Translation of the interaction action-space origin
-     * @param orientation_ Rotation of the interaction frame (must be unit quaternion)
+     * @param in_pose      The pose of the gesture
      * @param value_       Gesture-strength scalar in [0, 1], defaults to 0
      * @param ready_       Whether the gesture is activatable, defaults to false
+     * @param p_time       The time the gesture was detected
      */
-    [[maybe_unused]] explicit hand_interaction_pose(INTERACTION_POSE_TYPE& in_pose, float value_ = 0.f, bool ready_ = false,
+    [[maybe_unused]] explicit hand_interaction_pose(INTERACTION_POSE_TYPE& in_pose, float val = 0.f, bool rdy = false,
                                                     int64_t p_time = 0)
         : xrt_space_relation{}
-        , value{value_}
-        , ready{ready_}
+        , value{val}
+        , ready{rdy}
         , predicted_time{p_time} {
         pose = in_pose;
     }
 
     #ifndef ENABLE_MONADO
 
-    [[maybe_unused]] explicit hand_interaction_pose(XrSpaceLocation& location, float value_ = 0.f, bool ready_ = false,
+    /**
+     * @brief Construct from Monado based components
+     * @param location The location of the gesture
+     * @param val      Gesture-strength scalar in [0, 1], defaults to 0
+     * @param rdy      Whether the gesture is activatable, defaults to false
+     * @param p_time   The time the gesture was detected
+     */
+    [[maybe_unused]] explicit hand_interaction_pose(XrSpaceLocation& location, float val = 0.f, bool rdy = false,
                                                     XrTime p_time = 0)
         : xrt_space_relation{}
-        , value{value_}
-        , ready{ready_}
+        , value{val}
+        , ready{rdy}
         , predicted_time{p_time} {
         pose = location.pose;
         set_flags(location.locationFlags);
     }
 
+    /*
+     * @brief Update the data with new values
+     * @param location The new location of the gesture
+     * @param val      Gesture-strength scalar in [0, 1], defaults to 0
+     * @param rdy      Whether the gesture is activatable, defaults to false
+     * @param p_time   The time the gesture was detected
+     */
     void update(XrSpaceLocation location, float val, bool rdy, XrTime p_time) {
         pose  = location.pose;
         value = val;
@@ -171,7 +185,7 @@ struct hand_interaction_poses {
  * @brief Interaction poses for both hands, suitable for publication on the switchboard.
  */
 struct hand_interaction_poses_pair : public switchboard::event {
-    std::map<hand, hand_interaction_poses> hands;       //!< Per-hand interaction poses keyed by @c hand
+    std::map<side, hand_interaction_poses> hands;       //!< Per-hand interaction poses keyed by @c hand
     time_point                             sensor_time; //!< Timestamp at which the data was captured
 
     /**
@@ -186,7 +200,7 @@ struct hand_interaction_poses_pair : public switchboard::event {
      * @param hands_       Per-hand interaction poses
      * @param sensor_time_ Timestamp at which the data was captured
      */
-    hand_interaction_poses_pair(std::map<hand, hand_interaction_poses> hands_, time_point sensor_time_)
+    hand_interaction_poses_pair(std::map<side, hand_interaction_poses> hands_, time_point sensor_time_)
         : hands{std::move(hands_)}
         , sensor_time{sensor_time_} { }
 
@@ -194,7 +208,7 @@ struct hand_interaction_poses_pair : public switchboard::event {
         return hands.at(LEFT).is_valid() || hands.at(RIGHT).is_valid();
     }
 
-    hand_interaction_poses& operator[](hand h) {
+    hand_interaction_poses& operator[](side h) {
         return hands[h];
     }
 };

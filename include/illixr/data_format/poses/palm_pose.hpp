@@ -7,11 +7,24 @@
 
 namespace ILLIXR::data_format::pose {
 
+/**
+ * @brief Palm pose and velocity information
+ */
 struct palm_pose : xrt_space_relation {
+
+    /**
+     * @brief Returns whether or not there are any valid bit in the internal flags.
+     */
     bool is_valid() const {
         return relation_flags > 0;
     }
     #ifndef ENABLE_MONADO
+    /**
+     * @brief Update the internal data memebers
+     *
+     * @param location The new palm location information
+     * @param velocity The new paml velocity information
+     */
     void update(XrSpaceLocation& location, XrSpaceVelocity& velocity) {
         pose             = location.pose;
         linear_velocity  = velocity.linearVelocity;

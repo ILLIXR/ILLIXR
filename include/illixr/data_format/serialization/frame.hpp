@@ -234,9 +234,9 @@ void load(Archive& ar, ILLIXR::data_format::compressed_frame& f, const unsigned 
 #ifdef USING_OPENXR
         ar >> f.pose[0];
         ar >> f.pose[1];
-    }
 #else
-        ar >> f.pose;
+    }
+    ar >> f.pose;
 #endif
 
     ar >> f.near_z;
