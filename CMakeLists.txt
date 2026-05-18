@@ -9,7 +9,7 @@
 ########################################################################################
 
 cmake_minimum_required(VERSION 3.22)
-set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
+set(CMAKE_POLICY_VERSION_MINIMUM 3.10)
 if(UNIX)
     # since several plugins now require clang to compile themselves or their dependencies
     # clang is now a required dependency
@@ -196,7 +196,7 @@ set(ENV{PKG_CONFIG_PATH} "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig:${CMAKE_INSTALL_
 
 
 if(BUILD_DOCS)
-    set(DOCS_LIST "${CMAKE_SOURCE_DIR}/include/illixr;${CMAKE_SOURCE_DIR}/include/illixr/data_format;${CMAKE_SOURCE_DIR}/include/illixr/network;${CMAKE_SOURCE_DIR}/include/illixr/vk;${CMAKE_SOURCE_DIR}/plugins/hand_tracking/viewer;${CMAKE_SOURCE_DIR}/plugins/zed/data_injection;${CMAKE_SOURCE_DIR}/plugins/zed/capture;${CMAKE_SOURCE_DIR}/src;${CMAKE_SOURCE_DIR}/src/display;${CMAKE_SOURCE_DIR}/utils")
+    set(DOCS_LIST "${CMAKE_SOURCE_DIR}/include/illixr;${CMAKE_SOURCE_DIR}/include/illixr/data_format;${CMAKE_SOURCE_DIR}/include/illixr/data_format/poses;${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization;${CMAKE_SOURCE_DIR}/include/illixr/network;${CMAKE_SOURCE_DIR}/include/illixr/vk;${CMAKE_SOURCE_DIR}/plugins/hand_tracking/viewer;${CMAKE_SOURCE_DIR}/plugins/zed/data_injection;${CMAKE_SOURCE_DIR}/plugins/zed/capture;${CMAKE_SOURCE_DIR}/src;${CMAKE_SOURCE_DIR}/src/display;${CMAKE_SOURCE_DIR}/utils")
     set(DOCS_EXCLUDE_LIST "${CMAKE_SOURCE_DIR}/include/illixr/vk/vk_extension_request.hpp")
 endif()
 
@@ -243,19 +243,19 @@ if(WIN32 OR MSVC)
     else()
         set(MSVC_RUNTIME_FLAG "/MD")
     endif()
-    
+
     # Set this so Boost won't override it
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
-    
+
     # CRITICAL: Prevent it from affecting CUDA
     set(CMAKE_CUDA_RUNTIME_LIBRARY "None" CACHE STRING "" FORCE)
-    
+
     # Ensure C++ runtime is linked
     if(CMAKE_BUILD_TYPE MATCHES Debug)
         link_libraries(vcruntimed.lib msvcrtd.lib)
     else()
         link_libraries(vcruntime.lib msvcrt.lib)
-    endif()    
+    endif()
     # Remove conflicting static runtime libraries
     add_link_options(/NODEFAULTLIB:libcmt.lib /NODEFAULTLIB:libcmtd.lib)
 
