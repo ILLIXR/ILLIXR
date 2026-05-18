@@ -1,5 +1,6 @@
 #pragma once
 
+#include <map>
 #ifdef USING_OPENXR
     #ifdef ENABLE_MONADO
         #include "xrt/xrt_defines.h"
@@ -9,19 +10,29 @@
         #define POSE_DATA_TYPE XrPosef
     #endif
 #else
-    #include <Eigen/Dense>
-#endif // USING_OPENXR
+    #if __has_include(<Eigen/Dense>)
+        #include <Eigen/Dense>
+    #else // __has_include(<Eigen/Dense>)
+        #include <eigen3/Eigen/Dense>
+        #include <utility>
+    #endif // __has_include(<Eigen/Dense>)
+#endif     // USING_OPENXR
 
 namespace ILLIXR::data_format::pose {
 /** @brief Distinguishes the left and right hand. */
-enum hand : int { LEFT = 0, RIGHT = 1 };
+enum side : int { LEFT = 0, RIGHT = 1 };
+
+inline side non_primary(const side sd) {
+    if (sd == LEFT)
+        return RIGHT;
+    return LEFT;
+}
 
 /**
  * @brief Base struct for all pose types in ILLIXR.
  *
  * Captures the common 6-DOF pose fields (position, orientation) together with
- * the metadata that every derived pose needs: measurement units, coordinate
- * frame, reference space, confidence, and validity.  Derived structs should
+ * the metadata that every derived pose needs: confidence, and validity.  Derived structs should
  * inherit from this type rather than duplicating these fields.
  */
 #ifdef USING_OPENXR
@@ -79,9 +90,12 @@ struct pose_base {
     }
 #else
     void update(Eigen::Vector3f position_, Eigen::Quaternionf orientation_) {
-        position    = position_;
-        orientation = orientation_;
+        position    = std::move(position_);
+        orientation = std::move(orientation_);
     }
 #endif
 };
+
+[[maybe_unused]] typedef std::map<side, pose_base> multi_pose_map;
+
 } // namespace ILLIXR::data_format::pose

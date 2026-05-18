@@ -10,6 +10,7 @@
     #ifdef ENABLE_MONADO
         #define HAND_JOINT_COUNT XRT_HAND_JOINT_COUNT
     #else
+        #include "openxr_defines.hpp"
         #define HAND_JOINT_COUNT XR_HAND_JOINT_COUNT_EXT
     #endif
 
@@ -50,32 +51,47 @@ enum joint : int {
     LITTLE_TIP [[maybe_unused]]          = 25
 };
 
-    /**
-     * @brief Full 6-DOF pose for a single hand joint.
-     *
-     * Extends @c pose_base with per-joint @c joint_location_flags, a linear velocity,
-     * and a joint-sphere radius.
-     *
-     * @c pose_base::valid is set to @c true when both ORIENTATION_VALID and POSITION_VALID
-     * are set in @c location_flags, providing a single "is this usable?" check for
-     * consumers that do not need the finer-grained distinction.  Consumers that do need
-     * it (e.g. physics that should only apply velocity when POSITION_TRACKED is set)
-     * should read @c location_flags directly.
-     */
     #ifdef ENABLE_MONADO
+/**
+ * @brief Pose and velocity data for a hand joint
+ *
+ * Using @c xrt_hand_joint_value to be Monado compatable
+ */
 typedef xrt_hand_joint_value hand_joint_pose;
     #else
+/**
+ * @brief Full 6-DOF pose for a single hand joint.
+ *
+ * Extends @c pose_base with per-joint @c joint_location_flags, a linear velocity,
+ * and a joint-sphere radius.
+ *
+ * @c pose_base::valid is set to @c true when both ORIENTATION_VALID and POSITION_VALID
+ * are set in @c location_flags, providing a single "is this usable?" check for
+ * consumers that do not need the finer-grained distinction.  Consumers that do need
+ * it (e.g. physics that should only apply velocity when POSITION_TRACKED is set)
+ * should read @c location_flags directly.
+ */
 struct hand_joint_pose {
-    xrt_space_relation relation;
-    float              radius;
+    xrt_space_relation relation; //!< The pose, velocity, and flag data for the joint
+    float              radius;   //!< The radius of the joint
 
     hand_joint_pose()
         : radius{0.} { }
 
+    /**
+     * Constructor using an xrt_space_relation and radius
+     * @param rel
+     * @param r
+     */
     hand_joint_pose(xrt_space_relation rel, float r)
         : relation{rel}
         , radius{r} { }
 
+    /**
+     * Constructor using an OpenXR based hand joint and velocity
+     * @param pose The pose for the joint
+     * @param vel The velocity data for the joint
+     */
     hand_joint_pose(XrHandJointLocationEXT pose, XrHandJointVelocityEXT vel) {
         radius                    = pose.radius;
         relation.pose             = pose.pose;
@@ -92,6 +108,11 @@ struct hand_joint_pose {
      * the hand as a whole is currently being tracked.
      */
     #ifdef ENABLE_MONADO
+/**
+ * @brief Pose and velocity data for all points in a hand
+ *
+ * Using @c xrt_hand_joint_set to be Monado compatable
+ */
 typedef xrt_hand_joint_set hand_joint_poses;
     #else
 
@@ -107,18 +128,10 @@ struct hand_joint_poses {
         , is_active{false} { }
 
     /**
-     * @brief Construct from an explicit array of joint poses.
-     * @param joints_       Array of joint poses indexed by @c joint
-     * @param hand_tracked_ Whether the hand is currently tracked
-     * @param unit_         Common measurement unit, defaults to UNSET
+     * Update an existing instance with new information
+     * @param pose The new poses
+     * @param velocity The new velocity information
      */
-    // explicit hand_joint_poses(std::array<hand_joint_pose, HAND_JOINT_COUNT> joints_,
-    //                           bool hand_tracked_ = true,
-    //                           float confidence_ =0.f)
-    //     : joints{std::move(joints_)}
-    //     , hand_tracked{hand_tracked_}
-    //     , confidence{confidence_} { }
-
     void update(std::array<XrHandJointLocationEXT, XR_HAND_JOINT_COUNT_EXT>& pose,
                 std::array<XrHandJointVelocityEXT, XR_HAND_JOINT_COUNT_EXT>& velocity) {
         uint8_t tracked_count = 0;
@@ -131,6 +144,11 @@ struct hand_joint_poses {
         is_active = (static_cast<float>(tracked_count) / static_cast<float>(XR_HAND_JOINT_COUNT_EXT)) > 0.;
     }
 
+    /**
+     * Constructor using an array of poses and velocities
+     * @param pose Array of poses (one for each joint)
+     * @param velocity Array of velocities (one for each joint)
+     */
     hand_joint_poses(std::array<XrHandJointLocationEXT, XR_HAND_JOINT_COUNT_EXT>& pose,
                      std::array<XrHandJointVelocityEXT, XR_HAND_JOINT_COUNT_EXT>& velocity) {
         update(pose, velocity);
@@ -153,10 +171,6 @@ struct hand_joint_poses {
     const hand_joint_pose& operator[](joint j) const {
         return joints[static_cast<int>(j)];
     }
-
-    /**
-     * @brief Check if this hand has valid tracking data
-     */
 };
     #endif
 /**
@@ -166,7 +180,7 @@ struct hand_joint_poses {
  * of the map holds a @c hand_joint_poses for the corresponding hand.
  */
 struct hand_joint_poses_pair : public switchboard::event {
-    std::map<hand, hand_joint_poses> hands;       //!< Per-hand joint poses keyed by @c hand
+    std::map<side, hand_joint_poses> hands;       //!< Per-hand joint poses keyed by @c hand
     time_point                       sensor_time; //!< Timestamp at which the data was captured
 
     /**
@@ -181,15 +195,24 @@ struct hand_joint_poses_pair : public switchboard::event {
      * @param hands_       Per-hand joint poses
      * @param sensor_time_ Timestamp at which the data was captured
      */
-    hand_joint_poses_pair(std::map<hand, hand_joint_poses> hands_, time_point sensor_time_)
+    [[maybe_unused]] hand_joint_poses_pair(std::map<side, hand_joint_poses> hands_, time_point sensor_time_)
         : hands{std::move(hands_)}
         , sensor_time{sensor_time_} { }
 
-    [[nodiscard]] bool has_hands() const {
+    /**
+     * Returns whether there is any data for either hand
+     * @return True if there is any data for either hand, False otherwise.
+     */
+    [[nodiscard]] [[maybe_unused]] bool has_hands() const {
         return hands.at(LEFT).is_active || hands.at(RIGHT).is_active;
     }
 
-    hand_joint_poses& operator[](hand h) {
+    /**
+     * Get the hand joint data for the specified hand
+     * @param h The hand (LEFT or RIGHT) to obtain the joint data for
+     * @return The requested hand joint data
+     */
+    hand_joint_poses& operator[](side h) {
         return hands[h];
     }
 };

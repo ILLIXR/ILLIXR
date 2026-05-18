@@ -13,7 +13,7 @@ else()
                 ${CMAKE_SOURCE_DIR}/include/illixr/iterators/csv_iterator.hpp
                 ${CMAKE_SOURCE_DIR}/include/illixr/iterators/data_iterator.hpp
                 ${CMAKE_SOURCE_DIR}/include/illixr/plugin.hpp
-                ${CMAKE_SOURCE_DIR}/include/illixr/data_format/pose.hpp
+                ${CMAKE_SOURCE_DIR}/include/illixr/data_format/poses/head_pose.hpp
                 ${CMAKE_SOURCE_DIR}/include/illixr/data_format/imu.hpp
                 ${CMAKE_SOURCE_DIR}/include/illixr/data_format/misc.hpp
                 ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp

@@ -558,6 +558,15 @@
       ]
     },
     {
+      "name": "udp_network_backend",
+      "cmake_flag": "USE_UDP_NETWORK_BACKEND=ON",
+      "dependencies": [],
+      "OS": [
+        "linux",
+        "windows"
+      ]
+    },
+    {
       "name": "vkdemo",
       "cmake_flag": "USE_VKDEMO=ON",
       "dependencies": [

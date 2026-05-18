@@ -16,7 +16,7 @@ else()
 
     set(SRC_FILES plugin.cpp
         plugin.hpp
-        ${CMAKE_SOURCE_DIR}/include/illixr/data_format/pose.hpp
+        ${CMAKE_SOURCE_DIR}/include/illixr/data_format/poses/head_pose.hpp
         ${CMAKE_SOURCE_DIR}/include/illixr/error_util.hpp
         ${CMAKE_SOURCE_DIR}/include/illixr/phonebook.hpp
         ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
@@ -25,7 +25,13 @@ else()
 
     add_library(${PLUGIN_NAME} SHARED ${SRC_FILES})
 
-    target_include_directories(${PLUGIN_NAME} PUBLIC ${CMAKE_INSTALL_PREFIX}/include ${survive_INCLUDE_DIRS} ${survive_INCLUDE_DIRS}/redist)
+    target_include_directories(${PLUGIN_NAME} PUBLIC
+                               ${CMAKE_INSTALL_PREFIX}/include
+                               ${survive_INCLUDE_DIRS}
+                               ${survive_INCLUDE_DIRS}/redist
+                               ${libsurvive_SOURCE_DIR}/include/libsurvive
+                               ${libsurvive_SOURCE_DIR}/redist
+    )
 
     if(LibSurvive_EXTERNAL)
         message("SURVIVE   ${survive_INCLUDE_DIRS} ${survive_INCLUDE_DIRS}/redist ${survive_LIBRARIES}")

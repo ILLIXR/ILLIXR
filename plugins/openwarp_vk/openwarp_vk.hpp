@@ -120,7 +120,7 @@ public:
                std::shared_ptr<vulkan::buffer_pool<data_format::pose::fast_head_pose_type>> buffer_pool_,
                bool                                                                         input_texture_external_) override;
     void partial_destroy();
-    void update_uniforms(const data_format::pose::head_pose_type& render_pose) override;
+    void update_uniforms(const data_format::pose::fast_head_pose_type& render_pose) override;
     void record_command_buffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left) override;
     bool is_external() override;
     void destroy() override;

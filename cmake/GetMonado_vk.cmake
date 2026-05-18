@@ -81,5 +81,3 @@ else ()
 
 endif ()
 set(MONADO_RUNTIME "${CMAKE_INSTALL_PREFIX}/share/openxr/1/openxr_monado_vk.json" PARENT_SCOPE)
-
-set(EXTERNAL_PROJECTS ${EXTERNAL_PROJECTS} PARENT_SCOPE)

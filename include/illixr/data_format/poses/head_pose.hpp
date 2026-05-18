@@ -1,14 +1,20 @@
+/** @file head_pose.hpp
+ * @brief Definitions of head poses.
+ */
 #pragma once
 
 #include "illixr/data_format/poses/pose_base.hpp"
-#include "illixr/data_format/unit.hpp"
 #include "illixr/switchboard.hpp"
 
 #ifdef USING_OPENXR
     #include "openxr_defines.hpp"
-#else
-    #include <Eigen/Dense>
-#endif
+#else // USING_OPENXR
+    #if __has_include(<Eigen/Dense>)
+        #include <Eigen/Dense>
+    #else // __has_include(<Eigen/Dense>)
+        #include <eigen3/Eigen/Dense>
+    #endif // __has_include(<Eigen/Dense>)
+#endif     // USING_OPENXR
 #include <map>
 
 namespace ILLIXR::data_format::pose {
@@ -37,7 +43,6 @@ struct head_pose_data : public pose_base {
      * @param position_ The positional part of the pose
      * @param orientation_ RThe rotational part of the pose
      * @param valid_ The validity of the pose, default is true
-     * @param unit_ The units for the pose, default is UNSET
      * @param frm The reference frame, default is RIGHT_HANDED_Y_UP
      * @param ref The reference space, default is VIEWER
      * @param confidence_ The confidence of the pose (0..1, where 0 means no confidence)
@@ -46,6 +51,15 @@ struct head_pose_data : public pose_base {
         : pose_base{std::move(position_), std::move(orientation_), confidence_, valid_} { }
 };
 #endif
+#ifdef USING_OPENXR
+/**
+ * @typedef head_pose_type
+ *
+ * Pose and velocity data for the head / HMD. Using @c xrt_space_relation to be Monado compatable
+ */
+typedef xrt_space_relation head_pose_type;
+
+#else
 /**
  * @brief Pose and velocity data for the head / HMD, with a timestamp.
  *
@@ -58,10 +72,6 @@ struct head_pose_data : public pose_base {
  *   - @c linear_velocity  — metres per second
  *   - @c angular_velocity — radians per second (axis-angle, right-hand rule)
  */
-#ifdef USING_OPENXR
-typedef xrt_space_relation head_pose_type;
-
-#else
 struct [[maybe_unused]] head_pose_type
     : public switchboard::event
     , public head_pose_data {
@@ -142,6 +152,9 @@ struct [[maybe_unused]] head_pose_type
         , angular_velocity_valid{false} { }
 };
 #endif
+
+[[maybe_unused]] typedef std::map<side, head_pose_type> head_pose_map;
+
 /**
  * Fast pose
  */
@@ -231,10 +244,5 @@ struct [[maybe_unused]] texture_pose : public switchboard::event {
         , latest_quaternion{std::move(latest_quaternion_)}
         , render_quaternion{std::move(render_quaternion_)} { }
 };
-
-/**
- * @brief Map from eye index to a head pose, used for per-eye pose data.
- */
-[[maybe_unused]] typedef std::map<units::eyes, head_pose_type> multi_pose_map;
 
 } // namespace ILLIXR::data_format::pose

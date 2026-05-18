@@ -128,7 +128,7 @@ void native_renderer::_p_one_iteration() {
     if (!app_->is_external()) {
         // Get the current fast pose and update the uniforms
         // log_->debug("Updating uniforms");
-        app_->update_uniforms(fast_pose.pose);
+        app_->update_uniforms(fast_pose);
 
         VK_ASSERT_SUCCESS(vkResetCommandBuffer(app_command_buffer_, 0))
 
@@ -207,7 +207,7 @@ void native_renderer::_p_one_iteration() {
         auto res          = buffer_pool_->post_processing_acquire_image();
         auto buffer_index = res.first;
         auto pose         = res.second;
-        timewarp_->update_uniforms(pose.pose);
+        timewarp_->update_uniforms(pose);
 
         if (buffer_index == -1) {
             return;

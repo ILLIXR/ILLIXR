@@ -23,7 +23,7 @@ else()
                 offload_rendering_client.cpp
                 ${CMAKE_SOURCE_DIR}/include/illixr/data_format/pose_prediction.hpp
                 ${CMAKE_SOURCE_DIR}/include/illixr/phonebook.hpp
-                ${CMAKE_SOURCE_DIR}/include/illixr/data_format/serializable_data.hpp
+                ${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization/frame.hpp
                 ${CMAKE_SOURCE_DIR}/include/illixr/data_format/frame.hpp
                 ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
                 ${CMAKE_SOURCE_DIR}/include/illixr/threadloop.hpp
@@ -32,7 +32,7 @@ else()
                 ${CMAKE_SOURCE_DIR}/include/illixr/vk/render_pass.hpp
                 ${CMAKE_SOURCE_DIR}/include/illixr/vk/vk_extension_request.hpp
                 ${CMAKE_SOURCE_DIR}/include/illixr/vk/vulkan_utils.hpp
-                ${CMAKE_SOURCE_DIR}/utils/serializable_data.cpp
+                ${CMAKE_SOURCE_DIR}/utils/serialization/frame.cpp
     )
 
     set_target_properties(${PLUGIN_NAME} PROPERTIES OUTPUT_NAME ${PLUGIN_NAME})
@@ -46,6 +46,12 @@ else()
 
     target_link_libraries(${PLUGIN_NAME} ${libavdevice_illixr_LIBRARIES} ${libavformat_illixr_LIBRARIES} ${libavcodec_illixr_LIBRARIES} ${libavutil_illixr_LIBRARIES} ${libswscale_illixr_LIBRARIES})
     target_include_directories(${PLUGIN_NAME} PUBLIC ${libavcodec_illixr_INCLUDE_DIRS})
+
+    # Check if the modern target exists; if not, fall back to the old one
+    if(NOT TARGET CUDA::nvToolsExt AND TARGET CUDA::nvtx3)
+        add_library(CUDA::nvToolsExt INTERFACE IMPORTED)
+        target_link_libraries(CUDA::nvToolsExt INTERFACE CUDA::nvtx3)
+    endif()
 
     target_link_libraries(${PLUGIN_NAME} CUDA::cudart CUDA::nppif CUDA::nppial CUDA::nppicc CUDA::nppidei CUDA::nppig CUDA::nppim CUDA::nppist CUDA::nppisu CUDA::nppitc CUDA::npps CUDA::nvToolsExt)
     target_include_directories(${PLUGIN_NAME} PUBLIC ${CUDAToolkit_INCLUDE_DIRS})

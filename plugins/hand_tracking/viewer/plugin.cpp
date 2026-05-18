@@ -1,6 +1,7 @@
 #include "plugin.hpp"
 
 #include "illixr/data_format/opencv_data_types.hpp"
+#include "illixr/data_format/shape.hpp"
 #include "illixr/gl_util/obj.hpp"
 #include "illixr/imgui/backends/imgui_impl_glfw.h"
 #include "illixr/imgui/backends/imgui_impl_opengl3.h"
@@ -10,9 +11,6 @@
 
 using namespace ILLIXR;
 using namespace ILLIXR::data_format;
-
-int                     viewer::requested_unit_ = -1;
-units::measurement_unit viewer::base_unit_      = units::UNSET;
 
 /**
  * @brief Callback function to handle glfw errors
@@ -131,15 +129,6 @@ viewer::~viewer() {
 }
 
 void viewer::make_position_table() const {
-    ImGui::RadioButton("millimeter", &requested_unit_, 0);
-    ImGui::SameLine();
-    ImGui::RadioButton("centimeter", &requested_unit_, 1);
-    ImGui::SameLine();
-    ImGui::RadioButton("meter", &requested_unit_, 2);
-    ImGui::SameLine();
-    ImGui::RadioButton("foot", &requested_unit_, 3);
-    ImGui::SameLine();
-    ImGui::RadioButton("inch", &requested_unit_, 4);
     if (ImGui::BeginTable("Poses", 2, ImGuiTableFlags_Borders)) {
         ImGui::TableSetupColumn("Pose");
         ImGui::TableSetupColumn("x, y, z : w, x, y, z");
@@ -181,22 +170,20 @@ void viewer::make_position_table() const {
                 // ImGui::TableSetupColumn("Wy");
                 // ImGui::TableSetupColumn("Wz");
                 ImGui::TableHeadersRow();
-                auto points = current_frame_->hand_positions.at(static_cast<ht::hand>(idx));
-                bool skip   = points.points.empty();
+                auto points = current_frame_->hand_positions.at(static_cast<pose::side>(idx));
+                bool skip   = points.points_.empty();
                 for (int row = ht::WRIST; row < ht::PINKY_TIP; row++) {
                     ImGui::TableNextRow();
                     ImGui::TableSetColumnIndex(0);
                     ImGui::Text("%s", ht::point_str_map.at(row).c_str());
-                    point_with_units pnt;
+                    point::point pnt;
                     if (!skip) {
-                        pnt = points.points.at(row);
+                        pnt = points.points_.at(row);
                     }
                     for (int i = 0; i < 3; i++) {
                         ImGui::TableSetColumnIndex(i + 1);
                         if (pnt.valid) {
-                            ImGui::Text("%.3f", pnt[i] * units::conversion_factor[points.unit][requested_unit_]);
-                            // ImGui::TableSetColumnIndex(i + 1 + 4);
-                            // ImGui::Text("%.3f", thp.at(row)[i] * convert[points.unit][requested_unit_]);
+                            ImGui::Text("%.3f", pnt[i]);
                         } else {
                             ImGui::Text("");
                             ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg,
@@ -222,7 +209,7 @@ void viewer::make_position_table() const {
     }
 }
 
-void viewer::make_detection_table(units::eyes eye, int idx, const std::string& label) const {
+void viewer::make_detection_table(pose::side eye, int idx, const std::string& label) const {
     if (ImGui::BeginTabItem(label.c_str())) {
         if (ImGui::BeginTable("first_det", 2, ImGuiTableFlags_Borders)) {
             ImGui::TableSetupColumn("first_det_info");
@@ -241,12 +228,12 @@ void viewer::make_detection_table(units::eyes eye, int idx, const std::string& l
                 ImGui::TableSetupColumn("Rotation");
                 ImGui::TableHeadersRow();
                 for (auto i : ht::hand_map) {
-                    rect current_rect = current_frame_->detections.at(eye).palms.at(i);
+                    shapes::rect current_rect = current_frame_->detections.at(eye).palms.at(i);
                     ImGui::TableNextRow();
                     ImGui::TableSetColumnIndex(0);
                     ImGui::Text("%s", (i == 0) ? "Left palm" : "Right palm");
                     ImGui::TableSetColumnIndex(1);
-                    ImGui::Text("%s", units::unit_str.at(current_rect.unit).c_str());
+                    ImGui::Text("%s", "mm");
                     if (current_rect.valid) {
                         ImGui::TableSetColumnIndex(2);
                         ImGui::Text("%.2f, %.2f", current_rect.x_center, current_rect.y_center);
@@ -269,12 +256,12 @@ void viewer::make_detection_table(units::eyes eye, int idx, const std::string& l
                 ImGui::TableSetupColumn("Rotation");
                 ImGui::TableHeadersRow();
                 for (auto i : ht::hand_map) {
-                    rect current_rect = current_frame_->detections.at(eye).hands.at(i);
+                    shapes::rect current_rect = current_frame_->detections.at(eye).hands.at(i);
                     ImGui::TableNextRow();
                     ImGui::TableSetColumnIndex(0);
                     ImGui::Text("%s", (i == 0) ? "Left hand" : "Right hand");
                     ImGui::TableSetColumnIndex(1);
-                    ImGui::Text("%s", units::unit_str.at(current_rect.unit).c_str());
+                    ImGui::Text("%s", "mm");
                     if (current_rect.valid) {
                         ImGui::TableSetColumnIndex(2);
                         ImGui::Text("%.2f, %.2f", current_rect.x_center, current_rect.y_center);
@@ -297,15 +284,15 @@ void viewer::make_detection_table(units::eyes eye, int idx, const std::string& l
                 ImGui::TableSetColumnIndex(0);
                 ImGui::Text("%s", "Confidence");
                 ImGui::TableSetColumnIndex(1);
-                ImGui::Text("%.2f", current_frame_->detections.at(eye).confidence.at(ht::LEFT_HAND));
+                ImGui::Text("%.2f", current_frame_->detections.at(eye).confidence.at(pose::LEFT));
                 ImGui::TableSetColumnIndex(2);
-                ImGui::Text("%.2f", current_frame_->detections.at(eye).confidence.at(ht::RIGHT_HAND));
+                ImGui::Text("%.2f", current_frame_->detections.at(eye).confidence.at(pose::RIGHT));
                 for (int row = ht::WRIST; row <= ht::PINKY_TIP; row++) {
                     ImGui::TableNextRow();
                     ImGui::TableSetColumnIndex(0);
                     ImGui::Text("%s", ht::point_str_map.at(row).c_str());
                     ImGui::TableSetColumnIndex(1);
-                    auto pnt = current_frame_->detections.at(eye).points.at(ht::LEFT_HAND).points[row];
+                    auto pnt = current_frame_->detections.at(eye).points.at(pose::LEFT).points_[row];
                     if (pnt.valid) {
                         ImGui::Text("%.2f, %.2f, %.2f", pnt.x(), pnt.y(), pnt.z());
                     } else {
@@ -313,7 +300,7 @@ void viewer::make_detection_table(units::eyes eye, int idx, const std::string& l
                         ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, ImGui::GetColorU32(ImVec4(0.7f, 0.3f, 0.3f, 0.65f)));
                     }
                     ImGui::TableSetColumnIndex(2);
-                    pnt = current_frame_->detections.at(eye).points.at(ht::RIGHT_HAND).points[row];
+                    pnt = current_frame_->detections.at(eye).points.at(pose::RIGHT).points_[row];
                     if (pnt.valid) {
                         ImGui::Text("%.2f, %.2f, %.2f", pnt.x(), pnt.y(), pnt.z());
                     } else {
@@ -337,10 +324,6 @@ void viewer::make_gui(const switchboard::ptr<const ht::ht_frame>& frame) {
     glfwPollEvents();
     current_frame_ = frame.get();
 
-    if (base_unit_ == units::UNSET) {
-        base_unit_      = current_frame_->unit;
-        requested_unit_ = base_unit_;
-    }
     std::vector<image::image_type> found_types;
     cv::Mat                        raw_img[2];
     int                            last_idx = 0;
@@ -376,30 +359,29 @@ void viewer::make_gui(const switchboard::ptr<const ht::ht_frame>& frame) {
 
     ImGui::NewFrame();
     float proc_time;
-    if (current_frame_->detections.count(units::LEFT_EYE) == 1 && current_frame_->detections.count(units::RIGHT_EYE) == 1) {
+    if (current_frame_->detections.count(pose::LEFT) == 1 && current_frame_->detections.count(pose::RIGHT) == 1) {
         raw_img[0]     = current_frame_->at(image::LEFT_EYE).clone();
         raw_img[1]     = current_frame_->at(image::RIGHT_EYE).clone();
         enabled_right_ = true;
         tab_label_     = "Left Eye Raw";
-        single_eye_    = units::LEFT_EYE;
+        single_eye_    = pose::LEFT;
         detections_    = {image::LEFT_EYE_PROCESSED, image::RIGHT_EYE_PROCESSED};
-        proc_time =
-            (float) std::max(current_frame_->detections.at(static_cast<const units::eyes>(image::LEFT_EYE)).proc_time,
-                             current_frame_->detections.at(static_cast<const units::eyes>(image::RIGHT_EYE)).proc_time) /
+        proc_time = (float) std::max(current_frame_->detections.at(static_cast<const pose::side>(image::LEFT_EYE)).proc_time,
+                                     current_frame_->detections.at(static_cast<const pose::side>(image::RIGHT_EYE)).proc_time) /
             (1000.f * 1000.f);
     } else {
         image::image_type img_typ;
-        if (current_frame_->detections.count(units::LEFT_EYE) == 1) {
-            single_eye_ = units::LEFT_EYE;
+        if (current_frame_->detections.count(pose::LEFT) == 1) {
+            single_eye_ = pose::LEFT;
             detections_ = {image::LEFT_EYE_PROCESSED};
             img_typ     = image::LEFT_EYE;
-            proc_time   = (float) current_frame_->detections.at(static_cast<const units::eyes>(image::LEFT_EYE)).proc_time /
+            proc_time   = (float) current_frame_->detections.at(static_cast<const pose::side>(image::LEFT_EYE)).proc_time /
                 (1000.f * 1000.f);
-        } else if (current_frame_->detections.count(units::RIGHT_EYE) == 1) {
-            single_eye_ = units::RIGHT_EYE;
+        } else if (current_frame_->detections.count(pose::RIGHT) == 1) {
+            single_eye_ = pose::RIGHT;
             detections_ = {image::RIGHT_EYE_PROCESSED};
             img_typ     = image::RIGHT_EYE;
-            proc_time   = (float) current_frame_->detections.at(static_cast<const units::eyes>(image::RIGHT_EYE)).proc_time /
+            proc_time   = (float) current_frame_->detections.at(static_cast<const pose::side>(image::RIGHT_EYE)).proc_time /
                 (1000.f * 1000.f);
         } else {
             return;
@@ -449,7 +431,7 @@ void viewer::make_gui(const switchboard::ptr<const ht::ht_frame>& frame) {
         if (ImGui::BeginTabBar("TabBar")) {
             make_detection_table(single_eye_, 0, tab_label_);
             if (enabled_right_) {
-                make_detection_table(units::RIGHT_EYE, 1, "Right Eye Raw");
+                make_detection_table(pose::RIGHT, 1, "Right Eye Raw");
             }
             if (ImGui::BeginTabItem("True Position")) {
                 make_position_table();

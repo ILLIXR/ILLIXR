@@ -428,7 +428,7 @@ Topic details:
 
 Provides network communications over TCP.
 
-**Details**&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C27]
+&nbsp;&nbsp;[**Details**][P34]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C27]
 
 ## timewarp_gl [^1] ![Linux Logo](images/tux.png)
 
@@ -460,6 +460,12 @@ Topic details:
 -   Asynchronously *reads* `time_point` from `vsync_estimate` topic.
 
 &nbsp;&nbsp;[**Details**][P29]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C29]
+
+## udp_network_backend ![Linux Logo](images/tux.png) ![Windows logo](images/windows.png)
+
+Provides network communications over UDP.
+
+&nbsp;&nbsp;[**Details**][P34]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C39]
 
 ## webcam ![Linux Logo](images/tux.png)
 
@@ -530,7 +536,7 @@ interdependencies.
 See [Getting Started][I11] for more information on adding plugins to a [_profile_][G17] file.
 
 
-[^1]: ILLIXR has switched to a Vulkan back end, thus OpenGL based plugins may not work on every system.
+[^1]: ILLIXR has switched to a Vulkan back end, thus OpenGL-based plugins may not work on every system.
 
 
 [//]: # (- References -)
@@ -573,7 +579,9 @@ See [Getting Started][I11] for more information on adding plugins to a [_profile
 
 [P32]:  plugin_README/README_zed_data_injection.md
 
-[P33]:   plugin_README/README_ada.md
+[P33]:  plugin_README/README_ada.md
+
+[P34]:  plugin_README/README_network_backends.md
 
 [S10]:   illixr_services.md#pose_prediction
 
@@ -673,6 +681,7 @@ See [Getting Started][I11] for more information on adding plugins to a [_profile
 
 [C38]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/ada/scene_management
 
+[C39]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/udp_network_backend
 
 [//]: # (- Internal -)
 
@@ -706,9 +715,9 @@ See [Getting Started][I11] for more information on adding plugins to a [_profile
 
 [A10]:   api/classILLIXR_1_1switchboard.md
 
-[A11]:   api/structILLIXR_1_1data__format_1_1fast__pose__type.md
+[A11]:   api/structILLIXR_1_1data__format_1_1pose_1_1fast__head__pose__type.md
 
-[A12]:   api/structILLIXR_1_1data__format_1_1pose__type.md
+[A12]:   api/structILLIXR_1_1data__format_1_1pose_1_1head__pose__type.md
 
 [A13]:   api/structILLIXR_1_1data__format_1_1rgb__depth__type.md
 

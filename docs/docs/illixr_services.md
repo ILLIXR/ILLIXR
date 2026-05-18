@@ -77,6 +77,6 @@ Topic details:
 [37]:   glossary.md#pose
 [57]:   illixr_services.md#pose_prediction
 [58]:   glossary.md#service
-[61]:   api/structILLIXR_1_1data__format_1_1pose__type.md
-[60]:   api/structILLIXR_1_1data__format_1_1fast__pose__type.md
+[61]:   api/structILLIXR_1_1data__format_1_1pose_1_1head__pose__type.md
+[60]:   api/structILLIXR_1_1data__format_1_1pose_1_1fast__head__pose__type.md
 [30]:   https://github.com/ILLIXR/ILLIXR/tree/master/include/illixr/vk
