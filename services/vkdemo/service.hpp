@@ -73,7 +73,7 @@ public:
     void initialize();
     void setup(VkRenderPass render_pass, uint32_t subpass,
                std::shared_ptr<vulkan::buffer_pool<data_format::pose::fast_head_pose_type>> _) override;
-    void update_uniforms(const data_format::pose::head_pose_type& fp) override;
+    void update_uniforms(const BUFFER_TYPE& fp) override;
     void record_command_buffer(VkCommandBuffer command_buffer, VkFramebuffer frame_buffer, int buffer_ind, bool left) override;
     void destroy() override;
 
@@ -82,7 +82,7 @@ public:
     }
 
 private:
-    void update_uniform(const data_format::pose::head_pose_type& pose, int eye);
+    void update_uniform(const BUFFER_TYPE& pose, int eye);
     void bake_models();
     void create_descriptor_set_layout();
     void create_uniform_buffers();

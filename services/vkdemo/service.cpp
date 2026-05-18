@@ -90,7 +90,7 @@ void vkdemo::setup(VkRenderPass render_pass, uint32_t subpass,
     create_pipeline(render_pass, subpass);
 }
 
-void vkdemo::update_uniforms(const pose::head_pose_type& fp) {
+void vkdemo::update_uniforms(const BUFFER_TYPE& fp) {
     update_uniform(fp, 0);
     update_uniform(fp, 1);
 }
@@ -125,10 +125,10 @@ void vkdemo::destroy() {
     }
 }
 
-void vkdemo::update_uniform(const pose::head_pose_type& pose, int eye) {
+void vkdemo::update_uniform(const BUFFER_TYPE& pose, int eye) {
     Eigen::Matrix4f model_matrix = Eigen::Matrix4f::Identity();
 
-    Eigen::Matrix3f head_rotation_matrix = pose.orientation.toRotationMatrix();
+    Eigen::Matrix3f head_rotation_matrix = pose.pose.orientation.toRotationMatrix();
 
     constexpr int LEFT_EYE = 0;
 
@@ -139,12 +139,12 @@ void vkdemo::update_uniform(const pose::head_pose_type& pose, int eye) {
     eyeball = head_rotation_matrix * eyeball;
 
     // Apply head position to eyeball
-    eyeball += pose.position;
+    eyeball += pose.pose.position;
 
     // Build our eye matrix from the pose's position + orientation.
     Eigen::Matrix4f eye_matrix   = Eigen::Matrix4f::Identity();
     eye_matrix.block<3, 1>(0, 3) = eyeball; // Set position to eyeball's position
-    eye_matrix.block<3, 3>(0, 0) = pose.orientation.toRotationMatrix();
+    eye_matrix.block<3, 3>(0, 0) = pose.pose.orientation.toRotationMatrix();
 
     // Objects' "view matrix" is inverse of eye matrix.
     auto view_matrix = eye_matrix.inverse();
