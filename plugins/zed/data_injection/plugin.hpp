@@ -3,7 +3,6 @@
 #include "illixr/data_format/camera_data.hpp"
 #include "illixr/data_format/imu.hpp"
 #include "illixr/data_format/opencv_data_types.hpp"
-#include "illixr/data_format/poses/hand_tracking_data.hpp"
 #include "illixr/data_format/poses/head_pose.hpp"
 #include "illixr/threadloop.hpp"
 

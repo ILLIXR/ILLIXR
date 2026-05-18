@@ -1,0 +1,80 @@
+--- cmake_modules/Config.cmake.in	2026-05-14 09:36:49.757944804 -0500
++++ cmake_modules/Config.cmake.in.new	2026-05-12 15:17:56.705524080 -0500
+@@ -1,14 +1,74 @@
+ include(CMakeFindDependencyMacro)
++include(FetchContent)
++FetchContent_GetProperties(g2o)
+
++# ---------------------------------------------------------------
++# FetchContent / add_subdirectory mode
++# g2o creates un-namespaced build targets (stuff, core, etc.).
++# Wrap each in a g2o:: IMPORTED INTERFACE using $<BUILD_INTERFACE:>
++# so install(EXPORT) doesn't require them to be in an export set.
++# ---------------------------------------------------------------
++if(TARGET g2o_cli_library)
++    foreach(_g2o_comp IN ITEMS
++            freeglut_minimal
++            g2o_ceres_ad
++            stuff
++            opengl_helper
++            core
++            g2o_cli_library
++            g2o_simulator_library
++            types_slam2d
++            types_slam2d_addons
++            types_data
++            types_sclam2d
++            types_slam3d
++            types_slam3d_addons
++            types_sba
++            types_icp
++            types_sim3
++            solver_pcg
++            solver_dense
++            solver_slam2d_linear
++            solver_structure_only
++            solver_csparse
++            csparse_extension
++            solver_cholmod
++            solver_eigen
++            g2o_hierarchical_library)
++        message("g2o checking ${_g2o_comp}")
++        if(TARGET ${_g2o_comp} AND NOT TARGET g2o::${_g2o_comp})
++            add_library(g2o::${_g2o_comp} INTERFACE IMPORTED GLOBAL)
++            set_target_properties(g2o::${_g2o_comp} PROPERTIES
++                INTERFACE_LINK_LIBRARIES "$<BUILD_INTERFACE:${_g2o_comp}>"
++            )
++            message("  added g2o::${_g2o_comp}")
++        endif()
++    endforeach()
++    unset(_g2o_comp)
++    set(g2o_FOUND TRUE)
++    return()
++endif()
++
++# ---------------------------------------------------------------
++# Installed-package mode
++# ---------------------------------------------------------------
+ find_dependency(Eigen3)
+
+ if (@G2O_HAVE_OPENGL@)
+-  find_dependency(OpenGL)
++    find_dependency(OpenGL)
+ endif()
+
+ # Find spdlog if g2o was build with support for it
+ if (@G2O_HAVE_LOGGING@)
+-  find_dependency(spdlog)
++    find_dependency(spdlog)
++endif()
++
++set(_g2o_targets "${CMAKE_CURRENT_LIST_DIR}/@G2O_TARGETS_EXPORT_NAME@.cmake")
++if (NOT EXISTS "${_g2o_targets}")
++    set(g2o_FOUND FALSE)
++    unset(_g2o_targets)
++    return()
+ endif()
+
+-include("${CMAKE_CURRENT_LIST_DIR}/@G2O_TARGETS_EXPORT_NAME@.cmake")
++include("${_g2o_targets}")
++unset(_g2o_targets)

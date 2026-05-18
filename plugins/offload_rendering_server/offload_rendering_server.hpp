@@ -2,7 +2,7 @@
 
 #define DOUBLE_INCLUDE
 #include "illixr/data_format/pose_prediction.hpp"
-#include "illixr/data_format/serializable_data.hpp"
+#include "illixr/data_format/serialization/frame.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
 #include "illixr/vk/display_provider.hpp"
@@ -69,7 +69,7 @@ public:
     /**
      * @brief Get the true pose (same as fast pose in this implementation)
      */
-    data_format::pose_type get_true_pose() const override {
+    data_format::pose::head_pose_type get_true_pose() const override {
         return get_fast_pose().pose;
     }
 
@@ -206,14 +206,14 @@ private:
      */
     void ffmpeg_init_encoder();
 
-    std::shared_ptr<spdlog::logger>                                   log_;
-    std::shared_ptr<vulkan::display_provider>                         display_provider_;
-    std::shared_ptr<switchboard>                                      switchboard_;
-    switchboard::network_writer<data_format::compressed_frame>        frames_topic_;
-    switchboard::reader<BUFFER_TYPE>                                  render_pose_;
-    std::shared_ptr<vulkan::buffer_pool<data_format::fast_pose_type>> buffer_pool_;
-    std::vector<std::array<vulkan::ffmpeg_utils::ffmpeg_vk_frame, 2>> avvk_color_frames_;
-    std::vector<std::array<vulkan::ffmpeg_utils::ffmpeg_vk_frame, 2>> avvk_depth_frames_;
+    std::shared_ptr<spdlog::logger>                                              log_;
+    std::shared_ptr<vulkan::display_provider>                                    display_provider_;
+    std::shared_ptr<switchboard>                                                 switchboard_;
+    switchboard::network_writer<data_format::compressed_frame>                   frames_topic_;
+    switchboard::reader<BUFFER_TYPE>                                             render_pose_;
+    std::shared_ptr<vulkan::buffer_pool<data_format::pose::fast_head_pose_type>> buffer_pool_;
+    std::vector<std::array<vulkan::ffmpeg_utils::ffmpeg_vk_frame, 2>>            avvk_color_frames_;
+    std::vector<std::array<vulkan::ffmpeg_utils::ffmpeg_vk_frame, 2>>            avvk_depth_frames_;
 
     int  framerate_ = 144;
     long bitrate_   = OFFLOAD_RENDERING_BITRATE;

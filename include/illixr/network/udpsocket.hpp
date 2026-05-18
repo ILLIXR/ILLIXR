@@ -5,16 +5,19 @@
     #define WIN32_LEAN_AND_MEAN
 #endif
 
+#include <cstring>
 #include <stdexcept>
 #include <string>
 
 #if defined(_WIN32) || defined(_WIN64)
+// clang-format off
     #include <WinSock2.h>
     #include <ws2def.h>
     #include <ws2tcpip.h>
     #pragma comment(lib, "Ws2_32.lib")
     #define BYTE_TYPE   int
     #define SOCKET_TYPE SOCKET
+// clang-format on
 #else
     #include <arpa/inet.h>
     #include <netinet/in.h>
@@ -57,7 +60,7 @@ public:
 #endif
     }
 
-    // Bind to a local address and port (required on the server side, optional on client)
+    // Bind to a local address and port (required on the server side, optional on the client)
     void socket_bind(const std::string& ip, int port) const {
         sockaddr_in local_addr{};
         local_addr.sin_family      = AF_INET;
@@ -111,7 +114,7 @@ public:
         return sent == static_cast<BYTE_TYPE>(buffer.size());
     }
 
-    // Send a datagram to an explicit destination (used by server to reply to a specific client).
+    // Send a datagram to an explicit destination (used by the server to reply to a specific client).
     bool write_data_to(const std::string& buffer, const sockaddr_in& dest) const {
         BYTE_TYPE sent = sendto(fd_,
 #if defined(_WIN32) || defined(_WIN64)

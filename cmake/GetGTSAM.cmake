@@ -1,10 +1,21 @@
 # CMake module to look for GTSAM
 # if it is not found then it is downloaded and marked for compilation and install
 
+set(BUILD_GTSAM ON)
+
 find_package(GTSAM 4.3.0 QUIET EXACT)
 find_package(GTSAM_UNSTABLE 4.3.0 QUIET EXACT)
-list(APPEND EXTERNAL_PROJECTS GTSAM)
-if(NOT GTSAM_FOUND AND NOT GTSAM_UNSTABLE_FOUND)
+if(GTSAM_FOUND)
+    message(STATUS "  Found GTSAM, 4.3.0")
+    if(GTSAM_UNSTABLE_FOUND)
+        message(STATUS "  Found GTSAM_UNSTABLE, 4.3.0")
+        set(BUILD_GTSAM OFF)
+    else()
+        message(STATUS "  GTSAM_UNSTABLE not found, will build GTSAM from source")
+    endif()
+endif()
+
+if(BUILD_GTSAM)
     if(WIN32 OR MSVC)
         message(FATAL_ERROR "GTSAM should be installed with vcpkg")
     endif()
@@ -30,5 +41,3 @@ if(NOT GTSAM_FOUND AND NOT GTSAM_UNSTABLE_FOUND)
 else()
     set(GTSAM_VERSION ${GTSAM_VERSION} PARENT_SCOPE)
 endif()
-
-set(EXTERNAL_PROJECTS ${EXTERNAL_PROJECTS} PARENT_SCOPE)

@@ -1,20 +1,22 @@
 # CMake module to look for g2o
 # if it is not found then it is downloaded and marked for compilation and install
 
-list(APPEND EXTERNAL_PROJECTS g2o)
 find_package(g2o 1.0 QUIET)
-if (NOT g2o_FOUND)
-    EXTERNALPROJECT_ADD(g2o
-                        GIT_REPOSITORY https://github.com/RainerKuemmerle/g2o.git   # Git repo for source code
-                        PREFIX ${CMAKE_BINARY_DIR}/_deps/g2o                        # the build directory
-                        # arguments to pass to CMake
-                        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_CXX_FLAGS="-L${CMAKE_INSTALL_PREFIX}/lib" -DCMAKE_INSTALL_LIBDIR=lib -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=${CLANG_CXX_EXE} -DCMAKE_C_COMPILER=${CLANG_EXE}
-    )
-    # set variables for use by modules that depend on this one
-    set(g2o_DEP_STR "g2o")     # Dependency string for other modules that depend on this one
-    set(g2o_EXTERNAL YES)      # Mark that this module is being built
-else()
+if (g2o_FOUND)
     set(g2o_VERSION ${g2o_VERSION} PARENT_SCOPE)
-endif()
+    message(STATUS "  Found g2o, ${g2o_VERSION}")
+else()
+    fetch_git(NAME g2o
+              REPO https://github.com/RainerKuemmerle/g2o.git
+              TAG 20241228_git
+              PATCH
+              NO_OVERRIDE
+    )
+    configure_target(NAME g2o
+                     NO_FIND
+    )
 
-set(EXTERNAL_PROJECTS ${EXTERNAL_PROJECTS} PARENT_SCOPE)
+    message("SETTING g2o_DIR to ${g2o_BINARY_DIR}/generated")
+    set(g2o_DIR ${g2o_BINARY_DIR}/generated CACHE PATH "" FORCE)
+    message("    set to ${g2o_DIR}")
+endif()

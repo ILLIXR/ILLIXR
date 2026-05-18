@@ -1,5 +1,8 @@
 #include "plugin.hpp"
 
+#include "illixr/data_format/coordinate.hpp"
+#include "illixr/data_format/poses/hand_pose.hpp"
+
 #include <filesystem>
 #include <fstream>
 #include <opencv2/imgcodecs.hpp>
@@ -19,8 +22,8 @@ void data_injection::read_cam_data() {
         comma >> rcx >> comma >> rcy >> comma >> rvf >> comma >> rhf;
 
     data.close();
-    ccd_map cmap = {{units::LEFT_EYE, {lcx, lcy, lvf, lhf}}, {units::RIGHT_EYE, {rcx, rcy, rvf, rhf}}};
-    camera_data_ = {w, h, fps, bl, units::MILLIMETER, cmap};
+    ccd_map cmap = {{pose::LEFT, {lcx, lcy, lvf, lhf}}, {pose::RIGHT, {rcx, rcy, rvf, rhf}}};
+    camera_data_ = {w, h, fps, bl, cmap};
 }
 
 void data_injection::read_poses() {
@@ -38,8 +41,7 @@ void data_injection::read_poses() {
             base_time_ = tt - 1;
         t = tt - base_time_;
         timepoints_.push_back(t);
-        poses_[t] = new pose::head_pose_data(Eigen::Vector3f{tx, ty, tx}, Eigen::Quaternionf{w, x, y, z}, units::MILLIMETER,
-                                             coordinates::RIGHT_HANDED_Y_UP, coordinates::WORLD, 1.);
+        poses_[t] = new pose::head_pose_data(Eigen::Vector3f{tx, ty, tx}, Eigen::Quaternionf{w, x, y, z}, true, 1.);
     }
 }
 

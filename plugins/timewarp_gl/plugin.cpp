@@ -58,7 +58,7 @@ timewarp_gl::timewarp_gl(const std::string& name, phonebook* pb)
 #ifndef ENABLE_MONADO
     , eyebuffer_{switchboard_->get_reader<rendered_frame>("eyebuffer")}
     , vsync_estimate_{switchboard_->get_writer<switchboard::event_wrapper<time_point>>("vsync_estimate")}
-    , offload_data_{switchboard_->get_writer<texture_pose>("texture_pose")}
+    , offload_data_{switchboard_->get_writer<pose::texture_pose>("texture_pose")}
     , mtp_logger_{record_logger_}
     // TODO: Use #198 to configure this.
     // This is useful for experiments which seek to evaluate the end-effect of timewarp vs no-timewarp.
@@ -763,9 +763,9 @@ void timewarp_gl::warp(const switchboard::ptr<const rendered_frame>& most_recent
         GLubyte* image = read_texture_image();
 
         // Publish image and pose
-        offload_data_.put(offload_data_.allocate<texture_pose>(
-            texture_pose{offload_duration_, image, time_last_swap_, latest_pose.pose.position, latest_pose.pose.orientation,
-                         most_recent_frame->render_pose.pose.orientation}));
+        offload_data_.put(offload_data_.allocate<pose::texture_pose>(
+            pose::texture_pose{offload_duration_, image, time_last_swap_, latest_pose.pose.position,
+                               latest_pose.pose.orientation, most_recent_frame->render_pose.pose.orientation}));
     }
 #endif
 

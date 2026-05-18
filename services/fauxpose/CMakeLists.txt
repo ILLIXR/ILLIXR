@@ -6,11 +6,11 @@ add_library(${PLUGIN_NAME} SHARED
     service.hpp
     ${CMAKE_SOURCE_DIR}/include/illixr/plugin.hpp
     ${CMAKE_SOURCE_DIR}/include/illixr/data_format/pose_prediction.hpp
-    ${CMAKE_SOURCE_DIR}/include/illixr/data_format/pose.hpp
+    ${CMAKE_SOURCE_DIR}/include/illixr/data_format/poses/head_pose.hpp
 )
 
 target_include_directories(${PLUGIN_NAME} PRIVATE ${ILLIXR_SOURCE_DIR}/include)
-target_link_libraries(${PLUGIN_NAME} PUBLIC 
+target_link_libraries(${PLUGIN_NAME} PUBLIC
         spdlog::spdlog
         Boost::serialization
 )

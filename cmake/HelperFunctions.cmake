@@ -396,8 +396,8 @@ macro (report_build NAME)
 endmacro()
 
 function(fetch_git)
-    set(options PATCH RECURSE NO_OVERRIDE)
-    set(oneValueArgs NAME REPO TAG SUBDIR)
+    set(options PATCH RECURSE NO_OVERRIDE OVERRIDE_UPDATE)
+    set(oneValueArgs NAME REPO TAG SUBDIR OVERRIDE_BUILD)
     cmake_parse_arguments(fetch "${options}" "${oneValueArgs}" "" ${ARGV})
 
     if(NOT fetch_NAME)
@@ -407,56 +407,40 @@ function(fetch_git)
     elseif(NOT fetch_TAG)
         message(FATAL_ERROR "TAG must be specified in calls to fetch_git.")
     endif()
-        if(NOT fetch_NO_OVERRIDE)
-        set(OVERRIDE_TEXT OVERRIDE_FIND_PACKAGE)
-    else()
-        set(OVERRIDE_TEXT "")
+
+    set(FCD_ARGS
+        GIT_REPOSITORY ${fetch_REPO}
+        GIT_TAG ${fetch_TAG}
+        GIT_PROGRESS TRUE
+        GIT_SUBMODULES_RECURSE ${fetch_RECURSE}
+    )
+
+    if(fetch_SUBDIR)
+        list(APPEND FCD_ARGS "SOURCE_SUBDIR ${fetch_SUBDIR}")
     endif()
 
-    report_build(${fetch_NAME})
-    if (fetch_PATCH)
-        if (fetch_SUBDIR)
-            FetchContent_Declare(${fetch_NAME}
-                                 GIT_REPOSITORY ${fetch_REPO}
-                                 GIT_TAG ${fetch_TAG}
-                                 GIT_PROGRESS TRUE
-                                 GIT_SUBMODULES_RECURSE ${fetch_RECURSE}
-                                 SOURCE_SUBDIR ${fetch_SUBDIR}
-                                 PATCH_COMMAND ${CMAKE_CURRENT_LIST_DIR}/../do_patch.sh -p ${CMAKE_CURRENT_LIST_DIR}/${fetch_NAME}/${fetch_NAME}.patch
-                                 ${OVERRIDE_TEXT}
-            )
-        else()
-            FetchContent_Declare(${fetch_NAME}
-                                 GIT_REPOSITORY ${fetch_REPO}
-                                 GIT_TAG ${fetch_TAG}
-                                 GIT_SUBMODULES_RECURSE ${fetch_RECURSE}
-                                 GIT_PROGRESS TRUE
-                                 PATCH_COMMAND ${CMAKE_CURRENT_LIST_DIR}/../do_patch.sh -p ${CMAKE_CURRENT_LIST_DIR}/${fetch_NAME}/${fetch_NAME}.patch
-                                 ${OVERRIDE_TEXT}
-            )
-        endif()
-    else()
-        if (fetch_SUBDIR)
-            FetchContent_Declare(${fetch_NAME}
-                                 GIT_REPOSITORY ${fetch_REPO}
-                                 GIT_TAG ${fetch_TAG}
-                                 GIT_SUBMODULES_RECURSE ${fetch_RECURSE}
-                                 GIT_PROGRESS TRUE
-                                 SOURCE_SUBDIR ${fetch_SUBDIR}
-                                 ${OVERRIDE_TEXT}
-            )
-        else()
-            FetchContent_Declare(${fetch_NAME}
-                                 GIT_REPOSITORY ${fetch_REPO}
-                                 GIT_TAG ${fetch_TAG}
-                                 GIT_SUBMODULES_RECURSE ${fetch_RECURSE}
-                                 GIT_PROGRESS TRUE
-                                 ${OVERRIDE_TEXT}
-            )
-        endif()
+    if(NOT fetch_NO_OVERRIDE)
+        list(APPEND FCD_ARGS OVERRIDE_FIND_PACKAGE)
     endif()
-    message(STATUS "        complete.")
+
+    if(fetch_PATCH)
+        list(APPEND FCD_ARGS PATCH_COMMAND ${CMAKE_SOURCE_DIR}/cmake/do_patch.sh -p ${CMAKE_SOURCE_DIR}/cmake/patch/${fetch_NAME}.patch)
+    endif()
+
+    if(fetch_OVERRIDE_UPDATE)
+        list(APPEND FCD_ARGS GIT_SUBMODULES_RECURSE TRUE)
+    endif()
+
+    if(fetch_OVERRIDE_BUILD)
+        list(APPEND FCD_ARGS BUILD_COMMAND ${fetch_OVERRIDE_BUILD})
+    endif()
+    message("LIBSURVIVE  ${FCD_ARGS}")
+    report_build(${fetch_NAME})
+    FetchContent_Declare(${fetch_NAME}
+                         ${FCD_ARGS}
+    )
 endfunction()
+
 
 function(fetch_url)
     set(options PATCH NO_OVERRIDE)
@@ -470,27 +454,25 @@ function(fetch_url)
     elseif(NOT fetch_HASH)
         message(FATAL_ERROR "HASH must be specified in calls to fetch_git.")
     endif()
+
+    set(FCD_ARGS
+        URL ${fetch_SRC_URL}
+        URL_HASH ${fetch_HASH}
+    )
+
     if(NOT fetch_NO_OVERRIDE)
-        set(OVERRIDE_TEXT OVERRIDE_FIND_PACKAGE)
-    else()
-        set(OVERRIDE_TEXT "")
+        list(APPEND FCD_ARGS OVERRIDE_FIND_PACKAGE)
     endif()
+
+    if(fetch_PATCH)
+        list(APPEND FCD_ARGS PATCH_COMMAND ${CMAKE_SOURCE_DIR}/cmake/do_patch.sh -p ${CMAKE_SOURCE_DIR}/cmake/patch/${fetch_NAME}.patch)
+    endif()
+
     report_build(${fetch_NAME})
-    if (fetch_PATCH)
-        FetchContent_Declare(${fetch_NAME}
-                             URL ${fetch_SRC_URL}
-                             URL_HASH ${fetch_HASH}
-                             PATCH_COMMAND ${CMAKE_CURRENT_LIST_DIR}/../do_patch.sh -p ${CMAKE_CURRENT_LIST_DIR}/${fetch_NAME}/${fetch_NAME}.patch
-                             ${OVERRIDE_TEXT}
-        )
-    else()
-        FetchContent_Declare(${fetch_NAME}
-                             URL ${fetch_SRC_URL}
-                             URL_HASH ${fetch_HASH}
-                             ${OVERRIDE_TEXT}
-        )
-    endif()
-    message(STATUS "        complete.")
+
+    FetchContent_Declare(${fetch_NAME}
+                         ${FCD_ARGS}
+    )
 endfunction()
 
 macro(configure_target)
@@ -505,14 +487,18 @@ macro(configure_target)
     if(_config_USE_PKG_CONF AND NOT _config_PKG_CONF)
         set(${_config_PKG_CONF} ${_config_NAME})
     endif()
+
     message(STATUS "Configuring ${_config_NAME}")
     if (NOT _config_MATCH_BUILD_TYPE)
         set(CMAKE_BUILD_TYPE Release)
     endif()
+
     FetchContent_MakeAvailable(${_config_NAME})
+
     if (NOT _config_MATCH_BUILD_TYPE)
         set(CMAKE_BUILD_TYPE ${ILLIXR_BUILD_TYPE})
     endif()
+
     message(STATUS "   ${_config_NAME} Configuration complete")
     if (NOT _config_NO_FIND)
         if (${_config_VERSION})
