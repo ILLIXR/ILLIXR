@@ -18,8 +18,8 @@ private:
     void write_metadata();
     void write_data_to_disk();
 
-    const std::shared_ptr<switchboard>                             switchboard_;
-    std::vector<long>                                              time_seq_;
+    const std::shared_ptr<switchboard>                                   switchboard_;
+    std::vector<long>                                                    time_seq_;
     std::vector<switchboard::ptr<const data_format::pose::texture_pose>> offload_data_container_;
 
     int         percent_;

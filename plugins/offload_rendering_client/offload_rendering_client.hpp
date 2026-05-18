@@ -20,8 +20,8 @@
  */
 #define DOUBLE_INCLUDE
 // ILLIXR core headers
-#include "illixr/data_format/pose_prediction.hpp"
 #include "illixr/data_format/frame.hpp"
+#include "illixr/data_format/pose_prediction.hpp"
 #include "illixr/data_format/serialization/frame.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
@@ -223,14 +223,14 @@ private:
 
     data_format::pose::fast_head_pose_type decoded_frame_pose_;
 
-    VkCommandPool command_pool{};
-    Npp8u*        yuv420_y_plane_ = nullptr;
-    Npp8u*        yuv420_u_plane_ = nullptr;
-    Npp8u*        yuv420_v_plane_ = nullptr;
-    int           y_step_         = 0;
-    int           u_step_         = 0;
-    int           v_step_         = 0;
-    NppStreamContext npp_ctx_     = {};
+    VkCommandPool    command_pool{};
+    Npp8u*           yuv420_y_plane_ = nullptr;
+    Npp8u*           yuv420_u_plane_ = nullptr;
+    Npp8u*           yuv420_v_plane_ = nullptr;
+    int              y_step_         = 0;
+    int              u_step_         = 0;
+    int              v_step_         = 0;
+    NppStreamContext npp_ctx_        = {};
 
     uint64_t frame_count_ = 0;
 

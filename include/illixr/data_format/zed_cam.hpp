@@ -12,7 +12,7 @@ namespace ILLIXR::data_format {
  * camera type for ZED, can hold images for left eye, eight eye, rgb image, and pose
  */
 struct [[maybe_unused]] cam_type_zed : cam_base_type {
-    std::size_t    serial_no;
+    std::size_t         serial_no;
     pose::head_pose_map poses;
 
     cam_type_zed(time_point _time, cv::Mat _img0, cv::Mat _img1, cv::Mat _rgb, cv::Mat _depth, cv::Mat _confidence,

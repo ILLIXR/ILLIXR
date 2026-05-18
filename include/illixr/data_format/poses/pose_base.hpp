@@ -14,7 +14,7 @@
         #include <Eigen/Dense>
     #else // __has_include(<Eigen/Dense>)
         #include <eigen3/Eigen/Dense>
-#include <utility>
+        #include <utility>
     #endif // __has_include(<Eigen/Dense>)
 #endif     // USING_OPENXR
 
@@ -27,6 +27,7 @@ inline side non_primary(const side sd) {
         return RIGHT;
     return LEFT;
 }
+
 /**
  * @brief Base struct for all pose types in ILLIXR.
  *

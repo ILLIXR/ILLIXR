@@ -5,7 +5,7 @@
     #define M_PI 3.14159265358979323846
 #endif
 #ifdef Success
-#undef Success
+    #undef Success
 #endif
 #include <eigen3/Eigen/Core>
 

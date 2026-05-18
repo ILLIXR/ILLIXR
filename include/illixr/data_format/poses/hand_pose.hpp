@@ -51,14 +51,14 @@ enum joint : int {
     LITTLE_TIP [[maybe_unused]]          = 25
 };
 
-#ifdef ENABLE_MONADO
+    #ifdef ENABLE_MONADO
 /**
  * @brief Pose and velocity data for a hand joint
  *
  * Using @c xrt_hand_joint_value to be Monado compatable
  */
 typedef xrt_hand_joint_value hand_joint_pose;
-#else
+    #else
 /**
  * @brief Full 6-DOF pose for a single hand joint.
  *
@@ -72,11 +72,12 @@ typedef xrt_hand_joint_value hand_joint_pose;
  * should read @c location_flags directly.
  */
 struct hand_joint_pose {
-    xrt_space_relation relation;    //!< The pose, velocity, and flag data for the joint
-    float              radius;      //!< The radius of the joint
+    xrt_space_relation relation; //!< The pose, velocity, and flag data for the joint
+    float              radius;   //!< The radius of the joint
 
     hand_joint_pose()
         : radius{0.} { }
+
     /**
      * Constructor using an xrt_space_relation and radius
      * @param rel
@@ -170,7 +171,6 @@ struct hand_joint_poses {
     const hand_joint_pose& operator[](joint j) const {
         return joints[static_cast<int>(j)];
     }
-
 };
     #endif
 /**
@@ -203,7 +203,7 @@ struct hand_joint_poses_pair : public switchboard::event {
      * Returns whether there is any data for either hand
      * @return True if there is any data for either hand, False otherwise.
      */
-    [[nodiscard]][[maybe_unused]] bool has_hands() const {
+    [[nodiscard]] [[maybe_unused]] bool has_hands() const {
         return hands.at(LEFT).is_active || hands.at(RIGHT).is_active;
     }
 

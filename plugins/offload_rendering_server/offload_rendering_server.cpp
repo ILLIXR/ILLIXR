@@ -77,7 +77,7 @@ void offload_rendering_server::_p_thread_setup() {
 
 void offload_rendering_server::setup(VkRenderPass render_pass, uint32_t subpass,
                                      std::shared_ptr<vulkan::buffer_pool<pose::fast_head_pose_type>> buffer_pool,
-                                     bool                                                 input_texture_vulkan_coordinates) {
+                                     bool input_texture_vulkan_coordinates) {
     (void) render_pass;
     (void) subpass;
     (void) input_texture_vulkan_coordinates;

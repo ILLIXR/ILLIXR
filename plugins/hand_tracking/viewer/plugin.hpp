@@ -6,11 +6,11 @@
 // clang-format on
 
 #ifdef ILLIXR_HT_DIR
-#define STRINGIFY(x) #x
-#define TOSTRING(x) STRINGIFY(x)
-#include TOSTRING(ILLIXR_HT_DIR/hand_tracking_data.hpp)
+    #define STRINGIFY(x) #x
+    #define TOSTRING(x)  STRINGIFY(x)
+    #include TOSTRING(ILLIXR_HT_DIR / hand_tracking_data.hpp)
 #else
-#error "Can not locate hand_tracking_data.hpp, please specify its path with -DILLIXR_HT_DIR"
+    #error "Can not locate hand_tracking_data.hpp, please specify its path with -DILLIXR_HT_DIR"
 #endif
 
 #include "illixr/data_format/camera_data.hpp"

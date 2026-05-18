@@ -21,9 +21,10 @@ using namespace ILLIXR::data_format;
     , is_success_{true} /// TODO: Set with #198
     , obj_dir_{switchboard_->get_env_char("ILLIXR_OFFLOAD_PATH", "metrics/offloaded_data/")} {
     spdlogger(switchboard_->get_env_char("OFFLOAD_DATA_LOG_LEVEL"));
-    switchboard_->schedule<pose::texture_pose>(id_, "texture_pose", [&](const switchboard::ptr<const pose::texture_pose>& datum, size_t) {
-        callback(datum);
-    });
+    switchboard_->schedule<pose::texture_pose>(id_, "texture_pose",
+                                               [&](const switchboard::ptr<const pose::texture_pose>& datum, size_t) {
+                                                   callback(datum);
+                                               });
 }
 
 void offload_data::callback(const switchboard::ptr<const pose::texture_pose>& datum) {

@@ -239,35 +239,35 @@ void load(Archive& ar, ILLIXR::data_format::compressed_frame& f, const unsigned 
     ar >> f.pose;
 #endif
 
-    ar >> f.near_z;
-    ar >> f.far_z;
+        ar >> f.near_z;
+        ar >> f.far_z;
 #ifdef USING_OPENXR
-    ar >> f.fov_left[0];
-    ar >> f.fov_left[1];
-    ar >> f.fov_right[0];
-    ar >> f.fov_right[1];
-    ar >> f.fov_up[0];
-    ar >> f.fov_up[1];
-    ar >> f.fov_down[0];
-    ar >> f.fov_down[1];
+        ar >> f.fov_left[0];
+        ar >> f.fov_left[1];
+        ar >> f.fov_right[0];
+        ar >> f.fov_right[1];
+        ar >> f.fov_up[0];
+        ar >> f.fov_up[1];
+        ar >> f.fov_down[0];
+        ar >> f.fov_down[1];
 #endif
 
-    ar >> f.sent_time;
-    ar >> f.frame_number;
-    ar >> f.pose_id;
-    ar >> f.encode_time;
-    ar >> f.is_keyframe;
-    ar >> f.magic;
-    if (f.magic != 0xdeadbeef) {
-        throw std::runtime_error("compressed_frame: magic number mismatch");
+        ar >> f.sent_time;
+        ar >> f.frame_number;
+        ar >> f.pose_id;
+        ar >> f.encode_time;
+        ar >> f.is_keyframe;
+        ar >> f.magic;
+        if (f.magic != 0xdeadbeef) {
+            throw std::runtime_error("compressed_frame: magic number mismatch");
+        }
     }
-}
 
-// Register the split free functions with Boost
-template<class Archive>
-void serialize(Archive& ar, ILLIXR::data_format::compressed_frame& f, const unsigned int version) {
-    boost::serialization::split_free(ar, f, version);
-}
+    // Register the split free functions with Boost
+    template<class Archive>
+    void serialize(Archive & ar, ILLIXR::data_format::compressed_frame & f, const unsigned int version) {
+        boost::serialization::split_free(ar, f, version);
+    }
 
 } // namespace boost::serialization
 

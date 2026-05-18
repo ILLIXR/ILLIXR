@@ -1,7 +1,7 @@
 #pragma once
 
-#include "misc.hpp"
 #include "illixr/data_format/poses/pose_base.hpp"
+#include "misc.hpp"
 
 namespace boost::serialization {
 

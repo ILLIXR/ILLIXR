@@ -10,14 +10,14 @@
 #include <string>
 
 #if defined(_WIN32) || defined(_WIN64)
-    // clang-format off
+// clang-format off
     #include <WinSock2.h>
     #include <ws2def.h>
     #include <ws2tcpip.h>
     #pragma comment(lib, "Ws2_32.lib")
     #define BYTE_TYPE   int
     #define SOCKET_TYPE SOCKET
-    // clang-format on
+// clang-format on
 #else
     #include <arpa/inet.h>
     #include <netinet/in.h>

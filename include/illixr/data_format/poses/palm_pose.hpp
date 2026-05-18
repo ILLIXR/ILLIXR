@@ -11,7 +11,6 @@ namespace ILLIXR::data_format::pose {
  * @brief Palm pose and velocity information
  */
 struct palm_pose : xrt_space_relation {
-
     /**
      * @brief Returns whether or not there are any valid bit in the internal flags.
      */

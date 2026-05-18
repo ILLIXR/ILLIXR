@@ -46,18 +46,18 @@ struct ccd_data {
         , horizontal_fov{(hf > T_M_PI) ? hf * M_PI / 180. : hf} { }
 };
 
-typedef std::map<pose::side, ccd_data>
-    ccd_map; //!< mapping of ccd information to the eye it is associated with, for monocular cameras use `ILLIXR::data_format::pose::LEFT`
+typedef std::map<pose::side, ccd_data> ccd_map; //!< mapping of ccd information to the eye it is associated with, for monocular
+                                                //!< cameras use `ILLIXR::data_format::pose::LEFT`
 
 /**
  * @brief Data structure to hold information about the full camera system. This information is mostly constant.
  */
 struct camera_data : switchboard::event {
-    size_t                  width;    //!< width of the output image(s) in pixels
-    size_t                  height;   //!< height of the output image(s) in pixels
-    float                   fps;      //!< frames per second being used
-    float                   baseline; //!< distance between left and right eye center pixels
-    ccd_map                 ccds;     //!< camera specific information
+    size_t  width;    //!< width of the output image(s) in pixels
+    size_t  height;   //!< height of the output image(s) in pixels
+    float   fps;      //!< frames per second being used
+    float   baseline; //!< distance between left and right eye center pixels
+    ccd_map ccds;     //!< camera specific information
 
     camera_data()
         : width{0}
@@ -66,8 +66,7 @@ struct camera_data : switchboard::event {
         , baseline{0.,}
         , ccds{} {}
 
-    camera_data(const size_t width_, const size_t height_, const float fps_, const float baseline_,
-                ccd_map ccds_)
+    camera_data(const size_t width_, const size_t height_, const float fps_, const float baseline_, ccd_map ccds_)
         : width{width_}
         , height{height_}
         , fps{fps_}

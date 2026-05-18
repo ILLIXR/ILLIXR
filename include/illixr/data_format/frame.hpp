@@ -48,9 +48,9 @@ extern "C" {
             #define BUFFER_TYPE std::array<XrPosef, 2>
         #endif
     #else
-    #ifndef BUFFER_TYPE
-        #define BUFFER_TYPE data_format::pose::fast_head_pose_type
-    #endif
+        #ifndef BUFFER_TYPE
+            #define BUFFER_TYPE data_format::pose::fast_head_pose_type
+        #endif
     #endif
 #endif
 

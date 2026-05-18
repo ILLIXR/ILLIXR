@@ -206,14 +206,14 @@ private:
      */
     void ffmpeg_init_encoder();
 
-    std::shared_ptr<spdlog::logger>                                   log_;
-    std::shared_ptr<vulkan::display_provider>                         display_provider_;
-    std::shared_ptr<switchboard>                                      switchboard_;
-    switchboard::network_writer<data_format::compressed_frame>        frames_topic_;
-    switchboard::reader<BUFFER_TYPE>                                  render_pose_;
+    std::shared_ptr<spdlog::logger>                                              log_;
+    std::shared_ptr<vulkan::display_provider>                                    display_provider_;
+    std::shared_ptr<switchboard>                                                 switchboard_;
+    switchboard::network_writer<data_format::compressed_frame>                   frames_topic_;
+    switchboard::reader<BUFFER_TYPE>                                             render_pose_;
     std::shared_ptr<vulkan::buffer_pool<data_format::pose::fast_head_pose_type>> buffer_pool_;
-    std::vector<std::array<vulkan::ffmpeg_utils::ffmpeg_vk_frame, 2>> avvk_color_frames_;
-    std::vector<std::array<vulkan::ffmpeg_utils::ffmpeg_vk_frame, 2>> avvk_depth_frames_;
+    std::vector<std::array<vulkan::ffmpeg_utils::ffmpeg_vk_frame, 2>>            avvk_color_frames_;
+    std::vector<std::array<vulkan::ffmpeg_utils::ffmpeg_vk_frame, 2>>            avvk_depth_frames_;
 
     int  framerate_ = 144;
     long bitrate_   = OFFLOAD_RENDERING_BITRATE;

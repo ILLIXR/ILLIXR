@@ -41,4 +41,4 @@ template<typename T>
 inline void denormalize(T& obj, const float width, const float height) {
     denormalize<T>(obj, width, height, 1.);
 }
-} // namespace ILLIXR::data_format
+} // namespace ILLIXR

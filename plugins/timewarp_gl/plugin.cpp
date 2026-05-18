@@ -764,8 +764,8 @@ void timewarp_gl::warp(const switchboard::ptr<const rendered_frame>& most_recent
 
         // Publish image and pose
         offload_data_.put(offload_data_.allocate<pose::texture_pose>(
-            pose::texture_pose{offload_duration_, image, time_last_swap_, latest_pose.pose.position, latest_pose.pose.orientation,
-                         most_recent_frame->render_pose.pose.orientation}));
+            pose::texture_pose{offload_duration_, image, time_last_swap_, latest_pose.pose.position,
+                               latest_pose.pose.orientation, most_recent_frame->render_pose.pose.orientation}));
     }
 #endif
 

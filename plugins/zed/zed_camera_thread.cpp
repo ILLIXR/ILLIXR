@@ -1,7 +1,6 @@
 #include "zed_camera_thread.hpp"
 
 #include "illixr/data_format/poses/head_pose.hpp"
-
 #include "include/zed_opencv.hpp"
 
 using namespace ILLIXR;

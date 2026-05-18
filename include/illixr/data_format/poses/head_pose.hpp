@@ -8,13 +8,13 @@
 
 #ifdef USING_OPENXR
     #include "openxr_defines.hpp"
-#else   // USING_OPENXR
+#else // USING_OPENXR
     #if __has_include(<Eigen/Dense>)
         #include <Eigen/Dense>
-    #else   // __has_include(<Eigen/Dense>)
+    #else // __has_include(<Eigen/Dense>)
         #include <eigen3/Eigen/Dense>
-    #endif  // __has_include(<Eigen/Dense>)
-#endif  // USING_OPENXR
+    #endif // __has_include(<Eigen/Dense>)
+#endif     // USING_OPENXR
 #include <map>
 
 namespace ILLIXR::data_format::pose {
@@ -154,6 +154,7 @@ struct [[maybe_unused]] head_pose_type
 #endif
 
 [[maybe_unused]] typedef std::map<side, head_pose_type> head_pose_map;
+
 /**
  * Fast pose
  */

@@ -1,8 +1,8 @@
 #include "offload_rendering_client.hpp"
 
+#include <cuda.h>
 #include <cuda_runtime.h>
 #include <nppi_color_conversion.h>
-#include <cuda.h>
 
 #define OFFLOAD_RENDERING_FFMPEG_DECODER_NAME "hevc"
 

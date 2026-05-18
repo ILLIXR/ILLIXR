@@ -36,12 +36,12 @@ namespace data_format::shapes {
          */
         explicit rect(rect* other) {
             if (other != nullptr) {
-                x_center = other->x_center;
-                y_center = other->y_center;
-                width    = other->width;
-                height   = other->height;
-                rotation = other->rotation;
-                valid    = other->valid;
+                x_center   = other->x_center;
+                y_center   = other->y_center;
+                width      = other->width;
+                height     = other->height;
+                rotation   = other->rotation;
+                valid      = other->valid;
                 normalized = other->normalized;
             }
         }
@@ -72,12 +72,12 @@ namespace data_format::shapes {
          * @param r rotation angle
          */
         void set(const double xc, const double yc, const double w, const double h, const double r, bool normal = false) {
-            x_center = xc;
-            y_center = yc;
-            width    = w;
-            height   = h;
-            rotation = r;
-            valid    = true;
+            x_center   = xc;
+            y_center   = yc;
+            width      = w;
+            height     = h;
+            rotation   = r;
+            valid      = true;
             normalized = normal;
         }
 
