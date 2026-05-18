@@ -12,7 +12,7 @@ add_library(${PLUGIN_NAME} SHARED
             ${CMAKE_SOURCE_DIR}/include/illixr/iterators/csv_iterator.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/iterators/data_iterator.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/data_format/misc.hpp
-            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/pose.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/poses/head_pose.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/plugin.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/global_module_defs.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/phonebook.hpp
