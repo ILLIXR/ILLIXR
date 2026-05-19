@@ -3,11 +3,13 @@
 #define DOUBLE_INCLUDE
 
 #include "drivers/illixr/illixr_framebuffer.h"
+#ifdef USING_OPENXR
+#include "illixr/data_format/poses/combined_pose.hpp"
+#endif
 #include "illixr/data_format/frame.hpp"
 #include "illixr/data_format/hmd_config.hpp"
 #include "illixr/data_format/pose_id.hpp"
 #include "illixr/data_format/pose_prediction.hpp"
-#include "illixr/data_format/poses/combined_pose.hpp"
 #include "illixr/data_format/serialization/head_pose.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
