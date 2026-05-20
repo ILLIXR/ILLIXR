@@ -1,5 +1,7 @@
 #pragma once
 
+#ifndef __ANDROID__
+
 #include "illixr/concurrentqueue/blockingconcurrentqueue.hpp"
 #include "illixr/error_util.hpp"
 #include "illixr/global_module_defs.hpp"
@@ -231,3 +233,5 @@ private:
 };
 
 } // namespace ILLIXR
+
+#endif

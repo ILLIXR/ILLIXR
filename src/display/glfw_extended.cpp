@@ -1,5 +1,7 @@
+#ifndef __ANDROID__
+
 #if defined(_WIN32) || defined(_WIN64)
-    #include <Windows.h>
+#  include <Windows.h>
 #endif
 #define GLFW_INCLUDE_VULKAN
 #include "glfw_extended.hpp"
@@ -76,3 +78,5 @@ std::set<const char*> glfw_extended::get_required_device_extensions() {
 display_backend::display_backend_type glfw_extended::get_type() {
     return GLFW;
 }
+
+#endif

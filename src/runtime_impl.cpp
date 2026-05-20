@@ -9,18 +9,26 @@
 #include "illixr/record_logger.hpp"
 #include "illixr/stoplight.hpp"
 #include "illixr/switchboard.hpp"
-#include "illixr/vk/vk_extension_request.hpp"
+#ifndef __ANDROID__
+#  include "illixr/vk/vk_extension_request.hpp"
+#  include "vulkan_display.hpp"
+#endif
 // #include "sqlite_record_logger.hpp"
 // #include "stdout_record_logger.hpp"
 #include "no_op_record_logger.hpp"
-#include "vulkan_display.hpp"
 
 #include <algorithm>
 #include <memory>
-#include <set>
-#include <spdlog/sinks/basic_file_sink.h>
-#include <spdlog/sinks/stdout_color_sinks.h>
+#ifndef __ANDROID__
+#  include <set>
+#endif
 #include <spdlog/spdlog.h>
+#ifdef __ANDROID__
+#  include <spdlog/sinks/android_sink.h>
+#else
+#  include <spdlog/sinks/basic_file_sink.h>
+#  include <spdlog/sinks/stdout_color_sinks.h>
+#endif
 #include <string>
 #include <vector>
 
@@ -29,7 +37,9 @@
 #endif
 
 using namespace ILLIXR;
+#ifndef __ANDROID__
 typedef bool (*n_monado_t)();
+#endif
 
 void spdlogger(const std::string& name, const char* log_level) {
     if (!log_level) {
@@ -40,8 +50,12 @@ void spdlogger(const std::string& name, const char* log_level) {
 #endif
     }
     std::vector<spdlog::sink_ptr> sinks;
+#ifdef __ANDROID__
+    sinks.push_back(std::make_shared<spdlog::sinks::android_sink_mt>());
+#else
     sinks.push_back(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
     sinks.push_back(std::make_shared<spdlog::sinks::basic_file_sink_mt>("logs/" + name + ".log"));
+#endif
     auto logger = std::make_shared<spdlog::logger>(name, begin(sinks), end(sinks));
     logger->set_level(spdlog::level::from_str(log_level));
     spdlog::register_logger(logger);
@@ -53,12 +67,15 @@ public:
         spdlogger("illixr", std::getenv("ILLIXR_LOG_LEVEL")); // can't use switchboard interface here
         phonebook_.register_impl<relative_clock>(std::make_shared<relative_clock>());
         phonebook_.register_impl<record_logger>(std::make_shared<no_op_record_logger>());
-        phonebook_.register_impl<gen_guid>(std::make_shared<gen_guid>());
         phonebook_.register_impl<switchboard>(std::make_shared<switchboard>(&phonebook_));
-        switchboard_ = phonebook_.lookup_impl<switchboard>();
+#if !defined(ENABLE_MONADO) && !defined(__ANDROID__)
         // phonebook_.register_impl<xlib_gl_extended_window>(
         //     std::make_shared<xlib_gl_extended_window>(display_params::width_pixels, display_params::height_pixels, nullptr));
+#endif
+        switchboard_ = phonebook_.lookup_impl<switchboard>();
+#ifndef __ANDROID__
         enable_monado_ = false;
+#endif
         phonebook_.register_impl<stoplight>(std::make_shared<stoplight>());
     }
 
@@ -69,9 +86,11 @@ public:
             RAC_ERRNO_MSG("runtime_impl before creating the dynamic library");
             return dynamic_lib::create(so_path);
         });
+#ifndef __ANDROID__
         for (auto& i : libraries_) {
             enable_monado_ = enable_monado_ || i.get<n_monado_t>("needs_monado")();
         }
+#endif
         RAC_ERRNO_MSG("runtime_impl after creating the dynamic libraries");
 
         std::vector<plugin_factory> plugin_factories;
@@ -79,6 +98,7 @@ public:
             return lib.template get<plugin* (*) (phonebook*)>("this_plugin_factory");
         });
 
+#ifndef __ANDROID__
         if (!enable_monado_) {
             // get env var ILLIXR_DISPLAY_MODE
             std::string display_mode =
@@ -86,17 +106,36 @@ public:
             if (display_mode != "none")
                 phonebook_.register_impl<vulkan::display_provider>(std::make_shared<display_vk>(&phonebook_));
         }
-
+#endif
         RAC_ERRNO_MSG("runtime_impl after generating plugin factories");
-
-        std::transform(plugin_factories.cbegin(), plugin_factories.cend(), std::back_inserter(plugins_),
-                       [this](const auto& plugin_factory) {
-                           RAC_ERRNO_MSG("runtime_impl before building the plugin");
-                           return std::unique_ptr<plugin>{plugin_factory(&this->phonebook_)};
-                       });
-
         phonebook_.lookup_impl<relative_clock>()->start();
 
+        int plugin_offset = 0;
+#ifdef __ANDROID__  // on Android we have to have the network plugins up and running right away
+        plugins_.push_back(std::unique_ptr<plugin>{plugin_factories[0](&phonebook_)});
+        plugins_[0]->start();
+        plugins_.push_back(std::unique_ptr<plugin>{plugin_factories[1](&phonebook_)});
+        plugins_[1]->start();
+        plugin_offset = 2;
+#endif
+
+        std::transform(plugin_factories.cbegin() + plugin_offset, plugin_factories.cend(), std::back_inserter(plugins_),
+                       [this](const auto& plugin_factory) {
+                           RAC_ERRNO_MSG("runtime_impl before building the plugin");
+                           try {
+#ifdef __ANDROID__
+                               return std::unique_ptr<plugin>{plugin_factory(&phonebook_)};
+#else
+                               return std::unique_ptr<plugin>{plugin_factory(&this->phonebook_)};
+#endif
+                           } catch (std::exception& ex) {
+                               spdlog::get("illixr")->error(ex.what());
+                               throw;
+                           }
+                       });
+
+
+#ifndef __ANDROID__
         if (!enable_monado_) {
             const std::string display_mode =
                 switchboard_->get_env_char("ILLIXR_DISPLAY_MODE") ? switchboard_->get_env_char("ILLIXR_DISPLAY_MODE") : "glfw";
@@ -119,14 +158,13 @@ public:
                 display->start(instance_extensions, device_extensions);
             }
         }
-
-        std::for_each(plugins_.cbegin(), plugins_.cend(), [](const auto& plugin) {
+#endif
+        std::for_each(plugins_.cbegin() + plugin_offset, plugins_.cend(), [](const auto& plugin) {
             // Well-behaved plugins_ (any derived from threadloop) start there threads here, and then wait on the Stoplight.
             plugin->start();
         });
 
         // This actually kicks off the plugins
-
         phonebook_.lookup_impl<stoplight>()->signal_ready();
     }
 

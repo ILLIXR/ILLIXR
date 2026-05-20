@@ -1,9 +1,9 @@
 #pragma once
 #ifdef USING_OPENXR
-    #include "illixr/data_format/poses/pose_base.hpp"
-    #include "illixr/switchboard.hpp"
+#include "illixr/data_format/poses/pose_base.hpp"
+#include "illixr/switchboard.hpp"
 
-    #include <map>
+#include <map>
 
 namespace ILLIXR::data_format::pose {
 
@@ -17,7 +17,7 @@ struct palm_pose : xrt_space_relation {
     bool is_valid() const {
         return relation_flags > 0;
     }
-    #ifndef ENABLE_MONADO
+#ifndef ENABLE_MONADO
     /**
      * @brief Update the internal data memebers
      *
@@ -30,7 +30,7 @@ struct palm_pose : xrt_space_relation {
         angular_velocity = velocity.angularVelocity;
         set_flags(location.locationFlags, velocity.velocityFlags);
     }
-    #endif
+#endif
 };
 
 /**

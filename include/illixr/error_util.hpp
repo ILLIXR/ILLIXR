@@ -1,7 +1,6 @@
 #pragma once
 #if defined(_WIN32) || defined(_WIN64)
-    // #include <windows.h>
-    #include <cstdlib>
+#  include <cstdlib>
 #endif
 
 #include "global_module_defs.hpp"
@@ -11,8 +10,8 @@
 #include <string>
 
 #ifdef NDEBUG
-    #include <cerrno>
-    #include <cstdlib>
+#  include <cerrno>
+#  include <cstdlib>
 #endif
 /**
  * @brief Parameterless macro for report_and_clear_errno.

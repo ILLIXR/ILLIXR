@@ -3,6 +3,7 @@
 #include "export.hpp"
 
 #include <cassert>
+#include <iostream>
 #include <memory>
 #include <mutex>
 #include <shared_mutex>
@@ -11,14 +12,13 @@
 #include <unordered_map>
 
 #if defined(_WIN32) || defined(_WIN64)
-    #include <cstdlib>
-    #include <Windows.h>
+#  include <cstdlib>
+#  include <Windows.h>
 #endif
 
 #ifndef NDEBUG
-    #include <iostream>
-    #include <spdlog/spdlog.h>
-// #include "spdlog/sinks/stdout_color_sinks.h"
+#  include <spdlog/spdlog.h>
+//#  include "spdlog/sinks/stdout_color_sinks.h"
 #endif
 
 namespace ILLIXR {
@@ -152,8 +152,8 @@ public:
 #ifndef NDEBUG
         spdlog::get("illixr")->debug("[phonebook] Register {}", type_index.name());
 #endif
-        assert(registry_.count(type_index) == 0);
-        registry_.try_emplace(type_index, impl);
+        assert(registry_.count(type_index.name()) == 0);
+        registry_.try_emplace(type_index.name(), impl);
     }
 
     /**
@@ -173,17 +173,17 @@ public:
 
 #ifndef NDEBUG
         // if this fails, and there are no duplicate base classes, ensure the hash_code's are unique.
-        if (registry_.count(type_index) != 1) {
+        if (registry_.count(type_index.name()) != 1) {
             throw std::runtime_error{"Attempted to lookup an unregistered implementation " + std::string{type_index.name()}};
         }
 #endif
 
-        std::shared_ptr<service> this_service = registry_.at(type_index);
+        std::shared_ptr<service> this_service = registry_.at(type_index.name());
         if (!static_cast<bool>(this_service))
             throw std::runtime_error{"Could not find " + std::string{type_index.name()}};
 
         std::shared_ptr<Specific_service> this_specific_service = std::dynamic_pointer_cast<Specific_service>(this_service);
-        if (!static_cast<bool>(this_service))
+        if (!static_cast<bool>(this_service) || this_specific_service == nullptr)
             throw std::runtime_error{"Could not find specific " + std::string{type_index.name()}};
 
         return this_specific_service;
@@ -195,11 +195,16 @@ public:
 
         const std::type_index type_index = std::type_index(typeid(specific_service));
 
-        return registry_.count(type_index) == 1;
+        return registry_.count(type_index.name()) == 1;
     }
-
+    size_t get_next_id() {
+        size_t val = current_id_;
+        current_id_++;
+        return val;
+    }
 private:
-    std::unordered_map<std::type_index, const std::shared_ptr<service>> registry_;
-    mutable std::shared_mutex                                           mutex_;
+    std::unordered_map<std::string, const std::shared_ptr<service>> registry_;
+    mutable std::shared_mutex                                       mutex_;
+    size_t                                                          current_id_ = 0;
 };
 } // namespace ILLIXR

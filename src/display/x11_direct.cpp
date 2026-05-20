@@ -1,3 +1,5 @@
+#ifndef __ANDROID__
+
 #include "x11_direct.hpp"
 
 #include "illixr/vk/vulkan_utils.hpp"
@@ -185,3 +187,5 @@ std::set<const char*> x11_direct::get_required_device_extensions() {
 display_backend::display_backend_type x11_direct::get_type() {
     return X11_DIRECT;
 }
+
+#endif

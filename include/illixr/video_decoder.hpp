@@ -1,5 +1,7 @@
 #pragma once
 
+#ifndef __ANDROID__
+
 #include "gst/gst.h"
 #include "illixr/error_util.hpp"
 
@@ -7,19 +9,19 @@
 #include <functional>
 #include <opencv2/core/mat.hpp>
 
-#if defined ADA
-    #define IMG_WIDTH  1
-    #define IMG_HEIGHT 1
-#elif defined VIO
+#ifdef ADA
+#  define IMG_WIDTH  1
+#  define IMG_HEIGHT 1
+#elif defined(VIO)
 // #define ZED
 
-    #ifdef ZED
-        #define IMG_WIDTH  672
-        #define IMG_HEIGHT 376
-    #else
-        #define IMG_WIDTH  752
-        #define IMG_HEIGHT 480
-    #endif
+#  ifdef ZED
+#    define IMG_WIDTH  672
+#    define IMG_HEIGHT 376
+#  else
+#    define IMG_WIDTH  752
+#    define IMG_HEIGHT 480
+#  endif
 #endif
 
 namespace ILLIXR {
@@ -73,3 +75,5 @@ private:
 };
 
 } // namespace ILLIXR
+
+#endif

@@ -7,6 +7,10 @@
 #include <string>
 #include <vector>
 
+#ifdef __ANDROID__
+#  include <EGL/egl.h>
+#endif
+
 namespace ILLIXR {
 class plugin;
 

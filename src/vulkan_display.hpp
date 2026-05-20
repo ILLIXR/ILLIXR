@@ -1,4 +1,7 @@
 #pragma once
+
+#ifndef __ANDROID__
+
 // #define VMA_IMPLEMENTATION
 #include "display/glfw_extended.hpp"
 #include "display/headless.hpp"
@@ -12,9 +15,9 @@
 #include <thread>
 
 #ifdef __linux__
-    #include "illixr/vk/third_party/vk_mem_alloc.h"
+#  include "illixr/vk/third_party/vk_mem_alloc.h"
 #else
-    #include <vma/vk_mem_alloc.h>
+#  include <vma/vk_mem_alloc.h>
 #endif
 #include <vulkan/vulkan.h>
 
@@ -590,3 +593,5 @@ private:
 
     std::shared_ptr<relative_clock> clock_;
 };
+
+#endif

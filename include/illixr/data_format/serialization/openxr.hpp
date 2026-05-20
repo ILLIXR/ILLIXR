@@ -3,11 +3,11 @@
 #include "misc.hpp"
 
 #ifdef USING_OPENXR
-    #ifndef ENABLE_MONADO
-        #include <openxr/openxr.h>
-    #else
-        #include "xrt/xrt_defines.h"
-    #endif
+#  ifndef ENABLE_MONADO
+#    include <openxr/openxr.h>
+#  else
+#    include "xrt/xrt_defines.h"
+#  endif
 #endif
 namespace boost::serialization {
 

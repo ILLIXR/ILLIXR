@@ -1,7 +1,7 @@
 #pragma once
 
 #ifdef Success
-    #undef Success // For 'Success' conflict
+#  undef Success // For 'Success' conflict
 #endif
 
 #include "illixr/data_format/poses/head_pose.hpp"
@@ -11,15 +11,15 @@
 #include <boost/serialization/export.hpp>
 #include <cstdint>
 #ifdef __ANDROID__
-    #include <GLES/gl.h>
-    #ifndef NVDEC_DECODER
-        #define NVDEC_DECODER
-    #endif
-    #ifdef ILLIXR_VULKAN
-        #include <android/hardware_buffer.h>
-    #endif // ILLIXR_VULKAN
+#  include <GLES/gl.h>
+#  ifndef NVDEC_DECODER
+#    define NVDEC_DECODER
+#  endif
+#  ifdef ILLIXR_VULKAN
+#    include <android/hardware_buffer.h>
+#  endif // ILLIXR_VULKAN
 #else
-    #include <GL/gl.h>
+#  include <GL/gl.h>
 #endif // __ANDROID__
 
 // Define PACKET_TYPE based on available codec backends
@@ -31,27 +31,27 @@ extern "C" {
     #include "libavutil_illixr/opt.h"
     #include "libavutil_illixr/pixdesc.h"
 }
-    #define PACKET_TYPE AVPacket*
-    #define PACKET_REF  AVPacket*
+#  define PACKET_TYPE AVPacket*
+#  define PACKET_REF  AVPacket*
 #elif defined(NVENC_ENCODER) || defined(NVDEC_DECODER)
 
-    #define PACKET_TYPE std::vector<uint8_t>
-    #define PACKET_REF  std::vector<uint8_t>&
+#  define PACKET_TYPE std::vector<uint8_t>
+#  define PACKET_REF  std::vector<uint8_t>&
 
 #endif
 
 #ifndef BUFFER_TYPE
-    #ifdef USING_OPENXR
-        #ifdef ENABLE_MONADO
-            #define BUFFER_TYPE std::array<xrt_pose, 2>
-        #else
-            #define BUFFER_TYPE std::array<XrPosef, 2>
-        #endif
-    #else
-        #ifndef BUFFER_TYPE
-            #define BUFFER_TYPE data_format::pose::fast_head_pose_type
-        #endif
-    #endif
+#  ifdef USING_OPENXR
+#    ifdef ENABLE_MONADO
+#      define BUFFER_TYPE std::array<xrt_pose, 2>
+#    else
+#      define BUFFER_TYPE std::array<XrPosef, 2>
+#    endif
+#  else
+#    ifndef BUFFER_TYPE
+#      define BUFFER_TYPE data_format::pose::fast_head_pose_type
+#    endif
+#  endif
 #endif
 
 namespace ILLIXR::data_format {
@@ -333,7 +333,7 @@ struct [[maybe_unused]] dual_frames : public switchboard::event {
     // Used by oxr_interface to look up the original headset pose measurement
     // for latency and accuracy logging.
     uint64_t pose_id{0};
-
+    double encode_time{0.};
     // Projection clip planes forwarded from the server's compressed_frame.
     // Required by XrCompositionLayerDepthInfoKHR and
     // XrCompositionLayerSpaceWarpInfoFB (nearZ / farZ fields).
@@ -353,7 +353,7 @@ struct [[maybe_unused]] dual_frames : public switchboard::event {
     bool has_depth{false};
 #if defined(__ANDROID__) && defined(ILLIXR_VULKAN)
     bool has_motion_vectors{false};
-#endif // defined(__ANDROID__) && defined(ILLIXR_VULKAN)
+#endif  // defined(__ANDROID__) && defined(ILLIXR_VULKAN)
     dual_frames() = default;
 
     /// Construct with raw NV12 data

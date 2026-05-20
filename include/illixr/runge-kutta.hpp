@@ -1,7 +1,11 @@
 #pragma once
 #include "data_format/proper_quaternion.hpp"
 
-#include <eigen3/Eigen/Dense>
+#ifdef __ANDROID__
+#  include <Eigen/Dense>
+#else
+#  include <eigen3/Eigen/Dense>
+#endif
 #include <iostream>
 
 namespace ILLIXR {

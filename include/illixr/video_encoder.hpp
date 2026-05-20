@@ -1,5 +1,7 @@
 #pragma once
 
+#ifndef __ANDROID__
+
 #include "gst/gst.h"
 #include "illixr/error_util.hpp"
 
@@ -7,26 +9,26 @@
 #include <mutex>
 #include <opencv2/core/mat.hpp>
 
-#if defined ADA
-    #define ILLIXR_BITRATE  524288
-    #define IMG_WIDTH       640
-    #define IMG_HEIGHT      480
-    #define ILLIXR_ENCODING "nvv4l2h265enc"
-    #define TYPE_FRACTION   30
+#ifdef ADA
+#  define ILLIXR_BITRATE  524288
+#  define IMG_WIDTH       640
+#  define IMG_HEIGHT      480
+#  define ILLIXR_ENCODING "nvv4l2h265enc"
+#  define TYPE_FRACTION   30
 
-#elif defined VIO
-    #define ILLIXR_BITRATE  5242880
-    #define ILLIXR_ENCODING "nvv4l2h264enc"
-    #define TYPE_FRACTION   0
+#elif defined(VIO)
+#  define ILLIXR_BITRATE  5242880
+#  define ILLIXR_ENCODING "nvv4l2h264enc"
+#  define TYPE_FRACTION   0
 // #define ZED
 
-    #ifdef ZED
-        #define IMG_WIDTH  672
-        #define IMG_HEIGHT 376
-    #else
-        #define IMG_WIDTH  752
-        #define IMG_HEIGHT 480
-    #endif
+#  ifdef ZED
+#    define IMG_WIDTH  672
+#    define IMG_HEIGHT 376
+#  else
+#    define IMG_WIDTH  752
+#    define IMG_HEIGHT 480
+#  endif
 
 #endif
 
@@ -113,3 +115,5 @@ private:
 };
 
 } // namespace ILLIXR
+
+#endif

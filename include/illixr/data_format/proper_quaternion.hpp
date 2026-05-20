@@ -1,5 +1,9 @@
 #pragma once
-#include <eigen3/Eigen/Dense>
+#ifdef __ANDROID__
+#  include <Eigen/Dense>
+#else
+#  include <eigen3/Eigen/Dense>
+#endif
 #include <iostream>
 
 namespace ILLIXR::data_format {

@@ -1,6 +1,6 @@
 #pragma once
 #if defined(_WIN32) || defined(_WIN64)
-    #include <windows.h>
+#  include <windows.h>
 #endif
 
 #include "illixr/error_util.hpp"
@@ -30,7 +30,11 @@ struct object_t {
     GLuint texture;
     bool   has_texture;
 
+#ifdef __ANDROID__
+    void Draw() {
+#else
     void Draw() const {
+#endif
         RAC_ERRNO_MSG("gl_util/obj at start of Draw");
 
         glBindBuffer(GL_ARRAY_BUFFER, vbo_handle);
@@ -43,7 +47,11 @@ struct object_t {
             glBindTexture(GL_TEXTURE_2D, texture);
         }
 
+#ifdef __ANDROID__
+        glDrawArrays(GL_TRIANGLES, 0, num_triangles * 3);
+#else
         glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(num_triangles) * 3);
+#endif
 
         if (has_texture) {
             glBindTexture(GL_TEXTURE_2D, 0);

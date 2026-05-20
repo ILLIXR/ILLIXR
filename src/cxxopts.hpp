@@ -24,6 +24,8 @@ THE SOFTWARE.
 
 // vim: ts=2:sw=2:expandtab
 
+#ifndef __ANDROID__
+
 #ifndef CXXOPTS_HPP_INCLUDED
 #define CXXOPTS_HPP_INCLUDED
 
@@ -2084,3 +2086,5 @@ inline const HelpGroupDetails& Options::group_help(const std::string& group) con
 } // namespace cxxopts
 
 #endif // CXXOPTS_HPP_INCLUDED
+
+#endif

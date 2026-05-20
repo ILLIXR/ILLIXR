@@ -1,5 +1,7 @@
 #pragma once
 
+#ifndef __ANDROID__
+
 #include "display_backend.hpp"
 
 namespace ILLIXR::display {
@@ -33,3 +35,5 @@ private:
 };
 
 } // namespace ILLIXR::display
+
+#endif

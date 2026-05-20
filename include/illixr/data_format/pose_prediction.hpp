@@ -4,17 +4,20 @@
 #include "illixr/phonebook.hpp"
 #include "illixr/relative_clock.hpp"
 
-#include <eigen3/Eigen/Geometry>
+#ifdef __ANDROID__
+#  include <Eigen/Geometry>
+#else
+#  include <eigen3/Eigen/Geometry>
+#endif
 
 #ifdef USING_OPENXR
-    #include "xrt/xrt_defines.h"
-
-    #include <openxr/openxr.h>
-    #define POSE_TIME_TYPE XrTime
-    #define POSE_TYPE      xrt_space_relation
+#  include "xrt/xrt_defines.h"
+#  include <openxr/openxr.h>
+#  define POSE_TIME_TYPE XrTime
+#  define POSE_TYPE      xrt_space_relation
 #else
-    #define POSE_TIME_TYPE time_point
-    #define POSE_TYPE      data_format::pose::fast_head_pose_type
+#  define POSE_TIME_TYPE time_point
+#  define POSE_TYPE      data_format::pose::fast_head_pose_type
 #endif
 
 namespace ILLIXR::data_format {

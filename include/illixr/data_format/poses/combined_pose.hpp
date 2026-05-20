@@ -1,16 +1,16 @@
 #pragma once
 #ifdef USING_OPENXR
-    #include "illixr/data_format/poses/hand_interaction_pose.hpp"
-    #include "illixr/data_format/poses/hand_pose.hpp"
-    #include "illixr/data_format/poses/head_pose.hpp"
-    #include "illixr/data_format/poses/palm_pose.hpp"
+#include "illixr/data_format/poses/head_pose.hpp"
+#include "illixr/data_format/poses/hand_interaction_pose.hpp"
+#include "illixr/data_format/poses/hand_pose.hpp"
+#include "illixr/data_format/poses/palm_pose.hpp"
 
 namespace ILLIXR::data_format::pose {
 
-constexpr std::uint8_t HEAD_TRACKED{0b0000'0001};
-constexpr std::uint8_t HANDS_TRACKED{0b0000'0010};
-constexpr std::uint8_t PALMS_TRACKED{0b0000'0100};
-constexpr std::uint8_t INTERACTIONS_TRACKED{0b0000'1000};
+constexpr std::uint8_t HEAD_TRACKED         { 0b0000'0001 };
+constexpr std::uint8_t HANDS_TRACKED        { 0b0000'0010 };
+constexpr std::uint8_t PALMS_TRACKED        { 0b0000'0100 };
+constexpr std::uint8_t INTERACTIONS_TRACKED { 0b0000'1000 };
 
 struct combined_pose : public switchboard::event {
     fast_head_pose_type         head_pose;
@@ -18,7 +18,7 @@ struct combined_pose : public switchboard::event {
     palm_poses_pair             palm_poses;
     hand_interaction_poses_pair hand_interactions;
     uint8_t                     valid_data = 0;
-    uint64_t                    id;
+    uint64_t                    id = 0;
 
     // Time conversion data populated by oxr_relay on the headset.
     // These allow pose_relay on the server to convert the pose's XrTime
@@ -52,7 +52,7 @@ struct combined_pose : public switchboard::event {
 
     combined_pose(fast_head_pose_type& head, hand_joint_poses_pair& hands, palm_poses_pair& palms,
                   hand_interaction_poses_pair& hand_interactions, uint64_t fid, int64_t pose_xr_time = 0,
-                  int64_t xr_to_monotonic_offset = 0, int64_t monotinic_to_system_offset = 0, double smoothed_clock_offset = 0.,
+                  int64_t xr_to_monotonic_offset = 0, int64_t monotonic_to_system_offet = 0, double smoothed_clock_offset = 0.,
                   double smoothed_rtt = 0.)
         : head_pose{head}
         , hand_poses{hands}
@@ -61,7 +61,7 @@ struct combined_pose : public switchboard::event {
         , id{fid}
         , pose_xr_time_ns{pose_xr_time}
         , xr_to_monotonic_offset_ns{xr_to_monotonic_offset}
-        , monotonic_to_system_offset_ns{monotinic_to_system_offset}
+        , monotonic_to_system_offset_ns{monotonic_to_system_offet}
         , smoothed_clock_offset_ns{smoothed_clock_offset}
         , smoothed_rtt_ns{smoothed_rtt} {
         if (head_pose.is_valid())

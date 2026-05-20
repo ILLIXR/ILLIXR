@@ -7,25 +7,25 @@
 #include <boost/serialization/export.hpp>
 
 #ifdef USING_OPENXR
-    #ifdef ENABLE_MONADO
-        #include "xrt/xrt_defines.h"
-        #define THREE_VECTOR_TYPE xrt_vec3
-        #define QUATERNION_TYPE   xrt_quat
-        #define POSE_BASE_TYPE    xrt_space_relation
-        #define HAND_JOINT_SET    xrt_hand_joint_set
-        #define HAND_JOINT_TYPE   xrt_hand_joint_value
-        #define POSE_DATA_TYPE    xrt_pose
-    #else
-        #include <openxr/openxr.h>
-        #define THREE_VECTOR_TYPE XrVector3f
-        #define QUATERNION_TYPE   XrQuaternionf
-        #define POSE_BASE_TYPE    ILLIXR::data_format::pose::xrt_space_relation
-        #define HAND_JOINT_SET    ILLIXR::data_format::pose::hand_joint_poses
-        #define HAND_JOINT_TYPE   ILLIXR::data_format::pose::hand_joint_pose
-        #define POSE_DATA_TYPE    XrPosef
-    #endif
-    #include <boost/serialization/array.hpp>
-    #include <boost/serialization/map.hpp>
+#  ifdef ENABLE_MONADO
+#    include "xrt/xrt_defines.h"
+#    define THREE_VECTOR_TYPE xrt_vec3
+#    define QUATERNION_TYPE   xrt_quat
+#    define POSE_BASE_TYPE    xrt_space_relation
+#    define HAND_JOINT_SET    xrt_hand_joint_set
+#    define HAND_JOINT_TYPE   xrt_hand_joint_value
+#    define POSE_DATA_TYPE    xrt_pose
+#  else
+#    include <openxr/openxr.h>
+#    define THREE_VECTOR_TYPE XrVector3f
+#    define QUATERNION_TYPE   XrQuaternionf
+#    define POSE_BASE_TYPE    ILLIXR::data_format::pose::xrt_space_relation
+#    define HAND_JOINT_SET    ILLIXR::data_format::pose::hand_joint_poses
+#    define HAND_JOINT_TYPE   ILLIXR::data_format::pose::hand_joint_pose
+#    define POSE_DATA_TYPE    XrPosef
+#  endif
+#  include <boost/serialization/array.hpp>
+#  include <boost/serialization/map.hpp>
 #endif
 
 namespace boost::serialization {

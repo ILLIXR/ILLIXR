@@ -1,13 +1,16 @@
 #pragma once
 
-#include "export.hpp"
 #include "phonebook.hpp"
 #include "record_logger.hpp"
 
 #include <memory>
 #include <spdlog/common.h>
 #include <spdlog/sinks/basic_file_sink.h>
-#include <spdlog/sinks/stdout_color_sinks.h>
+#ifdef __ANDROID__
+#  include <spdlog/sinks/android_sink.h>
+#else
+#  include <spdlog/sinks/stdout_color_sinks.h>
+#endif
 #include <spdlog/spdlog.h>
 #include <string>
 #include <typeinfo>
@@ -16,11 +19,11 @@
 #if !defined(DOUBLE_INCLUDE) && !defined(BUILDING_MONADO_ILLIXR_DRIVER)
 extern "C" {
 MY_EXPORT_API bool needs_monado() {
-    #ifdef MONADO_REQUIRED
+#  ifdef MONADO_REQUIRED
     return true;
-    #else
+#  else
     return false;
-    #endif
+#  endif
 }
 }
 #endif
@@ -49,8 +52,7 @@ public:
         : name_{std::move(name)}
         , phonebook_{pb}
         , record_logger_{phonebook_->lookup_impl<record_logger>()}
-        , gen_guid_{phonebook_->lookup_impl<gen_guid>()}
-        , id_{gen_guid_->get()} { }
+        , id_{pb->get_next_id()} { }
 
     virtual ~plugin() = default;
 
@@ -62,11 +64,13 @@ public:
      * this use-case.
      */
     virtual void start() {
+#ifndef __ANDROID__
         record_logger_->log(record{_plugin_start_header,
                                    {
                                        {id_},
                                        {name_},
                                    }});
+#endif
     }
 
     /**
@@ -82,8 +86,10 @@ public:
      * Concrete plugins are responsible for initializing their specific logger and sinks.
      */
     virtual void stop() {
+#ifndef __ANDROID__
         if (plugin_logger_)
             plugin_logger_->flush();
+#endif
     }
 
     [[maybe_unused]] [[nodiscard]] std::string get_name() const noexcept {
@@ -99,10 +105,15 @@ public:
 #endif
         }
         std::vector<spdlog::sink_ptr> sinks;
-        auto                          file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>("logs/" + name_ + ".log");
-        auto                          console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+#ifdef __ANDROID__
+        auto main_sink = std::make_shared<spdlog::sinks::android_sink_mt>();
+        sinks.push_back(main_sink);
+#else
+        auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>("logs/" + name_ + ".log");
+        auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
         sinks.push_back(file_sink);
         sinks.push_back(console_sink);
+#endif
         if (spdlog::get(name_) == nullptr) {
             plugin_logger_ = std::make_shared<spdlog::logger>(name_, begin(sinks), end(sinks));
             plugin_logger_->set_level(spdlog::level::from_str(log_level));
@@ -130,7 +141,6 @@ protected:
     std::string                          name_;
     const phonebook*                     phonebook_;
     const std::shared_ptr<record_logger> record_logger_;
-    const std::shared_ptr<gen_guid>      gen_guid_;
     const std::size_t                    id_;
     std::shared_ptr<spdlog::logger>      plugin_logger_;
 };

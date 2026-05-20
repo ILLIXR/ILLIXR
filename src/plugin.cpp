@@ -2,24 +2,31 @@
 #include "illixr/error_util.hpp"
 #include "illixr/switchboard.hpp"
 
-#ifndef ILLIXR_INSTALL_PATH
-    #error "ILLIXR_INSTALL_PATH must be defined"
+#ifdef __ANDROID__
+#  include <EGL/egl.h>
+#  include <csignal>
+#  include <unistd.h> /// Not portable
+#else
+#  ifndef ILLIXR_INSTALL_PATH
+#    error "ILLIXR_INSTALL_PATH must be defined"
+#  endif
+#  ifndef BOOST_DATE_TIME_NO_LIB
+#    define BOOST_DATE_TIME_NO_LIB
+#  endif
+#  include <algorithm>
+#  include <boost/algorithm/string/join.hpp>
+#  include <cstdlib>
+#  include <iostream>
+#  ifdef __linux__
+#    include <pwd.h>
+#    include <unistd.h>
+#  endif
+#  include <sstream>
+#  include <stdexcept>
+#  include <yaml-cpp/yaml.h>
 #endif
-#ifndef BOOST_DATE_TIME_NO_LIB
-    #define BOOST_DATE_TIME_NO_LIB
-#endif
-#include <algorithm>
-#include <boost/algorithm/string/join.hpp>
-#include <cstdlib>
-#include <iostream>
-#ifdef __linux__
-    #include <pwd.h>
-    #include <unistd.h>
-#endif
-#include <sstream>
-#include <stdexcept>
-#include <yaml-cpp/yaml.h>
 
+#ifndef __ANDROID__
 namespace ILLIXR {
 struct Dependency {
     std::string                                     name;
@@ -74,26 +81,21 @@ struct convert<ILLIXR::Dependency> {
     }
 };
 } // namespace YAML
+#endif
 
 MY_EXPORT_API ILLIXR::runtime* runtime_ = nullptr;
 
 using namespace ILLIXR;
 
-/*std::string get_exec_path() {
-    char        result[PATH_MAX];
-    ssize_t     count = readlink("/proc/self/exe", result, PATH_MAX);
-    std::string exe_dir(result, (count > 0) ? count : 0);
-    return exe_dir.substr(0, exe_dir.find_last_of("/\\"));
-}*/
-
+#ifndef __ANDROID__
 std::string get_home_dir() {
-#if defined(_WIN32) || defined(_WIN64)
+#  if defined(_WIN32) || defined(_WIN64)
     char* path = getenv("USERPROFILE");
     return {path};
-#else
+#  else
     struct passwd* pw = getpwuid(getuid());
     return {pw->pw_dir};
-#endif
+#  endif
 }
 
 void check_plugins(std::vector<std::string>& plugins, const std::vector<ILLIXR::Dependency>& dep_map) {
@@ -155,22 +157,31 @@ void check_plugins(std::vector<std::string>& plugins, const std::vector<ILLIXR::
     if (modified)
         plugins = ordered_plugins;
 }
+#endif
 
-int ILLIXR::run(const cxxopts::ParseResult& options) {
+int ILLIXR::run(
+#ifdef __ANDROID__
+        const std::vector<std::string>& plugins, struct android_app* app
+#else
+        const cxxopts::ParseResult& options
+#endif
+) {
     std::chrono::seconds     run_duration;
+#ifndef __ANDROID__
     std::vector<std::string> plugins;
+#endif
     try {
         runtime_ = ILLIXR::runtime_factory();
-        // set internal env_vars
-        // const std::shared_ptr<switchboard> sb = r->get_switchboard();
 
         // set internal env_vars
         std::shared_ptr<switchboard> switchboard_ = runtime_->get_switchboard();
+#ifdef __ANDROID__
+        switchboard_->set_android_app(app);
+#else
 
         // read in yaml config file
         YAML::Node config;
-        // std::string exec_path = get_exec_path();
-        // setenv("ILLIXR_BINARY_PATH", exec_path.c_str(), 1);
+
         setenv("ILLIXR_BINARY_PATH", ILLIXR_INSTALL_PATH, 1);
         std::string home_dir = get_home_dir();
         if (options.count("yaml")) {
@@ -217,7 +228,7 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
                 setenv(ad.arg_name.c_str(), ad.value.c_str(), 1); // env vars from command line take precedence
             }
         }
-
+#endif
 #ifndef NDEBUG
         /// Activate sleeping at application start for attaching gdb. Disables 'catchsegv'.
         /// Enable using the ILLIXR_ENABLE_PRE_SLEEP environment variable (see 'runner/runner/main.py:load_tests')
@@ -239,7 +250,12 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
             spdlog::get("illixr")->info("[main] Resuming...");
         }
 #endif /// NDEBUG
-
+#ifdef __ANDROID__
+        /// Shutting down method 2: Run timer
+        run_duration = (!switchboard_->get_env("ILLIXR_RUN_DURATION").empty())
+                       ? std::chrono::seconds{std::stol(std::string{switchboard_->get_env("ILLIXR_RUN_DURATION")})}
+                       : ILLIXR_RUN_DURATION_DEFAULT;
+#else
         if (options.count("duration")) {
             run_duration = std::chrono::seconds{options["duration"].as<long>()};
         } else if (config["env_vars"]["duration"]) {
@@ -275,10 +291,10 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
         for (auto& dep_file : dep_list) {
             try {
                 YAML::Node plugin_deps = YAML::LoadFile(dep_file);
-#ifndef NDEBUG
+#  ifndef NDEBUG
                 spdlog::get("illixr")->info("Located plugin dependency map file (" + dep_file +
                                             "), verifying plugin dependencies.");
-#endif
+#  endif
                 dep_map.reserve(plugin_deps["dep_map"].size());
                 for (const auto& node : plugin_deps["dep_map"])
                     dep_map.push_back(node.as<ILLIXR::Dependency>());
@@ -322,7 +338,7 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
 
         // prevent double free
         switchboard_.reset();
-
+#endif
         RAC_ERRNO_MSG("main after creating runtime");
 
         std::vector<std::string> lib_paths;

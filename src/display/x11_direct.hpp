@@ -1,5 +1,7 @@
 #pragma once
 
+#ifndef __ANDROID__
+
 #include "display_backend.hpp"
 #include "illixr/switchboard.hpp"
 
@@ -36,3 +38,5 @@ private:
 };
 
 } // namespace ILLIXR::display
+
+#endif
