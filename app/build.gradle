@@ -2,7 +2,8 @@ plugins {
     id 'com.android.application'
 }
 
-def root_path = rootProject.getLayout().getProjectDirectory().getAsFile().getPath() + "/android_libraries/third_party/"
+def root_path = rootProject.getLayout().getProjectDirectory().getAsFile().getPath()
+def root_library_path = "${root_path}/android_libraries/third_party/"
 
 def home = System.getenv('HOME') ?: System.getenv('USERPROFILE')
 
@@ -36,7 +37,7 @@ android {
             cmake {
                 version '3.22.1'
                 cppFlags '-std=c++17', '-frtti', '-fexceptions'
-                arguments "-DTHIRD_PARTY_DIR=${root_path}"
+                arguments "-DTHIRD_PARTY_DIR=${root_library_path}"
             }
         }
     }
@@ -60,7 +61,7 @@ android {
     externalNativeBuild {
         cmake {
             version '3.22.1'
-            path 'src/main/cpp/CMakeLists.txt'
+            path "${root_path}/CMakeLists.txt"
 
         }
     }
