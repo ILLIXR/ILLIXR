@@ -5,10 +5,10 @@
 /* Last Edited: 07/27/2023                                                   */
 /*                                                                           */
 /* An ILLIXR plugin that publishes position tracking data ("pose")           */
-/*     from a mathematical operation just to quickly produce some known    */
-/*     tracking path for the purpose of debugging other portions of ILLIXR.*/
+/*     from a mathematical operation just to quickly produce some known      */
+/*     tracking path for the purpose of debugging other portions of ILLIXR.  */
 /*                                                                           */
-/* USAGE:                                                                   */
+/* USAGE:                                                                    */
 /*   * Add "- path: fauxpose/" as a plugin (and not other trackers)          */
 /*   * Use "FAUXPOSE_PERIOD" environment variable to control orbit period    */
 /*   * Use "FAUXPOSE_AMPLITUDE" environment variable to control orbit size   */
@@ -22,9 +22,9 @@
 /*   * Add control of orbital plane as a control parameter                   */
 /*                                                                           */
 /* NOTES:                                                                    */
-/*   * get_fast_pose() method returns a "fast_head_pose_type"                     */
-/*   * "fast_head_pose_type" is a "head_pose_type" plus computed & target timestamps   */
-/*   * correct_pose() method returns a "head_pose_type"                           */
+/*   * get_fast_pose() method returns a "fast_head_pose_type"                */
+/*   * "fast_head_pose_type" is a "head_pose_type" plus computed & target    */
+/*   * timestamps correct_pose() method returns a "head_pose_type"           */
 /*   * (This version uploaded to ILLIXR GitHub)                              */
 /*                                                                           */
 
@@ -32,8 +32,13 @@
 
 #include <cstdlib>
 #include <cstring>
-#include <eigen3/Eigen/Core>
-#include <eigen3/Eigen/Geometry>
+#ifdef __ANDROID__
+#  include <Eigen/Core>
+#  include <Eigen/Geometry>
+#else
+#  include <eigen3/Eigen/Core>
+#  include <eigen3/Eigen/Geometry>
+#endif
 #include <memory>
 #include <mutex>
 
