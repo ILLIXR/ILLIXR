@@ -1,8 +1,13 @@
 #pragma once
-
+#ifdef USING_OPENXR
+#  undef USING_OPENXR
+#endif
 #include "illixr/data_format/frame.hpp"
 #include "illixr/data_format/misc.hpp"
 #include "illixr/data_format/pose_prediction.hpp"
+#ifdef __ANDROID__
+#  include "illixr/common_lock.hpp"
+#endif
 #include "illixr/extended_window.hpp"
 #include "illixr/gl_util/obj.hpp"
 #include "illixr/phonebook.hpp"
@@ -33,10 +38,16 @@ public:
 private:
     static void create_shared_eyebuffer(GLuint* texture_handle);
     void        create_FBO(const GLuint* texture_handle, GLuint* fbo, GLuint* depth_target);
-
+#ifdef __ANDROID__
+    const std::shared_ptr<const xlib_gl_extended_window>              ext_window_;
+#else
     const std::unique_ptr<const xlib_gl_extended_window>              ext_window_;
+#endif
     const std::shared_ptr<switchboard>                                switchboard_;
     const std::shared_ptr<data_format::pose_prediction>               pose_prediction_;
+#ifdef __ANDROID__
+    const std::shared_ptr<common_lock>                                lock_;
+#endif
     const std::shared_ptr<const relative_clock>                       clock_;
     const switchboard::reader<switchboard::event_wrapper<time_point>> vsync_;
 
