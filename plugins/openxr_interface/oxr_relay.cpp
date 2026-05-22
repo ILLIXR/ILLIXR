@@ -107,7 +107,7 @@ void oxr_relay::_p_one_iteration() {
 
     if (XR_SUCCEEDED(get_head_pose(pose_time,
                                    &head_pose))) {
-        if (memcmp(&head_pose, &last_pose_, sizeof(XrPosef)) == 0) {
+        if (memcmp((void*)&head_pose, (void*)&last_pose_, sizeof(XrPosef)) == 0) {
             log_iter_time("pose unchanged");
             return;
         }
@@ -339,7 +339,7 @@ void oxr_relay::push_poses(XrTime predicted_time) {
     if (should_log) {
         if (current_hand_poses_.has_hands()) {
             const char*      hand_names[] = {"LEFT", "RIGHT"};
-            const pose::hand hand_enums[] = {pose::LEFT, pose::RIGHT};
+            const pose::side hand_enums[] = {pose::LEFT, pose::RIGHT};
             for (int h = 0; h < 2; h++) {
                 const auto& hd = current_hand_poses_.hands.at(hand_enums[h]);
                 if (!hd.is_active) {
@@ -365,7 +365,7 @@ void oxr_relay::push_poses(XrTime predicted_time) {
         // Palm poses
         if (current_palm_poses_.is_valid()) {
             const char*      hand_names[] = {"LEFT", "RIGHT"};
-            const pose::hand hand_enums[] = {pose::LEFT, pose::RIGHT};
+            const pose::side hand_enums[] = {pose::LEFT, pose::RIGHT};
             for (int h = 0; h < 2; h++) {
                 const auto& pd = current_palm_poses_.hands.at(hand_enums[h]);
                 if (!pd.is_valid()) {
@@ -388,7 +388,7 @@ void oxr_relay::push_poses(XrTime predicted_time) {
         // Hand interactions
         if (current_hand_interactions_.is_valid()) {
             const char*                    hand_names[] = {"LEFT", "RIGHT"};
-            const pose::hand               hand_enums[] = {pose::LEFT, pose::RIGHT};
+            const pose::side               hand_enums[] = {pose::LEFT, pose::RIGHT};
             const char*                    type_names[] = {"AIM", "GRIP", "PINCH", "POKE"};
             const pose::interaction_pose_type type_enums[] = {
                     pose::AIM, pose::GRIP, pose::PINCH, pose::POKE
@@ -737,7 +737,7 @@ void oxr_relay::update_hand_interaction(XrTime predicted_time) {
     //  Collect poses
     current_hand_interactions_.sensor_time = clock_->now();
 
-    const pose::hand hand_enum[2] = {pose::LEFT, pose::RIGHT};
+    const pose::side hand_enum[2] = {pose::LEFT, pose::RIGHT};
     const char*                       type_names[] = {"AIM", "GRIP", "PINCH", "POKE"};
     const char*                       hand_names[] = {"LEFT", "RIGHT"};
 
@@ -841,7 +841,7 @@ void oxr_relay::update_hand_interaction(XrTime predicted_time) {
         if ((++hi_log_counter % 300) == 1) {
             //spdlog::get("illixr")->debug("update_hand_interaction: logging");
 
-            const pose::hand                  hand_enums[] = {pose::LEFT, pose::RIGHT};
+            const pose::side                  hand_enums[] = {pose::LEFT, pose::RIGHT};
             const pose::interaction_pose_type type_enums[] = {
                     pose::AIM, pose::GRIP, pose::PINCH, pose::POKE
             };
@@ -900,7 +900,7 @@ void oxr_relay::update_hand_interaction(XrTime predicted_time) {
         const bool ori_valid = (location.locationFlags & XR_SPACE_LOCATION_ORIENTATION_VALID_BIT) != 0u;
 
         if (XR_SUCCEEDED(r) && pos_valid && ori_valid) {
-            pose::hand palm_hand = (h == 0) ? pose::LEFT : pose::RIGHT;
+            pose::side palm_hand = (h == 0) ? pose::LEFT : pose::RIGHT;
             current_palm_poses_.hands[palm_hand].update(location, velocity);
         } else {
             current_palm_poses_.hands[(h == 0) ? pose::LEFT : pose::RIGHT].relation_flags = 0;
@@ -911,7 +911,7 @@ void oxr_relay::update_hand_interaction(XrTime predicted_time) {
         // Throttle logging to once every 300 frames
         static uint64_t pp_log_counter = 0;
         if ((++pp_log_counter % log_interval) == 1) {
-            const pose::hand hand_enums[] = {pose::LEFT, pose::RIGHT};
+            const pose::side hand_enums[] = {pose::LEFT, pose::RIGHT};
             for (int h = 0; h < 2; h++) {
                 const auto& pd = current_palm_poses_.hands.at(hand_enums[h]);
                 if (!pd.is_valid()) {
