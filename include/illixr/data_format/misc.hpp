@@ -1,15 +1,15 @@
 #pragma once
 #if defined(_WIN32) || defined(_WIN64)
-#  include <windows.h>
+#    include <windows.h>
 #endif
 
 #include "illixr/switchboard.hpp"
 
 #ifdef __ANDROID__
-#  include <android/hardware_buffer.h>
-#  include <GLES/gl.h>
+#    include <android/hardware_buffer.h>
+#    include <GLES/gl.h>
 #else
-#  include <GL/glu.h>
+#    include <GL/glu.h>
 #endif
 
 // Tell gldemo and timewarp_gl to use two texture handle for left and right eye
@@ -49,18 +49,18 @@ typedef struct vk_image_handle {
 
 #ifdef __ANDROID__
 typedef struct vk_buffer_handle {
-    AHardwareBuffer  *ahardware_buffer;
-    int64_t  format;
-    size_t   allocation_size;
-    uint32_t width;
-    uint32_t height;
+    AHardwareBuffer* ahardware_buffer;
+    int64_t          format;
+    size_t           allocation_size;
+    uint32_t         width;
+    uint32_t         height;
 
-    vk_buffer_handle(AHardwareBuffer *ahardware_buffer_, int64_t format_, size_t alloc_size, uint32_t width_, uint32_t height_)
-            : ahardware_buffer{ahardware_buffer_}
-            , format{format_}
-            , allocation_size{alloc_size}
-            , width{width_}
-            , height{height_} { }
+    vk_buffer_handle(AHardwareBuffer* ahardware_buffer_, int64_t format_, size_t alloc_size, uint32_t width_, uint32_t height_)
+        : ahardware_buffer{ahardware_buffer_}
+        , format{format_}
+        , allocation_size{alloc_size}
+        , width{width_}
+        , height{height_} { }
 } vk_buffer_handle;
 
 #endif
@@ -103,12 +103,12 @@ struct [[maybe_unused]] image_handle : public switchboard::event {
         , usage{usage_} { }
 
 #ifdef __ANDROID__
-    image_handle(AHardwareBuffer *ahardware_buffer, int64_t format, size_t alloc_size, uint32_t width_, uint32_t height_, uint32_t num_images_,
-                 swapchain_usage usage_)
-            : type{graphics_api::VULKAN}
-            , vk_buffer_handle{ahardware_buffer, format, alloc_size, width_, height_}
-            , num_images{num_images_}
-            , usage{usage_} { }
+    image_handle(AHardwareBuffer* ahardware_buffer, int64_t format, size_t alloc_size, uint32_t width_, uint32_t height_,
+                 uint32_t num_images_, swapchain_usage usage_)
+        : type{graphics_api::VULKAN}
+        , vk_buffer_handle{ahardware_buffer, format, alloc_size, width_, height_}
+        , num_images{num_images_}
+        , usage{usage_} { }
 
 #endif
 };
@@ -158,25 +158,26 @@ inline bool compare(const std::string& input, const std::string& val) {
 enum class semaphore_usage { LEFT_RENDER_COMPLETE, RIGHT_RENDER_COMPLETE, NA };
 
 struct semaphore_handle : public switchboard::event {
-    int vk_handle;
+    int             vk_handle;
     semaphore_usage usage;
 
     semaphore_handle()
-            : vk_handle{0}
-            , usage{semaphore_usage::NA} {}
+        : vk_handle{0}
+        , usage{semaphore_usage::NA} { }
 
     semaphore_handle(int vk_handle_, semaphore_usage usage_)
-            : vk_handle{vk_handle_}
-            , usage{usage_} {}
+        : vk_handle{vk_handle_}
+        , usage{usage_} { }
 };
 
 struct [[maybe_unused]] illixr_signal : public switchboard::event {
     int illixr_ready;
+
     illixr_signal()
-            : illixr_ready(false) {}
+        : illixr_ready(false) { }
 
     explicit illixr_signal(int illixr_ready_)
-            : illixr_ready(illixr_ready_) {}
+        : illixr_ready(illixr_ready_) { }
 };
 #endif
 

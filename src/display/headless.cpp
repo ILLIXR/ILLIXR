@@ -1,6 +1,6 @@
 #ifndef __ANDROID__
 
-#include "headless.hpp"
+#    include "headless.hpp"
 
 using namespace ILLIXR::display;
 

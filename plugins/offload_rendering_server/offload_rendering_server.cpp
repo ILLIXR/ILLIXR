@@ -20,7 +20,7 @@ using namespace ILLIXR::data_format;
 #ifndef NVENC_ENCODER
 using namespace vulkan::ffmpeg_utils;
 #elif DUMP_FRAMES
-    #include "nvenc/frame_saver_integration.hpp"
+#    include "nvenc/frame_saver_integration.hpp"
 #endif
 
 offload_rendering_server::offload_rendering_server(const std::string& name, phonebook* pb)
@@ -472,37 +472,37 @@ void offload_rendering_server::enqueue_for_network_send(BUFFER_TYPE& pose, uint6
     // Default: two independent per-eye color bitstreams.
     std::shared_ptr<compressed_frame> frame;
     if (use_pass_motion_vectors_) {
-    #ifdef COMBINED_ENCODING
+#    ifdef COMBINED_ENCODING
         frame = std::make_shared<compressed_frame>(encode_out_combined_color_packet_, PACKET_TYPE{},
                                                    encode_out_depth_packets_[0], encode_out_depth_packets_[1],
                                                    encode_out_motion_vec_packets_[0], encode_out_motion_vec_packets_[1], pose,
                                                    timestamp, frame_number_, near_z_, far_z_, nalu_only_);
-    #else
+#    else
         frame = std::make_shared<compressed_frame>(encode_out_color_packets_[0], encode_out_color_packets_[1],
                                                    encode_out_depth_packets_[0], encode_out_depth_packets_[1],
                                                    encode_out_motion_vec_packets_[0], encode_out_motion_vec_packets_[1], pose,
                                                    timestamp, frame_number_, near_z_, far_z_, nalu_only_);
-    #endif // COMBINED_ENCODING
+#    endif // COMBINED_ENCODING
     } else if (use_pass_depth_) {
-    #ifdef COMBINED_ENCODING
+#    ifdef COMBINED_ENCODING
         frame = std::make_shared<compressed_frame>(encode_out_combined_color_packet_, PACKET_TYPE{},
                                                    encode_out_depth_packets_[0], encode_out_depth_packets_[1], pose, timestamp,
                                                    frame_number_, near_z_, far_z_, nalu_only_);
-    #else
+#    else
         frame = std::make_shared<compressed_frame>(encode_out_color_packets_[0], encode_out_color_packets_[1],
                                                    encode_out_depth_packets_[0], encode_out_depth_packets_[1], pose, timestamp,
                                                    frame_number_, near_z_, far_z_, nalu_only_);
-    #endif // COMBINED_ENCODING
+#    endif // COMBINED_ENCODING
     } else {
-    #ifdef COMBINED_ENCODING
+#    ifdef COMBINED_ENCODING
         frame = std::make_shared<compressed_frame>(encode_out_combined_color_packet_, PACKET_TYPE{}, pose, timestamp,
                                                    frame_number_, nalu_only_);
-    #else
+#    else
         frame = std::make_shared<compressed_frame>(encode_out_color_packets_[0], encode_out_color_packets_[1], pose, timestamp,
                                                    frame_number_, nalu_only_);
-    #endif // COMBINED_ENCODING
+#    endif // COMBINED_ENCODING
     }
-    #ifdef OPENXR_CLIENT
+#    ifdef OPENXR_CLIENT
     // Forward render FOV to headset for correct timewarp with overdraw
     for (int eye = 0; eye < 2; eye++) {
         frame->fov_left[eye]  = hmd_setup_.fov_angle_left[eye];
@@ -510,7 +510,7 @@ void offload_rendering_server::enqueue_for_network_send(BUFFER_TYPE& pose, uint6
         frame->fov_up[eye]    = hmd_setup_.fov_angle_up[eye];
         frame->fov_down[eye]  = hmd_setup_.fov_angle_down[eye];
     }
-    #endif
+#    endif
     frame->pose_id     = pose_id;
     frame->is_keyframe = color_frame_is_keyframe_;
     frame->encode_time = current_encode_time_;
@@ -541,14 +541,14 @@ void offload_rendering_server::enqueue_for_network_send(BUFFER_TYPE& pose, uint6
                                                    frame_number_, nalu_only_);
     }
 
-    #ifdef OPENXR_CLIENT
+#    ifdef OPENXR_CLIENT
     for (int eye = 0; eye < 2; eye++) {
         frame->fov_left[eye]  = hmd_setup_.fov_angle_left[eye];
         frame->fov_right[eye] = hmd_setup_.fov_angle_right[eye];
         frame->fov_up[eye]    = hmd_setup_.fov_angle_up[eye];
         frame->fov_down[eye]  = hmd_setup_.fov_angle_down[eye];
     }
-    #endif
+#    endif
     frame->pose_id     = pose_id;
     frame->is_keyframe = color_frame_is_keyframe_;
     frame->encode_time = current_encode_time_;
@@ -573,8 +573,8 @@ void offload_rendering_server::nvenc_init_vulkan_context() {
     vk_ctx_.graphics_queue        = display_provider_->queues_[vulkan::queue::GRAPHICS].vk_queue;
     vk_ctx_.graphics_queue_family = display_provider_->queues_[vulkan::queue::GRAPHICS].family;
 
-    // Get extension function pointers
-    #ifdef _WIN32
+// Get extension function pointers
+#    ifdef _WIN32
     vk_ctx_.vkGetMemoryWin32HandleKHR =
         reinterpret_cast<PFN_vkGetMemoryWin32HandleKHR>(vkGetDeviceProcAddr(vk_ctx_.device, "vkGetMemoryWin32HandleKHR"));
     vk_ctx_.vkGetSemaphoreWin32HandleKHR =
@@ -583,7 +583,7 @@ void offload_rendering_server::nvenc_init_vulkan_context() {
     if (!vk_ctx_.vkGetMemoryWin32HandleKHR) {
         throw std::runtime_error("vkGetMemoryWin32HandleKHR not available - ensure VK_KHR_external_memory_win32 is enabled");
     }
-    #else
+#    else
     vk_ctx_.vkGetMemoryFdKHR = reinterpret_cast<PFN_vkGetMemoryFdKHR>(vkGetDeviceProcAddr(vk_ctx_.device, "vkGetMemoryFdKHR"));
     vk_ctx_.vkGetSemaphoreFdKHR =
         reinterpret_cast<PFN_vkGetSemaphoreFdKHR>(vkGetDeviceProcAddr(vk_ctx_.device, "vkGetSemaphoreFdKHR"));
@@ -591,7 +591,7 @@ void offload_rendering_server::nvenc_init_vulkan_context() {
     if (!vk_ctx_.vkGetMemoryFdKHR) {
         throw std::runtime_error("vkGetMemoryFdKHR not available - ensure VK_KHR_external_memory_fd is enabled");
     }
-    #endif
+#    endif
 
     // Create command pool (may be needed for synchronization)
     VkCommandPoolCreateInfo pool_info = {};
@@ -635,13 +635,13 @@ void offload_rendering_server::nvenc_init_encoders() {
 
     log_->info("NVENC: Monado render scale {:.0f}% -> source {}x{} per eye -> encode {}x{} per eye", render_scale * 100.0f,
                source_width, source_height, encode_width, encode_height);
-    // Create color encoders.
-    //
-    // COMBINED_ENCODING: one encoder at double width encodes both eyes into a
-    // single bitstream.  color_encoder_[1] is left null.
-    //
-    // Default: one encoder per eye at per-eye width.
-    #ifdef COMBINED_ENCODING
+// Create color encoders.
+//
+// COMBINED_ENCODING: one encoder at double width encodes both eyes into a
+// single bitstream.  color_encoder_[1] is left null.
+//
+// Default: one encoder per eye at per-eye width.
+#    ifdef COMBINED_ENCODING
     {
         const uint32_t combined_width = encode_width * 2;
         log_->info("NVENC: COMBINED_ENCODING — single color encoder {}x{}", combined_width, encode_height);
@@ -650,7 +650,7 @@ void offload_rendering_server::nvenc_init_encoders() {
             throw std::runtime_error("Failed to initialize combined color encoder");
         }
     }
-    #else
+#    else
     // Encoder dimensions are the target (native) resolution; the source (oversized)
     // Vulkan images are imported separately and the GPU kernel downsamples during
     // color conversion.
@@ -662,7 +662,7 @@ void offload_rendering_server::nvenc_init_encoders() {
             throw std::runtime_error("Failed to initialize " + eye_label + " color encoder");
         }
     }
-    #endif // COMBINED_ENCODING
+#    endif // COMBINED_ENCODING
 
     if (use_pass_motion_vectors_) {
         // Motion vectors are encoded at a fixed 432x432 (the resolution produced by
@@ -756,11 +756,11 @@ void offload_rendering_server::nvenc_import_buffer_pool_images() {
             vk_image.format        = VK_FORMAT_R8G8B8A8_UNORM;
             vk_image.tiling        = VK_IMAGE_TILING_OPTIMAL;
 
-    #ifdef COMBINED_ENCODING
+#    ifdef COMBINED_ENCODING
             int imported_idx = color_encoder_[0]->import_vulkan_image(vk_image);
-    #else
+#    else
             int imported_idx = color_encoder_[eye]->import_vulkan_image(vk_image);
-    #endif // COMBINED_ENCODING
+#    endif // COMBINED_ENCODING
             if (imported_idx >= 0) {
                 color_imported_indices_[buffer_idx][eye] = imported_idx;
                 log_->info("Imported color buffer {} eye {} -> encoder index {}", buffer_idx, eye, imported_idx);
@@ -831,14 +831,14 @@ void offload_rendering_server::nvenc_encode_frames(int ind) {
         far_z_  = 0.0f;
     }
 
-    // Encode color.
-    //
-    // COMBINED_ENCODING: call encode_stereo on color_encoder_[0] using both eye
-    // indices.  The result is a single bitstream containing both eyes side-by-side
-    // and is stored in encode_out_combined_color_packet_.
-    //
-    // Default: encode each eye independently into encode_out_color_packets_[eye].
-    #ifdef COMBINED_ENCODING
+// Encode color.
+//
+// COMBINED_ENCODING: call encode_stereo on color_encoder_[0] using both eye
+// indices.  The result is a single bitstream containing both eyes side-by-side
+// and is stored in encode_out_combined_color_packet_.
+//
+// Default: encode each eye independently into encode_out_color_packets_[eye].
+#    ifdef COMBINED_ENCODING
     {
         const int left_idx  = color_imported_indices_[ind][0];
         const int right_idx = color_imported_indices_[ind][1];
@@ -849,7 +849,7 @@ void offload_rendering_server::nvenc_encode_frames(int ind) {
             color_frame_is_keyframe_          = color_encoder_[0]->last_frame_was_keyframe();
         }
     }
-    #else
+#    else
     for (int eye = 0; eye < 2; eye++) {
         const int color_index = color_imported_indices_[ind][eye];
         if (color_index < 0) {
@@ -862,7 +862,7 @@ void offload_rendering_server::nvenc_encode_frames(int ind) {
             color_frame_is_keyframe_ = color_encoder_[0]->last_frame_was_keyframe();
         }
     }
-    #endif // COMBINED_ENCODING
+#    endif // COMBINED_ENCODING
 
     // Depth and motion-vector encoding is unchanged by COMBINED_ENCODING
     // (they remain per-eye because the decoder still expects separate streams).

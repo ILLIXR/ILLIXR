@@ -2,35 +2,35 @@
 
 #ifndef __ANDROID__
 
-#include "gst/gst.h"
-#include "illixr/error_util.hpp"
+#    include "gst/gst.h"
+#    include "illixr/error_util.hpp"
 
-#include <functional>
-#include <mutex>
-#include <opencv2/core/mat.hpp>
+#    include <functional>
+#    include <mutex>
+#    include <opencv2/core/mat.hpp>
 
-#ifdef ADA
-#  define ILLIXR_BITRATE  524288
-#  define IMG_WIDTH       640
-#  define IMG_HEIGHT      480
-#  define ILLIXR_ENCODING "nvv4l2h265enc"
-#  define TYPE_FRACTION   30
+#    ifdef ADA
+#        define ILLIXR_BITRATE  524288
+#        define IMG_WIDTH       640
+#        define IMG_HEIGHT      480
+#        define ILLIXR_ENCODING "nvv4l2h265enc"
+#        define TYPE_FRACTION   30
 
-#elif defined(VIO)
-#  define ILLIXR_BITRATE  5242880
-#  define ILLIXR_ENCODING "nvv4l2h264enc"
-#  define TYPE_FRACTION   0
+#    elif defined(VIO)
+#        define ILLIXR_BITRATE  5242880
+#        define ILLIXR_ENCODING "nvv4l2h264enc"
+#        define TYPE_FRACTION   0
 // #define ZED
 
-#  ifdef ZED
-#    define IMG_WIDTH  672
-#    define IMG_HEIGHT 376
-#  else
-#    define IMG_WIDTH  752
-#    define IMG_HEIGHT 480
-#  endif
+#        ifdef ZED
+#            define IMG_WIDTH  672
+#            define IMG_HEIGHT 376
+#        else
+#            define IMG_WIDTH  752
+#            define IMG_HEIGHT 480
+#        endif
 
-#endif
+#    endif
 
 // Alternative encoding bitrates
 // 50Mbps = 52428800
@@ -93,7 +93,7 @@ protected:
     FrameCallback callback_;
 
 private:
-#if defined ADA
+#    if defined ADA
 
     static GstFlowReturn cb_new_sample_0(GstElement* appsink, gpointer user_data) {
         return reinterpret_cast<video_encoder*>(user_data)->cb_appsink_msb(appsink);
@@ -102,7 +102,7 @@ private:
     static GstFlowReturn cb_new_sample_1(GstElement* appsink, gpointer user_data) {
         return reinterpret_cast<video_encoder*>(user_data)->cb_appsink_lsb(appsink);
     }
-#elif defined VIO
+#    elif defined VIO
     static GstFlowReturn cb_new_sample_0(GstElement* appsink, gpointer* user_data) {
         return reinterpret_cast<video_encoder*>(user_data)->cb_appsink(appsink);
     }
@@ -111,7 +111,7 @@ private:
         return reinterpret_cast<video_encoder*>(user_data)->cb_appsink(appsink);
     }
 
-#endif
+#    endif
 };
 
 } // namespace ILLIXR

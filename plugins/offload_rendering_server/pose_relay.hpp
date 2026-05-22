@@ -1,7 +1,7 @@
 #pragma once
 
 #ifndef ENABLE_MONADO
-    #define ENABLE_MONADO
+#    define ENABLE_MONADO
 #endif
 
 #define DOUBLE_INCLUDE
@@ -14,15 +14,15 @@
 #include <map>
 
 #ifdef USING_OPENXR
-    #include "auxiliary/os/os_time.h"
-    #include "xrt/xrt_defines.h"
+#    include "auxiliary/os/os_time.h"
+#    include "xrt/xrt_defines.h"
 
-    #include <openxr/openxr.h>
-    #define POSE_TIME_TYPE XrTime
-    #define POSE_TYPE      xrt_space_relation
+#    include <openxr/openxr.h>
+#    define POSE_TIME_TYPE XrTime
+#    define POSE_TYPE      xrt_space_relation
 #else
-    #define POSE_TIME_TYPE time_point
-    #define POSE_TYPE      data_format::pose::fast_head_pose_type
+#    define POSE_TIME_TYPE time_point
+#    define POSE_TYPE      data_format::pose::fast_head_pose_type
 #endif
 
 /// Entry stored in pose_map_, associating an extrapolated pose with the
