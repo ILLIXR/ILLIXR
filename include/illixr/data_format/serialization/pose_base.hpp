@@ -4,7 +4,7 @@
 #include "misc.hpp"
 
 #ifdef USING_OPENXR
-#  include "openxr.hpp"
+#    include "openxr.hpp"
 #endif
 
 namespace boost::serialization {

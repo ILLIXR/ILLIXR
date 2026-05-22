@@ -8,10 +8,10 @@
 ///   - Secondary context(s): Created with share_context = primary, owned by other threads
 ///   - Resources created in one context are visible in all shared contexts
 
-#include <EGL/egl.h>
-#include <EGL/eglext.h>
-#include <mutex>
-#include <thread>
+#    include <EGL/egl.h>
+#    include <EGL/eglext.h>
+#    include <mutex>
+#    include <thread>
 
 namespace ILLIXR {
 

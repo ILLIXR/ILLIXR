@@ -1,7 +1,7 @@
 #pragma once
 
 #if defined(_WIN32) || defined(_WIN64)
-#  include <cstdlib>
+#    include <cstdlib>
 #endif
 #include "concurrentqueue/blockingconcurrentqueue.hpp"
 #include "export.hpp"
@@ -12,15 +12,15 @@
 #include "record_logger.hpp"
 
 #ifdef Success
-#  undef Success // For 'Success' conflict
+#    undef Success // For 'Success' conflict
 #endif
 
 #ifdef __ANDROID__
-#  include <Eigen/Core>
-#  include <Eigen/Geometry>
+#    include <Eigen/Core>
+#    include <Eigen/Geometry>
 #else
-#  include <eigen3/Eigen/Core>
-#  include <eigen3/Eigen/Geometry>
+#    include <eigen3/Eigen/Core>
+#    include <eigen3/Eigen/Geometry>
 #endif
 #include <iostream>
 #include <list>
@@ -29,15 +29,15 @@
 #include <utility>
 
 #ifdef __ANDROID__
-#  include <android_native_app_glue.h>
+#    include <android_native_app_glue.h>
 #endif
 
 #ifndef NDEBUG
-#  include <spdlog/spdlog.h>
+#    include <spdlog/spdlog.h>
 #endif
 
 #if __has_include("cpu_timer.hpp")
-#  include "cpu_timer.hpp"
+#    include "cpu_timer.hpp"
 #else
 static std::chrono::nanoseconds thread_cpu_time() {
     return {};
@@ -796,7 +796,7 @@ public:
         try {
             int res = std::stoi(val);
             return res;
-        } catch(...) { }
+        } catch (...) { }
         return _default;
     }
 
@@ -805,7 +805,7 @@ public:
         try {
             int res = std::stol(val);
             return res;
-        } catch(...) { }
+        } catch (...) { }
         return _default;
     }
 
@@ -814,7 +814,7 @@ public:
         try {
             int res = std::stoul(val);
             return res;
-        } catch(...) { }
+        } catch (...) { }
         return _default;
     }
 
@@ -823,7 +823,7 @@ public:
         try {
             int res = std::stod(val);
             return res;
-        } catch(...) { }
+        } catch (...) { }
         return _default;
     }
 

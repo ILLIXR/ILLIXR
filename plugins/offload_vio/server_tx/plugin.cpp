@@ -6,9 +6,9 @@
 #include "illixr/switchboard.hpp"
 // if the header exists, we are good; if not generate a stub class for IDEs to reduce on-screen errors
 #if __has_include("vio_output.pb.h")
-    #include "vio_output.pb.h"
+#    include "vio_output.pb.h"
 #else
-    #include "../proto/output_stub.hpp"
+#    include "../proto/output_stub.hpp"
 #endif
 
 #include <memory>
