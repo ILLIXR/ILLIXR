@@ -101,6 +101,7 @@ target_include_directories(${PLUGIN_NAME} PUBLIC
 )
 
 target_link_libraries(${PLUGIN_NAME} PUBLIC
+        Boost::serialization
         Eigen3::Eigen
         android
         spdlog::spdlog_android
