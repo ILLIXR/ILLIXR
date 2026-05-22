@@ -11,10 +11,15 @@
 #endif
 
 #ifdef USING_OPENXR
-#  include "xrt/xrt_defines.h"
+#  ifdef ENABLE_MONADO
+#    include "xrt/xrt_defines.h"
+#    define POSE_TYPE xrt_space_relation
+#  else
+#    include "illixr/data_format/poses/openxr_defines.hpp"
+#    define POSE_TYPE pose::xrt_space_relation
+#  endif
 #  include <openxr/openxr.h>
 #  define POSE_TIME_TYPE XrTime
-#  define POSE_TYPE      xrt_space_relation
 #else
 #  define POSE_TIME_TYPE time_point
 #  define POSE_TYPE      data_format::pose::fast_head_pose_type
