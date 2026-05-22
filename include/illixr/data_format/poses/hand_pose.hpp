@@ -6,6 +6,7 @@
 #include <array>
 #include <cstdint>
 #include <map>
+#include <utility>
 
 #ifdef ENABLE_MONADO
 #  define HAND_JOINT_COUNT XRT_HAND_JOINT_COUNT
@@ -85,7 +86,7 @@ struct hand_joint_pose {
      * @param r
      */
     hand_joint_pose(xrt_space_relation rel, float r)
-        : relation{rel}
+        : relation{std::move(rel)}
         , radius{r} { }
 
     /**
