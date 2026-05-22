@@ -1,18 +1,18 @@
 #ifdef __ANDROID__
-#include "frame_decoder.hpp"
+#    include "frame_decoder.hpp"
 
-#include <cstring>
-#include <media/NdkMediaFormat.h>
-#include <spdlog/spdlog.h>
+#    include <cstring>
+#    include <media/NdkMediaFormat.h>
+#    include <spdlog/spdlog.h>
 
 using namespace ILLIXR;
 
 frame_decoder::frame_decoder(int eye_index, int width, int height, bool is_10bit, decoder_codec codec)
-        : eye_index_(eye_index)
-        , width_(width)
-        , height_(height)
-        , is_10bit_(is_10bit)
-        , video_codec_(codec) {}
+    : eye_index_(eye_index)
+    , width_(width)
+    , height_(height)
+    , is_10bit_(is_10bit)
+    , video_codec_(codec) { }
 
 frame_decoder::~frame_decoder() {
     stop();
@@ -32,20 +32,17 @@ bool frame_decoder::initialize() {
     // consumer stall does not cause releaseOutputBuffer to block and back-
     // pressure the drainer thread.  Each slot is an AHardwareBuffer reference
     // (not a copy of the pixel data), so the memory overhead is negligible.
-    media_status_t status = AImageReader_new(width_, height_,
-                                             AIMAGE_FORMAT_PRIVATE, /*maxImages=*/8,
-                                             &image_reader_);
+    media_status_t status = AImageReader_new(width_, height_, AIMAGE_FORMAT_PRIVATE, /*maxImages=*/8, &image_reader_);
     if (status != AMEDIA_OK || image_reader_ == nullptr) {
-        spdlog::get("illixr")->error("[frame_decoder][{}] AImageReader_new failed: {}",
-                                     eye_index_, static_cast<int>(status));
+        spdlog::get("illixr")->error("[frame_decoder][{}] AImageReader_new failed: {}", eye_index_, static_cast<int>(status));
         return false;
     }
 
     // Retrieve the ANativeWindow that MediaCodec will render into.
     status = AImageReader_getWindow(image_reader_, &native_window_);
     if (status != AMEDIA_OK || native_window_ == nullptr) {
-        spdlog::get("illixr")->error("[frame_decoder][{}] AImageReader_getWindow failed: {}",
-                                     eye_index_, static_cast<int>(status));
+        spdlog::get("illixr")->error("[frame_decoder][{}] AImageReader_getWindow failed: {}", eye_index_,
+                                     static_cast<int>(status));
         AImageReader_delete(image_reader_);
         image_reader_ = nullptr;
         return false;
@@ -70,33 +67,32 @@ bool frame_decoder::initialize() {
 
     initialized_.store(true);
 
-    spdlog::get("illixr")->info("[frame_decoder][{}] Initialized {}x{} (AImageReader/Vulkan path)",
-                                eye_index_, width_, height_);
+    spdlog::get("illixr")->info("[frame_decoder][{}] Initialized {}x{} (AImageReader/Vulkan path)", eye_index_, width_,
+                                height_);
     return true;
 }
 
 bool frame_decoder::configure_codec() {
-#ifdef USE_AV1
+#    ifdef USE_AV1
     const bool use_av1 = (video_codec_ == decoder_codec::av1);
-#else
+#    else
     constexpr bool use_av1 = false;
-#endif // USE_AV1
+#    endif // USE_AV1
 
     const char* mime = use_av1 ? "video/av01" : "video/hevc";
 
     codec_ = AMediaCodec_createDecoderByType(mime);
     if (!codec_) {
-        spdlog::get("illixr")->error("[frame_decoder][{}] Failed to create {} codec",
-                                     eye_index_, use_av1 ? "AV1" : "HEVC");
+        spdlog::get("illixr")->error("[frame_decoder][{}] Failed to create {} codec", eye_index_, use_av1 ? "AV1" : "HEVC");
         return false;
     }
 
     AMediaFormat* format = AMediaFormat_new();
     AMediaFormat_setString(format, AMEDIAFORMAT_KEY_MIME, mime);
-    AMediaFormat_setInt32(format, AMEDIAFORMAT_KEY_WIDTH,  width_);
+    AMediaFormat_setInt32(format, AMEDIAFORMAT_KEY_WIDTH, width_);
     AMediaFormat_setInt32(format, AMEDIAFORMAT_KEY_HEIGHT, height_);
 
-#ifdef USE_AV1
+#    ifdef USE_AV1
     if (use_av1) {
         if (is_10bit_) {
             // ── 10-bit AV1 Main path ─────────────────────────────────────────
@@ -108,8 +104,7 @@ bool frame_decoder::configure_codec() {
             AMediaFormat_setInt32(format, "bit-depth", 10);
 
             // Max input size: 10-bit AV1 is ~2 bytes/luma sample in 4:2:0.
-            AMediaFormat_setInt32(format, AMEDIAFORMAT_KEY_MAX_INPUT_SIZE,
-                                  width_ * height_ * 2);
+            AMediaFormat_setInt32(format, AMEDIAFORMAT_KEY_MAX_INPUT_SIZE, width_ * height_ * 2);
 
             // Color metadata: BT.601 full-range, linear transfer.
             // Prevents the runtime from applying HDR tone-mapping to the
@@ -120,23 +115,19 @@ bool frame_decoder::configure_codec() {
             //   COLOR_RANGE_FULL       = 1
             AMediaFormat_setInt32(format, AMEDIAFORMAT_KEY_COLOR_TRANSFER, 1);
             AMediaFormat_setInt32(format, AMEDIAFORMAT_KEY_COLOR_STANDARD, 2);
-            AMediaFormat_setInt32(format, AMEDIAFORMAT_KEY_COLOR_RANGE,    1);
+            AMediaFormat_setInt32(format, AMEDIAFORMAT_KEY_COLOR_RANGE, 1);
 
-            spdlog::get("illixr")->info(
-                    "[frame_decoder][{}] Configuring AV1 Main 10-bit {}x{}",
-                    eye_index_, width_, height_);
+            spdlog::get("illixr")->info("[frame_decoder][{}] Configuring AV1 Main 10-bit {}x{}", eye_index_, width_, height_);
         } else {
             // ── 8-bit AV1 Main path ──────────────────────────────────────────
             // AV1ProfileMain8 = 1  (android.media.MediaCodecInfo.CodecProfileLevel)
             AMediaFormat_setInt32(format, AMEDIAFORMAT_KEY_PROFILE, 1);
             AMediaFormat_setInt32(format, AMEDIAFORMAT_KEY_MAX_INPUT_SIZE, width_ * height_);
 
-            spdlog::get("illixr")->info(
-                    "[frame_decoder][{}] Configuring AV1 Main 8-bit {}x{}",
-                    eye_index_, width_, height_);
+            spdlog::get("illixr")->info("[frame_decoder][{}] Configuring AV1 Main 8-bit {}x{}", eye_index_, width_, height_);
         }
     } else
-#endif // USE_AV1
+#    endif // USE_AV1
     {
         if (is_10bit_) {
             // ── 10-bit HEVC Main 10 path ─────────────────────────────────────
@@ -149,8 +140,7 @@ bool frame_decoder::configure_codec() {
 
             // Max input size: P010 is 2 bytes/luma sample + 1 byte/chroma pair
             // = width * height * 2 bytes for 4:2:0 at 10 bits packed in 16-bit words.
-            AMediaFormat_setInt32(format, AMEDIAFORMAT_KEY_MAX_INPUT_SIZE,
-                                  width_ * height_ * 2);
+            AMediaFormat_setInt32(format, AMEDIAFORMAT_KEY_MAX_INPUT_SIZE, width_ * height_ * 2);
 
             // Color metadata: BT.601 full-range, linear transfer.
             // This prevents the runtime from treating the motion-vector data as
@@ -161,16 +151,13 @@ bool frame_decoder::configure_codec() {
             //   COLOR_RANGE_FULL       = 1
             AMediaFormat_setInt32(format, AMEDIAFORMAT_KEY_COLOR_TRANSFER, 1);
             AMediaFormat_setInt32(format, AMEDIAFORMAT_KEY_COLOR_STANDARD, 2);
-            AMediaFormat_setInt32(format, AMEDIAFORMAT_KEY_COLOR_RANGE,    1);
+            AMediaFormat_setInt32(format, AMEDIAFORMAT_KEY_COLOR_RANGE, 1);
 
-            spdlog::get("illixr")->info(
-                    "[frame_decoder][{}] Configuring HEVC Main 10 (10-bit) {}x{}",
-                    eye_index_, width_, height_);
+            spdlog::get("illixr")->info("[frame_decoder][{}] Configuring HEVC Main 10 (10-bit) {}x{}", eye_index_, width_,
+                                        height_);
         } else {
             AMediaFormat_setInt32(format, AMEDIAFORMAT_KEY_MAX_INPUT_SIZE, width_ * height_);
-            spdlog::get("illixr")->info(
-                    "[frame_decoder][{}] Configuring HEVC Main (8-bit) {}x{}",
-                    eye_index_, width_, height_);
+            spdlog::get("illixr")->info("[frame_decoder][{}] Configuring HEVC Main (8-bit) {}x{}", eye_index_, width_, height_);
         }
     }
 
@@ -204,8 +191,8 @@ bool frame_decoder::configure_codec() {
     AMediaFormat_delete(format);
 
     if (status != AMEDIA_OK) {
-        spdlog::get("illixr")->error("[frame_decoder][{}] AMediaCodec_configure failed: {}",
-                                     eye_index_, static_cast<int>(status));
+        spdlog::get("illixr")->error("[frame_decoder][{}] AMediaCodec_configure failed: {}", eye_index_,
+                                     static_cast<int>(status));
         AMediaCodec_delete(codec_);
         codec_ = nullptr;
         return false;
@@ -219,14 +206,13 @@ bool frame_decoder::configure_codec() {
     spdlog::get("illixr")->info("[frame_decoder][{}] Using sync dequeue mode", eye_index_);
     status = AMediaCodec_start(codec_);
     if (status != AMEDIA_OK) {
-        spdlog::get("illixr")->error("[frame_decoder][{}] AMediaCodec_start failed: {}",
-                                     eye_index_, static_cast<int>(status));
+        spdlog::get("illixr")->error("[frame_decoder][{}] AMediaCodec_start failed: {}", eye_index_, static_cast<int>(status));
         AMediaCodec_delete(codec_);
         codec_ = nullptr;
         return false;
     }
 
-    feeder_thread_  = std::thread(&frame_decoder::feeder_loop,  this);
+    feeder_thread_  = std::thread(&frame_decoder::feeder_loop, this);
     drainer_thread_ = std::thread(&frame_decoder::drainer_loop, this);
 
     return true;
@@ -237,17 +223,17 @@ std::pair<AHardwareBuffer*, uint64_t> frame_decoder::acquire_latest_buffer() {
         return {nullptr, 0};
     }
 
-    AImage* image = nullptr;
+    AImage*        image  = nullptr;
     media_status_t status = AImageReader_acquireLatestImage(image_reader_, &image);
     if (status != AMEDIA_OK || image == nullptr) {
         return {nullptr, 0};
     }
 
     AHardwareBuffer* hw_buffer = nullptr;
-    status = AImage_getHardwareBuffer(image, &hw_buffer);
+    status                     = AImage_getHardwareBuffer(image, &hw_buffer);
     if (status != AMEDIA_OK || hw_buffer == nullptr) {
-        spdlog::get("illixr")->warn("[frame_decoder][{}] AImage_getHardwareBuffer failed: {}",
-                                    eye_index_, static_cast<int>(status));
+        spdlog::get("illixr")->warn("[frame_decoder][{}] AImage_getHardwareBuffer failed: {}", eye_index_,
+                                    static_cast<int>(status));
         AImage_delete(image);
         return {nullptr, 0};
     }
@@ -288,12 +274,13 @@ void frame_decoder::feeder_loop() {
             input_cv_.wait(pkt_lock, [this] {
                 return !input_queue_.empty() || !running_.load();
             });
-            if (!running_.load()) break;
+            if (!running_.load())
+                break;
             pkt = std::move(input_queue_.front());
             input_queue_.pop();
         }
 
-#ifdef USE_AV1
+#    ifdef USE_AV1
         // AV1: before submitting the very first keyframe, extract the OBU Sequence
         // Header from it and submit it separately as a CODEC_CONFIG buffer.
         // The Qualcomm hardware AV1 decoder on Quest 3 requires this to initialise
@@ -307,23 +294,27 @@ void frame_decoder::feeder_loop() {
             // Locate the Sequence Header OBU in the keyframe packet.
             // NVENC low-overhead format: TD OBU (0x12, 0x00) then Sequence Header OBU.
             // Sequence Header OBU header byte: 0x0A (obu_type=1, has_size_field=1).
-            const uint8_t* d    = pkt.data.data();
-            const size_t   dsz  = pkt.data.size();
-            size_t seq_hdr_end  = 0;
+            const uint8_t* d           = pkt.data.data();
+            const size_t   dsz         = pkt.data.size();
+            size_t         seq_hdr_end = 0;
 
             for (size_t i = 0; i + 1 < dsz; i++) {
                 uint8_t obu_type = (d[i] >> 3) & 0x0F;
                 bool    has_size = (d[i] >> 1) & 0x01;
                 size_t  hdr_len  = 1 + (((d[i] >> 2) & 0x01) ? 1 : 0); // +1 if extension_flag
 
-                if (!has_size) break; // cannot determine OBU length without size field
+                if (!has_size)
+                    break; // cannot determine OBU length without size field
 
                 // Parse LEB128 size
                 uint64_t obu_size  = 0;
                 size_t   leb_bytes = 0;
                 for (size_t j = i + hdr_len; j < dsz && leb_bytes < 8; j++, leb_bytes++) {
                     obu_size |= static_cast<uint64_t>(d[j] & 0x7F) << (7 * leb_bytes);
-                    if (!(d[j] & 0x80)) { leb_bytes++; break; }
+                    if (!(d[j] & 0x80)) {
+                        leb_bytes++;
+                        break;
+                    }
                 }
 
                 size_t obu_end = i + hdr_len + leb_bytes + obu_size;
@@ -333,7 +324,7 @@ void frame_decoder::feeder_loop() {
                     break;
                 }
                 if (obu_type == 6 || obu_type == 3) { // OBU_FRAME or OBU_FRAME_HEADER
-                    break; // passed headers, stop
+                    break;                            // passed headers, stop
                 }
                 i = obu_end - 1; // advance past this OBU (loop will ++i)
             }
@@ -347,36 +338,31 @@ void frame_decoder::feeder_loop() {
                 }
                 if (cfg_idx >= 0) {
                     size_t   cfg_buf_size = 0;
-                    uint8_t* cfg_buf = AMediaCodec_getInputBuffer(
-                            codec_, static_cast<size_t>(cfg_idx), &cfg_buf_size);
+                    uint8_t* cfg_buf      = AMediaCodec_getInputBuffer(codec_, static_cast<size_t>(cfg_idx), &cfg_buf_size);
                     if (cfg_buf && cfg_buf_size >= seq_hdr_end) {
                         std::memcpy(cfg_buf, d, seq_hdr_end);
-                        AMediaCodec_queueInputBuffer(codec_,
-                                static_cast<size_t>(cfg_idx),
-                                /*offset=*/0, seq_hdr_end,
-                                /*presentationTimeUs=*/0,
-                                AMEDIACODEC_BUFFER_FLAG_CODEC_CONFIG);
+                        AMediaCodec_queueInputBuffer(codec_, static_cast<size_t>(cfg_idx),
+                                                     /*offset=*/0, seq_hdr_end,
+                                                     /*presentationTimeUs=*/0, AMEDIACODEC_BUFFER_FLAG_CODEC_CONFIG);
                         codec_config_sent_ = true;
-                        spdlog::get("illixr")->info(
-                                "[frame_decoder][{}] AV1 CODEC_CONFIG submitted ({} bytes)",
-                                eye_index_, seq_hdr_end);
+                        spdlog::get("illixr")->info("[frame_decoder][{}] AV1 CODEC_CONFIG submitted ({} bytes)", eye_index_,
+                                                    seq_hdr_end);
                     }
                 }
             } else {
-                spdlog::get("illixr")->warn(
-                        "[frame_decoder][{}] AV1: could not locate Sequence Header OBU "
-                        "in keyframe (size={}), skipping CODEC_CONFIG",
-                        eye_index_, dsz);
+                spdlog::get("illixr")->warn("[frame_decoder][{}] AV1: could not locate Sequence Header OBU "
+                                            "in keyframe (size={}), skipping CODEC_CONFIG",
+                                            eye_index_, dsz);
                 codec_config_sent_ = true; // don't retry every keyframe
             }
         }
-#endif // USE_AV1
+#    endif // USE_AV1
 
         // Acquire a codec input buffer.  Use a short timeout so the thread
         // stays responsive to shutdown without busy-spinning.  Output draining
         // is handled by the dedicated drainer thread, so a timeout here does
         // NOT stall frame delivery.
-        ssize_t buf_idx = -1;
+        ssize_t buf_idx          = -1;
         int     dequeue_attempts = 0;
         while (running_.load() && buf_idx < 0) {
             buf_idx = AMediaCodec_dequeueInputBuffer(codec_, /*timeoutUs=*/2000);
@@ -390,7 +376,8 @@ void frame_decoder::feeder_loop() {
                 }
             }
         }
-        if (!running_.load()) break;
+        if (!running_.load())
+            break;
 
         // Write the encoded data directly into the codec's input buffer to
         // avoid a redundant copy.  The packet's data vector was already
@@ -401,18 +388,13 @@ void frame_decoder::feeder_loop() {
         if (buf && buf_size >= pkt.data.size()) {
             std::memcpy(buf, pkt.data.data(), pkt.data.size());
             uint32_t flags = pkt.is_keyframe ? AMEDIACODEC_BUFFER_FLAG_KEY_FRAME : 0;
-            AMediaCodec_queueInputBuffer(codec_,
-                                         static_cast<size_t>(buf_idx),
-                                         /*offset=*/0,
-                                         pkt.data.size(),
-                                         static_cast<uint64_t>(pkt.timestamp_us),
-                                         flags);
+            AMediaCodec_queueInputBuffer(codec_, static_cast<size_t>(buf_idx),
+                                         /*offset=*/0, pkt.data.size(), static_cast<uint64_t>(pkt.timestamp_us), flags);
             packets_fed++;
 
-            auto     now      = std::chrono::steady_clock::now();
-            uint64_t queue_us = static_cast<uint64_t>(
-                std::chrono::duration_cast<std::chrono::microseconds>(
-                    now - pkt.queue_time).count());
+            auto     now = std::chrono::steady_clock::now();
+            uint64_t queue_us =
+                static_cast<uint64_t>(std::chrono::duration_cast<std::chrono::microseconds>(now - pkt.queue_time).count());
 
             // Record queue_time, submit_time, and frame_number so the drainer
             // can compute decode/total latency and update last_decoded_frame_number_
@@ -453,20 +435,18 @@ void frame_decoder::drainer_loop() {
         if (out_idx >= 0) {
             // Decode latency: submit_time → output available.
             // Total latency:  queue_time  → output available.
-            auto     drain_start = std::chrono::steady_clock::now();
-            uint64_t decode_us   = 0; // submit → output
-            uint64_t total_us    = 0; // queue_encoded_data → output
+            auto     drain_start          = std::chrono::steady_clock::now();
+            uint64_t decode_us            = 0;                          // submit → output
+            uint64_t total_us             = 0;                          // queue_encoded_data → output
             uint64_t decoded_frame_number = last_decoded_frame_number_; // fallback if not found
             {
                 std::lock_guard<std::mutex> ts_lock(pending_timestamps_mutex_);
-                auto it = pending_timestamps_.find(info.presentationTimeUs);
+                auto                        it = pending_timestamps_.find(info.presentationTimeUs);
                 if (it != pending_timestamps_.end()) {
                     decode_us = static_cast<uint64_t>(
-                        std::chrono::duration_cast<std::chrono::microseconds>(
-                            drain_start - it->second.submit_time).count());
+                        std::chrono::duration_cast<std::chrono::microseconds>(drain_start - it->second.submit_time).count());
                     total_us = static_cast<uint64_t>(
-                        std::chrono::duration_cast<std::chrono::microseconds>(
-                            drain_start - it->second.queue_time).count());
+                        std::chrono::duration_cast<std::chrono::microseconds>(drain_start - it->second.queue_time).count());
                     decoded_frame_number = it->second.frame_number;
                     pending_timestamps_.erase(it);
                 }
@@ -490,14 +470,10 @@ void frame_decoder::drainer_loop() {
             }
 
             if (decode_us > 0) {
-                spdlog::get("illixr")->info(
-                        "[frame_decoder][{}] frame #{}: "
-                        "decode={:.2f}ms  total={:.2f}ms  fps={:.1f}",
-                        eye_index_,
-                        output_drained + 1,
-                        static_cast<double>(decode_us) / 1000.0,
-                        static_cast<double>(total_us)  / 1000.0,
-                        current_fps);
+                spdlog::get("illixr")->info("[frame_decoder][{}] frame #{}: "
+                                            "decode={:.2f}ms  total={:.2f}ms  fps={:.1f}",
+                                            eye_index_, output_drained + 1, static_cast<double>(decode_us) / 1000.0,
+                                            static_cast<double>(total_us) / 1000.0, current_fps);
             }
 
             // Write last_decoded_frame_number_ BEFORE releasing the output buffer
@@ -516,9 +492,8 @@ void frame_decoder::drainer_loop() {
 
             output_drained++;
 
-            uint64_t drain_us = static_cast<uint64_t>(
-                std::chrono::duration_cast<std::chrono::microseconds>(
-                    drain_end - drain_start).count());
+            uint64_t drain_us =
+                static_cast<uint64_t>(std::chrono::duration_cast<std::chrono::microseconds>(drain_end - drain_start).count());
 
             {
                 std::lock_guard<std::mutex> t_lock(timing_mutex_);
@@ -542,9 +517,10 @@ void frame_decoder::drainer_loop() {
             output_format_changes++;
             AMediaFormat* fmt     = AMediaCodec_getOutputFormat(codec_);
             const char*   fmt_str = fmt ? AMediaFormat_toString(fmt) : "null";
-            spdlog::get("illixr")->info("[frame_decoder][{}] Output format changed (#{}: {})",
-                                        eye_index_, output_format_changes, fmt_str);
-            if (fmt) AMediaFormat_delete(fmt);
+            spdlog::get("illixr")->info("[frame_decoder][{}] Output format changed (#{}: {})", eye_index_,
+                                        output_format_changes, fmt_str);
+            if (fmt)
+                AMediaFormat_delete(fmt);
         }
         // AMEDIACODEC_INFO_TRY_AGAIN_LATER (-1) and other negative values are
         // normal — they just mean no output was ready within the timeout.
@@ -555,8 +531,7 @@ void frame_decoder::drainer_loop() {
                                 eye_index_, output_drained);
 }
 
-bool frame_decoder::queue_encoded_data(const uint8_t* data, size_t size,
-                                       int64_t timestamp_us, bool is_keyframe,
+bool frame_decoder::queue_encoded_data(const uint8_t* data, size_t size, int64_t timestamp_us, bool is_keyframe,
                                        uint64_t frame_number) {
     if (!running_.load() || !initialized_.load()) {
         return false;
@@ -568,7 +543,7 @@ bool frame_decoder::queue_encoded_data(const uint8_t* data, size_t size,
     pkt.queue_time   = std::chrono::steady_clock::now();
     pkt.frame_number = frame_number;
 
-#ifdef USE_AV1
+#    ifdef USE_AV1
     if (video_codec_ == decoder_codec::av1 && !is_keyframe) {
         // The Qualcomm XR2 Gen 2 AV1 hardware decoder requires every temporal
         // unit to begin with a Temporal Delimiter OBU (TD OBU).  NVENC only
@@ -587,9 +562,9 @@ bool frame_decoder::queue_encoded_data(const uint8_t* data, size_t size,
     } else {
         pkt.data = std::vector<uint8_t>(data, data + size);
     }
-#else
+#    else
     pkt.data = std::vector<uint8_t>(data, data + size);
-#endif // USE_AV1
+#    endif // USE_AV1
 
     {
         std::lock_guard<std::mutex> lock(input_mutex_);
@@ -606,9 +581,8 @@ bool frame_decoder::queue_encoded_data(const uint8_t* data, size_t size,
         // would cause corruption until the next keyframe arrives.
         constexpr size_t kMaxQueueDepth = 16;
         if (input_queue_.size() >= kMaxQueueDepth && !input_queue_.front().is_keyframe) {
-            spdlog::get("illixr")->warn(
-                    "[frame_decoder][{}] queue overflow ({} >= {}), dropping oldest P-frame",
-                    eye_index_, input_queue_.size(), kMaxQueueDepth);
+            spdlog::get("illixr")->warn("[frame_decoder][{}] queue overflow ({} >= {}), dropping oldest P-frame", eye_index_,
+                                        input_queue_.size(), kMaxQueueDepth);
             input_queue_.pop();
             frames_dropped_.fetch_add(1, std::memory_order_relaxed);
         }
@@ -672,14 +646,12 @@ void frame_decoder::stop() {
     }
 
     if (feeder_thread_.joinable()) {
-        spdlog::get("illixr")->debug("[frame_decoder][{}] Waiting for feeder thread to exit",
-                                     eye_index_);
+        spdlog::get("illixr")->debug("[frame_decoder][{}] Waiting for feeder thread to exit", eye_index_);
         feeder_thread_.join();
     }
 
     if (drainer_thread_.joinable()) {
-        spdlog::get("illixr")->debug("[frame_decoder][{}] Waiting for drainer thread to exit",
-                                     eye_index_);
+        spdlog::get("illixr")->debug("[frame_decoder][{}] Waiting for drainer thread to exit", eye_index_);
         drainer_thread_.join();
     }
 

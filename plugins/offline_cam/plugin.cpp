@@ -11,8 +11,7 @@ using namespace ILLIXR;
 using namespace ILLIXR::data_format;
 
 // combine two maps into one
-std::map<ullong, sensor_types> make_map(const std::map<ullong, LAZY_TYPE>& cam0,
-                                        const std::map<ullong, LAZY_TYPE>& cam1) {
+std::map<ullong, sensor_types> make_map(const std::map<ullong, LAZY_TYPE>& cam0, const std::map<ullong, LAZY_TYPE>& cam1) {
     std::map<ullong, sensor_types> data;
     for (auto& it : cam0) {
         data[it.first].cam0 = it.second;
@@ -25,13 +24,13 @@ std::map<ullong, sensor_types> make_map(const std::map<ullong, LAZY_TYPE>& cam0,
 
 inline std::map<ullong, LAZY_TYPE> read_data(std::ifstream& gt_file, const std::string& file_name) {
     std::map<ullong, LAZY_TYPE> data;
-    auto                              name = std::regex_replace(file_name, std::regex("\\.csv"), "/");
+    auto                        name = std::regex_replace(file_name, std::regex("\\.csv"), "/");
     for (csv_iterator row{gt_file, 1}; row != csv_iterator{}; ++row) {
         ullong t = std::stoull(row[0]);
 #ifdef __ANDROID__
-        data[t]  = new lazy_load_image(name + row[1]);
+        data[t] = new lazy_load_image(name + row[1]);
 #else
-        data[t]  = lazy_load_image{name + row[1]};
+        data[t] = lazy_load_image{name + row[1]};
 #endif
     }
     return data;

@@ -1,20 +1,19 @@
 #pragma once
 
 #ifdef __ANDROID__
-#include <android/hardware_buffer.h>
-#include <media/NdkImageReader.h>
-#include <media/NdkMediaCodec.h>
-
-#include <atomic>
-#include <chrono>
-#include <condition_variable>
-#include <cstdint>
-#include <deque>
-#include <mutex>
-#include <queue>
-#include <thread>
-#include <unordered_map>
-#include <vector>
+#    include <android/hardware_buffer.h>
+#    include <atomic>
+#    include <chrono>
+#    include <condition_variable>
+#    include <cstdint>
+#    include <deque>
+#    include <media/NdkImageReader.h>
+#    include <media/NdkMediaCodec.h>
+#    include <mutex>
+#    include <queue>
+#    include <thread>
+#    include <unordered_map>
+#    include <vector>
 
 namespace ILLIXR {
 
@@ -32,12 +31,12 @@ struct decode_timing_stats {
     uint64_t frame_count{0};
 
     void reset() {
-        total_queue_time_us = 0;
-        total_decode_time_us = 0;
+        total_queue_time_us        = 0;
+        total_decode_time_us       = 0;
         total_output_drain_time_us = 0;
-        min_decode_latency_us = UINT64_MAX;
-        max_decode_latency_us = 0;
-        frame_count = 0;
+        min_decode_latency_us      = UINT64_MAX;
+        max_decode_latency_us      = 0;
+        frame_count                = 0;
     }
 
     [[nodiscard]] [[maybe_unused]] double avg_queue_time_us() const {
@@ -58,15 +57,15 @@ struct decode_timing_stats {
 /// Controlled by the USE_AV1 preprocessor directive: when defined the default
 /// becomes av1; otherwise it remains hevc.
 enum class decoder_codec {
-#ifdef USE_AV1
-    av1,           ///< AV1 (hardware decode, Android 13+ on Quest 3)
+#    ifdef USE_AV1
+    av1, ///< AV1 (hardware decode, Android 13+ on Quest 3)
     hevc,
     default_codec = av1,
-#else
-    hevc,          ///< HEVC / H.265 (default)
+#    else
+    hevc, ///< HEVC / H.265 (default)
     av1,
     default_codec = hevc,
-#endif
+#    endif
 };
 
 /**
@@ -159,7 +158,9 @@ public:
      *
      * @return true if decoder is ready to decode.
      */
-    [[nodiscard]] bool is_ready() const { return initialized_.load(); }
+    [[nodiscard]] bool is_ready() const {
+        return initialized_.load();
+    }
 
     /**
      * @brief Get the number of frames that have been successfully decoded.
@@ -168,7 +169,9 @@ public:
      *
      * @return Number of frames decoded.
      */
-    [[nodiscard]] uint64_t get_frames_decoded() const { return frames_decoded_.load(); }
+    [[nodiscard]] uint64_t get_frames_decoded() const {
+        return frames_decoded_.load();
+    }
 
     /**
      * @brief Check if at least one frame has been released to the AImageReader surface.
@@ -184,15 +187,24 @@ public:
      *
      * @return true if the codec has rendered at least one frame to the surface.
      */
-    [[nodiscard]] bool has_decoded_frames() const { return frames_released_.load() > 0; }
+    [[nodiscard]] bool has_decoded_frames() const {
+        return frames_released_.load() > 0;
+    }
 
     /**
      * @brief Get diagnostic statistics.
      */
-    [[nodiscard]] uint64_t get_frames_queued()   const { return frames_queued_.load(); }
-    [[nodiscard]] uint64_t get_frames_dropped()  const { return frames_dropped_.load(); }
-    [[nodiscard]] uint64_t get_frames_released() const { return frames_released_.load(); }
+    [[nodiscard]] uint64_t get_frames_queued() const {
+        return frames_queued_.load();
+    }
 
+    [[nodiscard]] uint64_t get_frames_dropped() const {
+        return frames_dropped_.load();
+    }
+
+    [[nodiscard]] uint64_t get_frames_released() const {
+        return frames_released_.load();
+    }
 
     /**
      * @brief Get current input queue depth.
@@ -228,7 +240,9 @@ public:
      */
     void stop();
 
-    [[nodiscard]] float get_decode_time() const { return last_decode_time_; }
+    [[nodiscard]] float get_decode_time() const {
+        return last_decode_time_;
+    }
 
     /**
      * @brief Boxcar FPS averaged over the last second.
@@ -247,7 +261,7 @@ private:
         int64_t                               timestamp_us;
         bool                                  is_keyframe;
         std::chrono::steady_clock::time_point queue_time;
-        uint64_t                              frame_number;   // ← add this
+        uint64_t                              frame_number; // ← add this
     };
 
     // Internal helpers
@@ -260,11 +274,11 @@ private:
     int width_;
     int height_;
 
-    bool is_10bit_; ///< True → 10-bit bitstream (HEVC Main 10 or AV1 10-bit Main); false → 8-bit.
+    bool          is_10bit_;    ///< True → 10-bit bitstream (HEVC Main 10 or AV1 10-bit Main); false → 8-bit.
     decoder_codec video_codec_; ///< Video codec selected at construction.
 
     // ── AImageReader
-    AImageReader*  image_reader_  = nullptr;
+    AImageReader* image_reader_ = nullptr;
 
     // Native window for MediaCodec output
     ANativeWindow* native_window_ = nullptr;
@@ -273,8 +287,8 @@ private:
     AMediaCodec* codec_ = nullptr;
 
     // Lifecycle
-    std::atomic<bool>     running_{false};
-    std::atomic<bool>     initialized_{false};
+    std::atomic<bool> running_{false};
+    std::atomic<bool> initialized_{false};
 
     // Input queue (encoded packets waiting to be fed to the codec)
     mutable std::mutex         input_mutex_;
@@ -316,8 +330,9 @@ private:
         std::chrono::steady_clock::time_point submit_time;
         uint64_t                              frame_number{0};
     };
-    mutable std::mutex                                          pending_timestamps_mutex_;
-    std::unordered_map<int64_t, timestamp_entry>               pending_timestamps_;
+
+    mutable std::mutex                           pending_timestamps_mutex_;
+    std::unordered_map<int64_t, timestamp_entry> pending_timestamps_;
 
     // Written by the drainer with release ordering BEFORE calling
     // releaseOutputBuffer, and read by acquire_latest_buffer() with acquire
@@ -326,7 +341,7 @@ private:
     // is already available in the AImageReader — no mutex required.
     std::atomic<uint64_t> last_decoded_frame_number_{0};
 
-    float    last_decode_time_{0.f};
+    float last_decode_time_{0.f};
 
     // AV1: tracks whether the OBU Sequence Header has been submitted to the codec
     // as a CODEC_CONFIG buffer.  Set to true after the first keyframe's sequence
@@ -336,8 +351,8 @@ private:
     // Boxcar FPS: timestamps of the last N decoded frames within a 1-second
     // sliding window.  Maintained by the drainer thread; access protected by
     // fps_mutex_ since get_fps() may be called from any thread.
-    mutable std::mutex                                          fps_mutex_;
-    std::deque<std::chrono::steady_clock::time_point>          fps_window_;
+    mutable std::mutex                                fps_mutex_;
+    std::deque<std::chrono::steady_clock::time_point> fps_window_;
 };
 
 } // namespace ILLIXR

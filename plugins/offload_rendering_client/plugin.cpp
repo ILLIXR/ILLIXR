@@ -32,14 +32,14 @@
 #ifndef __ANDROID__
 
 // ILLIXR Vulkan headers
-#include "illixr/vk/render_pass.hpp"
-#include "illixr/vk/vk_extension_request.hpp"
+#    include "illixr/vk/render_pass.hpp"
+#    include "illixr/vk/vk_extension_request.hpp"
 
 // FFmpeg headers (C interface)
 extern "C" {
-#include "libavfilter_illixr/buffersink.h"
-#include "libavfilter_illixr/buffersrc.h"
-#include "libswscale_illixr/swscale.h"
+#    include "libavfilter_illixr/buffersink.h"
+#    include "libavfilter_illixr/buffersrc.h"
+#    include "libswscale_illixr/swscale.h"
 }
 
 #endif // !__ANDROID__
@@ -65,7 +65,7 @@ class offload_rendering_client_loader
 #ifndef __ANDROID__
     , public vulkan::vk_extension_request
 #endif
-    {
+{
 public:
     /**
      * @brief Constructor registers the client plugin

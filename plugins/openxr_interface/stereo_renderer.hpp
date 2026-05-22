@@ -4,13 +4,13 @@
 #include "illixr/quest3_params.hpp"
 
 #include <android/hardware_buffer.h>
-#include <vulkan/vulkan.h>
-#include <vulkan/vulkan_android.h>
-
 #include <array>
 #include <memory>
 #include <unordered_map>
 #include <vector>
+#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_android.h>
+
 namespace ILLIXR {
 
 /**
@@ -43,7 +43,7 @@ public:
     ~stereo_renderer();
 
     // Non-copyable
-    stereo_renderer(const stereo_renderer&) = delete;
+    stereo_renderer(const stereo_renderer&)            = delete;
     stereo_renderer& operator=(const stereo_renderer&) = delete;
 
     /**
@@ -59,9 +59,8 @@ public:
      * @param swapchain_format VkFormat of the OpenXR swapchain images.
      * @return true on success.
      */
-    bool initialize(VkInstance instance, VkPhysicalDevice physical_device,
-                    VkDevice device, VkQueue queue, uint32_t queue_family,
-                    VkFormat swapchain_format);
+    bool initialize(VkInstance instance, VkPhysicalDevice physical_device, VkDevice device, VkQueue queue,
+                    uint32_t queue_family, VkFormat swapchain_format);
 
     /**
      * @brief Import AHardwareBuffer handles from a decoded frame into Vulkan.
@@ -83,8 +82,7 @@ public:
      *                         (pass VK_NULL_HANDLE if not needed).
      * @return true on success.
      */
-    bool render_eye(int eye, VkImage swapchain_image,
-                    uint32_t swapchain_width, uint32_t swapchain_height,
+    bool render_eye(int eye, VkImage swapchain_image, uint32_t swapchain_width, uint32_t swapchain_height,
                     VkSemaphore signal_semaphore = VK_NULL_HANDLE);
 
     /**
@@ -102,9 +100,8 @@ public:
      * @param swapchain_height     Image height.
      * @return true on success.
      */
-    bool render_eye_depth(int eye, VkImage depth_swapchain_image,
-                          VkFormat depth_format,
-                          uint32_t swapchain_width, uint32_t swapchain_height);
+    bool render_eye_depth(int eye, VkImage depth_swapchain_image, VkFormat depth_format, uint32_t swapchain_width,
+                          uint32_t swapchain_height);
     /**
      * @brief Record and submit a command buffer that renders one eye's
      *        motion-vector data into an App Spacewarp swapchain image.
@@ -123,8 +120,7 @@ public:
      * @param swapchain_height Image height (typically 432).
      * @return true on success.
      */
-    bool render_eye_motion_vec(int eye, VkImage mv_swapchain_image,
-                               uint32_t swapchain_width, uint32_t swapchain_height);
+    bool render_eye_motion_vec(int eye, VkImage mv_swapchain_image, uint32_t swapchain_width, uint32_t swapchain_height);
     /**
      * @brief Wait for all in-flight rendering to complete.
      *
@@ -133,10 +129,14 @@ public:
     void wait_idle();
 
     // Check if renderer is initialized
-    [[nodiscard]] bool is_initialized() const { return initialized_; }
+    [[nodiscard]] bool is_initialized() const {
+        return initialized_;
+    }
 
     // Check if we have a valid frame to render
-    [[nodiscard]] bool has_frame() const { return has_valid_frame_; }
+    [[nodiscard]] bool has_frame() const {
+        return has_valid_frame_;
+    }
 
     void cleanup();
 
@@ -159,19 +159,21 @@ public:
      *   v = frag_v * crop_scale_y
      * where crop_scale_x = 0.5 * (original_width / padded_half_width).
      */
-    void set_combined_encoding(bool enabled) { combined_encoding_ = enabled; }
+    void set_combined_encoding(bool enabled) {
+        combined_encoding_ = enabled;
+    }
 #endif
 
 private:
     // ── Imported decoder image (one per unique AHardwareBuffer pointer) ────────
     struct imported_image {
-        VkImage                    image         = VK_NULL_HANDLE;
-        VkDeviceMemory             memory        = VK_NULL_HANDLE;
-        VkImageView                image_view    = VK_NULL_HANDLE;
-        VkSamplerYcbcrConversion   ycbcr_conv    = VK_NULL_HANDLE;
-        VkSampler                  sampler       = VK_NULL_HANDLE;
-        uint64_t                   external_fmt  = 0;  // from AHardwareBufferProperties
-        AHardwareBuffer*           hw_buffer     = nullptr;
+        VkImage                  image        = VK_NULL_HANDLE;
+        VkDeviceMemory           memory       = VK_NULL_HANDLE;
+        VkImageView              image_view   = VK_NULL_HANDLE;
+        VkSamplerYcbcrConversion ycbcr_conv   = VK_NULL_HANDLE;
+        VkSampler                sampler      = VK_NULL_HANDLE;
+        uint64_t                 external_fmt = 0; // from AHardwareBufferProperties
+        AHardwareBuffer*         hw_buffer    = nullptr;
     };
 
     // ── Shader compilation ────────────────────────────────────────────────────
@@ -216,20 +218,20 @@ private:
     bool allocate_mv_command_buffers();
 
     // Vulkan device objects (not owned — owned by oxr_interface)
-    VkInstance        instance_        = VK_NULL_HANDLE;
-    VkPhysicalDevice  physical_device_ = VK_NULL_HANDLE;
-    VkDevice          device_          = VK_NULL_HANDLE;
-    VkQueue           queue_           = VK_NULL_HANDLE;
-    uint32_t          queue_family_    = 0;
-    VkFormat          swapchain_format_ = VK_FORMAT_R8G8B8A8_UNORM;
+    VkInstance       instance_         = VK_NULL_HANDLE;
+    VkPhysicalDevice physical_device_  = VK_NULL_HANDLE;
+    VkDevice         device_           = VK_NULL_HANDLE;
+    VkQueue          queue_            = VK_NULL_HANDLE;
+    uint32_t         queue_family_     = 0;
+    VkFormat         swapchain_format_ = VK_FORMAT_R8G8B8A8_UNORM;
 
     // Color rendering resources (owned)
-    VkRenderPass          render_pass_       = VK_NULL_HANDLE;
-    VkPipelineLayout      pipeline_layout_   = VK_NULL_HANDLE;
-    VkPipeline            pipeline_          = VK_NULL_HANDLE;
-    VkDescriptorPool      descriptor_pool_   = VK_NULL_HANDLE;
-    VkDescriptorSetLayout desc_set_layout_   = VK_NULL_HANDLE;
-    VkCommandPool         command_pool_      = VK_NULL_HANDLE;
+    VkRenderPass          render_pass_     = VK_NULL_HANDLE;
+    VkPipelineLayout      pipeline_layout_ = VK_NULL_HANDLE;
+    VkPipeline            pipeline_        = VK_NULL_HANDLE;
+    VkDescriptorPool      descriptor_pool_ = VK_NULL_HANDLE;
+    VkDescriptorSetLayout desc_set_layout_ = VK_NULL_HANDLE;
+    VkCommandPool         command_pool_    = VK_NULL_HANDLE;
 
     // Per-eye color resources
     std::array<VkDescriptorSet, 2> descriptor_sets_{VK_NULL_HANDLE, VK_NULL_HANDLE};
@@ -238,15 +240,15 @@ private:
     // Transient per-frame objects from the previous render_eye() call.
     // Destroyed at the top of the next call, after the fence has signalled,
     // because Vulkan requires them to outlive their command buffer submission.
-    std::array<VkFramebuffer, 2>   prev_framebuffers_{VK_NULL_HANDLE, VK_NULL_HANDLE};
-    std::array<VkImageView, 2>     prev_swapchain_views_{VK_NULL_HANDLE, VK_NULL_HANDLE};
+    std::array<VkFramebuffer, 2> prev_framebuffers_{VK_NULL_HANDLE, VK_NULL_HANDLE};
+    std::array<VkImageView, 2>   prev_swapchain_views_{VK_NULL_HANDLE, VK_NULL_HANDLE};
 
     // Depth pipeline resources (owned)
-    VkRenderPass          depth_render_pass_       = VK_NULL_HANDLE;
-    VkPipelineLayout      depth_pipeline_layout_   = VK_NULL_HANDLE;
-    VkPipeline            depth_pipeline_          = VK_NULL_HANDLE;
-    VkDescriptorPool      depth_descriptor_pool_   = VK_NULL_HANDLE;
-    VkDescriptorSetLayout depth_desc_set_layout_   = VK_NULL_HANDLE;
+    VkRenderPass          depth_render_pass_     = VK_NULL_HANDLE;
+    VkPipelineLayout      depth_pipeline_layout_ = VK_NULL_HANDLE;
+    VkPipeline            depth_pipeline_        = VK_NULL_HANDLE;
+    VkDescriptorPool      depth_descriptor_pool_ = VK_NULL_HANDLE;
+    VkDescriptorSetLayout depth_desc_set_layout_ = VK_NULL_HANDLE;
 
     // Per-eye depth resources
     std::array<VkDescriptorSet, 2> depth_descriptor_sets_{VK_NULL_HANDLE, VK_NULL_HANDLE};
@@ -257,13 +259,13 @@ private:
     // Immutable sampler embedded in depth_desc_set_layout_.  Must outlive the
     // layout (and therefore the pipeline).  Created in create_depth_pipeline(),
     // destroyed in cleanup().
-    VkSampler                      depth_immutable_sampler_ = VK_NULL_HANDLE;
+    VkSampler depth_immutable_sampler_ = VK_NULL_HANDLE;
 
     // Motion-vector pipeline resources (owned)
     /// Render pass targeting VK_FORMAT_R16G16B16A16_SFLOAT.
-    VkRenderPass          mv_render_pass_       = VK_NULL_HANDLE;
-    VkPipelineLayout      mv_pipeline_layout_   = VK_NULL_HANDLE;
-    VkPipeline            mv_pipeline_          = VK_NULL_HANDLE;
+    VkRenderPass     mv_render_pass_     = VK_NULL_HANDLE;
+    VkPipelineLayout mv_pipeline_layout_ = VK_NULL_HANDLE;
+    VkPipeline       mv_pipeline_        = VK_NULL_HANDLE;
     /// Descriptor pool and layout are shared between color and motion-vector
     /// pipelines since both use a single combined YCbCr sampler at binding 0.
     /// Separate pools are maintained so the descriptor counts are independent.
@@ -302,16 +304,16 @@ private:
     // Extension function pointers
     PFN_vkGetAndroidHardwareBufferPropertiesANDROID vk_get_ahb_properties_ = nullptr;
 
-    bool initialized_           = false;
-    bool has_valid_frame_       = false;
-    bool pipeline_created_      = false;
+    bool initialized_            = false;
+    bool has_valid_frame_        = false;
+    bool pipeline_created_       = false;
     bool depth_pipeline_created_ = false;
-    bool mv_pipeline_created_   = false;
-    bool has_depth_frame_       = false;
-    bool has_mv_frame_          = false;
+    bool mv_pipeline_created_    = false;
+    bool has_depth_frame_        = false;
+    bool has_mv_frame_           = false;
 #ifdef COMBINED_ENCODING
     /// True when the color decoder outputs a side-by-side combined frame.
-    bool combined_encoding_     = false;
+    bool combined_encoding_ = false;
 #endif
 };
 } // namespace ILLIXR

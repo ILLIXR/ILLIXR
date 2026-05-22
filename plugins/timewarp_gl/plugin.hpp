@@ -1,17 +1,17 @@
 #pragma once
 #define VULKAN_REQUIRED
 #if defined(_WIN32) || defined(_WIN64)
-#  include <windows.h>
+#    include <windows.h>
 #endif
 #ifdef __ANDROID__
-#  include "illixr/common_lock.hpp"
+#    include "illixr/common_lock.hpp"
 #endif
 #include "illixr/data_format/frame.hpp"
 #include "illixr/data_format/misc.hpp"
 #include "illixr/data_format/pose_prediction.hpp"
 #include "illixr/data_format/poses/pose_base.hpp"
 #ifndef __ANDROID__
-#  include "illixr/extended_window.hpp"
+#    include "illixr/extended_window.hpp"
 #endif
 #include "illixr/hmd.hpp"
 #include "illixr/phonebook.hpp"
@@ -22,9 +22,9 @@
 namespace ILLIXR {
 
 #ifdef __ANDROID__
-#  define EGL_EGLEXT_PROTOTYPES 1
-#  define GL_GLEXT_PROTOTYPES
-#  include <EGL/egl.h>
+#    define EGL_EGLEXT_PROTOTYPES 1
+#    define GL_GLEXT_PROTOTYPES
+#    include <EGL/egl.h>
 
 typedef EGLDisplay     TW_DISPLAY;
 typedef ANativeWindow* TW_WINDOW;
@@ -69,7 +69,8 @@ private:
 
     static GLuint convert_vk_format_to_GL(int64_t vk_format
 #ifdef __ANDROID__
-                                          , GLint swizzle_mask[]
+                                          ,
+                                          GLint swizzle_mask[]
 #endif
     );
 
@@ -97,12 +98,12 @@ private:
 #else
     // OpenGL objects
     TW_DISPLAY display_;
-#  if defined(__linux__) || (defined(__ANDROID) && !defined(ENABLE_MONADO))
+#    if defined(__linux__) || (defined(__ANDROID) && !defined(ENABLE_MONADO))
     TW_WINDOW root_window_;
-#  endif
-#  ifdef __ANDROID__
+#    endif
+#    ifdef __ANDROID__
     EGLSurface surface_;
-#  endif
+#    endif
 #endif
     TW_GL_CONTEXT context_;
 
@@ -125,9 +126,9 @@ private:
 
     // Synchronization helper for Monado
     switchboard::writer<data_format::signal_to_quad> signal_quad_;
-#  ifdef __ANDROID__
+#    ifdef __ANDROID__
     ullong signal_quad_seq_{0};
-#  endif
+#    endif
 
     // When using Monado, timewarp is a plugin and not a threadloop, but we still keep track of the iteration number
     std::size_t iteration_no = 0;

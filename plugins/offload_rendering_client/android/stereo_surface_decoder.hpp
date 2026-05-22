@@ -1,13 +1,12 @@
 #pragma once
 
 #ifdef __ANDROID__
-#include "illixr/data_format/frame.hpp"
+#    include "frame_decoder.hpp"
+#    include "illixr/data_format/frame.hpp"
 
-#include "frame_decoder.hpp"
-
-#include <android/hardware_buffer.h>
-#include <memory>
-#include <utility>
+#    include <android/hardware_buffer.h>
+#    include <memory>
+#    include <utility>
 
 namespace ILLIXR {
 /**
@@ -20,7 +19,7 @@ struct stereo_decode_timing_stats {
     decode_timing_stats right_eye;
 
     [[nodiscard]] [[maybe_unused]] double total_avg_decode_time_ms() const {
-        double left_avg = left_eye.avg_decode_time_us() / 1000.0;
+        double left_avg  = left_eye.avg_decode_time_us() / 1000.0;
         double right_avg = right_eye.avg_decode_time_us() / 1000.0;
         // Return the max since both eyes decode in parallel
         return std::max(left_avg, right_avg);
@@ -95,8 +94,8 @@ public:
      * @param is_keyframe  True if this is an IDR frame.
      * @param frame_number Monotonic frame counter.
      */
-    bool queue_encoded_data(int eye, const uint8_t* data, size_t size,
-                            int64_t timestamp_us, bool is_keyframe, uint64_t frame_number);
+    bool queue_encoded_data(int eye, const uint8_t* data, size_t size, int64_t timestamp_us, bool is_keyframe,
+                            uint64_t frame_number);
 
     /**
      * @brief Acquire the latest decoded frame pair.
@@ -128,9 +127,14 @@ public:
     void stop();
 
     // Get frame dimensions
-    [[nodiscard]] int get_width() const { return padded_width_; }
+    [[nodiscard]] int get_width() const {
+        return padded_width_;
+    }
 
-    [[maybe_unused]] [[nodiscard]] int get_height() const { return padded_height_; }
+    [[maybe_unused]] [[nodiscard]] int get_height() const {
+        return padded_height_;
+    }
+
     /**
      * @brief Get timing statistics from both decoders and reset counters.
      *
@@ -148,74 +152,77 @@ public:
     // Diagnostic counters — under COMBINED_ENCODING the combined decoder's
     // values are returned for both eyes to keep calling code uniform.
     [[nodiscard]] uint64_t get_left_frames_decoded() const {
-#ifdef COMBINED_ENCODING
+#    ifdef COMBINED_ENCODING
         return combined_decoder_ ? combined_decoder_->get_frames_decoded() : 0;
-#else
+#    else
         return left_decoder_ ? left_decoder_->get_frames_decoded() : 0;
-#endif
+#    endif
     }
 
     [[nodiscard]] uint64_t get_right_frames_decoded() const {
-#ifdef COMBINED_ENCODING
+#    ifdef COMBINED_ENCODING
         return combined_decoder_ ? combined_decoder_->get_frames_decoded() : 0;
-#else
+#    else
         return right_decoder_ ? right_decoder_->get_frames_decoded() : 0;
-#endif
+#    endif
     }
 
     [[nodiscard]] uint64_t get_left_frames_dropped() const {
-#ifdef COMBINED_ENCODING
+#    ifdef COMBINED_ENCODING
         return combined_decoder_ ? combined_decoder_->get_frames_dropped() : 0;
-#else
+#    else
         return left_decoder_ ? left_decoder_->get_frames_dropped() : 0;
-#endif
+#    endif
     }
 
     [[nodiscard]] uint64_t get_right_frames_dropped() const {
-#ifdef COMBINED_ENCODING
+#    ifdef COMBINED_ENCODING
         return combined_decoder_ ? combined_decoder_->get_frames_dropped() : 0;
-#else
+#    else
         return right_decoder_ ? right_decoder_->get_frames_dropped() : 0;
-#endif
+#    endif
     }
 
     [[nodiscard]] size_t get_left_queue_depth() const {
-#ifdef COMBINED_ENCODING
+#    ifdef COMBINED_ENCODING
         return combined_decoder_ ? combined_decoder_->get_queue_depth() : 0;
-#else
+#    else
         return left_decoder_ ? left_decoder_->get_queue_depth() : 0;
-#endif
+#    endif
     }
 
     [[nodiscard]] size_t get_right_queue_depth() const {
         // Under COMBINED_ENCODING both eyes share one decoder; report the same
         // queue depth for both so the receiver_loop drop logic is consistent.
-#ifdef COMBINED_ENCODING
+#    ifdef COMBINED_ENCODING
         return combined_decoder_ ? combined_decoder_->get_queue_depth() : 0;
-#else
+#    else
         return right_decoder_ ? right_decoder_->get_queue_depth() : 0;
-#endif
+#    endif
     }
 
-    [[nodiscard]] bool is_depth_decoder() const { return is_depth_; }
+    [[nodiscard]] bool is_depth_decoder() const {
+        return is_depth_;
+    }
 
     friend class offload_rendering_client;
+
 private:
     int original_width_;
     int original_height_;
-    int padded_width_;    ///< Per-eye padded width
+    int padded_width_; ///< Per-eye padded width
     int padded_height_;
 
     bool is_depth_;
     bool is_10bit_;
 
-#ifdef COMBINED_ENCODING
+#    ifdef COMBINED_ENCODING
     /// Single decoder whose internal width = padded_width_ * 2.
     std::unique_ptr<frame_decoder> combined_decoder_;
-#else
+#    else
     std::unique_ptr<frame_decoder> left_decoder_;
     std::unique_ptr<frame_decoder> right_decoder_;
-#endif // COMBINED_ENCODING
+#    endif // COMBINED_ENCODING
 };
 } // namespace ILLIXR
 

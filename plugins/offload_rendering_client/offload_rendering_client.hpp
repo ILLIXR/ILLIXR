@@ -22,7 +22,7 @@
 #define DOUBLE_INCLUDE
 // ILLIXR core headers
 #ifdef USING_OPENXR
-#include "illixr/data_format/poses/combined_pose.hpp"
+#    include "illixr/data_format/poses/combined_pose.hpp"
 #endif
 
 #include "illixr/data_format/frame.hpp"
@@ -34,32 +34,32 @@
 #include "illixr/threadloop.hpp"
 #undef DOUBLE_INCLUDE
 #ifdef USING_OPENXR
-#  include <openxr/openxr.h>
-#  include <mutex>
-#  include <thread>
-#  ifdef __ANDROID__
-#    include "illixr/quest3_params.hpp"
-#    include "android/stereo_surface_decoder.hpp"
+#    include <mutex>
+#    include <openxr/openxr.h>
+#    include <thread>
+#    ifdef __ANDROID__
+#        include "android/stereo_surface_decoder.hpp"
+#        include "illixr/quest3_params.hpp"
 
-#    include <android_native_app_glue.h>
-#  endif
+#        include <android_native_app_glue.h>
+#    endif
 #else
 // ILLIXR Vulkan headers
-#  include "illixr/vk/display_provider.hpp"
-#  include "illixr/vk/ffmpeg_utils.hpp"
-#  include "illixr/vk/render_pass.hpp"
-#  include "illixr/vk/vk_extension_request.hpp"
-#  include "illixr/vk/vulkan_utils.hpp"
+#    include "illixr/vk/display_provider.hpp"
+#    include "illixr/vk/ffmpeg_utils.hpp"
+#    include "illixr/vk/render_pass.hpp"
+#    include "illixr/vk/vk_extension_request.hpp"
+#    include "illixr/vk/vulkan_utils.hpp"
 
 // FFmpeg headers (C interface)
 extern "C" {
-#  include "libavfilter_illixr/buffersink.h"
-#  include "libavfilter_illixr/buffersrc.h"
-#  include "libswscale_illixr/swscale.h"
+#    include "libavfilter_illixr/buffersink.h"
+#    include "libavfilter_illixr/buffersrc.h"
+#    include "libswscale_illixr/swscale.h"
 }
 
 // NVIDIA nppi headers
-#include "nppi.h"
+#    include "nppi.h"
 #endif
 
 namespace ILLIXR {
@@ -69,7 +69,7 @@ class offload_rendering_client
 #ifndef __ANDROID__
     , public vulkan::app
 #endif
-    {
+{
 public:
     /**
      * @brief Constructor initializes the client with configuration from environment variables
@@ -157,7 +157,6 @@ protected:
     void _p_one_iteration() override;
 
 private:
-
 #ifdef __ANDROID__
     /**
      * @brief Metadata extracted from a received compressed_frame, shared
@@ -185,7 +184,7 @@ private:
      *        to the hardware decoders, and updates frame_meta_map_.
      */
     void receiver_loop();
-    
+
     /**
      * @brief Log Android decode timing statistics.
      *
@@ -272,12 +271,12 @@ private:
     void ffmpeg_init_decoder();
 #endif // __ANDROID__
 
-    std::shared_ptr<switchboard>                                switchboard_;
-    std::shared_ptr<spdlog::logger>                             log_;
+    std::shared_ptr<switchboard>    switchboard_;
+    std::shared_ptr<spdlog::logger> log_;
 #ifdef __ANDROID__
-    switchboard::writer<data_format::dual_frames>               frame_writer_;
+    switchboard::writer<data_format::dual_frames> frame_writer_;
 #else
-    std::shared_ptr<vulkan::display_provider>                   display_provider_;
+    std::shared_ptr<vulkan::display_provider> display_provider_;
 #endif
     switchboard::buffered_reader<data_format::compressed_frame> frames_reader_;
     switchboard::reader<data_format::network_latency_result>    network_latency_reader_;
@@ -294,15 +293,15 @@ private:
     std::shared_ptr<vulkan::buffer_pool<data_format::pose::fast_head_pose_type>> buffer_pool_;
 #endif
     bool use_depth_ = false;
-    
+
 #ifdef __ANDROID__
 
     bool use_motion_vectors_ = false;
 
     // Receiver thread: feeds encoded data to decoders independently of the
     // consumer (_p_one_iteration) so decoder latency cannot block reception.
-    std::thread          receiver_thread_;
-    std::atomic<bool>    receiver_running_{false};
+    std::thread       receiver_thread_;
+    std::atomic<bool> receiver_running_{false};
     // Maximum number of encoded frames allowed in the color decoder input
     // queue before incoming frames are dropped to prevent growing latency.
     // At 90fps a frame arrives every ~11.1ms; the feeder thread's
@@ -328,10 +327,10 @@ private:
     std::unique_ptr<stereo_surface_decoder> motion_vec_decoder_;
 
     // Android timing metrics (accumulated between reports)
-    //uint64_t android_queue_time_us_{0};         // Time spent queueing data to decoders
-    //uint64_t android_texture_update_time_us_{0}; // Time spent updating GPU textures
-    //uint64_t android_total_frame_time_us_{0};    // Total end-to-end frame processing time
-    //uint64_t android_timing_frame_count_{0};     // Number of frames in current timing window
+    // uint64_t android_queue_time_us_{0};         // Time spent queueing data to decoders
+    // uint64_t android_texture_update_time_us_{0}; // Time spent updating GPU textures
+    // uint64_t android_total_frame_time_us_{0};    // Total end-to-end frame processing time
+    // uint64_t android_timing_frame_count_{0};     // Number of frames in current timing window
 
 #else
     std::vector<std::array<vulkan::ffmpeg_utils::ffmpeg_vk_frame, 2>> avvk_color_frames_;
@@ -380,7 +379,7 @@ private:
     std::array<float, 2> cached_fov_right_ = {0.0f, 0.0f};
     std::array<float, 2> cached_fov_up_    = {0.0f, 0.0f};
     std::array<float, 2> cached_fov_down_  = {0.0f, 0.0f};
-    bool fov_cached_ = false;
+    bool                 fov_cached_       = false;
 #endif
     uint64_t last_submitted_frame_{0};
 };

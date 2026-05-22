@@ -1,15 +1,15 @@
 #include "offload_rendering_client.hpp"
 
 #ifdef USING_OPENXR
-#  include "illixr/data_format/poses/combined_pose.hpp"
+#    include "illixr/data_format/poses/combined_pose.hpp"
 #endif
 #ifdef __ANDROID__
-#  include "android/jni_helper.hpp"
+#    include "android/jni_helper.hpp"
 #else
-#  include <cuda.h>
-#  include <cuda_runtime.h>
-#  include <nppi_color_conversion.h>
-#  define OFFLOAD_RENDERING_FFMPEG_DECODER_NAME "hevc"
+#    include <cuda.h>
+#    include <cuda_runtime.h>
+#    include <nppi_color_conversion.h>
+#    define OFFLOAD_RENDERING_FFMPEG_DECODER_NAME "hevc"
 #endif
 
 using namespace ILLIXR;
@@ -17,7 +17,8 @@ using namespace ILLIXR::data_format;
 #ifdef __ANDROID__
 static bool is_hevc_keyframe(const uint8_t* data, size_t size) {
     // Need at least 6 bytes: 4-byte start code + 2-byte NAL header
-    if (size < 6) return false;
+    if (size < 6)
+        return false;
 
     // Skip the start code (00 00 00 01)
     const uint8_t* nal = data + 4;
@@ -30,7 +31,7 @@ static bool is_hevc_keyframe(const uint8_t* data, size_t size) {
     return nal_type == 19 || nal_type == 20;
 }
 
-constexpr int I_HEADSET_WIDTH = static_cast<int>(HEADSET_WIDTH * 1.1);
+constexpr int I_HEADSET_WIDTH  = static_cast<int>(HEADSET_WIDTH * 1.1);
 constexpr int I_HEADSET_HEIGHT = static_cast<int>(HEADSET_HEIGHT * 1.1);
 
 #else
@@ -38,10 +39,10 @@ using namespace ILLIXR::vulkan::ffmpeg_utils;
 
 NppStreamContext makeNppStreamContext(cudaStream_t stream = nullptr) {
     NppStreamContext ctx{};
-#  if CUDA_VERSION < 12090
+#    if CUDA_VERSION < 12090
     nppGetStreamContext(&ctx);
     ctx.hStream = stream; // override stream if needed
-#  else
+#    else
     int device = 0;
     cudaGetDevice(&device);
     cudaDeviceProp prop{};
@@ -55,13 +56,12 @@ NppStreamContext makeNppStreamContext(cudaStream_t stream = nullptr) {
     ctx.nSharedMemPerBlock                 = prop.sharedMemPerBlock;
     ctx.nCudaDevAttrComputeCapabilityMajor = prop.major;
     ctx.nCudaDevAttrComputeCapabilityMinor = prop.minor;
-#  endif
+#    endif
     return ctx;
 }
 #endif
 
 const int log_interval = 300; // pose logging interval in frames
-
 
 offload_rendering_client::offload_rendering_client(const std::string& name, phonebook* pb)
     : threadloop{name, pb}
@@ -84,7 +84,7 @@ offload_rendering_client::offload_rendering_client(const std::string& name, phon
 #ifdef __ANDROID__
     , app_{switchboard_->get_android_app()} {
 #else
-    {
+{
     display_provider_ffmpeg = display_provider_;
 #endif
 
@@ -95,7 +95,8 @@ offload_rendering_client::offload_rendering_client(const std::string& name, phon
     } else {
         use_depth_ = switchboard_->get_env_bool("ILLIXR_USE_DEPTH_IMAGES");
     }
-    log_->debug(use_motion_vectors_ ? "Encoding motion vector images for the client" : "Not encoding motion vector images for the client");
+    log_->debug(use_motion_vectors_ ? "Encoding motion vector images for the client"
+                                    : "Not encoding motion vector images for the client");
     log_->debug(use_depth_ ? "Encoding depth images for the client" : "Not encoding depth images for the client");
 }
 
@@ -114,8 +115,7 @@ offload_rendering_client::~offload_rendering_client() {
         auto color_stats = color_decoder_->get_timing_stats();
         log_->info("[offload_rendering_client] Final color decode stats: "
                    "left_avg={:.2f}ms, right_avg={:.2f}ms, total_frames={}",
-                   color_stats.left_eye.avg_decode_time_us() / 1000.0,
-                   color_stats.right_eye.avg_decode_time_us() / 1000.0,
+                   color_stats.left_eye.avg_decode_time_us() / 1000.0, color_stats.right_eye.avg_decode_time_us() / 1000.0,
                    color_stats.total_frames());
         color_decoder_->stop();
     }
@@ -123,8 +123,7 @@ offload_rendering_client::~offload_rendering_client() {
         auto depth_stats = depth_decoder_->get_timing_stats();
         log_->info("[offload_rendering_client] Final depth decode stats: "
                    "left_avg={:.2f}ms, right_avg={:.2f}ms, total_frames={}",
-                   depth_stats.left_eye.avg_decode_time_us() / 1000.0,
-                   depth_stats.right_eye.avg_decode_time_us() / 1000.0,
+                   depth_stats.left_eye.avg_decode_time_us() / 1000.0, depth_stats.right_eye.avg_decode_time_us() / 1000.0,
                    depth_stats.total_frames());
         depth_decoder_->stop();
     }
@@ -132,8 +131,7 @@ offload_rendering_client::~offload_rendering_client() {
         auto mv_stats = motion_vec_decoder_->get_timing_stats();
         log_->info("[offload_rendering_client] Final MV decode stats: "
                    "left_avg={:.2f}ms, right_avg={:.2f}ms, total_frames={}",
-                   mv_stats.left_eye.avg_decode_time_us() / 1000.0,
-                   mv_stats.right_eye.avg_decode_time_us() / 1000.0,
+                   mv_stats.left_eye.avg_decode_time_us() / 1000.0, mv_stats.right_eye.avg_decode_time_us() / 1000.0,
                    mv_stats.total_frames());
         motion_vec_decoder_->stop();
     }
@@ -153,20 +151,21 @@ void offload_rendering_client::log_android_decode_timing() {
     // Color decoder stats
     if (color_decoder_) {
         color_stats = color_decoder_->get_and_reset_timing_stats();
-        if(color_stats.left_eye.max_decode_latency_us > 0 ||
-                color_stats.right_eye.max_decode_latency_us > 0) {
+        if (color_stats.left_eye.max_decode_latency_us > 0 || color_stats.right_eye.max_decode_latency_us > 0) {
             log_->info("  Color decode latency (left):  avg={:.2f}ms, min={:.2f}ms, max={:.2f}ms",
                        color_stats.left_eye.avg_decode_time_us() / 1000.0,
-                       color_stats.left_eye.min_decode_latency_us == UINT64_MAX ? 0 :
-                       color_stats.left_eye.min_decode_latency_us / 1000.0,
+                       color_stats.left_eye.min_decode_latency_us == UINT64_MAX
+                           ? 0
+                           : color_stats.left_eye.min_decode_latency_us / 1000.0,
                        color_stats.left_eye.max_decode_latency_us / 1000.0);
-#  ifndef COMBINED_ENCODING
+#    ifndef COMBINED_ENCODING
             log_->info("  Color decode latency (right): avg={:.2f}ms, min={:.2f}ms, max={:.2f}ms",
                        color_stats.right_eye.avg_decode_time_us() / 1000.0,
-                       color_stats.right_eye.min_decode_latency_us == UINT64_MAX ? 0 :
-                       color_stats.right_eye.min_decode_latency_us / 1000.0,
+                       color_stats.right_eye.min_decode_latency_us == UINT64_MAX
+                           ? 0
+                           : color_stats.right_eye.min_decode_latency_us / 1000.0,
                        color_stats.right_eye.max_decode_latency_us / 1000.0);
-#  endif
+#    endif
         }
     }
 
@@ -176,57 +175,58 @@ void offload_rendering_client::log_android_decode_timing() {
         if (depth_stats.left_eye.avg_decode_time_us() > 0.) {
             log_->info("  Depth decode latency (left):  avg={:.2f}ms, min={:.2f}ms, max={:.2f}ms",
                        depth_stats.left_eye.avg_decode_time_us() / 1000.0,
-                       depth_stats.left_eye.min_decode_latency_us == UINT64_MAX ? 0 :
-                       depth_stats.left_eye.min_decode_latency_us / 1000.0,
+                       depth_stats.left_eye.min_decode_latency_us == UINT64_MAX
+                           ? 0
+                           : depth_stats.left_eye.min_decode_latency_us / 1000.0,
                        depth_stats.left_eye.max_decode_latency_us / 1000.0);
         }
-#  ifndef COMBINED_ENCODING
+#    ifndef COMBINED_ENCODING
         if (depth_stats.right_eye.avg_decode_time_us() > 0.) {
             log_->info("  Depth decode latency (right): avg={:.2f}ms, min={:.2f}ms, max={:.2f}ms",
                        depth_stats.right_eye.avg_decode_time_us() / 1000.0,
-                       depth_stats.right_eye.min_decode_latency_us == UINT64_MAX ? 0 :
-                       depth_stats.right_eye.min_decode_latency_us / 1000.0,
+                       depth_stats.right_eye.min_decode_latency_us == UINT64_MAX
+                           ? 0
+                           : depth_stats.right_eye.min_decode_latency_us / 1000.0,
                        depth_stats.right_eye.max_decode_latency_us / 1000.0);
         }
-#  endif
+#    endif
     }
 
     if (use_motion_vectors_ && motion_vec_decoder_) {
         mv_stats = motion_vec_decoder_->get_and_reset_timing_stats();
         log_->info("  MV decode latency (left):  avg={:.2f}ms, min={:.2f}ms, max={:.2f}ms",
                    mv_stats.left_eye.avg_decode_time_us() / 1000.0,
-                   mv_stats.left_eye.min_decode_latency_us == UINT64_MAX ? 0 :
-                   mv_stats.left_eye.min_decode_latency_us / 1000.0,
+                   mv_stats.left_eye.min_decode_latency_us == UINT64_MAX ? 0 : mv_stats.left_eye.min_decode_latency_us / 1000.0,
                    mv_stats.left_eye.max_decode_latency_us / 1000.0);
-#  ifndef COMBINED_ENCODING
+#    ifndef COMBINED_ENCODING
         log_->info("  MV decode latency (right): avg={:.2f}ms, min={:.2f}ms, max={:.2f}ms",
                    mv_stats.right_eye.avg_decode_time_us() / 1000.0,
-                   mv_stats.right_eye.min_decode_latency_us == UINT64_MAX ? 0 :
-                   mv_stats.right_eye.min_decode_latency_us / 1000.0,
+                   mv_stats.right_eye.min_decode_latency_us == UINT64_MAX ? 0
+                                                                          : mv_stats.right_eye.min_decode_latency_us / 1000.0,
                    mv_stats.right_eye.max_decode_latency_us / 1000.0);
-#  endif
+#    endif
     }
 
-    //log_->info("==========================================");
+    // log_->info("==========================================");
 
     // Reset accumulated metrics
-    //android_texture_update_time_us_ = 0;
-    //android_total_frame_time_us_ = 0;
-    //android_timing_frame_count_ = 0;
+    // android_texture_update_time_us_ = 0;
+    // android_total_frame_time_us_ = 0;
+    // android_timing_frame_count_ = 0;
 }
 
-//  receiver_loop
+// receiver_loop
 // Runs on receiver_thread_. Dequeues compressed frames from the network,
 // drops frames when the decoder input queue is full to prevent growing latency,
 // queues encoded data to the hardware decoders (all three stream types together
 // so they stay in sync), and stores frame metadata for _p_one_iteration.
-//  receiver_loop
+// receiver_loop
 // Runs on receiver_thread_. Dequeues compressed frames from the network,
 // drops frames when the decoder input queue is full to prevent growing latency,
 // queues encoded data to the hardware decoders (all three stream types together
 // so they stay in sync), and stores frame metadata for _p_one_iteration.
 void offload_rendering_client::receiver_loop() {
-    //spdlog::get("illixr")->info("[receiver_loop] Starting");
+    // spdlog::get("illixr")->info("[receiver_loop] Starting");
 
     while (receiver_running_) {
         auto current_frame = frames_reader_.dequeue();
@@ -235,27 +235,25 @@ void offload_rendering_client::receiver_loop() {
             continue;
         }
 
-        //spdlog::get("illixr")->info("Rx Frame {}", current_frame->frame_number);
-        // Determine keyframe status for each stream.
+        // spdlog::get("illixr")->info("Rx Frame {}", current_frame->frame_number);
+        //  Determine keyframe status for each stream.
         //
-        // Color: use the authoritative flag set by the server from
-        // nvenc_encoder::last_frame_was_keyframe().  This works correctly for
-        // both HEVC (IDR NAL) and AV1 (KEY_FRAME OBU) without any bitstream
-        // parsing on the client side.
+        //  Color: use the authoritative flag set by the server from
+        //  nvenc_encoder::last_frame_was_keyframe().  This works correctly for
+        //  both HEVC (IDR NAL) and AV1 (KEY_FRAME OBU) without any bitstream
+        //  parsing on the client side.
         //
-        // Depth / motion-vector streams are always HEVC regardless of USE_AV1,
-        // so they continue to use the NAL-unit scan.
+        //  Depth / motion-vector streams are always HEVC regardless of USE_AV1,
+        //  so they continue to use the NAL-unit scan.
         const bool is_key_color = current_frame->is_keyframe;
 
         const bool is_key_depth = (use_depth_ && !current_frame->left_depth.empty())
-                                  ? is_hevc_keyframe(current_frame->left_depth.data(),
-                                                     current_frame->left_depth.size())
-                                  : is_key_color;
+            ? is_hevc_keyframe(current_frame->left_depth.data(), current_frame->left_depth.size())
+            : is_key_color;
 
         const bool is_key_mv = (use_motion_vectors_ && !current_frame->left_motion_vec.empty())
-                               ? is_hevc_keyframe(current_frame->left_motion_vec.data(),
-                                                  current_frame->left_motion_vec.size())
-                               : is_key_color;
+            ? is_hevc_keyframe(current_frame->left_motion_vec.data(), current_frame->left_motion_vec.size())
+            : is_key_color;
 
         // Never drop a frame if any stream carries a keyframe - dropping a
         // keyframe causes decoder corruption until the next IDR arrives.
@@ -267,12 +265,10 @@ void offload_rendering_client::receiver_loop() {
         if (!is_any_key && color_decoder_) {
             const size_t left_depth  = color_decoder_->get_left_queue_depth();
             const size_t right_depth = color_decoder_->get_right_queue_depth();
-            if (left_depth >= MAX_DECODER_QUEUE_DEPTH ||
-                right_depth >= MAX_DECODER_QUEUE_DEPTH) {
-                spdlog::get("illixr")->warn(
-                        "[receiver_loop] Dropping P-frame {} - decoder queue full "
-                        "(left={}, right={})",
-                        current_frame->frame_number, left_depth, right_depth);
+            if (left_depth >= MAX_DECODER_QUEUE_DEPTH || right_depth >= MAX_DECODER_QUEUE_DEPTH) {
+                spdlog::get("illixr")->warn("[receiver_loop] Dropping P-frame {} - decoder queue full "
+                                            "(left={}, right={})",
+                                            current_frame->frame_number, left_depth, right_depth);
                 continue;
             }
         }
@@ -280,108 +276,71 @@ void offload_rendering_client::receiver_loop() {
         // Queue encoded data to the hardware decoders.
         // All stream types are submitted together so they stay in sync -
         // if we drop above, we drop all three atomically.
-#  ifdef COMBINED_ENCODING
+#    ifdef COMBINED_ENCODING
         // Combined mode: left_color holds the full side-by-side bitstream;
         // right_color is empty on the wire.  Feed only eye=0.
         if (color_decoder_ && !current_frame->left_color.empty()) {
-            color_decoder_->queue_encoded_data(
-                    0,
-                    current_frame->left_color.data(),
-                    current_frame->left_color.size(),
-                    current_frame->sent_time,
-                    is_key_color,
-                    current_frame->frame_number);
+            color_decoder_->queue_encoded_data(0, current_frame->left_color.data(), current_frame->left_color.size(),
+                                               current_frame->sent_time, is_key_color, current_frame->frame_number);
         }
 
         // Depth and motion-vector streams remain per-eye even under
         // COMBINED_ENCODING (server sends them as separate streams).
         for (int eye = 0; eye < 2; eye++) {
             if (use_depth_ && depth_decoder_) {
-                const auto& depth_pkt = (eye == 0) ? current_frame->left_depth
-                                                   : current_frame->right_depth;
+                const auto& depth_pkt = (eye == 0) ? current_frame->left_depth : current_frame->right_depth;
                 if (!depth_pkt.empty()) {
-                    depth_decoder_->queue_encoded_data(
-                            eye,
-                            depth_pkt.data(),
-                            depth_pkt.size(),
-                            current_frame->sent_time,
-                            is_key_depth,
-                            current_frame->frame_number);
+                    depth_decoder_->queue_encoded_data(eye, depth_pkt.data(), depth_pkt.size(), current_frame->sent_time,
+                                                       is_key_depth, current_frame->frame_number);
                 }
             }
 
-            if (use_motion_vectors_ && motion_vec_decoder_
-                && current_frame->use_motion_vectors) {
-                const auto& mv_pkt = (eye == 0) ? current_frame->left_motion_vec
-                                                : current_frame->right_motion_vec;
+            if (use_motion_vectors_ && motion_vec_decoder_ && current_frame->use_motion_vectors) {
+                const auto& mv_pkt = (eye == 0) ? current_frame->left_motion_vec : current_frame->right_motion_vec;
                 if (!mv_pkt.empty()) {
-                    motion_vec_decoder_->queue_encoded_data(
-                            eye,
-                            mv_pkt.data(),
-                            mv_pkt.size(),
-                            current_frame->sent_time,
-                            is_key_mv,
-                            current_frame->frame_number);
+                    motion_vec_decoder_->queue_encoded_data(eye, mv_pkt.data(), mv_pkt.size(), current_frame->sent_time,
+                                                            is_key_mv, current_frame->frame_number);
                 }
             }
         }
-#  else
+#    else
         for (int eye = 0; eye < 2; eye++) {
-            const auto& color_pkt = (eye == 0) ? current_frame->left_color
-                                               : current_frame->right_color;
+            const auto& color_pkt = (eye == 0) ? current_frame->left_color : current_frame->right_color;
             if (color_decoder_ && !color_pkt.empty()) {
-                color_decoder_->queue_encoded_data(
-                        eye,
-                        color_pkt.data(),
-                        color_pkt.size(),
-                        current_frame->sent_time,
-                        is_key_color,
-                        current_frame->frame_number);
+                color_decoder_->queue_encoded_data(eye, color_pkt.data(), color_pkt.size(), current_frame->sent_time,
+                                                   is_key_color, current_frame->frame_number);
             }
 
             if (use_depth_ && depth_decoder_) {
-                const auto& depth_pkt = (eye == 0) ? current_frame->left_depth
-                                                   : current_frame->right_depth;
+                const auto& depth_pkt = (eye == 0) ? current_frame->left_depth : current_frame->right_depth;
                 if (!depth_pkt.empty()) {
-                    depth_decoder_->queue_encoded_data(
-                            eye,
-                            depth_pkt.data(),
-                            depth_pkt.size(),
-                            current_frame->sent_time,
-                            is_key_depth,
-                            current_frame->frame_number);
+                    depth_decoder_->queue_encoded_data(eye, depth_pkt.data(), depth_pkt.size(), current_frame->sent_time,
+                                                       is_key_depth, current_frame->frame_number);
                 }
             }
 
-            if (use_motion_vectors_ && motion_vec_decoder_
-                && current_frame->use_motion_vectors) {
-                const auto& mv_pkt = (eye == 0) ? current_frame->left_motion_vec
-                                                : current_frame->right_motion_vec;
+            if (use_motion_vectors_ && motion_vec_decoder_ && current_frame->use_motion_vectors) {
+                const auto& mv_pkt = (eye == 0) ? current_frame->left_motion_vec : current_frame->right_motion_vec;
                 if (!mv_pkt.empty()) {
-                    motion_vec_decoder_->queue_encoded_data(
-                            eye,
-                            mv_pkt.data(),
-                            mv_pkt.size(),
-                            current_frame->sent_time,
-                            is_key_mv,
-                            current_frame->frame_number);
+                    motion_vec_decoder_->queue_encoded_data(eye, mv_pkt.data(), mv_pkt.size(), current_frame->sent_time,
+                                                            is_key_mv, current_frame->frame_number);
                 }
             }
         }
-#  endif // COMBINED_ENCODING
+#    endif // COMBINED_ENCODING
 
         // Store metadata so _p_one_iteration can populate dual_frames.
         // The mutex ensures _p_one_iteration always sees a consistent snapshot.
         {
             std::lock_guard<std::mutex> lock(frame_meta_map_mutex_);
-            frame_meta& meta        = frame_meta_map_[current_frame->frame_number];
-            meta.pose               = current_frame->pose;
-            meta.frame_number       = current_frame->frame_number;
-            meta.frame_time         = current_frame->sent_time;
-            meta.pose_id            = current_frame->pose_id;
-            meta.near_z             = current_frame->near_z;
-            meta.far_z              = current_frame->far_z;
-            meta.encode_time        = current_frame->encode_time;
+            frame_meta&                 meta = frame_meta_map_[current_frame->frame_number];
+            meta.pose                        = current_frame->pose;
+            meta.frame_number                = current_frame->frame_number;
+            meta.frame_time                  = current_frame->sent_time;
+            meta.pose_id                     = current_frame->pose_id;
+            meta.near_z                      = current_frame->near_z;
+            meta.far_z                       = current_frame->far_z;
+            meta.encode_time                 = current_frame->encode_time;
 
             // Cache first non-zero FOV received from server
             if (!fov_cached_ && current_frame->fov_left[0] != 0.0f) {
@@ -389,7 +348,7 @@ void offload_rendering_client::receiver_loop() {
                 cached_fov_right_ = current_frame->fov_right;
                 cached_fov_up_    = current_frame->fov_up;
                 cached_fov_down_  = current_frame->fov_down;
-                fov_cached_ = true;
+                fov_cached_       = true;
             }
         }
     }
@@ -629,7 +588,6 @@ void offload_rendering_client::_p_thread_setup() {
 #ifdef __ANDROID__
     spdlog::get("illixr")->info("[android_media_decoder] Thread setup starting");
 
-
     // Initialize color decoder - no GL/EGL arguments in the Vulkan path.
     color_decoder_ = std::make_unique<stereo_surface_decoder>(I_HEADSET_WIDTH, I_HEADSET_HEIGHT, false);
     if (!color_decoder_->initialize()) {
@@ -651,17 +609,14 @@ void offload_rendering_client::_p_thread_setup() {
             depth_decoder_.reset();
         }
 
-        motion_vec_decoder_ = std::make_unique<stereo_surface_decoder>(
-                MOTION_VEC_WIDTH, MOTION_VEC_HEIGHT, false, true);
+        motion_vec_decoder_ = std::make_unique<stereo_surface_decoder>(MOTION_VEC_WIDTH, MOTION_VEC_HEIGHT, false, true);
         if (!motion_vec_decoder_->initialize()) {
-            spdlog::get("illixr")->warn(
-                    "[android_media_decoder] Failed to initialize motion-vector decoder "
-                    "(Vulkan path); App Spacewarp will be unavailable");
+            spdlog::get("illixr")->warn("[android_media_decoder] Failed to initialize motion-vector decoder "
+                                        "(Vulkan path); App Spacewarp will be unavailable");
             motion_vec_decoder_.reset();
         } else {
-            spdlog::get("illixr")->info(
-                    "[android_media_decoder] Motion-vector decoder initialized ({}x{})",
-                    MOTION_VEC_WIDTH, MOTION_VEC_HEIGHT);
+            spdlog::get("illixr")->info("[android_media_decoder] Motion-vector decoder initialized ({}x{})", MOTION_VEC_WIDTH,
+                                        MOTION_VEC_HEIGHT);
         }
     } else if (use_depth_) {
         depth_decoder_ = std::make_unique<stereo_surface_decoder>(I_HEADSET_WIDTH, I_HEADSET_HEIGHT, true);
@@ -699,25 +654,24 @@ void offload_rendering_client::_p_one_iteration() {
 #endif
 
 #ifdef __ANDROID__
-    //  Consumer phase
+    // Consumer phase
     // The receiver_thread_ feeds encoded data to the decoders asynchronously.
     // Here we just acquire whatever the decoders have most recently finished
     // and publish it to the switchboard.
 
-
     // ============ TEXTURE UPDATE PHASE ============
     // Get current color frame with textures and transforms
     // This includes calling updateTexImage() which synchronizes with the decoder
-    //auto texture_update_start = std::chrono::high_resolution_clock::now();
+    // auto texture_update_start = std::chrono::high_resolution_clock::now();
 
     // Get complete frame with both color and depth
     dual_frames frame = construct_dual_frames(clock_->now());
 
-    //auto texture_update_end = std::chrono::high_resolution_clock::now();
+    // auto texture_update_end = std::chrono::high_resolution_clock::now();
 
-    //android_texture_update_time_us_ += static_cast<uint64_t>(
-    //    std::chrono::duration_cast<std::chrono::microseconds>(
-    //        texture_update_end - texture_update_start).count());
+    // android_texture_update_time_us_ += static_cast<uint64_t>(
+    //     std::chrono::duration_cast<std::chrono::microseconds>(
+    //         texture_update_end - texture_update_start).count());
 
     if (frame.is_valid()) {
         last_submitted_frame_ = frame.frame_number;
@@ -726,11 +680,11 @@ void offload_rendering_client::_p_one_iteration() {
     } else {
         std::this_thread::sleep_for(std::chrono::microseconds(500));
     }
-    //auto frame_end = std::chrono::high_resolution_clock::now();
-    //android_total_frame_time_us_ += static_cast<uint64_t>(
-    //    std::chrono::duration_cast<std::chrono::microseconds>(
-    //        frame_end - frame_start).count());
-    //android_timing_frame_count_++;
+    // auto frame_end = std::chrono::high_resolution_clock::now();
+    // android_total_frame_time_us_ += static_cast<uint64_t>(
+    //     std::chrono::duration_cast<std::chrono::microseconds>(
+    //         frame_end - frame_start).count());
+    // android_timing_frame_count_++;
 
 #else
 
@@ -957,7 +911,7 @@ void offload_rendering_client::_p_one_iteration() {
 
         for (auto& metric : metrics_) {
             auto fps = std::max(fps_counter_, (uint16_t) 1);
-            log_->info("{}: {}", metric.first, metric.second / (double)(fps));
+            log_->info("{}: {}", metric.first, metric.second / (double) (fps));
             metric.second = 0;
         }
 #ifdef __ANDROID__
@@ -986,10 +940,10 @@ void offload_rendering_client::push_poses() {
 // stale member variables, so receiver_thread_ and _p_one_iteration never race
 // on the same pose/frame_number/etc. fields.
 data_format::dual_frames offload_rendering_client::construct_dual_frames(time_point render_time) {
-    //  Vulkan path: acquire AHardwareBuffers from both decoders
+    // Vulkan path: acquire AHardwareBuffers from both decoders
     dual_frames frame = color_decoder_->get_current_frame(render_time);
-    frame_meta meta;
-    
+    frame_meta  meta;
+
     if (frame.is_valid()) {
         // frame.frame_number was set atomically with the buffer acquisition
         // inside acquire_latest_buffer() - no separate call needed.
@@ -998,7 +952,7 @@ data_format::dual_frames offload_rendering_client::construct_dual_frames(time_po
         const uint64_t decoded_frame_number = frame.frame_number;
         {
             std::lock_guard<std::mutex> lock(frame_meta_map_mutex_);
-            auto it = frame_meta_map_.find(decoded_frame_number);
+            auto                        it = frame_meta_map_.find(decoded_frame_number);
             if (it != frame_meta_map_.end()) {
                 meta = it->second;
                 // Erase this entry and everything older - the map is ordered by
@@ -1026,19 +980,18 @@ data_format::dual_frames offload_rendering_client::construct_dual_frames(time_po
             // fail is_valid() and be discarded by the caller.
         }
         if (meta.consumed) {
-            return {};  // another thread already claimed this frame
+            return {}; // another thread already claimed this frame
         }
-
     }
-    frame.pose         = meta.pose;
-    frame.near_z       = meta.near_z;
-    frame.far_z        = meta.far_z;
-    frame.pose_id      = meta.pose_id;
-    frame.encode_time  = meta.encode_time;
-    frame.fov_left  = cached_fov_left_;
-    frame.fov_right = cached_fov_right_;
-    frame.fov_up    = cached_fov_up_;
-    frame.fov_down  = cached_fov_down_;
+    frame.pose        = meta.pose;
+    frame.near_z      = meta.near_z;
+    frame.far_z       = meta.far_z;
+    frame.pose_id     = meta.pose_id;
+    frame.encode_time = meta.encode_time;
+    frame.fov_left    = cached_fov_left_;
+    frame.fov_right   = cached_fov_right_;
+    frame.fov_up      = cached_fov_up_;
+    frame.fov_down    = cached_fov_down_;
 
     if (use_depth_ && depth_decoder_ && depth_decoder_->is_ready()) {
         dual_frames depth_frame = depth_decoder_->get_current_frame(render_time);
@@ -1065,11 +1018,10 @@ data_format::dual_frames offload_rendering_client::construct_dual_frames(time_po
 
                 static uint64_t mv_log_counter = 0;
                 if (++mv_log_counter % log_interval == 1) {
-                    spdlog::get("illixr")->debug(
-                            "[construct_dual_frames] Vulkan frame with motion vectors: "
-                            "MV L={} R={}",
-                            static_cast<void*>(frame.left_motion_vec.hw_buffer),
-                            static_cast<void*>(frame.right_motion_vec.hw_buffer));
+                    spdlog::get("illixr")->debug("[construct_dual_frames] Vulkan frame with motion vectors: "
+                                                 "MV L={} R={}",
+                                                 static_cast<void*>(frame.left_motion_vec.hw_buffer),
+                                                 static_cast<void*>(frame.right_motion_vec.hw_buffer));
                 }
             }
         }
@@ -1095,7 +1047,7 @@ bool offload_rendering_client::network_receive() {
     }
 
     // Receive new frame data
-    auto current_frame = frames_reader_.dequeue();
+    auto current_frame   = frames_reader_.dequeue();
     auto current_latency = network_latency_reader_.get_ro_nullable();
     if (current_frame == nullptr) {
         return false;
@@ -1118,11 +1070,11 @@ bool offload_rendering_client::network_receive() {
     } else {
         log_->info("Network latency not available");
     }
-    current_frame_time_ = current_frame->sent_time;
-    decoded_frame_pose_ = current_frame->pose;
+    current_frame_time_   = current_frame->sent_time;
+    decoded_frame_pose_   = current_frame->pose;
     current_frame_number_ = current_frame->frame_number;
-    decoded_near_z_ = current_frame->near_z;
-    decoded_far_z_  = current_frame->far_z;
+    decoded_near_z_       = current_frame->near_z;
+    decoded_far_z_        = current_frame->far_z;
     decoded_pose_id_      = current_frame->pose_id;
     return true;
 }

@@ -1,9 +1,9 @@
 #pragma once
 
 #ifdef __ANDROID__
-#include <android_native_app_glue.h>
-#include <jni.h>
-#include <spdlog/spdlog.h>
+#    include <android_native_app_glue.h>
+#    include <jni.h>
+#    include <spdlog/spdlog.h>
 
 namespace ILLIXR {
 
@@ -82,9 +82,17 @@ public:
     jni_scope(const jni_scope&)            = delete;
     jni_scope& operator=(const jni_scope&) = delete;
 
-    [[nodiscard]] JNIEnv* env() const { return env_; }
-    [[nodiscard]] bool is_valid() const { return env_ != nullptr; }
-    explicit operator bool() const { return is_valid(); }
+    [[nodiscard]] JNIEnv* env() const {
+        return env_;
+    }
+
+    [[nodiscard]] bool is_valid() const {
+        return env_ != nullptr;
+    }
+
+    explicit operator bool() const {
+        return is_valid();
+    }
 
 private:
     JavaVM* vm_;
