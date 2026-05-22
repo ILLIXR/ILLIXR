@@ -4,7 +4,7 @@
 
 #include "drivers/illixr/illixr_framebuffer.h"
 #ifdef USING_OPENXR
-#include "illixr/data_format/poses/combined_pose.hpp"
+#    include "illixr/data_format/poses/combined_pose.hpp"
 #endif
 #include "illixr/data_format/frame.hpp"
 #include "illixr/data_format/hmd_config.hpp"
@@ -19,10 +19,10 @@
 #include "pose_relay.hpp"
 
 #ifdef NVENC_ENCODER
-    #include "nvenc/nvenc_encoder.hpp"
-    #define OFFLOAD_RENDERING_BITRATE 100000000
+#    include "nvenc/nvenc_encoder.hpp"
+#    define OFFLOAD_RENDERING_BITRATE 100000000
 #else
-    #include "illixr/vk/ffmpeg_utils.hpp"
+#    include "illixr/vk/ffmpeg_utils.hpp"
 #endif
 
 #undef DOUBLE_INCLUDE
@@ -324,13 +324,13 @@ private:
     // bitstream parsing on the client side.
     bool color_frame_is_keyframe_ = false;
 
-    #ifdef COMBINED_ENCODING
+#    ifdef COMBINED_ENCODING
     // Under COMBINED_ENCODING a single encoder handles both eyes at double width.
     // color_encoder_[0] is used; color_encoder_[1] is unused.
     // encode_out_combined_color_packet_ carries the single combined bitstream;
     // encode_out_color_packets_ is not used for color in this mode.
     PACKET_TYPE encode_out_combined_color_packet_{};
-    #endif // COMBINED_ENCODING
+#    endif // COMBINED_ENCODING
 
 #else
     // ========================================================================

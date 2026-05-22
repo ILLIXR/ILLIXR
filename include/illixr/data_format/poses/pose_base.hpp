@@ -2,21 +2,22 @@
 
 #include <map>
 #ifdef USING_OPENXR
-#  ifdef ENABLE_MONADO
-#    include "xrt/xrt_defines.h"
-#    define POSE_DATA_TYPE xrt_pose
-#  else
-#    include <openxr/openxr.h>
-#    include "openxr_defines.hpp"
-#    define POSE_DATA_TYPE XrPosef
-#  endif
+#    ifdef ENABLE_MONADO
+#        include "xrt/xrt_defines.h"
+#        define POSE_DATA_TYPE xrt_pose
+#    else
+#        include "openxr_defines.hpp"
+
+#        include <openxr/openxr.h>
+#        define POSE_DATA_TYPE XrPosef
+#    endif
 #else
-#  if __has_include(<Eigen/Dense>)
-#    include <Eigen/Dense>
-#  else // __has_include(<Eigen/Dense>)
-#    include <eigen3/Eigen/Dense>
-#    include <utility>
-#  endif // __has_include(<Eigen/Dense>)
+#    if __has_include(<Eigen/Dense>)
+#        include <Eigen/Dense>
+#    else // __has_include(<Eigen/Dense>)
+#        include <eigen3/Eigen/Dense>
+#        include <utility>
+#    endif // __has_include(<Eigen/Dense>)
 #endif     // USING_OPENXR
 
 namespace ILLIXR::data_format::pose {
@@ -54,7 +55,7 @@ struct pose_base {
         : POSE_DATA_TYPE{pose} { }
 
     pose_base(const pose_base& base)
-            : POSE_DATA_TYPE{} {
+        : POSE_DATA_TYPE{} {
         position    = base.position;
         orientation = base.orientation;
     }

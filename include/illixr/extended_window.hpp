@@ -9,48 +9,48 @@
 #include <spdlog/spdlog.h>
 
 #ifdef __ANDROID__
-#  include <EGL/egl.h>
-#  include <GLES3/gl32.h>
-#  include <GLES3/gl3ext.h>
-#  include <GLES3/gl3platform.h>
-#  include <initializer_list>
-#  include <memory>
-#  include <cstdlib>
-#  include <cstring>
-#  include <jni.h>
-#  include <android/log.h>
-#  include <android/native_window.h>
+#    include <android/log.h>
+#    include <android/native_window.h>
+#    include <cstdlib>
+#    include <cstring>
+#    include <EGL/egl.h>
+#    include <GLES3/gl32.h>
+#    include <GLES3/gl3ext.h>
+#    include <GLES3/gl3platform.h>
+#    include <initializer_list>
+#    include <jni.h>
+#    include <memory>
 #elif defined(_WIN32) || defined(_WIN64)
-#  include <GL/glew.h>
-#  include <windows.h>
-#  define WGL_CONTEXT_MAJOR_VERSION_ARB 0x2091
-#  define WGL_CONTEXT_MINOR_VERSION_ARB 0x2092
+#    include <GL/glew.h>
+#    include <windows.h>
+#    define WGL_CONTEXT_MAJOR_VERSION_ARB 0x2091
+#    define WGL_CONTEXT_MINOR_VERSION_ARB 0x2092
 #else
-#  include <GL/glx.h>
+#    include <GL/glx.h>
 // GLX context magics
-#  define GLX_CONTEXT_MAJOR_VERSION_ARB 0x2091
-#  define GLX_CONTEXT_MINOR_VERSION_ARB 0x2092
+#    define GLX_CONTEXT_MAJOR_VERSION_ARB 0x2091
+#    define GLX_CONTEXT_MINOR_VERSION_ARB 0x2092
 #endif
 
 #ifdef __ANDROID__
-#  define DISPLAY_TYPE EGLDisplay
-#  define CONTEXT_TYPE EGLContext
-#  define WINDOW_TYPE ANativeWindow*
+#    define DISPLAY_TYPE EGLDisplay
+#    define CONTEXT_TYPE EGLContext
+#    define WINDOW_TYPE  ANativeWindow*
 #elif defined(_WIN32) || defined(_WIN64)
 typedef HGLRC(WINAPI* wglCreateContextAttribsARBProc)(HDC hDC, HGLRC hShareContext, const int* attribList);
-#  define CONTEXT_TYPE HGLRC
+#    define CONTEXT_TYPE HGLRC
 #else
 typedef GLXContext (*glXCreateContextAttribsARBProc)(Display*, GLXFBConfig, GLXContext, Bool, const int*);
-#  define DISPLAY_TYPE Display*
-#  define CONTEXT_TYPE GLXContext
-#  define WINDOW_TYPE Window
+#    define DISPLAY_TYPE Display*
+#    define CONTEXT_TYPE GLXContext
+#    define WINDOW_TYPE  Window
 #endif
 
 namespace ILLIXR {
 class xlib_gl_extended_window : public phonebook::service {
 public:
 #ifdef __ANDROID__
-    xlib_gl_extended_window(int width, int height, EGLContext egl_context, ANativeWindow *window) {
+    xlib_gl_extended_window(int width, int height, EGLContext egl_context, ANativeWindow* window) {
         window_ = window;
 #elif defined(_WIN32) || defined(_WIN64)
     xlib_gl_extended_window(int width, int height, HGLRC shared_gl_context) {
@@ -62,42 +62,34 @@ public:
 #ifndef NDEBUG
         spdlog::get("illixr")->debug("[extended_window] Opening display");
 #endif
-//        RAC_ERRNO_MSG("extended_window at start of xlib_gl_extended_window constructor");
+// RAC_ERRNO_MSG("extended_window at start of xlib_gl_extended_window constructor");
 #ifdef __ANDROID__
         display_ = eglGetDisplay(EGL_DEFAULT_DISPLAY);
         EGLint major_version, minor_version;
         eglInitialize(display_, &major_version, &minor_version);
         spdlog::get("illixr")->info("EGL Initialized with major version : {} minor version: {}", major_version, minor_version);
 
-        const EGLint attribs[] = {
-                //EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
-                EGL_RENDERABLE_TYPE,EGL_OPENGL_ES2_BIT,
-                EGL_BLUE_SIZE, 8,
-                EGL_GREEN_SIZE, 8,
-                EGL_RED_SIZE, 8,
-                EGL_ALPHA_SIZE, 0,
-                // EGL_DEPTH_SIZE, 24,
-                EGL_NONE
-        };
+        const EGLint attribs[] = {// EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
+                                  EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT, EGL_BLUE_SIZE, 8, EGL_GREEN_SIZE, 8, EGL_RED_SIZE, 8,
+                                  EGL_ALPHA_SIZE, 0,
+                                  // EGL_DEPTH_SIZE, 24,
+                                  EGL_NONE};
 
-        EGLint w, h, format;
-        EGLint numConfigs;
+        EGLint    w, h, format;
+        EGLint    numConfigs;
         EGLConfig config = nullptr;
         eglChooseConfig(display_, attribs, &config, 1, &numConfigs);
-        std::unique_ptr < EGLConfig[] > supportedConfigs(new EGLConfig[numConfigs]);
+        std::unique_ptr<EGLConfig[]> supportedConfigs(new EGLConfig[numConfigs]);
         assert(supportedConfigs);
         eglChooseConfig(display_, attribs, supportedConfigs.get(), numConfigs, &numConfigs);
         assert(numConfigs);
         auto i = 0;
         for (; i < numConfigs; i++) {
-            auto &cfg = supportedConfigs[i];
+            auto&  cfg = supportedConfigs[i];
             EGLint r, g, b, d;
-            if (eglGetConfigAttrib(display_, cfg, EGL_RED_SIZE, &r) &&
-                eglGetConfigAttrib(display_, cfg, EGL_GREEN_SIZE, &g) &&
-                eglGetConfigAttrib(display_, cfg, EGL_BLUE_SIZE, &b) &&
-                eglGetConfigAttrib(display_, cfg, EGL_DEPTH_SIZE, &d) &&
+            if (eglGetConfigAttrib(display_, cfg, EGL_RED_SIZE, &r) && eglGetConfigAttrib(display_, cfg, EGL_GREEN_SIZE, &g) &&
+                eglGetConfigAttrib(display_, cfg, EGL_BLUE_SIZE, &b) && eglGetConfigAttrib(display_, cfg, EGL_DEPTH_SIZE, &d) &&
                 r == 8 && g == 8 && b == 8 && d == 24) {
-
                 config = supportedConfigs[i];
                 break;
             }
@@ -112,21 +104,16 @@ public:
         eglGetConfigAttrib(display_, config, EGL_NATIVE_VISUAL_ID, &format);
         if (window != nullptr) {
             spdlog::get("illixr")->info("window is not nullptr");
-        }
-        else{
+        } else {
             spdlog::get("illixr")->info("window is nullptr");
         }
         try {
             surface_ = eglCreateWindowSurface(display_, config, window_, nullptr);
-        }
-        catch (const std::exception& e) {
+        } catch (const std::exception& e) {
             return;
         }
-        EGLint ctxattrb[] = {
-                EGL_CONTEXT_CLIENT_VERSION, 2,
-                EGL_NONE
-        };
-        context_ = eglCreateContext(display_, config, egl_context, ctxattrb);
+        EGLint ctxattrb[] = {EGL_CONTEXT_CLIENT_VERSION, 2, EGL_NONE};
+        context_          = eglCreateContext(display_, config, egl_context, ctxattrb);
 
         eglQuerySurface(display_, surface_, EGL_WIDTH, &w);
         eglQuerySurface(display_, surface_, EGL_HEIGHT, &h);
@@ -207,12 +194,12 @@ public:
                                        None};
 #endif
 #ifndef __ANDROID__
-#  ifndef NDEBUG
+#    ifndef NDEBUG
         spdlog::get("illixr")->debug("[extended_window] Getting matching framebuffer configs");
-#  endif
+#    endif
         RAC_ERRNO_MSG("extended_window before glXChooseFBConfig");
 
-#  if defined(_WIN32) || defined(_WIN64)
+#    if defined(_WIN32) || defined(_WIN64)
         int pixel_format = ChoosePixelFormat(hdc_, &pfd);
         if (pixel_format == 0) {
             ILLIXR::abort("ChoosePixelFormat failed");
@@ -238,19 +225,19 @@ public:
             wglDeleteContext(temp_context);
             wglMakeCurrent(hdc_, context_);
         }
-#  else
+#    else
         int          fb_count  = 0;
         int          screen    = DefaultScreen(display_);
         GLXFBConfig* fb_config = glXChooseFBConfig(display_, screen, visual_attribs, &fb_count);
         if (!fb_config) {
             ILLIXR::abort("Failed to retrieve a framebuffer config");
         }
-#    ifndef NDEBUG
+#        ifndef NDEBUG
         spdlog::get("illixr")->debug("[extended_window] Found {} matching FB configs", fb_count);
 
         // Pick the FB config/visual with the most samples per pixel
         spdlog::get("illixr")->debug("[extended_window] Getting XVisualInfos");
-#    endif
+#        endif
         int best_fbc = -1, worst_fbc = -1, best_num_samp = -1, worst_num_samp = 999;
         int i;
         for (i = 0; i < fb_count; ++i) {
@@ -259,11 +246,11 @@ public:
                 int samp_buf, samples;
                 glXGetFBConfigAttrib(display_, fb_config[i], GLX_SAMPLE_BUFFERS, &samp_buf);
                 glXGetFBConfigAttrib(display_, fb_config[i], GLX_SAMPLES, &samples);
-#    ifndef NDEBUG
+#        ifndef NDEBUG
                 spdlog::get("illixr")->debug(
                     "[extended_window] Matching fb_config {}, visual ID {:x}: SAMPLE_BUFFERS = {}, SAMPLES = {}", i,
                     vis_info->visualid, samp_buf, samples);
-#    endif
+#        endif
                 if (best_fbc < 0 || (samp_buf && samples > best_num_samp)) {
                     best_fbc = i, best_num_samp = samples;
                 }
@@ -282,15 +269,15 @@ public:
 
         // Get a visual
         XVisualInfo* vis_info = glXGetVisualFromFBConfig(display_, g_best_fbc);
-#    ifndef NDEBUG
+#        ifndef NDEBUG
         spdlog::get("illixr")->debug("[extended_window] Chose visual ID = {:x}", vis_info->visualid);
         spdlog::get("illixr")->debug("[extended_window] Creating colormap");
-#    endif
+#        endif
         color_map_ = XCreateColormap(display_, root, vis_info->visual, AllocNone);
 
-#    ifndef NDEBUG
+#        ifndef NDEBUG
         spdlog::get("illixr")->debug("[extended_window] Creating window");
-#    endif
+#        endif
         XSetWindowAttributes attributes;
         attributes.colormap         = color_map_;
         attributes.background_pixel = 0;
@@ -307,9 +294,9 @@ public:
         // Done with visual info
         XFree(vis_info);
 
-#    ifndef NDEBUG
+#        ifndef NDEBUG
         spdlog::get("illixr")->debug("[extended_window] Creating context");
-#    endif
+#        endif
         auto glXCreateContextAttribsARB =
             (glXCreateContextAttribsARBProc) glXGetProcAddressARB((const GLubyte*) "glXCreateContextAttribsARB");
         int context_attribs[] = {GLX_CONTEXT_MAJOR_VERSION_ARB, 3, GLX_CONTEXT_MINOR_VERSION_ARB, 3, None};
@@ -321,71 +308,63 @@ public:
         XSync(display_, false);
         RAC_ERRNO_MSG("extended_window after XSync");
 
-#    ifndef NDEBUG
-            // Doing glXMakeCurrent here makes a third thread, the runtime one, enter the mix, and
-            // then there are three GL threads: runtime, timewarp, and gldemo, and the switching of
-            // contexts without synchronization during the initialization phase causes a data race.
-            // This is why native.yaml sometimes succeeds and sometimes doesn't. Headless succeeds
-            // because this behavior is OpenGL implementation dependent, and apparently mesa
-            // differs from NVIDIA in this regard.
-            // The proper fix is #173. Comment the below back in once #173 is done. In any case,
-            // this is just for debugging and does not affect any functionality.
+#        ifndef NDEBUG
+        // Doing glXMakeCurrent here makes a third thread, the runtime one, enter the mix, and
+        // then there are three GL threads: runtime, timewarp, and gldemo, and the switching of
+        // contexts without synchronization during the initialization phase causes a data race.
+        // This is why native.yaml sometimes succeeds and sometimes doesn't. Headless succeeds
+        // because this behavior is OpenGL implementation dependent, and apparently mesa
+        // differs from NVIDIA in this regard.
+        // The proper fix is #173. Comment the below back in once #173 is done. In any case,
+        // this is just for debugging and does not affect any functionality.
 
-            /*
-            const bool gl_result_0 = static_cast<bool>(glXMakeCurrent(display_, window_, context_));
-            int major = 0, minor = 0;
-            glGetIntegerv(GL_MAJOR_VERSION, &major);
-            glGetIntegerv(GL_MINOR_VERSION, &minor);
-            std::cout << "OpenGL context created" << std::endl
-                      << "Version " << major << "." << minor << std::endl
-                      << "Vendor " << glGetString(GL_VENDOR) << std::endl
-                      << "Renderer " << glGetString(GL_RENDERER) << std::endl;
-            const bool gl_result_1 = static_cast<bool>(glXMakeCurrent(display_, None, nullptr));
-            */
+        /*
+        const bool gl_result_0 = static_cast<bool>(glXMakeCurrent(display_, window_, context_));
+        int major = 0, minor = 0;
+        glGetIntegerv(GL_MAJOR_VERSION, &major);
+        glGetIntegerv(GL_MINOR_VERSION, &minor);
+        std::cout << "OpenGL context created" << std::endl
+                  << "Version " << major << "." << minor << std::endl
+                  << "Vendor " << glGetString(GL_VENDOR) << std::endl
+                  << "Renderer " << glGetString(GL_RENDERER) << std::endl;
+        const bool gl_result_1 = static_cast<bool>(glXMakeCurrent(display_, None, nullptr));
+        */
+#        endif
 #    endif
-#  endif
 #endif
     }
 
 #ifdef __ANDROID__
     xlib_gl_extended_window(int _width, int _height, EGLContext egl_context) {
-        width_ = _width;
-        height_ = _height;
+        width_   = _width;
+        height_  = _height;
         display_ = eglGetDisplay(EGL_DEFAULT_DISPLAY);
         EGLint major_version, minor_version;
         eglInitialize(display_, &major_version, &minor_version);
         spdlog::get("illixr")->info("EGL Initialized with major version : {} minor version: {}", major_version, minor_version);
 
-        const EGLint attribs[] = {
-                //EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
-                EGL_RENDERABLE_TYPE,EGL_OPENGL_ES2_BIT,
-                EGL_BLUE_SIZE, 8,
-                EGL_GREEN_SIZE, 8,
-                EGL_RED_SIZE, 8,
-                EGL_ALPHA_SIZE, 0,
-                // EGL_DEPTH_SIZE, 24,
-                EGL_NONE
-        };
+        const EGLint attribs[] = {// EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
+                                  EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT, EGL_BLUE_SIZE, 8, EGL_GREEN_SIZE, 8, EGL_RED_SIZE, 8,
+                                  EGL_ALPHA_SIZE, 0,
+                                  // EGL_DEPTH_SIZE, 24,
+                                  EGL_NONE};
 
-        //EGLint w, h;
-        EGLint format;
-        EGLint numConfigs;
+        // EGLint w, h;
+        EGLint    format;
+        EGLint    numConfigs;
         EGLConfig config = nullptr;
         eglChooseConfig(display_, attribs, &config, 1, &numConfigs);
-        std::unique_ptr < EGLConfig[] > supportedConfigs(new EGLConfig[numConfigs]);
+        std::unique_ptr<EGLConfig[]> supportedConfigs(new EGLConfig[numConfigs]);
         assert(supportedConfigs);
         eglChooseConfig(display_, attribs, supportedConfigs.get(), numConfigs, &numConfigs);
         assert(numConfigs);
         auto i = 0;
         for (; i < numConfigs; i++) {
-            auto &cfg = supportedConfigs[i];
+            auto&  cfg = supportedConfigs[i];
             EGLint r, g, b, d;
-            if (eglGetConfigAttrib(display_, cfg, EGL_RED_SIZE, &r) &&
-                eglGetConfigAttrib(display_, cfg, EGL_GREEN_SIZE, &g) &&
-                eglGetConfigAttrib(display_, cfg, EGL_BLUE_SIZE, &b) &&
-                eglGetConfigAttrib(display_, cfg, EGL_DEPTH_SIZE, &d) &&
+            if (eglGetConfigAttrib(display_, cfg, EGL_RED_SIZE, &r) && eglGetConfigAttrib(display_, cfg, EGL_GREEN_SIZE, &g) &&
+                eglGetConfigAttrib(display_, cfg, EGL_BLUE_SIZE, &b) && eglGetConfigAttrib(display_, cfg, EGL_DEPTH_SIZE, &d) &&
                 r == 8 && g == 8 && b == 8 && d == 24) {
-
                 config = supportedConfigs[i];
                 break;
             }
@@ -398,13 +377,9 @@ public:
             return;
         }
         eglGetConfigAttrib(display_, config, EGL_NATIVE_VISUAL_ID, &format);
-        surface_ = EGL_NO_SURFACE;
-        EGLint ctxattrb[] = {
-                EGL_CONTEXT_CLIENT_VERSION, 2,
-                EGL_NONE
-        };
-        context_ = eglCreateContext(display_, config, egl_context, ctxattrb);
-
+        surface_          = EGL_NO_SURFACE;
+        EGLint ctxattrb[] = {EGL_CONTEXT_CLIENT_VERSION, 2, EGL_NONE};
+        context_          = eglCreateContext(display_, config, egl_context, ctxattrb);
     }
 #endif
 
@@ -450,21 +425,21 @@ public:
 #endif
     }
 
-    int width_;
-    int height_;
+    int          width_;
+    int          height_;
     CONTEXT_TYPE context_;
 #if defined(_WIN32) || defined(_WIN64)
-    HWND  hwnd_;
-    HDC   hdc_;
+    HWND hwnd_;
+    HDC  hdc_;
 #else
     DISPLAY_TYPE display_;
     WINDOW_TYPE  window_;
-#  ifdef __ANDROID__
+#    ifdef __ANDROID__
     EGLSurface surface_;
-#  else
+#    else
 private:
     Colormap color_map_;
-#  endif
+#    endif
 #endif
 };
 } // namespace ILLIXR
