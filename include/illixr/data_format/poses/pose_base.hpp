@@ -7,6 +7,7 @@
 #    define POSE_DATA_TYPE xrt_pose
 #  else
 #    include <openxr/openxr.h>
+#    include "openxr_defines.hpp"
 #    define POSE_DATA_TYPE XrPosef
 #  endif
 #else
@@ -22,7 +23,7 @@ namespace ILLIXR::data_format::pose {
 /** @brief Distinguishes the left and right hand. */
 enum side : int { LEFT = 0, RIGHT = 1 };
 
-inline side non_primary(const side sd) {
+[[maybe_unused]] inline side non_primary(const side sd) {
     if (sd == LEFT)
         return RIGHT;
     return LEFT;
@@ -52,7 +53,8 @@ struct pose_base {
     explicit pose_base(POSE_DATA_TYPE pose)
         : POSE_DATA_TYPE{pose} { }
 
-    pose_base(const pose_base& base) {
+    pose_base(const pose_base& base)
+            : POSE_DATA_TYPE{} {
         position    = base.position;
         orientation = base.orientation;
     }

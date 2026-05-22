@@ -16,6 +16,7 @@
 #  endif // __has_include(<Eigen/Dense>)
 #endif     // USING_OPENXR
 #include <map>
+#include <utility>
 
 namespace ILLIXR::data_format::pose {
 
@@ -55,7 +56,7 @@ struct head_pose_data : public pose_base {
 /**
  * @typedef head_pose_type
  *
- * Pose and velocity data for the head / HMD. Using @c xrt_space_relation to be Monado compatable
+ * Pose and velocity data for the head / HMD. Using @c xrt_space_relation to be Monado compatible
  */
 typedef xrt_space_relation head_pose_type;
 
@@ -183,11 +184,7 @@ struct fast_head_pose_type : public switchboard::event {
      * @param predict_target_time_ The target time
      */
     fast_head_pose_type(head_pose_type pose_, time_point predict_computed_time_, TIME_POINT predict_target_time_)
-#ifdef USING_OPENXR
-        : pose{pose_}
-#else
         : pose{std::move(pose_)}
-#endif
         , predict_computed_time{predict_computed_time_}
         , predict_target_time{predict_target_time_} {}
 

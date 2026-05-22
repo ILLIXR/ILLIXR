@@ -5,7 +5,7 @@
 #  include <xrt/xrt_defines.h>
 #else
 #  include <openxr/openxr.h>
-#  include <stdint.h>
+#  include <cstdint>
 
 namespace ILLIXR::data_format::pose {
 // From monado xrt_defines.h
@@ -18,12 +18,12 @@ enum xrt_space_relation_flags : uint32_t {
     XRT_SPACE_RELATION_ORIENTATION_TRACKED_BIT =        (1u << 4u),
     XRT_SPACE_RELATION_POSITION_TRACKED_BIT =           (1u << 5u),
     // clang-format on
-    XRT_SPACE_RELATION_BITMASK_ALL = (uint32_t)XRT_SPACE_RELATION_ORIENTATION_VALID_BIT |      //
-                                     (uint32_t)XRT_SPACE_RELATION_POSITION_VALID_BIT |         //
-                                     (uint32_t)XRT_SPACE_RELATION_LINEAR_VELOCITY_VALID_BIT |  //
-                                     (uint32_t)XRT_SPACE_RELATION_ANGULAR_VELOCITY_VALID_BIT | //
-                                     (uint32_t)XRT_SPACE_RELATION_ORIENTATION_TRACKED_BIT |    //
-                                     (uint32_t)XRT_SPACE_RELATION_POSITION_TRACKED_BIT,
+    XRT_SPACE_RELATION_BITMASK_ALL [[maybe_unused]] = (uint32_t)XRT_SPACE_RELATION_ORIENTATION_VALID_BIT |      //
+                                                      (uint32_t)XRT_SPACE_RELATION_POSITION_VALID_BIT |         //
+                                                      (uint32_t)XRT_SPACE_RELATION_LINEAR_VELOCITY_VALID_BIT |  //
+                                                      (uint32_t)XRT_SPACE_RELATION_ANGULAR_VELOCITY_VALID_BIT | //
+                                                      (uint32_t)XRT_SPACE_RELATION_ORIENTATION_TRACKED_BIT |    //
+                                                      (uint32_t)XRT_SPACE_RELATION_POSITION_TRACKED_BIT,
     XRT_SPACE_RELATION_BITMASK_NONE = 0,
 };
 
@@ -35,7 +35,7 @@ enum xrt_space_relation_flags : uint32_t {
  * @see xrt_space_relation_flags
  */
 struct xrt_space_relation {
-    uint32_t          relation_flags;   //!< validity flags
+    uint32_t          relation_flags{XRT_SPACE_RELATION_BITMASK_NONE};   //!< validity flags
     struct XrPosef    pose;             //!< current pose
     struct XrVector3f linear_velocity;  //!< instantaneous linear velocity of the pose
     struct XrVector3f angular_velocity; //!< instantaneous angular velocity of the pose
@@ -98,9 +98,9 @@ struct xrt_space_relation {
         set_flags(location.locationFlags, velocity.velocityFlags);
     }
 
-    /**
+    [[nodiscard]] virtual /**
      * Returns whether the location is considered valid
-     * @return Trtue if both position and orientation are valid, False otherwise.
+     * @return True if both position and orientation are valid, False otherwise.
      */
     bool valid() const {
         return (relation_flags & XR_SPACE_LOCATION_POSITION_VALID_BIT) != 0u &&
