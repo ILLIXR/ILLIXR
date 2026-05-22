@@ -1,8 +1,8 @@
 #pragma once
 
 #if defined(_WIN32) || defined(_WIN64)
-#  define _WINSOCKAPI_
-#  define WIN32_LEAN_AND_MEAN
+#    define _WINSOCKAPI_
+#    define WIN32_LEAN_AND_MEAN
 #endif
 
 #include <cstring>
@@ -19,12 +19,12 @@
 #  define SOCKET_TYPE SOCKET
 // clang-format on
 #else
-#  include <arpa/inet.h>
-#  include <netinet/in.h>
-#  include <sys/socket.h>
-#  include <unistd.h>
-#  define BYTE_TYPE   ssize_t
-#  define SOCKET_TYPE int
+#    include <arpa/inet.h>
+#    include <netinet/in.h>
+#    include <sys/socket.h>
+#    include <unistd.h>
+#    define BYTE_TYPE   ssize_t
+#    define SOCKET_TYPE int
 #endif
 
 #include "illixr/export.hpp"

@@ -5,24 +5,24 @@
 #include "illixr/relative_clock.hpp"
 
 #ifdef __ANDROID__
-#  include <Eigen/Geometry>
+#    include <Eigen/Geometry>
 #else
-#  include <eigen3/Eigen/Geometry>
+#    include <eigen3/Eigen/Geometry>
 #endif
 
 #ifdef USING_OPENXR
-#  ifdef ENABLE_MONADO
-#    include "xrt/xrt_defines.h"
-#    define POSE_TYPE xrt_space_relation
-#  else
-#    include "illixr/data_format/poses/openxr_defines.hpp"
-#    define POSE_TYPE pose::xrt_space_relation
-#  endif
-#  include <openxr/openxr.h>
-#  define POSE_TIME_TYPE XrTime
+#    ifdef ENABLE_MONADO
+#        include "xrt/xrt_defines.h"
+#        define POSE_TYPE xrt_space_relation
+#    else
+#        include "illixr/data_format/poses/openxr_defines.hpp"
+#        define POSE_TYPE pose::xrt_space_relation
+#    endif
+#    include <openxr/openxr.h>
+#    define POSE_TIME_TYPE XrTime
 #else
-#  define POSE_TIME_TYPE time_point
-#  define POSE_TYPE      data_format::pose::fast_head_pose_type
+#    define POSE_TIME_TYPE time_point
+#    define POSE_TYPE      data_format::pose::fast_head_pose_type
 #endif
 
 namespace ILLIXR::data_format {

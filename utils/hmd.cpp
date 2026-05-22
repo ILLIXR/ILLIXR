@@ -1,4 +1,5 @@
 #include "illixr/hmd.hpp"
+
 #include <cmath>
 
 using namespace ILLIXR;

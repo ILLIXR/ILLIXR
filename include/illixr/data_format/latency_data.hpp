@@ -61,15 +61,15 @@ struct latency_pong : public switchboard::event {
  *       Positive values mean the server clock is ahead of the client clock.
  */
 struct network_latency_result : public switchboard::event {
-    uint64_t sequence_number;               ///< Sequence number of the measurement
-    double   round_trip_time_ms;            ///< Round-trip time in milliseconds (always accurate)
-    double   estimated_one_way_latency_ms;  ///< Estimated one-way latency assuming symmetric path (RTT/2)
-    double   client_to_server_ms;           ///< Client-Server latency (requires synchronized clocks)
-    double   server_to_client_ms;           ///< Server-Client latency (requires synchronized clocks)
-    double   estimated_clock_offset_ms;     ///< Estimated clock offset (server - client), assumes symmetric latency
-    double   smoothed_clock_offset_ms;      ///< EMA smoothed
-    double   smoothed_rtt_ms;               ///< EMA smoothed
-    uint64_t measurement_timestamp_ns;      ///< When this measurement was taken (client clock)
+    uint64_t sequence_number;              ///< Sequence number of the measurement
+    double   round_trip_time_ms;           ///< Round-trip time in milliseconds (always accurate)
+    double   estimated_one_way_latency_ms; ///< Estimated one-way latency assuming symmetric path (RTT/2)
+    double   client_to_server_ms;          ///< Client-Server latency (requires synchronized clocks)
+    double   server_to_client_ms;          ///< Server-Client latency (requires synchronized clocks)
+    double   estimated_clock_offset_ms;    ///< Estimated clock offset (server - client), assumes symmetric latency
+    double   smoothed_clock_offset_ms;     ///< EMA smoothed
+    double   smoothed_rtt_ms;              ///< EMA smoothed
+    uint64_t measurement_timestamp_ns;     ///< When this measurement was taken (client clock)
 
     network_latency_result()
         : sequence_number{0}
