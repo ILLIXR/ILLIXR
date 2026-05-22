@@ -4,7 +4,7 @@
 
 #include "drivers/illixr/illixr_framebuffer.h"
 #ifdef USING_OPENXR
-#include "illixr/data_format/poses/combined_pose.hpp"
+    #include "illixr/data_format/poses/combined_pose.hpp"
 #endif
 #include "illixr/data_format/frame.hpp"
 #include "illixr/data_format/hmd_config.hpp"
