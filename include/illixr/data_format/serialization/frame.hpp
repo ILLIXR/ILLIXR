@@ -10,7 +10,7 @@
 #include <spdlog/spdlog.h>
 #ifdef ILLIXR_LIBAV
 extern "C" {
-    #include "libavcodec_illixr/avcodec.h"
+#    include "libavcodec_illixr/avcodec.h"
 }
 #endif
 
@@ -146,9 +146,9 @@ void save(Archive& ar, const ILLIXR::data_format::compressed_frame& f, const uns
             ILLIXR::detail::save_packet(ar, f.left_motion_vec);
             ILLIXR::detail::save_packet(ar, f.right_motion_vec);
         }
-    #ifdef ILLIXR_LIBAV
+#    ifdef ILLIXR_LIBAV
     }
-    #endif
+#    endif
 #else
     static_assert(false, "Not compiled with libav or NVENC/NVDEC");
 #endif
@@ -205,26 +205,26 @@ void load(Archive& ar, ILLIXR::data_format::compressed_frame& f, const unsigned 
     } else {
 #if defined(ILLIXR_LIBAV) || defined(NVENC_ENCODER) || defined(NVDEC_DECODER)
 
-#  ifdef ILLIXR_LIBAV
+#    ifdef ILLIXR_LIBAV
         f.left_color  = av_packet_alloc();
         f.right_color = av_packet_alloc();
-#  endif
+#    endif
         ILLIXR::detail::load_packet(ar, f.left_color);
         ILLIXR::detail::load_packet(ar, f.right_color);
 
         if (f.use_depth) {
-#  ifdef ILLIXR_LIBAV
+#    ifdef ILLIXR_LIBAV
             f.left_depth  = av_packet_alloc();
             f.right_depth = av_packet_alloc();
-#  endif
+#    endif
             ILLIXR::detail::load_packet(ar, f.left_depth);
             ILLIXR::detail::load_packet(ar, f.right_depth);
         }
         if (f.use_motion_vectors) {
-#  ifdef ILLIXR_LIBAV
+#    ifdef ILLIXR_LIBAV
             f.left_motion_vec  = av_packet_alloc();
             f.right_motion_vec = av_packet_alloc();
-#  endif
+#    endif
             ILLIXR::detail::load_packet(ar, f.left_motion_vec);
             ILLIXR::detail::load_packet(ar, f.right_motion_vec);
         }

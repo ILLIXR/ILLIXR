@@ -3,7 +3,7 @@
 #include "illixr/data_format/imu.hpp"
 #include "illixr/data_format/misc.hpp"
 #ifndef __ANDROID__
-#  include "illixr/managed_thread.hpp"
+#    include "illixr/managed_thread.hpp"
 #endif
 #include "illixr/phonebook.hpp"
 #include "illixr/relative_clock.hpp"

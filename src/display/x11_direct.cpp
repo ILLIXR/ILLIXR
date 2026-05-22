@@ -1,13 +1,13 @@
 #ifndef __ANDROID__
 
-#include "x11_direct.hpp"
+#    include "x11_direct.hpp"
 
-#include "illixr/vk/vulkan_utils.hpp"
-#include "X11/extensions/Xrandr.h"
+#    include "illixr/vk/vulkan_utils.hpp"
+#    include "X11/extensions/Xrandr.h"
 
-#include <vulkan/vulkan.h>
-#include <vulkan/vulkan_xlib_xrandr.h>
-#include <X11/Xlib.h>
+#    include <vulkan/vulkan.h>
+#    include <vulkan/vulkan_xlib_xrandr.h>
+#    include <X11/Xlib.h>
 
 using namespace ILLIXR::display;
 

@@ -5,9 +5,9 @@
 #include "illixr/switchboard.hpp"
 
 #ifdef __ANDROID__
-#  include <Eigen/Dense>
+#    include <Eigen/Dense>
 #else
-#  include <eigen3/Eigen/Dense>
+#    include <eigen3/Eigen/Dense>
 #endif
 #include <fstream>
 #include <iostream>

@@ -1,32 +1,31 @@
 #if defined(_WIN32) || defined(_WIN64)
-#  include <windows.h>
+#    include <windows.h>
 #endif
 
 #ifdef __ANDROID__
-#  include <EGL/egl.h>
+#    include <EGL/egl.h>
 #else
 // clang-format off
 #  include <GL/glew.h> // GLEW has to be loaded before other GL libraries
 // clang-format on
 #endif
 
-#include "plugin.hpp"
-
 #include "illixr/error_util.hpp"
 #include "illixr/global_module_defs.hpp"
 #include "illixr/math_util.hpp"
+#include "plugin.hpp"
 
 #include <array>
 #include <chrono>
 #include <cmath>
 #ifdef __ANDROID__
-#  include <Eigen/Core>
+#    include <Eigen/Core>
 #else
-#  include <eigen3/Eigen/Core>
+#    include <eigen3/Eigen/Core>
 #endif
 #include <future>
 #ifndef __ANDROID__
-#  include <iostream>
+#    include <iostream>
 #endif
 #include <thread>
 
@@ -112,17 +111,17 @@ void gldemo::_p_thread_setup() {
     last_time_ = clock_->now();
 #ifndef __ANDROID__
     // Note: glXMakeContextCurrent must be called from the thread which will be using it.
-#  if defined(_WIN32) || defined(_WIN64)
+#    if defined(_WIN32) || defined(_WIN64)
     HGLRC ctx = wglGetCurrentContext();
     HDC   dcx = wglGetCurrentDC();
-#  endif
+#    endif
     [[maybe_unused]] int gl_result =
-#  if defined(_WIN32) || defined(_WIN64)
+#    if defined(_WIN32) || defined(_WIN64)
         wglMakeCurrent(ext_window_->hdc_, ext_window_->context_);
     DWORD error = GetLastError();
-#  else
-    static_cast<bool>(glXMakeCurrent(ext_window_->display_, ext_window_->window_, ext_window_->context_));
-#  endif
+#    else
+        static_cast<bool>(glXMakeCurrent(ext_window_->display_, ext_window_->window_, ext_window_->context_));
+#    endif
     assert(gl_result && "glXMakeCurrent should not fail");
 #endif
 }
@@ -135,10 +134,8 @@ void gldemo::_p_one_iteration() {
     wait_vsync();
 #ifdef __ANDROID__
     lock_->get_lock();
-    [[maybe_unused]] const bool gl_result = static_cast<bool>(eglMakeCurrent(ext_window_->display_,
-                                                                             ext_window_->surface_,
-                                                                             ext_window_->surface_,
-                                                                             ext_window_->context_));
+    [[maybe_unused]] const bool gl_result = static_cast<bool>(
+        eglMakeCurrent(ext_window_->display_, ext_window_->surface_, ext_window_->surface_, ext_window_->context_));
     assert(gl_result && "eglMakeCurrent should not fail");
 #endif
     glUseProgram(demo_shader_program_);
@@ -231,12 +228,11 @@ void gldemo::_p_one_iteration() {
     which_buffer_ = !which_buffer_;
 
 #ifdef __ANDROID__
-    [[maybe_unused]] const bool gl_result_1 = static_cast<bool>(eglMakeCurrent(ext_window_->display_,
-                                                                               nullptr, nullptr,
-                                                                               nullptr));
+    [[maybe_unused]] const bool gl_result_1 =
+        static_cast<bool>(eglMakeCurrent(ext_window_->display_, nullptr, nullptr, nullptr));
     assert(gl_result_1 && "glXMakeCurrent should not fail");
     lock_->release_lock();
-    auto stop = std::chrono::high_resolution_clock::now();
+    auto stop     = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
     spdlog::get("illixr")->debug("duration: %f", duration_to_double(duration));
 #endif
@@ -258,11 +254,12 @@ void gldemo::start() {
 #if defined(_WIN32) || defined(_WIN64)
         static_cast<bool>(wglMakeCurrent(ext_window_->hdc_, ext_window_->context_));
 #elif defined(__ANDROID__)
-        static_cast<bool>(eglMakeCurrent(ext_window_->display_, ext_window_->surface_, ext_window_->surface_, ext_window_->context_));
+        static_cast<bool>(
+            eglMakeCurrent(ext_window_->display_, ext_window_->surface_, ext_window_->surface_, ext_window_->context_));
 #else
         static_cast<bool>(glXMakeCurrent(ext_window_->display_, ext_window_->window_, ext_window_->context_));
 #endif
-    
+
     assert(gl_result_0 && "glXMakeCurrent should not fail");
 
     // Init and verify GLEW
@@ -300,10 +297,10 @@ void gldemo::start() {
     vertex_position_ = glGetAttribLocation(demo_shader_program_, "vertexPosition");
     vertex_normal_   = glGetAttribLocation(demo_shader_program_, "vertexNormal");
 #endif
-    model_view_      = glGetUniformLocation(demo_shader_program_, "u_modelview");
-    projection_      = glGetUniformLocation(demo_shader_program_, "u_projection");
+    model_view_ = glGetUniformLocation(demo_shader_program_, "u_modelview");
+    projection_ = glGetUniformLocation(demo_shader_program_, "u_projection");
 #ifdef __ANDROID__
-    color_uniform_   = glGetUniformLocation(demo_shader_program_, "u_color");
+    color_uniform_ = glGetUniformLocation(demo_shader_program_, "u_color");
 #endif
 
     // Load/initialize the demo scene

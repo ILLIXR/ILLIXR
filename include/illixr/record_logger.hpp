@@ -15,8 +15,8 @@
 #include <vector>
 
 #ifndef NDEBUG
-#  include <iostream>
-#  include <sstream>
+#    include <iostream>
+#    include <sstream>
 #endif
 
 namespace ILLIXR {

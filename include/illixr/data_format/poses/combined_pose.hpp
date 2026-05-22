@@ -1,16 +1,16 @@
 #pragma once
 #ifdef USING_OPENXR
-#include "illixr/data_format/poses/head_pose.hpp"
-#include "illixr/data_format/poses/hand_interaction_pose.hpp"
-#include "illixr/data_format/poses/hand_pose.hpp"
-#include "illixr/data_format/poses/palm_pose.hpp"
+#    include "illixr/data_format/poses/hand_interaction_pose.hpp"
+#    include "illixr/data_format/poses/hand_pose.hpp"
+#    include "illixr/data_format/poses/head_pose.hpp"
+#    include "illixr/data_format/poses/palm_pose.hpp"
 
 namespace ILLIXR::data_format::pose {
 
-constexpr std::uint8_t HEAD_TRACKED         { 0b0000'0001 };
-constexpr std::uint8_t HANDS_TRACKED        { 0b0000'0010 };
-constexpr std::uint8_t PALMS_TRACKED        { 0b0000'0100 };
-constexpr std::uint8_t INTERACTIONS_TRACKED { 0b0000'1000 };
+constexpr std::uint8_t HEAD_TRACKED{0b0000'0001};
+constexpr std::uint8_t HANDS_TRACKED{0b0000'0010};
+constexpr std::uint8_t PALMS_TRACKED{0b0000'0100};
+constexpr std::uint8_t INTERACTIONS_TRACKED{0b0000'1000};
 
 struct combined_pose : public switchboard::event {
     fast_head_pose_type         head_pose;
@@ -18,7 +18,7 @@ struct combined_pose : public switchboard::event {
     palm_poses_pair             palm_poses;
     hand_interaction_poses_pair hand_interactions;
     uint8_t                     valid_data = 0;
-    uint64_t                    id = 0;
+    uint64_t                    id         = 0;
 
     // Time conversion data populated by oxr_relay on the headset.
     // These allow pose_relay on the server to convert the pose's XrTime
