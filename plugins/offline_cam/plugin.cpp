@@ -11,8 +11,8 @@ using namespace ILLIXR;
 using namespace ILLIXR::data_format;
 
 // combine two maps into one
-std::map<ullong, sensor_types> make_map(const std::map<ullong, lazy_load_image>& cam0,
-                                        const std::map<ullong, lazy_load_image>& cam1) {
+std::map<ullong, sensor_types> make_map(const std::map<ullong, LAZY_TYPE>& cam0,
+                                        const std::map<ullong, LAZY_TYPE>& cam1) {
     std::map<ullong, sensor_types> data;
     for (auto& it : cam0) {
         data[it.first].cam0 = it.second;
@@ -23,12 +23,16 @@ std::map<ullong, sensor_types> make_map(const std::map<ullong, lazy_load_image>&
     return data;
 }
 
-inline std::map<ullong, lazy_load_image> read_data(std::ifstream& gt_file, const std::string& file_name) {
-    std::map<ullong, lazy_load_image> data;
+inline std::map<ullong, LAZY_TYPE> read_data(std::ifstream& gt_file, const std::string& file_name) {
+    std::map<ullong, LAZY_TYPE> data;
     auto                              name = std::regex_replace(file_name, std::regex("\\.csv"), "/");
     for (csv_iterator row{gt_file, 1}; row != csv_iterator{}; ++row) {
         ullong t = std::stoull(row[0]);
+#ifdef __ANDROID__
+        data[t]  = new lazy_load_image(name + row[1]);
+#else
         data[t]  = lazy_load_image{name + row[1]};
+#endif
     }
     return data;
 }
@@ -37,8 +41,8 @@ inline std::map<ullong, lazy_load_image> read_data(std::ifstream& gt_file, const
     : threadloop{name, pb}
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
     , cam_publisher_{switchboard_->get_writer<binocular_cam_type>("cam")}
-    , sensor_data_{make_map(load_data<lazy_load_image>("cam0", "offline_cam", &read_data, switchboard_),
-                            load_data<lazy_load_image>("cam1", "offline_cam", &read_data, switchboard_))}
+    , sensor_data_{make_map(load_data<LAZY_TYPE>("cam0", "offline_cam", &read_data, switchboard_),
+                            load_data<LAZY_TYPE>("cam1", "offline_cam", &read_data, switchboard_))}
     , dataset_first_time_{sensor_data_.cbegin()->first}
     , last_timestamp_{0}
     , clock_{phonebook_->lookup_impl<relative_clock>()}
@@ -88,8 +92,13 @@ void offline_cam::_p_one_iteration() {
     if (last_timestamp_ != nearest_row->first) {
         last_timestamp_ = nearest_row->first;
 
+#ifdef __ANDROID__
+        auto img0 = nearest_row->second.cam0->load();
+        auto img1 = nearest_row->second.cam1->load();
+#else
         auto img0 = nearest_row->second.cam0.load();
         auto img1 = nearest_row->second.cam1.load();
+#endif
 
         time_point expected_real_time_given_dataset_time(
             std::chrono::duration<long long, std::nano>{nearest_row->first - dataset_first_time_});
