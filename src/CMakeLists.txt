@@ -111,13 +111,13 @@ if(NOT ANDROID)
     install(TARGETS plugin.main${ILLIXR_BUILD_SUFFIX} DESTINATION lib)
 else()
     add_library(native-activity SHARED
-                illixr.hpp
-                main.cpp
-                plugin.cpp
-                runtime_impl.cpp
-                noop_record_logger.hpp
-                sqlite_record_logger.hpp
-                stdout_record_logger.hpp
+                src/illixr.hpp
+                src/main.cpp
+                src/plugin.cpp
+                src/runtime_impl.cpp
+                src/no_op_record_logger.hpp
+                src/sqlite_record_logger.hpp
+                src/stdout_record_logger.hpp
                 ${CMAKE_SOURCE_DIR}/include/illixr/dynamic_lib.hpp
                 ${CMAKE_SOURCE_DIR}/include/illixr/error_util.hpp
                 #${CMAKE_SOURCE_DIR}/include/illixr/extended_window.hpp

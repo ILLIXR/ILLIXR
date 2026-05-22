@@ -3,6 +3,10 @@
 #include "illixr/data_format/poses/pose_base.hpp"
 #include "misc.hpp"
 
+#ifdef USING_OPENXR
+#  include "openxr.hpp"
+#endif
+
 namespace boost::serialization {
 
 #ifdef USING_OPENXR
