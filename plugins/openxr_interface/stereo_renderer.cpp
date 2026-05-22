@@ -1,13 +1,12 @@
 #include "stereo_renderer.hpp"
 
-#include "color_vert_spv.h"
 #include "color_frag_spv.h"
+#include "color_vert_spv.h"
 #include "depth_frag_spv.h"
 #include "motion_vec_frag_spv.h"
 
-#include <spdlog/spdlog.h>
-
 #include <cstring>
+#include <spdlog/spdlog.h>
 #include <stdexcept>
 #include <vector>
 using namespace ILLIXR;
@@ -17,47 +16,43 @@ using namespace ILLIXR::data_format;
 // Helpers
 //
 
-#define VK_CHECK(expr)                                                              \
-    do {                                                                            \
-        VkResult _vk_result = (expr);                                               \
-        if (_vk_result != VK_SUCCESS) {                                             \
-            spdlog::get("illixr")->error("[stereo_renderer] Vulkan error {} at {}:{}", \
-                static_cast<int>(_vk_result), __FILE__, __LINE__);                 \
-            return false;                                                           \
-        }                                                                           \
+#define VK_CHECK(expr)                                                                                                         \
+    do {                                                                                                                       \
+        VkResult _vk_result = (expr);                                                                                          \
+        if (_vk_result != VK_SUCCESS) {                                                                                        \
+            spdlog::get("illixr")->error("[stereo_renderer] Vulkan error {} at {}:{}", static_cast<int>(_vk_result), __FILE__, \
+                                         __LINE__);                                                                            \
+            return false;                                                                                                      \
+        }                                                                                                                      \
     } while (0)
 
 stereo_renderer::~stereo_renderer() {
     cleanup();
 }
 
-void stereo_renderer::set_crop_region(int original_width, int original_height,
-                                       int padded_width,   int padded_height) {
-    crop_scale_x_ = static_cast<float>(original_width)  / static_cast<float>(padded_width);
+void stereo_renderer::set_crop_region(int original_width, int original_height, int padded_width, int padded_height) {
+    crop_scale_x_ = static_cast<float>(original_width) / static_cast<float>(padded_width);
     crop_scale_y_ = static_cast<float>(original_height) / static_cast<float>(padded_height);
 
-    spdlog::get("illixr")->info("[stereo_renderer] Crop {}x{} → {}x{} (scale {:.4f},{:.4f})",
-                                padded_width, padded_height,
-                                original_width, original_height,
-                                crop_scale_x_, crop_scale_y_);
+    spdlog::get("illixr")->info("[stereo_renderer] Crop {}x{} → {}x{} (scale {:.4f},{:.4f})", padded_width, padded_height,
+                                original_width, original_height, crop_scale_x_, crop_scale_y_);
 }
 
 //
 // Initialization
 //
-bool stereo_renderer::initialize(VkInstance instance, VkPhysicalDevice physical_device,
-                                  VkDevice device, VkQueue queue, uint32_t queue_family,
-                                  VkFormat swapchain_format) {
+bool stereo_renderer::initialize(VkInstance instance, VkPhysicalDevice physical_device, VkDevice device, VkQueue queue,
+                                 uint32_t queue_family, VkFormat swapchain_format) {
     if (initialized_) {
         spdlog::get("illixr")->warn("stereo_renderer already initialized");
         return true;
     }
 
-    instance_        = instance;
-    physical_device_ = physical_device;
-    device_          = device;
-    queue_           = queue;
-    queue_family_    = queue_family;
+    instance_         = instance;
+    physical_device_  = physical_device;
+    device_           = device;
+    queue_            = queue;
+    queue_family_     = queue_family;
     swapchain_format_ = swapchain_format;
     image_cache_.reserve(32);
     // Resolve the Android hardware buffer properties extension.
@@ -69,10 +64,14 @@ bool stereo_renderer::initialize(VkInstance instance, VkPhysicalDevice physical_
         return false;
     }
 
-    if (!create_render_pass())       return false;
-    if (!create_command_pool())      return false;
-    if (!allocate_command_buffers()) return false;
-    if (!create_descriptor_pool())   return false;
+    if (!create_render_pass())
+        return false;
+    if (!create_command_pool())
+        return false;
+    if (!allocate_command_buffers())
+        return false;
+    if (!create_descriptor_pool())
+        return false;
 
     // Fences for render completion
     VkFenceCreateInfo fence_info{VK_STRUCTURE_TYPE_FENCE_CREATE_INFO};
@@ -123,7 +122,7 @@ bool stereo_renderer::create_render_pass() {
     color_attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
     color_attachment.initialLayout  = VK_IMAGE_LAYOUT_UNDEFINED;
     // OpenXR expects COLOR_ATTACHMENT_OPTIMAL when it acquires the image back.
-    color_attachment.finalLayout    = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+    color_attachment.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
     VkAttachmentReference color_ref{};
     color_ref.attachment = 0;
@@ -160,9 +159,10 @@ bool stereo_renderer::create_render_pass() {
 //
 
 bool stereo_renderer::create_pipeline(const imported_image& prototype) {
-    if (pipeline_created_) return true;
+    if (pipeline_created_)
+        return true;
 
-    //  Descriptor set layout with immutable YCbCr sampler 
+    // Descriptor set layout with immutable YCbCr sampler
     // YCbCr combined-image-samplers MUST use immutable samplers in the layout.
     VkDescriptorSetLayoutBinding binding{};
     binding.binding            = 0;
@@ -171,28 +171,27 @@ bool stereo_renderer::create_pipeline(const imported_image& prototype) {
     binding.stageFlags         = VK_SHADER_STAGE_FRAGMENT_BIT;
     binding.pImmutableSamplers = &prototype.sampler;
 
-    VkDescriptorSetLayoutCreateInfo layout_info{
-        VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO};
+    VkDescriptorSetLayoutCreateInfo layout_info{VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO};
     layout_info.bindingCount = 1;
     layout_info.pBindings    = &binding;
     VK_CHECK(vkCreateDescriptorSetLayout(device_, &layout_info, nullptr, &desc_set_layout_));
 
     // Allocate descriptor sets (one per eye)
     std::vector<VkDescriptorSetLayout> layouts(2, desc_set_layout_);
-    VkDescriptorSetAllocateInfo alloc_info{VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO};
+    VkDescriptorSetAllocateInfo        alloc_info{VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO};
     alloc_info.descriptorPool     = descriptor_pool_;
     alloc_info.descriptorSetCount = 2;
     alloc_info.pSetLayouts        = layouts.data();
     VK_CHECK(vkAllocateDescriptorSets(device_, &alloc_info, descriptor_sets_.data()));
 
-    //  Push constants (crop scale + u_offset) 
+    // Push constants (crop scale + u_offset)
     VkPushConstantRange push_range{};
     push_range.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
     push_range.offset     = 0;
 #ifdef COMBINED_ENCODING
-    push_range.size       = sizeof(float) * 3; // crop_scale_x, crop_scale_y, u_offset
+    push_range.size = sizeof(float) * 3; // crop_scale_x, crop_scale_y, u_offset
 #else
-    push_range.size       = sizeof(float) * 2; // crop_scale_x, crop_scale_y
+    push_range.size = sizeof(float) * 2; // crop_scale_x, crop_scale_y
 #endif
 
     VkPipelineLayoutCreateInfo pl_info{VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO};
@@ -202,11 +201,9 @@ bool stereo_renderer::create_pipeline(const imported_image& prototype) {
     pl_info.pPushConstantRanges    = &push_range;
     VK_CHECK(vkCreatePipelineLayout(device_, &pl_info, nullptr, &pipeline_layout_));
 
-    //  Shaders 
-    VkShaderModule vert_module = create_shader_module(device_,
-                                                      color_vert_spv, sizeof(color_vert_spv) / sizeof(uint32_t));
-    VkShaderModule frag_module = create_shader_module(device_,
-                                                      color_frag_spv, sizeof(color_frag_spv) / sizeof(uint32_t));
+    // Shaders
+    VkShaderModule vert_module = create_shader_module(device_, color_vert_spv, sizeof(color_vert_spv) / sizeof(uint32_t));
+    VkShaderModule frag_module = create_shader_module(device_, color_frag_spv, sizeof(color_frag_spv) / sizeof(uint32_t));
     if (vert_module == VK_NULL_HANDLE || frag_module == VK_NULL_HANDLE) {
         spdlog::get("illixr")->error("[stereo_renderer] Shader compilation failed");
         return false;
@@ -222,43 +219,36 @@ bool stereo_renderer::create_pipeline(const imported_image& prototype) {
     stages[1].module = frag_module;
     stages[1].pName  = "main";
 
-    //  Fixed-function state
-    VkPipelineVertexInputStateCreateInfo vertex_input{
-        VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO};
+    // Fixed-function state
+    VkPipelineVertexInputStateCreateInfo vertex_input{VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO};
     // No vertex buffers — we generate vertices from gl_VertexIndex.
 
-    VkPipelineInputAssemblyStateCreateInfo ia{
-        VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO};
+    VkPipelineInputAssemblyStateCreateInfo ia{VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO};
     ia.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 
-    VkPipelineViewportStateCreateInfo vp_state{
-        VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO};
+    VkPipelineViewportStateCreateInfo vp_state{VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO};
     vp_state.viewportCount = 1;
     vp_state.scissorCount  = 1;
 
-    VkPipelineRasterizationStateCreateInfo raster{
-        VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO};
+    VkPipelineRasterizationStateCreateInfo raster{VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO};
     raster.polygonMode = VK_POLYGON_MODE_FILL;
     raster.cullMode    = VK_CULL_MODE_NONE;
     raster.frontFace   = VK_FRONT_FACE_COUNTER_CLOCKWISE;
     raster.lineWidth   = 1.0f;
 
-    VkPipelineMultisampleStateCreateInfo ms{
-        VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO};
+    VkPipelineMultisampleStateCreateInfo ms{VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO};
     ms.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
 
     VkPipelineColorBlendAttachmentState blend_attachment{};
     blend_attachment.colorWriteMask =
-        VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
-        VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+        VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 
-    VkPipelineColorBlendStateCreateInfo blend{
-        VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO};
+    VkPipelineColorBlendStateCreateInfo blend{VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO};
     blend.attachmentCount = 1;
     blend.pAttachments    = &blend_attachment;
 
     // Viewport and scissor are dynamic so we can change them per-frame.
-    constexpr VkDynamicState dyn_states[] = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
+    constexpr VkDynamicState         dyn_states[] = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
     VkPipelineDynamicStateCreateInfo dyn{VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO};
     dyn.dynamicStateCount = 2;
     dyn.pDynamicStates    = dyn_states;
@@ -277,14 +267,12 @@ bool stereo_renderer::create_pipeline(const imported_image& prototype) {
     gp_info.renderPass          = render_pass_;
     gp_info.subpass             = 0;
 
-    VkResult result = vkCreateGraphicsPipelines(device_, VK_NULL_HANDLE, 1,
-                                                &gp_info, nullptr, &pipeline_);
+    VkResult result = vkCreateGraphicsPipelines(device_, VK_NULL_HANDLE, 1, &gp_info, nullptr, &pipeline_);
     vkDestroyShaderModule(device_, vert_module, nullptr);
     vkDestroyShaderModule(device_, frag_module, nullptr);
 
     if (result != VK_SUCCESS) {
-        spdlog::get("illixr")->error("[stereo_renderer] vkCreateGraphicsPipelines failed: {}",
-                                     static_cast<int>(result));
+        spdlog::get("illixr")->error("[stereo_renderer] vkCreateGraphicsPipelines failed: {}", static_cast<int>(result));
         // Release all resources allocated in this attempt so that:
         //   (a) the descriptor pool does not fill up on repeated failures
         //       (pool exhaustion returns VK_ERROR_OUT_OF_POOL_MEMORY = -1000069000
@@ -308,11 +296,10 @@ bool stereo_renderer::create_pipeline(const imported_image& prototype) {
 // Shader module
 //
 
-VkShaderModule stereo_renderer::create_shader_module(VkDevice device,
-                                                     const uint32_t* spv, size_t word_count) {
+VkShaderModule stereo_renderer::create_shader_module(VkDevice device, const uint32_t* spv, size_t word_count) {
     VkShaderModuleCreateInfo ci{VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO};
-    ci.codeSize = word_count * sizeof(uint32_t);
-    ci.pCode    = spv;
+    ci.codeSize        = word_count * sizeof(uint32_t);
+    ci.pCode           = spv;
     VkShaderModule mod = VK_NULL_HANDLE;
     vkCreateShaderModule(device, &ci, nullptr, &mod);
     return mod;
@@ -359,8 +346,7 @@ bool stereo_renderer::create_descriptor_pool() {
 // AHardwareBuffer → VkImage import
 //
 
-stereo_renderer::imported_image*
-stereo_renderer::import_hardware_buffer(AHardwareBuffer* hw_buffer) {
+stereo_renderer::imported_image* stereo_renderer::import_hardware_buffer(AHardwareBuffer* hw_buffer) {
     auto it = image_cache_.find(hw_buffer);
     if (it != image_cache_.end()) {
         return it->second.get();
@@ -369,11 +355,10 @@ stereo_renderer::import_hardware_buffer(AHardwareBuffer* hw_buffer) {
     imported_image img{};
     img.hw_buffer = hw_buffer;
 
-    //  Query AHardwareBuffer properties 
+    // Query AHardwareBuffer properties
     VkAndroidHardwareBufferFormatPropertiesANDROID fmt_props{
         VK_STRUCTURE_TYPE_ANDROID_HARDWARE_BUFFER_FORMAT_PROPERTIES_ANDROID};
-    VkAndroidHardwareBufferPropertiesANDROID ahb_props{
-        VK_STRUCTURE_TYPE_ANDROID_HARDWARE_BUFFER_PROPERTIES_ANDROID};
+    VkAndroidHardwareBufferPropertiesANDROID ahb_props{VK_STRUCTURE_TYPE_ANDROID_HARDWARE_BUFFER_PROPERTIES_ANDROID};
     ahb_props.pNext = &fmt_props;
 
     if (vk_get_ahb_properties_(device_, hw_buffer, &ahb_props) != VK_SUCCESS) {
@@ -383,35 +368,33 @@ stereo_renderer::import_hardware_buffer(AHardwareBuffer* hw_buffer) {
 
     img.external_fmt = fmt_props.externalFormat;
     spdlog::get("illixr")->debug("[stereo_renderer] AHardwareBuffer imported: "
-                                  "externalFormat=0x{:X} memTypeBits=0x{:X}",
-                                  img.external_fmt, ahb_props.memoryTypeBits);
+                                 "externalFormat=0x{:X} memTypeBits=0x{:X}",
+                                 img.external_fmt, ahb_props.memoryTypeBits);
 
-    //  YCbCr conversion
+    // YCbCr conversion
     // For AIMAGE_FORMAT_PRIVATE buffers the externalFormat is non-zero.
     // We must attach a VkSamplerYcbcrConversion so the driver performs
     // the YUV→RGB transform in the sampler.
     VkExternalFormatANDROID ext_fmt_info{VK_STRUCTURE_TYPE_EXTERNAL_FORMAT_ANDROID};
     ext_fmt_info.externalFormat = img.external_fmt;
 
-    VkSamplerYcbcrConversionCreateInfo ycbcr_info{
-        VK_STRUCTURE_TYPE_SAMPLER_YCBCR_CONVERSION_CREATE_INFO};
-    ycbcr_info.pNext                    = &ext_fmt_info;
-    ycbcr_info.format                   = VK_FORMAT_UNDEFINED; // required for external format
-    ycbcr_info.ycbcrModel               = fmt_props.suggestedYcbcrModel;
-    ycbcr_info.ycbcrRange               = fmt_props.suggestedYcbcrRange;
-    ycbcr_info.components               = fmt_props.samplerYcbcrConversionComponents;
-    ycbcr_info.xChromaOffset            = fmt_props.suggestedXChromaOffset;
-    ycbcr_info.yChromaOffset            = fmt_props.suggestedYChromaOffset;
-    ycbcr_info.chromaFilter             = VK_FILTER_LINEAR;
+    VkSamplerYcbcrConversionCreateInfo ycbcr_info{VK_STRUCTURE_TYPE_SAMPLER_YCBCR_CONVERSION_CREATE_INFO};
+    ycbcr_info.pNext                       = &ext_fmt_info;
+    ycbcr_info.format                      = VK_FORMAT_UNDEFINED; // required for external format
+    ycbcr_info.ycbcrModel                  = fmt_props.suggestedYcbcrModel;
+    ycbcr_info.ycbcrRange                  = fmt_props.suggestedYcbcrRange;
+    ycbcr_info.components                  = fmt_props.samplerYcbcrConversionComponents;
+    ycbcr_info.xChromaOffset               = fmt_props.suggestedXChromaOffset;
+    ycbcr_info.yChromaOffset               = fmt_props.suggestedYChromaOffset;
+    ycbcr_info.chromaFilter                = VK_FILTER_LINEAR;
     ycbcr_info.forceExplicitReconstruction = VK_FALSE;
 
-    if (vkCreateSamplerYcbcrConversion(device_, &ycbcr_info, nullptr, &img.ycbcr_conv)
-            != VK_SUCCESS) {
+    if (vkCreateSamplerYcbcrConversion(device_, &ycbcr_info, nullptr, &img.ycbcr_conv) != VK_SUCCESS) {
         spdlog::get("illixr")->error("[stereo_renderer] vkCreateSamplerYcbcrConversion failed");
         return nullptr;
     }
 
-    //  Sampler 
+    // Sampler
     VkSamplerYcbcrConversionInfo conv_info{VK_STRUCTURE_TYPE_SAMPLER_YCBCR_CONVERSION_INFO};
     conv_info.conversion = img.ycbcr_conv;
 
@@ -430,12 +413,11 @@ stereo_renderer::import_hardware_buffer(AHardwareBuffer* hw_buffer) {
         return nullptr;
     }
 
-    //  VkImage 
+    // VkImage
     AHardwareBuffer_Desc ahb_desc{};
     AHardwareBuffer_describe(hw_buffer, &ahb_desc);
 
-    VkExternalMemoryImageCreateInfo ext_mem_img{
-        VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_IMAGE_CREATE_INFO};
+    VkExternalMemoryImageCreateInfo ext_mem_img{VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_IMAGE_CREATE_INFO};
     ext_mem_img.pNext       = &ext_fmt_info;
     ext_mem_img.handleTypes = VK_EXTERNAL_MEMORY_HANDLE_TYPE_ANDROID_HARDWARE_BUFFER_BIT_ANDROID;
 
@@ -458,9 +440,8 @@ stereo_renderer::import_hardware_buffer(AHardwareBuffer* hw_buffer) {
         return nullptr;
     }
 
-    //  VkDeviceMemory (imported from AHardwareBuffer)
-    VkImportAndroidHardwareBufferInfoANDROID import_info{
-        VK_STRUCTURE_TYPE_IMPORT_ANDROID_HARDWARE_BUFFER_INFO_ANDROID};
+    // VkDeviceMemory (imported from AHardwareBuffer)
+    VkImportAndroidHardwareBufferInfoANDROID import_info{VK_STRUCTURE_TYPE_IMPORT_ANDROID_HARDWARE_BUFFER_INFO_ANDROID};
     import_info.buffer = hw_buffer;
 
     VkMemoryDedicatedAllocateInfo ded_alloc{VK_STRUCTURE_TYPE_MEMORY_DEDICATED_ALLOCATE_INFO};
@@ -468,7 +449,7 @@ stereo_renderer::import_hardware_buffer(AHardwareBuffer* hw_buffer) {
     ded_alloc.image = img.image;
 
     // Find a memory type that satisfies the AHardwareBuffer requirements.
-    uint32_t mem_type_idx = 0;
+    uint32_t                         mem_type_idx = 0;
     VkPhysicalDeviceMemoryProperties mem_props{};
     vkGetPhysicalDeviceMemoryProperties(physical_device_, &mem_props);
     bool found = false;
@@ -476,7 +457,7 @@ stereo_renderer::import_hardware_buffer(AHardwareBuffer* hw_buffer) {
         if ((ahb_props.memoryTypeBits & (1u << i)) &&
             (mem_props.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)) {
             mem_type_idx = i;
-            found = true;
+            found        = true;
             break;
         }
     }
@@ -507,7 +488,7 @@ stereo_renderer::import_hardware_buffer(AHardwareBuffer* hw_buffer) {
         return nullptr;
     }
 
-    //  VkImageView 
+    // VkImageView
     VkSamplerYcbcrConversionInfo view_conv{VK_STRUCTURE_TYPE_SAMPLER_YCBCR_CONVERSION_INFO};
     view_conv.conversion = img.ycbcr_conv;
 
@@ -532,13 +513,11 @@ stereo_renderer::import_hardware_buffer(AHardwareBuffer* hw_buffer) {
     return image_cache_[hw_buffer].get();
 }
 
-stereo_renderer::imported_image*
-stereo_renderer::import_mv_hardware_buffer(AHardwareBuffer* hw_buffer) {
+stereo_renderer::imported_image* stereo_renderer::import_mv_hardware_buffer(AHardwareBuffer* hw_buffer) {
     // ── Identical to import_hardware_buffer() up to the YCbCr model ───────────
-    VkAndroidHardwareBufferPropertiesANDROID props{
-            VK_STRUCTURE_TYPE_ANDROID_HARDWARE_BUFFER_PROPERTIES_ANDROID};
+    VkAndroidHardwareBufferPropertiesANDROID       props{VK_STRUCTURE_TYPE_ANDROID_HARDWARE_BUFFER_PROPERTIES_ANDROID};
     VkAndroidHardwareBufferFormatPropertiesANDROID fmt_props{
-            VK_STRUCTURE_TYPE_ANDROID_HARDWARE_BUFFER_FORMAT_PROPERTIES_ANDROID};
+        VK_STRUCTURE_TYPE_ANDROID_HARDWARE_BUFFER_FORMAT_PROPERTIES_ANDROID};
     props.pNext = &fmt_props;
     if (vkGetAndroidHardwareBufferPropertiesANDROID(device_, hw_buffer, &props) != VK_SUCCESS) {
         return nullptr;
@@ -547,28 +526,26 @@ stereo_renderer::import_mv_hardware_buffer(AHardwareBuffer* hw_buffer) {
     VkExternalFormatANDROID ext_fmt_info{VK_STRUCTURE_TYPE_EXTERNAL_FORMAT_ANDROID};
     ext_fmt_info.externalFormat = fmt_props.externalFormat;
 
-    VkSamplerYcbcrConversionCreateInfo ycbcr_info{
-            VK_STRUCTURE_TYPE_SAMPLER_YCBCR_CONVERSION_CREATE_INFO};
-    ycbcr_info.pNext      = &ext_fmt_info;
-    ycbcr_info.format     = VK_FORMAT_UNDEFINED;
+    VkSamplerYcbcrConversionCreateInfo ycbcr_info{VK_STRUCTURE_TYPE_SAMPLER_YCBCR_CONVERSION_CREATE_INFO};
+    ycbcr_info.pNext  = &ext_fmt_info;
+    ycbcr_info.format = VK_FORMAT_UNDEFINED;
 
     // ── KEY DIFFERENCE: force RGB_IDENTITY, do NOT use suggestedYcbcrModel ──
     // The motion-vector buffer contains quantised float data, not a colour
     // video signal.  With RGB_IDENTITY the sampler performs a passthrough:
     // R ← Y_norm (Vx channel), G ← U_norm (Vy channel), B ← V_norm (Vz channel).
     // This lets motion_vec.frag dequantise directly without inverting BT.601.
-    ycbcr_info.ycbcrModel               = VK_SAMPLER_YCBCR_MODEL_CONVERSION_RGB_IDENTITY;
-    ycbcr_info.ycbcrRange               = VK_SAMPLER_YCBCR_RANGE_ITU_FULL;
-    ycbcr_info.components               = fmt_props.samplerYcbcrConversionComponents;
-    ycbcr_info.xChromaOffset            = fmt_props.suggestedXChromaOffset;
-    ycbcr_info.yChromaOffset            = fmt_props.suggestedYChromaOffset;
-    ycbcr_info.chromaFilter             = VK_FILTER_LINEAR;
+    ycbcr_info.ycbcrModel                  = VK_SAMPLER_YCBCR_MODEL_CONVERSION_RGB_IDENTITY;
+    ycbcr_info.ycbcrRange                  = VK_SAMPLER_YCBCR_RANGE_ITU_FULL;
+    ycbcr_info.components                  = fmt_props.samplerYcbcrConversionComponents;
+    ycbcr_info.xChromaOffset               = fmt_props.suggestedXChromaOffset;
+    ycbcr_info.yChromaOffset               = fmt_props.suggestedYChromaOffset;
+    ycbcr_info.chromaFilter                = VK_FILTER_LINEAR;
     ycbcr_info.forceExplicitReconstruction = VK_FALSE;
 
     // ── Identical to import_hardware_buffer() from here ───────────────────────
     imported_image img{};
-    if (vkCreateSamplerYcbcrConversion(device_, &ycbcr_info, nullptr, &img.ycbcr_conv)
-        != VK_SUCCESS) {
+    if (vkCreateSamplerYcbcrConversion(device_, &ycbcr_info, nullptr, &img.ycbcr_conv) != VK_SUCCESS) {
         return nullptr;
     }
 
@@ -576,12 +553,12 @@ stereo_renderer::import_mv_hardware_buffer(AHardwareBuffer* hw_buffer) {
     conv_info.conversion = img.ycbcr_conv;
 
     VkSamplerCreateInfo sampler_info{VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO};
-    sampler_info.pNext             = &conv_info;
-    sampler_info.magFilter         = VK_FILTER_LINEAR;
-    sampler_info.minFilter         = VK_FILTER_LINEAR;
-    sampler_info.addressModeU      = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
-    sampler_info.addressModeV      = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
-    sampler_info.addressModeW      = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+    sampler_info.pNext                   = &conv_info;
+    sampler_info.magFilter               = VK_FILTER_LINEAR;
+    sampler_info.minFilter               = VK_FILTER_LINEAR;
+    sampler_info.addressModeU            = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+    sampler_info.addressModeV            = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+    sampler_info.addressModeW            = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
     sampler_info.unnormalizedCoordinates = VK_FALSE;
     if (vkCreateSampler(device_, &sampler_info, nullptr, &img.sampler) != VK_SUCCESS) {
         vkDestroySamplerYcbcrConversion(device_, img.ycbcr_conv, nullptr);
@@ -589,20 +566,17 @@ stereo_renderer::import_mv_hardware_buffer(AHardwareBuffer* hw_buffer) {
     }
 
     // External image memory import — identical to import_hardware_buffer().
-    VkImportAndroidHardwareBufferInfoANDROID import_info{
-            VK_STRUCTURE_TYPE_IMPORT_ANDROID_HARDWARE_BUFFER_INFO_ANDROID};
+    VkImportAndroidHardwareBufferInfoANDROID import_info{VK_STRUCTURE_TYPE_IMPORT_ANDROID_HARDWARE_BUFFER_INFO_ANDROID};
     import_info.buffer = hw_buffer;
 
-    VkExternalMemoryImageCreateInfo ext_mem_img{
-            VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_IMAGE_CREATE_INFO};
+    VkExternalMemoryImageCreateInfo ext_mem_img{VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_IMAGE_CREATE_INFO};
     ext_mem_img.handleTypes = VK_EXTERNAL_MEMORY_HANDLE_TYPE_ANDROID_HARDWARE_BUFFER_BIT_ANDROID;
 
     VkImageCreateInfo img_info{VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO};
     img_info.pNext         = &ext_mem_img;
     img_info.imageType     = VK_IMAGE_TYPE_2D;
     img_info.format        = VK_FORMAT_UNDEFINED;
-    img_info.extent        = {static_cast<uint32_t>(props.allocationSize > 0 ? 1 : 1),
-                              1, 1};  // Driver fills actual extent
+    img_info.extent        = {static_cast<uint32_t>(props.allocationSize > 0 ? 1 : 1), 1, 1}; // Driver fills actual extent
     img_info.mipLevels     = 1;
     img_info.arrayLayers   = 1;
     img_info.samples       = VK_SAMPLE_COUNT_1_BIT;
@@ -634,7 +608,10 @@ stereo_renderer::import_mv_hardware_buffer(AHardwareBuffer* hw_buffer) {
 
     uint32_t type_idx = 0;
     for (uint32_t i = 0; i < 32; i++) {
-        if ((mem_reqs.memoryTypeBits >> i) & 1) { type_idx = i; break; }
+        if ((mem_reqs.memoryTypeBits >> i) & 1) {
+            type_idx = i;
+            break;
+        }
     }
     alloc.memoryTypeIndex = type_idx;
     if (vkAllocateMemory(device_, &alloc, nullptr, &img.memory) != VK_SUCCESS) {
@@ -651,9 +628,9 @@ stereo_renderer::import_mv_hardware_buffer(AHardwareBuffer* hw_buffer) {
         return nullptr;
     }
 
-    VkImageViewCreateInfo view_info{VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO};
+    VkImageViewCreateInfo        view_info{VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO};
     VkSamplerYcbcrConversionInfo view_conv{VK_STRUCTURE_TYPE_SAMPLER_YCBCR_CONVERSION_INFO};
-    view_conv.conversion = img.ycbcr_conv;
+    view_conv.conversion       = img.ycbcr_conv;
     view_info.pNext            = &view_conv;
     view_info.image            = img.image;
     view_info.viewType         = VK_IMAGE_VIEW_TYPE_2D;
@@ -665,9 +642,12 @@ stereo_renderer::import_mv_hardware_buffer(AHardwareBuffer* hw_buffer) {
     }
 
     auto [it, ok] = mv_image_cache_.emplace(hw_buffer, std::make_unique<imported_image>(std::move(img)));
-    if (!ok) { return nullptr; }
+    if (!ok) {
+        return nullptr;
+    }
     return it->second.get();
 }
+
 //
 // receive_frame — import the new AHardwareBuffers
 //
@@ -710,8 +690,8 @@ void stereo_renderer::receive_frame(const dual_frames& frame) {
             }
         }
         // Both eyes share the same image; update both descriptor sets.
-        //update_descriptor_set(0, *img);
-        //update_descriptor_set(1, *img);
+        // update_descriptor_set(0, *img);
+        // update_descriptor_set(1, *img);
         has_valid_frame_ = true;
 
         // Depth and motion vectors are still per-eye — fall through to the
@@ -721,7 +701,8 @@ void stereo_renderer::receive_frame(const dual_frames& frame) {
 #endif // COMBINED_ENCODING
 
     for (int eye = 0; eye < 2; eye++) {
-        if (bufs[eye] == nullptr) continue;
+        if (bufs[eye] == nullptr)
+            continue;
         imported_image* img = import_hardware_buffer(bufs[eye]);
         if (!img) {
             spdlog::get("illixr")->error("[stereo_renderer] Failed to import AHardwareBuffer for eye {}", eye);
@@ -740,18 +721,18 @@ void stereo_renderer::receive_frame(const dual_frames& frame) {
         }
 
         // Update descriptor set for this eye.
-        //update_descriptor_set(eye, *img);
+        // update_descriptor_set(eye, *img);
     }
 
     has_valid_frame_ = (current_images_[0] != nullptr && current_images_[1] != nullptr);
 
 #ifdef COMBINED_ENCODING
-    handle_depth_mv:
+handle_depth_mv:
 #endif
 
-//    current_format_ = frame.format;
-//    frame_width_ = frame.width;
-//    frame_height_ = frame.height; TODO:
+    // current_format_ = frame.format;
+    // frame_width_ = frame.width;
+    // frame_height_ = frame.height; TODO:
 
     /*if (frame.format == frame_format::external_oes) {
         // Store texture handles (owned by decoder)
@@ -772,12 +753,13 @@ void stereo_renderer::receive_frame(const dual_frames& frame) {
         upload_nv12_data(1, frame.right_eye, frame.width, frame.height);
     }*/
 
-    //  Depth frames 
+    // Depth frames
     has_depth_frame_ = false;
     if (frame.has_valid_depth()) {
         AHardwareBuffer* depth_bufs[2] = {frame.left_depth.hw_buffer, frame.right_depth.hw_buffer};
         for (int eye = 0; eye < 2; eye++) {
-            if (depth_bufs[eye] == nullptr) continue;
+            if (depth_bufs[eye] == nullptr)
+                continue;
 
             // Import into the separate depth cache so color and depth images
             // never collide (they come from different AImageReaders).
@@ -798,44 +780,44 @@ void stereo_renderer::receive_frame(const dual_frames& frame) {
                 current_depth_images_[eye] = it->second.get();
             }
 
-            //if (current_depth_images_[eye]) {
-            //    update_depth_descriptor_set(eye, *current_depth_images_[eye]);
-            //}
+            // if (current_depth_images_[eye]) {
+            //     update_depth_descriptor_set(eye, *current_depth_images_[eye]);
+            // }
         }
-        has_depth_frame_ = (current_depth_images_[0] != nullptr &&
-                            current_depth_images_[1] != nullptr);
+        has_depth_frame_ = (current_depth_images_[0] != nullptr && current_depth_images_[1] != nullptr);
         spdlog::get("illixr")->debug("stereo_renderer: Received depth");
     }
 
-    //  Motion-vector import 
+    // Motion-vector import
     if (frame.has_valid_motion_vectors()) {
         for (int eye = 0; eye < 2; eye++) {
-            AHardwareBuffer* mv_buf = (eye == 0)
-                ? frame.left_motion_vec.hw_buffer
-                : frame.right_motion_vec.hw_buffer;
+            AHardwareBuffer* mv_buf = (eye == 0) ? frame.left_motion_vec.hw_buffer : frame.right_motion_vec.hw_buffer;
 
             auto it = mv_image_cache_.find(mv_buf);
             if (it == mv_image_cache_.end()) {
                 imported_image* img = import_mv_hardware_buffer(mv_buf);
                 if (!img) {
-                    spdlog::get("illixr")->error(
-                        "[stereo_renderer] Failed to import MV AHardwareBuffer eye {}", eye);
+                    spdlog::get("illixr")->error("[stereo_renderer] Failed to import MV AHardwareBuffer eye {}", eye);
                     current_mv_images_[eye] = nullptr;
                     continue;
                 }
                 current_mv_images_[eye] = img;
                 if (!mv_pipeline_created_) {
-                    if (!create_mv_render_pass())          return;
-                    if (!create_mv_pipeline(*img))         return;
-                    if (!create_mv_descriptor_pool())      return;
-                    if (!allocate_mv_command_buffers())    return;
+                    if (!create_mv_render_pass())
+                        return;
+                    if (!create_mv_pipeline(*img))
+                        return;
+                    if (!create_mv_descriptor_pool())
+                        return;
+                    if (!allocate_mv_command_buffers())
+                        return;
                 }
-                //update_mv_descriptor_set(eye, *img);
+                // update_mv_descriptor_set(eye, *img);
             } else {
                 current_mv_images_[eye] = it->second.get();
-                //if (mv_pipeline_created_) {
-                //    update_mv_descriptor_set(eye, it->second);
-                //}
+                // if (mv_pipeline_created_) {
+                //     update_mv_descriptor_set(eye, it->second);
+                // }
             }
         }
         has_mv_frame_ = true;
@@ -848,9 +830,8 @@ void stereo_renderer::receive_frame(const dual_frames& frame) {
 // render_eye — record and submit command buffer for one eye
 //
 
-bool stereo_renderer::render_eye(int eye, VkImage swapchain_image,
-                                  uint32_t swapchain_width, uint32_t swapchain_height,
-                                  VkSemaphore signal_semaphore) {
+bool stereo_renderer::render_eye(int eye, VkImage swapchain_image, uint32_t swapchain_width, uint32_t swapchain_height,
+                                 VkSemaphore signal_semaphore) {
     if (!initialized_) {
         spdlog::get("illixr")->error("stereo_renderer: Not initialized");
         return false;
@@ -864,7 +845,6 @@ bool stereo_renderer::render_eye(int eye, VkImage swapchain_image,
     if (current_images_[eye] == nullptr) {
         return false;
     }
-
 
     // Wait for any previous submission on this eye's command buffer to finish,
     // then destroy the transient framebuffer and image view from that previous
@@ -898,64 +878,60 @@ bool stereo_renderer::render_eye(int eye, VkImage swapchain_image,
     begin.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
     vkBeginCommandBuffer(cmd, &begin);
 
-    //  Transition swapchain image to color attachment
+    // Transition swapchain image to color attachment
     VkImageMemoryBarrier barrier{VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER};
-    barrier.oldLayout                       = VK_IMAGE_LAYOUT_UNDEFINED;
-    barrier.newLayout                       = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-    barrier.srcQueueFamilyIndex             = VK_QUEUE_FAMILY_IGNORED;
-    barrier.dstQueueFamilyIndex             = VK_QUEUE_FAMILY_IGNORED;
-    barrier.image                           = swapchain_image;
-    barrier.subresourceRange.aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT;
-    barrier.subresourceRange.levelCount     = 1;
-    barrier.subresourceRange.layerCount     = 1;
-    barrier.srcAccessMask                   = 0;
-    barrier.dstAccessMask                   = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-    vkCmdPipelineBarrier(cmd,
-                         VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-                         VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-                         0, 0, nullptr, 0, nullptr, 1, &barrier);
+    barrier.oldLayout                   = VK_IMAGE_LAYOUT_UNDEFINED;
+    barrier.newLayout                   = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+    barrier.srcQueueFamilyIndex         = VK_QUEUE_FAMILY_IGNORED;
+    barrier.dstQueueFamilyIndex         = VK_QUEUE_FAMILY_IGNORED;
+    barrier.image                       = swapchain_image;
+    barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    barrier.subresourceRange.levelCount = 1;
+    barrier.subresourceRange.layerCount = 1;
+    barrier.srcAccessMask               = 0;
+    barrier.dstAccessMask               = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+    vkCmdPipelineBarrier(cmd, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, 0, 0, nullptr,
+                         0, nullptr, 1, &barrier);
 
-    //  Transition decoder image to shader read
+    // Transition decoder image to shader read
     VkImageMemoryBarrier src_barrier{VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER};
-    src_barrier.oldLayout                       = VK_IMAGE_LAYOUT_UNDEFINED;
-    src_barrier.newLayout                       = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-    src_barrier.srcQueueFamilyIndex             = VK_QUEUE_FAMILY_IGNORED;
-    src_barrier.dstQueueFamilyIndex             = VK_QUEUE_FAMILY_IGNORED;
-    src_barrier.image                           = current_images_[eye]->image;
-    src_barrier.subresourceRange.aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT;
-    src_barrier.subresourceRange.levelCount     = 1;
-    src_barrier.subresourceRange.layerCount     = 1;
-    src_barrier.srcAccessMask                   = 0;
-    src_barrier.dstAccessMask                   = VK_ACCESS_SHADER_READ_BIT;
-    vkCmdPipelineBarrier(cmd,
-                         VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-                         VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
-                         0, 0, nullptr, 0, nullptr, 1, &src_barrier);
+    src_barrier.oldLayout                   = VK_IMAGE_LAYOUT_UNDEFINED;
+    src_barrier.newLayout                   = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    src_barrier.srcQueueFamilyIndex         = VK_QUEUE_FAMILY_IGNORED;
+    src_barrier.dstQueueFamilyIndex         = VK_QUEUE_FAMILY_IGNORED;
+    src_barrier.image                       = current_images_[eye]->image;
+    src_barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    src_barrier.subresourceRange.levelCount = 1;
+    src_barrier.subresourceRange.layerCount = 1;
+    src_barrier.srcAccessMask               = 0;
+    src_barrier.dstAccessMask               = VK_ACCESS_SHADER_READ_BIT;
+    vkCmdPipelineBarrier(cmd, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0, 0, nullptr, 0,
+                         nullptr, 1, &src_barrier);
 
-    //  Create transient framebuffer for this swapchain image
+    // Create transient framebuffer for this swapchain image
     // We create a VkImageView for the swapchain image on the fly.
     // In production you would cache these per swapchain image index.
     VkImageViewCreateInfo sc_view_info{VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO};
-    sc_view_info.image                           = swapchain_image;
-    sc_view_info.viewType                        = VK_IMAGE_VIEW_TYPE_2D;
-    sc_view_info.format                          = swapchain_format_;
-    sc_view_info.subresourceRange.aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT;
-    sc_view_info.subresourceRange.levelCount     = 1;
-    sc_view_info.subresourceRange.layerCount     = 1;
-    VkImageView sc_view = VK_NULL_HANDLE;
+    sc_view_info.image                       = swapchain_image;
+    sc_view_info.viewType                    = VK_IMAGE_VIEW_TYPE_2D;
+    sc_view_info.format                      = swapchain_format_;
+    sc_view_info.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    sc_view_info.subresourceRange.levelCount = 1;
+    sc_view_info.subresourceRange.layerCount = 1;
+    VkImageView sc_view                      = VK_NULL_HANDLE;
     vkCreateImageView(device_, &sc_view_info, nullptr, &sc_view);
 
     VkFramebufferCreateInfo fb_info{VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO};
-    fb_info.renderPass      = render_pass_;
-    fb_info.attachmentCount = 1;
-    fb_info.pAttachments    = &sc_view;
-    fb_info.width           = swapchain_width;
-    fb_info.height          = swapchain_height;
-    fb_info.layers          = 1;
+    fb_info.renderPass        = render_pass_;
+    fb_info.attachmentCount   = 1;
+    fb_info.pAttachments      = &sc_view;
+    fb_info.width             = swapchain_width;
+    fb_info.height            = swapchain_height;
+    fb_info.layers            = 1;
     VkFramebuffer framebuffer = VK_NULL_HANDLE;
     vkCreateFramebuffer(device_, &fb_info, nullptr, &framebuffer);
 
-    //  Render pass
+    // Render pass
     VkClearValue clear_value{};
     clear_value.color = {{0.0f, 0.0f, 0.0f, 1.0f}};
 
@@ -968,23 +944,18 @@ bool stereo_renderer::render_eye(int eye, VkImage swapchain_image,
     vkCmdBeginRenderPass(cmd, &rp_begin, VK_SUBPASS_CONTENTS_INLINE);
 
     vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_);
-    vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS,
-                             pipeline_layout_, 0, 1, &descriptor_sets_[eye], 0, nullptr);
+    vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout_, 0, 1, &descriptor_sets_[eye], 0, nullptr);
 
     // Push crop scale constants (and u_offset under COMBINED_ENCODING).
 #ifdef COMBINED_ENCODING
     // crop_scale_x covers one eye's half of the combined buffer (0.5 of full width
     // after padding correction). u_offset shifts eye 1 to the right half.
-    const float u_offset = combined_encoding_ ? (eye == 0 ? 0.0f : 0.5f) : 0.0f;
-    float push_data[3] = {crop_scale_x_ * (combined_encoding_ ? 0.5f : 1.0f),
-                          crop_scale_y_,
-                          u_offset};
-    vkCmdPushConstants(cmd, pipeline_layout_, VK_SHADER_STAGE_VERTEX_BIT,
-                       0, sizeof(push_data), push_data);
+    const float u_offset     = combined_encoding_ ? (eye == 0 ? 0.0f : 0.5f) : 0.0f;
+    float       push_data[3] = {crop_scale_x_ * (combined_encoding_ ? 0.5f : 1.0f), crop_scale_y_, u_offset};
+    vkCmdPushConstants(cmd, pipeline_layout_, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(push_data), push_data);
 #else
     float push_data[2] = {crop_scale_x_, crop_scale_y_};
-    vkCmdPushConstants(cmd, pipeline_layout_, VK_SHADER_STAGE_VERTEX_BIT,
-                       0, sizeof(push_data), push_data);
+    vkCmdPushConstants(cmd, pipeline_layout_, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(push_data), push_data);
 #endif
 
     VkViewport viewport{};
@@ -1002,7 +973,7 @@ bool stereo_renderer::render_eye(int eye, VkImage swapchain_image,
     vkCmdEndRenderPass(cmd);
     vkEndCommandBuffer(cmd);
 
-    //  Submit 
+    // Submit
     VkSubmitInfo submit{VK_STRUCTURE_TYPE_SUBMIT_INFO};
     submit.commandBufferCount = 1;
     submit.pCommandBuffers    = &cmd;
@@ -1024,17 +995,21 @@ bool stereo_renderer::render_eye(int eye, VkImage swapchain_image,
 // render_eye_depth — write decoded depth into OpenXR depth swapchain image
 //
 
-bool stereo_renderer::render_eye_depth(int eye, VkImage depth_swapchain_image,
-                                       VkFormat depth_format,
-                                       uint32_t swapchain_width, uint32_t swapchain_height) {
-    if (!has_depth_frame_ || current_depth_images_[eye] == nullptr) return false;
+bool stereo_renderer::render_eye_depth(int eye, VkImage depth_swapchain_image, VkFormat depth_format, uint32_t swapchain_width,
+                                       uint32_t swapchain_height) {
+    if (!has_depth_frame_ || current_depth_images_[eye] == nullptr)
+        return false;
 
     // Lazily build the depth pipeline on first call (needs depth_format).
     if (!depth_pipeline_created_) {
-        if (!create_depth_render_pass(depth_format))   return false;
-        if (!create_depth_descriptor_pool())           return false;
-        if (!allocate_depth_command_buffers())         return false;
-        if (!create_depth_pipeline(*current_depth_images_[eye], depth_format)) return false;
+        if (!create_depth_render_pass(depth_format))
+            return false;
+        if (!create_depth_descriptor_pool())
+            return false;
+        if (!allocate_depth_command_buffers())
+            return false;
+        if (!create_depth_pipeline(*current_depth_images_[eye], depth_format))
+            return false;
     }
 
     // Wait for previous depth submission on this eye.
@@ -1059,63 +1034,59 @@ bool stereo_renderer::render_eye_depth(int eye, VkImage depth_swapchain_image,
     begin.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
     vkBeginCommandBuffer(cmd, &begin);
 
-    //  Transition depth swapchain image to depth attachment 
+    // Transition depth swapchain image to depth attachment
     VkImageMemoryBarrier depth_barrier{VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER};
-    depth_barrier.oldLayout                       = VK_IMAGE_LAYOUT_UNDEFINED;
-    depth_barrier.newLayout                       = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-    depth_barrier.srcQueueFamilyIndex             = VK_QUEUE_FAMILY_IGNORED;
-    depth_barrier.dstQueueFamilyIndex             = VK_QUEUE_FAMILY_IGNORED;
-    depth_barrier.image                           = depth_swapchain_image;
-    depth_barrier.subresourceRange.aspectMask     = VK_IMAGE_ASPECT_DEPTH_BIT;
-    depth_barrier.subresourceRange.levelCount     = 1;
-    depth_barrier.subresourceRange.layerCount     = 1;
-    depth_barrier.srcAccessMask                   = 0;
-    depth_barrier.dstAccessMask                   = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-    vkCmdPipelineBarrier(cmd,
-                         VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-                         VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT |
-                         VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT,
-                         0, 0, nullptr, 0, nullptr, 1, &depth_barrier);
+    depth_barrier.oldLayout                   = VK_IMAGE_LAYOUT_UNDEFINED;
+    depth_barrier.newLayout                   = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+    depth_barrier.srcQueueFamilyIndex         = VK_QUEUE_FAMILY_IGNORED;
+    depth_barrier.dstQueueFamilyIndex         = VK_QUEUE_FAMILY_IGNORED;
+    depth_barrier.image                       = depth_swapchain_image;
+    depth_barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+    depth_barrier.subresourceRange.levelCount = 1;
+    depth_barrier.subresourceRange.layerCount = 1;
+    depth_barrier.srcAccessMask               = 0;
+    depth_barrier.dstAccessMask               = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+    vkCmdPipelineBarrier(cmd, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+                         VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT, 0, 0, nullptr,
+                         0, nullptr, 1, &depth_barrier);
 
-    //  Transition decoded depth texture to shader read 
+    // Transition decoded depth texture to shader read
     VkImageMemoryBarrier src_barrier{VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER};
-    src_barrier.oldLayout                       = VK_IMAGE_LAYOUT_UNDEFINED;
-    src_barrier.newLayout                       = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-    src_barrier.srcQueueFamilyIndex             = VK_QUEUE_FAMILY_IGNORED;
-    src_barrier.dstQueueFamilyIndex             = VK_QUEUE_FAMILY_IGNORED;
-    src_barrier.image                           = current_depth_images_[eye]->image;
-    src_barrier.subresourceRange.aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT;
-    src_barrier.subresourceRange.levelCount     = 1;
-    src_barrier.subresourceRange.layerCount     = 1;
-    src_barrier.srcAccessMask                   = 0;
-    src_barrier.dstAccessMask                   = VK_ACCESS_SHADER_READ_BIT;
-    vkCmdPipelineBarrier(cmd,
-                         VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-                         VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
-                         0, 0, nullptr, 0, nullptr, 1, &src_barrier);
+    src_barrier.oldLayout                   = VK_IMAGE_LAYOUT_UNDEFINED;
+    src_barrier.newLayout                   = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    src_barrier.srcQueueFamilyIndex         = VK_QUEUE_FAMILY_IGNORED;
+    src_barrier.dstQueueFamilyIndex         = VK_QUEUE_FAMILY_IGNORED;
+    src_barrier.image                       = current_depth_images_[eye]->image;
+    src_barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    src_barrier.subresourceRange.levelCount = 1;
+    src_barrier.subresourceRange.layerCount = 1;
+    src_barrier.srcAccessMask               = 0;
+    src_barrier.dstAccessMask               = VK_ACCESS_SHADER_READ_BIT;
+    vkCmdPipelineBarrier(cmd, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0, 0, nullptr, 0,
+                         nullptr, 1, &src_barrier);
 
-    //  Create transient depth image view and framebuffer
+    // Create transient depth image view and framebuffer
     VkImageViewCreateInfo dv_info{VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO};
-    dv_info.image                           = depth_swapchain_image;
-    dv_info.viewType                        = VK_IMAGE_VIEW_TYPE_2D;
-    dv_info.format                          = depth_format;
-    dv_info.subresourceRange.aspectMask     = VK_IMAGE_ASPECT_DEPTH_BIT;
-    dv_info.subresourceRange.levelCount     = 1;
-    dv_info.subresourceRange.layerCount     = 1;
-    VkImageView depth_view = VK_NULL_HANDLE;
+    dv_info.image                       = depth_swapchain_image;
+    dv_info.viewType                    = VK_IMAGE_VIEW_TYPE_2D;
+    dv_info.format                      = depth_format;
+    dv_info.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+    dv_info.subresourceRange.levelCount = 1;
+    dv_info.subresourceRange.layerCount = 1;
+    VkImageView depth_view              = VK_NULL_HANDLE;
     vkCreateImageView(device_, &dv_info, nullptr, &depth_view);
 
     VkFramebufferCreateInfo fb_info{VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO};
-    fb_info.renderPass      = depth_render_pass_;
-    fb_info.attachmentCount = 1;
-    fb_info.pAttachments    = &depth_view;
-    fb_info.width           = swapchain_width;
-    fb_info.height          = swapchain_height;
-    fb_info.layers          = 1;
+    fb_info.renderPass        = depth_render_pass_;
+    fb_info.attachmentCount   = 1;
+    fb_info.pAttachments      = &depth_view;
+    fb_info.width             = swapchain_width;
+    fb_info.height            = swapchain_height;
+    fb_info.layers            = 1;
     VkFramebuffer framebuffer = VK_NULL_HANDLE;
     vkCreateFramebuffer(device_, &fb_info, nullptr, &framebuffer);
 
-    //  Depth render pass
+    // Depth render pass
     VkClearValue clear_depth{};
     clear_depth.depthStencil = {1.0f, 0};
 
@@ -1128,13 +1099,11 @@ bool stereo_renderer::render_eye_depth(int eye, VkImage depth_swapchain_image,
     vkCmdBeginRenderPass(cmd, &rp_begin, VK_SUBPASS_CONTENTS_INLINE);
 
     vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, depth_pipeline_);
-    vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS,
-                            depth_pipeline_layout_, 0, 1,
-                            &depth_descriptor_sets_[eye], 0, nullptr);
+    vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, depth_pipeline_layout_, 0, 1, &depth_descriptor_sets_[eye], 0,
+                            nullptr);
 
     float push_data[2] = {crop_scale_x_, crop_scale_y_};
-    vkCmdPushConstants(cmd, depth_pipeline_layout_, VK_SHADER_STAGE_VERTEX_BIT,
-                       0, sizeof(push_data), push_data);
+    vkCmdPushConstants(cmd, depth_pipeline_layout_, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(push_data), push_data);
 
     VkViewport viewport{};
     viewport.width    = static_cast<float>(swapchain_width);
@@ -1161,7 +1130,8 @@ bool stereo_renderer::render_eye_depth(int eye, VkImage depth_swapchain_image,
 }
 
 bool stereo_renderer::update_depth_descriptor_set(int eye, const imported_image& img) {
-    if (depth_descriptor_sets_[eye] == VK_NULL_HANDLE) return false;
+    if (depth_descriptor_sets_[eye] == VK_NULL_HANDLE)
+        return false;
 
     VkDescriptorImageInfo img_info{};
     img_info.sampler     = img.sampler;
@@ -1207,8 +1177,7 @@ bool stereo_renderer::create_depth_render_pass(VkFormat depth_format) {
     dep.srcSubpass    = VK_SUBPASS_EXTERNAL;
     dep.dstSubpass    = 0;
     dep.srcStageMask  = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
-    dep.dstStageMask  = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT |
-                        VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
+    dep.dstStageMask  = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
     dep.srcAccessMask = 0;
     dep.dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
 
@@ -1248,18 +1217,18 @@ bool stereo_renderer::allocate_depth_command_buffers() {
 }
 
 bool stereo_renderer::create_depth_pipeline(const imported_image& prototype, VkFormat depth_format) {
-    //  Descriptor set layout
+    // Descriptor set layout
     // Immutable sampler required for YCbCr (same constraint as colour pipeline).
     VkSamplerYcbcrConversionInfo ycbcr_info{VK_STRUCTURE_TYPE_SAMPLER_YCBCR_CONVERSION_INFO};
     ycbcr_info.conversion = prototype.ycbcr_conv;
 
     VkSamplerCreateInfo samp_info{VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO};
-    samp_info.pNext             = &ycbcr_info;
-    samp_info.magFilter         = VK_FILTER_LINEAR;
-    samp_info.minFilter         = VK_FILTER_LINEAR;
-    samp_info.addressModeU      = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
-    samp_info.addressModeV      = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
-    samp_info.addressModeW      = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+    samp_info.pNext                   = &ycbcr_info;
+    samp_info.magFilter               = VK_FILTER_LINEAR;
+    samp_info.minFilter               = VK_FILTER_LINEAR;
+    samp_info.addressModeU            = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+    samp_info.addressModeV            = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+    samp_info.addressModeW            = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
     samp_info.unnormalizedCoordinates = VK_FALSE;
 
     VkSampler depth_immutable_sampler = VK_NULL_HANDLE;
@@ -1286,15 +1255,15 @@ bool stereo_renderer::create_depth_pipeline(const imported_image& prototype, VkF
     // until the descriptor set layout is destroyed (cleanup() handles this).
     depth_immutable_sampler_ = depth_immutable_sampler;
 
-    //  Allocate depth descriptor sets (one per eye) 
+    // Allocate depth descriptor sets (one per eye)
     std::array<VkDescriptorSetLayout, 2> layouts = {depth_desc_set_layout_, depth_desc_set_layout_};
-    VkDescriptorSetAllocateInfo alloc{VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO};
+    VkDescriptorSetAllocateInfo          alloc{VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO};
     alloc.descriptorPool     = depth_descriptor_pool_;
     alloc.descriptorSetCount = 2;
     alloc.pSetLayouts        = layouts.data();
     VK_CHECK(vkAllocateDescriptorSets(device_, &alloc, depth_descriptor_sets_.data()));
 
-    //  Depth fences 
+    // Depth fences
     VkFenceCreateInfo fence_info{VK_STRUCTURE_TYPE_FENCE_CREATE_INFO};
     fence_info.flags = VK_FENCE_CREATE_SIGNALED_BIT;
     for (int i = 0; i < 2; i++) {
@@ -1316,19 +1285,17 @@ bool stereo_renderer::create_depth_pipeline(const imported_image& prototype, VkF
     VK_CHECK(vkCreatePipelineLayout(device_, &pl_info, nullptr, &depth_pipeline_layout_));
 
     // Shaders
-    VkShaderModule vert_mod = create_shader_module(device_,
-                                                   color_vert_spv, sizeof(color_vert_spv) / sizeof(uint32_t));
-    VkShaderModule frag_mod = create_shader_module(device_,
-                                                   depth_frag_spv, sizeof(depth_frag_spv) / sizeof(uint32_t));
+    VkShaderModule vert_mod = create_shader_module(device_, color_vert_spv, sizeof(color_vert_spv) / sizeof(uint32_t));
+    VkShaderModule frag_mod = create_shader_module(device_, depth_frag_spv, sizeof(depth_frag_spv) / sizeof(uint32_t));
     VkPipelineShaderStageCreateInfo stages[2] = {};
-    stages[0].sType  = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-    stages[0].stage  = VK_SHADER_STAGE_VERTEX_BIT;
-    stages[0].module = vert_mod;
-    stages[0].pName  = "main";
-    stages[1].sType  = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-    stages[1].stage  = VK_SHADER_STAGE_FRAGMENT_BIT;
-    stages[1].module = frag_mod;
-    stages[1].pName  = "main";
+    stages[0].sType                           = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+    stages[0].stage                           = VK_SHADER_STAGE_VERTEX_BIT;
+    stages[0].module                          = vert_mod;
+    stages[0].pName                           = "main";
+    stages[1].sType                           = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+    stages[1].stage                           = VK_SHADER_STAGE_FRAGMENT_BIT;
+    stages[1].module                          = frag_mod;
+    stages[1].pName                           = "main";
 
     // Fixed-function state
     VkPipelineVertexInputStateCreateInfo   vertex_input{VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO};
@@ -1358,7 +1325,7 @@ bool stereo_renderer::create_depth_pipeline(const imported_image& prototype, VkF
     VkPipelineColorBlendStateCreateInfo blend{VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO};
     blend.attachmentCount = 0; // no colour attachments
 
-    VkDynamicState dynamic_states[] = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
+    VkDynamicState                   dynamic_states[] = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
     VkPipelineDynamicStateCreateInfo dynamic{VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO};
     dynamic.dynamicStateCount = 2;
     dynamic.pDynamicStates    = dynamic_states;
@@ -1391,7 +1358,8 @@ bool stereo_renderer::create_depth_pipeline(const imported_image& prototype, VkF
 }
 
 bool stereo_renderer::update_descriptor_set(int eye, const imported_image& img) {
-    if (descriptor_sets_[eye] == VK_NULL_HANDLE) return false;
+    if (descriptor_sets_[eye] == VK_NULL_HANDLE)
+        return false;
 
     VkDescriptorImageInfo img_info{};
     img_info.sampler     = img.sampler;
@@ -1408,8 +1376,10 @@ bool stereo_renderer::update_descriptor_set(int eye, const imported_image& img) 
     vkUpdateDescriptorSets(device_, 1, &write, 0, nullptr);
     return true;
 }
+
 void stereo_renderer::cleanup() {
-    if (device_ == VK_NULL_HANDLE) return;
+    if (device_ == VK_NULL_HANDLE)
+        return;
 
     vkDeviceWaitIdle(device_);
     // Destroy any transient per-frame objects that were stashed for deferred
@@ -1559,9 +1529,9 @@ void stereo_renderer::cleanup() {
     mv_pipeline_created_ = false;
     has_mv_frame_        = false;
 
-    initialized_           = false;
-    has_valid_frame_       = false;
-    pipeline_created_      = false;
+    initialized_            = false;
+    has_valid_frame_        = false;
+    pipeline_created_       = false;
     depth_pipeline_created_ = false;
     has_depth_frame_        = false;
 }
@@ -1621,7 +1591,7 @@ bool stereo_renderer::create_mv_render_pass() {
 // Motion-vector graphics pipeline
 //
 bool stereo_renderer::create_mv_pipeline(const imported_image& prototype) {
-    //  Immutable YCbCr sampler
+    // Immutable YCbCr sampler
     // The pipeline's immutable sampler MUST use the same VkSamplerYcbcrConversion
     // as the imported image's view (Vulkan spec requirement for external-format
     // images).  import_mv_hardware_buffer() created that conversion with
@@ -1644,7 +1614,7 @@ bool stereo_renderer::create_mv_pipeline(const imported_image& prototype) {
 
     VK_CHECK(vkCreateSampler(device_, &sampler_ci, nullptr, &mv_immutable_sampler_));
 
-    //  Descriptor set layout
+    // Descriptor set layout
     VkDescriptorSetLayoutBinding binding{};
     binding.binding            = 0;
     binding.descriptorType     = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
@@ -1658,7 +1628,7 @@ bool stereo_renderer::create_mv_pipeline(const imported_image& prototype) {
 
     VK_CHECK(vkCreateDescriptorSetLayout(device_, &layout_ci, nullptr, &mv_desc_set_layout_));
 
-    //  Pipeline layout (push constants for crop scale)
+    // Pipeline layout (push constants for crop scale)
     VkPushConstantRange pc_range{};
     pc_range.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
     pc_range.offset     = 0;
@@ -1672,13 +1642,12 @@ bool stereo_renderer::create_mv_pipeline(const imported_image& prototype) {
 
     VK_CHECK(vkCreatePipelineLayout(device_, &pl_ci, nullptr, &mv_pipeline_layout_));
 
-    //  Shader stages
+    // Shader stages
     // Reuse the color vertex shader (full-screen triangle + crop push constants)
     // and use the new motion-vector fragment shader.
-    VkShaderModule vert_mod = create_shader_module(device_,
-                                                   color_vert_spv, sizeof(color_vert_spv) / sizeof(uint32_t));
-    VkShaderModule frag_mod = create_shader_module(device_,
-                                                   motion_vec_frag_spv, sizeof(motion_vec_frag_spv) / sizeof(uint32_t));
+    VkShaderModule vert_mod = create_shader_module(device_, color_vert_spv, sizeof(color_vert_spv) / sizeof(uint32_t));
+    VkShaderModule frag_mod =
+        create_shader_module(device_, motion_vec_frag_spv, sizeof(motion_vec_frag_spv) / sizeof(uint32_t));
 
     VkPipelineShaderStageCreateInfo stages[2]{};
     stages[0].sType  = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -1690,7 +1659,7 @@ bool stereo_renderer::create_mv_pipeline(const imported_image& prototype) {
     stages[1].module = frag_mod;
     stages[1].pName  = "main";
 
-    //  Fixed-function state 
+    // Fixed-function state
     VkPipelineVertexInputStateCreateInfo   vertex_input{VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO};
     VkPipelineInputAssemblyStateCreateInfo input_asm{VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO};
     input_asm.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
@@ -1710,14 +1679,14 @@ bool stereo_renderer::create_mv_pipeline(const imported_image& prototype) {
 
     // Single R16G16B16A16_SFLOAT colour attachment — standard alpha blend.
     VkPipelineColorBlendAttachmentState blend_att{};
-    blend_att.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT
-                               | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+    blend_att.colorWriteMask =
+        VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 
     VkPipelineColorBlendStateCreateInfo blend{VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO};
     blend.attachmentCount = 1;
     blend.pAttachments    = &blend_att;
 
-    VkDynamicState dynamic_states[] = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
+    VkDynamicState                   dynamic_states[] = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
     VkPipelineDynamicStateCreateInfo dynamic{VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO};
     dynamic.dynamicStateCount = 2;
     dynamic.pDynamicStates    = dynamic_states;
@@ -1740,8 +1709,7 @@ bool stereo_renderer::create_mv_pipeline(const imported_image& prototype) {
     vkDestroyShaderModule(device_, vert_mod, nullptr);
     vkDestroyShaderModule(device_, frag_mod, nullptr);
     if (result != VK_SUCCESS) {
-        spdlog::get("illixr")->error("[stereo_renderer] MV pipeline creation failed: {}",
-                                     static_cast<int>(result));
+        spdlog::get("illixr")->error("[stereo_renderer] MV pipeline creation failed: {}", static_cast<int>(result));
         return false;
     }
 
@@ -1771,7 +1739,7 @@ bool stereo_renderer::create_mv_descriptor_pool() {
     VK_CHECK(vkCreateDescriptorPool(device_, &pool_ci, nullptr, &mv_descriptor_pool_));
 
     std::array<VkDescriptorSetLayout, 2> layouts{mv_desc_set_layout_, mv_desc_set_layout_};
-    VkDescriptorSetAllocateInfo alloc_info{VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO};
+    VkDescriptorSetAllocateInfo          alloc_info{VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO};
     alloc_info.descriptorPool     = mv_descriptor_pool_;
     alloc_info.descriptorSetCount = 2;
     alloc_info.pSetLayouts        = layouts.data();
@@ -1791,7 +1759,8 @@ bool stereo_renderer::allocate_mv_command_buffers() {
 
 //
 bool stereo_renderer::update_mv_descriptor_set(int eye, const imported_image& img) {
-    if (mv_descriptor_sets_[eye] == VK_NULL_HANDLE) return false;
+    if (mv_descriptor_sets_[eye] == VK_NULL_HANDLE)
+        return false;
 
     VkDescriptorImageInfo img_info{};
     img_info.sampler     = img.sampler;
@@ -1812,8 +1781,7 @@ bool stereo_renderer::update_mv_descriptor_set(int eye, const imported_image& im
 //
 // Motion-vector render
 //
-bool stereo_renderer::render_eye_motion_vec(int eye, VkImage mv_swapchain_image,
-                                            uint32_t swapchain_width,
+bool stereo_renderer::render_eye_motion_vec(int eye, VkImage mv_swapchain_image, uint32_t swapchain_width,
                                             uint32_t swapchain_height) {
     if (!initialized_ || !mv_pipeline_created_) {
         spdlog::get("illixr")->warn("[stereo_renderer] render_eye_motion_vec: not ready (eye {})", eye);
@@ -1839,7 +1807,7 @@ bool stereo_renderer::render_eye_motion_vec(int eye, VkImage mv_swapchain_image,
         prev_mv_swapchain_views_[eye] = VK_NULL_HANDLE;
     }
 
-    //  Create swapchain image view
+    // Create swapchain image view
     VkImageViewCreateInfo iv_ci{VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO};
     iv_ci.image            = mv_swapchain_image;
     iv_ci.viewType         = VK_IMAGE_VIEW_TYPE_2D;
@@ -1850,7 +1818,7 @@ bool stereo_renderer::render_eye_motion_vec(int eye, VkImage mv_swapchain_image,
     VK_CHECK(vkCreateImageView(device_, &iv_ci, nullptr, &mv_view));
     prev_mv_swapchain_views_[eye] = mv_view;
 
-    //  Create framebuffer 
+    // Create framebuffer
     VkFramebufferCreateInfo fb_ci{VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO};
     fb_ci.renderPass      = mv_render_pass_;
     fb_ci.attachmentCount = 1;
@@ -1863,7 +1831,7 @@ bool stereo_renderer::render_eye_motion_vec(int eye, VkImage mv_swapchain_image,
     VK_CHECK(vkCreateFramebuffer(device_, &fb_ci, nullptr, &fb));
     prev_mv_framebuffers_[eye] = fb;
 
-    //  Record command buffer
+    // Record command buffer
     VkCommandBuffer cmd = mv_command_buffers_[eye];
     vkResetCommandBuffer(cmd, 0);
 
@@ -1881,10 +1849,8 @@ bool stereo_renderer::render_eye_motion_vec(int eye, VkImage mv_swapchain_image,
     barrier.subresourceRange    = {VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1};
     barrier.srcAccessMask       = 0;
     barrier.dstAccessMask       = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-    vkCmdPipelineBarrier(cmd,
-                         VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-                         VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-                         0, 0, nullptr, 0, nullptr, 1, &barrier);
+    vkCmdPipelineBarrier(cmd, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, 0, 0, nullptr,
+                         0, nullptr, 1, &barrier);
 
     // Begin render pass.
     VkRenderPassBeginInfo rp_begin{VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO};
@@ -1896,21 +1862,16 @@ bool stereo_renderer::render_eye_motion_vec(int eye, VkImage mv_swapchain_image,
     vkCmdBeginRenderPass(cmd, &rp_begin, VK_SUBPASS_CONTENTS_INLINE);
 
     vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, mv_pipeline_);
-    vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS,
-                            mv_pipeline_layout_, 0, 1,
-                            &mv_descriptor_sets_[eye], 0, nullptr);
+    vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, mv_pipeline_layout_, 0, 1, &mv_descriptor_sets_[eye], 0,
+                            nullptr);
 
     // Push crop scale (motion-vector buffers are already at their native
     // resolution with no padding, so scale = 1.0).
     float push[2] = {1.0f, 1.0f};
-    vkCmdPushConstants(cmd, mv_pipeline_layout_,
-                       VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(push), push);
+    vkCmdPushConstants(cmd, mv_pipeline_layout_, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(push), push);
 
-    VkViewport viewport{0.0f, 0.0f,
-                        static_cast<float>(swapchain_width),
-                        static_cast<float>(swapchain_height),
-                        0.0f, 1.0f};
-    VkRect2D scissor{{0, 0}, {swapchain_width, swapchain_height}};
+    VkViewport viewport{0.0f, 0.0f, static_cast<float>(swapchain_width), static_cast<float>(swapchain_height), 0.0f, 1.0f};
+    VkRect2D   scissor{{0, 0}, {swapchain_width, swapchain_height}};
     vkCmdSetViewport(cmd, 0, 1, &viewport);
     vkCmdSetScissor(cmd, 0, 1, &scissor);
 
@@ -1923,22 +1884,19 @@ bool stereo_renderer::render_eye_motion_vec(int eye, VkImage mv_swapchain_image,
     barrier.newLayout     = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
     barrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
     barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-    vkCmdPipelineBarrier(cmd,
-                         VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-                         VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
-                         0, 0, nullptr, 0, nullptr, 1, &barrier);
+    vkCmdPipelineBarrier(cmd, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0, 0,
+                         nullptr, 0, nullptr, 1, &barrier);
 
     VK_CHECK(vkEndCommandBuffer(cmd));
 
-    //  Submit 
+    // Submit
     VkSubmitInfo submit{VK_STRUCTURE_TYPE_SUBMIT_INFO};
     submit.commandBufferCount = 1;
     submit.pCommandBuffers    = &cmd;
 
     VkResult result = vkQueueSubmit(queue_, 1, &submit, mv_fences_[eye]);
     if (result != VK_SUCCESS) {
-        spdlog::get("illixr")->error("[stereo_renderer] MV render submit failed eye {}: {}",
-                                     eye, static_cast<int>(result));
+        spdlog::get("illixr")->error("[stereo_renderer] MV render submit failed eye {}: {}", eye, static_cast<int>(result));
         return false;
     }
     return true;

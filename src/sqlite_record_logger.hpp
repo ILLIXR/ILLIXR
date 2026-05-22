@@ -2,18 +2,18 @@
 
 #ifndef __ANDROID__
 
-#include "illixr/concurrentqueue/blockingconcurrentqueue.hpp"
-#include "illixr/error_util.hpp"
-#include "illixr/global_module_defs.hpp"
-#include "illixr/record_logger.hpp"
-#include "sqlite3pp/sqlite3pp.hpp"
+#    include "illixr/concurrentqueue/blockingconcurrentqueue.hpp"
+#    include "illixr/error_util.hpp"
+#    include "illixr/global_module_defs.hpp"
+#    include "illixr/record_logger.hpp"
+#    include "sqlite3pp/sqlite3pp.hpp"
 
-#include <filesystem>
-#include <iostream>
-#include <mutex>
-#include <shared_mutex>
-#include <spdlog/spdlog.h>
-#include <thread>
+#    include <filesystem>
+#    include <iostream>
+#    include <mutex>
+#    include <shared_mutex>
+#    include <spdlog/spdlog.h>
+#    include <thread>
 
 /**
  * There are many SQLite3 wrapper libraries.

@@ -1,15 +1,15 @@
 #define GL_GLEXT_PROTOTYPES
 #ifdef __ANDROID__
-#  define EGL_EGLEXT_PROTOTYPES 1
-#  include <GLES2/gl2.h>
-#  include <GLES2/gl2ext.h>
-#  include <EGL/egl.h>
-#  include <EGL/eglext.h>
-#  include <android/hardware_buffer.h>
+#    define EGL_EGLEXT_PROTOTYPES 1
+#    include <android/hardware_buffer.h>
+#    include <EGL/egl.h>
+#    include <EGL/eglext.h>
+#    include <GLES2/gl2.h>
+#    include <GLES2/gl2ext.h>
 #else
-#  if defined(_WIN32) || defined(_WIN64)
-#    include <windows.h>
-#  endif
+#    if defined(_WIN32) || defined(_WIN64)
+#        include <windows.h>
+#    endif
 // clang-format off
 #  include <GL/glew.h> // GLEW has to be loaded before other GL libraries
 #  if !defined(_WIN32) && !defined(_WIN64)
@@ -21,7 +21,7 @@
 #include "plugin.hpp"
 
 #ifdef __ANDROID__
-#  include "illixr/extended_window.hpp"
+#    include "illixr/extended_window.hpp"
 #endif
 #include "illixr/error_util.hpp"
 #include "illixr/global_module_defs.hpp"
@@ -33,11 +33,11 @@
 #include <iostream>
 #include <thread>
 #ifdef __ANDROID__
-#  include <vector>
+#    include <vector>
 #else
-#  include <cassert>
-#  include <chrono>
-#  include <memory>
+#    include <cassert>
+#    include <chrono>
+#    include <memory>
 #endif
 
 #include <vulkan/vulkan.h>
@@ -96,52 +96,44 @@ timewarp_gl::timewarp_gl(const std::string& name, phonebook* pb)
     spdlogger(switchboard_->get_env_char("TIMEWARP_GL_LOG_LEVEL"));
 #ifndef ENABLE_MONADO
     const std::shared_ptr<xlib_gl_extended_window> x_win = phonebook_->lookup_impl<xlib_gl_extended_window>();
-#  if defined(_WIN32) || defined(_WIN64)
+#    if defined(_WIN32) || defined(_WIN64)
     hwnd_ = x_win->hwnd_;
     hdc_  = x_win->hdc_;
-#  else
+#    else
     display_     = x_win->display_;
     root_window_ = x_win->window_;
-#    ifdef __ANDROID__
-    surface_                                             = x_win->surface;
+#        ifdef __ANDROID__
+    surface_ = x_win->surface;
+#        endif
 #    endif
-#  endif
     context_ = x_win->context_;
 #else
     // If we use Monado, timewarp_gl must create its own GL context because the extended window isn't used
-#  ifdef __ANDROID__
+#    ifdef __ANDROID__
     display_ = eglGetDisplay(EGL_DEFAULT_DISPLAY);
     EGLint major_version, minor_version;
     eglInitialize(display_, &major_version, &minor_version);
-    const EGLint attribs[] = {
-            //EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
-            EGL_RENDERABLE_TYPE,EGL_OPENGL_ES2_BIT,
-            EGL_BLUE_SIZE, 8,
-            EGL_GREEN_SIZE, 8,
-            EGL_RED_SIZE, 8,
-            EGL_ALPHA_SIZE, 0,
-            // EGL_DEPTH_SIZE, 24,
-            EGL_NONE
-    };
+    const EGLint attribs[] = {// EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
+                              EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT, EGL_BLUE_SIZE, 8, EGL_GREEN_SIZE, 8, EGL_RED_SIZE, 8,
+                              EGL_ALPHA_SIZE, 0,
+                              // EGL_DEPTH_SIZE, 24,
+                              EGL_NONE};
 
-    //EGLint w, h, format;
-    EGLint numConfigs;
+    // EGLint w, h, format;
+    EGLint    numConfigs;
     EGLConfig config = nullptr;
     eglChooseConfig(display_, attribs, &config, 1, &numConfigs);
-    std::unique_ptr < EGLConfig[] > supportedConfigs(new EGLConfig[numConfigs]);
+    std::unique_ptr<EGLConfig[]> supportedConfigs(new EGLConfig[numConfigs]);
     assert(supportedConfigs);
     eglChooseConfig(display_, attribs, supportedConfigs.get(), numConfigs, &numConfigs);
     assert(numConfigs);
     auto i = 0;
     for (; i < numConfigs; i++) {
-        auto &cfg = supportedConfigs[i];
+        auto&  cfg = supportedConfigs[i];
         EGLint r, g, b, d;
-        if (eglGetConfigAttrib(display_, cfg, EGL_RED_SIZE, &r) &&
-            eglGetConfigAttrib(display_, cfg, EGL_GREEN_SIZE, &g) &&
-            eglGetConfigAttrib(display_, cfg, EGL_BLUE_SIZE, &b) &&
-            eglGetConfigAttrib(display_, cfg, EGL_DEPTH_SIZE, &d) &&
+        if (eglGetConfigAttrib(display_, cfg, EGL_RED_SIZE, &r) && eglGetConfigAttrib(display_, cfg, EGL_GREEN_SIZE, &g) &&
+            eglGetConfigAttrib(display_, cfg, EGL_BLUE_SIZE, &b) && eglGetConfigAttrib(display_, cfg, EGL_DEPTH_SIZE, &d) &&
             r == 8 && g == 8 && b == 8 && d == 24) {
-
             config = supportedConfigs[i];
             break;
         }
@@ -153,35 +145,32 @@ timewarp_gl::timewarp_gl(const std::string& name, phonebook* pb)
     if (config == nullptr) {
         return;
     }
-    EGLint ctxattrb[] = {
-            EGL_CONTEXT_CLIENT_VERSION, 2,
-            EGL_NONE
-    };
-    context_ = eglCreateContext(display_, config, EGL_NO_CONTEXT, ctxattrb);
-    surface_ = EGL_NO_SURFACE;
-//                std::cout << "Timewarp creating GL Context" << std::endl;
-//                GLint        attr[] = {GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None};
-//                XVisualInfo* vi;
-//                        if (!(display_ = XOpenDisplay(NULL))) {
-//                        fprintf(stderr, "cannot connect to X server\n\n");
-//                        exit(1);
-//                    }
+    EGLint ctxattrb[] = {EGL_CONTEXT_CLIENT_VERSION, 2, EGL_NONE};
+    context_          = eglCreateContext(display_, config, EGL_NO_CONTEXT, ctxattrb);
+    surface_          = EGL_NO_SURFACE;
+// std::cout << "Timewarp creating GL Context" << std::endl;
+// GLint        attr[] = {GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None};
+// XVisualInfo* vi;
+//         if (!(display_ = XOpenDisplay(NULL))) {
+//         fprintf(stderr, "cannot connect to X server\n\n");
+//         exit(1);
+//     }
 //
-//                        /* get root window */
-//                                root = DefaultRootWindow(display_);
+//         /* get root window */
+//                 root = DefaultRootWindow(display_);
 //
-//                        /* get visual matching attr */
-//                                if (!(vi = glXChooseVisual(display_, 0, attr))) {
-//                        fprintf(stderr, "no appropriate visual found\n\n");
-//                        exit(1);
-//                    }
+//         /* get visual matching attr */
+//                 if (!(vi = glXChooseVisual(display_, 0, attr))) {
+//         fprintf(stderr, "no appropriate visual found\n\n");
+//         exit(1);
+//     }
 //
-//                        /* create a context using the root window */
-//                                if (!(context_ = glXCreateContext(display_, vi, NULL, GL_TRUE))) {
-//                        fprintf(stderr, "failed to create context\n\n");
-//                        exit(1);
-//                    }
-#  else
+//         /* create a context using the root window */
+//                 if (!(context_ = glXCreateContext(display_, vi, NULL, GL_TRUE))) {
+//         fprintf(stderr, "failed to create context\n\n");
+//         exit(1);
+//     }
+#    else
     std::cout << "Timewarp creating GL Context" << std::endl;
     GLint        attr[] = {GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None};
     XVisualInfo* vi;
@@ -206,7 +195,7 @@ timewarp_gl::timewarp_gl(const std::string& name, phonebook* pb)
         exit(1);
     }
 
-#  endif
+#    endif
 #endif
     client_backend_      = graphics_api::TBD;
     rendering_ready_     = false;
@@ -304,33 +293,34 @@ GLubyte* timewarp_gl::read_texture_image() {
 
 GLuint timewarp_gl::convert_vk_format_to_gl(int64_t vk_format
 #ifdef __ANDROID__
-                                            , GLint swizzle_mask[]
+                                            ,
+                                            GLint swizzle_mask[]
 #endif
 ) {
     switch (vk_format) {
-        case VK_FORMAT_R8G8B8A8_UNORM:
-            return GL_RGBA8;
-        case VK_FORMAT_B8G8R8A8_SRGB:
+    case VK_FORMAT_R8G8B8A8_UNORM:
+        return GL_RGBA8;
+    case VK_FORMAT_B8G8R8A8_SRGB:
 #ifdef __ANDROID__
-        {
-            swizzle_mask[0] = GL_BLUE;
-            swizzle_mask[2] = GL_RED;
-        }
+    {
+        swizzle_mask[0] = GL_BLUE;
+        swizzle_mask[2] = GL_RED;
+    }
 #endif
-        case VK_FORMAT_R8G8B8A8_SRGB:
-            return GL_SRGB8_ALPHA8;
-        default:
-            return 0;
+    case VK_FORMAT_R8G8B8A8_SRGB:
+        return GL_SRGB8_ALPHA8;
+    default:
+        return 0;
     }
 }
 
 #ifndef __ANDROID__
 void timewarp_gl::import_vulkan_image(const vk_image_handle& vk_handle, swapchain_usage usage) {
-#  if defined(_WIN32) || defined(_WIN64)
+#    if defined(_WIN32) || defined(_WIN64)
     const bool gl_result = static_cast<bool>(wglMakeCurrent(hdc_, context_));
-#  else
+#    else
     [[maybe_unused]] const bool gl_result = static_cast<bool>(glXMakeCurrent(display_, root_window_, context_));
-#  endif
+#    endif
     assert(gl_result && "glXMakeCurrent should not fail");
     assert(GLEW_EXT_memory_object_fd && "[timewarp_gl] Missing object memory extensions for Vulkan-GL interop");
 
@@ -502,9 +492,9 @@ void timewarp_gl::calculate_time_warp_transform(Eigen::Matrix4f& transform, cons
 
 void timewarp_gl::_setup() {
 #ifdef __ANDROID__
-// Wait a vsync for gldemo to go first.
-// This first time_last_swap will be "out of phase" with actual vsync.
-// The second one should be on the dot, since we don't exit the first until actual vsync.
+    // Wait a vsync for gldemo to go first.
+    // This first time_last_swap will be "out of phase" with actual vsync.
+    // The second one should be on the dot, since we don't exit the first until actual vsync.
     time_last_swap_ = clock_->now() + display_params::period;
 #endif
     // Generate reference HMD and physical body dimensions
@@ -517,14 +507,14 @@ void timewarp_gl::_setup() {
 
     // includes setting swap interval
 #ifdef __ANDROID__
-#  ifdef ENABLE_MONADO
+#    ifdef ENABLE_MONADO
     sem_wait(&lock_->sem_monado);
-#  else
+#    else
     lock_->get_lock();
-#  endif
+#    endif
 #endif
 
-[[maybe_unused]] const bool gl_result_0 =
+    [[maybe_unused]] const bool gl_result_0 =
 #if defined(_WIN32) || defined(_WIN64)
         static_cast<bool>(wglMakeCurrent(hdc_, context_));
 #elif defined(__ANDROID__)
@@ -656,11 +646,11 @@ void timewarp_gl::_setup() {
         static_cast<bool>(wglMakeCurrent(nullptr, nullptr));
 #elif defined(__ANDROID__)
         static_cast<bool>(eglMakeCurrent(display_, nullptr, nullptr, nullptr));
-#  ifdef ENABLE_MONADO
+#    ifdef ENABLE_MONADO
     sem_post(&lock_->sem_illixr);
-#  else
+#    else
     lock_->release_lock();
-#  endif
+#    endif
 #else
         static_cast<bool>(glXMakeCurrent(display_, None, nullptr));
 #endif
@@ -670,17 +660,18 @@ void timewarp_gl::_setup() {
 void timewarp_gl::_prepare_rendering() {
 #ifndef __ANDROID__
     [[maybe_unused]] const bool gl_result =
-#  if defined(_WIN32) || defined(_WIN64)
+#    if defined(_WIN32) || defined(_WIN64)
         static_cast<bool>(wglMakeCurrent(hdc_, context_));
-#  else
+#    else
         static_cast<bool>(glXMakeCurrent(display_, root_window_, context_));
-#  endif
+#    endif
     assert(gl_result && "glXMakeCurrent should not fail");
 #endif
 
     if (!rendering_ready_) {
-#ifdef __ANDROID__ 
-        while (!image_handles_ready_);
+#ifdef __ANDROID__
+        while (!image_handles_ready_)
+            ;
 #endif
         assert(image_handles_ready_);
         for (int eye = 0; eye < 2; eye++) {
@@ -704,11 +695,11 @@ void timewarp_gl::_prepare_rendering() {
         for (int eye = 0; eye < 2; eye++) {
 #ifdef ENABLE_MONADO
             image_handle image = eye_output_handles_[eye];
-#  ifdef __ANDROID__
+#    ifdef __ANDROID__
             vulkanGL_interop_buffer(image.vk_buffer_handle, image.usage);
-#  else
+#    else
             import_vulkan_image(image.vk_handle, image.usage);
-#  endif
+#    endif
 #else
             GLuint eye_output_texture;
             glGenTextures(1, &eye_output_texture);
@@ -740,11 +731,11 @@ void timewarp_gl::_prepare_rendering() {
 
 void timewarp_gl::warp(const switchboard::ptr<const rendered_frame>& most_recent_frame) {
 #ifdef __ANDROID__
-#  ifdef ENABLE_MONADO
+#    ifdef ENABLE_MONADO
     sem_wait(&lock_->sem_monado);
-#  else
+#    else
     lock_->get_lock();
-#  endif
+#    endif
     [[maybe_unused]] const bool gl_result = static_cast<bool>(eglMakeCurrent(display_, surface_, surface_, context_));
     assert(gl_result && "eglMakeCurrent should not fail");
 #endif
@@ -803,11 +794,11 @@ void timewarp_gl::warp(const switchboard::ptr<const rendered_frame>& most_recent
 
     glBindVertexArray(tw_vao);
 
-    auto     gpu_start_wall_time = clock_->now();
+    auto gpu_start_wall_time = clock_->now();
 #ifndef __ANDROID__
-    GLuint   query               = 0;
+    GLuint query = 0;
 #endif
-    GLuint64 elapsed_time        = 0;
+    GLuint64 elapsed_time = 0;
 
 #ifndef __ANDROID__
     glGenQueries(1, &query);
@@ -903,13 +894,13 @@ void timewarp_gl::warp(const switchboard::ptr<const rendered_frame>& most_recent
     // Call swap buffers; when vsync is enabled, this will return to the
     // CPU thread once the buffers have been successfully swapped.
     [[maybe_unused]] time_point time_before_swap = clock_->now();
-#  if defined(_WIN32) || defined(_WIN64)
+#    if defined(_WIN32) || defined(_WIN64)
     SwapBuffers(hdc_);
-#  elif defined(__ANDROID__    
+#    elif defined(__ANDROID__
     eglSwapBuffers(display_, surface_);
-#  else
+#    else
     glXSwapBuffers(display_, root_window_);
-#  endif
+#    endif
 
     // The swap time needs to be obtained and published as soon as possible
     time_last_swap_                             = clock_->now();
@@ -932,7 +923,7 @@ void timewarp_gl::warp(const switchboard::ptr<const rendered_frame>& most_recent
                                {render_to_display},
                            }});
 
-#  ifndef NDEBUG // Timewarp only has vsync estimates if we're running with native-gl
+#    ifndef NDEBUG // Timewarp only has vsync estimates if we're running with native-gl
 
     if (log_count_ > LOG_PERIOD_) {
         const double     time_swap         = duration_to_double<std::milli>(time_after_swap - time_before_swap);
@@ -948,7 +939,7 @@ void timewarp_gl::warp(const switchboard::ptr<const rendered_frame>& most_recent
         spdlog::get(name_)->debug("Render-to-display latency: {} ms", latency_rtd);
         spdlog::get(name_)->debug("Next swap in: {} ms in the future", timewarp_estimate);
     }
-#  endif
+#    endif
 
     // For now, it only makes sense to enable offloading in native mode
     // because running timewarp with Monado will not produce a single texture.
@@ -978,15 +969,14 @@ void timewarp_gl::warp(const switchboard::ptr<const rendered_frame>& most_recent
     glGetQueryObjectui64v(query, GL_QUERY_RESULT, &elapsed_time);
 #else
 
-    [[maybe_unused]] const bool gl_result_1 = static_cast<bool>(eglMakeCurrent(display_, nullptr, nullptr,
-                                                                               nullptr));
+    [[maybe_unused]] const bool gl_result_1 = static_cast<bool>(eglMakeCurrent(display_, nullptr, nullptr, nullptr));
     assert(gl_result_1 && "eglMakeCurrent should not fail");
 
-#  ifdef ENABLE_MONADO
+#    ifdef ENABLE_MONADO
     sem_post(&lock_->sem_illixr);
-#  else
+#    else
     lock_->release_lock();
-#  endif
+#    endif
 #endif
 
     timewarp_gpu_logger_.log(record{timewarp_gpu_record,
@@ -1052,17 +1042,17 @@ void timewarp_gl::vulkanGL_interop_buffer(const vk_buffer_handle& vk_buffer_hand
     AHardwareBuffer_Desc desc;
     AHardwareBuffer_describe(vk_buffer_handle.ahardware_buffer, &desc);
     EGLint attrs[] = {
-            EGL_IMAGE_PRESERVED_KHR,
-            EGL_TRUE,
-            (desc.usage & AHARDWAREBUFFER_USAGE_PROTECTED_CONTENT) ? EGL_TRUE : EGL_FALSE,
-            EGL_NONE,
-            EGL_NONE,
-            EGL_NONE,
+        EGL_IMAGE_PRESERVED_KHR,
+        EGL_TRUE,
+        (desc.usage & AHARDWAREBUFFER_USAGE_PROTECTED_CONTENT) ? EGL_TRUE : EGL_FALSE,
+        EGL_NONE,
+        EGL_NONE,
+        EGL_NONE,
     };
-    EGLenum source = EGL_NATIVE_BUFFER_ANDROID;
-    EGLImageKHR image = eglCreateImageKHR(display_, EGL_NO_CONTEXT, source, native_buffer, attrs);
-    GLint swizzle_mask[4] = {GL_RED, GL_GREEN, GL_BLUE, GL_ALPHA};
-    GLuint format = convert_vk_format_to_gl(vk_buffer_handle.format, swizzle_mask);
+    EGLenum     source          = EGL_NATIVE_BUFFER_ANDROID;
+    EGLImageKHR image           = eglCreateImageKHR(display_, EGL_NO_CONTEXT, source, native_buffer, attrs);
+    GLint       swizzle_mask[4] = {GL_RED, GL_GREEN, GL_BLUE, GL_ALPHA};
+    GLuint      format          = convert_vk_format_to_gl(vk_buffer_handle.format, swizzle_mask);
     assert(format != 0 && "Given VK format not handled!");
     spdlog::get("illixr")->debug("Format : {}", format);
     GLuint image_handle;
@@ -1070,55 +1060,54 @@ void timewarp_gl::vulkanGL_interop_buffer(const vk_buffer_handle& vk_buffer_hand
     glBindTexture(GL_TEXTURE_2D, image_handle);
 
     PFNGLEGLIMAGETARGETTEXTURE2DOESPROC glEGLImageTargetTexture2DOES;
-    glEGLImageTargetTexture2DOES = (PFNGLEGLIMAGETARGETTEXTURE2DOESPROC) eglGetProcAddress(
-            "glEGLImageTargetTexture2DOES");
-    glEGLImageTargetTexture2DOES(GL_TEXTURE_2D, (GLeglImageOES) image); //Try the EXT alternative
+    glEGLImageTargetTexture2DOES = (PFNGLEGLIMAGETARGETTEXTURE2DOESPROC) eglGetProcAddress("glEGLImageTargetTexture2DOES");
+    glEGLImageTargetTexture2DOES(GL_TEXTURE_2D, (GLeglImageOES) image); // Try the EXT alternative
 
     GLenum err;
     err = glGetError();
     if (err != GL_NO_ERROR)
         spdlog::get("illixr")->error("error {}", err);
     spdlog::get("illixr")->debug("NO ERROR");
-    //Alternate GL_TEXTURE_2D
+    // Alternate GL_TEXTURE_2D
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, swizzle_mask[0]);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, swizzle_mask[1]);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, swizzle_mask[2]);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, swizzle_mask[3]);
     spdlog::get("illixr")->debug("SWITCH");
     switch (usage) {
-        case data_format::swapchain_usage::LEFT_SWAPCHAIN: {
-            spdlog::get("illixr")->debug("Pushed LEFT_SWAPCHAIN");
-            eye_swapchains_[0].push_back(image_handle);
-            break;
-        }
-        case data_format::swapchain_usage::RIGHT_SWAPCHAIN: {
-            spdlog::get("illixr")->debug("Pushed RIGHT_SWAPCHAIN");
-            eye_swapchains_[1].push_back(image_handle);
-            break;
-        }
-        case data_format::swapchain_usage::LEFT_RENDER: {
-            spdlog::get("illixr")->debug("Pushed LEFT_RENDER");
-            eye_output_textures_[0] = image_handle;
-            break;
-        }
-        case data_format::swapchain_usage::RIGHT_RENDER: {
-            spdlog::get("illixr")->debug("Pushed RIGHT_RENDER");
-            eye_output_textures_[1] = image_handle;
-            break;
-        }
-        default: {
-            assert(false && "Invalid swapchain usage");
-            break;
-        }
+    case data_format::swapchain_usage::LEFT_SWAPCHAIN: {
+        spdlog::get("illixr")->debug("Pushed LEFT_SWAPCHAIN");
+        eye_swapchains_[0].push_back(image_handle);
+        break;
+    }
+    case data_format::swapchain_usage::RIGHT_SWAPCHAIN: {
+        spdlog::get("illixr")->debug("Pushed RIGHT_SWAPCHAIN");
+        eye_swapchains_[1].push_back(image_handle);
+        break;
+    }
+    case data_format::swapchain_usage::LEFT_RENDER: {
+        spdlog::get("illixr")->debug("Pushed LEFT_RENDER");
+        eye_output_textures_[0] = image_handle;
+        break;
+    }
+    case data_format::swapchain_usage::RIGHT_RENDER: {
+        spdlog::get("illixr")->debug("Pushed RIGHT_RENDER");
+        eye_output_textures_[1] = image_handle;
+        break;
+    }
+    default: {
+        assert(false && "Invalid swapchain usage");
+        break;
+    }
     }
 }
 
-#  ifdef ENABLE_MONADO
+#    ifdef ENABLE_MONADO
 void timewarp_gl::import_vulkan_semaphore(const semaphore_handle& vk_handle) {
-        [[maybe_unused]] const bool gl_result = static_cast<bool>(eglMakeCurrent(display_, surface_, surface_, context_));
-        assert(gl_result && "glXMakeCurrent should not fail");
-    }
-#  endif
+    [[maybe_unused]] const bool gl_result = static_cast<bool>(eglMakeCurrent(display_, surface_, surface_, context_));
+    assert(gl_result && "glXMakeCurrent should not fail");
+}
+#    endif
 #endif
 
 PLUGIN_MAIN(timewarp_gl)

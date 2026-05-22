@@ -24,8 +24,7 @@ void network_latency_pong_rx::_p_one_iteration() {
 
     // Skip if we've already processed this sequence number (duplicate detection)
     if (last_received_seq_.has_value() && pong->sequence_number <= last_received_seq_.value()) {
-        spdlog::get("illixr")->trace("[network_latency_pong_rx] Skipping duplicate seq={}",
-                                     pong->sequence_number);
+        spdlog::get("illixr")->trace("[network_latency_pong_rx] Skipping duplicate seq={}", pong->sequence_number);
         return;
     }
 
@@ -37,14 +36,14 @@ void network_latency_pong_rx::process_pong(const switchboard::ptr<const latency_
     uint64_t receive_time = get_timestamp_ns();
 
     // Calculate round-trip time (always accurate)
-    auto rtt_ns = static_cast<double>(receive_time - pong->client_timestamp_ns);
+    auto   rtt_ns = static_cast<double>(receive_time - pong->client_timestamp_ns);
     double rtt_ms = rtt_ns / 1'000'000.0;
 
     // Calculate directional latencies (only accurate with synchronized clocks)
-    auto c2s_ns = static_cast<double>(pong->server_timestamp_ns) - static_cast<double>(pong->client_timestamp_ns);
+    auto   c2s_ns = static_cast<double>(pong->server_timestamp_ns) - static_cast<double>(pong->client_timestamp_ns);
     double c2s_ms = c2s_ns / 1'000'000.0;
 
-    auto s2c_ns = static_cast<double>(receive_time) - static_cast<double>(pong->server_timestamp_ns);
+    auto   s2c_ns = static_cast<double>(receive_time) - static_cast<double>(pong->server_timestamp_ns);
     double s2c_ms = s2c_ns / 1'000'000.0;
 
     // Estimate clock offset assuming symmetric latency

@@ -3,9 +3,9 @@
 #include "illixr/runge-kutta.hpp"
 
 #ifdef __ANDROID__
-#  include <Eigen/Dense>
+#    include <Eigen/Dense>
 #else
-#  include <eigen3/Eigen/Dense>
+#    include <eigen3/Eigen/Dense>
 #endif
 #include <filesystem>
 #include <shared_mutex>
@@ -22,15 +22,16 @@ pose_prediction_impl::pose_prediction_impl(const phonebook* const pb)
     , ground_truth_offset_{switchboard_->get_reader<switchboard::event_wrapper<Eigen::Vector3f>>("ground_truth_offset")}
     , vsync_estimate_{switchboard_->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")}
 #ifdef __ANDROID__
-    , using_lighthouse_{false} { }
+    , using_lighthouse_{false} {}
 #else
-    , using_lighthouse_{switchboard_->get_env_bool("ILLIXR_LIGHTHOUSE")} { }
+    , using_lighthouse_{switchboard_->get_env_bool("ILLIXR_LIGHTHOUSE")} {
+}
 #endif
 
-// No parameter get_fast_pose() should just predict to the next vsync
-// However, we don't have vsync estimation yet.
-// So we will predict to `now()`, as a temporary approximation
-pose::fast_head_pose_type pose_prediction_impl::get_fast_pose() const {
+    // No parameter get_fast_pose() should just predict to the next vsync
+    // However, we don't have vsync estimation yet.
+    // So we will predict to `now()`, as a temporary approximation
+    pose::fast_head_pose_type pose_prediction_impl::get_fast_pose() const {
     switchboard::ptr<const switchboard::event_wrapper<time_point>> vsync_estimate = vsync_estimate_.get_ro_nullable();
 
     if (vsync_estimate == nullptr) {

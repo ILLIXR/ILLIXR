@@ -12,13 +12,13 @@
 #include <unordered_map>
 
 #if defined(_WIN32) || defined(_WIN64)
-#  include <cstdlib>
-#  include <Windows.h>
+#    include <cstdlib>
+#    include <Windows.h>
 #endif
 
 #ifndef NDEBUG
-#  include <spdlog/spdlog.h>
-//#  include "spdlog/sinks/stdout_color_sinks.h"
+#    include <spdlog/spdlog.h>
+// #  include "spdlog/sinks/stdout_color_sinks.h"
 #endif
 
 namespace ILLIXR {
@@ -197,11 +197,13 @@ public:
 
         return registry_.count(type_index.name()) == 1;
     }
+
     size_t get_next_id() {
         size_t val = current_id_;
         current_id_++;
         return val;
     }
+
 private:
     std::unordered_map<std::string, const std::shared_ptr<service>> registry_;
     mutable std::shared_mutex                                       mutex_;

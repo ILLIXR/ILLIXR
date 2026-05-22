@@ -56,7 +56,6 @@ void network_latency_rx::process_ping(const switchboard::ptr<const latency_ping>
     pong_writer_.put(
         pong_writer_.allocate<latency_pong>(latency_pong{ping->sequence_number, ping->client_timestamp_ns, server_timestamp}));
     pings_received_.fetch_add(1);
-
 }
 
 uint64_t network_latency_rx::get_timestamp_ns() {

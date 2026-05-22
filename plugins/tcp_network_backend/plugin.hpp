@@ -38,11 +38,11 @@ private:
     void send_to_peer(const std::string& topic_name, std::string&& message);
 
     std::shared_ptr<switchboard> switchboard_;
-    std::atomic<bool>            running_     = true;
+    std::atomic<bool>            running_ = true;
 #ifndef __ANDROID__
-    std::atomic<bool>            ready_       = false;
+    std::atomic<bool> ready_ = false;
 #endif
-    network::TCPSocket*          peer_socket_ = nullptr;
+    network::TCPSocket* peer_socket_ = nullptr;
 
     std::string server_ip_;
     int         server_port_;
