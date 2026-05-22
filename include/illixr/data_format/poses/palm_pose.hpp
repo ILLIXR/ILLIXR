@@ -14,15 +14,15 @@ struct palm_pose : xrt_space_relation {
     /**
      * @brief Returns whether or not there are any valid bit in the internal flags.
      */
-    bool is_valid() const {
+    [[nodiscard]] bool is_valid() const {
         return relation_flags > 0;
     }
 #ifndef ENABLE_MONADO
     /**
-     * @brief Update the internal data memebers
+     * @brief Update the internal data members
      *
      * @param location The new palm location information
-     * @param velocity The new paml velocity information
+     * @param velocity The new palm velocity information
      */
     void update(XrSpaceLocation& location, XrSpaceVelocity& velocity) {
         pose             = location.pose;
@@ -40,7 +40,7 @@ struct palm_pose : xrt_space_relation {
  * XR_EXT_palm_pose or the PALM joint of XR_EXT_hand_tracking.
  */
 struct palm_poses_pair : public switchboard::event {
-    std::map<hand, palm_pose> hands;       //!< Per-hand palm pose keyed by @c hand
+    std::map<side, palm_pose> hands;       //!< Per-hand palm pose keyed by @c hand
     time_point                sensor_time; //!< Timestamp at which the data was captured
 
     /**
@@ -55,16 +55,16 @@ struct palm_poses_pair : public switchboard::event {
      * @param hands_       Per-hand palm poses
      * @param sensor_time_ Timestamp at which the data was captured
      */
-    palm_poses_pair(std::map<hand, palm_pose> hands_, time_point sensor_time_)
+    palm_poses_pair(std::map<side, palm_pose> hands_, time_point sensor_time_)
         : hands{std::move(hands_)}
         , sensor_time{sensor_time_} { }
 
-    bool is_valid() const {
+    [[nodiscard]] bool is_valid() const {
         return hands.at(LEFT).relation_flags != XRT_SPACE_RELATION_BITMASK_NONE ||
             hands.at(RIGHT).relation_flags != XRT_SPACE_RELATION_BITMASK_NONE;
     }
 
-    palm_pose& operator[](hand h) {
+    palm_pose& operator[](side h) {
         return hands[h];
     }
 };

@@ -142,7 +142,7 @@ public:
 #if defined(_WIN32) || defined(_WIN64)
             recv(fd_, buffer_, static_cast<int>(min(BUFFER_SIZE, limit)), 0);
 #elif defined(__ANDROID__)
-            read(fd_, static_cast<void* const>(buffer_), min(BUFFER_SIZE, limit));
+            read(fd_, static_cast<void* const>(buffer_), std::min(BUFFER_SIZE, limit));
 #else
             read(fd_, buffer_, static_cast<int>(std::min(BUFFER_SIZE, limit)));
 #endif
