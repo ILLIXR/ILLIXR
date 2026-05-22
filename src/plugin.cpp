@@ -6,6 +6,9 @@
 #  include <EGL/egl.h>
 #  include <csignal>
 #  include <unistd.h> /// Not portable
+#  define _STR(y)      #y
+#  define STRINGIZE(x) _STR(x)
+
 #else
 #  ifndef ILLIXR_INSTALL_PATH
 #    error "ILLIXR_INSTALL_PATH must be defined"
