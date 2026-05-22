@@ -32,4 +32,4 @@ struct vulkan_device_context {
     uint32_t         queue_family    = 0;
 };
 
-} // namespace ILLIXR
+} // namespace ILLIXR::data_format

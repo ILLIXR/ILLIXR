@@ -2,27 +2,27 @@
 
 #ifndef __ANDROID__
 
-#include "gst/gst.h"
-#include "illixr/error_util.hpp"
+#    include "gst/gst.h"
+#    include "illixr/error_util.hpp"
 
-#include <condition_variable>
-#include <functional>
-#include <opencv2/core/mat.hpp>
+#    include <condition_variable>
+#    include <functional>
+#    include <opencv2/core/mat.hpp>
 
-#ifdef ADA
-#  define IMG_WIDTH  1
-#  define IMG_HEIGHT 1
-#elif defined(VIO)
+#    ifdef ADA
+#        define IMG_WIDTH  1
+#        define IMG_HEIGHT 1
+#    elif defined(VIO)
 // #define ZED
 
-#  ifdef ZED
-#    define IMG_WIDTH  672
-#    define IMG_HEIGHT 376
-#  else
-#    define IMG_WIDTH  752
-#    define IMG_HEIGHT 480
-#  endif
-#endif
+#        ifdef ZED
+#            define IMG_WIDTH  672
+#            define IMG_HEIGHT 376
+#        else
+#            define IMG_WIDTH  752
+#            define IMG_HEIGHT 480
+#        endif
+#    endif
 
 namespace ILLIXR {
 
@@ -35,10 +35,10 @@ public:
 
     inline void init() {
         create_pipelines();
-#ifdef ADA
+#    ifdef ADA
         msb_owned_.create(480, 640, CV_8UC1);
         lsb_owned_.create(480, 640, CV_8UC1);
-#endif
+#    endif
     }
 
     virtual void  enqueue(std::string& img0, std::string& img1) = 0;
@@ -68,10 +68,10 @@ private:
         return reinterpret_cast<video_decoder*>(user_data)->cb_appsink(appsink);
     }
 
-#ifdef ADA
+#    ifdef ADA
     cv::Mat msb_owned_;
     cv::Mat lsb_owned_;
-#endif
+#    endif
 };
 
 } // namespace ILLIXR

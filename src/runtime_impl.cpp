@@ -10,8 +10,8 @@
 #include "illixr/stoplight.hpp"
 #include "illixr/switchboard.hpp"
 #ifndef __ANDROID__
-#  include "illixr/vk/vk_extension_request.hpp"
-#  include "vulkan_display.hpp"
+#    include "illixr/vk/vk_extension_request.hpp"
+#    include "vulkan_display.hpp"
 #endif
 // #include "sqlite_record_logger.hpp"
 // #include "stdout_record_logger.hpp"
@@ -20,20 +20,20 @@
 #include <algorithm>
 #include <memory>
 #ifndef __ANDROID__
-#  include <set>
+#    include <set>
 #endif
 #include <spdlog/spdlog.h>
 #ifdef __ANDROID__
-#  include <spdlog/sinks/android_sink.h>
+#    include <spdlog/sinks/android_sink.h>
 #else
-#  include <spdlog/sinks/basic_file_sink.h>
-#  include <spdlog/sinks/stdout_color_sinks.h>
+#    include <spdlog/sinks/basic_file_sink.h>
+#    include <spdlog/sinks/stdout_color_sinks.h>
 #endif
 #include <string>
 #include <vector>
 
 #if defined(_WIN32) || defined(_WIN64)
-    #include <cstdlib>
+#    include <cstdlib>
 #endif
 
 using namespace ILLIXR;
@@ -111,7 +111,7 @@ public:
         phonebook_.lookup_impl<relative_clock>()->start();
 
         int plugin_offset = 0;
-#ifdef __ANDROID__  // on Android we have to have the network plugins up and running right away
+#ifdef __ANDROID__ // on Android we have to have the network plugins up and running right away
         plugins_.push_back(std::unique_ptr<plugin>{plugin_factories[0](&phonebook_)});
         plugins_[0]->start();
         plugins_.push_back(std::unique_ptr<plugin>{plugin_factories[1](&phonebook_)});
@@ -133,7 +133,6 @@ public:
                                throw;
                            }
                        });
-
 
 #ifndef __ANDROID__
         if (!enable_monado_) {
