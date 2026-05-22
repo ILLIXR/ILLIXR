@@ -32,7 +32,7 @@ public:
     [[nodiscard]] cv::Mat load() const {
 #ifdef LAZY
         cv::Mat mat_ = cv::imread(path_, cv::IMREAD_GRAYSCALE);
-    #error "Linux scheduler cannot interrupt IO work, so lazy-loading is unadvisable."
+#    error "Linux scheduler cannot interrupt IO work, so lazy-loading is unadvisable."
 #endif
         assert(!mat_.empty());
         return mat_;

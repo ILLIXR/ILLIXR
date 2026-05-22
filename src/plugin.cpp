@@ -3,30 +3,30 @@
 #include "illixr/switchboard.hpp"
 
 #ifdef __ANDROID__
-#  include <EGL/egl.h>
-#  include <csignal>
-#  include <unistd.h> /// Not portable
-#  define _STR(y)      #y
-#  define STRINGIZE(x) _STR(x)
+#    include <csignal>
+#    include <EGL/egl.h>
+#    include <unistd.h> /// Not portable
+#    define _STR(y)      #y
+#    define STRINGIZE(x) _STR(x)
 
 #else
-#  ifndef ILLIXR_INSTALL_PATH
-#    error "ILLIXR_INSTALL_PATH must be defined"
-#  endif
-#  ifndef BOOST_DATE_TIME_NO_LIB
-#    define BOOST_DATE_TIME_NO_LIB
-#  endif
-#  include <algorithm>
-#  include <boost/algorithm/string/join.hpp>
-#  include <cstdlib>
-#  include <iostream>
-#  ifdef __linux__
-#    include <pwd.h>
-#    include <unistd.h>
-#  endif
-#  include <sstream>
-#  include <stdexcept>
-#  include <yaml-cpp/yaml.h>
+#    ifndef ILLIXR_INSTALL_PATH
+#        error "ILLIXR_INSTALL_PATH must be defined"
+#    endif
+#    ifndef BOOST_DATE_TIME_NO_LIB
+#        define BOOST_DATE_TIME_NO_LIB
+#    endif
+#    include <algorithm>
+#    include <boost/algorithm/string/join.hpp>
+#    include <cstdlib>
+#    include <iostream>
+#    ifdef __linux__
+#        include <pwd.h>
+#        include <unistd.h>
+#    endif
+#    include <sstream>
+#    include <stdexcept>
+#    include <yaml-cpp/yaml.h>
 #endif
 
 #ifndef __ANDROID__
@@ -92,13 +92,13 @@ using namespace ILLIXR;
 
 #ifndef __ANDROID__
 std::string get_home_dir() {
-#  if defined(_WIN32) || defined(_WIN64)
+#    if defined(_WIN32) || defined(_WIN64)
     char* path = getenv("USERPROFILE");
     return {path};
-#  else
+#    else
     struct passwd* pw = getpwuid(getuid());
     return {pw->pw_dir};
-#  endif
+#    endif
 }
 
 void check_plugins(std::vector<std::string>& plugins, const std::vector<ILLIXR::Dependency>& dep_map) {
@@ -164,12 +164,12 @@ void check_plugins(std::vector<std::string>& plugins, const std::vector<ILLIXR::
 
 int ILLIXR::run(
 #ifdef __ANDROID__
-        const std::vector<std::string>& plugins, struct android_app* app
+    const std::vector<std::string>& plugins, struct android_app* app
 #else
-        const cxxopts::ParseResult& options
+    const cxxopts::ParseResult& options
 #endif
 ) {
-    std::chrono::seconds     run_duration;
+    std::chrono::seconds run_duration;
 #ifndef __ANDROID__
     std::vector<std::string> plugins;
 #endif
@@ -237,27 +237,27 @@ int ILLIXR::run(
         /// Enable using the ILLIXR_ENABLE_PRE_SLEEP environment variable (see 'runner/runner/main.py:load_tests')
         const bool enable_pre_sleep = switchboard_->get_env_bool("ILLIXR_ENABLE_PRE_SLEEP", "False");
         if (enable_pre_sleep) {
-    #if defined(_WIN32) || defined(_WIN64)
+#    if defined(_WIN32) || defined(_WIN64)
             DWORD pid = GetCurrentProcessId();
-    #else
+#    else
             const pid_t pid = getpid();
-    #endif
+#    endif
             spdlog::get("illixr")->info("[main] Pre-sleep enabled.");
             spdlog::get("illixr")->info("[main] PID: {}", pid);
             spdlog::get("illixr")->info("[main] Sleeping for {} seconds...", ILLIXR_PRE_SLEEP_DURATION);
-    #if defined(_WIN32) || defined(_WIN64)
+#    if defined(_WIN32) || defined(_WIN64)
             Sleep(ILLIXR_PRE_SLEEP_DURATION * 1000);
-    #else
+#    else
             sleep(ILLIXR_PRE_SLEEP_DURATION);
-    #endif
+#    endif
             spdlog::get("illixr")->info("[main] Resuming...");
         }
 #endif /// NDEBUG
 #ifdef __ANDROID__
         /// Shutting down method 2: Run timer
         run_duration = (!switchboard_->get_env("ILLIXR_RUN_DURATION").empty())
-                       ? std::chrono::seconds{std::stol(std::string{switchboard_->get_env("ILLIXR_RUN_DURATION")})}
-                       : ILLIXR_RUN_DURATION_DEFAULT;
+            ? std::chrono::seconds{std::stol(std::string{switchboard_->get_env("ILLIXR_RUN_DURATION")})}
+            : ILLIXR_RUN_DURATION_DEFAULT;
 #else
         if (options.count("duration")) {
             run_duration = std::chrono::seconds{options["duration"].as<long>()};
@@ -294,10 +294,10 @@ int ILLIXR::run(
         for (auto& dep_file : dep_list) {
             try {
                 YAML::Node plugin_deps = YAML::LoadFile(dep_file);
-#  ifndef NDEBUG
+#    ifndef NDEBUG
                 spdlog::get("illixr")->info("Located plugin dependency map file (" + dep_file +
                                             "), verifying plugin dependencies.");
-#  endif
+#    endif
                 dep_map.reserve(plugin_deps["dep_map"].size());
                 for (const auto& node : plugin_deps["dep_map"])
                     dep_map.push_back(node.as<ILLIXR::Dependency>());

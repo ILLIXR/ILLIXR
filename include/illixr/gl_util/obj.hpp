@@ -1,6 +1,6 @@
 #pragma once
 #if defined(_WIN32) || defined(_WIN64)
-#  include <windows.h>
+#    include <windows.h>
 #endif
 
 #include "illixr/error_util.hpp"
@@ -31,35 +31,35 @@ struct object_t {
     bool   has_texture;
 
 #ifdef __ANDROID__
-    void Draw() {
+    void Draw(){
 #else
     void Draw() const {
 #endif
         RAC_ERRNO_MSG("gl_util/obj at start of Draw");
 
-        glBindBuffer(GL_ARRAY_BUFFER, vbo_handle);
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex_t), (void*) offsetof(vertex_t, position));
-        glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(vertex_t), (void*) offsetof(vertex_t, uv));
+    glBindBuffer(GL_ARRAY_BUFFER, vbo_handle);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex_t), (void*) offsetof(vertex_t, position));
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(vertex_t), (void*) offsetof(vertex_t, uv));
 
-        if (has_texture) {
-            glBindTexture(GL_TEXTURE_2D, texture);
-        }
+    if (has_texture) {
+        glBindTexture(GL_TEXTURE_2D, texture);
+    }
 
 #ifdef __ANDROID__
-        glDrawArrays(GL_TRIANGLES, 0, num_triangles * 3);
+    glDrawArrays(GL_TRIANGLES, 0, num_triangles * 3);
 #else
         glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(num_triangles) * 3);
 #endif
 
-        if (has_texture) {
-            glBindTexture(GL_TEXTURE_2D, 0);
-        }
-
-        RAC_ERRNO_MSG("gl_util/obj at end of Draw");
+    if (has_texture) {
+        glBindTexture(GL_TEXTURE_2D, 0);
     }
-};
+
+    RAC_ERRNO_MSG("gl_util/obj at end of Draw");
+}
+}; // namespace ILLIXR
 
 // Represents a scene obtained from a single OBJ file.
 // Multiple objects can reside within the OBJ file; each
