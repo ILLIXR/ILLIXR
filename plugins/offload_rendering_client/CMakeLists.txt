@@ -5,8 +5,6 @@ if(WIN32 OR MSVC)
     return()
 endif()
 
-project(offload_rendering_client)
-
 set(PLUGIN_NAME plugin.offload_rendering_client${ILLIXR_BUILD_SUFFIX})
 
 set(CMAKE_CXX_STANDARD 17)
