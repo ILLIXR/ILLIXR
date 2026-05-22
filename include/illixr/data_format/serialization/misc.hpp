@@ -43,32 +43,6 @@ template<class Archive>
         tp = ILLIXR::time_point(std::chrono::nanoseconds(ns_since_epoch));
     }
 }
-#ifdef USING_OPENXR
-template<class Archive>
-void serialize(Archive& ar, QUATERNION_TYPE& quat, const unsigned int version) {
-    (void) version;
-    ar & quat.x;
-    ar & quat.y;
-    ar & quat.z;
-    ar & quat.w;
-}
-
-template<class Archive>
-void serialize(Archive& ar, THREE_VECTOR_TYPE& position, const unsigned int version) {
-    (void) version;
-    ar & position.x;
-    ar & position.y;
-    ar & position.z;
-}
-
-template<class Archive>
-void serialize(Archive& ar, POSE_DATA_TYPE& pose, const unsigned int version) {
-    (void) version;
-    ar & pose.position;
-    ar & pose.orientation;
-}
-
-#endif
 } // namespace boost::serialization
 
 BOOST_CLASS_EXPORT_KEY(ILLIXR::switchboard::event)
