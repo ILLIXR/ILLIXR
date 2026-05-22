@@ -1,20 +1,21 @@
 #pragma once
 #if defined(_WIN32) || defined(_WIN64)
-    #include <windows.h>
+#    include <windows.h>
 #endif
 
 #include "error_util.hpp"
 
 #ifdef __ANDROID__
-#  include "EGL/egl.h"
-#  include <GLES3/gl32.h>
-#  define SHADER_TYPE GLuint
+#    include "EGL/egl.h"
+
+#    include <GLES3/gl32.h>
+#    define SHADER_TYPE GLuint
 #else
 // clang-format off
 #  include <GL/glew.h>
 #  include <GL/gl.h>
 // clang-format on
-#  define SHADER_TYPE GLint
+#    define SHADER_TYPE GLint
 #endif
 
 #include <cassert>
@@ -32,7 +33,7 @@ static void GLAPIENTRY message_callback([[maybe_unused]] GLenum source, [[maybe_
                                         [[maybe_unused]] GLuint id, [[maybe_unused]] GLenum severity,
                                         [[maybe_unused]] GLsizei length, [[maybe_unused]] const GLchar* message,
                                         [[maybe_unused]] const void* user_param) {
-#  ifndef NDEBUG
+#    ifndef NDEBUG
     if (severity == GL_DEBUG_SEVERITY_NOTIFICATION) {
         /// Don't show message if severity level is notification. Non-fatal.
         return;
@@ -45,13 +46,13 @@ static void GLAPIENTRY message_callback([[maybe_unused]] GLenum source, [[maybe_
         /// Fatal error if severity level is high.
         ILLIXR::abort();
     } /// else => severity level low and medium are non-fatal.
-#  endif
+#    endif
 }
 #endif
 
 static GLuint init_and_link(const char* vertex_shader, const char* fragment_shader) {
     // GL handles for intermediary objects.
-    GLint result;
+    GLint       result;
     SHADER_TYPE vertex_shader_handle, fragment_shader_handle, shader_program;
     vertex_shader_handle = glCreateShader(GL_VERTEX_SHADER);
     auto vert_shader_len = static_cast<GLint>(strlen(vertex_shader));
@@ -65,7 +66,7 @@ static GLuint init_and_link(const char* vertex_shader, const char* fragment_shad
 
         glGetShaderInfoLog(vertex_shader_handle, GL_MAX_LOG_LENGTH * sizeof(GLchar), &length, gl_buf_log.data());
         const std::string msg{gl_buf_log.begin(), gl_buf_log.end()};
-        //assert(length == static_cast<GLsizei>(msg.size()) && "Length of log should match GLchar vector contents");
+        // assert(length == static_cast<GLsizei>(msg.size()) && "Length of log should match GLchar vector contents");
         ILLIXR::abort("[shader_util] Failed to get vertex_shader_handle: " + msg);
     }
 

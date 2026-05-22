@@ -33,7 +33,7 @@ private:
     switchboard::buffered_reader<data_format::latency_pong>  pong_reader_;
     switchboard::writer<data_format::network_latency_result> result_writer_;
 
-    std::optional<uint64_t> last_received_seq_;  ///< Empty until first pong received
+    std::optional<uint64_t> last_received_seq_; ///< Empty until first pong received
 
     std::atomic<double> smoothed_clock_offset_ms_ = 0.0;
     std::atomic<double> smoothed_rtt_ms_          = 0.0;

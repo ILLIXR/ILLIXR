@@ -18,7 +18,7 @@ public:
     void start() override;
 #else
     void start_client() override;
-    void start_server() override;    
+    void start_server() override;
 #endif
     void read_loop(network::UDPSocket* socket);
     void topic_create(std::string topic_name, network::topic_config& config) override;
@@ -37,11 +37,11 @@ private:
     void send_control(const std::string& message);
 
     std::shared_ptr<switchboard> switchboard_;
-    std::atomic<bool>            running_     = true;
+    std::atomic<bool>            running_ = true;
 #ifndef __ANDROID__
-    std::atomic<bool>            ready_       = false;
+    std::atomic<bool> ready_ = false;
 #endif
-    network::UDPSocket*          peer_socket_ = nullptr;
+    network::UDPSocket* peer_socket_ = nullptr;
 
     std::string server_ip_;
     int         server_port_;

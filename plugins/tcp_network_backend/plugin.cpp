@@ -93,8 +93,8 @@ void tcp_network_backend::start() {
     std::thread([this]() {
         read_loop(peer_socket_);
     }).detach();
-
 }
+
 tcp_network_backend::~tcp_network_backend() {
     spdlog::get("illixr")->debug("Destroying tcp_network");
 }

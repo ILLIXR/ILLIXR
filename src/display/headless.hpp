@@ -2,7 +2,7 @@
 
 #ifndef __ANDROID__
 
-#include "display_backend.hpp"
+#    include "display_backend.hpp"
 
 namespace ILLIXR::display {
 

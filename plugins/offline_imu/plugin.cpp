@@ -32,7 +32,8 @@ inline std::map<ullong, sensor_types> read_data(std::ifstream& gt_file, const st
 #ifndef __ANDROID__
     , imu_cam_log_{record_logger_}
 #endif
-    , clock_{phonebook_->lookup_impl<relative_clock>()} { }
+    , clock_{phonebook_->lookup_impl<relative_clock>()} {
+}
 
 ILLIXR::threadloop::skip_option offline_imu::_p_should_skip() {
     if (sensor_data_it_ != sensor_data_.end()) {

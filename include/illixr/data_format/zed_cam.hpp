@@ -1,11 +1,11 @@
 #pragma once
 
 #ifdef HAVE_ZED
-#  include "illixr/data_format/camera_data.hpp"
-#  include "illixr/data_format/opencv_data_types.hpp"
-#  include "illixr/data_format/poses/head_pose.hpp"
+#    include "illixr/data_format/camera_data.hpp"
+#    include "illixr/data_format/opencv_data_types.hpp"
+#    include "illixr/data_format/poses/head_pose.hpp"
 
-#  include <utility>
+#    include <utility>
 
 namespace ILLIXR::data_format {
 /**

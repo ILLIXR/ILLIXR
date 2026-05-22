@@ -7,9 +7,9 @@
 #include <spdlog/common.h>
 #include <spdlog/sinks/basic_file_sink.h>
 #ifdef __ANDROID__
-#  include <spdlog/sinks/android_sink.h>
+#    include <spdlog/sinks/android_sink.h>
 #else
-#  include <spdlog/sinks/stdout_color_sinks.h>
+#    include <spdlog/sinks/stdout_color_sinks.h>
 #endif
 #include <spdlog/spdlog.h>
 #include <string>
@@ -19,11 +19,11 @@
 #if !defined(DOUBLE_INCLUDE) && !defined(BUILDING_MONADO_ILLIXR_DRIVER)
 extern "C" {
 MY_EXPORT_API bool needs_monado() {
-#  ifdef MONADO_REQUIRED
+#    ifdef MONADO_REQUIRED
     return true;
-#  else
+#    else
     return false;
-#  endif
+#    endif
 }
 }
 #endif
@@ -109,7 +109,7 @@ public:
         auto main_sink = std::make_shared<spdlog::sinks::android_sink_mt>();
         sinks.push_back(main_sink);
 #else
-        auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>("logs/" + name_ + ".log");
+        auto file_sink    = std::make_shared<spdlog::sinks::basic_file_sink_mt>("logs/" + name_ + ".log");
         auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
         sinks.push_back(file_sink);
         sinks.push_back(console_sink);

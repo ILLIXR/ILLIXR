@@ -107,7 +107,6 @@ void udp_network_backend::start() {
     std::thread([this]() {
         read_loop(peer_socket_);
     }).detach();
-
 }
 #else
 

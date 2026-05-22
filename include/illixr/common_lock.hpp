@@ -1,10 +1,10 @@
 #pragma once
 
 #ifdef __ANDROID__
-#include "phonebook.hpp"
+#    include "phonebook.hpp"
 
-#include <mutex>
-#include <semaphore.h>
+#    include <mutex>
+#    include <semaphore.h>
 
 using namespace ILLIXR;
 
