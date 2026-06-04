@@ -37,7 +37,8 @@ android {
             cmake {
                 version '3.22.1'
                 cppFlags '-std=c++17', '-frtti', '-fexceptions'
-                arguments "-DTHIRD_PARTY_DIR=${root_library_path}"
+                arguments "-DTHIRD_PARTY_DIR=${root_library_path}",
+                          "-DBUILD_ANDROID=ON"
             }
         }
     }
