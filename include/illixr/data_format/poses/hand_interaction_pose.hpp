@@ -1,15 +1,15 @@
 #pragma once
 #ifdef USING_OPENXR
-#include "illixr/data_format/poses/pose_base.hpp"
-#include "illixr/switchboard.hpp"
+#    include "illixr/data_format/poses/pose_base.hpp"
+#    include "illixr/switchboard.hpp"
 
-#include <map>
+#    include <map>
 
-#ifdef ENABLE_MONADO
-#  define INTERACTION_POSE_TYPE xrt_pose
-#else
-#  define INTERACTION_POSE_TYPE XrPosef
-#endif
+#    ifdef ENABLE_MONADO
+#        define INTERACTION_POSE_TYPE xrt_pose
+#    else
+#        define INTERACTION_POSE_TYPE XrPosef
+#    endif
 namespace ILLIXR::data_format::pose {
 
 /**
@@ -60,8 +60,8 @@ constexpr int NUM_INTERACTION_POSES = 4;
  * true and @c value crosses the application's chosen threshold.
  */
 struct hand_interaction_pose : xrt_space_relation {
-    float value; //!< Gesture-strength scalar in [0, 1]; see struct documentation for per-type semantics
-    bool  ready; //!< Whether the runtime considers the gesture activatable; see struct documentation
+    float   value; //!< Gesture-strength scalar in [0, 1]; see struct documentation for per-type semantics
+    bool    ready; //!< Whether the runtime considers the gesture activatable; see struct documentation
     int64_t predicted_time;
 
     /**
@@ -89,7 +89,7 @@ struct hand_interaction_pose : xrt_space_relation {
         pose = in_pose;
     }
 
-#ifndef ENABLE_MONADO
+#    ifndef ENABLE_MONADO
 
     /**
      * @brief Construct from Monado based components
@@ -122,7 +122,7 @@ struct hand_interaction_pose : xrt_space_relation {
         set_flags(location.locationFlags);
         predicted_time = p_time;
     }
-#endif
+#    endif
     [[maybe_unused]] [[nodiscard]] bool valid() const override {
         return (relation_flags & XRT_SPACE_RELATION_POSITION_VALID_BIT) != 0u &&
             (relation_flags & XRT_SPACE_RELATION_ORIENTATION_VALID_BIT) != 0u;

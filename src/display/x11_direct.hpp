@@ -2,10 +2,10 @@
 
 #ifndef __ANDROID__
 
-#include "display_backend.hpp"
-#include "illixr/switchboard.hpp"
+#    include "display_backend.hpp"
+#    include "illixr/switchboard.hpp"
 
-#include <utility>
+#    include <utility>
 
 namespace ILLIXR::display {
 

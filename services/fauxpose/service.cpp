@@ -33,11 +33,11 @@
 #include <cstdlib>
 #include <cstring>
 #ifdef __ANDROID__
-#  include <Eigen/Core>
-#  include <Eigen/Geometry>
+#    include <Eigen/Core>
+#    include <Eigen/Geometry>
 #else
-#  include <eigen3/Eigen/Core>
-#  include <eigen3/Eigen/Geometry>
+#    include <eigen3/Eigen/Core>
+#    include <eigen3/Eigen/Geometry>
 #endif
 #include <memory>
 #include <mutex>

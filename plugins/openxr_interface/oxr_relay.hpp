@@ -1,24 +1,26 @@
 #pragma once
 #ifndef USING_OPENXR
-#define USING_OPENXR
+#    define USING_OPENXR
 #endif
 
 #define DOUBLE_INCLUDE
-#include "illixr/data_format/poses/combined_pose.hpp"
 #include "illixr/data_format/latency_data.hpp"
+#include "illixr/data_format/poses/combined_pose.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
 #undef DOUBLE_INCLUDE
 
 #include <openxr/openxr.h>
 
-#define OXR_CheckErrors(cmd, pfunc) do { \
-    XrResult res = cmd; \
-    if (XR_FAILED(res)) { \
-        spdlog::get("illixr")->error("OpenXR error {} at {}:{} from {}", static_cast<int>(res), __FILE__, __LINE__, #pfunc); \
-        throw std::runtime_error("Call failed");                                     \
-    } \
-} while(0)
+#define OXR_CheckErrors(cmd, pfunc)                                                                                     \
+    do {                                                                                                                \
+        XrResult res = cmd;                                                                                             \
+        if (XR_FAILED(res)) {                                                                                           \
+            spdlog::get("illixr")->error("OpenXR error {} at {}:{} from {}", static_cast<int>(res), __FILE__, __LINE__, \
+                                         #pfunc);                                                                       \
+            throw std::runtime_error("Call failed");                                                                    \
+        }                                                                                                               \
+    } while (0)
 #define OXR(func) OXR_CheckErrors(func, #func);
 
 namespace ILLIXR {
@@ -28,9 +30,9 @@ class oxr_interface;
 /// Entry in the headset pose history map, used by oxr_interface to
 /// correlate received frames back to the original pose measurement.
 struct pose_history_entry {
-    data_format::pose::xrt_space_relation   pose;   ///< Head pose
-    time_point generated_time;                      ///< Wall-clock time the pose was generated
-    XrTime    xr_time;                              ///< predictedDisplayTime this pose was located for
+    data_format::pose::xrt_space_relation pose;           ///< Head pose
+    time_point                            generated_time; ///< Wall-clock time the pose was generated
+    XrTime                                xr_time;        ///< predictedDisplayTime this pose was located for
 };
 
 class oxr_relay : public threadloop {
@@ -43,6 +45,7 @@ public:
     /// Returns true and populates out_entry if found, false otherwise.
     /// Thread-safe.
     bool get_pose_history(uint64_t id, pose_history_entry& out_entry) const;
+
 protected:
     skip_option _p_should_skip() override;
 
@@ -55,7 +58,10 @@ private:
 
     void destroy();
 
-    void update_time(XrTime time) { predicted_time_.store(time); }
+    void update_time(XrTime time) {
+        predicted_time_.store(time);
+    }
+
     // Pose tracking
     XrResult get_head_pose(XrTime time, data_format::pose::head_pose_type* out_pose);
     // ==================== Time offset calibration ====================
@@ -148,7 +154,7 @@ private:
     void push_poses(XrTime predicted_time);
 
     // ================== Member Variables ====================
-    const std::shared_ptr<switchboard> switchboard_;
+    const std::shared_ptr<switchboard>    switchboard_;
     const std::shared_ptr<relative_clock> clock_;
 
     /**
@@ -169,11 +175,11 @@ private:
     data_format::pose::hand_interaction_poses_pair current_hand_interactions_;
     data_format::pose::palm_poses_pair             current_palm_poses_;
 
-    XrInstance instance_ = XR_NULL_HANDLE;
-    XrSession  session_ = XR_NULL_HANDLE;
-    XrSpace    local_space_ = XR_NULL_HANDLE;
-    XrSpace    view_space_  = XR_NULL_HANDLE;
-    std::atomic<XrTime>     predicted_time_ = 0;
+    XrInstance          instance_       = XR_NULL_HANDLE;
+    XrSession           session_        = XR_NULL_HANDLE;
+    XrSpace             local_space_    = XR_NULL_HANDLE;
+    XrSpace             view_space_     = XR_NULL_HANDLE;
+    std::atomic<XrTime> predicted_time_ = 0;
 
     /// Left hand tracker handle
     XrHandTrackerEXT left_hand_tracker_{XR_NULL_HANDLE};
@@ -264,14 +270,14 @@ private:
      */
     XrSpace palm_pose_spaces_[2]{XR_NULL_HANDLE, XR_NULL_HANDLE};
 
-    bool initialized_{false};
-    bool xr_time_verified_{false};
-    bool time_offsets_calibrated_{false};
+    bool                                  initialized_{false};
+    bool                                  xr_time_verified_{false};
+    bool                                  time_offsets_calibrated_{false};
     std::chrono::steady_clock::time_point last_offset_calibration_{};
-    XrTime monotonic_to_system_offset_ns_{0};
-    XrTime xr_to_monotonic_offset_ns_{0};
-    uint64_t counter_{0};
-    data_format::pose::head_pose_type last_pose_{};
+    XrTime                                monotonic_to_system_offset_ns_{0};
+    XrTime                                xr_to_monotonic_offset_ns_{0};
+    uint64_t                              counter_{0};
+    data_format::pose::head_pose_type     last_pose_{};
 
     // Map from combined_pose id to the pose that was sent with that id.
     /// Bounded to 240 entries (~2 seconds at 120 Hz) to avoid unbounded growth.
@@ -281,4 +287,4 @@ private:
     static constexpr size_t                MAX_POSE_HISTORY = 240;
 };
 
-} // ILLIXR
+} // namespace ILLIXR

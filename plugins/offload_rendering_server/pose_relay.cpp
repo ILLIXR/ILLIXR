@@ -228,11 +228,11 @@ void pose_relay::_p_one_iteration() {
         pose_point                  pp;
         pp.time = static_cast<XrTime>(monado_time_ns);
         pp.id   = pose_data->id;
-    #ifdef USING_OPENXR
+#    ifdef USING_OPENXR
         pp.pose = pose_data->head_pose.pose;
-    #else
+#    else
         pp.pose = build_relation_from_pose(pose_data->head_pose);
-    #endif
+#    endif
         // Compute dt from the previous pose for the filter time constant
         double filter_dt = 0.0;
         if (!current_poses_.empty()) {

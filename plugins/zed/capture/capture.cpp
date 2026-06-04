@@ -1,11 +1,11 @@
 #include "capture.hpp"
 
+#include "../include/zed_opencv.hpp"
 #include "files.hpp"
 #include "illixr/data_format/camera_data.hpp"
 #include "illixr/imgui/backends/imgui_impl_glfw.h"
 #include "illixr/imgui/backends/imgui_impl_opengl3.h"
 #include "illixr/shader_util.hpp"
-#include "../include/zed_opencv.hpp"
 
 using namespace ILLIXR::zed_capture;
 

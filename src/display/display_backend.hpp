@@ -2,8 +2,8 @@
 
 #ifndef __ANDROID__
 
-#include "illixr/switchboard.hpp"
-#include "illixr/vk/display_provider.hpp"
+#    include "illixr/switchboard.hpp"
+#    include "illixr/vk/display_provider.hpp"
 
 namespace ILLIXR::display {
 

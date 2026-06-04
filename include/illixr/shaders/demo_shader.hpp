@@ -1,7 +1,7 @@
 #pragma once
 #ifdef __ANDROID__
-#include <EGL/egl.h>
-#include <GLES3/gl3.h>
+#    include <EGL/egl.h>
+#    include <GLES3/gl3.h>
 #endif
 
 static const char* const demo_vertex_shader =
@@ -25,7 +25,6 @@ static const char* const demo_vertex_shader =
     "    gl_Position = u_projection * u_modelview * vec4(in_position,1.0);\n"
     "    uv = in_uv;\n"
     "}\n";
-
 
 static const char* const demo_fragment_shader =
 #ifdef __ANDROID__
