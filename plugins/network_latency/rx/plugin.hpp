@@ -22,7 +22,7 @@ namespace ILLIXR {
  * responds with pong packets containing timing information. This allows
  * the client to measure round-trip network latency.
  *
- * No local switchboard publishing is done here — the server side
+ * No local switchboard publishing is done here - the server side
  * time conversion data arrives via the combined_pose topic instead.
  */
 class MY_EXPORT_API network_latency_rx : public threadloop {
