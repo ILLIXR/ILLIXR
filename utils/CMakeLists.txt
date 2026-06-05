@@ -27,7 +27,7 @@ if(WIN32 OR MSVC)
     target_link_libraries(illixr_vulkan_utils PUBLIC Vulkan::Vulkan GPUOpen::VulkanMemoryAllocator)
     target_compile_options(illixr_vulkan_utils PRIVATE /EHsc)
 endif()
-if(UNIX)
+if(USE_DEBUGVIEW)
     find_package(OpenGL REQUIRED)
 
     add_library(illixr_imgui STATIC
@@ -75,6 +75,9 @@ if(UNIX)
                           glfw
                           OpenGL::GL
     )
+endif()
+
+if(USE_ADA.DEVICE_TX OR USE_ADA.SERVER_RX OR USE_OFFLOAD_VIO.SERVER_RX OR USE_OFFLOAD_VIO.DEVICE_TX)
     pkg_search_module(GLIB REQUIRED glib-2.0)
     pkg_check_modules(GSTREAMER REQUIRED gstreamer-1.0)
     pkg_check_modules(GST_APP REQUIRED gstreamer-app-1.0)
@@ -94,70 +97,77 @@ if(UNIX)
     # reverse back to original order
     list(REVERSE LINK_LIBS)
 
-    add_library(video_encoder_ada OBJECT
-                ${CMAKE_SOURCE_DIR}/include/illixr/video_encoder.hpp
-                video_encoder.cpp
-    )
+    if(USE_ADA.DEVICE_TX)
+        add_library(video_encoder_ada OBJECT
+                    ${CMAKE_SOURCE_DIR}/include/illixr/video_encoder.hpp
+                    video_encoder.cpp
+        )
 
-    target_include_directories(video_encoder_ada PUBLIC
-                               ${OpenCV_INCLUDE_DIRS}
-                               ${INC_DIRS}
-    )
+        target_include_directories(video_encoder_ada PUBLIC
+                                   ${OpenCV_INCLUDE_DIRS}
+                                   ${INC_DIRS}
+        )
 
-    target_link_libraries(video_encoder_ada PUBLIC
-                          ${OpenCV_LIBS}
-                          ${LINK_LIBS}
-    )
+        target_link_libraries(video_encoder_ada PUBLIC
+                              ${OpenCV_LIBS}
+                              ${LINK_LIBS}
+        )
 
-    target_compile_definitions(video_encoder_ada PUBLIC ADA)
+        target_compile_definitions(video_encoder_ada PUBLIC ADA)
+    endif()
 
-    add_library(video_decoder_ada OBJECT
-                ${CMAKE_SOURCE_DIR}/include/illixr/video_decoder.hpp
-                video_decoder.cpp
-    )
+    if(USE_ADA.SERVER_RX)
+        add_library(video_decoder_ada OBJECT
+                    ${CMAKE_SOURCE_DIR}/include/illixr/video_decoder.hpp
+                    video_decoder.cpp
+        )
 
-    target_include_directories(video_decoder_ada PUBLIC
-                               ${OpenCV_INCLUDE_DIRS}
-                               ${INC_DIRS}
-    )
+        target_include_directories(video_decoder_ada PUBLIC
+                                   ${OpenCV_INCLUDE_DIRS}
+                                   ${INC_DIRS}
+        )
 
-    target_link_libraries(video_decoder_ada PUBLIC
-                          ${OpenCV_LIBS}
-                          ${LINK_LIBS}
-    )
-    target_compile_definitions(video_decoder_ada PUBLIC ADA)
+        target_link_libraries(video_decoder_ada PUBLIC
+                              ${OpenCV_LIBS}
+                              ${LINK_LIBS}
+        )
+        target_compile_definitions(video_decoder_ada PUBLIC ADA)
+    endif()
 
+    if(USE_OFFLOAD_VIO.DEVICE_TX)
+        add_library(video_encoder_vio OBJECT
+                    ${CMAKE_SOURCE_DIR}/include/illixr/video_encoder.hpp
+                    video_encoder.cpp
+        )
 
-    add_library(video_encoder_vio OBJECT
-                ${CMAKE_SOURCE_DIR}/include/illixr/video_encoder.hpp
-                video_encoder.cpp
-    )
+        target_include_directories(video_encoder_vio PUBLIC
+                                   ${OpenCV_INCLUDE_DIRS}
+                                   ${INC_DIRS}
+        )
 
-    target_include_directories(video_encoder_vio PUBLIC
-                               ${OpenCV_INCLUDE_DIRS}
-                               ${INC_DIRS}
-    )
+        target_link_libraries(video_encoder_vio PUBLIC
+                              ${OpenCV_LIBS}
+                              ${LINK_LIBS}
+        )
 
-    target_link_libraries(video_encoder_vio PUBLIC
-                          ${OpenCV_LIBS}
-                          ${LINK_LIBS}
-    )
+        target_compile_definitions(video_encoder_vio PUBLIC VIO)
+    endif()
 
-    target_compile_definitions(video_encoder_vio PUBLIC VIO)
+    if(USE_OFFLOAD_VIO.SERVER_RX)
+        add_library(video_decoder_vio OBJECT
+                    ${CMAKE_SOURCE_DIR}/include/illixr/video_decoder.hpp
+                    video_decoder.cpp
+        )
 
-    add_library(video_decoder_vio OBJECT
-                ${CMAKE_SOURCE_DIR}/include/illixr/video_decoder.hpp
-                video_decoder.cpp
-    )
+        target_include_directories(video_decoder_vio PUBLIC
+                                   ${OpenCV_INCLUDE_DIRS}
+                                   ${INC_DIRS}
+        )
 
-    target_include_directories(video_decoder_vio PUBLIC
-                               ${OpenCV_INCLUDE_DIRS}
-                               ${INC_DIRS}
-    )
-
-    target_link_libraries(video_decoder_vio PUBLIC
-                          ${OpenCV_LIBS}
-                          ${LINK_LIBS}
-    )
-    target_compile_definitions(video_decoder_vio PUBLIC VIO)
+        target_link_libraries(video_decoder_vio PUBLIC
+                              ${OpenCV_LIBS}
+                              ${LINK_LIBS}
+        )
+        target_compile_definitions(video_decoder_vio PUBLIC VIO)
+    endif()
 endif()
