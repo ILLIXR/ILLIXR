@@ -110,56 +110,89 @@ if(NOT ANDROID)
     install(TARGETS ${EXE_NAME} DESTINATION bin)
     install(TARGETS plugin.main${ILLIXR_BUILD_SUFFIX} DESTINATION lib)
 else()
-    add_library(native-activity SHARED
-                src/illixr.hpp
-                src/main.cpp
-                src/plugin.cpp
-                src/runtime_impl.cpp
-                src/no_op_record_logger.hpp
-                src/sqlite_record_logger.hpp
-                src/stdout_record_logger.hpp
-                ${CMAKE_SOURCE_DIR}/include/illixr/dynamic_lib.hpp
-                ${CMAKE_SOURCE_DIR}/include/illixr/error_util.hpp
-                #${CMAKE_SOURCE_DIR}/include/illixr/extended_window.hpp
-                ${CMAKE_SOURCE_DIR}/include/illixr/plugin.hpp
-                ${CMAKE_SOURCE_DIR}/include/illixr/relative_clock.hpp
-                ${CMAKE_SOURCE_DIR}/include/illixr/runtime.hpp
-                ${CMAKE_SOURCE_DIR}/include/illixr/stoplight.hpp
-                ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
-    )
-    target_include_directories(native-activity PRIVATE
-                               ${ILLIXR_SOURCE_DIR}/include
-                               ${OpenCV_LIBS}
-                               ${jnigraphics-lib}
-                               ${ANDROID_NDK}/sources/android/native_app_glue
-    )
+    if(BUILD_UNITY_INTERFACE)
+        # Unity interface build — no main.cpp, no native_app_glue.
+        # Mirrors plugin.main on Linux/Windows: exports runtime_factory and
+        # links against the plugins needed for the Unity scenario.
+        # Loaded by unity_bridge.so via runtime_factory() call.
+        add_library(plugin.main${ILLIXR_BUILD_SUFFIX} SHARED
+                    src/illixr.hpp
+                    src/plugin.cpp
+                    src/runtime_impl.cpp
+                    src/no_op_record_logger.hpp
+                    src/sqlite_record_logger.hpp
+                    src/stdout_record_logger.hpp
+                    ${CMAKE_SOURCE_DIR}/include/illixr/dynamic_lib.hpp
+                    ${CMAKE_SOURCE_DIR}/include/illixr/error_util.hpp
+                    ${CMAKE_SOURCE_DIR}/include/illixr/plugin.hpp
+                    ${CMAKE_SOURCE_DIR}/include/illixr/relative_clock.hpp
+                    ${CMAKE_SOURCE_DIR}/include/illixr/runtime.hpp
+                    ${CMAKE_SOURCE_DIR}/include/illixr/stoplight.hpp
+                    ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
+        )
+        target_include_directories(plugin.main${ILLIXR_BUILD_SUFFIX} PRIVATE
+                                   ${ILLIXR_SOURCE_DIR}/include
+                                   ${jnigraphics-lib}
+        )
 
-    target_link_libraries(native-activity
-                          #plugin.extended_window${ILLIXR_BUILD_SUFFIX}
-                          #OpenVINS_plugin
-                          #plugin.pose_prediction${ILLIXR_BUILD_SUFFIX}
-                          #plugin.pose_lookup${ILLIXR_BUILD_SUFFIX}
-                          #plugin.fauxpose${ILLIXR_BUILD_SUFFIX}
-                          #plugin.common_lock${ILLIXR_BUILD_SUFFIX}
-                          #plugin.timewarp_gl${ILLIXR_BUILD_SUFFIX}
-                          #plugin.rk4_integrator${ILLIXR_BUILD_SUFFIX}
-                          #plugin.offline_imu${ILLIXR_BUILD_SUFFIX}
-                          #plugin.offline_cam${ILLIXR_BUILD_SUFFIX}
-                          #plugin.gtsam_integrator${ILLIXR_BUILD_SUFFIX}
-                          #plugin.gldemo${ILLIXR_BUILD_SUFFIX}
-                          #plugin.android_data${ILLIXR_BUILD_SUFFIX}
-                          plugin.tcp_network_backend${ILLIXR_BUILD_SUFFIX}
-                          plugin.udp_network_backend${ILLIXR_BUILD_SUFFIX}
-                          plugin.network_latency.tx${ILLIXR_BUILD_SUFFIX}
-                          plugin.offload_rendering_client${ILLIXR_BUILD_SUFFIX}
-                          plugin.openxr_interface${ILLIXR_BUILD_SUFFIX}
-                          android
-                          native_app_glue
-                          EGL
-                          GLESv3
-                          Eigen3::Eigen
-                          Boost::serialization
-                          spdlog::spdlog_android
-    )
+        target_link_libraries(plugin.main${ILLIXR_BUILD_SUFFIX} PRIVATE
+                              plugin.tcp_network_backend${ILLIXR_BUILD_SUFFIX}
+                              android
+                              Eigen3::Eigen
+                              Boost::serialization
+                              spdlog::spdlog_android
+        )
 
+    else()
+        add_library(native-activity SHARED
+                    src/illixr.hpp
+                    src/main.cpp
+                    src/plugin.cpp
+                    src/runtime_impl.cpp
+                    src/no_op_record_logger.hpp
+                    src/sqlite_record_logger.hpp
+                    src/stdout_record_logger.hpp
+                    ${CMAKE_SOURCE_DIR}/include/illixr/dynamic_lib.hpp
+                    ${CMAKE_SOURCE_DIR}/include/illixr/error_util.hpp
+                    #${CMAKE_SOURCE_DIR}/include/illixr/extended_window.hpp
+                    ${CMAKE_SOURCE_DIR}/include/illixr/plugin.hpp
+                    ${CMAKE_SOURCE_DIR}/include/illixr/relative_clock.hpp
+                    ${CMAKE_SOURCE_DIR}/include/illixr/runtime.hpp
+                    ${CMAKE_SOURCE_DIR}/include/illixr/stoplight.hpp
+                    ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
+        )
+        target_include_directories(native-activity PRIVATE
+                                   ${ILLIXR_SOURCE_DIR}/include
+                                   ${OpenCV_LIBS}
+                                   ${jnigraphics-lib}
+        )
+
+        target_link_libraries(native-activity
+                              #plugin.extended_window${ILLIXR_BUILD_SUFFIX}
+                              #OpenVINS_plugin
+                              #plugin.pose_prediction${ILLIXR_BUILD_SUFFIX}
+                              #plugin.pose_lookup${ILLIXR_BUILD_SUFFIX}
+                              #plugin.fauxpose${ILLIXR_BUILD_SUFFIX}
+                              #plugin.common_lock${ILLIXR_BUILD_SUFFIX}
+                              #plugin.timewarp_gl${ILLIXR_BUILD_SUFFIX}
+                              #plugin.rk4_integrator${ILLIXR_BUILD_SUFFIX}
+                              #plugin.offline_imu${ILLIXR_BUILD_SUFFIX}
+                              #plugin.offline_cam${ILLIXR_BUILD_SUFFIX}
+                              #plugin.gtsam_integrator${ILLIXR_BUILD_SUFFIX}
+                              #plugin.gldemo${ILLIXR_BUILD_SUFFIX}
+                              #plugin.android_data${ILLIXR_BUILD_SUFFIX}
+                              plugin.tcp_network_backend${ILLIXR_BUILD_SUFFIX}
+                              plugin.udp_network_backend${ILLIXR_BUILD_SUFFIX}
+                              plugin.network_latency.tx${ILLIXR_BUILD_SUFFIX}
+                              plugin.offload_rendering_client${ILLIXR_BUILD_SUFFIX}
+                              plugin.openxr_interface${ILLIXR_BUILD_SUFFIX}
+                              android
+                              native_app_glue
+                              EGL
+                              GLESv3
+                              Eigen3::Eigen
+                              Boost::serialization
+                              spdlog::spdlog_android
+        )
+    endif()
 endif()
