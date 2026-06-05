@@ -1,0 +1,226 @@
+// Copyright 2020-2026, The Board of Trustees of the University of Illinois.
+// SPDX-License-Identifier: BSL-1.0
+/*!
+ * @file
+ * @brief  ILLIXR Unity component implementation.
+ *         Analogous to illixr_monado_create_plugin and the illixr_plugin class
+ *         in illixr_component.c in the Monado driver.
+ * @author RSIM Group <illixr@cs.illinois.edu>
+ */
+
+#ifdef __ANDROID__
+
+#include "unity_component.hpp"
+
+#include <cstring>
+#include <memory>
+
+using namespace ILLIXR;
+using namespace ILLIXR::data_format;
+
+unity_component::unity_component(const std::string& name, phonebook* pb)
+        : plugin{name, pb}
+        , switchboard_{pb->lookup_impl<switchboard>()}
+        , semantic_writer_{switchboard_->get_network_writer<semantic_data>("semantic_data", {})}
+        , query_writer_{switchboard_->get_network_writer<data_format::voice_query>("semantic_query", {})}
+        , response_reader_{switchboard_->get_reader<data_format::query_response>("semantic_response")} { }
+
+void unity_component::send_semantic_frame(int32_t        frame_number,
+                                          int32_t        width,
+                                          int32_t        height,
+                                          const uint8_t* image,
+                                          int32_t        image_len,
+                                          int32_t        depth_width,
+                                          int32_t        depth_height,
+                                          const uint8_t* depth,
+                                          int32_t        depth_len,
+                                          float          depth_near_z,
+                                          const float*   intrinsics,
+                                          const float*   depth_intrinsics,
+                                          const float*   rgb_camera_pose,
+                                          const float*   depth_pose,
+                                          float          max_depth) {
+    std::shared_ptr<semantic_data>  frame;
+    frame->frame_number  = frame_number;
+    frame->width         = width;
+    frame->height        = height;
+    frame->depth_width   = depth_width;
+    frame->depth_height  = depth_height;
+    frame->depth_near_z  = depth_near_z;
+    frame->max_depth     = max_depth;
+
+    frame->image.assign(image, image + image_len);
+    frame->depth.assign(depth, depth + depth_len);
+
+    std::memcpy(frame->intrinsics,       intrinsics,       4  * sizeof(float));
+    std::memcpy(frame->depth_intrinsics, depth_intrinsics, 4  * sizeof(float));
+    std::memcpy(frame->rgb_camera_pose,  rgb_camera_pose,  16 * sizeof(float));
+    std::memcpy(frame->depth_pose,       depth_pose,       16 * sizeof(float));
+
+    semantic_writer_.put(std::move(frame));
+}
+
+void unity_component::send_voice_query(uint64_t       query_id,
+                                       const uint8_t* pcm_data,
+                                       int32_t        pcm_len,
+                                       float          similarity_threshold,
+                                       float          min_match_similarity) {
+    std::shared_ptr<voice_query> query;
+    query->query_id               = query_id;
+    query->similarity_threshold   = similarity_threshold;
+    query->min_match_similarity   = min_match_similarity;
+    query->pcm_data.assign(pcm_data, pcm_data + pcm_len);
+
+    spdlog::get("illixr")->debug("Voice query id=%" PRIu64 " pcm_len=%d", query_id, pcm_len);
+    query_writer_.put(std::move(query));
+}
+
+bool unity_component::get_query_response(uint64_t* out_query_id,
+                                         float*    out_centroids,
+                                         int32_t*  out_num_clouds,
+                                         float*    out_server_latency,
+                                         char*     out_text_query,
+                                         int32_t   text_query_buf_len) {
+    auto response = response_reader_.get_ro_nullable();
+    if (!response)
+        return false;
+
+    // Only deliver if this is a new response we haven't seen yet
+    if (response->query_id == last_delivered_query_id_.load())
+        return false;
+
+    last_delivered_query_id_.store(response->query_id);
+
+    *out_query_id       = response->query_id;
+    *out_num_clouds     = response->num_point_clouds;
+    *out_server_latency = response->server_query_processing;
+
+    // Copy centroids — one [x, y, z] per point cloud
+    int32_t num_clouds = response->num_point_clouds;
+    for (int32_t i = 0; i < num_clouds; ++i) {
+        const auto& pc = response->point_clouds[i];
+        // centroid is [x, y, z] — copy up to 3 floats defensively
+        int32_t centroid_floats = static_cast<int32_t>(
+            std::min(pc.centroid.size(), static_cast<size_t>(3)));
+        std::memcpy(out_centroids + i * 3,
+                    pc.centroid.data(),
+                    centroid_floats * sizeof(float));
+        // zero any missing components
+        for (int32_t j = centroid_floats; j < 3; ++j)
+            out_centroids[i * 3 + j] = 0.0f;
+    }
+
+    // Copy text_query into caller-supplied buffer, null-terminated
+    if (out_text_query != nullptr && text_query_buf_len > 0) {
+        int32_t copy_len = static_cast<int32_t>(
+            std::min(response->text_query.size(),
+                     static_cast<size_t>(text_query_buf_len - 1)));
+        std::memcpy(out_text_query, response->text_query.data(), copy_len);
+        out_text_query[copy_len] = '\0';
+    }
+
+    spdlog::get("illixr")->debug("Query response id=%" PRIu64 " num_clouds=%d latency=%.3f",
+                                 response->query_id, num_clouds, response->server_query_processing);
+
+    return true;
+}
+// Static instance pointer — analogous to illixr_plugin_obj in illixr_component.c
+static ILLIXR::unity_component* unity_component_obj = nullptr;
+
+/*!
+ * @brief Factory function for the Unity component.
+ *        Analogous to illixr_monado_create_plugin in illixr_component.c.
+ *        Called by illixr_unity_init() via runtime->load_plugin_factory().
+ *        start() is not called here — load_plugin_factory() handles it.
+ */
+extern "C" ILLIXR::plugin* illixr_unity_create_plugin(ILLIXR::phonebook* pb) {
+    unity_component_obj = new ILLIXR::unity_component{"unity_component", pb};
+    return static_cast<ILLIXR::plugin*>(unity_component_obj);
+}
+
+/*!
+ * @brief Sends a semantic frame to the switchboard.
+ *        Called from Unity C# per frame via [DllImport("unity_bridge")].
+ *        All parameters are blittable for C# marshalling — std::vector
+ *        fields are passed as pointer + length pairs.
+ *
+ * @param frame_number     Frame counter from Unity.
+ * @param width            RGB image width in pixels.
+ * @param height           RGB image height in pixels.
+ * @param image            Encoded RGB image bytes.
+ * @param image_len        Length of image buffer in bytes.
+ * @param depth_width      Depth image width in pixels.
+ * @param depth_height     Depth image height in pixels.
+ * @param depth            Encoded depth image bytes.
+ * @param depth_len        Length of depth buffer in bytes.
+ * @param depth_near_z     Near plane depth value.
+ * @param intrinsics       RGB camera intrinsics [fx, fy, cx, cy].
+ * @param depth_intrinsics Depth camera intrinsics [fx, fy, cx, cy].
+ * @param rgb_camera_pose  RGB camera pose as row-major 4x4 matrix.
+ * @param depth_pose       Depth camera pose as row-major 4x4 matrix.
+ * @param max_depth        Maximum depth value.
+ */
+extern "C" void illixr_unity_send_semantic_frame(int32_t        frame_number,
+                                                 int32_t        width,
+                                                 int32_t        height,
+                                                 const uint8_t* image,
+                                                 int32_t        image_len,
+                                                 int32_t        depth_width,
+                                                 int32_t        depth_height,
+                                                 const uint8_t* depth,
+                                                 int32_t        depth_len,
+                                                 float          depth_near_z,
+                                                 const float*   intrinsics,
+                                                 const float*   depth_intrinsics,
+                                                 const float*   rgb_camera_pose,
+                                                 const float*   depth_pose,
+                                                 float          max_depth) {
+    if (unity_component_obj == nullptr)
+        return;
+
+    unity_component_obj->send_semantic_frame(frame_number,
+                                             width,
+                                             height,
+                                             image,
+                                             image_len,
+                                             depth_width,
+                                             depth_height,
+                                             depth,
+                                             depth_len,
+                                             depth_near_z,
+                                             intrinsics,
+                                             depth_intrinsics,
+                                             rgb_camera_pose,
+                                             depth_pose,
+                                             max_depth);
+}
+
+// Called by Unity when user asks a question — writes voice_query to switchboard
+extern "C" void illixr_unity_send_voice_query(uint64_t       query_id,
+                                              const uint8_t* pcm_data,
+                                              int32_t        pcm_len,
+                                              float          similarity_threshold,
+                                              float          min_match_similarity) {
+    if (unity_component_obj == nullptr)
+        return;
+
+    unity_component_obj->send_voice_query(query_id, pcm_data, pcm_len, similarity_threshold,
+                                          min_match_similarity);
+}
+
+// Called by Unity polling — reads query_response from switchboard
+extern "C" int illixr_unity_get_query_response(uint64_t* out_query_id,
+                                               float*    out_centroids,      // caller supplies float[num_clouds * 3]
+                                               int32_t*  out_num_clouds,
+                                               float*    out_server_latency,
+                                               char*     out_text_query,     // caller supplies char buffer
+                                               int32_t   text_query_buf_len) {
+    if (unity_component_obj == nullptr)
+        return 0;
+
+    return unity_component_obj->get_query_response(out_query_id, out_centroids, out_num_clouds,
+                                                   out_server_latency, out_text_query,
+                                                   text_query_buf_len) ? 1 : 0;
+}
+
+#endif // __ANDROID__
