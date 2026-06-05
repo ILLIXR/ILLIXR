@@ -1,6 +1,6 @@
 #pragma once
 #if defined(_WIN32) || defined(_WIN64)
-#    include <cstdlib>
+    #include <cstdlib>
 #endif
 
 #include "global_module_defs.hpp"
@@ -10,14 +10,14 @@
 #include <string>
 
 #ifdef NDEBUG
-#    include <cerrno>
-#    include <cstdlib>
+    #include <cerrno>
+    #include <cstdlib>
 #endif
 /**
  * @brief Parameterless macro for report_and_clear_errno.
  */
 #ifndef RAC_ERRNO
-#    define RAC_ERRNO() ILLIXR::report_and_clear_errno(__FILE__, __LINE__, __func__)
+    #define RAC_ERRNO() ILLIXR::report_and_clear_errno(__FILE__, __LINE__, __func__)
 #endif /// RAC_ERRNO
 
 /**
@@ -26,7 +26,7 @@
  * Prints a message from the calling context for additional info.
  */
 #ifndef RAC_ERRNO_MSG
-#    define RAC_ERRNO_MSG(msg) ILLIXR::report_and_clear_errno(__FILE__, __LINE__, __func__, msg)
+    #define RAC_ERRNO_MSG(msg) ILLIXR::report_and_clear_errno(__FILE__, __LINE__, __func__, msg)
 #endif /// RAC_ERRNO_MSG
 
 namespace ILLIXR {
