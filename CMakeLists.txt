@@ -128,6 +128,8 @@ option(NO_GPL "Do not build any code licensed under GPL. This will affect any ge
 option(NO_LGPL "Do not build any code licensed under LGPL or GPL. This will affect any generated profile files as well." OFF)
 option(NO_ZED "Do not build and ZED related code" OFF)
 
+option(BUILD_UNITY_INTERFACE "Build the interface to integrate ILLIXR into a Unity App." OFF)
+
 set(LAST_NO_GPL "$CACHE{NO_GPL_CACHE}")
 set(LAST_NO_LGPL "$CACHE{NO_LGPL_CACHE}")
 
@@ -496,6 +498,7 @@ endif()
 set(FULL_PLUGIN_LIST "")
 
 add_subdirectory(utils)
+
 foreach(ITEM IN LISTS PLUGIN_LIST)
     string(TOUPPER "USE_${ITEM}" ITEM_UPPER)
     string(TOLOWER ${ITEM} ITEM_LOWER)
@@ -540,6 +543,8 @@ if(ANDROID)
 endif()
 
 include(src/CMakeLists.txt)
+
+add_subdirectory(interfaces)  # this must come after src
 
 list(SORT FULL_PLUGIN_LIST COMPARE STRING CASE INSENSITIVE ORDER ASCENDING)
 set(FULL_PLUGIN_LIST_STRING "\n")
