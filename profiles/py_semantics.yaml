@@ -1,0 +1,9 @@
+# This file was auto generated, take caution if manually editing.
+plugins: tcp_network_backend,semantic_python
+env_vars:
+  ENABLE_OFFLOAD: false
+  ENABLE_ALIGNMENT: false
+  ENABLE_VERBOSE_ERRORS: false
+  ENABLE_PRE_SLEEP: false
+  DURATION: 1200
+  ILLIXR_IS_CLIENT: 0
