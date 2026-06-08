@@ -1,0 +1,11 @@
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -88,7 +88,8 @@
+ set_target_properties(survive PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
+ 
+ if(WIN32)
+     set_target_properties(survive PROPERTIES PREFIX "lib")
++    set_target_properties(survive PROPERTIES IMPORT_PREFIX "lib")
+ endif()
+ 
+ target_link_libraries(survive ${ADDITIONAL_LIBRARIES} mpfit cnkalman)

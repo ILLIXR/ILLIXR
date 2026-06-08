@@ -1,0 +1,12 @@
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,6 +1,8 @@
+ cmake_minimum_required(VERSION 3.12)
+ 
+-project(cnmatrix LANGUAGES C CXX)
++if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
++  #project(cnmatrix LANGUAGES C CXX)
++endif()
+ include(CTest)
+ 
+ option(ENABLE_TESTS "Enable tests" OFF)
