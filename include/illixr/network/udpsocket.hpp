@@ -1,12 +1,12 @@
 #pragma once
 
 #if defined(_WIN32) || defined(_WIN64)
-#  ifndef WIN32_LEAN_AND_MEAN
-#    define WIN32_LEAN_AND_MEAN
-#  endif
-#  ifndef _WINSOCKAPI_
-#    define _WINSOCKAPI_
-#  endif
+    #ifndef WIN32_LEAN_AND_MEAN
+        #define WIN32_LEAN_AND_MEAN
+    #endif
+    #ifndef _WINSOCKAPI_
+        #define _WINSOCKAPI_
+    #endif
 // clang-format off
     #include <WinSock2.h>
     #include <ws2def.h>
