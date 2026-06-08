@@ -282,7 +282,7 @@ Topic details:
 
 &nbsp;&nbsp;[**Details**][P22]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C14]
 
-## offload_rendering_server ![Linux Logo](images/tux.png)
+## offload_rendering_server ![Linux Logo](images/tux.png) ![Windows logo](images/windows.png)
 
 Encodes and transmits frames to one of the offload_rendering_clients. 
 
