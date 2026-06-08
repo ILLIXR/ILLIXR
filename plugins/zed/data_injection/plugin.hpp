@@ -8,7 +8,7 @@
 
 namespace ILLIXR {
 
-class data_injection : public threadloop {
+class MY_EXPORT_API data_injection : public threadloop {
 public:
     [[maybe_unused]] data_injection(const std::string& name_, phonebook* pb_);
 

@@ -2,7 +2,6 @@
 
 #include "illixr/error_util.hpp"
 
-#include <algorithm>
 #include <cassert>
 #include <chrono>
 #include <cmath>
@@ -35,7 +34,7 @@ std::shared_ptr<zed_camera> zed_imu_thread::start_camera() {
     init_params.camera_fps             = 30;                                       // gives the best user experience
     init_params.depth_mode             = (with_hand_tracking) ? sl::DEPTH_MODE::QUALITY : sl::DEPTH_MODE::PERFORMANCE;
     init_params.depth_stabilization    = true;
-    init_params.depth_minimum_distance = 0.3;
+    init_params.depth_minimum_distance = 0.3f;
 
     // Open the camera
     sl::ERROR_CODE err = zed_cam->open(init_params);
@@ -52,7 +51,7 @@ void zed_imu_thread::stop() {
     threadloop::stop();
 }
 
-zed_imu_thread::zed_imu_thread(const std::string& name_, phonebook* pb_)
+[[maybe_unused]] zed_imu_thread::zed_imu_thread(const std::string& name_, phonebook* pb_)
     : threadloop{name_, pb_}
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
     , zed_cam_{start_camera()}
