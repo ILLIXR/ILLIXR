@@ -18,7 +18,7 @@ using pim_t     = gtsam::PreintegratedCombinedMeasurements;
 using pim_ptr_t = gtsam::PreintegrationType*;
 
 namespace ILLIXR {
-class gtsam_integrator : public plugin {
+class MY_EXPORT_API gtsam_integrator : public plugin {
 public:
     [[maybe_unused]] gtsam_integrator(const std::string& name, phonebook* pb);
     void callback(const switchboard::ptr<const data_format::imu_type>& datum);

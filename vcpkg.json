@@ -124,6 +124,9 @@
     {
       "name": "libusb",
       "version>=": "1.0.29"
+    },
+    {
+      "name": "metis"
     }
   ],
   "features": {
@@ -780,6 +783,10 @@
     {
       "name": "wil",
       "version": "1.0.250325.1"
+    },
+    {
+      "name": "gtsam",
+      "version": "4.3a0"
     }
   ]
 }
