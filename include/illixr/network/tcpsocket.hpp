@@ -21,13 +21,13 @@
 #  define SOCKET_TYPE SOCKET
 // clang-format on
 #else
-#  include <arpa/inet.h>
-#  include <netinet/in.h>
-#  include <netinet/tcp.h>
-#  include <sys/socket.h>
-#  include <unistd.h>
-#  define BYTE_TYPE   ssize_t
-#  define SOCKET_TYPE int
+    #include <arpa/inet.h>
+    #include <netinet/in.h>
+    #include <netinet/tcp.h>
+    #include <sys/socket.h>
+    #include <unistd.h>
+    #define BYTE_TYPE   ssize_t
+    #define SOCKET_TYPE int
 #endif
 
 #include "illixr/export.hpp"
