@@ -593,9 +593,17 @@
         }
       ]
     },
-    "plugin-record-cam-imu": {
+    "plugin-record-imu-cam": {
       "description": "",
-      "dependencies": []
+      "dependencies": [
+        "opencv4"
+      ]
+    },
+    "plugin-record-rgb-depth": {
+      "description": "",
+      "dependencies": [
+        "opencv4"
+      ]
     },
     "plugin-rk4-integrator": {
       "description": "",

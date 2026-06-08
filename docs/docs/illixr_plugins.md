@@ -390,7 +390,7 @@ Topic details:
 
 &nbsp;&nbsp;**Details**&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C23]
 
-## record_imu_cam ![Linux Logo](images/tux.png)
+## record_imu_cam ![Linux Logo](images/tux.png) ![Windows logo](images/windows.png)
 
 Writes [`imu_type`][A15] and [`binocular_cam_type`][A14] data to disk.
 
@@ -401,7 +401,7 @@ Topic details:
 
 &nbsp;&nbsp;[**Details**][P24]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C24]
 
-## record_rgb_depth ![Linux Logo](images/tux.png)
+## record_rgb_depth ![Linux Logo](images/tux.png) ![Windows logo](images/windows.png)
 
 Writes [`rgb_depth_type`][A13] data to disk.
 
