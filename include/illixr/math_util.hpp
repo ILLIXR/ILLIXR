@@ -86,7 +86,7 @@ void projection_fov(Eigen::Matrix4f* result, const float fov_left, const float f
 void unreal_projection(Eigen::Matrix4f* result, const float fov_left, const float fov_right, const float fov_up,
                        const float fov_down) {
     // Unreal uses a far plane at infinity and a near plane of 10 centimeters (0.1 meters)
-    constexpr float near_z = 0.1;
+    constexpr float near_z = 0.1f;
 
     const float angle_left  = tanf(static_cast<float>(fov_left));
     const float angle_right = tanf(static_cast<float>(fov_right));
@@ -125,8 +125,8 @@ void unreal_projection(Eigen::Matrix4f* result, const float fov_left, const floa
     // Godot's default far and near planes are 4000m and 0.05m respectively.
     // https://github.com/godotengine/godot/blob/e96ad5af98547df71b50c4c4695ac348638113e0/modules/openxr/openxr_util.cpp#L97
     // The Vulkan implementation passes in GRAPHICS_OPENGL for some reason.
-    constexpr float near_z   = 0.05;
-    constexpr float far_z    = 4000;
+    constexpr float near_z   = 0.05f;
+    constexpr float far_z    = 4000.f;
     constexpr float offset_z = near_z;
 
     const float angle_left  = tanf(static_cast<float>(fov_left));

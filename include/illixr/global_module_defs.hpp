@@ -89,17 +89,17 @@ struct server_params {
     // Quest 3 asymmetric FOV values (from xrLocateViews)
     //
     // Key difference from previous values:
-    // - Inner angles (nose side) are ~40° not ~52°
-    // - Outer angles are ~54°
+    // - Inner angles (nose side) are ~40deg not ~52deg
+    // - Outer angles are ~54deg
     // - Previous symmetric values caused "wall-eyed" effect
     //
-    // Left eye:  angleLeft=-54°, angleRight=+40°, angleUp=+44°, angleDown=-55°
-    // Right eye: angleLeft=-40°, angleRight=+54°, angleUp=+44°, angleDown=-55°
+    // Left eye:  angleLeft=-54deg, angleRight=+40deg, angleUp=+44deg, angleDown=-55deg
+    // Right eye: angleLeft=-40deg, angleRight=+54deg, angleUp=+44deg, angleDown=-55deg
 
-    static constexpr float fov_left[2]  = {-0.94247776f, -0.6981317f}; // Left eye: -54°, Right eye: -40°
-    static constexpr float fov_right[2] = {0.6981317f, 0.94247776f};   // Left eye: +40°, Right eye: +54°
-    static constexpr float fov_up[2]    = {0.7679449f, 0.7679449f};    // Both eyes: +44°
-    static constexpr float fov_down[2]  = {-0.9599311f, -0.9599311f};  // Both eyes: -55°
+    static constexpr float fov_left[2]  = {-0.94247776f, -0.6981317f}; // Left eye: -54deg, Right eye: -40deg
+    static constexpr float fov_right[2] = {0.6981317f, 0.94247776f};   // Left eye: +40deg, Right eye: +54deg
+    static constexpr float fov_up[2]    = {0.7679449f, 0.7679449f};    // Both eyes: +44deg
+    static constexpr float fov_down[2]  = {-0.9599311f, -0.9599311f};  // Both eyes: -55deg
 };
 
 struct index_params {
