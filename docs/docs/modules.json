@@ -347,7 +347,8 @@
         "cuda-cudart"
       ],
       "OS": [
-        "linux"
+        "linux",
+        "windows"
       ]
     },
     {
