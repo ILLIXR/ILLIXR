@@ -1,10 +1,8 @@
 cmake_minimum_required(VERSION 3.16)
 if(WIN32 OR MSVC)
     message(WARNING "offload_rendering_client is not yet avaiable for windows")
-    set(USE_OFFLOAD_RENDERING_CLIENT OFF)
+    set(USE_OFFLOAD_RENDENG_CLIENT OFF)
 else()
-
-    project(offload_rendering_client)
 
     set(PLUGIN_NAME plugin.offload_rendering_client${ILLIXR_BUILD_SUFFIX})
 
