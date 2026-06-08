@@ -1,8 +1,3 @@
-if(WIN32 OR MSVC)
-    message(WARNING "openwarp_vk is not yet available for windows")
-    set(USE_OPENWARP_VK OFF)
-endif()
-
 cmake_minimum_required(VERSION 3.16)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -78,10 +73,17 @@ add_dependencies(${PLUGIN_NAME} OpenWarp_VK_Shaders)
 
 set_target_properties(${PLUGIN_NAME} PROPERTIES OUTPUT_NAME ${PLUGIN_NAME})
 
-target_link_libraries(${PLUGIN_NAME} PUBLIC spdlog::spdlog)
+target_link_libraries(${PLUGIN_NAME} PUBLIC
+                      spdlog::spdlog
+                      Eigen3::Eigen
+                      Boost::serialization
+)
 
 if(WIN32 OR MSVC)
-    target_link_libraries(${PLUGIN_NAME} PUBLIC Vulkan::Vulkan glm::glm-header-only)
+    target_link_libraries(${PLUGIN_NAME} PUBLIC
+                          Vulkan::Vulkan
+                          glm::glm-header-only)
+    target_compile_definitions(${PLUGIN_NAME} PRIVATE BUILDING_LIBRARY)
 else()
     target_link_libraries(${PLUGIN_NAME} PUBLIC ${Vulkan_LIBRARIES})
     target_include_directories(${PLUGIN_NAME} PUBLIC ${Vulkan_INCLUDE_DIRS})

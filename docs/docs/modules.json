@@ -426,7 +426,8 @@
         "glm"
       ],
       "OS": [
-        "linux"
+        "linux",
+        "windows"
       ]
     },
     {
