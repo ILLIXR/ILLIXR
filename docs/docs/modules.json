@@ -190,7 +190,8 @@
       "cmake_flag": "USE_WEBCAM=ON",
       "dependencies": [],
       "OS": [
-        "linux"
+        "linux",
+        "windows"
       ]
     },
     {

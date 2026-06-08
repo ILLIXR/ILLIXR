@@ -467,7 +467,7 @@ Provides network communications over UDP.
 
 &nbsp;&nbsp;[**Details**][P34]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C39]
 
-## webcam ![Linux Logo](images/tux.png)
+## webcam ![Linux Logo](images/tux.png) ![Windows logo](images/windows.png)
 
 Uses a webcam to capture images for input into the `hand_tracking` plugin. This plugin is useful for debugging and is not meant to be used in a production pipeline.
 
