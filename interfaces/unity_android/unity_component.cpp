@@ -40,7 +40,7 @@ void unity_component::send_semantic_frame(int32_t        frame_number,
                                           const float*   rgb_camera_pose,
                                           const float*   depth_pose,
                                           float          max_depth) {
-    std::shared_ptr<semantic_data>  frame;
+    auto frame = std::make_shared<semantic_data>();
     frame->frame_number  = frame_number;
     frame->width         = width;
     frame->height        = height;
@@ -65,13 +65,23 @@ void unity_component::send_voice_query(uint64_t       query_id,
                                        int32_t        pcm_len,
                                        float          similarity_threshold,
                                        float          min_match_similarity) {
-    std::shared_ptr<voice_query> query;
+    spdlog::get("illixr")->debug("Starting send for {}, pcm_pointer={}, len={}, threshold={}, similarity={}",
+                                 query_id, static_cast<void*>(const_cast<uint8_t*>(pcm_data)),
+                                 pcm_len, similarity_threshold, min_match_similarity);
+    auto query = std::make_shared<voice_query>();
+    spdlog::get("illixr")->debug("send_voice_query: query ptr={} use_count={} pcm_data ptr={}",
+                                 static_cast<void*>(query.get()),
+                                 query.use_count(),
+                                 static_cast<void*>(const_cast<uint8_t*>(pcm_data)));
     query->query_id               = query_id;
     query->similarity_threshold   = similarity_threshold;
     query->min_match_similarity   = min_match_similarity;
     query->pcm_data.assign(pcm_data, pcm_data + pcm_len);
 
-    spdlog::get("illixr")->debug("Voice query id=%" PRIu64 " pcm_len=%d", query_id, pcm_len);
+
+    spdlog::get("illixr")->debug("send_voice_query: query ptr={} pcm_data ptr={}",
+                                 static_cast<void*>(query.get()),
+                                 static_cast<void*>(const_cast<uint8_t*>(pcm_data)));
     query_writer_.put(std::move(query));
 }
 
