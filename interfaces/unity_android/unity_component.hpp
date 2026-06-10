@@ -56,6 +56,8 @@ public:
     bool get_query_response(uint64_t* out_query_id,
                             float*    out_centroids,
                             int32_t*  out_num_clouds,
+                            float*    out_colors,
+                            int32_t   out_colors_max,
                             float*    out_server_latency,
                             char*     out_text_query,
                             int32_t   text_query_buf_len);

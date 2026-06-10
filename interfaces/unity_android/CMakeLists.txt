@@ -7,7 +7,9 @@ add_library(${ILLIXR_INTERFACE_NAME} SHARED
             ${CMAKE_SOURCE_DIR}/include/illixr/data_format/semantics.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/phonebook.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/plugin.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization/semantics.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
+            ${CMAKE_SOURCE_DIR}/utils/serialization/semantics.cpp
 )
 
 target_include_directories(${ILLIXR_INTERFACE_NAME} PRIVATE

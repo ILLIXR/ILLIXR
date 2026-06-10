@@ -9,8 +9,12 @@
  */
 
 #ifdef __ANDROID__
+#include <boost/archive/binary_iarchive.hpp>
+#include <boost/archive/binary_oarchive.hpp>
 
 #include "unity_component.hpp"
+
+#include "illixr/data_format/serialization/semantics.hpp"
 
 #include <cstring>
 #include <memory>
@@ -22,8 +26,8 @@ unity_component::unity_component(const std::string& name, phonebook* pb)
         : plugin{name, pb}
         , switchboard_{pb->lookup_impl<switchboard>()}
         , semantic_writer_{switchboard_->get_network_writer<semantic_data>("semantic_data", {})}
-        , query_writer_{switchboard_->get_network_writer<data_format::voice_query>("semantic_query", {})}
-        , response_reader_{switchboard_->get_reader<data_format::query_response>("semantic_response")} { }
+        , query_writer_{switchboard_->get_network_writer<voice_query>("semantic_query", {})}
+        , response_reader_{switchboard_->get_reader<query_response>("semantic_response")} { }
 
 void unity_component::send_semantic_frame(int32_t        frame_number,
                                           int32_t        width,
@@ -40,6 +44,7 @@ void unity_component::send_semantic_frame(int32_t        frame_number,
                                           const float*   rgb_camera_pose,
                                           const float*   depth_pose,
                                           float          max_depth) {
+    spdlog::get("illixr")->debug("sending frames with size {} x {}", width, height);
     auto frame = std::make_shared<semantic_data>();
     frame->frame_number  = frame_number;
     frame->width         = width;
@@ -88,10 +93,13 @@ void unity_component::send_voice_query(uint64_t       query_id,
 bool unity_component::get_query_response(uint64_t* out_query_id,
                                          float*    out_centroids,
                                          int32_t*  out_num_clouds,
+                                         float*    out_colors,
+                                         int32_t   out_colors_max,
                                          float*    out_server_latency,
                                          char*     out_text_query,
                                          int32_t   text_query_buf_len) {
     auto response = response_reader_.get_ro_nullable();
+
     if (!response)
         return false;
 
@@ -120,6 +128,11 @@ bool unity_component::get_query_response(uint64_t* out_query_id,
             out_centroids[i * 3 + j] = 0.0f;
     }
 
+    int32_t num_colors = static_cast<int32_t>(
+        std::min(response->colors.size(),
+                 static_cast<size_t>(out_colors_max)));
+    std::memcpy(out_colors, response->colors.data(), num_colors * sizeof(float));
+
     // Copy text_query into caller-supplied buffer, null-terminated
     if (out_text_query != nullptr && text_query_buf_len > 0) {
         int32_t copy_len = static_cast<int32_t>(
@@ -129,7 +142,7 @@ bool unity_component::get_query_response(uint64_t* out_query_id,
         out_text_query[copy_len] = '\0';
     }
 
-    spdlog::get("illixr")->debug("Query response id=%" PRIu64 " num_clouds=%d latency=%.3f",
+    spdlog::get("illixr")->debug("Query response id={} num_clouds={} latency={}",
                                  response->query_id, num_clouds, response->server_query_processing);
 
     return true;
@@ -222,6 +235,8 @@ extern "C" void illixr_unity_send_voice_query(uint64_t       query_id,
 extern "C" int illixr_unity_get_query_response(uint64_t* out_query_id,
                                                float*    out_centroids,      // caller supplies float[num_clouds * 3]
                                                int32_t*  out_num_clouds,
+                                               float*    out_colors,
+                                               int32_t   out_colors_max,
                                                float*    out_server_latency,
                                                char*     out_text_query,     // caller supplies char buffer
                                                int32_t   text_query_buf_len) {
@@ -229,6 +244,7 @@ extern "C" int illixr_unity_get_query_response(uint64_t* out_query_id,
         return 0;
 
     return unity_component_obj->get_query_response(out_query_id, out_centroids, out_num_clouds,
+                                                   out_colors, out_colors_max,
                                                    out_server_latency, out_text_query,
                                                    text_query_buf_len) ? 1 : 0;
 }
