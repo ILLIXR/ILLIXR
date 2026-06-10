@@ -34,9 +34,10 @@ private:
     const std::shared_ptr<switchboard>               switchboard_;
     switchboard::reader<data_format::semantic_data>  semantic_reader_;
     switchboard::reader<data_format::voice_query>    voice_query_reader_;
-    switchboard::writer<data_format::query_response> response_writer_;
+    switchboard::network_writer<data_format::query_response> response_writer_;
 
     pybind11::scoped_interpreter                 guard_;
+    pybind11::gil_scoped_release                 release_;
     std::thread                                  py_thread_;
     std::unordered_map<std::string, std::string> py_args_;
     std::string                                  py_exe_;

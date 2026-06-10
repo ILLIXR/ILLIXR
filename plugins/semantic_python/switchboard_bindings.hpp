@@ -163,7 +163,7 @@ struct py_query_response_writer {
              pybind11::list         colors,
              float            server_latency,
              const std::string& text_query) {
-        std::shared_ptr<data_format::query_response> resp;
+        auto resp = std::make_shared<data_format::query_response>();
         resp->query_id               = query_id;
         resp->server_query_processing = server_latency;
         resp->text_query             = text_query;
