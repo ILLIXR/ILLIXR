@@ -11,8 +11,8 @@ using namespace ILLIXR::data_format;
     : plugin{name, pb}
     , switchboard_{pb->lookup_impl<switchboard>()}
     , semantic_reader_{switchboard_->get_reader<semantic_data>("semantic_data")}
-    , voice_query_reader_{switchboard_->get_reader<voice_query>("voice_query")}
-    , response_writer_{switchboard_->get_writer<query_response>("query_response")}
+    , voice_query_reader_{switchboard_->get_reader<voice_query>("semantic_query")}
+    , response_writer_{switchboard_->get_writer<query_response>("semantic_response")}
     , guard_{} {
     std::string arg_string = switchboard_->get_env("SEMANTIC_PYTHON_ARGS", "");
     parse_py_args(arg_string);

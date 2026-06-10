@@ -1,4 +1,6 @@
-add_library(unity_android_interface SHARED
+set(ILLIXR_INTERFACE_NAME unity_android_interface${ILLIXR_BUILD_SUFFIX})
+
+add_library(${ILLIXR_INTERFACE_NAME} SHARED
             unity_bridge_jni.cpp
             unity_component.cpp
             unity_component.hpp
@@ -8,11 +10,15 @@ add_library(unity_android_interface SHARED
             ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
 )
 
-target_include_directories(unity_android_interface PRIVATE
+target_include_directories(${ILLIXR_INTERFACE_NAME} PRIVATE
                            ${CMAKE_SOURCE_DIR}/include
 )
 
-target_link_libraries(unity_android_interface PRIVATE
+target_compile_definitions(${ILLIXR_INTERFACE_NAME} PRIVATE
+                           ILLIXR_BUILD_SUFFIX_STR="${ILLIXR_BUILD_SUFFIX}"
+)
+
+target_link_libraries(${ILLIXR_INTERFACE_NAME} PRIVATE
                       plugin.main${ILLIXR_BUILD_SUFFIX}
                       android
                       spdlog::spdlog_android

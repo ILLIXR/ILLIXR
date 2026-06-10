@@ -51,6 +51,30 @@ extern "C" ILLIXR::plugin* illixr_unity_create_plugin(ILLIXR::phonebook*);
 extern "C" {
 
 /*!
+ * @brief Sets an environment variable for the ILLIXR runtime.
+ *        Must be called BEFORE illixr_unity_init() for each variable
+ *        that ILLIXR plugins read at startup.
+ *
+ * @param name   Environment variable name (null-terminated).
+ * @param value  Environment variable value (null-terminated).
+ * @return       0 on success, -1 on failure.
+ */
+int illixr_unity_set_env(const char* name, const char* value) {
+    if (name == nullptr || value == nullptr) {
+        UNITY_LOG("illixr_unity_set_env: null name or value");
+        return -1;
+    }
+    // overwrite = 1: always update, even if already set
+    int result = setenv(name, value, 1);
+    if (result != 0) {
+        UNITY_LOG("illixr_unity_set_env: setenv(%s, %s) failed", name, value);
+        return -1;
+    }
+    UNITY_LOG("illixr_unity_set_env: %s=%s", name, value);
+    return 0;
+}
+
+/*!
  * @brief Initializes the ILLIXR runtime from Unity.
  *
  * Mirrors the sequence in illixr_rt_launch (illixr_device.cpp in Monado):
@@ -69,10 +93,6 @@ int illixr_unity_init() {
         return 0;
     }
 
-    setenv("ILLIXR_TCP_CLIENT_IP", "192.168.8.140", true);
-    setenv("ILLIXR_TCP_SERVER_IP", "192.168.8.158", true);
-    setenv("ILLIXR_TCP_CLIENT_PORT", "9000", true);
-    setenv("ILLIXR_TCP_SERVER_PORT", "9001", true);
     setenv("ILLIXR_IS_CLIENT", "1", true);
 
     // Step 1: create runtime — mirrors illixr_rt_launch calling runtime_factory
@@ -89,7 +109,7 @@ int illixr_unity_init() {
     std::vector<std::string> lib_paths;
     lib_paths.reserve(plugin_names.size());
     for (const auto& name : plugin_names)
-        lib_paths.push_back("libplugin." + name + ".so");
+        lib_paths.push_back("libplugin." + name + ILLIXR_BUILD_SUFFIX_STR + ".so");
 
     g_runtime->load_so(lib_paths);
 
