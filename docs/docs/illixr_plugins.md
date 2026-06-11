@@ -419,6 +419,18 @@ Topic details:
 
 &nbsp;&nbsp;**Details**&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C26]
 
+## semantic_python
+
+DESCRIPTION HERE
+
+Topic details:
+
+-   Asynchronously *reads* [`semantic_data`][A27] from `semantic_data` topic
+-   Asynchronously *reads* [`semantic_query`][A28] from `semantic_query` topic
+-   *Publishes* [`query_response`][A29] to `semantic_response` networked topic
+
+&nbsp;&nbsp;[**Details**][P34]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C39]
+
 ## tcp_network_backend
 
 Provides network communications over TCP.
@@ -572,6 +584,7 @@ See [Getting Started][I11] for more information on adding plugins to a [_profile
 
 [S10]:   illixr_services.md#pose_prediction
 
+[P34]:   plugin_README/README_semantic_python.md
 
 [//]: # (- external -)
 
@@ -668,6 +681,7 @@ See [Getting Started][I11] for more information on adding plugins to a [_profile
 
 [C38]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/ada/scene_management
 
+[C39]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/semantic_python
 
 [//]: # (- Internal -)
 
@@ -732,3 +746,9 @@ See [Getting Started][I11] for more information on adding plugins to a [_profile
 [A25]:   api/structILLIXR_1_1data__format_1_1scene__recon__type.md
 
 [A26]:   api/structILLIXR_1_1data__format_1_1draco__type.md
+
+[A27]:   api/
+
+[A28]:   api/
+
+[A29]:   api/

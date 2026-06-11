@@ -95,6 +95,11 @@ component. ILLIXR currently contains the following [plugins][P66] and [services]
   scene provisioning system, allowing reconstruction to run on a server and meshes
   to be delivered to the XR device over the network.
 
+### Interfaces
+
+- [semantic_python][P70]
+
+
 [^1]: Source is hosted in an external repository under the [ILLIXR project][E7].
 
 Some components, such as eye tracking, are available as standalone components and are in the process
@@ -122,7 +127,7 @@ see our [YouTube][E54] channel, and join our [Discord][E47] for announcements.
 
 ## Demo Videos
 
-All of our demo videos can be seen on our [YouTube][E54] channel. 
+All of our demo videos can be seen on our [YouTube][E54] channel.
 Here are some highlights:
 
 | Running Locally                                                                                                                                                                                                                                                                                                                                                                      | Head Tracking (VIO) Offloaded                                                                                                                                                                       |
@@ -436,6 +441,8 @@ request!
 [P68]:   https://github.com/ILLIXR/ILLIXR
 
 [P69]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#ada
+
+[P70]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#semantic_python
 
 [//]: # (- Third Party Packages -)
 
