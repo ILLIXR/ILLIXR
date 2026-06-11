@@ -421,7 +421,7 @@ Topic details:
 
 ## semantic_python
 
-DESCRIPTION HERE
+Provides reader and writer handles to a Python script, allowing the script to access the switchboard directly.
 
 Topic details:
 
