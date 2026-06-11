@@ -1,3 +1,9 @@
+if(ANDROID)
+    message(WARNING "openwarp_vk is not yet available for Android")
+    set(USE_OPENWARP_VK OFF)
+    return()
+endif()
+
 cmake_minimum_required(VERSION 3.16)
 
 set(CMAKE_CXX_STANDARD 17)

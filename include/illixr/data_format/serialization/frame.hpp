@@ -10,7 +10,7 @@
 #include <spdlog/spdlog.h>
 #ifdef ILLIXR_LIBAV
 extern "C" {
-    #include "libavcodec_illixr/avcodec.h"
+#    include "libavcodec_illixr/avcodec.h"
 }
 #endif
 
@@ -146,9 +146,9 @@ void save(Archive& ar, const ILLIXR::data_format::compressed_frame& f, const uns
             ILLIXR::detail::save_packet(ar, f.left_motion_vec);
             ILLIXR::detail::save_packet(ar, f.right_motion_vec);
         }
-    #ifdef ILLIXR_LIBAV
+#    ifdef ILLIXR_LIBAV
     }
-    #endif
+#    endif
 #else
     static_assert(false, "Not compiled with libav or NVENC/NVDEC");
 #endif
@@ -205,69 +205,69 @@ void load(Archive& ar, ILLIXR::data_format::compressed_frame& f, const unsigned 
     } else {
 #if defined(ILLIXR_LIBAV) || defined(NVENC_ENCODER) || defined(NVDEC_DECODER)
 
-    #ifdef ILLIXR_LIBAV
+#    ifdef ILLIXR_LIBAV
         f.left_color  = av_packet_alloc();
         f.right_color = av_packet_alloc();
-    #endif
+#    endif
         ILLIXR::detail::load_packet(ar, f.left_color);
         ILLIXR::detail::load_packet(ar, f.right_color);
 
         if (f.use_depth) {
-    #ifdef ILLIXR_LIBAV
+#    ifdef ILLIXR_LIBAV
             f.left_depth  = av_packet_alloc();
             f.right_depth = av_packet_alloc();
-    #endif
+#    endif
             ILLIXR::detail::load_packet(ar, f.left_depth);
             ILLIXR::detail::load_packet(ar, f.right_depth);
         }
         if (f.use_motion_vectors) {
-    #ifdef ILLIXR_LIBAV
+#    ifdef ILLIXR_LIBAV
             f.left_motion_vec  = av_packet_alloc();
             f.right_motion_vec = av_packet_alloc();
-    #endif
+#    endif
             ILLIXR::detail::load_packet(ar, f.left_motion_vec);
             ILLIXR::detail::load_packet(ar, f.right_motion_vec);
         }
 #else
         static_assert(false, "Not compiled with libav or NVENC/NVDEC");
 #endif
-#ifdef USING_OPENXR
-        ar >> f.pose[0];
-        ar >> f.pose[1];
-#else
     }
+#ifdef USING_OPENXR
+    ar >> f.pose[0];
+    ar >> f.pose[1];
+#else
     ar >> f.pose;
 #endif
 
-        ar >> f.near_z;
-        ar >> f.far_z;
+    ar >> f.near_z;
+    ar >> f.far_z;
 #ifdef USING_OPENXR
-        ar >> f.fov_left[0];
-        ar >> f.fov_left[1];
-        ar >> f.fov_right[0];
-        ar >> f.fov_right[1];
-        ar >> f.fov_up[0];
-        ar >> f.fov_up[1];
-        ar >> f.fov_down[0];
-        ar >> f.fov_down[1];
+    ar >> f.fov_left[0];
+    ar >> f.fov_left[1];
+    ar >> f.fov_right[0];
+    ar >> f.fov_right[1];
+    ar >> f.fov_up[0];
+    ar >> f.fov_up[1];
+    ar >> f.fov_down[0];
+    ar >> f.fov_down[1];
 #endif
 
-        ar >> f.sent_time;
-        ar >> f.frame_number;
-        ar >> f.pose_id;
-        ar >> f.encode_time;
-        ar >> f.is_keyframe;
-        ar >> f.magic;
-        if (f.magic != 0xdeadbeef) {
-            throw std::runtime_error("compressed_frame: magic number mismatch");
-        }
+    ar >> f.sent_time;
+    ar >> f.frame_number;
+    ar >> f.pose_id;
+    ar >> f.encode_time;
+    ar >> f.is_keyframe;
+    ar >> f.magic;
+    if (f.magic != 0xdeadbeef) {
+        throw std::runtime_error("compressed_frame: magic number mismatch");
     }
+}
 
-    // Register the split free functions with Boost
-    template<class Archive>
-    void serialize(Archive & ar, ILLIXR::data_format::compressed_frame & f, const unsigned int version) {
-        boost::serialization::split_free(ar, f, version);
-    }
+// Register the split free functions with Boost
+template<class Archive>
+void serialize(Archive& ar, ILLIXR::data_format::compressed_frame& f, const unsigned int version) {
+    boost::serialization::split_free(ar, f, version);
+}
 
 } // namespace boost::serialization
 
