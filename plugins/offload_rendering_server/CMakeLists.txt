@@ -1,4 +1,8 @@
-cmake_minimum_required(VERSION 3.18)
+if(ANDROID)
+    message(WARNING "offload_rendering_server is not available for Android")
+    set(USE_OFFLOAD_RENDERING_SERVER OFF)
+    return()
+endif()
 #set(DUMP_FRAMES ON)
 # Enable CUDA language only if using NVENC encoder
 option(USE_NVENC_ENCODER "Use direct NVENC encoder instead of FFmpeg" ON)
@@ -129,7 +133,7 @@ if(USE_NVENC_ENCODER)
             )
         endif()
     endif()
-    
+
     set(CODEC_SDK_FOUND false)
 
     if(DEFINED ENV{VIDEO_CODEC_SDK_PATH})
