@@ -436,7 +436,8 @@ private:
             if (config.serialization_method == network::topic_config::SerializationMethod::BOOST) {
                 // TODO: Need to differentiate and support protobuf deserialization
                 boost::iostreams::stream<boost::iostreams::array_source> stream{buffer.data(), buffer.size()};
-                boost::archive::binary_iarchive                          ia{stream};
+                // Use no_header for cross-platform compatibility (sizeof(long) differs between Windows and Linux)
+                boost::archive::binary_iarchive                          ia{stream, boost::archive::no_header};
                 ptr<event>                                               this_event;
                 ia >> this_event;
                 put(std::move(this_event));
@@ -646,7 +647,8 @@ public:
                     std::vector<char>                                                                        buffer;
                     boost::iostreams::back_insert_device<std::vector<char>>                                  inserter{buffer};
                     boost::iostreams::stream_buffer<boost::iostreams::back_insert_device<std::vector<char>>> stream{inserter};
-                    boost::archive::binary_oarchive                                                          oa{stream};
+                    // Use no_header for cross-platform compatibility (sizeof(long) differs between Windows and Linux)
+                    boost::archive::binary_oarchive                                                          oa{stream, boost::archive::no_header};
                     oa << base_event;
                     // flush
                     stream.pubsync();

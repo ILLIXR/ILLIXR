@@ -41,7 +41,7 @@ private:
     std::unordered_map<std::string, network::topic_config> networked_topics_configs_;
 
     // To delimit the topic_name and the serialization method when creating a topic
-    std::string delimiter_ = ":";
+    std::string delimiter_ = "|";
 };
 
 } // namespace ILLIXR
