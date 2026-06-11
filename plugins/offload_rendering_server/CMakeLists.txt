@@ -246,6 +246,7 @@ if(WIN32 OR MSVC)
                                WIN32_LEAN_AND_MEAN
                                NOMINMAX
                                COMBINED_ENCODING
+                               NVENC_ENCODER
     )
 else()
     target_compile_definitions(${PLUGIN_NAME} PRIVATE
