@@ -1,10 +1,11 @@
 #pragma once
 #if defined(_WIN32) || defined(_WIN64)
-#    define _WINSOCKAPI_
+#  ifndef WIN32_LEAN_AND_MEAN
 #    define WIN32_LEAN_AND_MEAN
-#endif
-#include <stdexcept>
-#if defined(_WIN32) || defined(_WIN64)
+#  endif
+#  ifndef _WINSOCKAPI_
+#    define _WINSOCKAPI_
+#  endif
 // clang-format off
 #  include <WinSock2.h>  // Must come FIRST
 #  include <ws2def.h>
@@ -13,26 +14,25 @@
 #  include <WindNS.h>
 #  include <iphlpapi.h>
 #  include <icmpapi.h>
-#  include <iphlpapi.h>
-#  include <mstcpip.h>
 #  include <nldef.h>
+#  pragma comment(lib, "Ws2_32.lib")
+#  pragma comment(lib, "Iphlpapi.lib")
+#  define BYTE_TYPE   int
+#  define SOCKET_TYPE SOCKET
 // clang-format on
-#    pragma comment(lib, "Ws2_32.lib")
-#    pragma comment(lib, "Iphlpapi.lib")
-#    define BYTE_TYPE   int
-#    define SOCKET_TYPE SOCKET
 #else
-#    include <arpa/inet.h>
-#    include <netinet/in.h>
-#    include <netinet/tcp.h>
-#    include <sys/socket.h>
-#    include <unistd.h>
-#    define BYTE_TYPE   ssize_t
-#    define SOCKET_TYPE int
+#  include <arpa/inet.h>
+#  include <netinet/in.h>
+#  include <netinet/tcp.h>
+#  include <sys/socket.h>
+#  include <unistd.h>
+#  define BYTE_TYPE   ssize_t
+#  define SOCKET_TYPE int
 #endif
 
 #include "illixr/export.hpp"
 
+#include <stdexcept>
 #include <string>
 
 namespace ILLIXR::network {
