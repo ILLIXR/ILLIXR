@@ -1,27 +1,27 @@
 #pragma once
 
 #if defined(_WIN32) || defined(_WIN64)
-    #ifndef WIN32_LEAN_AND_MEAN
-        #define WIN32_LEAN_AND_MEAN
-    #endif
-    #ifndef _WINSOCKAPI_
-        #define _WINSOCKAPI_
-    #endif
+#    ifndef WIN32_LEAN_AND_MEAN
+#        define WIN32_LEAN_AND_MEAN
+#    endif
+#    ifndef _WINSOCKAPI_
+#        define _WINSOCKAPI_
+#    endif
 // clang-format off
-    #include <WinSock2.h>
-    #include <ws2def.h>
-    #include <ws2tcpip.h>
-    #pragma comment(lib, "Ws2_32.lib")
-    #define BYTE_TYPE   int
-    #define SOCKET_TYPE SOCKET
+#  include <WinSock2.h>
+#  include <ws2def.h>
+#  include <ws2tcpip.h>
+#  pragma comment(lib, "Ws2_32.lib")
+#  define BYTE_TYPE   int
+#  define SOCKET_TYPE SOCKET
 // clang-format on
 #else
-    #include <arpa/inet.h>
-    #include <netinet/in.h>
-    #include <sys/socket.h>
-    #include <unistd.h>
-    #define BYTE_TYPE   ssize_t
-    #define SOCKET_TYPE int
+#    include <arpa/inet.h>
+#    include <netinet/in.h>
+#    include <sys/socket.h>
+#    include <unistd.h>
+#    define BYTE_TYPE   ssize_t
+#    define SOCKET_TYPE int
 #endif
 
 #include "illixr/export.hpp"
@@ -80,7 +80,7 @@ public:
     void socket_set_reuseaddr() const {
 #if defined(_WIN32) || defined(_WIN64)
         int enable = 1;
-        // Use SO_EXCLUSIVEADDRUSE on Windows — SO_REUSEADDR has unsafe semantics there
+        // Use SO_EXCLUSIVEADDRUSE on Windows - SO_REUSEADDR has unsafe semantics there
         if (setsockopt(fd_, SOL_SOCKET, SO_EXCLUSIVEADDRUSE, reinterpret_cast<const char*>(&enable), sizeof(enable)) < 0)
             throw std::runtime_error("SO_EXCLUSIVEADDRUSE failed");
 #else

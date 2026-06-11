@@ -7,7 +7,7 @@
 /// viewed with most image viewers and easily converted to PNG with ImageMagick:
 ///   convert frame_000010.ppm frame_000010.png
 
-    #include "frame_saver.hpp"
+#    include "frame_saver.hpp"
 
 using namespace ILLIXR;
 
@@ -24,11 +24,11 @@ frame_saver::frame_saver(const config& cfg)
         auto    now    = std::chrono::system_clock::now();
         auto    time_t = std::chrono::system_clock::to_time_t(now);
         std::tm tm_buf;
-    #ifdef _WIN32
+#    ifdef _WIN32
         localtime_s(&tm_buf, &time_t);
-    #else
+#    else
         localtime_r(&time_t, &tm_buf);
-    #endif
+#    endif
         std::stringstream ss;
         ss << std::put_time(&tm_buf, "%Y%m%d_%H%M%S");
         session_dir_ = config_.output_directory + "/" + ss.str();

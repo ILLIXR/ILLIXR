@@ -24,90 +24,92 @@ THE SOFTWARE.
 
 // vim: ts=2:sw=2:expandtab
 
-#ifndef CXXOPTS_HPP_INCLUDED
-#define CXXOPTS_HPP_INCLUDED
+#ifndef __ANDROID__
 
-#include <algorithm>
-#include <cstring>
-#include <exception>
-#include <initializer_list>
-#include <limits>
-#include <locale>
-#include <map>
-#include <memory>
-#include <sstream>
-#include <string>
-#include <unordered_map>
-#include <unordered_set>
-#include <utility>
-#include <vector>
+#    ifndef CXXOPTS_HPP_INCLUDED
+#        define CXXOPTS_HPP_INCLUDED
 
-#ifdef CXXOPTS_NO_EXCEPTIONS
-    #include <iostream>
-#endif
+#        include <algorithm>
+#        include <cstring>
+#        include <exception>
+#        include <initializer_list>
+#        include <limits>
+#        include <locale>
+#        include <map>
+#        include <memory>
+#        include <sstream>
+#        include <string>
+#        include <unordered_map>
+#        include <unordered_set>
+#        include <utility>
+#        include <vector>
 
-#if defined(__GNUC__) && !defined(__clang__)
-    #if (__GNUC__ * 10 + __GNUC_MINOR__) < 49
-        #define CXXOPTS_NO_REGEX true
-    #endif
-#endif
-#if defined(_MSC_VER) && !defined(__clang__)
-    #define CXXOPTS_LINKONCE_CONST __declspec(selectany) extern
-    #define CXXOPTS_LINKONCE       __declspec(selectany) extern
-#else
-    #define CXXOPTS_LINKONCE_CONST
-    #define CXXOPTS_LINKONCE
-#endif
+#        ifdef CXXOPTS_NO_EXCEPTIONS
+#            include <iostream>
+#        endif
 
-#ifndef CXXOPTS_NO_REGEX
-    #include <regex>
-#endif // CXXOPTS_NO_REGEX
+#        if defined(__GNUC__) && !defined(__clang__)
+#            if (__GNUC__ * 10 + __GNUC_MINOR__) < 49
+#                define CXXOPTS_NO_REGEX true
+#            endif
+#        endif
+#        if defined(_MSC_VER) && !defined(__clang__)
+#            define CXXOPTS_LINKONCE_CONST __declspec(selectany) extern
+#            define CXXOPTS_LINKONCE       __declspec(selectany) extern
+#        else
+#            define CXXOPTS_LINKONCE_CONST
+#            define CXXOPTS_LINKONCE
+#        endif
+
+#        ifndef CXXOPTS_NO_REGEX
+#            include <regex>
+#        endif // CXXOPTS_NO_REGEX
 
 // Nonstandard before C++17, which is coincidentally what we also need for <optional>
-#ifdef __has_include
-    #if __has_include(<optional>)
-        #include <optional>
-        #ifdef __cpp_lib_optional
-            #define CXXOPTS_HAS_OPTIONAL
-        #endif
-    #endif
-#endif
+#        ifdef __has_include
+#            if __has_include(<optional>)
+#                include <optional>
+#                ifdef __cpp_lib_optional
+#                    define CXXOPTS_HAS_OPTIONAL
+#                endif
+#            endif
+#        endif
 
-#if __cplusplus >= 201603L
-    #define CXXOPTS_NODISCARD [[nodiscard]]
-#else
-    #define CXXOPTS_NODISCARD
-#endif
+#        if __cplusplus >= 201603L
+#            define CXXOPTS_NODISCARD [[nodiscard]]
+#        else
+#            define CXXOPTS_NODISCARD
+#        endif
 
-#ifndef CXXOPTS_VECTOR_DELIMITER
-    #define CXXOPTS_VECTOR_DELIMITER ','
-#endif
+#        ifndef CXXOPTS_VECTOR_DELIMITER
+#            define CXXOPTS_VECTOR_DELIMITER ','
+#        endif
 
-#define CXXOPTS__VERSION_MAJOR 3
-#define CXXOPTS__VERSION_MINOR 1
-#define CXXOPTS__VERSION_PATCH 1
+#        define CXXOPTS__VERSION_MAJOR 3
+#        define CXXOPTS__VERSION_MINOR 1
+#        define CXXOPTS__VERSION_PATCH 1
 
-#if (__GNUC__ < 10 || (__GNUC__ == 10 && __GNUC_MINOR__ < 1)) && __GNUC__ >= 6
-    #define CXXOPTS_NULL_DEREF_IGNORE
-#endif
+#        if (__GNUC__ < 10 || (__GNUC__ == 10 && __GNUC_MINOR__ < 1)) && __GNUC__ >= 6
+#            define CXXOPTS_NULL_DEREF_IGNORE
+#        endif
 
-#if defined(__GNUC__)
-    #define DO_PRAGMA(x)              _Pragma(#x)
-    #define CXXOPTS_DIAGNOSTIC_PUSH   DO_PRAGMA(GCC diagnostic push)
-    #define CXXOPTS_DIAGNOSTIC_POP    DO_PRAGMA(GCC diagnostic pop)
-    #define CXXOPTS_IGNORE_WARNING(x) DO_PRAGMA(GCC diagnostic ignored x)
-#else
-    // define other compilers here if needed
-    #define CXXOPTS_DIAGNOSTIC_PUSH
-    #define CXXOPTS_DIAGNOSTIC_POP
-    #define CXXOPTS_IGNORE_WARNING(x)
-#endif
+#        if defined(__GNUC__)
+#            define DO_PRAGMA(x)              _Pragma(#x)
+#            define CXXOPTS_DIAGNOSTIC_PUSH   DO_PRAGMA(GCC diagnostic push)
+#            define CXXOPTS_DIAGNOSTIC_POP    DO_PRAGMA(GCC diagnostic pop)
+#            define CXXOPTS_IGNORE_WARNING(x) DO_PRAGMA(GCC diagnostic ignored x)
+#        else
+// define other compilers here if needed
+#            define CXXOPTS_DIAGNOSTIC_PUSH
+#            define CXXOPTS_DIAGNOSTIC_POP
+#            define CXXOPTS_IGNORE_WARNING(x)
+#        endif
 
-#ifdef CXXOPTS_NO_RTTI
-    #define CXXOPTS_RTTI_CAST static_cast
-#else
-    #define CXXOPTS_RTTI_CAST dynamic_cast
-#endif
+#        ifdef CXXOPTS_NO_RTTI
+#            define CXXOPTS_RTTI_CAST static_cast
+#        else
+#            define CXXOPTS_RTTI_CAST dynamic_cast
+#        endif
 
 namespace cxxopts {
 static constexpr struct {
@@ -121,8 +123,8 @@ static constexpr struct {
 // it is necessary to make sure that <unicode/unistr.h> can be found by the
 // compiler, and that icu-uc is linked in to the binary.
 
-#ifdef CXXOPTS_USE_UNICODE
-    #include <unicode/unistr.h>
+#        ifdef CXXOPTS_USE_UNICODE
+#            include <unicode/unistr.h>
 
 namespace cxxopts {
 
@@ -230,7 +232,7 @@ inline cxxopts::UnicodeStringIterator end(const icu::UnicodeString& s) {
 } // namespace std
 
 // ifdef CXXOPTS_USE_UNICODE
-#else
+#        else
 
 namespace cxxopts {
 
@@ -270,7 +272,7 @@ inline bool empty(const std::string& s) {
 } // namespace cxxopts
 
 // ifdef CXXOPTS_USE_UNICODE
-#endif
+#        endif
 
 namespace cxxopts {
 
@@ -417,16 +419,16 @@ void throw_or_mimic(const std::string& text) {
                   "throw_or_mimic only works on std::exception and "
                   "deriving classes");
 
-#ifndef CXXOPTS_NO_EXCEPTIONS
+#        ifndef CXXOPTS_NO_EXCEPTIONS
     // If CXXOPTS_NO_EXCEPTIONS is not defined, just throw
     throw T{text};
-#else
+#        else
     // Otherwise manually instantiate the exception, print what() to stderr,
     // and exit
     T exception{text};
     std::cerr << exception.what() << std::endl;
     std::exit(EXIT_FAILURE);
-#endif
+#        endif
 }
 
 using OptionNames = std::vector<std::string>;
@@ -448,7 +450,7 @@ namespace values {
             std::string value     = "";
         };
 
-#ifdef CXXOPTS_NO_REGEX
+#        ifdef CXXOPTS_NO_REGEX
         inline IntegerDesc SplitInteger(const std::string& text) {
             if (text.empty()) {
                 throw_or_mimic<exceptions::incorrect_argument_type>(text);
@@ -578,7 +580,7 @@ namespace values {
             return argu_desc;
         }
 
-#else // CXXOPTS_NO_REGEX
+#        else // CXXOPTS_NO_REGEX
 
         namespace {
             CXXOPTS_LINKONCE
@@ -666,8 +668,8 @@ namespace values {
             return argu_desc;
         }
 
-#endif // CXXOPTS_NO_REGEX
-#undef CXXOPTS_NO_REGEX
+#        endif // CXXOPTS_NO_REGEX
+#        undef CXXOPTS_NO_REGEX
     } // namespace parser_tool
 
     namespace detail {
@@ -817,14 +819,14 @@ namespace values {
         }
     }
 
-#ifdef CXXOPTS_HAS_OPTIONAL
+#        ifdef CXXOPTS_HAS_OPTIONAL
     template<typename T>
     void parse_value(const std::string& text, std::optional<T>& value) {
         T result;
         parse_value(text, result);
         value = std::move(result);
     }
-#endif
+#        endif
 
     inline void parse_value(const std::string& text, char& c) {
         if (text.length() != 1) {
@@ -1106,19 +1108,19 @@ public:
         m_long_names = &details->long_names();
     }
 
-#if defined(CXXOPTS_NULL_DEREF_IGNORE)
+#        if defined(CXXOPTS_NULL_DEREF_IGNORE)
     CXXOPTS_DIAGNOSTIC_PUSH
     CXXOPTS_IGNORE_WARNING("-Wnull-dereference")
-#endif
+#        endif
 
     CXXOPTS_NODISCARD
     std::size_t count() const noexcept {
         return m_count;
     }
 
-#if defined(CXXOPTS_NULL_DEREF_IGNORE)
+#        if defined(CXXOPTS_NULL_DEREF_IGNORE)
     CXXOPTS_DIAGNOSTIC_POP
-#endif
+#        endif
 
     // TODO: maybe default options should count towards the number of arguments
     CXXOPTS_NODISCARD
@@ -2083,4 +2085,6 @@ inline const HelpGroupDetails& Options::group_help(const std::string& group) con
 
 } // namespace cxxopts
 
-#endif // CXXOPTS_HPP_INCLUDED
+#    endif // CXXOPTS_HPP_INCLUDED
+
+#endif
