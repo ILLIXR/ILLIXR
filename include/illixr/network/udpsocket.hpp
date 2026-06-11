@@ -1,15 +1,12 @@
 #pragma once
 
 #if defined(_WIN32) || defined(_WIN64)
-#    define _WINSOCKAPI_
+#  ifndef WIN32_LEAN_AND_MEAN
 #    define WIN32_LEAN_AND_MEAN
-#endif
-
-#include <cstring>
-#include <stdexcept>
-#include <string>
-
-#if defined(_WIN32) || defined(_WIN64)
+#  endif
+#  ifndef _WINSOCKAPI_
+#    define _WINSOCKAPI_
+#  endif
 // clang-format off
 #  include <WinSock2.h>
 #  include <ws2def.h>
@@ -19,15 +16,19 @@
 #  define SOCKET_TYPE SOCKET
 // clang-format on
 #else
-#    include <arpa/inet.h>
-#    include <netinet/in.h>
-#    include <sys/socket.h>
-#    include <unistd.h>
-#    define BYTE_TYPE   ssize_t
-#    define SOCKET_TYPE int
+#  include <arpa/inet.h>
+#  include <netinet/in.h>
+#  include <sys/socket.h>
+#  include <unistd.h>
+#  define BYTE_TYPE   ssize_t
+#  define SOCKET_TYPE int
 #endif
 
 #include "illixr/export.hpp"
+
+#include <cstring>
+#include <stdexcept>
+#include <string>
 
 namespace ILLIXR::network {
 
