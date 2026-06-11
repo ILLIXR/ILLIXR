@@ -7,23 +7,23 @@
 /// viewed with most image viewers and easily converted to PNG with ImageMagick:
 ///   convert frame_000010.ppm frame_000010.png
 
-    #include <chrono>
-    #include <cstdint>
-    #include <cstring>
-    #include <fstream>
-    #include <iomanip>
-    #include <spdlog/spdlog.h>
-    #include <sstream>
-    #include <string>
-    #include <vector>
+#    include <chrono>
+#    include <cstdint>
+#    include <cstring>
+#    include <fstream>
+#    include <iomanip>
+#    include <spdlog/spdlog.h>
+#    include <sstream>
+#    include <string>
+#    include <vector>
 
-    #ifdef _WIN32
-        #include <direct.h>
-        #define MKDIR(dir) _mkdir(dir)
-    #else
-        #include <sys/stat.h>
-        #define MKDIR(dir) mkdir(dir, 0755)
-    #endif
+#    ifdef _WIN32
+#        include <direct.h>
+#        define MKDIR(dir) _mkdir(dir)
+#    else
+#        include <sys/stat.h>
+#        define MKDIR(dir) mkdir(dir, 0755)
+#    endif
 
 namespace ILLIXR {
 

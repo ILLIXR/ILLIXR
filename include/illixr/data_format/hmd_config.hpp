@@ -1,12 +1,11 @@
 #pragma once
 
 #ifdef __cplusplus
-    #include "illixr/switchboard.hpp"
+#    include "illixr/switchboard.hpp"
 
-    #include <cstdint>
-
+#    include <cstdint>
 #else
-    #include <stdint.h>
+#    include <stdint.h>
 #endif
 struct hmd_config {
     uint32_t recommended_image_width;
