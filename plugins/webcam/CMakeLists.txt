@@ -1,6 +1,13 @@
+if(ANDROID)
+    message(WARNING "webcam is not supported on Android")
+    set(USE_WEBCAM OFF)
+    return()
+endif()
+
 set(PLUGIN_NAME plugin.webcam${ILLIXR_BUILD_SUFFIX})
 
-add_library(${PLUGIN_NAME} SHARED plugin.cpp
+add_library(${PLUGIN_NAME} SHARED
+            plugin.cpp
             plugin.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/data_format/opencv_data_types.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/threadloop.hpp

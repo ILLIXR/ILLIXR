@@ -1,13 +1,18 @@
 #pragma once
 #define VULKAN_REQUIRED
 #if defined(_WIN32) || defined(_WIN64)
-    #include <windows.h>
+#    include <windows.h>
+#endif
+#ifdef __ANDROID__
+#    include "illixr/common_lock.hpp"
 #endif
 #include "illixr/data_format/frame.hpp"
 #include "illixr/data_format/misc.hpp"
 #include "illixr/data_format/pose_prediction.hpp"
 #include "illixr/data_format/poses/pose_base.hpp"
-#include "illixr/extended_window.hpp"
+#ifndef __ANDROID__
+#    include "illixr/extended_window.hpp"
+#endif
 #include "illixr/hmd.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/relative_clock.hpp"
@@ -15,6 +20,22 @@
 #include "illixr/threadloop.hpp"
 
 namespace ILLIXR {
+
+#ifdef __ANDROID__
+#    define EGL_EGLEXT_PROTOTYPES 1
+#    define GL_GLEXT_PROTOTYPES
+#    include <EGL/egl.h>
+
+typedef EGLDisplay     TW_DISPLAY;
+typedef ANativeWindow* TW_WINDOW;
+typedef EGLContext     TW_GL_CONTEXT;
+#elif defined(__linux__)
+typedef Display*   TW_DISPLAY;
+typedef Window     TW_WINDOW;
+typedef GLXContext TW_GL_CONTEXT;
+#else
+typedef HGLRC TW_GL_CONTEXT;
+#endif
 
 #ifdef ENABLE_MONADO
 typedef plugin timewarp_type;
@@ -39,32 +60,52 @@ public:
 #endif
 
 private:
-    GLubyte*      read_texture_image();
-    static GLuint convert_vk_format_to_GL(int64_t vk_format);
-    void          import_vulkan_image(const data_format::vk_image_handle& vk_handle, data_format::swapchain_usage usage);
-    void          build_timewarp(HMD::hmd_info_t& hmd_info);
-    static void   calculate_time_warp_transform(Eigen::Matrix4f& transform, const Eigen::Matrix4f& render_projection_matrix,
-                                                const Eigen::Matrix4f& render_view_matrix,
-                                                const Eigen::Matrix4f& new_view_matrix);
+    GLubyte* read_texture_image();
+#ifdef __ANDROID__
+    void vulkanGL_interop_buffer(const data_format::vk_buffer_handle& vk_buffer_handle, data_format::swapchain_usage usage);
+#else
+    void import_vulkan_image(const data_format::vk_image_handle& vk_handle, data_format::swapchain_usage usage);
+#endif
+
+    static GLuint convert_vk_format_to_GL(int64_t vk_format
+#ifdef __ANDROID__
+                                          ,
+                                          GLint swizzle_mask[]
+#endif
+    );
+
+    void        build_timewarp(HMD::hmd_info_t& hmd_info);
+    static void calculate_time_warp_transform(Eigen::Matrix4f& transform, const Eigen::Matrix4f& render_projection_matrix,
+                                              const Eigen::Matrix4f& render_view_matrix,
+                                              const Eigen::Matrix4f& new_view_matrix);
 #ifndef ENABLE_MONADO
-    [[nodiscard]] time_point                get_next_swap_time_estimate() const;
-    [[maybe_unused]] [[nodiscard]] duration estimate_time_to_sleep(double frame_percentage) const;
+    [[nodiscard]] time_point get_next_swap_time_estimate();
+    [[nodiscard]] duration   estimate_time_to_sleep(double frame_percentage);
+#elif defined(__ANDROID__)
+    void import_vulkan_semaphore(const data_format::semaphore_handle& vk_handle);
 #endif
 
     const std::shared_ptr<switchboard>                  switchboard_;
     const std::shared_ptr<data_format::pose_prediction> pose_prediction_;
-    const std::shared_ptr<const relative_clock>         clock_;
+#ifdef __ANDROID__
+    const std::shared_ptr<common_lock> lock_;
+#endif
+    const std::shared_ptr<const relative_clock> clock_;
 
 #if defined(_WIN32) || defined(_WIN64)
-    HWND  hwnd_;
-    HDC   hdc_;
-    HGLRC context_;
+    HWND hwnd_;
+    HDC  hdc_;
 #else
     // OpenGL objects
-    Display*   display_;
-    Window     root_window_;
-    GLXContext context_;
+    TW_DISPLAY display_;
+#    if defined(__linux__) || (defined(__ANDROID) && !defined(ENABLE_MONADO))
+    TW_WINDOW root_window_;
+#    endif
+#    ifdef __ANDROID__
+    EGLSurface surface_;
+#    endif
 #endif
+    TW_GL_CONTEXT context_;
 
     // Shared objects between ILLIXR and the application (either gldemo or Monado)
     bool                      rendering_ready_;
@@ -85,6 +126,9 @@ private:
 
     // Synchronization helper for Monado
     switchboard::writer<data_format::signal_to_quad> signal_quad_;
+#    ifdef __ANDROID__
+    ullong signal_quad_seq_{0};
+#    endif
 
     // When using Monado, timewarp is a plugin and not a threadloop, but we still keep track of the iteration number
     std::size_t iteration_no = 0;
@@ -153,7 +197,9 @@ private:
 
     // Hologram call data
     ullong hologram_seq_{0};
+#ifndef __ANDROID__
     ullong signal_quad_seq_{0};
+#endif
 
     bool disable_warp_;
 

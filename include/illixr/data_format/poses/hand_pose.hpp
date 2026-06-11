@@ -1,18 +1,19 @@
 #pragma once
 #ifdef USING_OPENXR
-    #include "illixr/data_format/poses/pose_base.hpp"
-    #include "illixr/switchboard.hpp"
+#    include "illixr/data_format/poses/pose_base.hpp"
+#    include "illixr/switchboard.hpp"
 
-    #include <array>
-    #include <cstdint>
-    #include <map>
+#    include <array>
+#    include <cstdint>
+#    include <map>
+#    include <utility>
 
-    #ifdef ENABLE_MONADO
-        #define HAND_JOINT_COUNT XRT_HAND_JOINT_COUNT
-    #else
-        #include "openxr_defines.hpp"
-        #define HAND_JOINT_COUNT XR_HAND_JOINT_COUNT_EXT
-    #endif
+#    ifdef ENABLE_MONADO
+#        define HAND_JOINT_COUNT XRT_HAND_JOINT_COUNT
+#    else
+#        define HAND_JOINT_COUNT XR_HAND_JOINT_COUNT_EXT
+#        include "openxr_defines.hpp"
+#    endif
 
 namespace ILLIXR::data_format::pose {
 
@@ -51,14 +52,15 @@ enum joint : int {
     LITTLE_TIP [[maybe_unused]]          = 25
 };
 
-    #ifdef ENABLE_MONADO
+#    ifdef ENABLE_MONADO
 /**
  * @brief Pose and velocity data for a hand joint
  *
  * Using @c xrt_hand_joint_value to be Monado compatable
  */
 typedef xrt_hand_joint_value hand_joint_pose;
-    #else
+
+#    else
 /**
  * @brief Full 6-DOF pose for a single hand joint.
  *
@@ -84,7 +86,7 @@ struct hand_joint_pose {
      * @param r
      */
     hand_joint_pose(xrt_space_relation rel, float r)
-        : relation{rel}
+        : relation{std::move(rel)}
         , radius{r} { }
 
     /**
@@ -100,21 +102,23 @@ struct hand_joint_pose {
         relation.set_flags(pose.locationFlags, vel.velocityFlags);
     }
 };
-    #endif
-    /**
-     * @brief All joint poses for one hand, along with hand-level metadata.
-     *
-     * Wraps an array of @c hand_joint_pose (one per @c joint) and records whether
-     * the hand as a whole is currently being tracked.
-     */
-    #ifdef ENABLE_MONADO
+#    endif
+
+/**
+ * @brief All joint poses for one hand, along with hand-level metadata.
+ *
+ * Wraps an array of @c hand_joint_pose (one per @c joint) and records whether
+ * the hand as a whole is currently being tracked.
+ */
+#    ifdef ENABLE_MONADO
 /**
  * @brief Pose and velocity data for all points in a hand
  *
  * Using @c xrt_hand_joint_set to be Monado compatable
  */
 typedef xrt_hand_joint_set hand_joint_poses;
-    #else
+
+#    else
 
 struct hand_joint_poses {
     std::array<hand_joint_pose, XR_HAND_JOINT_COUNT_EXT> joints; //!< Per-joint pose data indexed by @c joint
@@ -172,7 +176,7 @@ struct hand_joint_poses {
         return joints[static_cast<int>(j)];
     }
 };
-    #endif
+#    endif
 /**
  * @brief Joint poses for both hands, suitable for publication on the switchboard.
  *

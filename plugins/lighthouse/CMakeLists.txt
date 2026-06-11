@@ -1,7 +1,10 @@
 # To add compiler flags for debugging, uncomment the lines below.
 # SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -fsanitize=thread")
 # SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=thread")
-
+if(ANDROID)
+    message(WARNING "lighthouse is not yet available for Android yet")
+    set(USE_LIGHTHOUSE OFF)
+else()
 set(PLUGIN_NAME plugin.lighthouse${ILLIXR_BUILD_SUFFIX})
 
 SET(THREADS_PREFER_PTHREAD_FLAG TRUE)

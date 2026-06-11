@@ -76,9 +76,9 @@ void save_encoded_frame(int eye, const vulkan_image_info& vk_image) {
 // Complete example function to read back Vulkan image and save as PNG:
 // ============================================================================
 
-    #include <memory>
-    #include <vector>
-    #include <vulkan/vulkan.h>
+#    include <memory>
+#    include <vector>
+#    include <vulkan/vulkan.h>
 
 namespace ILLIXR {
 
