@@ -12,16 +12,16 @@
 #include <utility>
 
 #if defined(_WIN32) || defined(_WIN64)
-    #include <atomic>
-    #include <cstdlib>
-    #include <time.h>
-    #include <Windows.h>
-    #ifndef CLOCK_MONOTONIC
-        #define CLOCK_MONOTINIC 1
-    #endif
-    #ifndef CLOCK_THREAD_CPUTIME_ID
-        #define CLOCK_THREAD_CPUTIME_ID 3
-    #endif
+#    include <atomic>
+#    include <cstdlib>
+#    include <time.h>
+#    include <Windows.h>
+#    ifndef CLOCK_MONOTONIC
+#        define CLOCK_MONOTINIC 1
+#    endif
+#    ifndef CLOCK_THREAD_CPUTIME_ID
+#        define CLOCK_THREAD_CPUTIME_ID 3
+#    endif
 
 typedef int clockid_t;
 
