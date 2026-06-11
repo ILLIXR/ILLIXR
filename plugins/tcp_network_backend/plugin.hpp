@@ -1,7 +1,9 @@
 #pragma once
+// clang-format off
+#include "illixr/network/tcpsocket.hpp"
+// clang-format on
 
 #include "illixr/network/network_backend.hpp"
-#include "illixr/network/tcpsocket.hpp"
 #include "illixr/network/topic_config.hpp"
 #include "illixr/plugin.hpp"
 #include "illixr/switchboard.hpp"
