@@ -1,8 +1,12 @@
+if(ANDROID)
+    message(WARNING "zed.data_injection is supported on Android")
+    set(USE_ZED.DATA_INJECTION OFF)
+    return()
+endif()
+
 # To add compiler flags for debugging, uncomment the lines below.
 # SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -fsanitize=thread")
 # SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=thread")
-
-CMAKE_MINIMUM_REQUIRED(VERSION 3.16)
 
 set(PLUGIN_NAME plugin.zed.data_injection${ILLIXR_BUILD_SUFFIX})
 

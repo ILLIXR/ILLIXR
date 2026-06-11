@@ -1,4 +1,9 @@
 # module to build and install the record_imu_cam ILLIXR plugin
+if(ANDROID)
+    message(WARNING "record_imu_cam is not yet available for Android")
+    set(USE_RECORD_IMU_CAM OFF)
+    return()
+endif()
 
 set(PLUGIN_NAME plugin.record_imu_cam${ILLIXR_BUILD_SUFFIX})
 

@@ -1,6 +1,13 @@
+if(ANDROID)
+    message(WARNING "record_depth_rgb is not yet available for Android")
+    set(USE_RECORD_DEPTH_RGB OFF)
+    return()
+endif()
+
 set(PLUGIN_NAME plugin.record_rgb_depth${ILLIXR_BUILD_SUFFIX})
 
-set(RECORD_RGB_SOURCES plugin.cpp
+set(RECORD_RGB_SOURCES
+    plugin.cpp
     plugin.hpp
     ${CMAKE_SOURCE_DIR}/include/illixr/data_format/opencv_data_types.hpp
     ${CMAKE_SOURCE_DIR}/include/illixr/phonebook.hpp

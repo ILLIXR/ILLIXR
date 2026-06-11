@@ -559,7 +559,7 @@ bool nvenc_encoder::import_vulkan_memory(const vulkan_image_info& vk_image, cuda
     rt_ext_mem_desc.size                         = vk_image.memory_size;
     rt_ext_mem_desc.flags                        = 0;
 
-    #ifdef _WIN32
+#    ifdef _WIN32
     if (!vk_ctx_.vkGetMemoryWin32HandleKHR) {
         spdlog::get("illixr")->error("nvenc_encoder: vkGetMemoryWin32HandleKHR not available");
         return false;
@@ -596,7 +596,7 @@ bool nvenc_encoder::import_vulkan_memory(const vulkan_image_info& vk_image, cuda
     }
     spdlog::get("illixr")->debug("nvenc_encoder: Got Win32 handle: {:p}", imported.handle);
 
-    #else  // !_WIN32
+#    else  // !_WIN32
     if (!vk_ctx_.vkGetMemoryFdKHR) {
         spdlog::get("illixr")->error("nvenc_encoder: vkGetMemoryFdKHR not available");
         return false;
@@ -616,7 +616,7 @@ bool nvenc_encoder::import_vulkan_memory(const vulkan_image_info& vk_image, cuda
     rt_ext_mem_desc.type      = cudaExternalMemoryHandleTypeOpaqueFd;
     rt_ext_mem_desc.handle.fd = imported.fd;
     spdlog::get("illixr")->debug("nvenc_encoder: Got FD: {}", imported.fd);
-    #endif // _WIN32
+#    endif // _WIN32
 
     spdlog::get("illixr")->debug("nvenc_encoder: Calling cudaImportExternalMemory (runtime path) with size={}",
                                  vk_image.memory_size);
@@ -692,7 +692,7 @@ bool nvenc_encoder::import_vulkan_memory(const vulkan_image_info& vk_image, cuda
     ext_mem_desc.size  = vk_image.memory_size;
     ext_mem_desc.flags = 0;
 
-    #ifdef _WIN32
+#    ifdef _WIN32
     if (!vk_ctx_.vkGetMemoryWin32HandleKHR) {
         spdlog::get("illixr")->error("nvenc_encoder: vkGetMemoryWin32HandleKHR not available");
         return false;
@@ -731,7 +731,7 @@ bool nvenc_encoder::import_vulkan_memory(const vulkan_image_info& vk_image, cuda
     ext_mem_desc.handle.win32.handle = imported.handle;
     ext_mem_desc.handle.win32.name   = nullptr;
 
-    #else  // !_WIN32
+#    else  // !_WIN32
     if (!vk_ctx_.vkGetMemoryFdKHR) {
         spdlog::get("illixr")->error("nvenc_encoder: vkGetMemoryFdKHR not available");
         return false;
@@ -751,7 +751,7 @@ bool nvenc_encoder::import_vulkan_memory(const vulkan_image_info& vk_image, cuda
 
     ext_mem_desc.type      = CU_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD;
     ext_mem_desc.handle.fd = imported.fd;
-    #endif // _WIN32
+#    endif // _WIN32
 
     spdlog::get("illixr")->debug("nvenc_encoder: Calling cuImportExternalMemory (driver path) with size={}", ext_mem_desc.size);
 
@@ -1247,13 +1247,13 @@ std::vector<uint8_t> nvenc_encoder::encode_stereo(int left_index, int right_inde
     pic_params.inputTimeStamp    = frame_count_++;
     pic_params.encodePicFlags    = 0;
     if (pending_idrs_ > 0) {
-    #ifdef USE_AV1
+#    ifdef USE_AV1
         const bool use_av1 = (codec_ == encoder_codec::av1);
         pic_params.encodePicFlags =
             use_av1 ? NV_ENC_PIC_FLAG_FORCEIDR : (NV_ENC_PIC_FLAG_FORCEIDR | NV_ENC_PIC_FLAG_OUTPUT_SPSPPS);
-    #else
+#    else
         pic_params.encodePicFlags = NV_ENC_PIC_FLAG_FORCEIDR | NV_ENC_PIC_FLAG_OUTPUT_SPSPPS;
-    #endif // USE_AV1
+#    endif // USE_AV1
         pending_idrs_--;
     }
 
@@ -1274,11 +1274,11 @@ std::vector<uint8_t> nvenc_encoder::encode_stereo(int left_index, int right_inde
         (lock_bitstream.pictureType == NV_ENC_PIC_TYPE_IDR) || (lock_bitstream.pictureType == NV_ENC_PIC_TYPE_I);
     last_frame_was_keyframe_ = is_keyframe;
 
-    #ifdef USE_AV1
+#    ifdef USE_AV1
     const bool prepend_headers = (codec_ != encoder_codec::av1) && is_keyframe && !vps_sps_pps_.empty();
-    #else
+#    else
     const bool prepend_headers = is_keyframe && !vps_sps_pps_.empty();
-    #endif // USE_AV1
+#    endif // USE_AV1
 
     if (prepend_headers) {
         encoded_data.reserve(vps_sps_pps_.size() + bitstream_size);
@@ -1393,7 +1393,7 @@ void nvenc_encoder::save_cuda_frame_to_disk(const cuda_imported_vulkan_image& im
             cuda_host_buffer_.resize(required_size);
         }
 
-    #if CUDA_VERSION >= 13000
+#    if CUDA_VERSION >= 13000
         if (imported.rt_array == nullptr) {
             spdlog::get("illixr")->warn("nvenc_encoder: imported.rt_array is NULL, cannot save");
             return;
@@ -1409,7 +1409,7 @@ void nvenc_encoder::save_cuda_frame_to_disk(const cuda_imported_vulkan_image& im
                                         actual_width, actual_height);
             return;
         }
-    #else
+#    else
         if (imported.array == nullptr) {
             spdlog::get("illixr")->warn("nvenc_encoder: imported.array is NULL, cannot save");
             return;
@@ -1437,7 +1437,7 @@ void nvenc_encoder::save_cuda_frame_to_disk(const cuda_imported_vulkan_image& im
                                         (void*) imported.array);
             return;
         }
-    #endif // CUDA_VERSION >= 13000
+#    endif // CUDA_VERSION >= 13000
 
         frame_saver_->save_bgra(cuda_host_buffer_.data(), actual_width, actual_height, 0, current_eye_index_, "color");
 
