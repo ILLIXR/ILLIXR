@@ -126,6 +126,8 @@ else()
                 ${CMAKE_SOURCE_DIR}/include/illixr/runtime.hpp
                 ${CMAKE_SOURCE_DIR}/include/illixr/stoplight.hpp
                 ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
+                src/android/network_config_dialog.cpp
+                src/android/network_config_dialog.hpp
                 src/android/profile_picker_dialog.cpp
                 src/android/profile_picker_dialog.hpp
     )

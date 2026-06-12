@@ -3,6 +3,7 @@
 #include "illixr/switchboard.hpp"
 
 #ifdef __ANDROID__
+#    include "android/network_config_dialog.hpp"
 #    include <csignal>
 #    include <EGL/egl.h>
 #    include <unistd.h> /// Not portable
@@ -212,6 +213,21 @@ int ILLIXR::run(
                 token.erase(token.find_last_not_of(" \t") + 1);
                 if (!token.empty())
                     plugins.push_back(token);
+            }
+        }
+
+        // Show the network configuration dialog for any network backends present
+        // in the plugin list.  The dialog blocks until the user confirms or
+        // cancels; on confirmation all ILLIXR_TCP_* / ILLIXR_UDP_* environment
+        // variables are set via setenv() before returning.
+        {
+            const ILLIXR::network_dialog_flags net_flags =
+                ILLIXR::make_network_dialog_flags(plugins);
+            const ILLIXR::network_config net_cfg =
+                ILLIXR::show_network_config_dialog(app, net_flags);
+            if (net_cfg.cancelled) {
+                spdlog::get("illixr")->error("[run] User cancelled network configuration.");
+                return EXIT_FAILURE;
             }
         }
 #else
