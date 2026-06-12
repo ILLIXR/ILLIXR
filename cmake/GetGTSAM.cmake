@@ -28,7 +28,7 @@ endif()
 
 fetch_git(NAME GTSAM
           REPO https://github.com/ILLIXR/gtsam.git
-          TAG 135f09fe08f749596a03d4d018387f4590f826c1
+          TAG 64e2258644780eff415e1f0bac13c784c14bb92a
           NO_OVERRIDE
 )
 set(GTSAM_WITH_TBB OFF)
