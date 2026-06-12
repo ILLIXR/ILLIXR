@@ -38,9 +38,12 @@
                 switchboard_->set_env(#ENV, "False");       \
             }                                               \
         }
-#    define _STR(y)      #y
-#    define STRINGIZE(x) _STR(x)
 #endif
+
+// STRINGIZE is used on both Android and non-Android to build plugin library
+// names from the ILLIXR_BUILD_SUFFIX compile-time constant.
+#define _STR(y)      #y
+#define STRINGIZE(x) _STR(x)
 
 constexpr std::chrono::seconds          ILLIXR_RUN_DURATION_DEFAULT{60};
 [[maybe_unused]] constexpr unsigned int ILLIXR_PRE_SLEEP_DURATION{10};
@@ -58,7 +61,7 @@ extern MY_EXPORT_API ILLIXR::runtime* runtime_;
 
 namespace ILLIXR {
 #ifdef __ANDROID__
-int run(const std::vector<std::string>& plugins, struct android_app* app);
+int run(struct android_app* app, const std::string& yaml_path);
 #else
 MY_EXPORT_API int run(const cxxopts::ParseResult& options);
 #endif

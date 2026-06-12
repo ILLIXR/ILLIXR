@@ -1,10 +1,8 @@
 #if !defined(__ANDROID__) || (defined(ANDROID) && !defined(ENABLE_MONADO))
-
 #    include "illixr.hpp"
 #    ifdef __ANDROID__
 #        include <EGL/egl.h>
 #        include <thread>
-#        include <vector>
 #    else
 #        include <iostream>
 #    endif
@@ -61,29 +59,25 @@ int main(int argc, const char* argv[]) {
 
 #    ifdef __ANDROID__
     if (cmd == APP_CMD_INIT_WINDOW) {
-        const std::vector<std::string> plugins = {"tcp_network_backend", "udp_network_backend", "network_latency.tx",
-                                                  "offload_rendering_client", "openxr_interface"};
-
         // EuRoC
         setenv("ILLIXR_DATA", "/sdcard/Android/data/com.example.native_activity/mav0", true);
         setenv("ILLIXR_LOG", "/sdcard/Android/data/com.example.native_activity/log.txt", true);
 
         setenv("ILLIXR_DEMO_DATA", "/sdcard/Android/data/com.example.native_activity/demo_data", true);
-        setenv("ILLIXR_OFFLOAD_ENABLE", "False", true);
-        setenv("ILLIXR_ALIGNMENT_ENABLE", "False", true);
-        setenv("ILLIXR_ENABLE_VERBOSE_ERRORS", "False", true);
         setenv("ILLIXR_RUN_DURATION", "1000000", true);
-        setenv("ILLIXR_ENABLE_PRE_SLEEP", "False", true);
-        setenv("ILLIXR_ENABLE_PRE_SLEEP", "False", true);
-        setenv("ILLIXR_TCP_CLIENT_IP", "192.168.8.140", true);
-        setenv("ILLIXR_TCP_SERVER_IP", "192.168.8.158", true);
-        setenv("ILLIXR_TCP_CLIENT_PORT", "9000", true);
-        setenv("ILLIXR_UDP_CLIENT_PORT", "9002", true);
-        setenv("ILLIXR_TCP_SERVER_PORT", "9001", true);
-        setenv("ILLIXR_UDP_SERVER_PORT", "9003", true);
         setenv("ILLIXR_IS_CLIENT", "1", true);
         setenv("ILLIXR_USE_DEPTH_IMAGES", "0", true);
         setenv("ILLIXR_USE_MOTION_VECTORS", "0", true);
+        // Show the profile picker dialog.  It extracts bundled profile YAML
+        // files from the APK assets to the app's internal storage, presents
+        // them in a spinner, and returns the full path to the chosen file.
+        // If the user cancels, or no profiles are found, the app exits.
+        const std::string yaml_path = ILLIXR::show_profile_picker_dialog(app);
+        if (yaml_path.empty()) {
+            // User cancelled or no profiles available — cannot continue.
+
+            return;
+        }
 #    else
     cxxopts::Options options("ILLIXR", "Main program");
     options.show_positional_help();
@@ -114,7 +108,7 @@ int main(int argc, const char* argv[]) {
         /// Shutting down method 1: Ctrl+C
         std::signal(SIGINT, sigint_handler);
 #    ifdef __ANDROID__
-        std::thread runtime_thread(ILLIXR::run, plugins, app);
+        std::thread runtime_thread(ILLIXR::run, app, yaml_path);
         runtime_thread.join();
     }
 #    else
