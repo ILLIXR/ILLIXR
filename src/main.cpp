@@ -1,6 +1,7 @@
 #if !defined(__ANDROID__) || (defined(ANDROID) && !defined(ENABLE_MONADO))
 #    include "illixr.hpp"
 #    ifdef __ANDROID__
+#        include "android/profile_picker_dialog.hpp"
 #        include <EGL/egl.h>
 #        include <thread>
 #    else

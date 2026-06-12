@@ -126,8 +126,11 @@ else()
                 ${CMAKE_SOURCE_DIR}/include/illixr/runtime.hpp
                 ${CMAKE_SOURCE_DIR}/include/illixr/stoplight.hpp
                 ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
+                src/android/profile_picker_dialog.cpp
+                src/android/profile_picker_dialog.hpp
     )
     target_include_directories(native-activity PRIVATE
+                               ${CMAKE_CURRENT_SOURCE_DIR}/android
                                ${ILLIXR_SOURCE_DIR}/include
                                ${OpenCV_LIBS}
                                ${jnigraphics-lib}
