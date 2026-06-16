@@ -1,0 +1,15 @@
+fields:
+  query_id:
+    type: uint64
+  point_clouds:
+    type: semantic_xr.point_cloud
+    container: list
+  colors:
+    type: float
+    container: list
+  num_point_clouds:
+    type: int
+  server_query_processing:
+    type: float
+  text_query:
+    type: string

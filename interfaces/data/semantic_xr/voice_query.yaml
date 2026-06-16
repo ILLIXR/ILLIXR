@@ -1,0 +1,10 @@
+fields:
+  query_id:
+    type: uint_64
+  pcm_data:
+    type: byte
+    container: list
+  similarity_threshold:
+    type: float
+  min_match_similarity:
+    type: float

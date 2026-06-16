@@ -238,3 +238,11 @@ profiles:
       enable_alignment: false
       enable_verbose_errors: false
       enable_pre_sleep: false
+
+  - semantic_python:
+    plugins: tcp_network_backend
+    env_vars:
+      enable_offload: false
+      enable_alignment: false
+      enable_verbose_errors: false
+      enable_pre_sleep: false

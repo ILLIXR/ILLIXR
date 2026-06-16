@@ -1,0 +1,33 @@
+fields:
+  image:
+    type: byte
+    container: list
+  frame_number:
+    type: int
+  width:
+    type: int
+  height:
+    type: int
+  depth:
+    type: char
+    container: list
+  depth_width:
+    type: int
+  depth_height:
+    type: int
+  depth_near_z:
+    type: float
+  intrinsics:
+    type: float
+    shape: [4]
+  depth_intrinsics:
+    type: float
+    shape: [4]
+  rgb_camera_pose:
+    type: float
+    shape: [4, 4]
+  depth_pose:
+    type: float
+    shape: [4, 4]
+  max_depth:
+    type: float

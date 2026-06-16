@@ -170,6 +170,10 @@ include(cmake/HelperFunctions.cmake)
 generate_yaml()
 check_plugins()
 
+if(PYTHON_BRIDGE_PROFILE)
+    include(interfaces/python/bridge.cmake)
+endif()
+
 if(YAML_FILE)
     read_yaml(${YAML_FILE})
     string(REGEX MATCH "/all.yaml" MATCH_FOUND ${YAML_FILE})
@@ -203,6 +207,12 @@ elseif(BUILD_ANDROID)
     set(USE_OPENXR_INTERFACE ON)
     set(USE_OFFLOAD_RENDERING_CLIENT ON)
     set(USE_NETWORK_LATENCY.TX ON)
+endif()
+
+if(PYTHON_BRIDGE_PROFILE)
+    find_package(pybind11 CONFIG REQUIRED)
+    find_package(Python3 REQUIRED COMPONENTS Interpreter)
+    generate_python_bridge_plugins()
 endif()
 
 set(ILLIXR_SOURCE_DIR ${CMAKE_SOURCE_DIR})

@@ -1,0 +1,9 @@
+fields:
+  points:
+    type: float
+    container: list
+  centroid:
+    type: float
+    shape: [3]
+  num_points:
+    type: int
