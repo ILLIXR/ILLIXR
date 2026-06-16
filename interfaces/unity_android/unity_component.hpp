@@ -62,6 +62,22 @@ public:
                             char*     out_text_query,
                             int32_t   text_query_buf_len);
 
+    bool get_query_response_info(uint64_t* out_query_id,
+                                 int32_t*  out_num_clouds,
+                                 int32_t*  out_total_points,
+                                 int32_t*  out_points_per_cloud,
+                                 int32_t   points_per_cloud_max,
+                                 float*    out_centroids,
+                                 float*    out_colors,
+                                 int32_t   out_colors_max,
+                                 int32_t*  out_num_colors,
+                                 float*    out_server_latency,
+                                 char*     out_text_query,
+                                 int32_t   text_query_buf_len);
+
+    bool get_query_response_points(uint64_t query_id,
+                                   float*   out_points,
+                                   int32_t  points_max);
 private:
     const std::shared_ptr<switchboard>  switchboard_;
     switchboard::network_writer<data_format::semantic_data> semantic_writer_;
@@ -71,6 +87,7 @@ private:
     // Sequence number of the last query_response we delivered to Unity,
     // used to detect when a new response has arrived.
     std::atomic<uint64_t> last_delivered_query_id_{0};
+    std::shared_ptr<const data_format::query_response> cached_response_;
 };
 
 } // namespace ILLIXR
