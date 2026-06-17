@@ -32,7 +32,7 @@
 // colon-separated list of plugin names to load. runtime_impl::load_so
 // reorders these so any plugin whose name contains "network_backend"
 // starts first. Extend this list as additional plugins are implemented.
-static constexpr const char* ILLIXR_ANDROID_COMP = "tcp_network_backend";
+static constexpr const char* ILLIXR_ANDROID_COMP = "tcp_network_backend:android_sensors";
 // additional plugins added here as needed, e.g.:
 // static constexpr const char* ILLIXR_ANDROID_COMP = "tcp_network_backend:my_plugin";
 

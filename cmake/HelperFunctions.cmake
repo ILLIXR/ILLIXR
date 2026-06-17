@@ -434,7 +434,7 @@ function(fetch_git)
     if(fetch_OVERRIDE_BUILD)
         list(APPEND FCD_ARGS BUILD_COMMAND ${fetch_OVERRIDE_BUILD})
     endif()
-    message("LIBSURVIVE  ${FCD_ARGS}")
+
     report_build(${fetch_NAME})
     FetchContent_Declare(${fetch_NAME}
                          ${FCD_ARGS}

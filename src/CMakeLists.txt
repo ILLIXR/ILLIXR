@@ -137,6 +137,7 @@ else()
 
         target_link_libraries(plugin.main${ILLIXR_BUILD_SUFFIX} PRIVATE
                               plugin.tcp_network_backend${ILLIXR_BUILD_SUFFIX}
+                              plugin.android_sensors${ILLIXR_BUILD_SUFFIX}
                               android
                               Eigen3::Eigen
                               Boost::serialization

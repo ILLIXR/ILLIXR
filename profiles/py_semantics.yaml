@@ -1,5 +1,5 @@
 # This file was auto generated, take caution if manually editing.
-plugins: tcp_network_backend,semantic_python
+plugins: tcp_network_backend,android_sensors
 env_vars:
   ENABLE_OFFLOAD: false
   ENABLE_ALIGNMENT: false

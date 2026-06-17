@@ -25,11 +25,11 @@ using namespace ILLIXR::data_format;
 unity_component::unity_component(const std::string& name, phonebook* pb)
         : plugin{name, pb}
         , switchboard_{pb->lookup_impl<switchboard>()}
-        , semantic_writer_{switchboard_->get_network_writer<semantic_data>("semantic_data", {})}
+        //, semantic_writer_{switchboard_->get_network_writer<semantic_data>("semantic_data", {})}
         , query_writer_{switchboard_->get_network_writer<voice_query>("semantic_query", {})}
         , response_reader_{switchboard_->get_reader<query_response>("semantic_response")} { }
 
-void unity_component::send_semantic_frame(int32_t        frame_number,
+/*void unity_component::send_semantic_frame(int32_t        frame_number,
                                           int32_t        width,
                                           int32_t        height,
                                           const uint8_t* image,
@@ -63,7 +63,7 @@ void unity_component::send_semantic_frame(int32_t        frame_number,
     std::memcpy(frame->depth_pose,       depth_pose,       16 * sizeof(float));
 
     semantic_writer_.put(std::move(frame));
-}
+}*/
 
 void unity_component::send_voice_query(uint64_t       query_id,
                                        const uint8_t* pcm_data,
@@ -183,7 +183,7 @@ extern "C" ILLIXR::plugin* illixr_unity_create_plugin(ILLIXR::phonebook* pb) {
  * @param depth_pose       Depth camera pose as row-major 4x4 matrix.
  * @param max_depth        Maximum depth value.
  */
-extern "C" void illixr_unity_send_semantic_frame(int32_t        frame_number,
+/*extern "C" void illixr_unity_send_semantic_frame(int32_t        frame_number,
                                                  int32_t        width,
                                                  int32_t        height,
                                                  const uint8_t* image,
@@ -216,7 +216,7 @@ extern "C" void illixr_unity_send_semantic_frame(int32_t        frame_number,
                                              rgb_camera_pose,
                                              depth_pose,
                                              max_depth);
-}
+}*/
 
 // Called by Unity when user asks a question — writes voice_query to switchboard
 extern "C" void illixr_unity_send_voice_query(uint64_t       query_id,

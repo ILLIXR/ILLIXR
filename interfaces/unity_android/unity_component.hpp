@@ -31,7 +31,7 @@ public:
      *        and writes it to the switchboard.
      *        Called from the C-linkage illixr_unity_send_semantic_frame function.
      */
-    void send_semantic_frame(int32_t        frame_number,
+    /*void send_semantic_frame(int32_t        frame_number,
                              int32_t        width,
                              int32_t        height,
                              const uint8_t* image,
@@ -45,7 +45,7 @@ public:
                              const float*   depth_intrinsics,
                              const float*   rgb_camera_pose,
                              const float*   depth_pose,
-                             float          max_depth);
+                             float          max_depth);*/
 
    void send_voice_query(uint64_t       query_id,
                          const uint8_t* pcm_data,
@@ -80,7 +80,7 @@ public:
                                    int32_t  points_max);
 private:
     const std::shared_ptr<switchboard>  switchboard_;
-    switchboard::network_writer<data_format::semantic_data> semantic_writer_;
+    //switchboard::network_writer<data_format::semantic_data> semantic_writer_;
     switchboard::network_writer<data_format::voice_query>   query_writer_;
     switchboard::reader<data_format::query_response>        response_reader_;
 

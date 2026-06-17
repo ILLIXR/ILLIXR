@@ -827,6 +827,15 @@ public:
         return _default;
     }
 
+    [[maybe_unused]] float get_env_float(const std::string& var, const double _default = 0.f) {
+        std::string val = get_env(var, std::to_string(_default));
+        try {
+            int res = std::stof(val);
+            return res;
+        } catch (...) { }
+        return _default;
+    }
+
     /**
      * @brief Schedules the callback @p fn every time an event is published to @p topic_name.
      *
