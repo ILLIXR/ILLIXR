@@ -20,22 +20,40 @@ Invocation
 ----------
   # Tier 1 only (profile YAMLs)
   python3 generate_python_bridges.py --write-profiles
-      <master_profile> <source_dir>
+      <master_profile>  <source_dir>
 
   # Tier 2 only (headers + sources for selected profile)
   python3 generate_python_bridges.py --generate
-      <bridge_profile> <build_dir> <source_dir>
+      <bridge_profile>  <build_dir>  <source_dir>
 
   # Both tiers in one call (used when python_bridges.yaml has changed)
   python3 generate_python_bridges.py --write-profiles --generate
-      <master_profile> <bridge_profile> <build_dir> <source_dir>
+      <master_profile>  <bridge_profile>  <build_dir>  <source_dir>
+
+Type naming and namespacing
+---------------------------
+Types are referenced in YAML using dotted notation that mirrors the directory
+structure under interfaces/data/:
+
+  camera_intrinsics          → interfaces/data/camera_intrinsics.yaml
+                               C++: ILLIXR::bridge::camera_intrinsics
+                               Python: illixr.bridge.camera_intrinsics
+
+  geometry.camera_intrinsics → interfaces/data/geometry/camera_intrinsics.yaml
+                               C++: ILLIXR::bridge::geometry::camera_intrinsics
+                               Python: illixr.bridge.geometry.camera_intrinsics
+
+Each directory level adds one nested C++ namespace inside ILLIXR::bridge and
+one Python sub-package level inside illixr.bridge.
 
 Outputs (Tier 2)
 ----------------
-  <build_dir>/include/illixr/bridge/<name>.hpp - generated struct headers
-  <build_dir>/generated/plugins/<bridge>/plugin.hpp
-  <build_dir>/generated/plugins/<bridge>/plugin.cpp
-  <build_dir>/generated/plugins/<bridge>/bindings_<type>.cpp
+  <build>/include/illixr/bridge[/<ns>]/<name>.hpp   generated struct headers
+  <build>/generated/plugins/<bridge>/plugin.hpp
+  <build>/generated/plugins/<bridge>/plugin.cpp
+  <build>/generated/plugins/<bridge>/bindings_<flat_name>.cpp
+  <build>/generated/plugins/<bridge>/illixr/bridge[/<ns>/]__init__.py
+  <build>/generated/plugins/<bridge>/illixr/bridge[/<ns>/]<name>.py
 
 CMake variables emitted to stdout (Tier 2 only)
 -----------------------------------------------
@@ -51,6 +69,7 @@ CMake variables emitted to stdout (Tier 2 only)
 """
 
 import argparse
+import datetime
 import re
 import sys
 from pathlib import Path
@@ -62,7 +81,6 @@ except ImportError:
           'pip install pyyaml")')
     sys.exit(1)
 
-import datetime
 YEAR = str(datetime.date.today().year)
 
 # ---------------------------------------------------------------------------
@@ -120,7 +138,7 @@ DICT_FORBIDDEN_VALUE_TYPES = {"bool", "uint8", "uint16", "uint32", "uint64"}
 SHAPE_FORBIDDEN_SCALAR     = {"string", "str", "bool"}
 VECTOR_FORBIDDEN           = {"bool"}
 
-# Known existing ILLIXR types → header path (relative to the ILLIXR include/)
+# Known existing ILLIXR system types → header path (relative to include/)
 KNOWN_ILLIXR_TYPES = {
     "semantic_data":    "illixr/data_format/semantic_data.hpp",
     "voice_query":      "illixr/data_format/voice_query.hpp",
@@ -131,6 +149,93 @@ KNOWN_ILLIXR_TYPES = {
     "audio_data":       "illixr/data_format/audio_data.hpp",
     "frame_meta":       "illixr/data_format/frame_meta.hpp",
 }
+
+
+# ---------------------------------------------------------------------------
+# Dotted-name helpers
+#
+# A dotted type name like "geometry.camera_intrinsics" encodes both the
+# directory path relative to interfaces/data/ and the C++ namespace nesting
+# inside ILLIXR::bridge.
+#
+# All internal representations keep the dotted form as the canonical key.
+# ---------------------------------------------------------------------------
+
+def dotted_to_path(dotted: str) -> Path:
+    """'geometry.camera_intrinsics' → Path('geometry/camera_intrinsics')"""
+    return Path(*dotted.split("."))
+
+
+def dotted_to_cpp_ns(dotted: str) -> str:
+    """
+    'geometry.camera_intrinsics' → 'ILLIXR::bridge::geometry::camera_intrinsics'
+    'camera_intrinsics'          → 'ILLIXR::bridge::camera_intrinsics'
+    """
+    parts = dotted.split(".")
+    return "::".join(["ILLIXR", "bridge"] + parts)
+
+
+def dotted_to_open_namespaces(dotted: str) -> list[str]:
+    """
+    Returns the sequence of 'namespace X {' lines needed to open the
+    namespace for this type, outermost first.
+    'geometry.camera_intrinsics' → ['namespace ILLIXR {',
+                                     'namespace bridge {',
+                                     'namespace geometry {']
+    """
+    parts = ["ILLIXR", "bridge"] + dotted.split(".")[:-1]
+    return [f"namespace {p} {{" for p in parts]
+
+
+def dotted_to_close_namespaces(dotted: str) -> list[str]:
+    """Matching close lines, innermost first."""
+    parts = ["ILLIXR", "bridge"] + dotted.split(".")[:-1]
+    return [f"}} // namespace {p}" for p in reversed(parts)]
+
+
+def dotted_stem(dotted: str) -> str:
+    """'geometry.camera_intrinsics' → 'camera_intrinsics'"""
+    return dotted.split(".")[-1]
+
+
+def dotted_to_header_path(dotted: str) -> str:
+    """
+    Include path relative to the build include root.
+    'geometry.camera_intrinsics' → 'illixr/bridge/geometry/camera_intrinsics.hpp'
+    """
+    rel = dotted_to_path(dotted)
+    return f"illixr/bridge/{rel}.hpp"
+
+
+def dotted_to_module_name(dotted: str) -> str:
+    """
+    pybind11 embedded module identifier (no dots/slashes allowed).
+    'geometry.camera_intrinsics' → 'illixr_bridge_geometry_camera_intrinsics'
+    """
+    flat = dotted.replace(".", "_")
+    return f"illixr_bridge_{flat}"
+
+
+def dotted_to_python_import(dotted: str) -> str:
+    """
+    'geometry.camera_intrinsics' → 'illixr.bridge.geometry.camera_intrinsics'
+    """
+    return f"illixr.bridge.{dotted}"
+
+
+def dotted_to_serialize_define(dotted: str) -> str:
+    """
+    'geometry.camera_intrinsics' → 'ILLIXR_SERIALIZE_GEOMETRY_CAMERA_INTRINSICS'
+    """
+    return "ILLIXR_SERIALIZE_" + dotted.upper().replace(".", "_")
+
+
+def dotted_to_binding_filename(dotted: str) -> str:
+    """
+    'geometry.camera_intrinsics' → 'bindings_geometry_camera_intrinsics.cpp'
+    """
+    flat = dotted.replace(".", "_")
+    return f"bindings_{flat}.cpp"
 
 
 # ---------------------------------------------------------------------------
@@ -157,7 +262,11 @@ def cpp_scalar(ctype):
     return SCALAR_TYPES[ctype][0]
 
 
-def validate_field(fname, fdef, known_struct_names):
+def validate_field(fname, fdef, known_dotted_names):
+    """
+    known_dotted_names: set of dotted type names known in this context
+    (e.g. {'camera_intrinsics', 'geometry.point'})
+    """
     if not isinstance(fdef, dict):
         raise SchemaError(f"Field '{fname}': definition must be a mapping")
     ftype = fdef.get("type")
@@ -189,7 +298,8 @@ def validate_field(fname, fdef, known_struct_names):
                 f"Field '{fname}': 'channels' must be an integer between 1 and 4")
         return dict(fdef, type=ftype, container=None, shape=None)
 
-    if ftype in known_struct_names:
+    # Bridge-defined struct (dotted name)
+    if ftype in known_dotted_names:
         if channels is not None:
             raise SchemaError(f"Field '{fname}': 'channels' is only valid for mat_* types")
         if container is not None and container != "vector":
@@ -208,7 +318,8 @@ def validate_field(fname, fdef, known_struct_names):
     if not is_scalar(ftype):
         raise SchemaError(
             f"Field '{fname}': unknown type '{ftype}'. Must be a scalar type, "
-            "a mat_* type, or a bridge-defined struct name")
+            "a mat_* type, or a bridge-defined struct dotted name "
+            "(e.g. 'camera_intrinsics' or 'geometry.camera_intrinsics')")
 
     if channels is not None:
         raise SchemaError(f"Field '{fname}': 'channels' is only valid for mat_* types")
@@ -239,25 +350,35 @@ def validate_field(fname, fdef, known_struct_names):
     return dict(fdef, type=ctype, container=container, shape=shape)
 
 
-def validate_type_yaml(data, path, all_struct_names):
-    # Struct name is derived from the yaml filename stem, not from a 'name'
-    # field.  This guarantees uniqueness across profiles: two bridges
-    # referencing the same yaml always produce the same generated header.
-    name = Path(path).stem
-    if not re.match(r'^[a-z][a-z0-9_]*$', name):
-        raise SchemaError(
-            f"{path}: filename stem '{name}' must be lowercase snake_case")
+def validate_type_yaml(data, path, data_dir, all_dotted_names):
+    """
+    path: absolute path to the YAML file
+    data_dir: absolute path to interfaces/data/
+    all_dotted_names: set of all known dotted type names in this profile
+
+    Derives the dotted name from the file's path relative to data_dir.
+    """
+    rel   = Path(path).relative_to(data_dir)
+    # rel = geometry/camera_intrinsics.yaml → dotted = geometry.camera_intrinsics
+    parts = list(rel.with_suffix("").parts)
+    dotted = ".".join(parts)
+
+    # Validate each segment is lowercase snake_case
+    for part in parts:
+        if not re.match(r'^[a-z][a-z0-9_]*$', part):
+            raise SchemaError(
+                f"{path}: path segment '{part}' must be lowercase snake_case")
 
     if "name" in data:
         raise SchemaError(
-            f"{path}: type yaml files must not contain a 'name' field; "
-            f"the struct name is derived from the filename ('{name}')")
+            f"{path}: type YAML files must not contain a 'name' field; "
+            f"the struct name is derived from the filename ('{dotted}')")
 
     fields_raw = data.get("fields")
     if not fields_raw or not isinstance(fields_raw, dict):
         raise SchemaError(f"{path}: 'fields' must be a non-empty mapping")
 
-    peers  = set(all_struct_names) - {name}
+    peers  = set(all_dotted_names) - {dotted}
     fields = {}
     for fname, fdef in fields_raw.items():
         if not re.match(r'^[a-z][a-z0-9_]*$', fname):
@@ -265,7 +386,7 @@ def validate_type_yaml(data, path, all_struct_names):
                 f"{path}: field name '{fname}' must be lowercase snake_case")
         fields[fname] = validate_field(fname, fdef, peers)
 
-    return {"name": name, "fields": fields}
+    return {"dotted": dotted, "fields": fields}
 
 
 def normalize_network(val):
@@ -282,7 +403,17 @@ def normalize_network(val):
         f"Invalid network value '{val}'. Use: tcp, TCP, udp, UDP, true, false")
 
 
+def validate_dotted_name(name: str, context: str):
+    """Validate that a dotted type name has only lowercase snake_case segments."""
+    for part in name.split("."):
+        if not re.match(r'^[a-z][a-z0-9_]*$', part):
+            raise SchemaError(
+                f"{context}: '{name}' contains invalid segment '{part}'; "
+                "each segment must be lowercase snake_case")
+
+
 def validate_bridge_yaml(data, path, all_type_names):
+    """all_type_names: set of all valid dotted bridge names + KNOWN_ILLIXR_TYPES keys"""
     name = data.get("name")
     if not name:
         raise SchemaError(f"{path}: missing required 'name' key")
@@ -296,7 +427,10 @@ def validate_bridge_yaml(data, path, all_type_names):
 
     type_names = data.get("types", [])
     if not isinstance(type_names, list):
-        raise SchemaError(f"{path}: 'types' must be a list of type names")
+        raise SchemaError(f"{path}: 'types' must be a list of dotted type names")
+
+    for tname in type_names:
+        validate_dotted_name(tname, f"{path} types")
 
     inputs  = data.get("inputs",  [])
     outputs = data.get("outputs", [])
@@ -319,7 +453,8 @@ def validate_bridge_yaml(data, path, all_type_names):
         if itype not in all_type_names:
             raise SchemaError(
                 f"{path}: input[{i}] type '{itype}' is not a known ILLIXR type "
-                "or listed in 'types:'")
+                "or listed in 'types:' — remember to use dotted notation "
+                "for types in subdirectories (e.g. 'geometry.camera_intrinsics')")
         validated_inputs.append({"topic": topic, "type": itype, "alias": alias})
 
     validated_outputs = []
@@ -337,7 +472,8 @@ def validate_bridge_yaml(data, path, all_type_names):
         if otype not in all_type_names:
             raise SchemaError(
                 f"{path}: output[{i}] type '{otype}' is not a known ILLIXR type "
-                "or listed in 'types:'")
+                "or listed in 'types:' — remember to use dotted notation "
+                "for types in subdirectories (e.g. 'geometry.camera_intrinsics')")
         validated_outputs.append(
             {"topic": topic, "type": otype, "alias": alias, "network": network})
 
@@ -355,20 +491,21 @@ def validate_bridge_yaml(data, path, all_type_names):
 # ---------------------------------------------------------------------------
 
 def topo_sort(type_defs):
-    name_to_def = {td["name"]: td for td in type_defs}
+    """Sort by dotted name key; dependencies before dependents."""
+    name_to_def = {td["dotted"]: td for td in type_defs}
     visited     = set()
     order       = []
 
-    def visit(name):
-        if name in visited or name not in name_to_def:
+    def visit(dotted):
+        if dotted in visited or dotted not in name_to_def:
             return
-        visited.add(name)
-        for fdef in name_to_def[name]["fields"].values():
+        visited.add(dotted)
+        for fdef in name_to_def[dotted]["fields"].values():
             visit(fdef.get("type", ""))
-        order.append(name_to_def[name])
+        order.append(name_to_def[dotted])
 
     for td in type_defs:
-        visit(td["name"])
+        visit(td["dotted"])
     return order
 
 
@@ -376,24 +513,35 @@ def topo_sort(type_defs):
 # C++ code generation helpers
 # ---------------------------------------------------------------------------
 
-def field_decl(fname, fdef, gen_names):
+def _cpp_type_ref(ftype, gen_dotted_names):
+    """
+    Return the C++ type spelling to use in a field declaration.
+    For bridge types, emits the fully-qualified ILLIXR::bridge::... name.
+    """
+    if ftype in gen_dotted_names:
+        return dotted_to_cpp_ns(ftype)
+    return ftype   # scalar, already a C++ type name
+
+
+def field_decl(fname, fdef, gen_dotted_names):
     ftype     = fdef["type"]
     container = fdef.get("container")
     shape     = fdef.get("shape")
 
+    cpp_t = _cpp_type_ref(ftype, gen_dotted_names)
+
     if shape and not container:
-        t = ftype if ftype in gen_names else cpp_scalar(ftype)
         if len(shape) == 1:
-            return f"    {t} {fname}_[{shape[0]}];"
-        return f"    {t} {fname}_[{shape[0]}][{shape[1]}];"
+            return f"    {cpp_t} {fname}_[{shape[0]}];"
+        return f"    {cpp_t} {fname}_[{shape[0]}][{shape[1]}];"
 
     if is_mat(ftype):
         return f"    cv::Mat {fname}_;"
 
-    if ftype in gen_names:
+    if ftype in gen_dotted_names:
         if container == "vector":
-            return f"    std::vector<{ftype}> {fname}_;"
-        return f"    {ftype} {fname}_;"
+            return f"    std::vector<{cpp_t}> {fname}_;"
+        return f"    {cpp_t} {fname}_;"
 
     t = cpp_scalar(canonical_type(ftype))
     if container == "vector":
@@ -403,7 +551,7 @@ def field_decl(fname, fdef, gen_names):
     return f"    {t} {fname}_;"
 
 
-def required_includes(td, gen_names):
+def required_includes(td, gen_dotted_names):
     illixr = set()
     system = set()
     has_vec = has_map = has_str = has_cstdint = has_mat = False
@@ -417,9 +565,9 @@ def required_includes(td, gen_names):
             system.add("<boost/serialization/split_member.hpp>")
             continue
 
-        if ftype in gen_names:
-            # cross-include uses the new bridge path
-            illixr.add(f'"illixr/bridge/{ftype}.hpp"')
+        if ftype in gen_dotted_names:
+            # Cross-include: path mirrors the dotted namespace
+            illixr.add(f'"illixr/bridge/{dotted_to_path(ftype)}.hpp"')
             if container == "vector":
                 has_vec = True
             continue
@@ -453,7 +601,7 @@ def required_includes(td, gen_names):
     return sorted(illixr), sorted(system)
 
 
-def serialize_stmt(fname, fdef, gen_names):
+def serialize_stmt(fname, fdef, gen_dotted_names):
     ftype     = fdef["type"]
     shape     = fdef.get("shape")
     container = fdef.get("container")
@@ -479,11 +627,9 @@ def _mat_save_lines(fname):
         f"typ = {fname}_.type();",
         f"            ar_ & rows; ar_ & cols; ar_ & typ;",
         f"            if ({fname}_.isContinuous()) {{",
-        f"                std::size_t sz = "
-        f"{fname}_.total() * {fname}_.elemSize();",
+        f"                std::size_t sz = {fname}_.total() * {fname}_.elemSize();",
         f"                ar_ & boost::serialization::make_array(",
-        f"                    reinterpret_cast<const uint8_t*>"
-        f"({fname}_.data), sz);",
+        f"                    reinterpret_cast<const uint8_t*>({fname}_.data), sz);",
         "            }",
         "        }",
     ]
@@ -495,8 +641,7 @@ def _mat_load_lines(fname):
         "            int rows, cols, typ;",
         f"            ar_ & rows; ar_ & cols; ar_ & typ;",
         f"            {fname}_.create(rows, cols, typ);",
-        f"            std::size_t sz = "
-        f"{fname}_.total() * {fname}_.elemSize();",
+        f"            std::size_t sz = {fname}_.total() * {fname}_.elemSize();",
         f"            ar_ & boost::serialization::make_array(",
         f"                reinterpret_cast<uint8_t*>({fname}_.data), sz);",
         "        }",
@@ -507,21 +652,25 @@ def _mat_load_lines(fname):
 # Struct header generation
 # ---------------------------------------------------------------------------
 
-def gen_struct_header(td, gen_names_so_far):
-    name    = td["name"]
+def gen_struct_header(td, gen_dotted_names_so_far):
+    dotted  = td["dotted"]
+    stem    = dotted_stem(dotted)
     fields  = td["fields"]
-    guard   = name.upper()
-    gen_set = set(gen_names_so_far)
+    guard   = dotted_to_serialize_define(dotted)   # e.g. ILLIXR_SERIALIZE_GEOMETRY_CAM...
+    gen_set = set(gen_dotted_names_so_far)
     has_mat = any(is_mat(f["type"]) for f in fields.values())
+    full_qn = dotted_to_cpp_ns(dotted)
 
     illixr_incs, system_incs = required_includes(td, gen_set)
 
+    open_ns  = dotted_to_open_namespaces(dotted)
+    close_ns = dotted_to_close_namespaces(dotted)
+
     L = []
-    L.append(f"// Copyright 2020-{YEAR}, The Board of Trustees of the "
-             "University of Illinois.")
+    L.append(f"// Copyright 2020-{YEAR}, The Board of Trustees of the University of Illinois.")
     L.append("// SPDX-License-Identifier: BSL-1.0")
-    L.append("// This file was generated by generate_python_bridges.py "
-             "-- do not edit directly.")
+    L.append("// This file was generated by generate_python_bridges.py -- do not edit directly.")
+    L.append(f"// Bridge type: {dotted_to_python_import(dotted)}")
     L.append("")
     L.append("#pragma once")
     L.append("")
@@ -535,23 +684,25 @@ def gen_struct_header(td, gen_names_so_far):
         for h in system_incs:
             L.append(f"#include {h}")
     L.append("")
-    L.append(f"#ifdef ILLIXR_SERIALIZE_{guard}")
+    L.append(f"#ifdef {guard}")
     L.append("#include <boost/serialization/access.hpp>")
     L.append("#include <boost/serialization/array.hpp>")
     L.append("#include <boost/serialization/nvp.hpp>")
     L.append("#endif")
     L.append("")
-    L.append("namespace ILLIXR {")
-    L.append("")
-    L.append(f"struct {name} : switchboard::event {{")
 
+    # Open nested namespaces
+    for ns_line in open_ns:
+        L.append(ns_line)
+    L.append("")
+
+    L.append(f"struct {stem} : switchboard::event {{")
     for fname, fdef in fields.items():
         L.append(field_decl(fname, fdef, gen_set))
-
     L.append("")
-    L.append(f"    {name}() = default;")
+    L.append(f"    {stem}() = default;")
     L.append("")
-    L.append(f"#ifdef ILLIXR_SERIALIZE_{guard}")
+    L.append(f"#ifdef {guard}")
 
     if has_mat:
         L.append("    BOOST_SERIALIZATION_SPLIT_MEMBER()")
@@ -589,15 +740,19 @@ def gen_struct_header(td, gen_names_so_far):
     L.append("")
     L.append("private:")
     L.append("    friend class boost::serialization::access;")
-    L.append(f"#endif // ILLIXR_SERIALIZE_{guard}")
+    L.append(f"#endif // {guard}")
     L.append("};")
     L.append("")
-    L.append("} // namespace ILLIXR")
+
+    # Close nested namespaces
+    for ns_line in close_ns:
+        L.append(ns_line)
     L.append("")
-    L.append(f"#ifdef ILLIXR_SERIALIZE_{guard}")
-    L.append(f"BOOST_CLASS_EXPORT_KEY(ILLIXR::{name})")
-    L.append(f"BOOST_CLASS_EXPORT_IMPLEMENT(ILLIXR::{name})")
-    L.append(f"#endif // ILLIXR_SERIALIZE_{guard}")
+
+    L.append(f"#ifdef {guard}")
+    L.append(f"BOOST_CLASS_EXPORT_KEY({full_qn})")
+    L.append(f"BOOST_CLASS_EXPORT_IMPLEMENT({full_qn})")
+    L.append(f"#endif // {guard}")
     L.append("")
     return "\n".join(L)
 
@@ -606,18 +761,16 @@ def gen_struct_header(td, gen_names_so_far):
 # pybind11 bindings generation
 # ---------------------------------------------------------------------------
 
-def _mat_getter_lines(fname, ftype, struct_name):
+def _mat_getter_lines(fname, ftype, qname):
     np_dtype = MAT_TYPES[ftype][1][3:]   # strip "np."
-    cpp_elem = MAT_TYPES[ftype][2]
     return [
         f'    .def_property("{fname}",',
-        f'        [](const {struct_name}& self) -> py::array {{',
+        f'        [](const {qname}& self) -> py::array {{',
         f'            if (self.{fname}_.empty()) return py::array();',
         f'            py::object guard = py::capsule(',
-        f'                new std::shared_ptr<{struct_name}>(),',
+        f'                new std::shared_ptr<{qname}>(),',
         f'                [](void* p) {{',
-        f'                    delete static_cast<'
-        f'std::shared_ptr<{struct_name}>*>(p); }});',
+        f'                    delete static_cast<std::shared_ptr<{qname}>*>(p); }});',
         f'            std::vector<ssize_t> shp, str;',
         f'            if (self.{fname}_.channels() == 1) {{',
         f'                shp = {{self.{fname}_.rows, self.{fname}_.cols}};',
@@ -636,31 +789,29 @@ def _mat_getter_lines(fname, ftype, struct_name):
     ]
 
 
-def _mat_setter_lines(fname, ftype, struct_name):
+def _mat_setter_lines(fname, ftype, qname):
     cv_base  = MAT_TYPES[ftype][0]
     cpp_elem = MAT_TYPES[ftype][2]
     return [
-        f'        []({struct_name}& self, py::array_t<{cpp_elem}> arr) {{',
+        f'        []({qname}& self, py::array_t<{cpp_elem}> arr) {{',
         f'            auto buf = arr.request();',
         f'            int r = (int)buf.shape[0], c = (int)buf.shape[1];',
         f'            int ch = (buf.ndim == 3) ? (int)buf.shape[2] : 1;',
-        f'            cv::Mat tmp(r, c, CV_MAKETYPE({cv_base}(ch), ch), '
-        f'buf.ptr);',
+        f'            cv::Mat tmp(r, c, CV_MAKETYPE({cv_base}(ch), ch), buf.ptr);',
         f'            tmp.copyTo(self.{fname}_);',
         f'        }})',
     ]
 
 
-def _fixed_array_getter_lines(fname, fdef, struct_name, gen_names):
-    """Zero-copy getter for fixed scalar arrays; list getter for struct arrays."""
+def _fixed_array_getter_lines(fname, fdef, qname, gen_dotted_names):
     ftype = fdef["type"]
     shape = fdef["shape"]
 
-    if ftype in gen_names:
+    if ftype in gen_dotted_names:
         n = shape[0]
         return [
             f'    .def_property("{fname}",',
-            f'        [](const {struct_name}& self) {{',
+            f'        [](const {qname}& self) {{',
             f'            py::list result;',
             f'            for (int i = 0; i < {n}; ++i)',
             f'                result.append(self.{fname}_[i]);',
@@ -674,7 +825,7 @@ def _fixed_array_getter_lines(fname, fdef, struct_name, gen_names):
     data_p = f"self.{fname}_" if len(shape) == 1 else f"&self.{fname}_[0][0]"
     return [
         f'    .def_property("{fname}",',
-        f'        [](const {struct_name}& self) -> py::array_t<{cpp_t}> {{',
+        f'        [](const {qname}& self) -> py::array_t<{cpp_t}> {{',
         f'            return py::array_t<{cpp_t}>(',
         f'                {{{flat}}}, {{sizeof({cpp_t})}},',
         f'                const_cast<{cpp_t}*>({data_p}));',
@@ -682,30 +833,29 @@ def _fixed_array_getter_lines(fname, fdef, struct_name, gen_names):
     ]
 
 
-def _fixed_array_setter_lines(fname, fdef, struct_name, gen_names):
+def _fixed_array_setter_lines(fname, fdef, qname, gen_dotted_names):
     ftype = fdef["type"]
     shape = fdef["shape"]
 
-    if ftype in gen_names:
-        n = shape[0]
+    if ftype in gen_dotted_names:
+        n    = shape[0]
+        fqn  = dotted_to_cpp_ns(ftype)
         return [
-            f'        []({struct_name}& self, py::list lst) {{',
+            f'        []({qname}& self, py::list lst) {{',
             f'            if ((int)lst.size() != {n})',
             f'                throw std::runtime_error(',
             f'                    "{fname}: expected {n} elements");',
             f'            for (int i = 0; i < {n}; ++i)',
-            f'                self.{fname}_[i] = '
-            f'lst[i].cast<ILLIXR::{ftype}>();',
+            f'                self.{fname}_[i] = lst[i].cast<{fqn}>();',
             f'        }})',
         ]
 
     ctype = canonical_type(ftype)
     cpp_t = cpp_scalar(ctype)
     flat  = shape[0] if len(shape) == 1 else shape[0] * shape[1]
-    dest  = (f"self.{fname}_"
-             if len(shape) == 1 else f"&self.{fname}_[0][0]")
+    dest  = (f"self.{fname}_" if len(shape) == 1 else f"&self.{fname}_[0][0]")
     return [
-        f'        []({struct_name}& self, py::array_t<{cpp_t}> arr) {{',
+        f'        []({qname}& self, py::array_t<{cpp_t}> arr) {{',
         f'            if (arr.size() != {flat})',
         f'                throw std::runtime_error(',
         f'                    "{fname}: expected {flat} elements");',
@@ -714,8 +864,7 @@ def _fixed_array_setter_lines(fname, fdef, struct_name, gen_names):
     ]
 
 
-def _kw_param(fname, fdef, gen_names):
-    """pybind11 py::arg default for one field."""
+def _kw_param(fname, fdef, gen_dotted_names):
     ftype     = fdef["type"]
     container = fdef.get("container")
     shape     = fdef.get("shape")
@@ -723,49 +872,45 @@ def _kw_param(fname, fdef, gen_names):
     if is_mat(ftype) or (shape and not container):
         return f'py::arg("{fname}") = py::none()'
 
-    if ftype in gen_names:
+    if ftype in gen_dotted_names:
+        fqn = dotted_to_cpp_ns(ftype)
         if container == "vector":
-            return f'py::arg("{fname}") = std::vector<ILLIXR::{ftype}>()'
-        return f'py::arg("{fname}") = ILLIXR::{ftype}()'
+            return f'py::arg("{fname}") = std::vector<{fqn}>()'
+        return f'py::arg("{fname}") = {fqn}()'
 
     ctype = canonical_type(ftype)
     cpp_t = cpp_scalar(ctype)
     if container == "vector":
         return f'py::arg("{fname}") = std::vector<{cpp_t}>()'
     if container == "dict":
-        return (f'py::arg("{fname}") = '
-                f'std::unordered_map<std::string, {cpp_t}>()')
+        return f'py::arg("{fname}") = std::unordered_map<std::string, {cpp_t}>()'
     defaults = {"bool": "false", "std::string": '""',
                 "float": "0.0f", "double": "0.0"}
     return f'py::arg("{fname}") = {defaults.get(cpp_t, "0")}'
 
 
-def _kw_init_body(fname, fdef, gen_names):
-    """Constructor body assignment for one field."""
+def _kw_init_body(fname, fdef, gen_dotted_names):
     ftype     = fdef["type"]
     container = fdef.get("container")
     shape     = fdef.get("shape")
 
     if is_mat(ftype):
-        cv_base  = MAT_TYPES[ftype][0]
-        cpp_elem = MAT_TYPES[ftype][2]
+        cv_base = MAT_TYPES[ftype][0]
         return (
             f"        if (!{fname}.is_none()) {{\n"
             f"            auto arr = {fname}.cast<py::array>();\n"
             f"            auto buf = arr.request();\n"
-            f"            int r = (int)buf.shape[0], "
-            f"c = (int)buf.shape[1];\n"
-            f"            int ch = (buf.ndim == 3) ? "
-            f"(int)buf.shape[2] : 1;\n"
-            f"            cv::Mat tmp(r, c, "
-            f"CV_MAKETYPE({cv_base}(ch), ch), buf.ptr);\n"
+            f"            int r = (int)buf.shape[0], c = (int)buf.shape[1];\n"
+            f"            int ch = (buf.ndim == 3) ? (int)buf.shape[2] : 1;\n"
+            f"            cv::Mat tmp(r, c, CV_MAKETYPE({cv_base}(ch), ch), buf.ptr);\n"
             f"            tmp.copyTo(obj.{fname}_);\n"
             f"        }}"
         )
 
     if shape and not container:
-        if ftype in gen_names:
-            n = shape[0]
+        if ftype in gen_dotted_names:
+            fqn = dotted_to_cpp_ns(ftype)
+            n   = shape[0]
             return (
                 f"        if (!{fname}.is_none()) {{\n"
                 f"            auto lst = {fname}.cast<py::list>();\n"
@@ -773,31 +918,27 @@ def _kw_init_body(fname, fdef, gen_names):
                 f"                throw std::runtime_error(\n"
                 f'                    "{fname}: expected {n} elements");\n'
                 f"            for (int i = 0; i < {n}; ++i)\n"
-                f"                obj.{fname}_[i] = "
-                f"lst[i].cast<ILLIXR::{ftype}>();\n"
+                f"                obj.{fname}_[i] = lst[i].cast<{fqn}>();\n"
                 f"        }}"
             )
         ctype = canonical_type(ftype)
         cpp_t = cpp_scalar(ctype)
         flat  = shape[0] if len(shape) == 1 else shape[0] * shape[1]
-        dest  = (f"obj.{fname}_"
-                 if len(shape) == 1 else f"&obj.{fname}_[0][0]")
+        dest  = (f"obj.{fname}_" if len(shape) == 1 else f"&obj.{fname}_[0][0]")
         return (
             f"        if (!{fname}.is_none()) {{\n"
             f"            auto arr = {fname}.cast<py::array_t<{cpp_t}>>();\n"
             f"            if (arr.size() != {flat})\n"
             f"                throw std::runtime_error(\n"
             f'                    "{fname}: expected {flat} elements");\n'
-            f"            std::copy(arr.data(), arr.data() + {flat}, "
-            f"{dest});\n"
+            f"            std::copy(arr.data(), arr.data() + {flat}, {dest});\n"
             f"        }}"
         )
 
     return f"        obj.{fname}_ = {fname};"
 
 
-def _lambda_param_type(fname, fdef, gen_names):
-    """C++ parameter type for the kw-init lambda."""
+def _lambda_param_type(fname, fdef, gen_dotted_names):
     ftype     = fdef["type"]
     container = fdef.get("container")
     shape     = fdef.get("shape")
@@ -805,10 +946,11 @@ def _lambda_param_type(fname, fdef, gen_names):
     if is_mat(ftype) or (shape and not container):
         return "py::object"
 
-    if ftype in gen_names:
+    if ftype in gen_dotted_names:
+        fqn = dotted_to_cpp_ns(ftype)
         if container == "vector":
-            return f"std::vector<ILLIXR::{ftype}>"
-        return f"ILLIXR::{ftype}"
+            return f"std::vector<{fqn}>"
+        return fqn
 
     ctype = canonical_type(ftype)
     cpp_t = cpp_scalar(ctype)
@@ -819,21 +961,23 @@ def _lambda_param_type(fname, fdef, gen_names):
     return cpp_t
 
 
-def gen_bindings_cpp(td, gen_names_so_far):
-    name    = td["name"]
+def gen_bindings_cpp(td, gen_dotted_names_so_far):
+    dotted  = td["dotted"]
+    stem    = dotted_stem(dotted)
     fields  = td["fields"]
-    gen_set = set(gen_names_so_far)
+    gen_set = set(gen_dotted_names_so_far)
     has_mat = any(is_mat(f["type"]) for f in fields.values())
-    qname   = f"ILLIXR::{name}"
+    qname   = dotted_to_cpp_ns(dotted)
+    module  = dotted_to_module_name(dotted)
+    hdr     = dotted_to_header_path(dotted)
 
     L = []
-    L.append(f"// Copyright 2020-{YEAR}, The Board of Trustees of the "
-             "University of Illinois.")
+    L.append(f"// Copyright 2020-{YEAR}, The Board of Trustees of the University of Illinois.")
     L.append("// SPDX-License-Identifier: BSL-1.0")
-    L.append("// This file was generated by generate_python_bridges.py "
-             "-- do not edit directly.")
+    L.append("// This file was generated by generate_python_bridges.py -- do not edit directly.")
+    L.append(f"// Python module: {dotted_to_python_import(dotted)}")
     L.append("")
-    L.append(f'#include "illixr/bridge/{name}.hpp"')
+    L.append(f'#include "{hdr}"')
     L.append("")
     L.append("#include <pybind11/embed.h>")
     L.append("#include <pybind11/numpy.h>")
@@ -847,30 +991,29 @@ def gen_bindings_cpp(td, gen_names_so_far):
     L.append("")
     L.append("namespace py = pybind11;")
     L.append("")
-    L.append(f"PYBIND11_EMBEDDED_MODULE({name}, m) {{")
-    L.append(f'    m.doc() = "ILLIXR bridge type: {name}";')
+    L.append(f"PYBIND11_EMBEDDED_MODULE({module}, m) {{")
+    L.append(f'    m.doc() = "ILLIXR bridge type: {dotted_to_python_import(dotted)}";')
     L.append("")
 
-    # Build kw-init lambda parameter list
-    params = [(fn, _lambda_param_type(fn, fd, gen_set))
-              for fn, fd in fields.items()]
-    param_str = ",\n".join(
-        f"            {ptype} {pname}" for pname, ptype in params)
+    # kw-init lambda parameters
+    params    = [(fn, _lambda_param_type(fn, fd, gen_set)) for fn, fd in fields.items()]
+    param_str = ",\n".join(f"            {ptype} {pname}" for pname, ptype in params)
 
-    L.append(f"    py::class_<{qname}>(m, \"{name}\")")
-    L.append(f"        .def(py::init([]({param_str}) {{")
-    L.append(f"            {qname} obj;")
-    for fname, fdef in fields.items():
-        L.append(_kw_init_body(fname, fdef, gen_set))
-    L.append("            return obj;")
-    L.append("        }),")
-
-    # py::arg defaults — last one has no trailing comma
-    args = [_kw_param(fn, fd, gen_set) for fn, fd in fields.items()]
-    for i, arg in enumerate(args):
-        suffix = "," if i < len(args) - 1 else ""
-        L.append(f"        {arg}{suffix}")
-    L.append("        )")
+    L.append(f"    py::class_<{qname}>(m, \"{stem}\")")
+    if param_str:
+        L.append(f"        .def(py::init([]({param_str}) {{")
+        L.append(f"            {qname} obj;")
+        for fname, fdef in fields.items():
+            L.append(_kw_init_body(fname, fdef, gen_set))
+        L.append("            return obj;")
+        L.append("        }),")
+        args = [_kw_param(fn, fd, gen_set) for fn, fd in fields.items()]
+        for i, arg in enumerate(args):
+            suffix = "," if i < len(args) - 1 else ""
+            L.append(f"        {arg}{suffix}")
+        L.append("        )")
+    else:
+        L.append(f"        .def(py::init<>())")
 
     # Properties and readwrite
     for fname, fdef in fields.items():
@@ -885,8 +1028,7 @@ def gen_bindings_cpp(td, gen_names_so_far):
             L += _fixed_array_getter_lines(fname, fdef, qname, gen_set)
             L += _fixed_array_setter_lines(fname, fdef, qname, gen_set)
         else:
-            L.append(f'        .def_readwrite("{fname}", '
-                     f'&{qname}::{fname}_)')
+            L.append(f'        .def_readwrite("{fname}", &{qname}::{fname}_)')
 
     L.append("        ;")
     L.append("}")
@@ -895,29 +1037,103 @@ def gen_bindings_cpp(td, gen_names_so_far):
 
 
 # ---------------------------------------------------------------------------
+# Python package shim generation
+# ---------------------------------------------------------------------------
+
+def gen_python_package_tree(sorted_types, plugin_dir: Path):
+    """
+    Generate the illixr/bridge[/<ns>/]__init__.py and <stem>.py shims for
+    all bridge types used by a plugin.  Creates directories as needed.
+
+    Returns list of generated .py file paths.
+    """
+    generated = []
+
+    # Collect all unique package directories needed
+    # illixr/bridge/ is always needed
+    # illixr/bridge/geometry/ needed for geometry.* types, etc.
+    pkg_dirs: set[Path] = set()
+    for td in sorted_types:
+        dotted = td["dotted"]
+        parts  = dotted.split(".")
+        # All ancestor package dirs including the leaf's parent
+        for depth in range(len(parts)):
+            rel = Path("illixr", "bridge", *parts[:depth])
+            pkg_dirs.add(plugin_dir / rel)
+
+    # Write __init__.py for each package dir
+    # The top-level illixr/bridge/__init__.py imports all types in topo order
+    # Sub-package __init__.py files import their own types in topo order
+
+    # Group types by their immediate parent package
+    # key: tuple of namespace parts above the stem
+    # e.g. () for root, ('geometry',) for geometry.*
+    ns_to_types: dict[tuple, list] = {}
+    for td in sorted_types:
+        parts = td["dotted"].split(".")
+        ns    = tuple(parts[:-1])
+        ns_to_types.setdefault(ns, []).append(td)
+
+    # For each package dir, write __init__.py that imports its direct children
+    # in topological order
+    for pkg_dir in sorted(pkg_dirs):
+        pkg_dir.mkdir(parents=True, exist_ok=True)
+        rel_parts = pkg_dir.relative_to(plugin_dir / "illixr" / "bridge").parts
+        # Types directly in this namespace
+        types_here = ns_to_types.get(rel_parts, [])
+        init_lines = [
+            f"# Auto-generated by generate_python_bridges.py -- do not edit directly.",
+            f"# Bridge types in illixr.bridge{'.' + '.'.join(rel_parts) if rel_parts else ''}",
+            "",
+        ]
+        for td in types_here:
+            stem   = dotted_stem(td["dotted"])
+            module = dotted_to_module_name(td["dotted"])
+            init_lines.append(f"from {module} import *  # noqa: F401,F403")
+        init_path = pkg_dir / "__init__.py"
+        init_path.write_text("\n".join(init_lines) + "\n")
+        generated.append(str(init_path))
+
+    # Also ensure illixr/__init__.py exists
+    illixr_init = plugin_dir / "illixr" / "__init__.py"
+    illixr_init.parent.mkdir(parents=True, exist_ok=True)
+    if not illixr_init.exists():
+        illixr_init.write_text(
+            "# Auto-generated by generate_python_bridges.py\n")
+        generated.append(str(illixr_init))
+
+    return generated
+
+
+# ---------------------------------------------------------------------------
 # Plugin source generation
 # ---------------------------------------------------------------------------
 
-def _include_for_type(tname, gen_names):
-    if tname in gen_names:
-        return f'"illixr/bridge/{tname}.hpp"'
+def _include_for_type(tname, gen_dotted_names):
+    if tname in gen_dotted_names:
+        return f'"illixr/bridge/{dotted_to_path(tname)}.hpp"'
     return f'"illixr/data_format/{tname}.hpp"'
 
 
-def gen_plugin_hpp(bridge, gen_names):
+def _cpp_type_for_switchboard(tname, gen_dotted_names):
+    """Return the C++ type name to use in switchboard::reader/writer<T>."""
+    if tname in gen_dotted_names:
+        return dotted_to_cpp_ns(tname)
+    return tname   # ILLIXR system type, already in ILLIXR namespace
+
+
+def gen_plugin_hpp(bridge, gen_dotted_names):
     pname     = bridge["name"]
     all_types = (
             {inp["type"] for inp in bridge["inputs"]} |
             {out["type"] for out in bridge["outputs"]}
     )
-    type_incs = sorted(_include_for_type(t, gen_names) for t in all_types)
+    type_incs = sorted(_include_for_type(t, gen_dotted_names) for t in all_types)
 
     L = []
-    L.append(f"// Copyright 2020-{YEAR}, The Board of Trustees of the "
-             "University of Illinois.")
+    L.append(f"// Copyright 2020-{YEAR}, The Board of Trustees of the University of Illinois.")
     L.append("// SPDX-License-Identifier: BSL-1.0")
-    L.append("// This file was generated by generate_python_bridges.py "
-             "-- do not edit directly.")
+    L.append("// This file was generated by generate_python_bridges.py -- do not edit directly.")
     L.append("")
     L.append("#pragma once")
     L.append("")
@@ -945,11 +1161,11 @@ def gen_plugin_hpp(bridge, gen_names):
     L.append("")
     L.append("    const std::shared_ptr<switchboard> switchboard_;")
     for inp in bridge["inputs"]:
-        L.append(
-            f"    switchboard::reader<{inp['type']}> {inp['alias']}_reader_;")
+        cpp_t = _cpp_type_for_switchboard(inp["type"], gen_dotted_names)
+        L.append(f"    switchboard::reader<{cpp_t}> {inp['alias']}_reader_;")
     for out in bridge["outputs"]:
-        L.append(
-            f"    switchboard::writer<{out['type']}> {out['alias']}_writer_;")
+        cpp_t = _cpp_type_for_switchboard(out["type"], gen_dotted_names)
+        L.append(f"    switchboard::writer<{cpp_t}> {out['alias']}_writer_;")
     L.append("")
     L.append("    pybind11::scoped_interpreter guard_;")
     L.append("    std::thread                  py_thread_;")
@@ -960,15 +1176,13 @@ def gen_plugin_hpp(bridge, gen_names):
     return "\n".join(L)
 
 
-def gen_plugin_cpp(bridge, gen_names, script_abs):
+def gen_plugin_cpp(bridge, gen_dotted_names, script_abs, plugin_dir: Path):
     pname = bridge["name"]
 
     L = []
-    L.append(f"// Copyright 2020-{YEAR}, The Board of Trustees of the "
-             "University of Illinois.")
+    L.append(f"// Copyright 2020-{YEAR}, The Board of Trustees of the University of Illinois.")
     L.append("// SPDX-License-Identifier: BSL-1.0")
-    L.append("// This file was generated by generate_python_bridges.py "
-             "-- do not edit directly.")
+    L.append("// This file was generated by generate_python_bridges.py -- do not edit directly.")
     L.append("")
     L.append('#include "plugin.hpp"')
     L.append("")
@@ -987,54 +1201,47 @@ def gen_plugin_cpp(bridge, gen_names, script_abs):
     L.append("namespace ILLIXR {")
     L.append("")
 
-    # Constructor — initializer list
     L.append(f"{pname}::{pname}(const std::string& name, phonebook* pb)")
     L.append(f"    : plugin{{name, pb}}")
     L.append(f"    , switchboard_{{pb->lookup_impl<switchboard>()}}")
     for inp in bridge["inputs"]:
-        L.append(
-            f"    , {inp['alias']}_reader_{{switchboard_->"
-            f"get_reader<{inp['type']}>("
-            f"\"{inp['topic']}\")}} ")
+        cpp_t = _cpp_type_for_switchboard(inp["type"], gen_dotted_names)
+        L.append(f"    , {inp['alias']}_reader_{{switchboard_->"
+                 f"get_reader<{cpp_t}>(\"{inp['topic']}\")}} ")
     for out in bridge["outputs"]:
-        L.append(
-            f"    , {out['alias']}_writer_{{switchboard_->"
-            f"get_writer<{out['type']}>("
-            f"\"{out['topic']}\")}} ")
+        cpp_t = _cpp_type_for_switchboard(out["type"], gen_dotted_names)
+        L.append(f"    , {out['alias']}_writer_{{switchboard_->"
+                 f"get_writer<{cpp_t}>(\"{out['topic']}\")}} ")
     L.append("    , guard_{}")
     L.append("{ }")
     L.append("")
 
-    # Destructor
     L.append(f"{pname}::~{pname}() {{")
     L.append("    if (py_thread_.joinable())")
     L.append("        py_thread_.join();")
     L.append("}")
     L.append("")
 
-    # start()
     L.append(f"void {pname}::start() {{")
-    L.append(f"    py_thread_ = std::thread(&{pname}::run_python_thread, "
-             "this);")
+    L.append(f"    py_thread_ = std::thread(&{pname}::run_python_thread, this);")
     L.append("}")
     L.append("")
 
-    # run_python_thread()
     L.append(f"void {pname}::run_python_thread() {{")
     L.append(f'    const std::filesystem::path script_path{{"{script_abs}"}};')
     L.append("    if (!std::filesystem::exists(script_path)) {")
     L.append(f'        spdlog::get("illixr")->error(')
-    L.append(f'            "[{pname}] Script not found: {{}}",')
-    L.append(f'            script_path.string());')
+    L.append(f'            "[{pname}] Script not found: {{}}", script_path.string());')
     L.append("        return;")
     L.append("    }")
     L.append("")
+    # Add the plugin dir to sys.path so illixr.bridge.* package resolves
+    L.append(f'    const std::string plugin_pkg_dir = "{plugin_dir}";')
     L.append("    py::dict inputs, outputs;")
     L.append("")
 
     for inp in bridge["inputs"]:
         alias = inp["alias"]
-        itype = inp["type"]
         L.append(f'    inputs["{alias}"] = py::cpp_function(')
         L.append(f'        [this]() -> py::object {{')
         L.append(f'            auto val = {alias}_reader_.get_latest_ro();')
@@ -1045,18 +1252,19 @@ def gen_plugin_cpp(bridge, gen_names, script_abs):
 
     for out in bridge["outputs"]:
         alias = out["alias"]
-        otype = out["type"]
+        cpp_t = _cpp_type_for_switchboard(out["type"], gen_dotted_names)
         L.append(f'    outputs["{alias}"] = py::cpp_function(')
-        L.append(f'        [this](const {otype}& val) {{')
-        L.append(f'            {alias}_writer_.put('
-                 f'{alias}_writer_.allocate(val));')
+        L.append(f'        [this](const {cpp_t}& val) {{')
+        L.append(f'            {alias}_writer_.put({alias}_writer_.allocate(val));')
         L.append(f'        }});')
         L.append("")
 
     L.append("    try {")
     L.append("        py::module_ sys = py::module_::import(\"sys\");")
-    L.append("        sys.attr(\"path\").attr(\"insert\")(")
-    L.append("            0, script_path.parent_path().string());")
+    L.append("        // Add plugin package dir first so illixr.bridge.* resolves.")
+    L.append("        sys.attr(\"path\").attr(\"insert\")(0, plugin_pkg_dir);")
+    L.append("        // Add script dir so the user script can do relative imports.")
+    L.append("        sys.attr(\"path\").attr(\"insert\")(0, script_path.parent_path().string());")
     L.append("        py::module_ script = py::module_::import(")
     L.append("            script_path.stem().string().c_str());")
     L.append("        script.attr(\"run\")(inputs, outputs);")
@@ -1074,10 +1282,10 @@ def gen_plugin_cpp(bridge, gen_names, script_abs):
 
 
 # ---------------------------------------------------------------------------
-# Tier 1 — profile yaml generation
+# Tier 1 — profile YAML generation
 # ---------------------------------------------------------------------------
 
-def write_profile_yamls(master_path, bridges_dir):
+def write_profile_yamls(master_path, profiles_dir):
     with open(master_path) as f:
         raw = yaml.safe_load(f)
 
@@ -1092,10 +1300,9 @@ def write_profile_yamls(master_path, bridges_dir):
         bridges_val = profile_data.get("bridges", "")
         if not bridges_val:
             raise SchemaError(
-                f"{master_path}: profile '{profile_name}' "
-                "missing 'bridges' key")
+                f"{master_path}: profile '{profile_name}' missing 'bridges' key")
         bridges_str = re.sub(r'\s*,\s*', ',', str(bridges_val).strip())
-        out_path    = Path(bridges_dir) / f"{profile_name}.yaml"
+        out_path    = Path(profiles_dir) / f"{profile_name}.yaml"
         out_path.write_text(
             "# This file was auto-generated from python_bridges.yaml"
             " -- do not edit directly.\n"
@@ -1125,76 +1332,106 @@ def run_generate(bridge_profile_path, build_dir, source_dir):
         sys.exit(1)
 
     bridges_str  = bp_raw.get("bridges", "")
-    bridge_names = [b.strip()
-                    for b in str(bridges_str).split(",") if b.strip()]
+    bridge_names = [b.strip() for b in str(bridges_str).split(",") if b.strip()]
     if not bridge_names:
-        print(f'message(FATAL_ERROR "Bridge profile '
-              f'\'{bridge_profile_path}\' has no bridges listed")')
+        print(f'message(FATAL_ERROR "Bridge profile \'{bridge_profile_path}\' '
+              f'has no bridges listed")')
         sys.exit(1)
 
     # Read and validate bridge descriptors; check for duplicates
     bridge_raws = []
     seen_names  = {}
     for bname in bridge_names:
+        # Bridge names are plain snake_case plugin names -- never dotted.
+        # A dot here almost always means the user put a type dotted name
+        # (e.g. semantic_xr.semantic_data) in the profile bridges: list
+        # instead of in the bridge descriptor types: list.
+        if "." in bname:
+            errmsg = (
+                f"Bridge name '{bname}' in profile '{bridge_profile_path}' "
+                "contains a dot, which is not allowed. "
+                "The bridges: list must contain bridge plugin names "
+                "(e.g. semantic_xr), not dotted type names "
+                "(e.g. semantic_xr.semantic_data). "
+                "Dotted type names belong in the bridge descriptor "
+                "types: list, not in the profile."
+            )
+            print(f'message(FATAL_ERROR "{errmsg}")')
+            sys.exit(1)
+        if not re.match(r'^[a-z][a-z0-9_]*$', bname):
+            errmsg = f"Bridge name '{bname}' must be lowercase snake_case (no dots)."
+            print(f'message(FATAL_ERROR "{errmsg}")')
+            sys.exit(1)
         bpath = bridges_dir / f"{bname}.yaml"
         if not bpath.exists():
-            print(f'message(FATAL_ERROR "Bridge descriptor not found: '
-                  f'{bpath}")')
+            errmsg = (
+                f"Bridge descriptor not found: {bpath}. "
+                "The bridges: list must contain plugin names matching "
+                "files in interfaces/python/bridges/. "
+                "Dotted type names (e.g. semantic_xr.semantic_data) "
+                "belong in the bridge descriptor types: list."
+            )
+            print(f'message(FATAL_ERROR "{errmsg}")')
             sys.exit(1)
         try:
             with open(bpath) as f:
                 braw = yaml.safe_load(f)
         except Exception as e:
-            print(f'message(FATAL_ERROR "Cannot read bridge descriptor '
-                  f'\'{bpath}\': {e}")')
+            errmsg = f"Cannot read bridge descriptor '{bpath}': {e}"
+            print(f'message(FATAL_ERROR "{errmsg}")')
             sys.exit(1)
         declared = braw.get("name", "")
         if declared in seen_names:
-            print(f'message(FATAL_ERROR "Duplicate plugin name '
-                  f'\'{declared}\' in bridge profiles: '
-                  f'\'{seen_names[declared]}\' and \'{bpath}\'")')
+            errmsg = (
+                f"Duplicate plugin name '{declared}' in bridge profiles: "
+                f"'{seen_names[declared]}' and '{bpath}'"
+            )
+            print(f'message(FATAL_ERROR "{errmsg}")')
             sys.exit(1)
         seen_names[declared] = str(bpath)
         bridge_raws.append((bpath, braw))
 
-    # Collect all type names referenced across selected bridges
-    all_type_yaml_names = set()
-    type_yaml_raw       = {}
-    type_yaml_paths     = {}
+    # Collect all type names referenced; dotted names map to YAML files
+    all_dotted_yaml: set[str] = set()
+    type_yaml_raw:   dict[str, dict]  = {}
+    type_yaml_paths: dict[str, Path]  = {}
 
     for bpath, braw in bridge_raws:
         for tname in braw.get("types", []):
-            if tname in all_type_yaml_names:
+            if tname in all_dotted_yaml:
                 continue
-            tpath = data_dir / f"{tname}.yaml"
+            # Dotted name → file path under data_dir
+            rel   = dotted_to_path(tname)
+            tpath = data_dir / f"{rel}.yaml"
             if not tpath.exists():
-                print(f'message(FATAL_ERROR "Type yaml not found: {tpath}")')
+                print(f'message(FATAL_ERROR "Type YAML not found: {tpath}\\n'
+                      f'  Dotted name \'{tname}\' resolves to {tpath}")')
                 sys.exit(1)
             try:
                 with open(tpath) as f:
                     traw = yaml.safe_load(f)
             except Exception as e:
-                print(f'message(FATAL_ERROR "Cannot read type yaml '
+                print(f'message(FATAL_ERROR "Cannot read type YAML '
                       f'\'{tpath}\': {e}")')
                 sys.exit(1)
-            all_type_yaml_names.add(tname)
+            all_dotted_yaml.add(tname)
             type_yaml_raw[tname]   = traw
             type_yaml_paths[tname] = tpath
 
-    # Validate type yamls
+    # Validate type YAMLs
     validated_types = []
     for tname, traw in type_yaml_raw.items():
         try:
             td = validate_type_yaml(traw, type_yaml_paths[tname],
-                                    all_type_yaml_names)
+                                    data_dir, all_dotted_yaml)
             validated_types.append(td)
         except SchemaError as e:
             print(f'message(FATAL_ERROR "Type schema error: {e}")')
             sys.exit(1)
 
-    sorted_types = topo_sort(validated_types)
-    gen_names    = {td["name"] for td in sorted_types}
-    all_types    = gen_names | set(KNOWN_ILLIXR_TYPES.keys())
+    sorted_types    = topo_sort(validated_types)
+    gen_dotted_set  = {td["dotted"] for td in sorted_types}
+    all_types       = gen_dotted_set | set(KNOWN_ILLIXR_TYPES.keys())
 
     # Validate bridge descriptors
     validated_bridges = []
@@ -1207,14 +1444,14 @@ def run_generate(bridge_profile_path, build_dir, source_dir):
                   f'\'{bpath}\': {e}")')
             sys.exit(1)
 
-    # Compute serialization defines per bridge
-    type_defs_by_name = {td["name"]: td for td in sorted_types}
+    # Serialization defines per bridge
+    type_defs_by_dotted = {td["dotted"]: td for td in sorted_types}
 
     def collect_ser_deps(tname, out):
-        if tname not in gen_names or tname in out:
+        if tname not in gen_dotted_set or tname in out:
             return
         out.add(tname)
-        for fdef in type_defs_by_name[tname]["fields"].values():
+        for fdef in type_defs_by_dotted[tname]["fields"].values():
             collect_ser_deps(fdef.get("type", ""), out)
 
     bridge_serialize = {}
@@ -1225,21 +1462,23 @@ def run_generate(bridge_profile_path, build_dir, source_dir):
                 collect_ser_deps(out["type"], deps)
         bridge_serialize[bd["name"]] = deps
 
-    # Output directories — new path convention
-    struct_out_dir = build_dir / "include" / "illixr" / "bridge"
-    struct_out_dir.mkdir(parents=True, exist_ok=True)
+    # Generate struct headers (mirroring subdir structure)
+    struct_out_root = build_dir / "include" / "illixr" / "bridge"
+    struct_out_root.mkdir(parents=True, exist_ok=True)
 
-    # Generate struct headers
-    cumulative     = []
-    generated_hdrs = []
+    cumulative_dotted: list[str] = []
+    generated_hdrs: list[str]   = []
+
     for td in sorted_types:
-        content  = gen_struct_header(td, cumulative)
-        out_path = struct_out_dir / f"{td['name']}.hpp"
-        out_path.write_text(content)
+        dotted   = td["dotted"]
+        rel_path = dotted_to_path(dotted)
+        out_path = struct_out_root / f"{rel_path}.hpp"
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        out_path.write_text(gen_struct_header(td, cumulative_dotted))
         generated_hdrs.append(str(out_path))
-        cumulative.append(td["name"])
+        cumulative_dotted.append(dotted)
 
-    # Generate per-bridge plugin sources + bindings
+    # Generate per-bridge sources
     all_bridge_names  = []
     all_plugin_dirs   = []
     all_plugin_cpps   = []
@@ -1247,36 +1486,37 @@ def run_generate(bridge_profile_path, build_dir, source_dir):
     all_ser_defs      = []
     all_has_network   = []
 
-    cumul_names = list(cumulative)
-
     for bd in validated_bridges:
         bname      = bd["name"]
         plugin_dir = build_dir / "generated" / "plugins" / bname
         plugin_dir.mkdir(parents=True, exist_ok=True)
 
-        # Script path relative to the bridge descriptor file
         bpath      = bridges_dir / f"{bname}.yaml"
         script_abs = (bpath.parent / bd["script"]).resolve()
 
         (plugin_dir / "plugin.hpp").write_text(
-            gen_plugin_hpp(bd, gen_names))
+            gen_plugin_hpp(bd, gen_dotted_set))
         (plugin_dir / "plugin.cpp").write_text(
-            gen_plugin_cpp(bd, gen_names, str(script_abs)))
+            gen_plugin_cpp(bd, gen_dotted_set, str(script_abs), plugin_dir))
 
-        # One bindings file per generated type used by this bridge
+        # Bindings: one file per generated type used by this bridge
         bridge_binding_files = []
-        cumul_so_far         = []
+        cumul_so_far: list[str] = []
         for td in sorted_types:
-            tname = td["name"]
-            if tname not in bd["type_names"]:
-                cumul_so_far.append(tname)
+            dotted = td["dotted"]
+            if dotted not in bd["type_names"]:
+                cumul_so_far.append(dotted)
                 continue
-            bfile = plugin_dir / f"bindings_{tname}.cpp"
+            bfile = plugin_dir / dotted_to_binding_filename(dotted)
             bfile.write_text(gen_bindings_cpp(td, cumul_so_far))
             bridge_binding_files.append(str(bfile))
-            cumul_so_far.append(tname)
+            cumul_so_far.append(dotted)
 
-        ser_defines = [f"ILLIXR_SERIALIZE_{t.upper()}"
+        # Python package tree for bridge types used by this bridge
+        used_tds = [td for td in sorted_types if td["dotted"] in bd["type_names"]]
+        gen_python_package_tree(used_tds, plugin_dir)
+
+        ser_defines = [dotted_to_serialize_define(t)
                        for t in sorted(bridge_serialize[bname])]
         has_net     = bool(bridge_serialize[bname])
 
@@ -1295,8 +1535,7 @@ def run_generate(bridge_profile_path, build_dir, source_dir):
     print(f'set(PY_BRIDGE_PLUGIN_CPPS "{cmake_list(all_plugin_cpps)}")')
     print(f'set(PY_BRIDGE_BINDING_CPPS "{cmake_list(all_binding_cpps)}")')
     print(f'set(PY_BRIDGE_STRUCT_HDRS "{cmake_list(generated_hdrs)}")')
-    struct_include_root = build_dir / "include"
-    print(f'set(PY_BRIDGE_STRUCT_INCLUDE_DIR "{struct_include_root}")')
+    print(f'set(PY_BRIDGE_STRUCT_INCLUDE_DIR "{build_dir / "include"}")')
     print(f'set(PY_BRIDGE_SERIALIZE_DEFS "{cmake_list(all_ser_defs)}")')
     print(f'set(PY_BRIDGE_HAS_NETWORK "{cmake_list(all_has_network)}")')
     print(f'set(PY_BRIDGE_COUNT "{len(all_bridge_names)}")')
@@ -1310,7 +1549,7 @@ def main():
     ap = argparse.ArgumentParser(
         description="ILLIXR Python bridge generator")
     ap.add_argument("--write-profiles", action="store_true",
-                    help="Tier 1: write per-profile yaml files")
+                    help="Tier 1: write per-profile YAML files")
     ap.add_argument("--generate", action="store_true",
                     help="Tier 2: generate struct headers and plugin sources")
     ap.add_argument("args", nargs="*")
@@ -1324,7 +1563,6 @@ def main():
     positional = opts.args
 
     if opts.write_profiles and opts.generate:
-        # Both: master_profile bridge_profile build_dir source_dir
         if len(positional) != 4:
             print('message(FATAL_ERROR "generate_python_bridges.py '
                   '--write-profiles --generate requires 4 positional args: '
@@ -1334,16 +1572,16 @@ def main():
         bridge_profile = Path(positional[1]).resolve()
         build_dir      = Path(positional[2]).resolve()
         source_dir     = Path(positional[3]).resolve()
-        bridges_dir    = source_dir / "interfaces" / "python" / "bridges"
+        profiles_dir   = source_dir / "interfaces" / "python" / "profiles"
+        profiles_dir.mkdir(parents=True, exist_ok=True)
         try:
-            write_profile_yamls(master_profile, bridges_dir)
+            write_profile_yamls(master_profile, profiles_dir)
         except SchemaError as e:
             print(f'message(FATAL_ERROR "Master profile error: {e}")')
             sys.exit(1)
         run_generate(bridge_profile, build_dir, source_dir)
 
     elif opts.write_profiles:
-        # Tier 1 only: master_profile source_dir
         if len(positional) != 2:
             print('message(FATAL_ERROR "generate_python_bridges.py '
                   '--write-profiles requires 2 positional args: '
@@ -1351,15 +1589,15 @@ def main():
             sys.exit(1)
         master_profile = Path(positional[0]).resolve()
         source_dir     = Path(positional[1]).resolve()
-        bridges_dir    = source_dir / "interfaces" / "python" / "bridges"
+        profiles_dir   = source_dir / "interfaces" / "python" / "profiles"
+        profiles_dir.mkdir(parents=True, exist_ok=True)
         try:
-            write_profile_yamls(master_profile, bridges_dir)
+            write_profile_yamls(master_profile, profiles_dir)
         except SchemaError as e:
             print(f'message(FATAL_ERROR "Master profile error: {e}")')
             sys.exit(1)
 
     else:
-        # Tier 2 only: bridge_profile build_dir source_dir
         if len(positional) != 3:
             print('message(FATAL_ERROR "generate_python_bridges.py '
                   '--generate requires 3 positional args: '
