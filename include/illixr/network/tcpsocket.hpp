@@ -71,8 +71,13 @@ public:
 #endif
     }
 
-    // Bind socket to a specified local ip and port
+    // Bind socket to a specified local ip and port.
+    // Always sets SO_REUSEADDR + SO_REUSEPORT and SO_LINGER=0 before binding
+    // so that the port is immediately reusable after a crash or force-quit,
+    // regardless of whether the caller remembered to set these options first.
     void socket_bind(const std::string& ip, int port) const {
+        socket_set_reuseaddr();
+        socket_set_linger_zero();
         sockaddr_in local_addr;
         local_addr.sin_family      = AF_INET;
         local_addr.sin_port        = htons(port);
@@ -119,7 +124,9 @@ public:
         return fd;
     }
 
-    // Allow the reuse of local addresses
+    // Allow the reuse of local addresses.
+    // On Linux/Android, also sets SO_REUSEPORT so that a new socket can bind
+    // to a port still in TIME_WAIT after a crash, without waiting ~60 seconds.
     void socket_set_reuseaddr() const {
 #if defined(_WIN32) || defined(_WIN64)
         int enable = 1;
@@ -130,6 +137,25 @@ public:
 #else
         const int enable = 1;
         setsockopt(fd_, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int));
+        setsockopt(fd_, SOL_SOCKET, SO_REUSEPORT, &enable, sizeof(int));
+#endif
+    }
+
+    // Set SO_LINGER with a zero timeout so that close() sends a TCP RST
+    // rather than going through the graceful FIN/FIN-ACK sequence.
+    // This prevents the socket from entering TIME_WAIT after a crash,
+    // allowing the port to be reused immediately on restart.
+    void socket_set_linger_zero() const {
+#if defined(_WIN32) || defined(_WIN64)
+        LINGER lg{};
+        lg.l_onoff  = 1;
+        lg.l_linger = 0;
+        setsockopt(fd_, SOL_SOCKET, SO_LINGER, reinterpret_cast<const char*>(&lg), sizeof(lg));
+#else
+        struct linger lg{};
+        lg.l_onoff  = 1;
+        lg.l_linger = 0;
+        setsockopt(fd_, SOL_SOCKET, SO_LINGER, &lg, sizeof(lg));
 #endif
     }
 
