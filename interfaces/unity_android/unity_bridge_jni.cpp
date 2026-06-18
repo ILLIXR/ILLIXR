@@ -22,6 +22,7 @@
 #undef DOUBLE_INCLUDE
 
 #include <android/log.h>
+#include <dlfcn.h>
 #include <string>
 #include <vector>
 
@@ -134,6 +135,47 @@ void illixr_unity_shutdown() {
         g_runtime = nullptr;
         UNITY_LOG("ILLIXR runtime stopped");
     }
+}
+
+// ---------------------------------------------------------------------------
+// Depth acquisition pass-throughs
+//
+// illixr_acquire_depth() and illixr_get_render_event_callback() are defined
+// in libplugin.android_sensors.so and loaded into the same process by
+// illixr_unity_init(). We resolve them lazily via dlsym so that this bridge
+// library has no link-time dependency on the sensor plugin.
+// ---------------------------------------------------------------------------
+
+// Function pointer types matching the exports in plugin.cpp
+typedef void        (*illixr_acquire_depth_fn)();
+typedef void*       (*illixr_get_render_event_callback_fn)();
+
+static void* resolve_sensor_sym(const char* name) {
+    // RTLD_NEXT finds the next occurrence of the symbol after this library,
+    // skipping the bridge library itself. This prevents infinite recursion
+    // when the bridge library exports a pass-through with the same name —
+    // RTLD_DEFAULT would find the pass-through itself, causing a stack overflow.
+    void* sym = dlsym(RTLD_NEXT, name);
+    if (sym == nullptr)
+        UNITY_LOG("resolve_sensor_sym: %s not found via RTLD_NEXT — sensor plugin not loaded?", name);
+    return sym;
+}
+
+void illixr_acquire_depth() {
+    static illixr_acquire_depth_fn fn = nullptr;
+    if (fn == nullptr)
+        fn = reinterpret_cast<illixr_acquire_depth_fn>(
+            resolve_sensor_sym("illixr_acquire_depth"));
+    if (fn != nullptr)
+        fn();
+}
+
+void* illixr_get_render_event_callback() {
+    static illixr_get_render_event_callback_fn fn = nullptr;
+    if (fn == nullptr)
+        fn = reinterpret_cast<illixr_get_render_event_callback_fn>(
+            resolve_sensor_sym("illixr_get_render_event_callback"));
+    return fn != nullptr ? fn() : nullptr;
 }
 
 } // extern "C"

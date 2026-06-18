@@ -37,7 +37,8 @@ android {
             cmake {
                 version '3.22.1'
                 cppFlags '-std=c++17', '-frtti', '-fexceptions'
-                arguments "-DTHIRD_PARTY_DIR=${root_library_path}",
+                arguments "-DUNITY_PLUGIN_API_DIR=C:/Program Files/Unity/Hub/Editor/6000.4.0f1/Editor/Data/PluginAPI",
+                          "-DTHIRD_PARTY_DIR=${root_library_path}",
                           "-DBUILD_ANDROID=ON",
                           "-DBUILD_UNITY_INTERFACE=ON"
             }

@@ -6,14 +6,22 @@ if(NOT ANDROID)
     message(FATAL_ERROR "android_sensors requires an Android build target (MediaCodec)")
 endif()
 
-# XR_META_environment_depth is defined in the standard Khronos openxr.h
-# (added in OpenXR SDK 1.1.36). No Meta SDK headers are needed.
-
 find_package(OpenXR REQUIRED)
 message(WARNING "OpenXR version: ${OpenXR_VERSION}")
 find_library(CAMERA2_LIB camera2ndk)
 
 set(PLUGIN_NAME plugin.android_sensors${ILLIXR_BUILD_SUFFIX})
+
+# Unity PluginAPI headers (IUnityInterface.h, IUnityGraphicsVulkan.h, etc.)
+# Located in <Unity Editor>/Editor/Data/PluginAPI on the build machine.
+# Set UNITY_PLUGIN_API_DIR on the CMake command line or in the Android Studio
+# cmake arguments, e.g.:
+#   -DUNITY_PLUGIN_API_DIR="C:/Program Files/Unity/Hub/Editor/6000.4.0f1/Editor/Data/PluginAPI"
+if(NOT DEFINED UNITY_PLUGIN_API_DIR)
+    message(FATAL_ERROR
+        "UNITY_PLUGIN_API_DIR must be set to the Unity PluginAPI include directory.\n"
+        "Example: -DUNITY_PLUGIN_API_DIR=\"C:/Program Files/Unity/Hub/Editor/6000.4.0f1/Editor/Data/PluginAPI\"")
+endif()
 
 add_library(${PLUGIN_NAME} SHARED
     plugin.cpp
@@ -27,6 +35,7 @@ add_library(${PLUGIN_NAME} SHARED
 
 target_include_directories(${PLUGIN_NAME} PRIVATE
     ${CMAKE_SOURCE_DIR}/include
+    ${UNITY_PLUGIN_API_DIR}
     ${jnigraphics-lib}
     ${ANDROID_NDK}/sources/android/native_app_glue
 )
@@ -35,16 +44,26 @@ target_link_libraries(${PLUGIN_NAME} PRIVATE
     ${CAMERA2_LIB}
     mediandk
     android
-    EGL
-    GLESv3
     Eigen3::Eigen
     Boost::serialization
     spdlog::spdlog_android
     OpenXR::openxr_loader
+    vulkan
 )
 
 target_compile_definitions(${PLUGIN_NAME} PRIVATE
     USING_OPENXR
-    XR_USE_GRAPHICS_API_OPENGL_ES
+    XR_USE_GRAPHICS_API_VULKAN
     XR_USE_PLATFORM_ANDROID
+)
+
+if(ANDROID_NATIVE_API_LEVEL LESS 26)
+    message(FATAL_ERROR
+        "xr_sensor_capture requires ANDROID_NATIVE_API_LEVEL >= 26 "
+        "(current: ${ANDROID_NATIVE_API_LEVEL})")
+endif()
+
+set_target_properties(${PLUGIN_NAME} PROPERTIES
+    CXX_STANDARD          17
+    CXX_STANDARD_REQUIRED ON
 )
