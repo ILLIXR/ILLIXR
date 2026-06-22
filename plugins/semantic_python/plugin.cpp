@@ -1,5 +1,6 @@
 #include "plugin.hpp"
 
+#include "nvdec_decoder.hpp"
 #include "switchboard_bindings.hpp"
 
 #include <pybind11/pybind11.h>
@@ -77,6 +78,14 @@ static pybind11::scoped_interpreter make_interpreter() {
     spdlog::get("illixr")->debug("Python script: {} with args {}", py_exe_, arg_string);
     if (py_exe_.empty())
         throw std::runtime_error("No SEMANTIC_PYTHON_SCRIPT given.");
+
+    // Register decode callback — fires on the switchboard thread whenever a
+    // new semantic_data frame arrives, decoding it immediately into the cache.
+    switchboard_->schedule<data_format::semantic_data>(
+        id_, "semantic_data",
+        [this](const switchboard::ptr<const data_format::semantic_data>& frame, std::size_t idx) {
+            on_semantic_data(frame, idx);
+        });
 }
 
 semantic_python::~semantic_python() {
@@ -107,8 +116,9 @@ void semantic_python::run_python_thread() {
         // register the module
         auto m = pybind11::module_::create_extension_module("illixr_bridge", nullptr, new pybind11::module_::module_def{});
         register_bindings(m);
-        // inject the proxy objects
-        py_semantic_data_reader  semantic_proxy{&semantic_reader_};
+        // inject the proxy objects — decoder_ is initialized by the decode
+        // callback thread (on_semantic_data), not here.
+        py_semantic_data_reader  semantic_proxy{&semantic_reader_, &decoded_frames_};
         py_voice_query_reader    voice_proxy{&voice_query_reader_};
         py_query_response_writer response_proxy{&response_writer_};
 
@@ -157,6 +167,73 @@ void semantic_python::parse_py_args(const std::string& input) {
             }
         }
         start = comma + 1;
+    }
+}
+
+void semantic_python::on_semantic_data(
+        const switchboard::ptr<const data_format::semantic_data>& frame,
+        std::size_t /*idx*/) {
+    if (!frame) {
+        spdlog::get("illixr")->warn("[semantic_python] on_semantic_data: null frame");
+        return;
+    }
+    if (frame->image.empty()) {
+        spdlog::get("illixr")->warn(
+            "[semantic_python] on_semantic_data: frame={} has empty image",
+            frame->frame_number);
+        return;
+    }
+
+    spdlog::get("illixr")->debug(
+        "[semantic_python] on_semantic_data: frame={} image={}B depth={}B",
+        frame->frame_number, frame->image.size(), frame->depth.size());
+
+    // Lazy decoder init — constructed on the first callback invocation so
+    // its CUDA context is bound to the switchboard decode thread.
+    {
+        std::lock_guard<std::mutex> lock(decoder_init_mutex_);
+        if (!decoder_initialized_) {
+            spdlog::get("illixr")->info(
+                "[semantic_python] Initializing NVDEC HEVC decoder...");
+            try {
+                decoder_ = std::make_unique<nvdec_decoder>(cudaVideoCodec_HEVC);
+                decoder_initialized_ = true;
+                spdlog::get("illixr")->info(
+                    "[semantic_python] NVDEC HEVC decoder initialized");
+            } catch (const std::exception& e) {
+                spdlog::get("illixr")->error(
+                    "[semantic_python] NVDEC init failed: {}", e.what());
+                return;
+            }
+        }
+    }
+
+    if (!decoder_)
+        return;
+
+    try {
+        const uint8_t* rgb = decoder_->decode(
+            frame->image.data(), frame->image.size());
+
+        if (rgb != nullptr) {
+            decoded_frames_.store(frame->frame_number,
+                                  decoder_->width(), decoder_->height(),
+                                  rgb);
+            spdlog::get("illixr")->debug(
+                "[semantic_python] frame={} decoded -> {}x{} RGB stored in cache",
+                frame->frame_number, decoder_->width(), decoder_->height());
+        } else {
+            // nullptr is normal for SPS/PPS-only packets during decoder init —
+            // log at debug level so the first few frames don't look like errors.
+            spdlog::get("illixr")->debug(
+                "[semantic_python] frame={} decode returned no output "
+                "(normal during decoder init with SPS/PPS packets)",
+                frame->frame_number);
+        }
+    } catch (const std::exception& e) {
+        spdlog::get("illixr")->warn(
+            "[semantic_python] NVDEC decode failed frame={}: {}",
+            frame->frame_number, e.what());
     }
 }
 
