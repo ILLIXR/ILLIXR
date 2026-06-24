@@ -212,7 +212,6 @@ endif()
 if(PYTHON_BRIDGE_PROFILE)
     find_package(pybind11 CONFIG REQUIRED)
     find_package(Python3 REQUIRED COMPONENTS Interpreter)
-    generate_python_bridge_plugins()
 endif()
 
 set(ILLIXR_SOURCE_DIR ${CMAKE_SOURCE_DIR})
@@ -507,6 +506,11 @@ endif()
 set(FULL_PLUGIN_LIST "")
 
 add_subdirectory(utils)
+if(PYTHON_BRIDGE_PROFILE)
+    generate_python_bridge_plugins()
+endif()
+
+
 foreach(ITEM IN LISTS PLUGIN_LIST)
     string(TOUPPER "USE_${ITEM}" ITEM_UPPER)
     string(TOLOWER ${ITEM} ITEM_LOWER)
