@@ -29,7 +29,7 @@ Paths derived from the script's own location (interfaces/python/):
   Output dir  : <source_root>/interfaces/python/system_bindings/
 
 The script reads CMakeCache.txt from --build-dir to discover include paths
-set by cmake (e.g. Eigen, OpenCV, Boost).  --include-dir arguments are
+set by cmake (e.g., Eigen, OpenCV, Boost).  --include-dir arguments are
 added on top.
 
 All #ifdef blocks evaluate as false (no predefined macros beyond the
@@ -112,7 +112,7 @@ def read_cmake_cache(build_dir: Path) -> list[str]:
         if p.exists():
             include_dirs.append(str(p))
 
-    # Add any recognised include variables
+    # Add any recognized include variables
     for var in _CMAKE_INCLUDE_VARS:
         if var in values and values[var]:
             # Values may be semicolon-separated lists
@@ -132,10 +132,10 @@ def read_cmake_cache(build_dir: Path) -> list[str]:
 
 
 # ---------------------------------------------------------------------------
-# C++ type → pybind11 type mapping
+# C++ type -> pybind11 type mapping
 # ---------------------------------------------------------------------------
 
-# Maps canonical C++ spelling → (pybind11 def_readwrite works natively,
+# Maps canonical C++ spelling -> (pybind11 def_readwrite works natively,
 # numpy hint for documentation)
 _SCALAR_CPP_TYPES = {
     "bool",
@@ -253,7 +253,7 @@ def parse_header(header_path: Path,
     args = ["-std=c++17", "-x", "c++"]
     for d in include_dirs:
         args += ["-I", d]
-    # No predefined macros → all #ifdef blocks evaluate as false
+    # No predefined macros -> all #ifdef blocks evaluate as false
     args += ["-undef"]
 
     tu = index.parse(
@@ -297,7 +297,7 @@ def parse_header(header_path: Path,
         for child in cursor.get_children():
             walk(child)
 
-    # Build a set of all known struct names (local + bases pulled via includes)
+    # Build a set of all known struct names (local and bases pulled via includes)
     all_known: set[str] = set(local_struct_names)
 
     def _process_struct(cursor):
@@ -360,7 +360,7 @@ def parse_header(header_path: Path,
 def topo_sort_structs(all_structs: dict[str, StructInfo]) -> list[str]:
     """
     Return struct names in topological order (bases before derived).
-    all_structs maps qualified_name → StructInfo.
+    all_structs maps qualified_name -> StructInfo.
     """
     visited: set[str] = set()
     order:   list[str] = []
@@ -375,8 +375,8 @@ def topo_sort_structs(all_structs: dict[str, StructInfo]) -> list[str]:
                 visit(base)
         order.append(name)
 
-    for name in all_structs:
-        visit(name)
+    for struct in all_structs:
+        visit(struct)
     return order
 
 
@@ -388,11 +388,11 @@ def topo_sort_modules(
     A module depends on another if any of its structs has a base defined in
     the other module.
     """
-    # Build qualified_name → stem map
+    # Build qualified_name -> stem map
     qname_to_stem: dict[str, str] = {}
-    for stem, structs in module_structs.items():
+    for base, structs in module_structs.items():
         for s in structs:
-            qname_to_stem[s.qualified_name] = stem
+            qname_to_stem[s.qualified_name] = base
 
     visited: set[str] = set()
     order:   list[str] = []
@@ -401,29 +401,21 @@ def topo_sort_modules(
         if stem in visited:
             return
         visited.add(stem)
-        for struct in module_structs.get(stem, []):
-            for base in struct.bases:
-                dep_stem = qname_to_stem.get(base)
+        for m_struct in module_structs.get(stem, []):
+            for base_ in m_struct.bases:
+                dep_stem = qname_to_stem.get(base_)
                 if dep_stem and dep_stem != stem:
                     visit(dep_stem)
         order.append(stem)
 
-    for stem in module_structs:
-        visit(stem)
+    for struct in module_structs:
+        visit(struct)
     return order
 
 
 # ---------------------------------------------------------------------------
 # Code generation
 # ---------------------------------------------------------------------------
-
-def _cpp_type_for_binding(spelling: str, known_qnames: set[str]) -> str:
-    """Return the C++ type spelling to use in the binding."""
-    s = spelling.strip()
-    s = re.sub(r'\bstruct\b\s*', '', s)
-    s = re.sub(r'\bclass\b\s*',  '', s)
-    return s.strip()
-
 
 def gen_binding_cpp(stem: str,
                     structs: list[StructInfo],
@@ -435,13 +427,10 @@ def gen_binding_cpp(stem: str,
 
     # Collect all headers needed
     local_headers: set[str] = set()
-    for s in structs:
+    for struct in structs:
         local_headers.add(
-            f'"illixr/data_format/{Path(s.source_file).name}"')
+            f'"illixr/data_format/{Path(struct.source_file).name}"')
 
-    needs_stl   = any(
-        any(c.startswith("std::") for c in (f.cpp_type for f in s.fields))
-        for s in structs)
     needs_eigen = any(
         any("Eigen" in f.cpp_type for f in s.fields)
         for s in structs)
@@ -455,16 +444,16 @@ def gen_binding_cpp(stem: str,
         structs,
         key=lambda s: qname_order.get(s.qualified_name, 999))
 
-    L: list[str] = []
-    L.append(
+    cpp: list[str] = []
+    cpp.append(
         f"// Copyright 2020-{YEAR}, The Board of Trustees of the "
         "University of Illinois.")
-    L.append("// SPDX-License-Identifier: BSL-1.0")
-    L.append(
+    cpp.append("// SPDX-License-Identifier: BSL-1.0")
+    cpp.append(
         "// This file was generated by generate_system_bindings.py "
         "-- do not edit directly.")
-    L.append(f"// Module: illixr.{stem}")
-    L.append("")
+    cpp.append(f"// Module: illixr.{stem}")
+    cpp.append("")
 
     # Dependency order comment
     deps = []
@@ -476,32 +465,32 @@ def gen_binding_cpp(stem: str,
                 if dep_stem != stem and dep_stem not in deps:
                     deps.append(dep_stem)
     if deps:
-        L.append(
+        cpp.append(
             f"// Python import dependencies (auto-imported via illixr "
             f"package): {', '.join('illixr.' + d for d in deps)}")
-        L.append("")
+        cpp.append("")
 
     for h in sorted(local_headers):
-        L.append(f"#include {h}")
+        cpp.append(f"#include {h}")
     if has_serialization and ser_header:
-        L.append(f'#include "illixr/data_format/serialization/{ser_header}.hpp"')
-    L.append("")
-    L.append("#include <pybind11/embed.h>")
-    L.append("#include <pybind11/stl.h>")
+        cpp.append(f'#include "illixr/data_format/serialization/{ser_header}.hpp"')
+    cpp.append("")
+    cpp.append("#include <pybind11/embed.h>")
+    cpp.append("#include <pybind11/stl.h>")
     if needs_eigen:
-        L.append("#include <pybind11/eigen.h>")
+        cpp.append("#include <pybind11/eigen.h>")
     if needs_opencv:
-        L.append("#include <opencv2/core.hpp>")
-        L.append("#include <pybind11/numpy.h>")
-    L.append("")
-    L.append("#include <stdexcept>")
-    L.append("")
-    L.append("namespace py = pybind11;")
-    L.append("")
-    # Module name uses illixr_ prefix to distinguish from Python package name
-    L.append(f"PYBIND11_EMBEDDED_MODULE(illixr_{stem}, m) {{")
-    L.append(f'    m.doc() = "ILLIXR system types: {stem}";')
-    L.append("")
+        cpp.append("#include <opencv2/core.hpp>")
+        cpp.append("#include <pybind11/numpy.h>")
+    cpp.append("")
+    cpp.append("#include <stdexcept>")
+    cpp.append("")
+    cpp.append("namespace py = pybind11;")
+    cpp.append("")
+    # Module name uses illixr_ prefix to distinguish from the Python package name
+    cpp.append(f"PYBIND11_EMBEDDED_MODULE(illixr_{stem}, m) {{")
+    cpp.append(f'    m.doc() = "ILLIXR system types: {stem}";')
+    cpp.append("")
 
     for si in sorted_local:
         qn = si.qualified_name
@@ -521,37 +510,37 @@ def gen_binding_cpp(stem: str,
         else:
             class_decl = f"    py::class_<{qn}>(m, \"{si.name}\")"
 
-        L.append(class_decl)
-        L.append(f"        .def(py::init<>())")
+        cpp.append(class_decl)
+        cpp.append(f"        .def(py::init<>())")
 
         # Keyword-argument constructor
         if si.fields:
-            L.append(
+            cpp.append(
                 f"        .def(py::init([]({_lambda_params(si)}) {{")
-            L.append(f"            {qn} obj;")
+            cpp.append(f"            {qn} obj;")
             for f in si.fields:
-                L.append(f"            obj.{f.name} = {f.name};")
-            L.append("            return obj;")
-            L.append("        }),")
+                cpp.append(f"            obj.{f.name} = {f.name};")
+            cpp.append("            return obj;")
+            cpp.append("        }),")
             for idx, f in enumerate(si.fields):
                 suffix = "," if idx < len(si.fields) - 1 else ""
-                L.append(
+                cpp.append(
                     f"        py::arg(\"{f.name}\") = "
                     f"{_default_for(f.cpp_type)}{suffix}")
-            L.append("        )")
+            cpp.append("        )")
 
         # def_readwrite for each field
         for f in si.fields:
-            L.append(
+            cpp.append(
                 f"        .def_readwrite(\"{f.name}\", "
                 f"&{qn}::{f.name})")
 
-        L.append("        ;")
-        L.append("")
+        cpp.append("        ;")
+        cpp.append("")
 
-    L.append("}")
-    L.append("")
-    return "\n".join(L)
+    cpp.append("}")
+    cpp.append("")
+    return "\n".join(cpp)
 
 
 def _lambda_params(si: StructInfo) -> str:
@@ -572,7 +561,7 @@ def _default_for(cpp_type: str) -> str:
         return f"{t}()"
     if "std::array" in t:
         return f"{t}{{}}"
-    # Struct type or unknown → default construct
+    # Struct type or unknown -> default construct
     return f"{t}()"
 
 
@@ -588,26 +577,26 @@ def gen_python_shim(stem: str) -> str:
 
 
 def gen_init_py(module_order: list[str]) -> str:
-    L: list[str] = []
-    L.append(
+    py_out: list[str] = []
+    py_out.append(
         f"# Copyright 2020-{YEAR}, The Board of Trustees of the "
         "University of Illinois.")
-    L.append("# SPDX-License-Identifier: BSL-1.0")
-    L.append(
+    py_out.append("# SPDX-License-Identifier: BSL-1.0")
+    py_out.append(
         "# Auto-generated by generate_system_bindings.py "
         "-- do not edit directly.")
-    L.append(
+    py_out.append(
         "# Modules are imported in dependency order so that base classes")
-    L.append("# are always registered before derived classes.")
-    L.append("")
-    L.append("def _load() -> None:")
+    py_out.append("# are always registered before derived classes.")
+    py_out.append("")
+    py_out.append("def _load() -> None:")
     for stem in module_order:
-        L.append(f"    from . import {stem}  # noqa: F401")
-    L.append("")
-    L.append("")
-    L.append("_load()")
-    L.append("")
-    return "\n".join(L)
+        py_out.append(f"    from . import {stem}  # noqa: F401")
+    py_out.append("")
+    py_out.append("")
+    py_out.append("_load()")
+    py_out.append("")
+    return "\n".join(py_out)
 
 
 # ---------------------------------------------------------------------------
@@ -623,33 +612,33 @@ def gen_cmake_snippet(output_dir: Path,
     This file is included by PythonBridge.cmake via include().
     """
     rel_output = output_dir.relative_to(source_dir)
-    L: list[str] = []
-    L.append(
+    cmake: list[str] = []
+    cmake.append(
         f"# Copyright 2020-{YEAR}, The Board of Trustees of the "
         "University of Illinois.")
-    L.append("# SPDX-License-Identifier: BSL-1.0")
-    L.append(
+    cmake.append("# SPDX-License-Identifier: BSL-1.0")
+    cmake.append(
         "# Auto-generated by generate_system_bindings.py "
         "-- do not edit directly.")
-    L.append(
+    cmake.append(
         "# Included by PythonBridge.cmake to add system binding sources.")
-    L.append("")
-    L.append("# Glob all compiled system binding sources")
-    L.append(
+    cmake.append("")
+    cmake.append("# Glob all compiled system binding sources")
+    cmake.append(
         f"file(GLOB _ILLIXR_SYSTEM_BINDING_SOURCES"
         f"    \"${{CMAKE_SOURCE_DIR}}/{rel_output}/bindings_*.cpp\")")
-    L.append("")
-    L.append("# Serialization cpp files for types that have them")
-    L.append("set(_ILLIXR_SERIALIZATION_SOURCES")
+    cmake.append("")
+    cmake.append("# Serialization cpp files for types that have them")
+    cmake.append("set(_ILLIXR_SERIALIZATION_SOURCES")
     for stem, ser_stem in sorted(serialization_map.items()):
-        L.append(
+        cmake.append(
             f"    \"${{CMAKE_SOURCE_DIR}}/utils/serialization/{ser_stem}.cpp\"")
-    L.append(")")
-    L.append("")
-    L.append(
+    cmake.append(")")
+    cmake.append("")
+    cmake.append(
         "# These are appended to each bridge plugin target in "
         "PythonBridge.cmake")
-    return "\n".join(L)
+    return "\n".join(cmake)
 
 
 # ---------------------------------------------------------------------------
@@ -692,8 +681,8 @@ def main():
     include_dirs: list[str] = []
 
     if opts.build_dir:
-        cmake_incs = read_cmake_cache(Path(opts.build_dir).resolve())
-        include_dirs.extend(cmake_incs)
+        cmake_includes = read_cmake_cache(Path(opts.build_dir).resolve())
+        include_dirs.extend(cmake_includes)
 
     # Always add source include/
     src_include = str(source_dir / "include")
@@ -710,7 +699,7 @@ def main():
 
     # -----------------------------------------------------------------------
     # 2. Discover serialization correspondence
-    #    serialization/<stem>.hpp → utils/serialization/<stem>.cpp exists
+    #    serialization/<stem>.hpp -> utils/serialization/<stem>.cpp exists
     #    Skip serialization/openxr.hpp
     # -----------------------------------------------------------------------
     serialization_stems: set[str] = set()
@@ -736,7 +725,7 @@ def main():
 
     print(f"Found {len(headers)} data_format headers", file=sys.stderr)
 
-    # module stem → list of StructInfo
+    # module stem -> list of StructInfo
     module_structs: dict[str, list[StructInfo]] = {}
     all_warnings:   list[str] = []
 
@@ -759,7 +748,7 @@ def main():
     # -----------------------------------------------------------------------
     # 4. Build global struct map and topological sort
     # -----------------------------------------------------------------------
-    all_struct_map: dict[str, StructInfo] = {}   # qualified_name → StructInfo
+    all_struct_map: dict[str, StructInfo] = {}   # qualified_name -> StructInfo
     for structs in module_structs.values():
         for s in structs:
             all_struct_map[s.qualified_name] = s
@@ -772,10 +761,10 @@ def main():
 
     # -----------------------------------------------------------------------
     # 5. Build serialization map:
-    #    module stem → serialization stem (if a corresponding ser file exists)
+    #    module stem -> serialization stem (if a corresponding ser file exists)
     # -----------------------------------------------------------------------
-    # Maps data-format header stem → serialization stem
-    # (they may differ — e.g. misc.hpp serialises time_point only)
+    # Maps data-format header stem -> serialization stem
+    # (they may differ — e.g., misc.hpp serializes time_point only)
     ser_for_module: dict[str, str] = {}
     for stem in module_structs:
         if stem in serialization_stems:
