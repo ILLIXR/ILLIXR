@@ -4,6 +4,6 @@ fields:
     container: list
   centroid:
     type: float
-    shape: [3]
+    container: list
   num_points:
     type: int

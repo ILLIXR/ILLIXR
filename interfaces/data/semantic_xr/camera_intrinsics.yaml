@@ -1,0 +1,13 @@
+fields:
+  fx:
+    type: float
+  fy:
+    type: float
+  cx:
+    type: float
+  cy:
+    type: float
+  width:
+    type: int
+  height:
+    type: int

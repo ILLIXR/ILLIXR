@@ -1,6 +1,6 @@
 fields:
   query_id:
-    type: uint_64
+    type: uint64
   pcm_data:
     type: byte
     container: list
