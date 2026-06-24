@@ -1,0 +1,13 @@
+# interfaces/python/python_profiles.yaml
+#
+# Master Python bridge profile file.
+# Each top-level key is a profile name.
+# The 'bridges' value is a comma-separated list of bridge names.
+# Each name must have a corresponding interfaces/python/bridges/<name>.yaml.
+#
+# Running cmake generates one yaml file per profile into
+# interfaces/python/profiles/, which are committed to git.
+# Pass one to cmake as: -DPYTHON_BRIDGE_PROFILE=my_xr.yaml
+
+my_xr:
+  bridges: semantic_my_xr

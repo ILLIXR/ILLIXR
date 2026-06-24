@@ -15,7 +15,7 @@
 #     Tier 1 — Profile yaml generation (timestamp-gated)
 #       Mirrors the generate_yaml() pattern in HelperFunctions.cmake.
 #       Only runs when python_bridges.yaml has changed since last configure
-#       (tracked via LAST_PY_BRIDGE_YAML_BUILD cache variable).
+#       (tracked via LAST_PY_PROFILES_YAML_BUILD cache variable).
 #
 #     Tier 2 — Struct headers + plugin sources (always runs)
 #       Generates for every bridge listed in the selected profile:
@@ -42,6 +42,9 @@
 #   add_subdirectory loop.
 
 cmake_minimum_required(VERSION 3.22)
+find_package(Python COMPONENTS Interpreter Development REQUIRED)
+set(PYBIND11_FINDPYTHON ON)
+find_package(pybind11 CONFIG REQUIRED)
 
 if(DEFINED _ILLIXR_PYTHON_BRIDGE_INCLUDED)
     return()
@@ -53,7 +56,7 @@ set(_PY_BRIDGE_GENERATOR
     CACHE INTERNAL "Path to generate_python_bridges.py")
 
 set(_PY_BRIDGE_MASTER_PROFILE
-    "${CMAKE_SOURCE_DIR}/interfaces/python/python_bridges.yaml"
+    "${CMAKE_SOURCE_DIR}/interfaces/python/python_profiles.yaml"
     CACHE INTERNAL "Path to master python bridge profile")
 
 set(_PY_BRIDGE_BRIDGES_DIR
@@ -126,14 +129,7 @@ function(generate_python_bridge_plugins)
         message(FATAL_ERROR
                 "generate_python_bridge_plugins: Python3 interpreter not found. "
                 "Call find_package(Python3 REQUIRED COMPONENTS Interpreter) "
-                "before including python/bridge.cmake.")
-    endif()
-
-    if(NOT TARGET pybind11::embed)
-        message(FATAL_ERROR
-                "generate_python_bridge_plugins: pybind11::embed target not found. "
-                "Call find_package(pybind11 REQUIRED) before including "
-                "python/bridge.cmake.")
+                "before including PythonBridge.cmake.")
     endif()
 
     if(NOT EXISTS "${_PY_BRIDGE_GENERATOR}")
@@ -149,17 +145,16 @@ function(generate_python_bridge_plugins)
     endif()
 
     # -----------------------------------------------------------------------
-    # 3. Tier 1 — Profile yaml generation (timestamp-gated)
+    # 3. Tier 1 — Profile yaml generation (timestamp-gated on master profile)
     # -----------------------------------------------------------------------
-    file(TIMESTAMP "${_PY_BRIDGE_MASTER_PROFILE}"
-         _py_bridge_master_ts "%s" UTC)
+    file(MD5 "${_PY_BRIDGE_MASTER_PROFILE}" _py_bridge_master_hash)
 
-    if(NOT DEFINED CACHE{LAST_PY_BRIDGE_YAML_BUILD})
-        set(LAST_PY_BRIDGE_YAML_BUILD "0" CACHE INTERNAL "")
+    if(NOT DEFINED CACHE{LAST_PY_PROFILES_YAML_BUILD})
+        set(LAST_PY_PROFILES_YAML_BUILD "" CACHE INTERNAL "")
     endif()
 
-    if($CACHE{LAST_PY_BRIDGE_YAML_BUILD} LESS "${_py_bridge_master_ts}")
-        message(STATUS "Rebuilding python bridge profile yaml files")
+    if(NOT "${LAST_PY_PROFILES_YAML_BUILD}" STREQUAL "${_py_bridge_master_hash}")
+        message(STATUS "Rebuilding python bridge profile yaml files from python_profiles.yaml")
         file(MAKE_DIRECTORY "${_PY_BRIDGE_PROFILES_DIR}")
 
         execute_process(
@@ -169,7 +164,7 @@ function(generate_python_bridge_plugins)
                 "${_PY_BRIDGE_MASTER_PROFILE}"
                 "${CMAKE_SOURCE_DIR}"
                 OUTPUT_VARIABLE _tier1_out
-                ERROR_VARIABLE  _tier1_err
+                ERROR_VARIABLE _tier1_err
                 RESULT_VARIABLE _tier1_result
                 OUTPUT_STRIP_TRAILING_WHITESPACE
         )
@@ -183,16 +178,9 @@ function(generate_python_bridge_plugins)
             message(WARNING "${_tier1_err}")
         endif()
 
-        string(TIMESTAMP _now "%s" UTC)
-        set(LAST_PY_BRIDGE_YAML_BUILD "${_now}"
-            CACHE INTERNAL
-            "Epoch timestamp of last python_bridges.yaml processing")
-
-        message(STATUS
-                "Python bridge profile yaml files written to "
-                "${_PY_BRIDGE_BRIDGES_DIR}")
-    else()
-        message(STATUS "Python bridge profile yaml files are up-to-date")
+        file(MD5 "${_PY_BRIDGE_MASTER_PROFILE}" _master_md5)
+        set(LAST_PY_PROFILES_YAML_BUILD "${_master_md5}"
+            CACHE INTERNAL "MD5 of python_profiles.yaml at last processing")
     endif()
 
     if(NOT EXISTS "${_bridge_profile}")
@@ -205,8 +193,19 @@ function(generate_python_bridge_plugins)
     endif()
 
     # -----------------------------------------------------------------------
-    # 4. Tier 2 — Struct headers + plugin sources (always runs)
+    # 4. Tier 2 — Struct headers + plugin sources
+    #
+    # Staleness detection is delegated entirely to the Python generator via
+    # a JSON state file in the build directory.  This avoids all cmake cache
+    # scoping, escaping, and indirect-expansion pitfalls.
+    #
+    # The generator writes ${CMAKE_BINARY_DIR}/.py_bridge_state.json after
+    # each successful run.  On the next invocation it reads that file,
+    # computes MD5 hashes of all bridge and type yaml files, and compares
+    # them to determine which bridges are stale.  It then regenerates only
+    # those bridges and emits cmake set() variables for ALL bridges.
     # -----------------------------------------------------------------------
+    message(STATUS "Running Python bridge generator...")
     execute_process(
             COMMAND "${Python3_EXECUTABLE}"
             "${_PY_BRIDGE_GENERATOR}"
@@ -215,43 +214,50 @@ function(generate_python_bridge_plugins)
             "${CMAKE_BINARY_DIR}"
             "${CMAKE_SOURCE_DIR}"
             OUTPUT_VARIABLE _tier2_out
-            ERROR_VARIABLE  _tier2_err
+            ERROR_VARIABLE _tier2_err
             RESULT_VARIABLE _tier2_result
             OUTPUT_STRIP_TRAILING_WHITESPACE
+            ERROR_STRIP_TRAILING_WHITESPACE
     )
+    if(_tier2_err)
+        # Generator prints per-bridge progress to stderr — show as STATUS
+        string(REPLACE "
+        " ";" _tier2_err_lines "${_tier2_err}")
+        foreach(_err_line ${_tier2_err_lines})
+            if(NOT "${_err_line}" STREQUAL "")
+                message(STATUS "${_err_line}")
+            endif()
+        endforeach()
+    endif()
 
     if(NOT _tier2_result EQUAL 0)
         message(FATAL_ERROR
                 "generate_python_bridge_plugins: code generation failed:\n"
                 "${_tier2_err}\n${_tier2_out}")
     endif()
-    if(_tier2_err)
-        message(WARNING "${_tier2_err}")
-    endif()
+    # (stderr already printed as STATUS messages above)
 
     cmake_language(EVAL CODE "${_tier2_out}")
 
     # -----------------------------------------------------------------------
-    # 5. Validate generator output
+    # 5. Validate that all required variables are now set
+    #    (either from the generator or restored from cache)
     # -----------------------------------------------------------------------
     foreach(_required_var
-            PY_BRIDGE_NAMES PY_BRIDGE_PLUGIN_DIRS PY_BRIDGE_PLUGIN_CPPS
-            PY_BRIDGE_STRUCT_INCLUDE_DIR PY_BRIDGE_COUNT)
+            PY_BRIDGE_NAMES PY_BRIDGE_CMAKE_DIRS PY_BRIDGE_COUNT)
         if(NOT DEFINED ${_required_var})
             message(FATAL_ERROR
-                    "generate_python_bridge_plugins: generator did not set "
-                    "${_required_var}")
+                    "generate_python_bridge_plugins: '${_required_var}' is not set "
+                    "and no cached value exists. Delete CMakeCache.txt and re-run cmake.")
         endif()
     endforeach()
 
     # -----------------------------------------------------------------------
-    # 6. Collect system binding sources (shared across all bridge targets)
-    # -----------------------------------------------------------------------
-    _py_bridge_collect_system_sources()
-    # _PY_SYSTEM_SOURCES is now set in this scope
-
-    # -----------------------------------------------------------------------
-    # 7. Register each bridge plugin target
+    # 6. Register each bridge plugin via add_subdirectory
+    #    Each bridge's generated CMakeLists.txt defines its own target,
+    #    links, includes, and compile definitions — matching the ILLIXR
+    #    plugin pattern exactly (SHARED library, PLUGIN_NAME definition,
+    #    install rule).
     # -----------------------------------------------------------------------
     list(LENGTH PY_BRIDGE_NAMES _n_bridges)
     if(_n_bridges EQUAL 0)
@@ -260,72 +266,16 @@ function(generate_python_bridge_plugins)
     math(EXPR _last_idx "${_n_bridges} - 1")
 
     foreach(_idx RANGE ${_last_idx})
-        list(GET PY_BRIDGE_NAMES       ${_idx} _bname)
-        list(GET PY_BRIDGE_PLUGIN_DIRS ${_idx} _plugin_dir)
-        list(GET PY_BRIDGE_PLUGIN_CPPS ${_idx} _plugin_cpp)
-        list(GET PY_BRIDGE_HAS_NETWORK ${_idx} _has_net)
+        list(GET PY_BRIDGE_NAMES ${_idx} _bname)
+        list(GET PY_BRIDGE_CMAKE_DIRS ${_idx} _cmake_dir)
 
-        # Bridge-specific sources: plugin.cpp + bindings_<type>.cpp
-        file(GLOB _bridge_binding_files "${_plugin_dir}/bindings_*.cpp")
-        set(_all_sources
-            "${_plugin_cpp}"
-            ${_bridge_binding_files}
-            ${_PY_SYSTEM_SOURCES}   # system binding cpp + serialization cpp
-        )
+        # The generated CMakeLists.txt lives in _cmake_dir alongside
+        # plugin.cpp, plugin.hpp, and bindings_*.cpp.
+        add_subdirectory("${_cmake_dir}" "${CMAKE_BINARY_DIR}/bridge_build/${_bname}")
 
-        add_illixr_plugin(${_bname}
-                          SOURCES ${_all_sources}
-        )
-
-        # Include paths:
-        #   1. Generated plugin dir  (generated plugin.hpp)
-        #   2. ${CMAKE_BINARY_DIR}/include  (illixr/bridge/*.hpp)
-        #   3. ${CMAKE_SOURCE_DIR}/include  (illixr/data_format/*.hpp for
-        #      system binding headers)
-        #   4. System bindings dir  (for any local headers)
-        target_include_directories(plugin.${_bname} PRIVATE
-                                   "${_plugin_dir}"
-                                   "${PY_BRIDGE_STRUCT_INCLUDE_DIR}"
-                                   "${CMAKE_SOURCE_DIR}/include"
-                                   "${_PY_SYSTEM_BINDINGS_DIR}"
-        )
-
-        target_link_libraries(plugin.${_bname} PRIVATE
-                              pybind11::embed
-                              spdlog::spdlog
-        )
-
-        if(_has_net STREQUAL "TRUE")
-            if(NOT TARGET Boost::serialization)
-                message(FATAL_ERROR
-                        "Bridge '${_bname}' has networked output topics but "
-                        "Boost::serialization was not found.")
-            endif()
-            target_link_libraries(plugin.${_bname} PRIVATE
-                                  Boost::serialization)
-        endif()
-
-        if(TARGET opencv_core)
-            target_link_libraries(plugin.${_bname} PRIVATE opencv_core)
-        elseif(OpenCV_FOUND)
-            target_link_libraries(plugin.${_bname} PRIVATE ${OpenCV_LIBS})
-        endif()
-
-        # Per-bridge serialization compile definitions
-        foreach(_ser_entry ${PY_BRIDGE_SERIALIZE_DEFS})
-            string(REGEX MATCH "^([^:]+):(.*)" _ser_match "${_ser_entry}")
-            if(CMAKE_MATCH_1 STREQUAL _bname AND CMAKE_MATCH_2)
-                string(REPLACE ";" ";" _ser_defines "${CMAKE_MATCH_2}")
-                foreach(_def ${_ser_defines})
-                    target_compile_definitions(plugin.${_bname}
-                                               PRIVATE "${_def}")
-                endforeach()
-            endif()
-        endforeach()
-
-        # -------------------------------------------------------------------
-        # 8. Append to PLUGIN_UNORDERED → included in illixr.yaml
-        # -------------------------------------------------------------------
+        # -----------------------------------------------------------------------
+        # 7. Append to PLUGIN_UNORDERED -> included in illixr.yaml
+        # -----------------------------------------------------------------------
         if(PLUGIN_UNORDERED)
             set(PLUGIN_UNORDERED "${PLUGIN_UNORDERED},${_bname}"
                 PARENT_SCOPE)

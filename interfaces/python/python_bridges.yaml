@@ -1,2 +1,0 @@
-semantic_xr:
-  bridges: semantic_xr.semantic_data,semantic_xr.voice_query,semantic_xr.query_response
