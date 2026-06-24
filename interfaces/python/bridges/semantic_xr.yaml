@@ -1,2 +1,0 @@
-# This file was auto-generated from python_bridges.yaml -- do not edit directly.
-bridges: semantic_xr.semantic_data,semantic_xr.voice_query,semantic_xr.query_response
