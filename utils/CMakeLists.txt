@@ -24,6 +24,12 @@ else()
     target_include_directories(illixr_hmd_gl PUBLIC ${CMAKE_SOURCE_DIR}/include)
     target_compile_definitions(illixr_hmd_gl PUBLIC USE_GL)
 
+
+    add_library(illixr_vulkan_utils STATIC
+                ${CMAKE_SOURCE_DIR}/include/illixr/vk/vulkan_utils.hpp
+                vulkan_utils.cpp
+    )
+
     target_include_directories(illixr_vulkan_utils PUBLIC ${CMAKE_SOURCE_DIR}/include)
     target_link_libraries(illixr_vulkan_utils PUBLIC
                           spdlog::spdlog
