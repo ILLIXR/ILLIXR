@@ -1,738 +1,463 @@
-# ILLIXR Bridge Data Type YAML Reference
+# ILLIXR Python Bridge YAML Schema
 
-This document describes how to write data type description files for the
-ILLIXR Python bridge interface.  These files live in `interfaces/data/` and
-are referenced by bridge descriptor files (`interfaces/python/bridges/*.yaml`).
-Each file defines a single C++ struct that the bridge system generates at
-cmake configure time.
+This document describes the YAML files used to define Python bridge plugins for the
+ILLIXR XR runtime. The bridge generator (`generate_python_bridges.py`) reads these files
+at CMake configure time and produces C++ plugin sources and struct headers.
 
 ---
 
-## Table of Contents
-
-- [Overview](#overview)
-- [File Location and Naming](#file-location-and-naming)
-- [Namespacing with Subdirectories](#namespacing-with-subdirectories)
-- [Top-Level Structure](#top-level-structure)
-- [Scalar Types](#scalar-types)
-- [Fixed-Size Array Fields](#fixed-size-array-fields)
-- [Container Fields](#container-fields)
-- [OpenCV Mat Fields](#opencv-mat-fields)
-- [Nested Struct Fields](#nested-struct-fields)
-- [Serialization](#serialization)
-- [Allowed and Disallowed Combinations](#allowed-and-disallowed-combinations)
-- [Complete Example](#complete-example)
-- [Using Generated Headers in C++ Plugins](#using-generated-headers-in-c-plugins)
-- [Python-Side Usage](#python-side-usage)
-    - [Bridge-Defined Types](#bridge-defined-types)
-    - [ILLIXR System Types](#illixr-system-types)
-
----
-
-## Overview
-
-There are two categories of data types available to Python bridge scripts:
-
-**Bridge-defined types** are described in YAML files in `interfaces/data/`.
-The cmake configure step generates a C++ struct header and pybind11 bindings
-for each one.  All bridge-defined types live in the `ILLIXR::bridge` C++
-namespace (with additional nesting for subdirectories) and are imported in
-Python under `illixr.bridge`.
-
-**ILLIXR system types** are the existing C++ structs in
-`include/illixr/data_format/`.  The script `generate_system_bindings.py` is
-run manually to produce pre-generated pybind11 bindings checked into git under
-`interfaces/python/system_bindings/`.  These are compiled into every bridge
-plugin automatically and are accessible in Python under `illixr` (without the
-`bridge` sub-package).
-
-The `illixr.bridge` and `illixr` namespaces are strictly separate, so there
-is no risk of name collision between bridge-defined and system types.
-
----
-
-## File Location and Naming
+## Directory structure
 
 ```
 interfaces/
+├── python/
+│   ├── python_profiles.yaml          # master profile (hand-written)
+│   ├── generate_python_bridges.py    # generator (do not edit generated files directly)
+│   ├── bridges/
+│   │   └── <bridge_name>.yaml        # one file per bridge (hand-written)
+│   └── profiles/                     # auto-generated per-profile yamls (committed)
+│       └── <profile_name>.yaml
 └── data/
-    ├── camera_intrinsics.yaml        # root-level type
-    ├── sensor_frame.yaml
-    └── geometry/
-        └── camera_intrinsics.yaml   # same stem, different namespace
+    └── <namespace>/                  # one directory per namespace
+        └── <type_name>.yaml          # one file per struct type (hand-written)
 ```
-
-- Files must be placed in `interfaces/data/` or a subdirectory of it.
-- **The struct name is derived from the filename stem.**  A file named
-  `sensor_frame.yaml` defines a struct named `sensor_frame`.  There is no
-  `name:` key inside the file — including one is an error.
-- Every filename and subdirectory name must be lowercase snake_case: letters,
-  digits, and underscores only, starting with a letter.
-- Two files in different directories may share the same stem without conflict
-  because each gains a distinct namespace from its path.
 
 ---
 
-## Namespacing with Subdirectories
+## Master profile (`python_profiles.yaml`)
 
-The directory path under `interfaces/data/` maps directly and consistently
-to C++ namespaces, Python import paths, generated header paths, and
-serialization macro names.  The root of the mapping is always `ILLIXR::bridge`
-in C++ and `illixr.bridge` in Python.
-
-| File path | Dotted name (in YAML) | C++ qualified name | Python import | Generated header |
-|---|---|---|---|---|
-| `interfaces/data/camera_intrinsics.yaml` | `camera_intrinsics` | `ILLIXR::bridge::camera_intrinsics` | `illixr.bridge.camera_intrinsics` | `illixr/bridge/camera_intrinsics.hpp` |
-| `interfaces/data/geometry/camera_intrinsics.yaml` | `geometry.camera_intrinsics` | `ILLIXR::bridge::geometry::camera_intrinsics` | `illixr.bridge.geometry.camera_intrinsics` | `illixr/bridge/geometry/camera_intrinsics.hpp` |
-| `interfaces/data/pose/fast_pose.yaml` | `pose.fast_pose` | `ILLIXR::bridge::pose::fast_pose` | `illixr.bridge.pose.fast_pose` | `illixr/bridge/pose/fast_pose.hpp` |
-| `interfaces/data/geometry/shapes/point.yaml` | `geometry.shapes.point` | `ILLIXR::bridge::geometry::shapes::point` | `illixr.bridge.geometry.shapes.point` | `illixr/bridge/geometry/shapes/point.hpp` |
-
-Nesting depth is unlimited.  Every directory level adds one C++ namespace and
-one Python sub-package level.
-
-### Dotted names in bridge descriptor files
-
-Types are referenced in bridge descriptor YAML using their dotted name.  The
-resolution is exact — no fallback search is performed.
+Defines named profiles, each listing the bridges it activates.
 
 ```yaml
-# interfaces/python/bridges/my_bridge.yaml
-types:
-  - camera_intrinsics             # must exist at interfaces/data/camera_intrinsics.yaml
-  - geometry.camera_intrinsics    # must exist at interfaces/data/geometry/camera_intrinsics.yaml
+my_xr:
+  bridges: semantic_my_xr
+
+offload:
+  bridges: offload_frames, offload_response
+```
+
+A profile is selected at CMake configure time with `-DPYTHON_BRIDGE_PROFILE=my_xr.yaml`.
+
+---
+
+## Bridge descriptor (`bridges/<bridge_name>.yaml`)
+
+Defines a single bridge plugin — one Python script, its inputs, and its outputs.
+The filename stem is the bridge name.
+
+```yaml
+script: scripts/my_script.py      # path to the Python script (required)
 
 inputs:
-  - topic: frames
-    type: sensor_frame            # root-level sensor_frame
-    alias: frames
+  - topic: semantic_data           # switchboard topic name
+    type: semantic_xr.semantic_data  # dotted type name (namespace.struct)
+    alias: semantic_data           # optional: Python global name suffix
+                                   # defaults to the topic name
 
-  - topic: geo_frames
-    type: geometry.sensor_frame   # geometry-namespaced sensor_frame
-    alias: geo_frames
-```
-
-If a bare name like `camera_intrinsics` is used but no
-`interfaces/data/camera_intrinsics.yaml` exists at the root level, the
-generator produces a `FATAL_ERROR` at configure time — it does **not** search
-subdirectories for a match.
-
----
-
-## Top-Level Structure
-
-Every data type file has exactly one required top-level key:
-
-```yaml
-# interfaces/data/sensor_frame.yaml
-# Struct name: sensor_frame  (from filename)
-# C++ type:    ILLIXR::bridge::sensor_frame
-# Python:      illixr.bridge.sensor_frame
-
-fields:
-  field_one:
-    type: int
-  field_two:
-    type: float
-```
-
-```yaml
-# interfaces/data/geometry/sensor_frame.yaml
-# Struct name: sensor_frame  (same stem, different namespace)
-# C++ type:    ILLIXR::bridge::geometry::sensor_frame
-# Python:      illixr.bridge.geometry.sensor_frame
-
-fields:
-  field_one:
-    type: int
-  field_two:
-    type: float
-```
-
-| Key      | Required | Description |
-|----------|----------|-------------|
-| `name`   | **forbidden** | Must not be present. The struct name and namespace come from the file path. |
-| `fields` | yes      | Non-empty mapping of field name to field definition. |
-
-Field names must be lowercase snake_case.
-
----
-
-## Scalar Types
-
-A scalar field has a `type` key and no `container`, `shape`, or `channels` key.
-
-```yaml
-fields:
-  frame_number:
-    type: int
-
-  confidence:
-    type: float
-
-  label:
-    type: string
-```
-
-The following scalar types are supported.  Aliases are accepted interchangeably.
-
-| YAML type  | Aliases        | C++ type       | Python / numpy type |
-|------------|----------------|----------------|---------------------|
-| `int8`     |                | `int8_t`       | `np.int8`           |
-| `int16`    |                | `int16_t`      | `np.int16`          |
-| `int`      | `int32`        | `int32_t`      | `np.int32`          |
-| `int64`    |                | `int64_t`      | `np.int64`          |
-| `uint8`    | `byte`, `char` | `uint8_t`      | `np.uint8`          |
-| `uint16`   |                | `uint16_t`     | `np.uint16`         |
-| `uint32`   |                | `uint32_t`     | `np.uint32`         |
-| `uint64`   |                | `uint64_t`     | `np.uint64`         |
-| `float`    | `float32`      | `float`        | `np.float32`        |
-| `double`   | `float64`      | `double`       | `np.float64`        |
-| `bool`     |                | `bool`         | `bool`              |
-| `string`   | `str`          | `std::string`  | `str`               |
-
----
-
-## Fixed-Size Array Fields
-
-A field with a `shape` key becomes a C-style fixed-size array.  Shape must be
-a list of one or two positive integer literals.  Three or higher dimensions are
-not supported.
-
-```yaml
-fields:
-  intrinsics:
-    type: float
-    shape: [4]          # → float intrinsics_[4]
-
-  projection_matrix:
-    type: float64
-    shape: [4, 4]       # → double projection_matrix_[4][4]
-```
-
-On the Python side, 1D and 2D fixed arrays of scalar types are exposed as numpy
-arrays (zero-copy read, copy on write).
-
-**Restrictions on `shape`:**
-
-- `shape` and `container` are mutually exclusive on the same field.
-- `string` and `bool` may not be used with `shape`.  Use `vector` instead.
-- Two-dimensional shape is not allowed for nested struct types.
-  For nested struct 1D arrays see [Nested Struct Fields](#nested-struct-fields).
-
----
-
-## Container Fields
-
-A field with a `container` key becomes a dynamically-sized collection.  The
-`container` and `shape` keys are mutually exclusive.
-
-### Vector (dynamic list)
-
-```yaml
-fields:
-  keypoint_scores:
-    type: float
-    container: vector   # std::vector<float>
-
-  tags:
-    type: string
-    container: list     # alias for vector; std::vector<std::string>
-```
-
-`vector` and `list` are interchangeable aliases.  The C++ type is
-`std::vector<T>`.  On the Python side this is a plain `list`.
-
-### Dict (string-keyed map)
-
-```yaml
-fields:
-  metadata:
-    type: string
-    container: dict     # std::unordered_map<std::string, std::string>
-```
-
-`dict` and `map` are interchangeable aliases.  Keys are always `std::string`.
-The C++ type is `std::unordered_map<std::string, T>`.  On the Python side this
-is a plain `dict`.
-
-**Restrictions on containers:**
-
-| Combination            | Allowed | Reason |
-|------------------------|---------|--------|
-| `vector<bool>`         | **no**  | `std::vector<bool>` is a bitfield specialisation; use `vector<uint8>` instead |
-| `dict<bool>`           | **no**  | Same underlying concern as `vector<bool>` |
-| `dict<uint8..uint64>`  | **no**  | Small integer dict values are almost always a design error; use `vector` |
-| `vector` of `mat_*`    | **no**  | Use multiple named fields instead |
-| `dict` of `mat_*`      | **no**  | `cv::Mat` cannot be a dict value |
-| Nested containers      | **no**  | `vector<vector<T>>`, `dict<dict<T>>`, etc. are not supported |
-
----
-
-## OpenCV Mat Fields
-
-A field with a `mat_*` type holds a `cv::Mat`.  The `channels` key is required
-and must be an integer from 1 to 4.
-
-```yaml
-fields:
-  color_frame:
-    type: mat_8u
-    channels: 3       # CV_8UC3; numpy shape (H, W, 3), dtype uint8
-
-  depth_frame:
-    type: mat_32f
-    channels: 1       # CV_32FC1; numpy shape (H, W),    dtype float32
-
-  ir_frame:
-    type: mat_16u
-    channels: 1       # CV_16UC1; numpy shape (H, W),    dtype uint16
-```
-
-Supported mat types:
-
-| YAML type  | OpenCV depth | C++ element type | numpy dtype  |
-|------------|--------------|------------------|--------------|
-| `mat_8u`   | `CV_8U`      | `uint8_t`        | `np.uint8`   |
-| `mat_8s`   | `CV_8S`      | `int8_t`         | `np.int8`    |
-| `mat_16u`  | `CV_16U`     | `uint16_t`       | `np.uint16`  |
-| `mat_16s`  | `CV_16S`     | `int16_t`        | `np.int16`   |
-| `mat_32s`  | `CV_32S`     | `int32_t`        | `np.int32`   |
-| `mat_32f`  | `CV_32F`     | `float`          | `np.float32` |
-| `mat_64f`  | `CV_64F`     | `double`         | `np.float64` |
-
-On the Python side, `mat_*` fields are exposed as numpy arrays.  The getter
-returns a zero-copy view backed by the `cv::Mat` data; the setter accepts a
-numpy array of matching dtype and copies it into the `cv::Mat`.
-
-**Restrictions on `mat_*` fields:**
-
-- `shape` is not valid with `mat_*` types; the Mat encodes its own dimensions.
-- `container` is not valid with `mat_*` types.
-- `channels` is required and must be 1, 2, 3, or 4.
-
----
-
-## Nested Struct Fields
-
-A field may use another bridge-defined struct as its type.  The type is
-specified using its **dotted name**, which must match the file's path relative
-to `interfaces/data/`.  The dependency must be listed before the dependent type
-in the bridge descriptor's `types:` list.
-
-```yaml
-# interfaces/data/sensor_frame.yaml
-
-fields:
-  # Root-level struct — bare name
-  color_intrinsics:
-    type: camera_intrinsics
-    # C++: ILLIXR::bridge::camera_intrinsics color_intrinsics_
-
-  # Geometry-namespaced struct — dotted name
-  geo_intrinsics:
-    type: geometry.camera_intrinsics
-    # C++: ILLIXR::bridge::geometry::camera_intrinsics geo_intrinsics_
-
-  # 1D fixed array of a namespaced struct
-  camera_rig:
-    type: geometry.camera_intrinsics
-    shape: [4]
-    # C++: ILLIXR::bridge::geometry::camera_intrinsics camera_rig_[4]
-
-  # Dynamic list of a root struct
-  detected_cameras:
-    type: camera_intrinsics
-    container: vector
-    # C++: std::vector<ILLIXR::bridge::camera_intrinsics>
-```
-
-On the Python side:
-
-- A plain nested struct is a Python object with the same attribute names as the
-  nested type.
-- A 1D struct array is a Python `list` of objects.
-- A `vector` of structs is a Python `list` of objects.
-
-**Restrictions on nested struct fields:**
-
-| Combination | Allowed | Reason |
-|---|---|---|
-| 1D `shape` | **yes** | Fixed-length list on the Python side |
-| 2D `shape` | **no**  | No clean numpy/Python representation |
-| `container: vector` | **yes** | Dynamic list on the Python side |
-| `container: dict` | **no**  | Unclear Python semantics |
-| `channels` | **no**  | Only valid for `mat_*` types |
-| Self-referential or cyclic structs | **no**  | Generator cannot resolve include order |
-| Bare name that has no root-level yaml | **no**  | Generator does not search subdirectories; use the full dotted name |
-| Struct shared across plugin `.so` boundaries via switchboard | **no** | Each plugin compiles its own copy; types are distinct at link time.  Promote to a proper ILLIXR data format header if sharing is needed. |
-
-The bridge descriptor's `types:` list must name dependencies before dependents
-(e.g. `camera_intrinsics` before `sensor_frame`, or
-`geometry.camera_intrinsics` before `geometry.sensor_frame`).
-
----
-
-## Serialization
-
-Serialization code is always generated inside the struct header, guarded by an
-`#ifdef`.  The macro name is derived from the dotted type name with dots
-replaced by underscores and the whole name uppercased:
-
-| Dotted name | Serialization macro |
-|---|---|
-| `sensor_frame` | `ILLIXR_SERIALIZE_SENSOR_FRAME` |
-| `geometry.camera_intrinsics` | `ILLIXR_SERIALIZE_GEOMETRY_CAMERA_INTRINSICS` |
-| `pose.fast_pose` | `ILLIXR_SERIALIZE_POSE_FAST_POSE` |
-
-```cpp
-#ifdef ILLIXR_SERIALIZE_GEOMETRY_CAMERA_INTRINSICS
-    template<typename Archive>
-    void serialize(Archive& ar_, const unsigned int) { ... }
-    friend class boost::serialization::access;
-#endif
-```
-
-The define is activated per output topic in the bridge descriptor:
-
-```yaml
-# interfaces/python/bridges/my_bridge.yaml
 outputs:
-  - topic: processed_frames
-    type: geometry.sensor_frame
-    network: tcp    # activates ILLIXR_SERIALIZE_GEOMETRY_SENSOR_FRAME
+  - topic: semantic_response
+    type: semantic_xr.query_response
+    network: tcp                   # optional: tcp or udp (omit for local)
+    alias: semantic_response       # optional
 ```
 
-Accepted `network` values: `tcp`, `TCP`, `udp`, `UDP`, `true`, `false` (default).
+The `alias` controls the name of the global injected into the Python script:
 
-When serialization is activated for a type, it is also activated transitively
-for all nested bridge-defined struct types it depends on.  Both
-`BOOST_CLASS_EXPORT_KEY` and `BOOST_CLASS_EXPORT_IMPLEMENT` are placed in the
-same header.  This is safe because each generated header is included only
-within its own plugin's translation units.
+- Input alias `foo` -> `illixr_foo_reader`
+- Output alias `bar` -> `illixr_bar_writer`
 
 ---
 
-## Allowed and Disallowed Combinations
+## Type definition (`data/<namespace>/<type_name>.yaml`)
 
-The following table is a concise summary of every rule enforced by the generator.
-Violations produce a CMake `FATAL_ERROR` at configure time.
-
-### File and path rules
-
-| Situation | Allowed |
-|-----------|---------|
-| `name:` key present in the file | **✗** struct name and namespace come from the file path only |
-| Filename not lowercase snake_case | **✗** |
-| Subdirectory name not lowercase snake_case | **✗** |
-| Bare type name with no matching root-level yaml | **✗** generator does not search subdirectories |
-
-### Field-level rules
-
-| Field definition | Allowed |
-|------------------|---------|
-| Scalar with no `shape`, `container`, or `channels` | ✓ |
-| Scalar with 1D `shape` | ✓ (except `bool` and `string`) |
-| Scalar with 2D `shape` | ✓ (except `bool` and `string`) |
-| Scalar with `container: vector` | ✓ (except `bool`) |
-| Scalar with `container: dict` | ✓ (except `bool` and unsigned integer types) |
-| `shape` and `container` on the same field | **✗** mutually exclusive |
-| `mat_*` with `channels` 1–4 | ✓ |
-| `mat_*` with `shape` | **✗** |
-| `mat_*` with `container` | **✗** |
-| `mat_*` without `channels` | **✗** |
-| `channels` on a non-`mat_*` field | **✗** |
-| Nested struct using dotted name, plain | ✓ |
-| Nested struct using dotted name, 1D `shape` | ✓ |
-| Nested struct using dotted name, 2D `shape` | **✗** |
-| Nested struct with `container: vector` | ✓ |
-| Nested struct with `container: dict` | **✗** |
-| `vector<bool>` | **✗** use `vector<uint8>` |
-| `dict` with `bool`, `uint8`–`uint64` values | **✗** |
-| Nested containers (`vector<vector<T>>` etc.) | **✗** |
-| Unknown type name | **✗** |
-| Field name not lowercase snake_case | **✗** |
-
-### Struct-level rules
-
-| Situation | Allowed |
-|-----------|---------|
-| Inheriting from another bridge-defined struct | **✗** all structs inherit only from `switchboard::event` |
-| Using another bridge-defined struct as a data member | ✓ (see Nested Struct Fields) |
-| Self-referential or cyclic struct dependency | **✗** |
-| Duplicate struct names in the same namespace | **✗** |
-| Same stem in different namespaces | ✓ each gains a distinct C++ namespace from its path |
-| Pointer members | **✗** not representable in YAML |
-
----
-
-## Complete Example
-
-The following shows a realistic type file using all supported field categories,
-including fields that reference both a root-level and a namespaced version of
-`camera_intrinsics`.
+Defines a C++ struct that is exchanged over the switchboard. The dotted name
+`namespace.type_name` is derived from the directory path and filename.
 
 ```yaml
-# interfaces/data/sensor_frame.yaml
-# C++ type: ILLIXR::bridge::sensor_frame
-# Python:   illixr.bridge.sensor_frame
-
 fields:
-  # --- scalars ---
-  frame_number:
-    type: int
+  field_name:
+    type: <type>          # required
+    # --- optional modifiers ---
+    container: <container>
+    shape: <shape>
+    channels: <int>       # mat types only — see below
+```
 
-  timestamp:
-    type: double
+### Scalar types
 
-  valid:
-    type: bool
+| YAML `type`               | C++ type      | Python type |
+|---------------------------|---------------|-------------|
+| `int8`                    | `int8_t`      | `int`       |
+| `int16`                   | `int16_t`     | `int`       |
+| `int` / `int32`           | `int32_t`     | `int`       |
+| `int64`                   | `int64_t`     | `int`       |
+| `uint8` / `byte` / `char` | `uint8_t`     | `int`       |
+| `uint16`                  | `uint16_t`    | `int`       |
+| `uint32`                  | `uint32_t`    | `int`       |
+| `uint64`                  | `uint64_t`    | `int`       |
+| `float` / `float32`       | `float`       | `float`     |
+| `double` / `float64`      | `double`      | `float`     |
+| `bool`                    | `bool`        | `bool`      |
+| `string` / `str`          | `std::string` | `str`       |
 
-  sensor_id:
-    type: string
+### Nested bridge-defined struct
 
-  # --- 1D fixed array ---
-  distortion_coeffs:
-    type: float
-    shape: [5]
+```yaml
+type: semantic_xr.point_cloud    # dotted name referencing another type YAML
+```
 
-  # --- 2D fixed array ---
-  projection_matrix:
-    type: float
-    shape: [4, 4]
+The struct must be defined in `data/semantic_xr/point_cloud.yaml`. In Python
+the field is a nested `dict` with the same keys as the nested struct.
 
-  # --- dynamic containers ---
-  keypoint_scores:
-    type: float
+### ILLIXR system types
+
+Any struct defined in `include/illixr/data_format/` can be used directly
+as a field type without a YAML definition. The generator automatically
+discovers all available structs via a libclang scan at CMake configure time —
+no manual registration is required. Use the bare struct name (without a namespace):
+
+```yaml
+fields:
+  pose:
+    type: combined_pose
+  audio:
+    type: audio_data
     container: vector
+```
+
+If libclang is not available, the scan is skipped and only bridge-defined
+types are usable. Install `libclang-dev` and the `clang` Python package
+to enable system type discovery.
+
+---
+
+## Field modifiers
+
+### `container`
+
+Makes the field a collection. The C++ type becomes `std::vector<T>` in all cases.
+In Python the field is a `list`.
+
+| YAML value     | C++ type                             |
+|----------------|--------------------------------------|
+| `vector`       | `std::vector<T>`                     |
+| `list`         | `std::vector<T>`                     |
+| `dict` / `map` | `std::unordered_map<std::string, T>` |
+
+```yaml
+fields:
+  scores:
+    type: float
+    container: vector        # std::vector<float> in C++, list in Python
 
   tags:
     type: string
+    container: dict          # std::unordered_map<std::string, std::string>
+```
+
+For a 1-D dynamically sized array use `container: vector` with no `shape`.
+For multidimensional arrays use `shape` instead (see below).
+
+### `shape` — fixed or dynamic multi-dimensional arrays
+
+`shape` defines how a field is laid out as a multidimensional array.
+It takes a list of one to three entries. Each entry is either:
+
+- A **positive integer** — a compile-time constant dimension
+- A **field name** (lowercase snake_case string) — a runtime dimension stored
+  in a sibling integer field that is synthesized automatically
+
+#### Fixed compile-time array (all integers, no `container`)
+
+```yaml
+fields:
+  matrix:
+    type: float
+    shape: [3, 3]            # float matrix_[3][3] in C++; numpy (9,) in Python
+  rotation:
+    type: float
+    shape: [3, 3, 3]         # float rotation_[3][3][3]; numpy (27,) in Python
+  weights:
+    type: float
+    shape: [128]             # float weights_[128]; numpy (128,) in Python
+```
+
+Fixed arrays are serialized with Boost and presented to Python as a flat
+1-D numpy array (the dimensions are unfolded).
+
+#### Dynamic numpy array (with `container: vector` or any string dimension)
+
+When `shape` is combined with `container: vector`, or when any dimension entry
+is a field name, the field is stored as `std::vector<T>` and presented to
+Python as a shaped numpy array. Dimension fields are synthesized automatically
+as `int32_t` — you do not need to declare them separately.
+
+```yaml
+fields:
+  # Fully dynamic — all three dimensions known only at runtime
+  voxels:
+    type: uint8
+    shape: [dim_x, dim_y, dim_z]      # synthesizes int32_t dim_x_, dim_y_, dim_z_
+
+  # Mixed — two runtime dims, one compile-time constant
+  feature_map:
+    type: float
+    shape: [height, width, 512]       # synthesizes int32_t height_, width_
+
+  # Fully fixed shape stored as a vector (unusual but valid)
+  lut:
+    type: float
     container: vector
+    shape: [256, 3]                   # no fields synthesized
+```
 
-  properties:
-    type: string
-    container: dict
+The numpy array is C-contiguous (row-major). The shape in Python matches the
+YAML entry order: `shape: [dim_x, dim_y, dim_z]` -> numpy shape `(dim_x, dim_y, dim_z)`.
 
-  # --- OpenCV mats ---
-  color_frame:
+On the writer side (Python -> C++), pass a numpy array of the correct shape.
+The dimension fields are populated automatically from `array.shape` and do not
+need to be included in the Python dict.
+
+### `type: image` — packed image arrays
+
+`type: image` is a specialization for camera images stored as packed uint8 RGB/gray.
+It always uses `shape: [width, height, channels]` where `channels` is 1, 2, or 3.
+
+```yaml
+fields:
+  rgb:
+    type: image
+    shape: [image_width, image_height, 3]    # synthesizes int32_t image_width_, image_height_
+
+  depth:
+    type: image
+    shape: [depth_width, depth_height, 1]    # single-channel
+```
+
+- C++ storage: `std::vector<uint8_t>`
+- Dimension fields: synthesized as `int32_t` (or use integer literals for fixed sizes)
+- Python numpy shape: **(height, width, channels)** — the standard image convention
+  used by PIL, OpenCV, and matplotlib, regardless of YAML entry order
+- Strides: C-contiguous `(width * channels, channels, 1)` — matches the output
+  of `entry_to_numpy` and standard video decoder output
+
+```python
+frame = illixr_semantic_data_reader.get()
+img = frame["rgb"]           # shape (H, W, 3), dtype uint8
+Image.fromarray(img).save("frame.png")       # works directly
+cv2.imshow("frame", img[:, :, ::-1])         # BGR swap for OpenCV
+```
+
+On the writer side, pass a `(H, W, ch)` numpy array. The width and height
+fields are populated automatically from `array.shape`.
+
+### `channels` — OpenCV Mat types
+
+Mat types (`mat_8u`, `mat_16u`, `mat_32f`, `mat_64f`, etc.) store an OpenCV
+`cv::Mat` and require a `channels` key (1-4).
+
+```yaml
+fields:
+  frame:
     type: mat_8u
-    channels: 3
-
-  depth_frame:
+    channels: 3              # cv::Mat, 3-channel uint8
+  depth:
     type: mat_32f
     channels: 1
-
-  # --- root-level nested struct ---
-  color_intrinsics:
-    type: camera_intrinsics
-    # C++: ILLIXR::bridge::camera_intrinsics
-
-  # --- geometry-namespaced nested struct ---
-  geo_intrinsics:
-    type: geometry.camera_intrinsics
-    # C++: ILLIXR::bridge::geometry::camera_intrinsics
-
-  # --- 1D array of a namespaced struct ---
-  camera_rig:
-    type: geometry.camera_intrinsics
-    shape: [4]
-
-  # --- dynamic list of a root struct ---
-  detected_cameras:
-    type: camera_intrinsics
-    container: vector
 ```
 
-The bridge descriptor for a plugin using this type must list all dependencies
-before `sensor_frame`:
+| YAML `type`  | Element C++ type | numpy dtype |
+|--------------|------------------|-------------|
+| `mat_8u`     | `uint8_t`        | `uint8`     |
+| `mat_8s`     | `int8_t`         | `int8`      |
+| `mat_16u`    | `uint16_t`       | `uint16`    |
+| `mat_16s`    | `int16_t`        | `int16`     |
+| `mat_32s`    | `int32_t`        | `int32`     |
+| `mat_32f`    | `float`          | `float32`   |
+| `mat_64f`    | `double`         | `float64`   |
+
+In Python, mat fields are presented as numpy arrays via a zero-copy capsule.
+Empty mats are returned as `None`.
+
+---
+
+## Complete example
+
+### `data/semantic_xr/point_cloud.yaml`
 
 ```yaml
-types:
-  - camera_intrinsics              # interfaces/data/camera_intrinsics.yaml
-  - geometry.camera_intrinsics     # interfaces/data/geometry/camera_intrinsics.yaml
-  - sensor_frame                   # interfaces/data/sensor_frame.yaml
+fields:
+  points:
+    type: float
+    container: list          # std::vector<float>; Python list
+  centroid:
+    type: float
+    container: list
+  num_points:
+    type: int
+```
+
+### `data/semantic_xr/semantic_data.yaml`
+
+```yaml
+fields:
+  image:
+    type: image
+    shape: [image_width, image_height, 3]   # synthesizes image_width_, image_height_
+  intrinsics:
+    type: float
+    shape: [4]               # fixed 1-D array; numpy (4,)
+  depth:
+    type: float
+    container: vector        # plain 1-D vector, size unknown at compile time
+  depth_width:
+    type: int
+  depth_height:
+    type: int
+  frame_number:
+    type: int
+```
+
+### `data/semantic_xr/query_response.yaml`
+
+```yaml
+fields:
+  query_id:
+    type: uint64
+  point_clouds:
+    type: semantic_xr.point_cloud
+    container: list          # vector of nested bridge structs
+  colors:
+    type: float
+    container: list
+  num_point_clouds:
+    type: int
+  server_query_processing:
+    type: float
+  text_query:
+    type: string
+```
+
+### `bridges/semantic_my_xr.yaml`
+
+```yaml
+script: scripts/semantic_xr.py
+
+inputs:
+  - topic: semantic_data
+    type: semantic_xr.semantic_data
+  - topic: semantic_query
+    type: semantic_xr.voice_query
+    alias: query
+
+outputs:
+  - topic: semantic_response
+    type: semantic_xr.query_response
+    network: tcp
 ```
 
 ---
 
-## Using Generated Headers in C++ Plugins
+## Python interface
 
-Generated headers are placed under `${CMAKE_BINARY_DIR}/include/`, mirroring
-the dotted namespace in the path:
+The generator injects the following globals into the script's namespace:
 
-| Dotted name | Generated header path |
-|---|---|
-| `sensor_frame` | `${CMAKE_BINARY_DIR}/include/illixr/bridge/sensor_frame.hpp` |
-| `geometry.camera_intrinsics` | `${CMAKE_BINARY_DIR}/include/illixr/bridge/geometry/camera_intrinsics.hpp` |
+```python
+# --- Readers ---
+# illixr_<alias>_reader.get() -> dict or None
 
-To use a generated type in a pure C++ plugin, add the header to the plugin's
-source list and add `${CMAKE_BINARY_DIR}/include` to its include directories:
+frame = illixr_semantic_data_reader.get()
+if frame is not None:
+    img        = frame["image"]          # numpy (H, W, 3) uint8
+    intrinsics = frame["intrinsics"]     # numpy (4,) float32
+    depth      = frame["depth"]          # Python list of floats
+    fn         = frame["frame_number"]   # int
 
-**`plugins/my_plugin/CMakeLists.txt`**
-```cmake
-add_illixr_plugin(my_plugin
-    SOURCES
-        plugin.cpp
-        ${CMAKE_BINARY_DIR}/include/illixr/bridge/sensor_frame.hpp
-        ${CMAKE_BINARY_DIR}/include/illixr/bridge/geometry/camera_intrinsics.hpp
-)
+# --- Writers ---
+# illixr_<alias>_writer.put(dict)
 
-target_include_directories(plugin.my_plugin PRIVATE
-    ${CMAKE_BINARY_DIR}/include
-)
+illixr_semantic_response_writer.put({
+    "query_id":                query_id,
+    "point_clouds": [
+        {
+            "points":     [x, y, z, ...],   # flat list, 3 floats per point
+            "centroid":   [cx, cy, cz],
+            "num_points": n,
+        }
+    ],
+    "colors":                  [0.8, 0.2, 0.2],
+    "num_point_clouds":        1,
+    "server_query_processing": 0.012,
+    "text_query":              "chair",
+})
+
+# --- Subscribe ---
+# illixr_subscribe(alias, callback)
+# callback receives the same dict as .get()
+
+def on_frame(d):
+    process(d["image"])
+
+illixr_subscribe("semantic_data", on_frame)
 ```
 
-**`plugins/my_plugin/plugin.cpp`**
-```cpp
-#include "illixr/bridge/sensor_frame.hpp"
-#include "illixr/bridge/geometry/camera_intrinsics.hpp"
+### Dict conventions
 
-// Use the types via their fully-qualified C++ names
-void example() {
-    ILLIXR::bridge::sensor_frame                  frame;
-    ILLIXR::bridge::geometry::camera_intrinsics   geo_cam;
-}
-```
-
-The `${CMAKE_BINARY_DIR}/include` path mirrors the convention used for
-non-generated ILLIXR headers under `${CMAKE_SOURCE_DIR}/include`.
+- Field names in dicts match the YAML field names exactly (no trailing underscore).
+- Missing keys in a `put()` dict leave the corresponding struct field at its
+  default-constructed value.
+- Nested bridge structs appear as nested dicts.
+- Vectors of bridge structs appear as Python lists of dicts.
+- Fixed-shape arrays and dynamic numpy arrays appear as numpy arrays.
+- `type: image` fields appear as `(H, W, ch)` numpy arrays (height first).
+- Mat fields appear as numpy arrays or `None` if empty.
 
 ---
 
-## Python-Side Usage
+## Serialization and network transport
 
-### Bridge-Defined Types
+Serialization is only required for fields on output topics that specify
+`network: tcp` or `network: udp`. It is never needed for local (non-network)
+topics or for input topics.
 
-Bridge-defined types are imported under the `illixr.bridge` package.  The
-import path mirrors the dotted name used in the YAML:
+> **Important:** The Python bridge generator supports **Boost serialization
+> only**. Some ILLIXR networked data types use Protobuf serialization written
+> at the plugin level rather than Boost. Such types cannot be used on network
+> output topics in a Python bridge. If you attempt to use one, the generator
+> will correctly raise a "serialization header not found" error since these
+> types have no Boost serialization header in `data_format/serialization/`.
+> Use a bridge-defined type with Boost serialization for any data that must
+> travel over the network from a Python bridge.
 
-```python
-import illixr.bridge.camera_intrinsics          as root_cam
-import illixr.bridge.geometry.camera_intrinsics as geo_cam
-import illixr.bridge.sensor_frame               as sf_types
+**Bridge-defined types** (declared in `interfaces/data/`) always have
+Boost serialization generated automatically — no extra steps needed.
+
+**ILLIXR system types** (from `include/illixr/data_format/`) require a
+`boost::serialization::serialize()` (or `save`/`load`) specialization in
+a header under `include/illixr/data_format/serialization/`. If a system
+type is used on a network output and no Boost serialization header exists
+— including types that use Protobuf serialization instead — the generator
+raises a clear error:
+
+```
+FATAL_ERROR: Bridge 'my_bridge' output topic 'pose_out' uses ILLIXR type
+'pose_data' over network transport, but no serialization header was found
+for it in data_format/serialization/. Add a boost::serialization::serialize()
+specialisation for ILLIXR::pose_data to a header in that directory.
 ```
 
-The `inputs` and `outputs` dicts are provided automatically by the bridge.
-Struct types must be imported explicitly only when constructing output objects.
+To fix this, either add a Boost serialization header to
+`include/illixr/data_format/serialization/` for the type, or define a
+bridge-specific type in `interfaces/data/` and convert the data there.
 
-```python
-# scripts/my_bridge.py
+---
 
-import illixr.bridge.camera_intrinsics          as root_cam
-import illixr.bridge.geometry.camera_intrinsics as geo_cam
-import illixr.bridge.sensor_frame               as sf_types
+## Staleness and regeneration
 
-def run(inputs, outputs):
-    frame = inputs["frames"]()
-    if frame is None:
-        return
+The generator uses a JSON state file (`${CMAKE_BINARY_DIR}/.py_bridge_state.json`)
+to track MD5 hashes of all bridge and type YAML files. Only bridges whose YAML
+files have changed since the last CMake run are regenerated. The libclang scan
+for ILLIXR serialization headers runs only when regeneration is needed, keeping
+up to date cmake runs fast (under one second).
 
-    # Scalar fields — C++ trailing underscore is preserved
-    fn = frame.frame_number_
-    ts = frame.timestamp_
-
-    # numpy arrays — mat_* and fixed-shape arrays are zero-copy reads
-    color = frame.color_frame_          # np.ndarray (H, W, 3) uint8
-    depth = frame.depth_frame_          # np.ndarray (H, W)    float32
-    proj  = frame.projection_matrix_    # np.ndarray (16,)     float32
-
-    # Nested struct fields — fully distinct types despite sharing the name
-    rx = frame.color_intrinsics_.fx_    # ILLIXR::bridge::camera_intrinsics
-    gx = frame.geo_intrinsics_.fx_      # ILLIXR::bridge::geometry::camera_intrinsics
-
-    # vector and dict fields
-    scores = frame.keypoint_scores_     # list of float
-    props  = frame.properties_          # dict str->str
-
-    # Construct output using keyword arguments (all default to zero/empty)
-    result = sf_types.sensor_frame(
-        frame_number     = fn + 1,
-        color_frame      = color,
-        depth_frame      = depth,
-        color_intrinsics = root_cam.camera_intrinsics(
-            fx=525.0, fy=525.0, cx=320.0, cy=240.0,
-            width=640, height=480),
-        geo_intrinsics   = geo_cam.camera_intrinsics(
-            fx=525.0, fy=525.0, cx=320.0, cy=240.0,
-            width=640, height=480, skew=0.0),
-    )
-
-    outputs["frames_out"](result)
-```
-
-All C++ member names retain their trailing underscore on the Python side.
-
-### ILLIXR System Types
-
-ILLIXR system types (from `include/illixr/data_format/`) are accessed through
-the `illixr` package (not `illixr.bridge`), which is compiled into every bridge
-plugin automatically.
-
-```python
-import illixr.head_pose as head_pose
-import illixr.pose      as pose_types
-```
-
-Importing `illixr.head_pose` automatically imports `illixr.pose` and
-`illixr.fast_pose` first, mirroring the C++ `#include` chain so base classes
-are always registered before derived classes.
-
-```python
-import illixr.head_pose as head_pose
-
-def run(inputs, outputs):
-    raw = inputs["pose_in"]()
-    if raw is None:
-        return
-
-    # System struct field names have no trailing underscore
-    x = raw.x
-    y = raw.y
-
-    out = head_pose.fast_head_pose_type(
-        imu_bias_x=0.01,
-        imu_bias_y=0.02,
-        imu_bias_z=0.00,
-    )
-    outputs["pose_out"](out)
-```
-
-The complete list of available system types, their fields, and the required
-import order is in `interfaces/python/system_bindings/system_types.json`.
-
-#### Namespace summary
-
-| Type category | C++ namespace | Python import prefix |
-|---|---|---|
-| Bridge-defined, root level | `ILLIXR::bridge` | `illixr.bridge` |
-| Bridge-defined, subdirectory | `ILLIXR::bridge::<subdir>` | `illixr.bridge.<subdir>` |
-| ILLIXR system types | `ILLIXR` | `illixr` |
-
-#### Regenerating System Bindings
-
-System bindings are pre-generated and checked into git.  Regenerate them
-whenever `include/illixr/data_format/` headers change:
-
-```sh
-# Minimal — uses source include/ only
-python3 interfaces/python/generate_system_bindings.py
-
-# With cmake cache for auto-discovered dependency paths (Eigen, OpenCV, etc.)
-python3 interfaces/python/generate_system_bindings.py --build-dir build/
-
-# With an extra include path not found via the cache
-python3 interfaces/python/generate_system_bindings.py \
-    --build-dir build/ \
-    --include-dir /usr/include/eigen3
-```
-
-The script derives all paths from its own location:
-
-| Path | How it is determined |
-|------|----------------------|
-| Source root | Two directories above the script |
-| `include/illixr/data_format/` | Relative to source root |
-| `interfaces/python/system_bindings/` (output) | Sibling of the script directory |
-
-After regenerating, commit the updated files in
-`interfaces/python/system_bindings/` to git.
+To force full regeneration, delete the state file or the build directory.
