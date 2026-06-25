@@ -1,5 +1,5 @@
 # This file was auto generated, take caution if manually editing.
-plugins: tcp_network_backend
+plugins: tcp_network_backend,semantic_frame_decoder
 env_vars:
   ENABLE_OFFLOAD: false
   ENABLE_ALIGNMENT: false
