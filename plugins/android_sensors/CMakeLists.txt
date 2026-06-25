@@ -26,11 +26,16 @@ endif()
 add_library(${PLUGIN_NAME} SHARED
     plugin.cpp
     plugin.hpp
+    ndk_encoder.cpp
+    ndk_encoder.hpp
+    ${CMAKE_SOURCE_DIR}/include/illixr/data_format/semantics.hpp
+    ${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization/semantics.hpp
     ${CMAKE_SOURCE_DIR}/include/illixr/error_util.hpp
     ${CMAKE_SOURCE_DIR}/include/illixr/phonebook.hpp
     ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
     ${CMAKE_SOURCE_DIR}/include/illixr/plugin.hpp
     ${CMAKE_SOURCE_DIR}/include/illixr/threadloop.hpp
+    ${CMAKE_SOURCE_DIR}/utils/serialization/semantics.cpp
 )
 
 target_include_directories(${PLUGIN_NAME} PRIVATE
