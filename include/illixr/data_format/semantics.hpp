@@ -57,7 +57,7 @@ struct camera_intrinsics {
  * Coordinate conversion to Unity left-handed world space is the server's
  * responsibility, consistent with the existing LhToRh convention.
  */
-struct semantic_data : switchboard::event {
+struct semantic_frame : switchboard::event {
     // ----- RGB -----
     std::vector<uint8_t> image;      //!< H.265 annexb bytes
     camera_intrinsics    intrinsics; //!< RGB camera intrinsics (includes width/height)
@@ -79,9 +79,9 @@ struct semantic_data : switchboard::event {
     int64_t  rgb_timestamp_ns   = 0;      //!< CLOCK_BOOTTIME ns (from encoder PTS)
     int64_t  depth_timestamp_ns = 0;      //!< XrTime ns (from XrDepthSensorDataMETA)
 
-    semantic_data() = default;
+    semantic_frame() = default;
 };
-
+/*
 struct voice_query : switchboard::event {
     uint64_t             query_id{0};               // for correlating response
     std::vector<uint8_t> pcm_data;                  // PCM16 mono 12kHz bytes
@@ -109,5 +109,5 @@ struct query_response : switchboard::event {
 
     query_response() = default;
 };
-
+*/
 } // namespace ILLIXR::data_format

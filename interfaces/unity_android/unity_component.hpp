@@ -14,7 +14,8 @@
 
 #ifdef __ANDROID__
 
-#include "illixr/data_format/semantics.hpp"
+#include "illixr/data_format/query_response.hpp"
+#include "illixr/data_format/voice_query.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/plugin.hpp"
 #include "illixr/switchboard.hpp"
@@ -25,27 +26,6 @@ class unity_component : public plugin {
 public:
     explicit unity_component(const std::string& name, phonebook* pb);
     ~unity_component() override = default;
-
-    /*!
-     * @brief Constructs a semantic_data object from raw C-compatible parameters
-     *        and writes it to the switchboard.
-     *        Called from the C-linkage illixr_unity_send_semantic_frame function.
-     */
-    /*void send_semantic_frame(int32_t        frame_number,
-                             int32_t        width,
-                             int32_t        height,
-                             const uint8_t* image,
-                             int32_t        image_len,
-                             int32_t        depth_width,
-                             int32_t        depth_height,
-                             const uint8_t* depth,
-                             int32_t        depth_len,
-                             float          depth_near_z,
-                             const float*   intrinsics,
-                             const float*   depth_intrinsics,
-                             const float*   rgb_camera_pose,
-                             const float*   depth_pose,
-                             float          max_depth);*/
 
    void send_voice_query(uint64_t       query_id,
                          const uint8_t* pcm_data,
@@ -81,13 +61,13 @@ public:
 private:
     const std::shared_ptr<switchboard>  switchboard_;
     //switchboard::network_writer<data_format::semantic_data> semantic_writer_;
-    switchboard::network_writer<data_format::voice_query>   query_writer_;
-    switchboard::reader<data_format::query_response>        response_reader_;
+    switchboard::network_writer<bridge::semantic_xr::voice_query>   query_writer_;
+    switchboard::reader<bridge::semantic_xr::query_response>        response_reader_;
 
     // Sequence number of the last query_response we delivered to Unity,
     // used to detect when a new response has arrived.
     std::atomic<uint64_t> last_delivered_query_id_{0};
-    std::shared_ptr<const data_format::query_response> cached_response_;
+    std::shared_ptr<const bridge::semantic_xr::query_response> cached_response_;
 };
 
 } // namespace ILLIXR

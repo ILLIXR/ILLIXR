@@ -14,13 +14,14 @@
 
 #include "unity_component.hpp"
 
-#include "illixr/data_format/serialization/semantics.hpp"
+#include "illixr/data_format/query_response_ser.hpp"
+#include "illixr/data_format/voice_query_ser.hpp"
 
 #include <cstring>
 #include <memory>
 
 using namespace ILLIXR;
-using namespace ILLIXR::data_format;
+using namespace ILLIXR::bridge::semantic_xr;
 
 unity_component::unity_component(const std::string& name, phonebook* pb)
         : plugin{name, pb}
@@ -29,59 +30,23 @@ unity_component::unity_component(const std::string& name, phonebook* pb)
         , query_writer_{switchboard_->get_network_writer<voice_query>("semantic_query", {})}
         , response_reader_{switchboard_->get_reader<query_response>("semantic_response")} { }
 
-/*void unity_component::send_semantic_frame(int32_t        frame_number,
-                                          int32_t        width,
-                                          int32_t        height,
-                                          const uint8_t* image,
-                                          int32_t        image_len,
-                                          int32_t        depth_width,
-                                          int32_t        depth_height,
-                                          const uint8_t* depth,
-                                          int32_t        depth_len,
-                                          float          depth_near_z,
-                                          const float*   intrinsics,
-                                          const float*   depth_intrinsics,
-                                          const float*   rgb_camera_pose,
-                                          const float*   depth_pose,
-                                          float          max_depth) {
-    spdlog::get("illixr")->debug("sending frames with size {} x {}", width, height);
-    auto frame = std::make_shared<semantic_data>();
-    frame->frame_number  = frame_number;
-    frame->width         = width;
-    frame->height        = height;
-    frame->depth_width   = depth_width;
-    frame->depth_height  = depth_height;
-    frame->depth_near_z  = depth_near_z;
-    frame->max_depth     = max_depth;
-
-    frame->image.assign(image, image + image_len);
-    frame->depth.assign(depth, depth + depth_len);
-
-    std::memcpy(frame->intrinsics,       intrinsics,       4  * sizeof(float));
-    std::memcpy(frame->depth_intrinsics, depth_intrinsics, 4  * sizeof(float));
-    std::memcpy(frame->rgb_camera_pose,  rgb_camera_pose,  16 * sizeof(float));
-    std::memcpy(frame->depth_pose,       depth_pose,       16 * sizeof(float));
-
-    semantic_writer_.put(std::move(frame));
-}*/
-
-void unity_component::send_voice_query(uint64_t       query_id,
+void unity_component::send_voice_query(uint64_t       query_id_,
                                        const uint8_t* pcm_data,
                                        int32_t        pcm_len,
                                        float          similarity_threshold,
                                        float          min_match_similarity) {
     spdlog::get("illixr")->debug("Starting send for {}, pcm_pointer={}, len={}, threshold={}, similarity={}",
-                                 query_id, static_cast<void*>(const_cast<uint8_t*>(pcm_data)),
+                                 query_id_, static_cast<void*>(const_cast<uint8_t*>(pcm_data)),
                                  pcm_len, similarity_threshold, min_match_similarity);
     auto query = std::make_shared<voice_query>();
     spdlog::get("illixr")->debug("send_voice_query: query ptr={} use_count={} pcm_data ptr={}",
                                  static_cast<void*>(query.get()),
                                  query.use_count(),
                                  static_cast<void*>(const_cast<uint8_t*>(pcm_data)));
-    query->query_id               = query_id;
-    query->similarity_threshold   = similarity_threshold;
-    query->min_match_similarity   = min_match_similarity;
-    query->pcm_data.assign(pcm_data, pcm_data + pcm_len);
+    query->query_id_               = query_id_;
+    query->similarity_threshold_   = similarity_threshold;
+    query->min_match_similarity_   = min_match_similarity;
+    query->pcm_data_.assign(pcm_data, pcm_data + pcm_len);
 
 
     spdlog::get("illixr")->debug("send_voice_query: query ptr={} pcm_data ptr={}",
@@ -104,24 +69,24 @@ bool unity_component::get_query_response(uint64_t* out_query_id,
         return false;
 
     // Only deliver if this is a new response we haven't seen yet
-    if (response->query_id == last_delivered_query_id_.load())
+    if (response->query_id_ == last_delivered_query_id_.load())
         return false;
 
-    last_delivered_query_id_.store(response->query_id);
+    last_delivered_query_id_.store(response->query_id_);
 
-    *out_query_id       = response->query_id;
-    *out_num_clouds     = response->num_point_clouds;
-    *out_server_latency = response->server_query_processing;
+    *out_query_id       = response->query_id_;
+    *out_num_clouds     = response->num_point_clouds_;
+    *out_server_latency = response->server_query_processing_;
 
     // Copy centroids — one [x, y, z] per point cloud
-    int32_t num_clouds = response->num_point_clouds;
+    int32_t num_clouds = response->num_point_clouds_;
     for (int32_t i = 0; i < num_clouds; ++i) {
-        const auto& pc = response->point_clouds[i];
+        const auto& pc = response->point_clouds_[i];
         // centroid is [x, y, z] — copy up to 3 floats defensively
         int32_t centroid_floats = static_cast<int32_t>(
-            std::min(pc.centroid.size(), static_cast<size_t>(3)));
+            std::min(pc.centroid_.size(), static_cast<size_t>(3)));
         std::memcpy(out_centroids + i * 3,
-                    pc.centroid.data(),
+                    pc.centroid_.data(),
                     centroid_floats * sizeof(float));
         // zero any missing components
         for (int32_t j = centroid_floats; j < 3; ++j)
@@ -129,21 +94,21 @@ bool unity_component::get_query_response(uint64_t* out_query_id,
     }
 
     int32_t num_colors = static_cast<int32_t>(
-        std::min(response->colors.size(),
+        std::min(response->colors_.size(),
                  static_cast<size_t>(out_colors_max)));
-    std::memcpy(out_colors, response->colors.data(), num_colors * sizeof(float));
+    std::memcpy(out_colors, response->colors_.data(), num_colors * sizeof(float));
 
-    // Copy text_query into caller-supplied buffer, null-terminated
+    // Copy text_query_ into caller-supplied buffer, null-terminated
     if (out_text_query != nullptr && text_query_buf_len > 0) {
         int32_t copy_len = static_cast<int32_t>(
-            std::min(response->text_query.size(),
+            std::min(response->text_query_.size(),
                      static_cast<size_t>(text_query_buf_len - 1)));
-        std::memcpy(out_text_query, response->text_query.data(), copy_len);
+        std::memcpy(out_text_query, response->text_query_.data(), copy_len);
         out_text_query[copy_len] = '\0';
     }
 
     spdlog::get("illixr")->debug("Query response id={} num_clouds={} latency={}",
-                                 response->query_id, num_clouds, response->server_query_processing);
+                                 response->query_id_, num_clouds, response->server_query_processing_);
 
     return true;
 }
@@ -219,7 +184,7 @@ extern "C" ILLIXR::plugin* illixr_unity_create_plugin(ILLIXR::phonebook* pb) {
 }*/
 
 // Called by Unity when user asks a question — writes voice_query to switchboard
-extern "C" void illixr_unity_send_voice_query(uint64_t       query_id,
+extern "C" void illixr_unity_send_voice_query(uint64_t       query_id_,
                                               const uint8_t* pcm_data,
                                               int32_t        pcm_len,
                                               float          similarity_threshold,
@@ -227,7 +192,7 @@ extern "C" void illixr_unity_send_voice_query(uint64_t       query_id,
     if (unity_component_obj == nullptr)
         return;
 
-    unity_component_obj->send_voice_query(query_id, pcm_data, pcm_len, similarity_threshold,
+    unity_component_obj->send_voice_query(query_id_, pcm_data, pcm_len, similarity_threshold,
                                           min_match_similarity);
 }
 
@@ -271,12 +236,12 @@ extern "C" int illixr_unity_get_query_response_info(
 }
 
 extern "C" int illixr_unity_get_query_response_points(
-    uint64_t query_id,
+    uint64_t query_id_,
     float*   out_points,
     int32_t  points_max) {
     if (unity_component_obj == nullptr) return 0;
     return unity_component_obj->get_query_response_points(
-               query_id, out_points, points_max) ? 1 : 0;
+               query_id_, out_points, points_max) ? 1 : 0;
 }
 
 bool unity_component::get_query_response_info(
@@ -297,34 +262,34 @@ bool unity_component::get_query_response_info(
     if (!response)
         return false;
 
-    if (response->query_id == last_delivered_query_id_.load())
+    if (response->query_id_ == last_delivered_query_id_.load())
         return false;
 
-    last_delivered_query_id_.store(response->query_id);
+    last_delivered_query_id_.store(response->query_id_);
     cached_response_ = response;   // cache for second call
 
-    *out_query_id       = response->query_id;
-    *out_num_clouds     = response->num_point_clouds;
-    *out_server_latency = response->server_query_processing;
+    *out_query_id       = response->query_id_;
+    *out_num_clouds     = response->num_point_clouds_;
+    *out_server_latency = response->server_query_processing_;
 
     // Count total points across all clouds
     int32_t total_points = 0;
-    for (int32_t i = 0; i < response->num_point_clouds; ++i)
-        total_points += response->point_clouds[i].num_points;
+    for (int32_t i = 0; i < response->num_point_clouds_; ++i)
+        total_points += response->point_clouds_[i].num_points_;
     *out_total_points = total_points;
 
     // Points per cloud array
-    int32_t num_clouds = std::min(response->num_point_clouds,
+    int32_t num_clouds = std::min(response->num_point_clouds_,
                                   points_per_cloud_max);
     for (int32_t i = 0; i < num_clouds; ++i)
-        out_points_per_cloud[i] = response->point_clouds[i].num_points;
+        out_points_per_cloud[i] = response->point_clouds_[i].num_points_;
 
     // Centroids — [x,y,z] per cloud
     for (int32_t i = 0; i < num_clouds; ++i) {
-        const auto& pc = response->point_clouds[i];
+        const auto& pc = response->point_clouds_[i];
         int32_t n = static_cast<int32_t>(
-            std::min(pc.centroid.size(), static_cast<size_t>(3)));
-        std::memcpy(out_centroids + i * 3, pc.centroid.data(),
+            std::min(pc.centroid_.size(), static_cast<size_t>(3)));
+        std::memcpy(out_centroids + i * 3, pc.centroid_.data(),
                     n * sizeof(float));
         for (int32_t j = n; j < 3; ++j)
             out_centroids[i * 3 + j] = 0.0f;
@@ -332,52 +297,52 @@ bool unity_component::get_query_response_info(
 
     // Colors — 3 floats per cloud
     int32_t num_colors = static_cast<int32_t>(
-        std::min(response->colors.size(),
+        std::min(response->colors_.size(),
                  static_cast<size_t>(out_colors_max)));
-    std::memcpy(out_colors, response->colors.data(),
+    std::memcpy(out_colors, response->colors_.data(),
                 num_colors * sizeof(float));
     *out_num_colors = num_colors;
 
     // Text query
     if (out_text_query != nullptr && text_query_buf_len > 0) {
         int32_t copy_len = static_cast<int32_t>(
-            std::min(response->text_query.size(),
+            std::min(response->text_query_.size(),
                      static_cast<size_t>(text_query_buf_len - 1)));
-        std::memcpy(out_text_query, response->text_query.data(), copy_len);
+        std::memcpy(out_text_query, response->text_query_.data(), copy_len);
         out_text_query[copy_len] = '\0';
     }
 
     spdlog::get("illixr")->debug(
         "get_query_response_info: id={} clouds={} total_points={}",
-        response->query_id, response->num_point_clouds, total_points);
+        response->query_id_, response->num_point_clouds_, total_points);
 
     return true;
 }
 
 bool unity_component::get_query_response_points(
-    uint64_t query_id,
+    uint64_t query_id_,
     float*   out_points,
     int32_t  points_max) {
 
-    if (!cached_response_ || cached_response_->query_id != query_id)
+    if (!cached_response_ || cached_response_->query_id_ != query_id_)
         return false;
 
     int32_t written = 0;
-    for (const auto& pc : cached_response_->point_clouds) {
+    for (const auto& pc : cached_response_->point_clouds_) {
         int32_t n = static_cast<int32_t>(
-            std::min(static_cast<size_t>(pc.num_points),
-                     pc.points.size() / 3));
+            std::min(static_cast<size_t>(pc.num_points_),
+                     pc.points_.size() / 3));
         int32_t floats = n * 3;
         if (written + floats > points_max * 3) break;
         std::memcpy(out_points + written,
-                    pc.points.data(),
+                    pc.points_.data(),
                     floats * sizeof(float));
         written += floats;
     }
 
     spdlog::get("illixr")->debug(
         "get_query_response_points: id={} written={} floats",
-        query_id, written);
+        query_id_, written);
 
     return true;
 }

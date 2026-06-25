@@ -7,9 +7,16 @@ add_library(${ILLIXR_INTERFACE_NAME} SHARED
             ${CMAKE_SOURCE_DIR}/include/illixr/data_format/semantics.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/phonebook.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/plugin.hpp
-            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization/semantics.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/point_cloud.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/point_cloud_ser.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/point_cloud_ser.cpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/voice_query.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/voice_query_ser.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/voice_query_ser.cpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/query_response.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/query_response_ser.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/query_response_ser.cpp
             ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
-            ${CMAKE_SOURCE_DIR}/utils/serialization/semantics.cpp
 )
 
 target_include_directories(${ILLIXR_INTERFACE_NAME} PRIVATE

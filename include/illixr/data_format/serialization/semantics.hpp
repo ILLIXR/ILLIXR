@@ -20,7 +20,7 @@ void serialize(Archive& ar, ILLIXR::data_format::camera_intrinsics& data, const 
 }
 
 template<class Archive>
-void serialize(Archive& ar, ILLIXR::data_format::semantic_data& data, const unsigned int version) {
+void serialize(Archive& ar, ILLIXR::data_format::semantic_frame& data, const unsigned int version) {
     (void) version;
 
     ar& boost::serialization::base_object<ILLIXR::switchboard::event>(data);
@@ -36,7 +36,7 @@ void serialize(Archive& ar, ILLIXR::data_format::semantic_data& data, const unsi
     ar & data.rgb_timestamp_ns;
     ar & data.depth_timestamp_ns;
 }
-
+/*
 template<class Archive>
 void serialize(Archive& ar, ILLIXR::data_format::voice_query& data, const unsigned int) {
     ar & boost::serialization::base_object<ILLIXR::switchboard::event>(data);
@@ -62,9 +62,9 @@ void serialize(Archive& ar, ILLIXR::data_format::query_response& data, const uns
     ar & data.num_point_clouds;
     ar & data.server_query_processing;
     ar & data.text_query;
-}
+}*/
 } // namespace boost::serialization
 
-BOOST_CLASS_EXPORT_KEY(ILLIXR::data_format::semantic_data)
-BOOST_CLASS_EXPORT_KEY(ILLIXR::data_format::voice_query)
-BOOST_CLASS_EXPORT_KEY(ILLIXR::data_format::query_response)
+BOOST_CLASS_EXPORT_KEY(ILLIXR::data_format::semantic_frame)
+//BOOST_CLASS_EXPORT_KEY(ILLIXR::data_format::voice_query)
+//BOOST_CLASS_EXPORT_KEY(ILLIXR::data_format::query_response)
