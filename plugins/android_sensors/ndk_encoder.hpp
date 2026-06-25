@@ -26,7 +26,7 @@ public:
     const int32_t height_;
     const uint8_t capture_fps_;
 
-    ANativeWindow* get_window() const {
+    [[nodiscard]] ANativeWindow* get_window() const {
         return encoder_window_;
     }
 

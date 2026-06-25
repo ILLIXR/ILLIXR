@@ -15,19 +15,18 @@
 
 #ifdef __ANDROID__
 
-#define DOUBLE_INCLUDE
-#include "illixr/plugin.hpp"
-#include "illixr/runtime.hpp"
-#include "illixr/string_utils.hpp"
-#undef DOUBLE_INCLUDE
+#    define DOUBLE_INCLUDE
+#    include "illixr/plugin.hpp"
+#    include "illixr/runtime.hpp"
+#    include "illixr/string_utils.hpp"
+#    undef DOUBLE_INCLUDE
 
-#include <android/log.h>
-#include <dlfcn.h>
-#include <string>
-#include <vector>
+#    include <android/log.h>
+#    include <dlfcn.h>
+#    include <string>
+#    include <vector>
 
-#define UNITY_LOG(fmt, ...) \
-    __android_log_print(ANDROID_LOG_INFO, "ILLIXR_Unity", fmt, ##__VA_ARGS__)
+#    define UNITY_LOG(fmt, ...) __android_log_print(ANDROID_LOG_INFO, "ILLIXR_Unity", fmt, ##__VA_ARGS__)
 
 // Analogous to ILLIXR_COMP env var read in illixr_prober.c:
 // colon-separated list of plugin names to load. runtime_impl::load_so
@@ -147,8 +146,8 @@ void illixr_unity_shutdown() {
 // ---------------------------------------------------------------------------
 
 // Function pointer types matching the exports in plugin.cpp
-typedef void        (*illixr_acquire_depth_fn)();
-typedef void*       (*illixr_get_render_event_callback_fn)();
+typedef void (*illixr_acquire_depth_fn)();
+typedef void* (*illixr_get_render_event_callback_fn)();
 
 static void* resolve_sensor_sym(const char* name) {
     // RTLD_NEXT finds the next occurrence of the symbol after this library,
@@ -164,8 +163,7 @@ static void* resolve_sensor_sym(const char* name) {
 void illixr_acquire_depth() {
     static illixr_acquire_depth_fn fn = nullptr;
     if (fn == nullptr)
-        fn = reinterpret_cast<illixr_acquire_depth_fn>(
-            resolve_sensor_sym("illixr_acquire_depth"));
+        fn = reinterpret_cast<illixr_acquire_depth_fn>(resolve_sensor_sym("illixr_acquire_depth"));
     if (fn != nullptr)
         fn();
 }
@@ -173,8 +171,7 @@ void illixr_acquire_depth() {
 void* illixr_get_render_event_callback() {
     static illixr_get_render_event_callback_fn fn = nullptr;
     if (fn == nullptr)
-        fn = reinterpret_cast<illixr_get_render_event_callback_fn>(
-            resolve_sensor_sym("illixr_get_render_event_callback"));
+        fn = reinterpret_cast<illixr_get_render_event_callback_fn>(resolve_sensor_sym("illixr_get_render_event_callback"));
     return fn != nullptr ? fn() : nullptr;
 }
 

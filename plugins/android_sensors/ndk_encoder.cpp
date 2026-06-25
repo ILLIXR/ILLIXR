@@ -8,9 +8,7 @@ ndk_encoder::ndk_encoder(int32_t width, int32_t height, int32_t bps, uint8_t fps
     : width_{width}
     , height_{height}
     , capture_fps_{fps}
-    , bitrate_bps_{bps} {
-
-}
+    , bitrate_bps_{bps} { }
 
 bool ndk_encoder::initialize(uint8_t iframe_rate) {
     codec_ = AMediaCodec_createEncoderByType(HEVC_MIME);
@@ -34,8 +32,8 @@ bool ndk_encoder::initialize(uint8_t iframe_rate) {
     // causing decoders to guess — NVDEC defaults to limited-range and crushes
     // blacks even when the input is full-range.
     AMediaFormat_setInt32(codec_format_, AMEDIAFORMAT_KEY_COLOR_STANDARD, 2); // BT601_625
-    AMediaFormat_setInt32(codec_format_, AMEDIAFORMAT_KEY_COLOR_RANGE,    1); // full
-    AMediaFormat_setInt32(codec_format_, AMEDIAFORMAT_KEY_COLOR_TRANSFER,  3); // SDR
+    AMediaFormat_setInt32(codec_format_, AMEDIAFORMAT_KEY_COLOR_RANGE, 1);    // full
+    AMediaFormat_setInt32(codec_format_, AMEDIAFORMAT_KEY_COLOR_TRANSFER, 3); // SDR
 
     if (AMediaCodec_configure(codec_, codec_format_, nullptr, nullptr, 1) != AMEDIA_OK) {
         spdlog::get("illixr")->error("AMediaCodec_configure failed");
@@ -57,7 +55,6 @@ bool ndk_encoder::initialize(uint8_t iframe_rate) {
 
     spdlog::get("illixr")->info("MediaCodec HEVC encoder started (Surface-input): {}x{}", width_, height_);
     return true;
-
 }
 
 void ndk_encoder::destroy_encoder() {
@@ -98,30 +95,24 @@ void ndk_encoder::drain_encoder_output(int64_t offset) {
                     // Cache SPS/PPS — prepend to the next IDR frame so NVDEC
                     // on the server receives a self-contained access unit.
                     sps_pps_cache_.assign(data, data + size);
-                    spdlog::get("illixr")->info(
-                        "[encoder] cached SPS/PPS {}B", size);
+                    spdlog::get("illixr")->info("[encoder] cached SPS/PPS {}B", size);
                 } else {
                     pending_rgb frame{};
                     // Prepend cached SPS/PPS if present so the server's NVDEC
                     // can initialize from the first packet it receives.
                     if (!sps_pps_cache_.empty()) {
                         frame.encoded.reserve(sps_pps_cache_.size() + size);
-                        frame.encoded.insert(frame.encoded.end(),
-                                             sps_pps_cache_.begin(),
-                                             sps_pps_cache_.end());
+                        frame.encoded.insert(frame.encoded.end(), sps_pps_cache_.begin(), sps_pps_cache_.end());
                         sps_pps_cache_.clear();
                     }
                     frame.encoded.insert(frame.encoded.end(), data, data + size);
-                    frame.timestamp = static_cast<XrTime>(
-                        info.presentationTimeUs * 1'000LL + offset);
-                    spdlog::get("illixr")->debug(
-                        "[encoder] drained frame ts={}us size={}B flags=0x{:X}",
-                        info.presentationTimeUs, frame.encoded.size(), info.flags);
+                    frame.timestamp = static_cast<XrTime>(info.presentationTimeUs * 1'000LL + offset);
+                    spdlog::get("illixr")->debug("[encoder] drained frame ts={}us size={}B flags=0x{:X}",
+                                                 info.presentationTimeUs, frame.encoded.size(), info.flags);
                     pending_frames_.push_back(std::move(frame));
                 }
             }
         }
         AMediaCodec_releaseOutputBuffer(codec_, static_cast<size_t>(idx), false);
     }
-
 }

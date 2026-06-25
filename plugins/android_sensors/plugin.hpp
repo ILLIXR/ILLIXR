@@ -15,11 +15,11 @@
 #include <IUnityRenderingExtensions.h>
 #include <IUnityGraphicsVulkan.h>
 // clang-format on
+#include <array>
 #include <camera/NdkCameraCaptureSession.h>
 #include <camera/NdkCameraDevice.h>
 #include <camera/NdkCameraManager.h>
 #include <camera/NdkCameraMetadata.h>
-#include <array>
 #include <cstdint>
 #include <mutex>
 #include <openxr/openxr.h>
@@ -99,6 +99,7 @@ public:
     // image back to the OpenXR runtime before xrEndFrame.
     // Must be called on the main thread - same constraint as xrBeginFrame.
     void release_depth_after_submit();
+
 protected:
     void        _p_one_iteration() override;
     skip_option _p_should_skip() override;
@@ -106,22 +107,21 @@ protected:
 private:
     // ---- Configuration ----
     // Set to true when any init step fails - no-ops _p_should_skip.
-    bool    init_failed_ = false;
+    bool init_failed_ = false;
 
     // ---- Timing ----
     int64_t tick_interval_ns_ = 33'333'333LL;
     int64_t last_tick_ns_     = 0;
 
-
     // ---- OpenXR ----
     bool init_openxr();
     void destroy_openxr();
 
-    XrInstance  xr_instance_ = XR_NULL_HANDLE;
-    XrSession   xr_session_  = XR_NULL_HANDLE;
-    XrSpace     head_space_  = XR_NULL_HANDLE;
-    XrSpace     local_space_ = XR_NULL_HANDLE;
-    bool        owns_xr_     = false;
+    XrInstance xr_instance_ = XR_NULL_HANDLE;
+    XrSession  xr_session_  = XR_NULL_HANDLE;
+    XrSpace    head_space_  = XR_NULL_HANDLE;
+    XrSpace    local_space_ = XR_NULL_HANDLE;
+    bool       owns_xr_     = false;
 
     PFN_xrCreateEnvironmentDepthProviderMETA           xr_create_depth_provider_   = nullptr;
     PFN_xrDestroyEnvironmentDepthProviderMETA          xr_destroy_depth_provider_  = nullptr;
@@ -132,14 +132,14 @@ private:
     PFN_xrGetEnvironmentDepthSwapchainStateMETA        xr_get_depth_state_         = nullptr;
     PFN_xrAcquireEnvironmentDepthImageMETA             xr_acquire_depth_image_     = nullptr;
     // PFN_xrReleaseEnvironmentDepthImageMETA takes only the provider handle.
-    using xr_release_depth_fn = XrResult(XRAPI_PTR*)(XrEnvironmentDepthProviderMETA);
-    xr_release_depth_fn                                  xr_release_depth_image_     = nullptr;
+    using xr_release_depth_fn                   = XrResult(XRAPI_PTR*)(XrEnvironmentDepthProviderMETA);
+    xr_release_depth_fn xr_release_depth_image_ = nullptr;
 
     bool needs_depth_release_ = false; // true after acquire, until release
 
-    XrEnvironmentDepthProviderMETA  depth_provider_      = XR_NULL_HANDLE;
-    XrEnvironmentDepthSwapchainMETA depth_swapchain_     = XR_NULL_HANDLE;
-    bool                            depth_ext_available_ = false;
+    XrEnvironmentDepthProviderMETA  depth_provider_         = XR_NULL_HANDLE;
+    XrEnvironmentDepthSwapchainMETA depth_swapchain_        = XR_NULL_HANDLE;
+    bool                            depth_ext_available_    = false;
     int32_t                         depth_swapchain_width_  = 0;
     int32_t                         depth_swapchain_height_ = 0;
 
@@ -149,18 +149,18 @@ private:
     // ---- Pose lookup ----
     bool get_pose_at_timestamp(XrTime timestamp, float out_matrix[16]) const;
 
-    VkDevice         vk_device_        = VK_NULL_HANDLE;
-    VkPhysicalDevice vk_physical_      = VK_NULL_HANDLE;
-    VkQueue          vk_queue_         = VK_NULL_HANDLE;
-    uint32_t         vk_queue_family_  = 0;
-    VkCommandPool    vk_cmd_pool_      = VK_NULL_HANDLE;
-    VkCommandBuffer  vk_cmd_buf_       = VK_NULL_HANDLE;
-    VkFence          vk_fence_         = VK_NULL_HANDLE;
+    VkDevice         vk_device_       = VK_NULL_HANDLE;
+    VkPhysicalDevice vk_physical_     = VK_NULL_HANDLE;
+    VkQueue          vk_queue_        = VK_NULL_HANDLE;
+    uint32_t         vk_queue_family_ = 0;
+    VkCommandPool    vk_cmd_pool_     = VK_NULL_HANDLE;
+    VkCommandBuffer  vk_cmd_buf_      = VK_NULL_HANDLE;
+    VkFence          vk_fence_        = VK_NULL_HANDLE;
 
     // Host-visible staging buffer - sized for one full depth frame.
-    VkBuffer         vk_staging_buf_   = VK_NULL_HANDLE;
-    VkDeviceMemory   vk_staging_mem_   = VK_NULL_HANDLE;
-    VkDeviceSize     vk_staging_size_  = 0;
+    VkBuffer       vk_staging_buf_  = VK_NULL_HANDLE;
+    VkDeviceMemory vk_staging_mem_  = VK_NULL_HANDLE;
+    VkDeviceSize   vk_staging_size_ = 0;
 
     // Find a memory type index satisfying required property flags.
     uint32_t find_memory_type(uint32_t type_filter, VkMemoryPropertyFlags props) const;
@@ -171,15 +171,15 @@ private:
     // LateUpdate() ticks (~10fps at 72Hz Unity) and stores frames in a
     // ring buffer of DEPTH_CACHE_SIZE entries. _p_one_iteration() picks
     // the entry whose timestamp is closest to each encoded RGB frame.
-    static constexpr int     DEPTH_ACQUIRE_EVERY = 7;  // ~10fps at 72Hz
-    static constexpr size_t  DEPTH_CACHE_SIZE    = 16; // ~1.6s of history
+    static constexpr int    DEPTH_ACQUIRE_EVERY = 7;  // ~10fps at 72Hz
+    static constexpr size_t DEPTH_CACHE_SIZE    = 16; // ~1.6s of history
 
     struct depth_frame_data {
-        std::vector<uint8_t>           data;     // R16F, 2 bytes/pixel, top-down
+        std::vector<uint8_t>           data; // R16F, 2 bytes/pixel, top-down
         data_format::camera_intrinsics intrinsics;
-        float                          near_z   = 0.f;
-        float                          far_z    = 0.f;
-        float                          pose[16] = {};
+        float                          near_z    = 0.f;
+        float                          far_z     = 0.f;
+        float                          pose[16]  = {};
         XrTime                         timestamp = 0;
         bool                           valid     = false;
     };
@@ -188,28 +188,27 @@ private:
     // or nullptr if the cache is empty.
     const depth_frame_data* find_closest_depth(XrTime rgb_ts) const;
 
-    mutable std::mutex                            depth_mutex_;
+    mutable std::mutex                             depth_mutex_;
     std::array<depth_frame_data, DEPTH_CACHE_SIZE> depth_cache_;
-    size_t                                        depth_cache_next_ = 0;
-    int                                           depth_acquire_counter_ = 0;
+    size_t                                         depth_cache_next_      = 0;
+    int                                            depth_acquire_counter_ = 0;
 
     // Pending Vulkan readback: set by acquire_depth_unity_thread() on the
     // main thread, consumed by submit_depth_readback() on the render thread.
     struct pending_readback {
-        VkImage                         image     = VK_NULL_HANDLE;
-        int32_t                         width     = 0;
-        int32_t                         height    = 0;
-        data_format::camera_intrinsics  intrinsics;
-        float                           near_z    = 0.f;
-        float                           far_z     = 0.f;
-        float                           pose[16]  = {};
-        XrTime                          timestamp = 0;
-        bool                            valid     = false;
+        VkImage                        image  = VK_NULL_HANDLE;
+        int32_t                        width  = 0;
+        int32_t                        height = 0;
+        data_format::camera_intrinsics intrinsics;
+        float                          near_z    = 0.f;
+        float                          far_z     = 0.f;
+        float                          pose[16]  = {};
+        XrTime                         timestamp = 0;
+        bool                           valid     = false;
     };
 
     std::mutex       pending_readback_mutex_;
     pending_readback pending_readback_;
-
 
     // ---- Camera2 RGB ----
     bool init_camera();
@@ -226,15 +225,14 @@ private:
     data_format::camera_intrinsics rgb_intrinsics_;
     bool                           rgb_intrinsics_valid_ = false;
 
-
     // ---- Switchboard output ----
-    const std::shared_ptr<switchboard>                      switchboard_;
+    const std::shared_ptr<switchboard>                       switchboard_;
     switchboard::network_writer<data_format::semantic_frame> writer_;
-    int32_t                                                 frame_number_ = 0;
-    float                                                   max_depth_m_;
+    int32_t                                                  frame_number_ = 0;
+    float                                                    max_depth_m_;
 
     std::unique_ptr<ndk_encoder> encoder_;
-    int64_t clock_offset_ns_;
+    int64_t                      clock_offset_ns_;
 };
 
 } // namespace ILLIXR

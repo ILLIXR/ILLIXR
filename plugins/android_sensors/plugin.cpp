@@ -1,5 +1,7 @@
 #include "plugin.hpp"
 
+#include "illixr/data_format/query_response_ser.hpp"
+#include "illixr/data_format/voice_query_ser.hpp"
 #include "illixr/error_util.hpp"
 
 #include <algorithm>
@@ -11,8 +13,6 @@
 #include <mutex>
 #include <string>
 #include <vulkan/vulkan.h>
-#include "illixr/data_format/query_response_ser.hpp"
-#include "illixr/data_format/voice_query_ser.hpp"
 
 using namespace ILLIXR;
 using namespace ILLIXR::data_format;
@@ -770,8 +770,8 @@ void xr_sensor_capture::submit_depth_readback() {
     // depth provider, matching OpenGL convention. The server expects
     // top-down to match the RGB image orientation.
     std::vector<uint8_t> r16(static_cast<size_t>(w * h * 2));
-    const auto* src = static_cast<const uint8_t*>(mapped);
-    const size_t row_bytes = static_cast<size_t>(w * 2); // 2 bytes per R16F pixel
+    const auto*          src       = static_cast<const uint8_t*>(mapped);
+    const size_t         row_bytes = static_cast<size_t>(w * 2); // 2 bytes per R16F pixel
     for (int r = 0; r < h; ++r) {
         const uint8_t* src_row = src + (h - 1 - r) * row_bytes;
         uint8_t*       dst_row = r16.data() + r * row_bytes;
@@ -1065,11 +1065,11 @@ void xr_sensor_capture::_p_one_iteration() {
         spdlog::get("illixr")->debug("[frame={}] closest depth delta={}ms", frame_number_, delta_ns / 1'000'000LL);
 
         semantic_frame frame{};
-        frame.frame_number      = frame_number_++;
-        frame.image             = std::move(rgb.encoded);
-        frame.intrinsics        = rgb_intrinsics_;
-        frame.rgb_timestamp_ns  = static_cast<int64_t>(rgb.timestamp);
-        frame.max_depth         = max_depth_m_;
+        frame.frame_number     = frame_number_++;
+        frame.image            = std::move(rgb.encoded);
+        frame.intrinsics       = rgb_intrinsics_;
+        frame.rgb_timestamp_ns = static_cast<int64_t>(rgb.timestamp);
+        frame.max_depth        = max_depth_m_;
         std::memcpy(frame.rgb_camera_pose, rgb_matrix, sizeof(rgb_matrix));
 
         frame.depth              = depth_snap->data;
