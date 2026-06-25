@@ -1,27 +1,33 @@
 fields:
   image:
-    type: byte
-    container: list
+    type: image
+    shape: [width, height, 3]
+  image_width:
+    type: int
+  image_height:
+    type: int
   intrinsics:
-    type: semantic_xr.camera_intrinsics
+    type: float
+    shape: [4]
   depth:
-    type: char
+    type: uint8
     container: list
+  depth_width:
+    type: int
+  depth_height:
+    type: int
   depth_near_z:
     type: float
   depth_intrinsics:
-    type: semantic_xr.camera_intrinsics
+    type: float
+    shape: [4]
   rgb_camera_pose:
     type: float
     shape: [16]
   depth_pose:
     type: float
     shape: [16]
-  max_depth:
+  max_depth_m:
     type: float
   frame_number:
     type: int
-  rgb_timestamp_ns:
-    type: int64
-  depth_timestamp_ns:
-    type: int64

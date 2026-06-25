@@ -2,9 +2,9 @@ script: scripts/semantic_xr.py
 inputs:
   - topic: semantic_data
     type: semantic_xr.semantic_data
-  - topic: query
+  - topic: semantic_query
     type: semantic_xr.voice_query
 outputs:
-  - topic: response
+  - topic: semantic_response
     type: semantic_xr.query_response
     network: tcp

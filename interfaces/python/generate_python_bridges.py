@@ -125,6 +125,11 @@ SCALAR_ALIASES = {
     "str": "string",
 }
 
+# Image types: underlying storage is std::vector<uint8_t>.
+# shape: [width, height, channels] in YAML (user-natural order).
+# numpy output: (height, width, channels) matching entry_to_numpy convention.
+IMAGE_TYPES = {"image"}
+
 MAT_TYPES = {
     "mat_8u": ("CV_8UC", "np.uint8", "uint8_t"),
     "mat_8s": ("CV_8SC", "np.int8", "int8_t"),
@@ -287,12 +292,53 @@ def validate_field(field_name, field_def, known_dotted_names):
             f"Field '{field_name}': unknown container '{field_def['container']}'. "
             "Use: vector, list, dict, map")
 
-    shape = field_def.get("shape", None)
+    shape  = field_def.get("shape",  None)
+    image  = field_def.get("image",  None)
     channels = field_def.get("channels", None)
 
-    if shape is not None and container is not None:
-        raise SchemaError(
-            f"Field '{field_name}': 'shape' and 'container' are mutually exclusive")
+    if shape is not None:
+        if container not in ["vector", "list", None]:
+            raise SchemaError(f"Field '{field_name}': 'shape' and 'container' are mutually exclusive for non-vector/list types.")
+
+        # If shape contains string entries, this is a dynamic numpy array.
+        # Infer container=vector so all downstream code works without change.
+        if any(isinstance(e, str) for e in (shape or [])):
+            container = "vector"
+
+    if field_type in IMAGE_TYPES:
+        # type: image - stored as std::vector<uint8_t>.
+        # Requires shape: [width_dim, height_dim, channels].
+        # numpy output: (height, width, channels) matching entry_to_numpy.
+        # Note: container may have been inferred as "vector" by the shape
+        # inference above - check field_def directly for user-specified container.
+        if field_def.get("container") is not None:
+            raise SchemaError(
+                f"Field '{field_name}': type 'image' implies vector storage, "
+                "do not specify container")
+        if channels is not None:
+            raise SchemaError(
+                f"Field '{field_name}': use shape: [w, h, ch] for type 'image', not 'channels'")
+        if shape is None or not isinstance(shape, list) or len(shape) != 3:
+            raise SchemaError(
+                f"Field '{field_name}': type 'image' requires shape: [width, height, channels]")
+        w_dim, h_dim, ch = shape
+        for dim_name, dim_val in [("width", w_dim), ("height", h_dim)]:
+            if not isinstance(dim_val, (str, int)):
+                raise SchemaError(
+                    f"Field '{field_name}': image {dim_name} must be a field name or positive integer")
+            if isinstance(dim_val, int) and dim_val < 1:
+                raise SchemaError(
+                    f"Field '{field_name}': image {dim_name} literal must be positive")
+            if isinstance(dim_val, str) and not re.match(r'^[a-z][a-z0-9_]*$', dim_val):
+                raise SchemaError(
+                    f"Field '{field_name}': image {dim_name} '{dim_val}' must be lowercase snake_case")
+        if not isinstance(ch, int) or ch not in (1, 2, 3):
+            raise SchemaError(
+                f"Field '{field_name}': image channels must be 1, 2, or 3, got '{ch}'")
+        # Store as vector<uint8_t>; image=shape tells generators to use
+        # (H, W, ch) stride layout rather than plain vector handling.
+        return dict(field_def, type="uint8", container="vector",
+                    shape=shape, image=shape)
 
     if is_mat(field_type):
         if shape is not None:
@@ -335,18 +381,44 @@ def validate_field(field_name, field_def, known_dotted_names):
     ctype = canonical_type(field_type)
 
     if shape is not None:
-        if ctype in SHAPE_FORBIDDEN_SCALAR:
-            raise SchemaError(
-                f"Field '{field_name}': type '{field_type}' cannot be used with 'shape'")
-        if not isinstance(shape, list) or len(shape) not in (1, 2):
-            raise SchemaError(
-                f"Field '{field_name}': 'shape' must be a list of 1 or 2 positive integers")
-        for dim in shape:
-            if not isinstance(dim, int) or dim < 1:
+        # 'shape' on a vector field may contain field name strings and/or int
+        # literals, defining a dynamic multi-dimensional numpy array.
+        # 'shape' on a plain (non-vector) scalar field may only contain ints
+        # and defines a fixed compile-time array (validated above).
+        # Both are stored under the same "shape" key; the vector+string case
+        # is distinguished at code-generation time by checking container.
+        if container == "vector":
+            if ctype in SHAPE_FORBIDDEN_SCALAR or ctype == "bool":
                 raise SchemaError(
-                    f"Field '{field_name}': shape dimensions must be positive integers")
+                    f"Field '{field_name}': dynamic 'shape' is not valid with type '{field_type}'")
+            if not isinstance(shape, list) or not (1 <= len(shape) <= 3):
+                raise SchemaError(
+                    f"Field '{field_name}': 'shape' must be a list of 1-3 entries")
+            for sf in shape:
+                if isinstance(sf, int):
+                    if sf < 1:
+                        raise SchemaError(
+                            f"Field '{field_name}': shape literal '{sf}' "
+                            "must be a positive integer")
+                elif not isinstance(sf, str) or not re.match(r"^[a-zA-Z][a-zA-Z0-9_]*$", sf):
+                    raise SchemaError(f"Field '{field_name}': shape entry '{sf}' must be "
+                                      "a field name or a positive integer literal")
 
-    if container is not None:
+        else:
+            # Fixed compile-time array: shape must be a list of 1 or 2 positive ints.
+            # Dynamic numpy shape (container: vector) is validated separately below.
+            if ctype in SHAPE_FORBIDDEN_SCALAR:
+                raise SchemaError(
+                    f"Field '{field_name}': type '{field_type}' cannot be used with 'shape'")
+            if not isinstance(shape, list) or len(shape) not in (1, 2, 3):
+                raise SchemaError(
+                    f"Field '{field_name}': 'shape' must be a list of 1, 2, or 3 positive integers")
+            for dim in shape:
+                if not isinstance(dim, int) or dim < 1:
+                    raise SchemaError(
+                        f"Field '{field_name}': shape dimensions must be positive integers")
+
+    elif container is not None:
         if container == "vector" and ctype in VECTOR_FORBIDDEN:
             raise SchemaError(
                 f"Field '{field_name}': vector<bool> is not allowed; "
@@ -355,7 +427,7 @@ def validate_field(field_name, field_def, known_dotted_names):
             raise SchemaError(
                 f"Field '{field_name}': dict with value type '{field_type}' is not allowed")
 
-    return dict(field_def, type=ctype, container=container, shape=shape)
+    return dict(field_def, type=ctype, container=container, shape=shape, image=None)
 
 
 def validate_type_yaml(data, path, data_dir, all_dotted_names):
@@ -393,6 +465,47 @@ def validate_type_yaml(data, path, data_dir, all_dotted_names):
             raise SchemaError(
                 f"{path}: field name '{field_name}' must be lowercase snake_case")
         fields[field_name] = validate_field(field_name, field_def, peers)
+
+    # Process 'image' entries: synthesize missing width/height dimension fields.
+    for fname, fdef in list(fields.items()):
+        image = fdef.get("image")
+        if not image:
+            continue
+        w_dim, h_dim, _ = image
+        for dim_val in (w_dim, h_dim):
+            if isinstance(dim_val, str) and dim_val not in fields:
+                fields[dim_val] = {"type": "int", "container": None,
+                                   "shape": None, "image": None}
+            elif isinstance(dim_val, str):
+                sf_type = fields[dim_val].get("type", "")
+                sf_cpp  = cpp_scalar(canonical_type(sf_type))
+                _int_cpp_types = {"int8_t", "int16_t", "int32_t", "int64_t",
+                                  "uint8_t", "uint16_t", "uint32_t", "uint64_t"}
+                if sf_cpp not in _int_cpp_types:
+                    raise SchemaError(
+                        f"{path}: field '{fname}' image width/height field '{dim_val}' "
+                        f"must be an integer field, got '{sf_type}'")
+
+    # Process dynamic shape entries (shape on a vector field containing strings):
+    # synthesize any missing dimension fields as int32_t, or validate that
+    # explicitly declared dimension fields are integers.
+    _int_cpp_types = {"int8_t", "int16_t", "int32_t", "int64_t",
+                      "uint8_t", "uint16_t", "uint32_t", "uint64_t"}
+    for fname, fdef in list(fields.items()):
+        if fdef.get("container") != "vector":
+            continue
+        sf_names = [e for e in (fdef.get("shape") or []) if isinstance(e, str)]
+        for sf in sf_names:
+            if sf not in fields:
+                # Synthesize the dimension field as int32_t
+                fields[sf] = {"type": "int", "container": None, "shape": None}
+            else:
+                sf_type = fields[sf].get("type", "")
+                sf_cpp  = cpp_scalar(canonical_type(sf_type))
+                if sf_cpp not in _int_cpp_types:
+                    raise SchemaError(
+                        f"{path}: field '{fname}' shape['{sf}'] must be "
+                        f"an integer field, got '{sf_type}' (C++ type '{sf_cpp}')")
 
     return {"dotted": dotted, "fields": fields}
 
@@ -564,7 +677,9 @@ def field_decl(field_name, field_def, gen_dotted_names):
     if shape and not container:
         if len(shape) == 1:
             return f"    {cpp_t} {field_name}_[{shape[0]}];"
-        return f"    {cpp_t} {field_name}_[{shape[0]}][{shape[1]}];"
+        if len(shape) == 2:
+            return f"    {cpp_t} {field_name}_[{shape[0]}][{shape[1]}];"
+        return f"    {cpp_t} {field_name}_[{shape[0]}][{shape[1]}][{shape[2]}];"
 
     if is_mat(field_type):
         return f"    cv::Mat {field_name}_;"
@@ -645,9 +760,13 @@ def serialize_stmt(field_name, field_def):
         if len(shape) == 1:
             return (f"    ar & boost::serialization::"
                     f"make_array(data.{field_name}_, {shape[0]});")
-        n = shape[0] * shape[1]
+        if len(shape) == 2:
+            n = shape[0] * shape[1]
+            return (f"    ar & boost::serialization::"
+                    f"make_array(&data.{field_name}_[0][0], {n});")
+        n = shape[0] * shape[1] * shape[2]
         return (f"    ar & boost::serialization::"
-                f"make_array(&data.{field_name}_[0][0], {n});")
+                f"make_array(&data.{field_name}_[0][0][0], {n});")
 
     return f"    ar & data.{field_name}_;"
 
@@ -714,7 +833,7 @@ def gen_struct_header(td, gen_dotted_names_so_far):
             header.append(f"#include {h}")
     header.append("")
 
-    # Open nested namespaces — struct definition only, no serialization inside
+    # Open nested namespaces - struct definition only, no serialization inside
     for ns_line in open_ns:
         header.append(ns_line)
     header.append("")
@@ -999,8 +1118,15 @@ def _fixed_array_getter_lines(field_name, field_def, qname, gen_dotted_names):
 
     ctype = canonical_type(field_type)
     cpp_t = cpp_scalar(ctype)
-    flat = shape[0] if len(shape) == 1 else shape[0] * shape[1]
-    data_p = f"self.{field_name}_" if len(shape) == 1 else f"&self.{field_name}_[0][0]"
+    if len(shape) == 1:
+        flat   = shape[0]
+        data_p = f"self.{field_name}_"
+    elif len(shape) == 2:
+        flat   = shape[0] * shape[1]
+        data_p = f"&self.{field_name}_[0][0]"
+    else:
+        flat   = shape[0] * shape[1] * shape[2]
+        data_p = f"&self.{field_name}_[0][0][0]"
     return [
         f'    .def_property("{field_name}",',
         f'        [](const {qname}& self) -> py::array_t<{cpp_t}> {{',
@@ -1030,8 +1156,15 @@ def _fixed_array_setter_lines(field_name, field_def, qname, gen_dotted_names):
 
     ctype = canonical_type(field_type)
     cpp_t = cpp_scalar(ctype)
-    flat = shape[0] if len(shape) == 1 else shape[0] * shape[1]
-    dest = (f"self.{field_name}_" if len(shape) == 1 else f"&self.{field_name}_[0][0]")
+    if len(shape) == 1:
+        flat = shape[0]
+        dest = f"self.{field_name}_"
+    elif len(shape) == 2:
+        flat = shape[0] * shape[1]
+        dest = f"&self.{field_name}_[0][0]"
+    else:
+        flat = shape[0] * shape[1] * shape[2]
+        dest = f"&self.{field_name}_[0][0][0]"
     return [
         f'        []({qname}& self, py::array_t<{cpp_t}> arr) {{',
         f'            if (arr.size() != {flat})',
@@ -1101,8 +1234,15 @@ def _kw_init_body(field_name, field_def, gen_dotted_names):
             )
         ctype = canonical_type(field_type)
         cpp_t = cpp_scalar(ctype)
-        flat = shape[0] if len(shape) == 1 else shape[0] * shape[1]
-        dest = (f"obj.{field_name}_" if len(shape) == 1 else f"&obj.{field_name}_[0][0]")
+        if len(shape) == 1:
+            flat = shape[0]
+            dest = f"obj.{field_name}_"
+        elif len(shape) == 2:
+            flat = shape[0] * shape[1]
+            dest = f"&obj.{field_name}_[0][0]"
+        else:
+            flat = shape[0] * shape[1] * shape[2]
+            dest = f"&obj.{field_name}_[0][0][0]"
         return (
             f"        if (!{field_name}.is_none()) {{\n"
             f"            auto arr = {field_name}.cast<py::array_t<{cpp_t}>>();\n"
@@ -1328,7 +1468,7 @@ def gen_plugin_cmake(bridge, gen_dotted_names, gen_serializers, plugin_dir,
     cmake.append("")
     cmake.append("target_compile_definitions(${PLUGIN_NAME} PRIVATE")
     cmake.append("    PLUGIN_NAME=" + plugin_name)
-    # Serialization is always compiled in — no per-type defines needed.
+    # Serialization is always compiled in - no per-type defines needed.
     cmake.append(")")
     cmake.append("")
     cmake.append("set_target_properties(${PLUGIN_NAME} PROPERTIES")
@@ -1424,7 +1564,7 @@ def gen_plugin_hpp(bridge, gen_dotted_names):
     hpp.append("    pybind11::gil_scoped_release  release_;")
     hpp.append("    std::thread                   py_thread_;")
     hpp.append("")
-    # Static topic_config builders — one per transport type used.
+    # Static topic_config builders - one per transport type used.
     # Sequential field assignment avoids designated initializer syntax
     # which is not supported on MSVC.
     _net_types = set(out["network"] for out in bridge["outputs"]
@@ -1464,10 +1604,10 @@ def _gen_reader_dict_body(td, gen_dotted_names, var='val', indent='             
         ftype     = fdef["type"]
         container = fdef.get("container")
         shape     = fdef.get("shape")
+        image     = fdef.get("image")
 
         if is_mat(ftype):
             np_dtype = MAT_TYPES[ftype][1][3:]  # strip "np."
-            cpp_elem = MAT_TYPES[ftype][2]
             result.append(indent + "{")
             result.append(indent + f"    const auto& _m = {var}.{fname}_;")
             result.append(indent +  "    if (!_m.empty()) {")
@@ -1490,15 +1630,87 @@ def _gen_reader_dict_body(td, gen_dotted_names, var='val', indent='             
             ctype = canonical_type(ftype) if ftype not in gen_set else None
             if ctype:
                 cpp_t = cpp_scalar(ctype)
-                flat  = shape[0] if len(shape) == 1 else shape[0] * shape[1]
-                ptr   = f"{var}.{fname}_" if len(shape) == 1 else f"&{var}.{fname}_[0][0]"
+                if len(shape) == 1:
+                    flat = shape[0]
+                    ptr  = f"{var}.{fname}_"
+                elif len(shape) == 2:
+                    flat = shape[0] * shape[1]
+                    ptr  = f"&{var}.{fname}_[0][0]"
+                else:
+                    flat = shape[0] * shape[1] * shape[2]
+                    ptr  = f"&{var}.{fname}_[0][0][0]"
                 result.append(indent +
                     f"{dict_var}[\"{fname}\"] = py::array_t<{cpp_t}>"
                     f"({{{flat}}}, {{sizeof({cpp_t})}},"
                     f"reinterpret_cast<const {cpp_t}*>({ptr}));")
 
+        elif image:
+            # Image field (type: image): stored as flat row-major (H, W, ch) bytes.
+            # numpy output: (H, W, ch) with C-contiguous strides (W*ch, ch, 1),
+            # matching entry_to_numpy. YAML shape [width, height, ch] is user-natural
+            # but the array axes follow the standard image convention.
+            ctype  = canonical_type(ftype)
+            cpp_t  = cpp_scalar(ctype)
+            w_dim, h_dim, ch = image
+            w_expr = str(w_dim) if isinstance(w_dim, int) else f"{var}.{w_dim}_"
+            h_expr = str(h_dim) if isinstance(h_dim, int) else f"{var}.{h_dim}_"
+            result.append(indent + "{")
+            result.append(indent + f"    auto* _vbuf_{fname} = "
+                                    f"new std::vector<{cpp_t}>({var}.{fname}_);")
+            result.append(indent + f"    py::capsule _cap_{fname}("
+                                    f"_vbuf_{fname}, [](void* p) {{"
+                                    f"delete static_cast<std::vector<{cpp_t}>*>(p); }});")
+            result.append(indent +
+                f"    {dict_var}[\"{fname}\"] = py::array_t<{cpp_t}>(")
+            result.append(indent +
+                f"        {{{h_expr}, {w_expr}, {ch}}},")
+            result.append(indent +
+                f"        {{(py::ssize_t)({w_expr} * {ch} * sizeof({cpp_t})),"
+                f" (py::ssize_t)({ch} * sizeof({cpp_t})),"
+                f" (py::ssize_t)sizeof({cpp_t})}},")
+            result.append(indent +
+                f"        _vbuf_{fname}->data(), _cap_{fname});")
+            result.append(indent + "}")
+
+        elif (container == "vector"
+              and shape and any(isinstance(e, str) or isinstance(e, int) for e in shape)
+              and ftype not in gen_set):
+            # Dynamic multi-dimensional numpy array.
+            # Flat vector wrapped with runtime shape from sibling fields.
+            # Uses a heap-allocated copy owned by a capsule for safe lifetime.
+            ctype        = canonical_type(ftype)
+            cpp_t        = cpp_scalar(ctype)
+            sf           = fdef["shape"]
+            ndim         = len(sf)
+            # Each entry in sf is either a string (sibling field name) or
+            # an int literal. Build shape and C-contiguous stride expressions.
+            def _dim_expr(d):
+                return str(d) if isinstance(d, int) else f"{var}.{d}_"
+            shape_expr = ", ".join(f"(py::ssize_t){_dim_expr(d)}" for d in sf)
+            # C-contiguous strides: stride[i] = product(dim[i+1:]) * sizeof(T)
+            stride_parts = []
+            for i in range(ndim):
+                inner = sf[i+1:]
+                if inner:
+                    prod = " * ".join(_dim_expr(d) for d in inner)
+                    stride_parts.append(f"(py::ssize_t)({prod} * sizeof({cpp_t}))")
+                else:
+                    stride_parts.append(f"(py::ssize_t)sizeof({cpp_t})")
+            stride_expr = ", ".join(stride_parts)
+            result.append(indent + "{")
+            result.append(indent + f"    auto* _vbuf_{fname} = "
+                                    f"new std::vector<{cpp_t}>({var}.{fname}_);")
+            result.append(indent + f"    py::capsule _cap_{fname}("
+                                    f"_vbuf_{fname}, [](void* p) {{"
+                                    f"delete static_cast<std::vector<{cpp_t}>*>(p); }});")
+            result.append(indent + f"    {dict_var}[\"{fname}\"] = "
+                                    f"py::array_t<{cpp_t}>("
+                                    f"{{{shape_expr}}}, {{{stride_expr}}},"
+                                    f"_vbuf_{fname}->data(), _cap_{fname});")
+            result.append(indent + "}")
+
         elif ftype in gen_set and not container:
-            # Nested bridge-defined struct — build a nested py::dict inline.
+            # Nested bridge-defined struct - build a nested py::dict inline.
             # Cannot use py::cast because the binding module is not imported.
             sub_var  = f"_sub_{fname}"
             sub_dict = f"_dict_{fname}"
@@ -1516,7 +1728,7 @@ def _gen_reader_dict_body(td, gen_dotted_names, var='val', indent='             
             result.append(indent + "}")
 
         elif container == "vector" and ftype in gen_set:
-            # Vector of bridge-defined structs — build a py::list of dicts.
+            # Vector of bridge-defined structs - build a py::list of dicts.
             elem_var  = f"_elem_{fname}"
             elem_dict = f"_edict_{fname}"
             list_var  = f"_list_{fname}"
@@ -1537,25 +1749,47 @@ def _gen_reader_dict_body(td, gen_dotted_names, var='val', indent='             
             result.append(indent + "}")
 
         else:
-            # Scalars, vectors of scalars, dicts — pybind11 built-in converters handle these.
+            # Scalars, vectors of scalars, dicts - pybind11 built-in converters handle these.
             result.append(indent + f"{dict_var}[\"{fname}\"] = py::cast({var}.{fname}_);")
+
     return result
 
-
-
 def _gen_writer_from_dict_body(td, gen_dotted_names, src='d', dest='data',
-                               indent='                    '):
+                               indent='                    ',
+                               type_defs_map=None):
     """
     Generate C++ lines that populate a struct from a py::dict.
     Each dict key (without trailing _) is assigned to the matching field.
     Returns a list of C++ source line strings.
     """
     result = []
+    # Fields referenced by shape_fields of another field are populated
+    # automatically from the numpy array shape - skip them in the dict loop.
+    # Fields auto-populated from shape or image array dimensions
+    _auto_populated = set()
+    for _fd in td["fields"].values():
+        # shape dynamic dims
+        if _fd.get("container") == "vector":
+            for _sf in (_fd.get("shape") or []):
+                if isinstance(_sf, str):
+                    _auto_populated.add(_sf)
+        # image width/height dims
+        _img = _fd.get("image")
+        if _img:
+            w_dim, h_dim, _ = _img
+            if isinstance(w_dim, str):
+                _auto_populated.add(w_dim)
+            if isinstance(h_dim, str):
+                _auto_populated.add(h_dim)
+
     for fname, fdef in td["fields"].items():
+        if fname in _auto_populated:
+            continue
         ftype     = fdef["type"]
         container = fdef.get("container")
         shape     = fdef.get("shape")
-        key       = fname  # dict key = field name without trailing _
+        image     = fdef.get("image")
+        key       = fname
 
         result.append(indent + f'if ({src}.contains("{key}")) {{')
 
@@ -1573,24 +1807,95 @@ def _gen_writer_from_dict_body(td, gen_dotted_names, src='d', dest='data',
             ctype = canonical_type(ftype) if ftype not in set(gen_dotted_names) else None
             if ctype:
                 cpp_t = cpp_scalar(ctype)
-                flat  = shape[0] if len(shape) == 1 else shape[0] * shape[1]
-                ptr   = f"{dest}.{fname}_" if len(shape) == 1 else f"&{dest}.{fname}_[0][0]"
+                if len(shape) == 1:
+                    flat = shape[0]
+                    ptr  = f"{dest}.{fname}_"
+                elif len(shape) == 2:
+                    flat = shape[0] * shape[1]
+                    ptr  = f"&{dest}.{fname}_[0][0]"
+                else:
+                    flat = shape[0] * shape[1] * shape[2]
+                    ptr  = f"&{dest}.{fname}_[0][0][0]"
                 result.append(indent + f'    auto _a = {src}["{key}"].cast<py::array_t<{cpp_t}>>();')
                 result.append(indent + f"    if (_a.size() >= {flat})")
                 result.append(indent + f"        std::copy(_a.data(), _a.data()+{flat}, {ptr});")
 
+        elif image:
+            # Image field (type: image): Python sends (H, W, ch) array matching
+            # the reader output. Since it is C-contiguous, just flatten and copy.
+            ctype  = canonical_type(ftype)
+            cpp_t  = cpp_scalar(ctype)
+            w_dim, h_dim, ch = image
+            result.append(indent + f'if ({src}.contains("{key}")) {{')
+            result.append(indent +  '    {')
+            result.append(indent + f'        auto _np = {src}["{key}"].cast<py::array_t<{cpp_t}>>();')
+            result.append(indent +  '        auto _buf = _np.request();')
+            result.append(indent + f'        {dest}.{fname}_.assign(')
+            result.append(indent + f'            static_cast<const {cpp_t}*>(_buf.ptr),')
+            result.append(indent + f'            static_cast<const {cpp_t}*>(_buf.ptr) + _buf.size);')
+            if isinstance(w_dim, str):
+                result.append(indent + f'        {dest}.{w_dim}_ = (_buf.ndim > 1) ? (int32_t)_buf.shape[1] : 0;')
+            if isinstance(h_dim, str):
+                result.append(indent + f'        {dest}.{h_dim}_ = (_buf.ndim > 0) ? (int32_t)_buf.shape[0] : 0;')
+            result.append(indent +  '    }')
+            result.append(indent +  '}')
+
+        elif (container == "vector"
+              and shape and any(isinstance(e, str) or isinstance(e, int) for e in shape)
+              and ftype not in set(gen_dotted_names)):
+            # Dynamic numpy array: accept array, extract flat data and populate
+            # sibling dimension fields from the array's shape attribute.
+            ctype = canonical_type(ftype)
+            cpp_t = cpp_scalar(ctype)
+            sf    = fdef["shape"]
+            result.append(indent +  "    {")
+            result.append(indent + f"        auto _np = {src}[\"{key}\"].cast<py::array_t<{cpp_t}>>();")
+            result.append(indent +  "        auto _buf = _np.request();")
+            result.append(indent + f"        {dest}.{fname}_.assign(")
+            result.append(indent + f"            static_cast<const {cpp_t}*>(_buf.ptr),")
+            result.append(indent + f"            static_cast<const {cpp_t}*>(_buf.ptr) + _buf.size);")
+            for di, sf_entry in enumerate(sf):
+                if isinstance(sf_entry, int):
+                    continue  # literal - no field to populate
+                result.append(indent + f"        if (_buf.ndim > {di})")
+                result.append(indent + f"            {dest}.{sf_entry}_ = (int32_t)_buf.shape[{di}];")
+            result.append(indent +  "    }")
+
+        elif container == "vector" and ftype in set(gen_dotted_names):
+            # Vector of bridge-defined structs: iterate the Python list,
+            # populate each element from its dict field-by-field.
+            # Cannot use cast<std::vector<T>>() - T is not registered as pybind11 type.
+            cpp_t  = _cpp_type_for_switchboard(ftype, gen_dotted_names)
+            result.append(indent + f'    if (py::isinstance<py::list>({src}["{key}"])) {{')
+            result.append(indent + f'        auto _lst = {src}["{key}"].cast<py::list>();')
+            result.append(indent + f'        {dest}.{fname}_.clear();')
+            result.append(indent + f'        {dest}.{fname}_.reserve(_lst.size());')
+            result.append(indent + f'        for (auto _item : _lst) {{')
+            result.append(indent + f'            if (!py::isinstance<py::dict>(_item)) continue;')
+            result.append(indent + f'            {cpp_t} _elem;')
+            result.append(indent + f'            auto _ed = _item.cast<py::dict>();')
+            # Inline the sub-struct field assignments
+            if ftype in (type_defs_map or {}):
+                sub_td = type_defs_map[ftype]
+                sub_lines = _gen_writer_from_dict_body(
+                    sub_td, gen_dotted_names,
+                    src='_ed', dest='_elem',
+                    indent=indent + '            ',
+                    type_defs_map=type_defs_map)
+                result.extend(sub_lines)
+            result.append(indent + f'            {dest}.{fname}_.push_back(std::move(_elem));')
+            result.append(indent + f'        }}')
+            result.append(indent + f'    }}')
+
         elif container == "vector":
-            # vector<scalar> or vector<struct>
-            if ftype in set(gen_dotted_names):
-                elem = _cpp_type_for_switchboard(ftype, gen_dotted_names)
-            else:
-                elem = cpp_scalar(canonical_type(ftype))
+            elem = cpp_scalar(canonical_type(ftype))
             result.append(indent + f'    {dest}.{fname}_ = {src}["{key}"].cast<std::vector<{elem}>>();')
+
         elif container == "dict":
             ct = cpp_scalar(canonical_type(ftype))
             result.append(indent + f'    {dest}.{fname}_ = {src}["{key}"].cast<std::unordered_map<std::string,{ct}>>();')
+
         else:
-            # Plain scalar or nested struct
             if ftype in ("string", "str") or canonical_type(ftype) == "std::string":
                 result.append(indent + f'    {dest}.{fname}_ = {src}["{key}"].cast<std::string>();')
             elif ftype in set(gen_dotted_names):
@@ -1603,7 +1908,6 @@ def _gen_writer_from_dict_body(td, gen_dotted_names, src='d', dest='data',
         result.append(indent + "}")
 
     return result
-
 
 def gen_plugin_cpp(bridge, gen_dotted_names, script_yaml_default,
                    plugin_dir: Path, type_defs_map=None):
@@ -1712,7 +2016,7 @@ def gen_plugin_cpp(bridge, gen_dotted_names, script_yaml_default,
     cpp.append("")
 
     # -----------------------------------------------------------------------
-    # parse_py_args()  — identical to semantic_xr implementation
+    # parse_py_args()  - identical to semantic_xr implementation
     # -----------------------------------------------------------------------
     cpp.append(f"void {plugin_name}::parse_py_args(const std::string& input) {{")
     cpp.append("    std::string::size_type start = 0;")
@@ -1759,7 +2063,7 @@ def gen_plugin_cpp(bridge, gen_dotted_names, script_yaml_default,
     cpp.append("        py::dict globals = py::globals();")
     cpp.append("")
 
-    # Inject readers — each reader.get() returns a py::dict
+    # Inject readers - each reader.get() returns a py::dict
     for inp in bridge['inputs']:
         alias       = inp['alias']
         itype       = inp['type']
@@ -1782,15 +2086,17 @@ def gen_plugin_cpp(bridge, gen_dotted_names, script_yaml_default,
                     type_defs_map=type_defs_map):
                 cpp.append(dict_line)
         else:
-            # ILLIXR system type — fall back to exposing raw cast
+            # ILLIXR system type - fall back to exposing raw cast
             cpp.append(f'                _d["value"] = py::cast(*val);')
         cpp.append( '                return _d;')
         cpp.append(f'            }}')
         cpp.append(f'        }};')
-        cpp.append(f'        py::class_<Py_{alias}_reader>('
-                    'py::module_::import("__main__"),')
+        cpp.append( '        {')
+        cpp.append( '        auto _mreg = py::module_::import("__main__");')
+        cpp.append(f'        py::class_<Py_{alias}_reader>(_mreg,')
         cpp.append(f'            "_{plugin_name}_{alias}_reader_t")')
         cpp.append(f'            .def("get", &Py_{alias}_reader::get);')
+        cpp.append( '        }')
         cpp.append(f'        globals["{global_name}"] = Py_{alias}_reader{{this}};')
         cpp.append('')
 
@@ -1811,19 +2117,23 @@ def gen_plugin_cpp(bridge, gen_dotted_names, script_yaml_default,
         cpp.append(f'                {cpp_t} data;')
         cpp.append( '                auto d = val.cast<py::dict>();')
         if td_out:
-            for wline in _gen_writer_from_dict_body(td_out, gen_dotted_names):
+            for wline in _gen_writer_from_dict_body(td_out, gen_dotted_names,
+                                                    type_defs_map=type_defs_map):
                 cpp.append(wline)
         cpp.append(f'                auto ev = self_->{alias}_writer_.allocate(std::move(data));')
         cpp.append(f'                self_->{alias}_writer_.put(std::move(ev));')
         cpp.append( '            }')
         cpp.append( '        };')
-        cpp.append(f'        py::class_<Py_{alias}_writer>(py::module_::import("__main__"),')
+        cpp.append( '        {')
+        cpp.append( '        auto _mreg = py::module_::import("__main__");')
+        cpp.append(f'        py::class_<Py_{alias}_writer>(_mreg,')
         cpp.append(f'            "_{plugin_name}_{alias}_writer_t")')
         cpp.append(f'            .def("put", &Py_{alias}_writer::put);')
+        cpp.append( '        }')
         cpp.append(f'        globals["{global_name}"] = Py_{alias}_writer{{this}};')
         cpp.append('')
 
-    # Inject subscribe callable — callback receives a py::dict
+    # Inject subscribe callable - callback receives a py::dict
     cpp.append('        globals["illixr_subscribe"] = py::cpp_function(')
     cpp.append('            [this](const std::string& alias, py::object callback) {')
     for inp in bridge['inputs']:
@@ -1869,7 +2179,7 @@ def gen_plugin_cpp(bridge, gen_dotted_names, script_yaml_default,
 
 
 # ---------------------------------------------------------------------------
-# Tier 1 — profile YAML generation
+# Tier 1 - profile YAML generation
 # ---------------------------------------------------------------------------
 
 def write_profile_yaml_files(master_path, profiles_dir):
@@ -1898,7 +2208,7 @@ def write_profile_yaml_files(master_path, profiles_dir):
 
 
 # ---------------------------------------------------------------------------
-# Tier 2 — struct headers + plugin sources
+# Tier 2 - struct headers + plugin sources
 # ---------------------------------------------------------------------------
 
 def cmake_list(items):
@@ -2056,7 +2366,7 @@ def run_generate(bridge_profile_path, build_dir, source_dir):
 
     def load_type_yaml(type_name_: str) -> None:
         """Recursively load a type YAML and all bridge types it references."""
-        if type_name_ in all_dotted_yaml or type_name_ in KNOWN_ILLIXR_TYPES:
+        if type_name_ in all_dotted_yaml or type_name_ in KNOWN_ILLIXR_TYPES or type_name_ in IMAGE_TYPES:
             return
         rel = dotted_to_path(type_name_)
         type_path = data_dir / f"{rel}.yaml"
@@ -2178,7 +2488,7 @@ def run_generate(bridge_profile_path, build_dir, source_dir):
         print(f'set(PY_BRIDGE_TYPE_YAMLS_{name_upper} "{cmake_list(bridge_type_yamls)}")')
 
     # Generate struct headers (mirroring subdir structure).
-    # Only regenerate if at least one bridge is stale — if everything is
+    # Only regenerate if at least one bridge is stale - if everything is
     # up-to-date the headers on disk are already correct.
     struct_out_root = build_dir / "include" / "illixr" / "bridge"
     struct_out_root.mkdir(parents=True, exist_ok=True)
@@ -2186,7 +2496,7 @@ def run_generate(bridge_profile_path, build_dir, source_dir):
     cumulative_dotted: list[str] = []
     generated_hdrs: list[str] = []
     generated_serializers: set[str] = set()
-    # The libclang serialization scan is expensive — build it lazily the
+    # The libclang serialization scan is expensive - build it lazily the
     # first time a struct header actually needs to be written.
     illixr_ser_map: dict | None = None
 
