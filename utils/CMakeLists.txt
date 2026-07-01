@@ -17,7 +17,7 @@ add_library(illixr_vulkan_utils STATIC
             ${CMAKE_SOURCE_DIR}/include/illixr/vk/vulkan_utils.hpp
             vulkan_utils.cpp
 )
-
+set_target_properties(illixr_vulkan_utils PROPERTIES POSITION_INDEPENDENT_CODE ON)
 target_include_directories(illixr_vulkan_utils PUBLIC ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(illixr_vulkan_utils PUBLIC
                       spdlog::spdlog
