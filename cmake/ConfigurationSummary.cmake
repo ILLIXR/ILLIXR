@@ -465,5 +465,14 @@ endif()
 
 giveExecString()
 
+# ------------------------- Unity/C# Bridge -------------------------------
+if(ILLIXR_UNITY_SUMMARY)
+    message("${COLOR_BLUE_BOLD}Unity/C# Bridge${RESET_FORMAT}")
+    foreach(ITEM IN LISTS ILLIXR_UNITY_SUMMARY)
+        message("${ITEM}")
+    endforeach()
+    message("")
+endif()
+
 message("${COLOR_BLUE_BOLD}-------------------------------------------------------------${RESET_FORMAT}")
 message("")
