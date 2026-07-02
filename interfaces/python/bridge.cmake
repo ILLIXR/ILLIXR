@@ -24,12 +24,6 @@
 #         ${CMAKE_BINARY_DIR}/generated/plugins/<bridge>/plugin.cpp
 #         ${CMAKE_BINARY_DIR}/generated/plugins/<bridge>/bindings_<type>.cpp
 #
-#     System bindings (included automatically if present)
-#       interfaces/python/system_bindings/bindings_*.cpp are compiled into
-#       every bridge plugin target alongside the bridge-specific sources.
-#       utils/serialization/*.cpp files listed in SystemBindings.cmake are
-#       also linked in.
-#
 # -DPYTHON_BRIDGE_PROFILE interpretation
 #   Filename only, .yaml extension required.
 #   Resolved as: ${CMAKE_SOURCE_DIR}/interfaces/python/profiles/<value>
@@ -50,7 +44,7 @@ if(DEFINED _ILLIXR_PYTHON_BRIDGE_INCLUDED)
     return()
 endif()
 set(_ILLIXR_PYTHON_BRIDGE_INCLUDED TRUE)
-
+include(${CMAKE_SOURCE_DIR}/interfaces/system/ILLIXRTypes.cmake)
 set(_PY_BRIDGE_GENERATOR
     "${CMAKE_SOURCE_DIR}/interfaces/python/generate_python_bridges.py"
     CACHE INTERNAL "Path to generate_python_bridges.py")

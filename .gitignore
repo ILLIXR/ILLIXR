@@ -59,3 +59,5 @@ local.properties
 third_party/include
 third_party/**/*.a
 third_party/sdk/etc/haarcascades/
+
+interfaces/bridge_generator/__pycache__/

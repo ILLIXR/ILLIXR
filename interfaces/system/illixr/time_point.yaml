@@ -1,0 +1,11 @@
+# Hand-maintained — do not auto-generate. time_point is defined in
+# include/illixr/relative_clock.hpp outside data_format/ and is stable.
+# Source: include/illixr/relative_clock.hpp
+structs:
+  time_point:
+    dotted: illixr.time_point
+    namespace: illixr
+    fields:
+      time_since_epoch_ns: {type: int64}
+    # time_since_epoch_ is clock_duration_ = std::chrono::duration<long long, std::nano>
+    # Exposed as a plain int64 nanosecond count for Python convenience.

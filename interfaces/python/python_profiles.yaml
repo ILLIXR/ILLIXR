@@ -10,4 +10,4 @@
 # Pass one to cmake as: -DPYTHON_BRIDGE_PROFILE=my_xr.yaml
 
 my_xr:
-  bridges: semantic_my_xr
+  bridges: my_semantic_xr
