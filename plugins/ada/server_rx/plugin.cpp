@@ -137,8 +137,8 @@ void server_rx::receive_sr_input(const sr_input_proto::SRSendData& sr_input) {
         receive_timestamp << cur_frame << " " << millis << "\n";
     }
     Eigen::Vector3f    incoming_position{static_cast<float>(sr_input.input_pose().p_x()),
-                                      static_cast<float>(sr_input.input_pose().p_y()),
-                                      static_cast<float>(sr_input.input_pose().p_z())};
+                                         static_cast<float>(sr_input.input_pose().p_y()),
+                                         static_cast<float>(sr_input.input_pose().p_z())};
     Eigen::Quaternionf incoming_orientation{
         static_cast<float>(sr_input.input_pose().o_w()), static_cast<float>(sr_input.input_pose().o_x()),
         static_cast<float>(sr_input.input_pose().o_y()), static_cast<float>(sr_input.input_pose().o_z())};

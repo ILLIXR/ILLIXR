@@ -486,7 +486,7 @@ struct [[maybe_unused]] points_with_units {
      */
     void transform(const pose_data& pose) {
         for (point& pnt : points)
-            pnt = (Eigen::Vector3f)((pose.orientation * pnt) + pose.position);
+            pnt = (Eigen::Vector3f) ((pose.orientation * pnt) + pose.position);
     }
 
     /**
@@ -609,7 +609,7 @@ struct raw_point {
 
     void transform(const pose_data& pose) {
         Eigen::Vector3f vec{x, y, z};
-        vec = (Eigen::Vector3f)((pose.orientation * vec) + pose.position);
+        vec = (Eigen::Vector3f) ((pose.orientation * vec) + pose.position);
         x   = vec.x();
         y   = vec.y();
         z   = vec.z();
@@ -618,7 +618,7 @@ struct raw_point {
     [[maybe_unused]] void de_transform(const pose_data& pose) {
         Eigen::Vector3f vec{x, y, z};
         vec -= pose.position;
-        vec = (Eigen::Vector3f)((pose.orientation.inverse() * vec));
+        vec = (Eigen::Vector3f) ((pose.orientation.inverse() * vec));
         x   = vec.x();
         y   = vec.y();
         z   = vec.z();
