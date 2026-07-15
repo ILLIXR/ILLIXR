@@ -461,7 +461,7 @@ Topic details:
 
 &nbsp;&nbsp;[**Details**][P29]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C29]
 
-## udp_network_backend ![Linux Logo](images/tux.png) ![Windows logo](images/windows.png)
+## webcam ![Linux Logo](images/tux.png)
 
 Provides network communications over UDP.
 
