@@ -2,9 +2,7 @@
 # if it is not found then it is downloaded and marked for compilation and install
 
 find_package(depthai QUIET)
-
-set(DEPTHAI_CMAKE_ARGS "")
-
+list(APPEND EXTERNAL_PROJECTS depthai)
 if(depthai_FOUND)
     set(DepthAI_VERSION "${depthai_VERSION}" PARENT_SCOPE)   # set current version
 else()

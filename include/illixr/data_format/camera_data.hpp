@@ -6,6 +6,9 @@
 #include <map>
 #include <utility>
 
+#ifndef M_PI
+    #define M_PI 3.14159265358979323846
+#endif
 /*
  * The structs in this file were created to hold information about the camera which produced the images. This information
  * includes: center pixels, fields of view, number of pixels across images, and units. This information is needed by the hand

@@ -31,10 +31,11 @@ void lighthouse::stop() {
 void lighthouse::process_slow_pose(SurviveObject* so, survive_long_timecode timecode, const SurvivePose* pose) {
     survive_default_pose_process(so, timecode, pose);
 
-    auto quat = Eigen::Quaternionf{pose->Rot[0], pose->Rot[1], pose->Rot[2], pose->Rot[3]};
+    auto quat = Eigen::Quaternionf{static_cast<float>(pose->Rot[0]), static_cast<float>(pose->Rot[1]),
+                                   static_cast<float>(pose->Rot[2]), static_cast<float>(pose->Rot[3])};
 
     // The libsurvive coordinate system must be adjusted.
-    auto adjustment = Eigen::Quaternionf{-sqrt(2.0) / 2.0, sqrt(2.0) / 2.0, 0.0, 0.0};
+    auto adjustment = Eigen::Quaternionf{static_cast<float>(-sqrt(2.0)) / 2.f, static_cast<float>(sqrt(2.0)) / 2.f, 0.0, 0.0};
     auto new_quat   = adjustment * quat;
     new_quat.normalize();
 

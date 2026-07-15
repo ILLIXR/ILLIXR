@@ -10,7 +10,7 @@
 
 namespace ILLIXR {
 
-class timewarp_vk : public vulkan::timewarp {
+class MY_EXPORT_API timewarp_vk : public vulkan::timewarp {
 public:
     explicit timewarp_vk(const phonebook* pb);
     void initialize();

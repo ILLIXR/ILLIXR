@@ -1,8 +1,13 @@
 # ILLIXR plugins
 
-This page details the structure of ILLIXR's [_plugins_][G18] and how they interact with each other.
+This page details the structure of ILLIXR's [_plugins_][G18] and how they interact with each other. Each plugin is labeled with the OSs they are supported on:
 
-## Ada
+| Logo                                      | OS      |
+|-------------------------------------------|---------|
+| ![Linux Logo](images/tux-large.png)       | Linux   |
+| ![Windows Logo](images/windows-large.png) | Windows |
+
+## Ada ![Linux Logo](images/tux.png)
 
 Ada’s distributed design relies on **four communication plugins** that coordinate data transfer between the **device** and **server** for remote scene provisioning.
 
@@ -23,7 +28,7 @@ Ada’s distributed design relies on **four communication plugins** that coordin
 
 &nbsp;&nbsp;[**Details**][P33]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C33]
 
-## ada.infinitam
+## ada.infinitam ![Linux Logo](images/tux.png)
 
 Performs **scene reconstruction** using incoming depth and pose data from the device, followed by **on-demand or proactive scene extraction**.  
 During extraction, it generates both the **updated partial mesh** and the **Unique Voxel Block List (UVBL)**, which are sent downstream for compression and scene management. Extraction frequency is configurable to balance latency and compute cost.
@@ -36,7 +41,7 @@ Topic details:
 
 &nbsp;&nbsp;[**Details**][P33]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C34]
 
-## ada.mesh_compression
+## ada.mesh_compression ![Linux Logo](images/tux.png)
 
 Compresses mesh chunks from [`ada.infinitam`][I12] using a **customized version of [Google Draco][E17]**. Compression parallelism can be tuned for different latency–power trade-offs.
 
@@ -47,7 +52,7 @@ Topic details:
 
 &nbsp;&nbsp;[**Details**][P33]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C35]
 
-## ada.mesh_decompression_grey
+## ada.mesh_decompression_grey ![Linux Logo](images/tux.png)
 
 Decompresses the mesh chunks received from the server and performs a portion of scene management that can be parallelized. Decompression parallelism can be tuned for different latency–power trade-offs.
 
@@ -58,7 +63,7 @@ Topic details:
 
 &nbsp;&nbsp;[**Details**][P33]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C36]
 
-## ada.offline_scannet
+## ada.offline_scannet ![Linux Logo](images/tux.png)
 
 Loads the **ScanNet dataset** for offline or reproducible experiments.
  
@@ -68,7 +73,7 @@ Topic details:
 
 &nbsp;&nbsp;[**Details**][P33]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C37]
 
-## ada.scene_management
+## ada.scene_management ![Linux Logo](images/tux.png)
 
 Integrates incremental scene updates into a **maintained global mesh**, merging new geometry and removing outdated regions for consistency.
 
@@ -79,7 +84,7 @@ Topic details:
 
 &nbsp;&nbsp;[**Details**][P33]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C38]
 
-## audio_pipeline
+## audio_pipeline ![Linux Logo](images/tux.png)
 
 Launches a thread for [binaural][E12]: recording and one for binaural playback.
 Audio output is not yet routed to the system's speakers or microphone,
@@ -92,7 +97,7 @@ Topic details:
 
 &nbsp;&nbsp;[**Details**][P10]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C1]
 
-## debugview
+## debugview ![Linux Logo](images/tux.png)
 
 Renders incoming [_frames_][G11] from the graphics pipeline for debugging live executions of the application.
 
@@ -106,7 +111,7 @@ Topic details:
 
 &nbsp;&nbsp;[**Details**][P11]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C2]
 
-## depthai
+## depthai ![Linux Logo](images/tux.png)
 
 Enables access to the DepthAI library.
 
@@ -118,7 +123,7 @@ Topic details:
 
 &nbsp;&nbsp;**Details**&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C3]
 
-## gldemo [^1]
+## gldemo [^1] ![Linux Logo](images/tux.png)
 
 Renders a static scene (into left and right [_eye buffers_][G11]) given the [_pose_][G14]
 from [`pose_prediction`][S10].
@@ -132,7 +137,7 @@ Topic details:
 
 &nbsp;&nbsp;[**Details**][P12]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C4]
 
-## ground_truth_slam
+## ground_truth_slam ![Linux Logo](images/tux.png)
 
 Reads the [_ground truth_][G10] from the same dataset as the `offline_imu` plugin.
 Ground truth data can be compared against the head tracking results (e.g. from VIO, IMU integrator, or pose predictor) for accuracy.
@@ -146,7 +151,7 @@ Topic details:
 
 &nbsp;&nbsp;**Details**&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C5]
 
-## gtsam_integrator
+## gtsam_integrator ![Linux Logo](images/tux.png)
 
 Integrates over all [_IMU_][G13] samples since the last published visual-inertial [_pose_][G14] to provide a
 [_fast pose_][G14] every time a new IMU sample arrives using the GTSAM library ([upstream][E10]).
@@ -159,7 +164,7 @@ Topic details:
 
 &nbsp;&nbsp;**Details** [**Code**][C6]
 
-## hand_tracking
+## hand_tracking ![Linux Logo](images/tux.png)
 
 Detects and identifies hands in an image, CPU based calculations. The output from this plugin can be used to track hand movements and recognize hand gestures.
 
@@ -178,7 +183,7 @@ Topic details:
 
 &nbsp;&nbsp;[**Details**][P13]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C7]
 
-## hand_tracking_gpu
+## hand_tracking_gpu ![Linux Logo](images/tux.png)
 
 Detects and identifies hands in an image, GPU based calculations. The output from this plugin can be used to track hand movements and recognize hand gestures. This plugin is currently experimental.
 
@@ -197,7 +202,7 @@ Topic details:
 
 &nbsp;&nbsp;[**Details**][P13]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C7]
 
-## hand_tracking.viewer
+## hand_tracking.viewer ![Linux Logo](images/tux.png)
 
 Reads the output of the `hand_tracking` plugin and displays the results on the screen. This is most useful for debugging. The capabilities of this plugin will be merged into the `debugview` plugin in the future.
 
@@ -207,7 +212,7 @@ Topic details:
 
 &nbsp;&nbsp;[**Details**][P14]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C8]
 
-## lighthouse
+## lighthouse ![Linux Logo](images/tux.png)
 
 Enables lighthouse tracking using the [libsurvive library](https://github.com/collabora/libsurvive)
 
@@ -218,7 +223,7 @@ Topic details:
 
 &nbsp;&nbsp;[**Details**][P15]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C9]
 
-## native_renderer
+## native_renderer ![Linux Logo](images/tux.png) ![Windows logo](images/windows.png)
 
 Constructs a full rendering pipeline utilizing several ILLIXR components.
 
@@ -232,7 +237,7 @@ Topic details:
 
 &nbsp;&nbsp;[**Details**][P21]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C10]
 
-## offline_cam
+## offline_cam ![Linux Logo](images/tux.png) ![Windows logo](images/windows.png)
 
 Reads camera images from files on disk, emulating real cameras on the [_headset_][G15]
 (feeds the application input measurements with timing similar to an actual camera).
@@ -243,7 +248,7 @@ Topic details:
 
 &nbsp;&nbsp;**Details**&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C11]
 
-## offline_imu
+## offline_imu ![Linux Logo](images/tux.png) ![Windows logo](images/windows.png)
 
 Reads [_IMU_][G13] data files on disk, emulating a real sensor on the [_headset_][G15]
 (feeds the application input measurements with timing similar to an actual IMU).
@@ -254,7 +259,7 @@ Topic details:
 
 &nbsp;&nbsp;**Details**&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C12]
 
-## offload_data
+## offload_data ![Linux Logo](images/tux.png)
 
 Writes [_frames_][G11] and [_poses_][G14] output from the [_asynchronous reprojection_][G12] plugin to disk for analysis.
 
@@ -264,7 +269,7 @@ Topic details:
 
 &nbsp;&nbsp;**Details**&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C13]
 
-## offload_rendering_client
+## offload_rendering_client ![Linux Logo](images/tux.png)
 
 Receives encoded frames from the network, sent by [offload_rendering_server](#offload_rendering_server)
 
@@ -277,7 +282,7 @@ Topic details:
 
 &nbsp;&nbsp;[**Details**][P22]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C14]
 
-## offload_rendering_server
+## offload_rendering_server ![Linux Logo](images/tux.png)
 
 Encodes and transmits frames to one of the offload_rendering_clients. 
 
@@ -289,7 +294,7 @@ Topic details:
 
 &nbsp;&nbsp;[**Details**][P16]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C16]
 
-## offload_vio
+## offload_vio ![Linux Logo](images/tux.png)
 
 Four plugins which work in unison to allow head tracking (VIO) to be rendered remotely. 
 
@@ -314,7 +319,7 @@ Topic details:
 
 &nbsp;&nbsp;[**Details**][P17]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C17]
 
-## openni
+## openni ![Linux Logo](images/tux.png)
 
 Enables an interface to the Openni algorithms.
 
@@ -324,7 +329,7 @@ Topic details:
 
 &nbsp;&nbsp;[**Details**][P18]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C18]
 
-## open_vins
+## open_vins ![Linux Logo](images/tux.png) ![Windows logo](images/windows.png)
 
 An alternate head tracking ([upstream][E11]) implementation that uses a MSCKF
 (Multi-State Constrained Kalman Filter) to determine poses via camera/[_IMU_][G13].
@@ -337,7 +342,7 @@ Topic details:
 
 &nbsp;&nbsp;[**Details**][P19]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C19]
 
-## openwarp_vk
+## openwarp_vk ![Linux Logo](images/tux.png)
 
 Provides a Vulkan-based reprojection service.
 
@@ -348,7 +353,7 @@ Topic details:
 
 &nbsp;&nbsp;[**Details**][P20]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C20]
 
-## orb_slam3
+## orb_slam3 ![Linux Logo](images/tux.png)
 
 Utilizes the ORB_SLAM3 library to enable real-time head tracking.
 
@@ -361,7 +366,7 @@ Topic details:
 
 &nbsp;&nbsp;[**Details**][P21]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C21]
 
-## passthrough_integrator
+## passthrough_integrator ![Linux Logo](images/tux.png) ![Windows logo](images/windows.png)
 
 Provides IMU integration.
 
@@ -373,7 +378,7 @@ Topic details:
 
 &nbsp;&nbsp;**Details**&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C22]
 
-## realsense
+## realsense ![Linux Logo](images/tux.png)
 
 Reads images and [_IMU_][G13] measurements from the [Intel Realsense][E14].
 
@@ -385,7 +390,7 @@ Topic details:
 
 &nbsp;&nbsp;**Details**&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C23]
 
-## record_imu_cam
+## record_imu_cam ![Linux Logo](images/tux.png)
 
 Writes [`imu_type`][A15] and [`binocular_cam_type`][A14] data to disk.
 
@@ -396,7 +401,7 @@ Topic details:
 
 &nbsp;&nbsp;[**Details**][P24]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C24]
 
-## record_rgb_depth
+## record_rgb_depth ![Linux Logo](images/tux.png)
 
 Writes [`rgb_depth_type`][A13] data to disk.
 
@@ -406,7 +411,7 @@ Topic details:
 
 **Details** [**Code**][C25]
 
-## rk4_integrator
+## rk4_integrator ![Linux Logo](images/tux.png) ![Windows logo](images/windows.png)
 
 Integrates over all [_IMU_][G13] samples since the last published visual-inertial [_pose_][G14] to
 provide a [_fast pose_][G14] every time a new IMU sample arrives using RK4 integration.
@@ -419,13 +424,13 @@ Topic details:
 
 &nbsp;&nbsp;**Details**&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C26]
 
-## tcp_network_backend
+## tcp_network_backend ![Linux Logo](images/tux.png) ![Windows logo](images/windows.png)
 
 Provides network communications over TCP.
 
 **Details**&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C27]
 
-## timewarp_gl [^1]
+## timewarp_gl [^1] ![Linux Logo](images/tux.png)
 
 [Asynchronous reprojection][G12] of the [_eye buffers_][G11].
 The timewarp ends right before [_vsync_][G11], so it can deduce when the next vsync will be.
@@ -443,7 +448,7 @@ Topic details:
 
 &nbsp;&nbsp;[**Details**][P28]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C28]
 
-## timewarp_vk
+## timewarp_vk ![Linux Logo](images/tux.png) ![Windows logo](images/windows.png)
 
 [Asynchronous reprojection][G12] of the [_eye buffers_][G11].
 The timewarp ends right before [_vsync_][G11], so it can deduce when the next vsync will be.
@@ -456,7 +461,7 @@ Topic details:
 
 &nbsp;&nbsp;[**Details**][P29]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C29]
 
-## webcam
+## webcam ![Linux Logo](images/tux.png)
 
 Uses a webcam to capture images for input into the `hand_tracking` plugin. This plugin is useful for debugging and is not meant to be used in a production pipeline.
 
@@ -466,7 +471,7 @@ Topic details:
 
 &nbsp;&nbsp;[**Details**][P30]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C30]
 
-## zed
+## zed ![Linux Logo](images/tux.png)
 
 Reads images and [_IMU_][G13] measurements from the [ZED Mini][E13].
 Unlike `offline_imu`, `zed` additionally has RGB and [_depth_][G11] data.
@@ -485,7 +490,7 @@ Topic details:
 
 &nbsp;&nbsp;[**Details**][P31]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C31]
 
-## zed.data_injection
+## zed.data_injection ![Linux Logo](images/tux.png)
 
 Reads images and pose information from disk and publishes them to ILLIXR.
 
@@ -509,18 +514,18 @@ See [Writing Your Plugin][I10] to extend ILLIXR.
 Some plugins require other plugins to be loaded in order to work. The table below gives a listing of the plugin
 interdependencies.
 
-| Plugin          | Requires        | Provided by plugin                      |
-|:----------------|:----------------|:----------------------------------------|
+| Plugin          | Requires        | Provided by plugin                     |
+|:----------------|:----------------|:---------------------------------------|
 | debugview       | pose_prediction | fauxpose, pose_lookup, pose_prediction |
 | gldemo          | pose_prediction | fauxpose, pose_lookup, pose_prediction |
-| native_renderer | app             | vkdemo                                  |
-|                 | display_sink    | display_vk                              |
+| native_renderer | app             | vkdemo                                 |
+|                 | display_sink    | display_vk                             |
 |                 | pose_prediction | fauxpose, pose_lookup, pose_prediction |
-|                 | timewarp        | timewarp_vk                             |
+|                 | timewarp        | timewarp_vk                            |
 | timewarp_gl     | pose_prediction | fauxpose, pose_lookup, pose_prediction |
-| timewarp_vk     | display_sink    | display_vk                              |
+| timewarp_vk     | display_sink    | display_vk                             |
 |                 | pose_prediction | fauxpose, pose_lookup, pose_prediction |
-| vkdemo          | display_sink    | display_vk                              |
+| vkdemo          | display_sink    | display_vk                             |
 
 See [Getting Started][I11] for more information on adding plugins to a [_profile_][G17] file.
 

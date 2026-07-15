@@ -31,6 +31,7 @@
 #include "service.hpp"
 
 #include <cstdlib>
+#include <cstring>
 #include <eigen3/Eigen/Core>
 #include <eigen3/Eigen/Geometry>
 #include <memory>
@@ -39,6 +40,19 @@
 using namespace ILLIXR;
 using namespace ILLIXR::data_format;
 
+#if defined(_WIN32) || defined(_WIN64)
+
+char* strchrnul(char* str, int c) {
+    char* pos = strchr(str, c);
+    return (pos != nullptr) ? pos : str + strlen(str);
+}
+
+const char* strchrnul(const char* str, int c) {
+    const char* pos = strchr(str, c);
+    return (pos != nullptr) ? pos : str + strlen(str);
+}
+
+#endif
 fauxpose_impl::fauxpose_impl(const phonebook* pb)
     : switchboard_{pb->lookup_impl<switchboard>()}
     , clock_{pb->lookup_impl<relative_clock>()}

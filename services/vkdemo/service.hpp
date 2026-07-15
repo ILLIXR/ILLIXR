@@ -67,7 +67,7 @@ struct texture {
     VkImageView   image_view;
 };
 
-class vkdemo : public vulkan::app {
+class MY_EXPORT_API vkdemo : public vulkan::app {
 public:
     explicit vkdemo(const phonebook* const pb);
     void initialize();

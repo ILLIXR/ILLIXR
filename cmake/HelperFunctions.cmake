@@ -30,11 +30,11 @@ macro(disable_gpl)
 endmacro()
 # generate the profile yaml files from the master plugins.yaml
 function(generate_yaml)
-    if(NOT EXISTS "${PROJECT_SOURCE_DIR}/plugins/plugins.yaml")
+    if(NOT EXISTS "${CMAKE_SOURCE_DIR}/plugins/plugins.yaml")
         message(FATAL_ERROR "plugins/plugins.yaml file is missing")
     endif()
 
-    file(TIMESTAMP "${PROJECT_SOURCE_DIR}/plugins/plugins.yaml" PROFILE_FILE_TIMESTAMP "%s" UTC)
+    file(TIMESTAMP "${CMAKE_SOURCE_DIR}/plugins/plugins.yaml" PROFILE_FILE_TIMESTAMP "%s" UTC)
 
     if(NOT FORCE_REGEN AND DEFINED CACHE{LAST_YAML_BUILD} AND DEFINED CACHE{PLUGIN_LIST})
         message("Using cached profile yaml files")
@@ -48,7 +48,7 @@ function(generate_yaml)
         set(PROFILE_NAMES "")
         set(ALL_BUILD_FLAGS "")
 
-        file(STRINGS "${PROJECT_SOURCE_DIR}/plugins/plugins.yaml" YAML_LINES)
+        file(STRINGS "${CMAKE_SOURCE_DIR}/plugins/plugins.yaml" YAML_LINES)
         set(IN_ENV_VARS NO)
         set(INDENT_LEVEL 0)
         set(STARTED_PROFILES NO)
@@ -89,7 +89,7 @@ function(generate_yaml)
                     endif()
                     list(APPEND PROFILE_NAMES ${PROFILE_NAME})
                     set(TEMP_MOD_PLUG "${TEMP_MOD_PLUG}    {\n      \"name\": \"${PROFILE_NAME}\"")
-                    set(OUTFILE "${PROJECT_SOURCE_DIR}/profiles/${PROFILE_NAME}.yaml")
+                    set(OUTFILE "${CMAKE_SOURCE_DIR}/profiles/${PROFILE_NAME}.yaml")
                     file(WRITE ${OUTFILE} "# This file was auto generated, take caution if manually editing.\n")
                     continue()
                 endif()
@@ -128,7 +128,7 @@ function(generate_yaml)
                     string(REPLACE "," ";" TEMP_BUILD_FLAGS "${LOCAL_BUILD_FLAGS}")
                     list(APPEND ALL_BUILD_FLAGS "${TEMP_BUILD_FLAGS}")
                 elseif(ENTRY STREQUAL "profiles")
-                    set(ALL_FILE "${PROJECT_SOURCE_DIR}/profiles/all.yaml")
+                    set(ALL_FILE "${CMAKE_SOURCE_DIR}/profiles/all.yaml")
                     file(WRITE ${ALL_FILE} "# This file was auto generated and is intended for debugging an entire build, take caution if editing manually.\n")
                     file(APPEND ${ALL_FILE} "plugins: ${PLUGIN_NAMES}\n")
                     file(APPEND ${ALL_FILE} "env_vars:\n")
@@ -389,3 +389,144 @@ function(check_for_external)
     endforeach()
     set(${CHECK_FOR_EXTERNAL_OUT_FLAGS} ${FLAGS_FOUND} PARENT_SCOPE)
 endfunction()
+
+macro (report_build NAME)
+    message(STATUS "${NAME} could not be found, it will be built from source")
+    message(STATUS "    downloading...")
+endmacro()
+
+function(fetch_git)
+    set(options PATCH RECURSE NO_OVERRIDE)
+    set(oneValueArgs NAME REPO TAG SUBDIR)
+    cmake_parse_arguments(fetch "${options}" "${oneValueArgs}" "" ${ARGV})
+
+    if(NOT fetch_NAME)
+        message(FATAL_ERROR "Name must be specified in calls to fetch_git.")
+    elseif(NOT fetch_REPO)
+        message(FATAL_ERROR "REPO must be specified in calls to fetch_git.")
+    elseif(NOT fetch_TAG)
+        message(FATAL_ERROR "TAG must be specified in calls to fetch_git.")
+    endif()
+        if(NOT fetch_NO_OVERRIDE)
+        set(OVERRIDE_TEXT OVERRIDE_FIND_PACKAGE)
+    else()
+        set(OVERRIDE_TEXT "")
+    endif()
+
+    report_build(${fetch_NAME})
+    if (fetch_PATCH)
+        if (fetch_SUBDIR)
+            FetchContent_Declare(${fetch_NAME}
+                                 GIT_REPOSITORY ${fetch_REPO}
+                                 GIT_TAG ${fetch_TAG}
+                                 GIT_PROGRESS TRUE
+                                 GIT_SUBMODULES_RECURSE ${fetch_RECURSE}
+                                 SOURCE_SUBDIR ${fetch_SUBDIR}
+                                 PATCH_COMMAND ${CMAKE_CURRENT_LIST_DIR}/../do_patch.sh -p ${CMAKE_CURRENT_LIST_DIR}/${fetch_NAME}/${fetch_NAME}.patch
+                                 ${OVERRIDE_TEXT}
+            )
+        else()
+            FetchContent_Declare(${fetch_NAME}
+                                 GIT_REPOSITORY ${fetch_REPO}
+                                 GIT_TAG ${fetch_TAG}
+                                 GIT_SUBMODULES_RECURSE ${fetch_RECURSE}
+                                 GIT_PROGRESS TRUE
+                                 PATCH_COMMAND ${CMAKE_CURRENT_LIST_DIR}/../do_patch.sh -p ${CMAKE_CURRENT_LIST_DIR}/${fetch_NAME}/${fetch_NAME}.patch
+                                 ${OVERRIDE_TEXT}
+            )
+        endif()
+    else()
+        if (fetch_SUBDIR)
+            FetchContent_Declare(${fetch_NAME}
+                                 GIT_REPOSITORY ${fetch_REPO}
+                                 GIT_TAG ${fetch_TAG}
+                                 GIT_SUBMODULES_RECURSE ${fetch_RECURSE}
+                                 GIT_PROGRESS TRUE
+                                 SOURCE_SUBDIR ${fetch_SUBDIR}
+                                 ${OVERRIDE_TEXT}
+            )
+        else()
+            FetchContent_Declare(${fetch_NAME}
+                                 GIT_REPOSITORY ${fetch_REPO}
+                                 GIT_TAG ${fetch_TAG}
+                                 GIT_SUBMODULES_RECURSE ${fetch_RECURSE}
+                                 GIT_PROGRESS TRUE
+                                 ${OVERRIDE_TEXT}
+            )
+        endif()
+    endif()
+    message(STATUS "        complete.")
+endfunction()
+
+function(fetch_url)
+    set(options PATCH NO_OVERRIDE)
+    set(oneValueArgs NAME SRC_URL HASH)
+    cmake_parse_arguments(fetch "${options}" "${oneValueArgs}" "" ${ARGV})
+
+    if(NOT fetch_NAME)
+        message(FATAL_ERROR "Name must be specified in calls to fetch_git.")
+    elseif(NOT fetch_SRC_URL)
+        message(FATAL_ERROR "SRC_URL must be specified in calls to fetch_git.")
+    elseif(NOT fetch_HASH)
+        message(FATAL_ERROR "HASH must be specified in calls to fetch_git.")
+    endif()
+    if(NOT fetch_NO_OVERRIDE)
+        set(OVERRIDE_TEXT OVERRIDE_FIND_PACKAGE)
+    else()
+        set(OVERRIDE_TEXT "")
+    endif()
+    report_build(${fetch_NAME})
+    if (fetch_PATCH)
+        FetchContent_Declare(${fetch_NAME}
+                             URL ${fetch_SRC_URL}
+                             URL_HASH ${fetch_HASH}
+                             PATCH_COMMAND ${CMAKE_CURRENT_LIST_DIR}/../do_patch.sh -p ${CMAKE_CURRENT_LIST_DIR}/${fetch_NAME}/${fetch_NAME}.patch
+                             ${OVERRIDE_TEXT}
+        )
+    else()
+        FetchContent_Declare(${fetch_NAME}
+                             URL ${fetch_SRC_URL}
+                             URL_HASH ${fetch_HASH}
+                             ${OVERRIDE_TEXT}
+        )
+    endif()
+    message(STATUS "        complete.")
+endfunction()
+
+macro(configure_target)
+    set(options MATCH_BUILD_TYPE NO_FIND USE_PKG_CONF)
+    set(oneValueArgs NAME VERSION PKG_CONF)
+    cmake_parse_arguments(_config "${options}" "${oneValueArgs}" "" ${ARGV})
+
+    if(NOT _config_NAME)
+        message(FATAL_ERROR "Name must be specified in calls to fetch_git.")
+    endif()
+
+    if(_config_USE_PKG_CONF AND NOT _config_PKG_CONF)
+        set(${_config_PKG_CONF} ${_config_NAME})
+    endif()
+    message(STATUS "Configuring ${_config_NAME}")
+    if (NOT _config_MATCH_BUILD_TYPE)
+        set(CMAKE_BUILD_TYPE Release)
+    endif()
+    FetchContent_MakeAvailable(${_config_NAME})
+    if (NOT _config_MATCH_BUILD_TYPE)
+        set(CMAKE_BUILD_TYPE ${ILLIXR_BUILD_TYPE})
+    endif()
+    message(STATUS "   ${_config_NAME} Configuration complete")
+    if (NOT _config_NO_FIND)
+        if (${_config_VERSION})
+            if (${_config_USE_PKG_CONF})
+                pkg_check_modules(${_config_NAME} REQUIRED ${_config_PKG_CONF}>=$_config_VERSION})
+            else()
+                find_package(${_config_NAME} ${_config_VERSION} REQUIRED)
+            endif()
+        else()
+            if (${_config_USE_PKG_CONF})
+                pkg_check_modules(${_config_NAME} REQUIRED ${_config_PKG_CONF})
+            else()
+                find_package(${_config_NAME} REQUIRED)
+            endif()
+        endif()
+    endif()
+endmacro()

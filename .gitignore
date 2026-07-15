@@ -35,3 +35,9 @@ profiles/all.yaml
 docs/docs/index.md
 
 docs/mkdocs.yaml
+
+out/
+vcpkg_*
+.vs/
+.vscode/
+*.bak

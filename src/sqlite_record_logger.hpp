@@ -30,7 +30,7 @@ public:
             std::filesystem::create_directory(directory_);
         }
 
-        const std::string path = directory_ / (table_name_ + std::string{".sqlite"});
+        const std::string path = directory_.string() + "/" + (table_name_ + std::string{".sqlite"});
 
         RAC_ERRNO_MSG("sqlite_record_logger before sqlite3pp::database");
         sqlite3pp::database database{path.c_str()};

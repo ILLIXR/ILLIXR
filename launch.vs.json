@@ -1,0 +1,35 @@
+{
+  "version": "4.1.1",
+  "defaults": {},
+  "configurations": [
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "name": "monado service",
+      "projectTarget": "monado-service.exe (Install) (bin\\monado-service.exe)",
+      "program": "${workspaceRoot}\\launch\\launch_monado_service_debug.bat"
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "name": "monado service release",
+      "projectTarget": "monado-service.exe (Install) (bin\\monado-service.exe)",
+      "program": "${workspaceRoot}\\launch\\launch_monado_service_release.bat"
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "main.opt.exe (Install) (bin\\illixr.opt.exe)",
+      "name": "illixr release",
+      "program": "${workspaceRoot}\\launch\\launch_illixr_release.bat"
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "main.dbg.exe (Install) (bin\\illixr.dbg.exe)",
+      "name": "illixr debug",
+      "program": "${workspaceRoot}\\launch\\launch_illixr_debug.bat"
+    }
+
+  ]
+}

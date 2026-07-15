@@ -12,7 +12,7 @@
 #include <stack>
 
 namespace ILLIXR {
-class native_renderer : public threadloop {
+class MY_EXPORT_API native_renderer : public threadloop {
 public:
     [[maybe_unused]] native_renderer(const std::string& name, phonebook* pb);
     ~native_renderer() override;

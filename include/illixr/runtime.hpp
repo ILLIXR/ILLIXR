@@ -1,5 +1,6 @@
 #pragma once
 
+#include "illixr/export.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/switchboard.hpp"
 
@@ -43,6 +44,6 @@ protected:
     std::shared_ptr<switchboard> switchboard_;
 };
 
-extern "C" runtime* runtime_factory();
+extern "C" MY_EXPORT_API runtime* runtime_factory();
 
 } // namespace ILLIXR

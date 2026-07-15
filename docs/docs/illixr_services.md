@@ -1,9 +1,15 @@
 # ILLIXR Services
 
-This page details the structure of ILLIXR's [_services_][58] and how they interact with each other.
+This page details the structure of ILLIXR's [_services_][58] and how they interact with each other. Each service is labeled with the OSs they are supported on:
+
+| Logo                                      | OS      |
+|-------------------------------------------|---------|
+| ![Linux Logo](images/tux-large.png)       | Linux   |
+| ![Windows Logo](images/windows-large.png) | Windows |
 
 
-## fauxpose
+
+## fauxpose ![Linux Logo](images/tux.png) ![Windows logo](images/windows.png)
 
 An alternate tracking implementation that simply generates "fast_pose"
 data from a simple mathematical algorithm (circular movement).  The intent
@@ -16,7 +22,7 @@ Topic details:
 
 &nbsp;&nbsp;[**Details**][D42]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C42]
 
-## pose_prediction
+## pose_prediction ![Linux Logo](images/tux.png) ![Windows logo](images/windows.png)
 
 Uses the latest [_IMU_][36] value to predict a [_pose_][37] for a future point in time.
 Implements the `pose_prediction` service,
@@ -31,7 +37,7 @@ Topic details:
 
 &nbsp;&nbsp;**Details**&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C44]
 
-## pose_lookup
+## pose_lookup ![Linux Logo](images/tux.png) ![Windows logo](images/windows.png)
 
 Implements the `pose_predict` service, but uses [_ground truth_][33] from the dataset.
 The plugin peeks "into the future" to determine what the exact [_pose_][37] will be at a certain time.
@@ -42,7 +48,7 @@ Topic details:
 
 &nbsp;&nbsp;**Details**&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C43]
 
-## vkdemo
+## vkdemo ![Linux Logo](images/tux.png) ![Windows logo](images/windows.png)
 
 INFO NEEDED
 

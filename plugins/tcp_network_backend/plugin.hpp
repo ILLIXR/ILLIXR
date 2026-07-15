@@ -8,7 +8,7 @@
 
 namespace ILLIXR {
 
-class tcp_network_backend
+class MY_EXPORT_API tcp_network_backend
     : public plugin
     , public network::network_backend {
 public:

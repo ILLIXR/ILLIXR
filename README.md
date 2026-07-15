@@ -13,7 +13,8 @@ system and testbed. The modular, extensible, and OpenXR-compatible ILLIXR runtim
 components into a complete XR system.
 
 The current ILLIXR release is [v4.1][E51]. Source code is available from our [GitHub repository][P68], which also contains
-instructions for building fully contained [Docker images][E56].
+instructions for building fully contained [Docker images][E56]. While ILLIXR was originally designed for Linux, Windows
+is now also supported by many of the plugins.
 
 ILLIXR provides its components in standalone configurations to enable architects and system designers to research each
 component in isolation. The standalone components are packaged together as of the v3.1.0 release of ILLIXR.
@@ -46,9 +47,6 @@ component. ILLIXR currently contains the following [plugins][P66] and [services]
     - [webcam][P37]
 - Scene provisioning
     - [Ada (scene provisioning)][P69]: collection of plugins that implement scene provisioning—combining InfiniTAM-based real-time scene reconstruction with delivery of mesh-based scene data to XR applications and other scene-consuming spatial computing components.
-
-
-      
 
 
 ### Visual
@@ -122,7 +120,7 @@ see our [YouTube][E54] channel, and join our [Discord][E47] for announcements.
 
 ## Demo Videos
 
-All of our demo videos can be seen on our [YouTube][E54] channel. 
+All of our demo videos can be seen on our [YouTube][E54] channel.
 Here are some highlights:
 
 | Running Locally                                                                                                                                                                                                                                                                                                                                                                      | Head Tracking (VIO) Offloaded                                                                                                                                                                       |

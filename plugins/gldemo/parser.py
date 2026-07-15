@@ -56,6 +56,9 @@ print("// Total objects: " + str(len(objects)) + "\n")
 
 print("#ifndef MODEL_HH")
 print("#define MODEL_HH")
+print("#if defined(_WIN32) || defined(_WIN64)")
+print("#include <windows.h>")
+print("#endif")
 
 print("#include <GL/gl.h>")
 

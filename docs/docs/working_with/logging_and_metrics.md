@@ -15,17 +15,39 @@ If `NDEBUG` is not defined, then the default logging level is `warn`, otherwise 
 Logging is activated by exporting environment variables to a particular level before running ILLIXR. These take the form
 of `<PLUGIN_NAME>_LOG_LEVEL`, e.g.,
 
-```  { .bash .copy }
+``` bash
 # Activate logging for both the ground_truth_slam plugin and the ILLIXR app
 # Each will log to the console, with color (actual colors dependent on the terminal settings)
 # Each log will write to $ILLIXR_ROOT/logs/<plugin_name>.log
 # Each log can have a different level.
+```
 
-export GROUND_TRUTH_SLAM_LOG_LEVEL=debug
-export ILLIXR_LOG_LEVEL=warn
+=== "bash"
 
-main.dbg.exe -yaml=profiles/native_gl.yaml
-``` 
+    ``` { .bash .copy }
+    export GROUND_TRUTH_SLAM_LOG_LEVEL=debug
+    export ILLIXR_LOG_LEVEL=warn
+
+    main.dbg.exe -yaml=profiles/native_gl.yaml
+    ```
+
+=== "csh"
+
+    ``` { .csh .copy }
+    setenv GROUND_TRUTH_SLAM_LOG_LEVEL debug
+    setenv ILLIXR_LOG_LEVEL warn
+
+    main.dbg.exe -yaml=profiles/native_gl.yaml
+    ```
+
+=== "Windows (powershell)"
+
+    ``` { .powershell .copy }
+    $Env:GROUND_TRUTH_SLAM_LOG_LEVEL = "debug"
+    $Env:ILLIXR_LOG_LEVEL = "warn"
+
+    main.dbg.exe -yaml=profiles/native_gl.yaml
+    ```
 
 When writing a new plugin, the `plugin.spdlogger(std::string log_level)` method should be called, e.g., using
 `switchboard->get_env("<PLUGIN_NAME>_LOG_LEVEL")` This creates a logger with two sinks (console and file). This logger
@@ -34,7 +56,7 @@ is then registered in the global spdlog registry.
 To log inside a plugin method, use the plugin's name attribute to get the particular logger from the registry and call
 the desired log level method, e.g.
 
-```
+``` C++
 spdlog::get(name)->info("informative message");
 ```
 

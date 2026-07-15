@@ -73,7 +73,7 @@ public:
         return columns_[column].second;
     }
 
-    [[nodiscard]] unsigned get_columns() const {
+    [[nodiscard]] size_t get_columns() const {
         return columns_.size();
     }
 

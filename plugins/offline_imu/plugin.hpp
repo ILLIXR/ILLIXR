@@ -21,7 +21,7 @@ typedef struct {
     raw_imu_type imu0;
 } sensor_types;
 
-class offline_imu : public threadloop {
+class MY_EXPORT_API offline_imu : public threadloop {
 public:
     [[maybe_unused]] offline_imu(const std::string& name, phonebook* pb);
 
