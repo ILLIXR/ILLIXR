@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.18)
 #set(DUMP_FRAMES ON)
 # Enable CUDA language only if using NVENC encoder
-option(USE_NVENC_ENCODER "Use direct NVENC encoder instead of FFmpeg" ON)
+option(USE_NVENC_ENCODER "Use direct NVENC encoder instead of FFmpeg" OFF)
 # NVENC is required for windows, ffmpeg is not supported on that platform.
 if(WIN32 OR MSVC)
     set(USE_NVENC_ENCODER ON)
@@ -129,7 +129,7 @@ if(USE_NVENC_ENCODER)
             )
         endif()
     endif()
-    
+
     set(CODEC_SDK_FOUND false)
 
     if(DEFINED ENV{VIDEO_CODEC_SDK_PATH})
