@@ -158,7 +158,8 @@ void udp_network_backend::topic_create(std::string topic_name, network::topic_co
         for (int i = 0; i < 3; ++i)
             send_control(ctrl_message);
     } else {
-        spdlog::get("illixr")->error("[udp_network_backend]: ERROR socket: {}  has_peer: {}", (peer_socket_ == nullptr) ? "null" : "valid", peer_socket_->has_peer());
+        spdlog::get("illixr")->error("[udp_network_backend]: ERROR socket: {}  has_peer: {}",
+                                     (peer_socket_ == nullptr) ? "null" : "valid", peer_socket_->has_peer());
     }
 }
 
@@ -172,7 +173,7 @@ void udp_network_backend::topic_send(std::string topic_name, std::string&& messa
         return;
     }
     // Packet format: total_length(4) | topic_name_length(4) | topic_name | message
-    auto topic_name_length = static_cast<uint32_t>(topic_name.size());
+    auto     topic_name_length = static_cast<uint32_t>(topic_name.size());
     uint32_t total_length      = 8u + topic_name_length + static_cast<uint32_t>(message.size());
 
     std::string packet;
@@ -224,7 +225,7 @@ udp_network_backend::~udp_network_backend() {
 void udp_network_backend::send_control(const std::string& message) {
     // Send a control datagram directly, bypassing the is_topic_networked guard
     // since illixr_control is not registered as a networked topic.
-    auto topic_name_length = static_cast<uint32_t>(std::strlen("illixr_control"));
+    auto     topic_name_length = static_cast<uint32_t>(std::strlen("illixr_control"));
     uint32_t total_length      = 8u + topic_name_length + static_cast<uint32_t>(message.size());
 
     std::string packet;
