@@ -7,7 +7,6 @@
     #include "illixr/data_format/poses/combined_pose.hpp"
 #endif
 #include "illixr/data_format/frame.hpp"
-#include "illixr/data_format/hmd_config.hpp"
 #include "illixr/data_format/pose_id.hpp"
 #include "illixr/data_format/pose_prediction.hpp"
 #include "illixr/data_format/serialization/head_pose.hpp"
@@ -270,7 +269,6 @@ private:
     std::shared_ptr<vulkan::display_provider>                  display_provider_;
     std::shared_ptr<switchboard>                               switchboard_;
     switchboard::network_writer<data_format::compressed_frame> frames_topic_;
-    switchboard::reader<data_format::hmd_config_data>          hmd_config_;
 
     /**
      * @brief Cached head pose extracted from pose_with_hands
@@ -299,6 +297,9 @@ private:
 
     std::atomic<bool> framebuffers_imported_{false};
 
+    // Set after each color encode call and copied into compressed_frame::is_keyframe.
+    bool color_frame_is_keyframe_ = false;
+
 #ifdef NVENC_ENCODER
     // ========================================================================
     // NVENC-specific members
@@ -317,20 +318,13 @@ private:
     std::vector<std::array<int, 2>> depth_imported_indices_;
     std::vector<std::array<int, 2>> motion_vec_imported_indices_;
 
-    // Set by nvenc_encode_frames() immediately after each color encode call.
-    // Read by enqueue_for_network_send() to populate compressed_frame::is_keyframe.
-    // Using last_frame_was_keyframe() from the encoder is authoritative for both
-    // HEVC (IDR) and AV1 (KEY_FRAME / auto-GOP I-frame), avoiding any need for
-    // bitstream parsing on the client side.
-    bool color_frame_is_keyframe_ = false;
-
-    #ifdef COMBINED_ENCODING
+#  ifdef COMBINED_ENCODING
     // Under COMBINED_ENCODING a single encoder handles both eyes at double width.
     // color_encoder_[0] is used; color_encoder_[1] is unused.
     // encode_out_combined_color_packet_ carries the single combined bitstream;
     // encode_out_color_packets_ is not used for color in this mode.
     PACKET_TYPE encode_out_combined_color_packet_{};
-    #endif // COMBINED_ENCODING
+#  endif // COMBINED_ENCODING
 
 #else
     // ========================================================================

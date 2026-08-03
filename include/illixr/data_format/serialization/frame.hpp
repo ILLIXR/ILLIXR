@@ -231,11 +231,11 @@ void load(Archive& ar, ILLIXR::data_format::compressed_frame& f, const unsigned 
 #else
         static_assert(false, "Not compiled with libav or NVENC/NVDEC");
 #endif
-#ifdef USING_OPENXR
-        ar >> f.pose[0];
-        ar >> f.pose[1];
-#else
     }
+#ifdef USING_OPENXR
+    ar >> f.pose[0];
+    ar >> f.pose[1];
+#else
     ar >> f.pose;
 #endif
 
