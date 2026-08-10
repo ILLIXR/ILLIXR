@@ -1,6 +1,10 @@
 #pragma once
 
+#if defined(_WIN32) || defined(_WIN64)
+    #include <cstdlib>
+#endif
 #include "concurrentqueue/blockingconcurrentqueue.hpp"
+#include "export.hpp"
 #include "managed_thread.hpp"
 #include "network/network_backend.hpp"
 #include "network/topic_config.hpp"
@@ -115,7 +119,7 @@ const record_header _switchboard_topic_stop_header{"switchboard_topic_stop",
  * });
  * \endcode
  */
-class switchboard : public phonebook::service {
+class MY_EXPORT_API switchboard : public phonebook::service {
 public:
     /**
      * @brief The type of shared pointer returned by switchboard.
@@ -404,8 +408,7 @@ private:
          */
         void put(ptr<const event>&& this_event) {
             assert(this_event != nullptr);
-            assert(this_event.unique() ||
-                   this_event.use_count() <= 2); /// <-- TODO: Revisit for solution that guarantees uniqueness
+            assert(this_event.use_count() <= 2); /// <-- TODO: Revisit for solution that guarantees uniqueness
 
             /* The pointer that this gets exchanged with needs to get dropped. */
             size_t index          = (latest_index_.load() + 1) % latest_buffer_size_;
@@ -437,8 +440,8 @@ private:
                 // TODO: Need to differentiate and support protobuf deserialization
                 boost::iostreams::stream<boost::iostreams::array_source> stream{buffer.data(), buffer.size()};
                 // Use no_header for cross-platform compatibility (sizeof(long) differs between Windows and Linux)
-                boost::archive::binary_iarchive                          ia{stream, boost::archive::no_header};
-                ptr<event>                                               this_event;
+                boost::archive::binary_iarchive ia{stream, boost::archive::no_header};
+                ptr<event>                      this_event;
                 ia >> this_event;
                 put(std::move(this_event));
             } else {
@@ -616,11 +619,10 @@ public:
         virtual void put(ptr<Specific_event>&& this_specific_event) {
             assert(typeid(Specific_event) == topic_.ty());
             assert(this_specific_event != nullptr);
-            assert(this_specific_event.unique());
+            assert(this_specific_event.use_count() == 1);
             ptr<const event> this_event =
                 std::const_pointer_cast<const event>(std::static_pointer_cast<event>(std::move(this_specific_event)));
-            assert(this_event.unique() ||
-                   this_event.use_count() <= 2); /// TODO: Revisit for solution that guarantees uniqueness
+            assert(this_event.use_count() <= 2); /// TODO: Revisit for solution that guarantees uniqueness
             topic_.put(std::move(this_event));
         }
 
@@ -648,7 +650,7 @@ public:
                     boost::iostreams::back_insert_device<std::vector<char>>                                  inserter{buffer};
                     boost::iostreams::stream_buffer<boost::iostreams::back_insert_device<std::vector<char>>> stream{inserter};
                     // Use no_header for cross-platform compatibility (sizeof(long) differs between Windows and Linux)
-                    boost::archive::binary_oarchive                                                          oa{stream, boost::archive::no_header};
+                    boost::archive::binary_oarchive oa{stream, boost::archive::no_header};
                     oa << base_event;
                     // flush
                     stream.pubsync();
@@ -737,8 +739,9 @@ public:
         } catch (std::out_of_range&) {
             char* val = std::getenv(var.c_str());
             if (val) {
+                std::string temp(val);
                 set_env(var, val); // store it locally for faster retrieval
-                return {val};
+                return temp;
             }
             return _default;
         }
@@ -777,6 +780,13 @@ public:
         return strdup(val.c_str());
     }
 
+    [[maybe_unused]] int get_env_int(const std::string& var, const int _default = 0) {
+        std::string val = get_env(var, "");
+        if (val.empty())
+            return _default;
+        return std::stoi(val);
+    }
+
     [[maybe_unused]] long get_env_long(const std::string& var, const long _default = 0) {
         std::string val = get_env(var, "");
         if (val.empty())
@@ -784,7 +794,7 @@ public:
         return std::stol(val);
     }
 
-    [[maybe_unused]] ulong get_env_ulong(const std::string& var, const ulong _default = 0) {
+    [[maybe_unused]] unsigned long get_env_ulong(const std::string& var, const unsigned long _default = 0) {
         std::string val = get_env(var, "");
         if (val.empty())
             return _default;
@@ -832,12 +842,47 @@ public:
         return writer<Specific_event>{try_register_topic<Specific_event>(topic_name)};
     }
 
+    /**
+     * @brief Obtain a network_writer for the given topic.
+     *
+     * Selects the backend based on config.transport_method:
+     *   - TransportMethod::TCP  -> looks up tcp_network_backend_tag
+     *   - TransportMethod::UDP  -> looks up udp_network_backend_tag
+     *
+     * If the requested backend has not been registered (e.g., the UDP plugin
+     * was not loaded) a runtime_error is thrown with a descriptive message.
+     *
+     * @tparam Specific_event  The event type to be transported.
+     * @param  topic_name      Name of the switchboard topic.
+     * @param  config          Transport and serialization configuration.
+     *                         Defaults to TCP + Boost serialization.
+     */
     template<typename Specific_event>
     network_writer<Specific_event> get_network_writer(const std::string& topic_name, network::topic_config config = {}) {
-        auto backend = phonebook_->lookup_impl<network::network_backend>();
-        if (registry_.find(topic_name) == registry_.end()) {
-            backend->topic_create(topic_name, config);
+        ptr<network::network_backend> backend;
+
+        switch (config.transport_method) {
+        case network::topic_config::TransportMethod::UDP:
+            backend = phonebook_->lookup_impl<network::udp_backend>();
+            if (!backend) {
+                throw std::runtime_error("[switchboard] UDP transport requested for topic '" + topic_name +
+                                         "' but no UDP network backend is registered in the phonebook. "
+                                         "Ensure the udp_network_backend plugin is loaded before this writer is constructed.");
+            }
+            break;
+        case network::topic_config::TransportMethod::TCP:
+        default:
+            backend = phonebook_->lookup_impl<network::tcp_backend>();
+            if (!backend) {
+                throw std::runtime_error("[switchboard] TCP transport requested for topic '" + topic_name +
+                                         "' but no TCP network backend is registered in the phonebook.");
+            }
+            break;
         }
+
+        if (registry_.find(topic_name) == registry_.end())
+            backend->topic_create(topic_name, config);
+
         return network_writer<Specific_event>{try_register_topic<Specific_event>(topic_name), backend, config};
     }
 

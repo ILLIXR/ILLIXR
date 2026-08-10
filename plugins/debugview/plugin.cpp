@@ -45,7 +45,7 @@ static void glfw_error_callback(int error, const char* description) {
     : threadloop{name, pb}
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
     , pose_prediction_{phonebook_->lookup_impl<pose_prediction>()}
-    , slow_pose_reader_{switchboard_->get_reader<pose_type>("slow_pose")}
+    , slow_pose_reader_{switchboard_->get_reader<pose::head_pose_type>("slow_pose")}
     , fast_pose_reader_{switchboard_->get_reader<imu_raw_type>("imu_raw")}
     , rgb_depth_reader_(switchboard_->get_reader<rgb_depth_type>("rgb_depth"))
     , cam_reader_{switchboard_->get_buffered_reader<data_format::binocular_cam_type>("cam")}
@@ -91,7 +91,7 @@ void debugview::draw_GUI() {
         ImGui::Text("Resets to zeroed out tracking universe");
 
         if (ImGui::Button("Zero orientation")) {
-            const pose_type predicted_pose = pose_prediction_->get_fast_pose().pose;
+            const pose::head_pose_type predicted_pose = pose_prediction_->get_fast_pose().pose;
             if (pose_prediction_->fast_pose_reliable()) {
                 // Can only zero if predicted_pose is valid
                 pose_prediction_->set_offset(predicted_pose.orientation);
@@ -106,7 +106,7 @@ void debugview::draw_GUI() {
     ImGui::SameLine();
 
     if (pose_prediction_->fast_pose_reliable()) {
-        const pose_type predicted_pose = pose_prediction_->get_fast_pose().pose;
+        const pose::head_pose_type predicted_pose = pose_prediction_->get_fast_pose().pose;
         ImGui::TextColored(ImVec4(0.0, 1.0, 0.0, 1.0), "Valid predicted pose pointer");
         ImGui::Text("Predicted pose position (XYZ):\n  (%f, %f, %f)", predicted_pose.position.x(), predicted_pose.position.y(),
                     predicted_pose.position.z());
@@ -121,11 +121,11 @@ void debugview::draw_GUI() {
 
     switchboard::ptr<const imu_raw_type> raw_imu = fast_pose_reader_.get_ro_nullable();
     if (raw_imu) {
-        pose_type raw_pose;
+        pose::head_pose_type raw_pose;
         raw_pose.position    = Eigen::Vector3f{float(raw_imu->pos(0)), float(raw_imu->pos(1)), float(raw_imu->pos(2))};
         raw_pose.orientation = Eigen::Quaternionf{float(raw_imu->quat.w()), float(raw_imu->quat.x()), float(raw_imu->quat.y()),
                                                   float(raw_imu->quat.z())};
-        pose_type swapped_pose = pose_prediction_->correct_pose(raw_pose);
+        pose::head_pose_type swapped_pose = pose_prediction_->correct_pose(raw_pose);
 
         ImGui::TextColored(ImVec4(0.0, 1.0, 0.0, 1.0), "Valid fast pose pointer");
         ImGui::Text("Fast pose position (XYZ):\n  (%f, %f, %f)", swapped_pose.position.x(), swapped_pose.position.y(),
@@ -139,9 +139,9 @@ void debugview::draw_GUI() {
     ImGui::Text("Slow pose topic:");
     ImGui::SameLine();
 
-    switchboard::ptr<const pose_type> slow_pose_ptr = slow_pose_reader_.get_ro_nullable();
+    switchboard::ptr<const pose::head_pose_type> slow_pose_ptr = slow_pose_reader_.get_ro_nullable();
     if (slow_pose_ptr) {
-        pose_type swapped_pose = pose_prediction_->correct_pose(*slow_pose_ptr);
+        pose::head_pose_type swapped_pose = pose_prediction_->correct_pose(*slow_pose_ptr);
         ImGui::TextColored(ImVec4(0.0, 1.0, 0.0, 1.0), "Valid slow pose pointer");
         ImGui::Text("Slow pose position (XYZ):\n  (%f, %f, %f)", swapped_pose.position.x(), swapped_pose.position.y(),
                     swapped_pose.position.z());
@@ -155,7 +155,7 @@ void debugview::draw_GUI() {
     ImGui::SameLine();
 
     if (pose_prediction_->true_pose_reliable()) {
-        const pose_type true_pose = pose_prediction_->get_true_pose();
+        const pose::head_pose_type true_pose = pose_prediction_->get_true_pose();
         ImGui::TextColored(ImVec4(0.0, 1.0, 0.0, 1.0), "Valid ground truth pose pointer");
         ImGui::Text("Ground truth position (XYZ):\n  (%f, %f, %f)", true_pose.position.x(), true_pose.position.y(),
                     true_pose.position.z());
@@ -329,11 +329,11 @@ void debugview::_p_one_iteration() {
 
     Eigen::Matrix4f headset_pose = Eigen::Matrix4f::Identity();
 
-    const fast_pose_type predicted_pose = pose_prediction_->get_fast_pose();
+    const pose::fast_head_pose_type predicted_pose = pose_prediction_->get_fast_pose();
     if (pose_prediction_->fast_pose_reliable()) {
-        const pose_type    pose          = predicted_pose.pose;
-        Eigen::Quaternionf combined_quat = pose.orientation;
-        headset_pose                     = generate_headset_transform(pose.position, combined_quat, tracking_position_offset_);
+        const pose::head_pose_type pose          = predicted_pose.pose;
+        Eigen::Quaternionf         combined_quat = pose.orientation;
+        headset_pose = generate_headset_transform(pose.position, combined_quat, tracking_position_offset_);
     }
 
     Eigen::Matrix4f model_matrix = Eigen::Matrix4f::Identity();

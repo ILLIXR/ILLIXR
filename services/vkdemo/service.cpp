@@ -16,7 +16,6 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "illixr/gl_util/lib/stb_image.h"
 #include "illixr/vk/display_provider.hpp"
-#include "illixr/vk/render_pass.hpp"
 #include "illixr/vk/vulkan_utils.hpp"
 
 #include <unordered_map>
@@ -86,11 +85,12 @@ void vkdemo::initialize() {
     }
 }
 
-void vkdemo::setup(VkRenderPass render_pass, uint32_t subpass, std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> _) {
+void vkdemo::setup(VkRenderPass render_pass, uint32_t subpass,
+                   std::shared_ptr<vulkan::buffer_pool<pose::fast_head_pose_type>> _) {
     create_pipeline(render_pass, subpass);
 }
 
-void vkdemo::update_uniforms(const pose_type& fp) {
+void vkdemo::update_uniforms(const BUFFER_TYPE& fp) {
     update_uniform(fp, 0);
     update_uniform(fp, 1);
 }
@@ -125,10 +125,10 @@ void vkdemo::destroy() {
     }
 }
 
-void vkdemo::update_uniform(const pose_type& pose, int eye) {
+void vkdemo::update_uniform(const BUFFER_TYPE& pose, int eye) {
     Eigen::Matrix4f model_matrix = Eigen::Matrix4f::Identity();
 
-    Eigen::Matrix3f head_rotation_matrix = pose.orientation.toRotationMatrix();
+    Eigen::Matrix3f head_rotation_matrix = pose.pose.orientation.toRotationMatrix();
 
     constexpr int LEFT_EYE = 0;
 
@@ -139,12 +139,12 @@ void vkdemo::update_uniform(const pose_type& pose, int eye) {
     eyeball = head_rotation_matrix * eyeball;
 
     // Apply head position to eyeball
-    eyeball += pose.position;
+    eyeball += pose.pose.position;
 
     // Build our eye matrix from the pose's position + orientation.
     Eigen::Matrix4f eye_matrix   = Eigen::Matrix4f::Identity();
     eye_matrix.block<3, 1>(0, 3) = eyeball; // Set position to eyeball's position
-    eye_matrix.block<3, 3>(0, 0) = pose.orientation.toRotationMatrix();
+    eye_matrix.block<3, 3>(0, 0) = pose.pose.orientation.toRotationMatrix();
 
     // Objects' "view matrix" is inverse of eye matrix.
     auto view_matrix = eye_matrix.inverse();
@@ -189,11 +189,11 @@ void vkdemo::create_descriptor_set_layout() {
     };
 
     VkDescriptorSetLayoutBinding sampled_image_layout_binding{
-        2,                                      // binding
-        VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,       // descriptorType
-        static_cast<uint>(texture_map_.size()), // descriptorCount
-        VK_SHADER_STAGE_FRAGMENT_BIT,           // stageFlags
-        nullptr                                 // pImmutableSamplers
+        2,                                              // binding
+        VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,               // descriptorType
+        static_cast<unsigned int>(texture_map_.size()), // descriptorCount
+        VK_SHADER_STAGE_FRAGMENT_BIT,                   // stageFlags
+        nullptr                                         // pImmutableSamplers
     };
 
     VkDescriptorSetLayoutCreateInfo layout_info{
@@ -519,12 +519,13 @@ void vkdemo::image_layout_transition(VkImage image, [[maybe_unused]] VkFormat fo
         VK_QUEUE_FAMILY_IGNORED,                // dstQueueFamilyIndex
         image,                                  // image
         {
-            (new_layout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL) ? VK_IMAGE_ASPECT_DEPTH_BIT
-                                                                             : VK_IMAGE_ASPECT_COLOR_BIT, // aspectMask
-            0,                                                                                            // baseMipLevel
-            1,                                                                                            // levelCount
-            0,                                                                                            // baseArrayLayer
-            1                                                                                             // layerCount
+            (new_layout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)
+                ? static_cast<VkImageAspectFlags>(VK_IMAGE_ASPECT_DEPTH_BIT)
+                : static_cast<VkImageAspectFlags>(VK_IMAGE_ASPECT_COLOR_BIT), // aspectMask
+            0,                                                                // baseMipLevel
+            1,                                                                // levelCount
+            0,                                                                // baseArrayLayer
+            1                                                                 // layerCount
         } // subresourceRange
     };
 

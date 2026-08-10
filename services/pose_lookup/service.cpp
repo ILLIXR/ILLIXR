@@ -9,9 +9,9 @@
 using namespace ILLIXR;
 using namespace ILLIXR::data_format;
 
-inline std::map<ullong, pose_type> read_data(std::ifstream& gt_file, const std::string& file_name) {
+inline std::map<ullong, pose::head_pose_type> read_data(std::ifstream& gt_file, const std::string& file_name) {
     (void) file_name;
-    std::map<ullong, pose_type> data;
+    std::map<ullong, pose::head_pose_type> data;
 
     for (csv_iterator row{gt_file, 1}; row != csv_iterator{}; ++row) {
         ullong             t = std::stoull(row[0]);
@@ -25,7 +25,7 @@ inline std::map<ullong, pose_type> read_data(std::ifstream& gt_file, const std::
 pose_lookup_impl::pose_lookup_impl(const phonebook* const pb)
     : switchboard_{pb->lookup_impl<switchboard>()}
     , clock_{pb->lookup_impl<relative_clock>()}
-    , sensor_data_{load_data<pose_type>("state_groundtruth_estimate0", "pose_lookup", &read_data, switchboard_)}
+    , sensor_data_{load_data<pose::head_pose_type>("state_groundtruth_estimate0", "pose_lookup", &read_data, switchboard_)}
     , sensor_data_it_{sensor_data_.cbegin()}
     , dataset_first_time_{sensor_data_it_->first}
     , vsync_estimate_{switchboard_->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")}
@@ -47,7 +47,7 @@ pose_lookup_impl::pose_lookup_impl(const phonebook* const pb)
     set_offset(newoffset);
 }
 
-fast_pose_type pose_lookup_impl::get_fast_pose() const {
+pose::fast_head_pose_type pose_lookup_impl::get_fast_pose() const {
     const switchboard::ptr<const switchboard::event_wrapper<time_point>> estimated_vsync = vsync_estimate_.get_ro_nullable();
     if (estimated_vsync == nullptr) {
         spdlog::get("illixr")->trace("[pose_lookup] Vsync estimation not valid yet, returning fast_pose for now()");
@@ -57,7 +57,7 @@ fast_pose_type pose_lookup_impl::get_fast_pose() const {
     }
 }
 
-pose_type pose_lookup_impl::get_true_pose() const {
+pose::head_pose_type pose_lookup_impl::get_true_pose() const {
     throw std::logic_error{"Not Implemented"};
 }
 
@@ -73,17 +73,17 @@ Eigen::Quaternionf pose_lookup_impl::get_offset() {
     return offset_;
 }
 
-pose_type pose_lookup_impl::correct_pose(const pose_type& pose) const {
-    pose_type swapped_pose;
+pose::head_pose_type pose_lookup_impl::correct_pose(const pose::head_pose_type& pose) const {
+    pose::head_pose_type swapped_pose;
 
     // Step 1: Compensate starting point to (0, 0, 0), pos only
-    auto input_pose = pose_type{pose.sensor_time,
-                                Eigen::Vector3f{
-                                    pose.position(0) - init_pos_offset_(0),
-                                    pose.position(1) - init_pos_offset_(1),
-                                    pose.position(2) - init_pos_offset_(2),
-                                },
-                                pose.orientation};
+    auto input_pose = pose::head_pose_type{pose.sensor_time,
+                                           Eigen::Vector3f{
+                                               pose.position(0) - init_pos_offset_(0),
+                                               pose.position(1) - init_pos_offset_(1),
+                                               pose.position(2) - init_pos_offset_(2),
+                                           },
+                                           pose.orientation};
 
     if (enable_alignment_) {
         // Step 2: Apply estimated alignment parameters
@@ -131,7 +131,7 @@ Eigen::Quaternionf pose_lookup_impl::apply_offset(const Eigen::Quaternionf& orie
     return orientation * offset_;
 }
 
-fast_pose_type pose_lookup_impl::get_fast_pose(time_point time) const {
+pose::fast_head_pose_type pose_lookup_impl::get_fast_pose(time_point time) const {
     ullong lookup_time = time.time_since_epoch().count() + dataset_first_time_;
 
     auto nearest_row = sensor_data_.upper_bound(lookup_time);
@@ -158,7 +158,7 @@ fast_pose_type pose_lookup_impl::get_fast_pose(time_point time) const {
 
     auto looked_up_pose        = nearest_row->second;
     looked_up_pose.sensor_time = time_point{std::chrono::nanoseconds{nearest_row->first - dataset_first_time_}};
-    return fast_pose_type{correct_pose(looked_up_pose), clock_->now(), time};
+    return pose::fast_head_pose_type{correct_pose(looked_up_pose), clock_->now(), time};
 }
 
 class pose_lookup_plugin : public plugin {

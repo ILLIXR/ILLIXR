@@ -1,6 +1,6 @@
 #pragma once
 
-namespace ILLIXR::data_format::coordinates {
+namespace ILLIXR::coordinates {
 /**
  * Enumeration of the possible reference frames
  */
@@ -15,4 +15,4 @@ enum frame {
 
 enum reference_space { VIEWER, WORLD, ROOM = WORLD };
 
-} // namespace ILLIXR::data_format::coordinates
+} // namespace ILLIXR::coordinates

@@ -131,6 +131,7 @@ if(BUILD_DOCS)
     file(READ docs/modules.json MODULE_TEMP)
     string(REPLACE "||" "\n" MODULE_PLUGIN_JSON "${MODULE_PLUGINS}")
     string(REPLACE "@PROFILES@" "${MODULE_PLUGIN_JSON}" MODULE_JSON "${MODULE_TEMP}")
+    file(READ docs/js/illixr.js ILLIXR_JS_CONTENT)
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/docs/getting_started.md.in ${DOC_BUILD_DIR}/getting_started.md)
 
     # convert the index.md.in to index.md
@@ -149,9 +150,15 @@ if(BUILD_DOCS)
     set(DOXY_DOC_DIR "${CMAKE_INSTALL_DATAROOTDIR}/doc/ILLIXR" CACHE INTERNAL "")
     string(REPLACE ";" " " DOCS_LIST_STR "${DOCS_LIST}")
     set(DOXYGEN_SOURCE_DIR "${DOCS_LIST_STR}")
+    set(DOXYGEN_OXR_SOURCE_DIR "${CMAKE_SOURCE_DIR}/include/illixr/data_format/poses ${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization")
     string(REPLACE ";" " " DOCS_EXCLUDE_LIST_STR "${DOCS_EXCLUDE_LIST}")
     set(DOXYGEN_EXCLUDE_FILES "${DOCS_EXCLUDE_LIST_STR}")
+    set(ILLIXR_PREDEF "ENABLE_OXR=1 HAVE_ZED=1")
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in ${CURRENT_BUILD_DIR}/_docs/Doxyfile)
+    set(ILLIXR_PREDEF "USING_OPENXR=1")
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in ${CURRENT_BUILD_DIR}/_docs/Doxyfile_oxr)
+    set(ILLIXR_PREDEF "USING_OPENXR=1 ENABLE_MONADO=1")
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in ${CURRENT_BUILD_DIR}/_docs/Doxyfile_monado)
 
     # configure teh mkdocs file
     set(MKDOCS_DOCS_DIR "${CURRENT_BUILD_DIR}/_docs/docs")

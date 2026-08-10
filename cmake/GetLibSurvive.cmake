@@ -1,18 +1,20 @@
 find_package(survive QUIET)
+
 if (NOT survive_FOUND)
     pkg_check_modules(survive QUIET survive)
 endif()
 
-if(NOT survive_FOUND)
-    EXTERNALPROJECT_ADD(LibSurvive_ext
-                        GIT_REPOSITORY https://github.com/collabora/libsurvive.git
-                        GIT_TAG 4fb6d888d0277a8a3ba725e63707434d80ecdb2a
-                        PREFIX ${CMAKE_BINARY_DIR}/_deps/survive
-                        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=${CLANG_CXX_EXE} -DCMAKE_C_COMPILER=${CLANG_EXE} -DCMAKE_POLICY_VERSION_MINIMUM=3.5
-                        UPDATE_COMMAND git submodule update --init
+if(survive_FOUND)
+    message(STATUS "  Found survive, ${survive_VERSION}")
+else()
+    fetch_git(NAME LibSurvive_ext
+              REPO https://github.com/collabora/libsurvive.git
+              TAG 4fb6d888d0277a8a3ba725e63707434d80ecdb2a
+              OVERRIDE_UPDATE
     )
-    set(LibSurvive_DEP_STR LibSurvive_ext)
-    set(LibSurvive_EXTERNAL Yes)
+
+    configure_target(NAME LibSurvive_ext)
+
     set(cnkalman_LIBRARIES cnkalman)
     set(cnkalman_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include/cnkalman ${CMAKE_INSTALL_PREFIX}/include/cnkalman/redist)
     set(cnmatrix_LIBRARIES cnmatrix)

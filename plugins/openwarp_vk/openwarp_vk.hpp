@@ -7,6 +7,10 @@
 #include "illixr/vk/display_provider.hpp"
 #include "illixr/vk/render_pass.hpp"
 
+#if defined(_WIN32) || defined(_WIN64)
+    #include <windows.h>
+#endif
+
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #define GLM_ENABLE_EXPERIMENTAL
@@ -113,10 +117,10 @@ public:
     explicit openwarp_vk(const phonebook* pb);
     void initialize();
     void setup(VkRenderPass render_pass, uint32_t subpass,
-               std::shared_ptr<vulkan::buffer_pool<data_format::fast_pose_type>> buffer_pool_,
-               bool                                                              input_texture_external_) override;
+               std::shared_ptr<vulkan::buffer_pool<data_format::pose::fast_head_pose_type>> buffer_pool_,
+               bool                                                                         input_texture_external_) override;
     void partial_destroy();
-    void update_uniforms(const data_format::pose_type& render_pose) override;
+    void update_uniforms(const data_format::pose::fast_head_pose_type& render_pose) override;
     void record_command_buffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left) override;
     bool is_external() override;
     void destroy() override;
@@ -134,7 +138,7 @@ private:
     void                   create_descriptor_sets();
     void                   create_openwarp_pipeline();
     VkPipeline             create_distortion_correction_pipeline(VkRenderPass render_pass, [[maybe_unused]] uint32_t subpass);
-    static Eigen::Matrix4f create_camera_matrix(const data_format::pose_type& pose, int eye);
+    static Eigen::Matrix4f create_camera_matrix(const data_format::pose::head_pose_type& pose, int eye);
     static Eigen::Matrix4f calculate_distortion_transform(const Eigen::Matrix4f& projection_matrix);
 
     const phonebook* const             phonebook_;
@@ -163,7 +167,7 @@ private:
     size_t swapchain_width_{};
     size_t swapchain_height_{};
 
-    std::shared_ptr<vulkan::buffer_pool<data_format::fast_pose_type>> buffer_pool_;
+    std::shared_ptr<vulkan::buffer_pool<data_format::pose::fast_head_pose_type>> buffer_pool_;
 
     VkSampler fb_sampler_{};
 

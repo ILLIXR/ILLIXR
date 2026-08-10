@@ -20,8 +20,9 @@
  */
 #define DOUBLE_INCLUDE
 // ILLIXR core headers
+#include "illixr/data_format/frame.hpp"
 #include "illixr/data_format/pose_prediction.hpp"
-#include "illixr/data_format/serializable_data.hpp"
+#include "illixr/data_format/serialization/frame.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
 #undef DOUBLE_INCLUDE
@@ -67,7 +68,7 @@ public:
      * @param buffer_pool The buffer pool for frame data
      */
     void setup(VkRenderPass render_pass, uint32_t subpass,
-               std::shared_ptr<vulkan::buffer_pool<data_format::fast_pose_type>> buffer_pool) override;
+               std::shared_ptr<vulkan::buffer_pool<data_format::pose::fast_head_pose_type>> buffer_pool) override;
 
     /**
      * @brief Record command buffer (no-op in this implementation)
@@ -77,13 +78,6 @@ public:
         (void) framebuffer;
         (void) buffer_ind;
         (void) left;
-    }
-
-    /**
-     * @brief Update uniforms (no-op in this implementation)
-     */
-    void update_uniforms(const data_format::pose_type& render_pose) override {
-        (void) render_pose;
     }
 
     /**
@@ -197,25 +191,25 @@ private:
      */
     void ffmpeg_init_decoder();
 
-    std::shared_ptr<switchboard>                                switchboard_;
-    std::shared_ptr<spdlog::logger>                             log_;
-    std::shared_ptr<vulkan::display_provider>                   display_provider_;
-    switchboard::buffered_reader<data_format::compressed_frame> frames_reader_;
-    switchboard::network_writer<data_format::fast_pose_type>    pose_writer_;
-    std::shared_ptr<data_format::pose_prediction>               pose_prediction_;
-    std::atomic<bool>                                           ready_ = false;
+    std::shared_ptr<switchboard>                                        switchboard_;
+    std::shared_ptr<spdlog::logger>                                     log_;
+    std::shared_ptr<vulkan::display_provider>                           display_provider_;
+    switchboard::buffered_reader<data_format::compressed_frame>         frames_reader_;
+    switchboard::network_writer<data_format::pose::fast_head_pose_type> pose_writer_;
+    std::shared_ptr<data_format::pose_prediction>                       pose_prediction_;
+    std::atomic<bool>                                                   ready_ = false;
 
-    std::shared_ptr<vulkan::buffer_pool<data_format::fast_pose_type>> buffer_pool_;
-    bool                                                              use_depth_ = false;
-    std::vector<std::array<vulkan::ffmpeg_utils::ffmpeg_vk_frame, 2>> avvk_color_frames_;
-    std::vector<std::array<vulkan::ffmpeg_utils::ffmpeg_vk_frame, 2>> avvk_depth_frames_;
-    std::vector<std::array<VkCommandBuffer, 2>>                       layout_transition_start_cmd_bufs_;
-    std::vector<std::array<VkCommandBuffer, 2>>                       layout_transition_end_cmd_bufs_;
-    AVBufferRef*                                                      device_ctx_          = nullptr;
-    AVBufferRef*                                                      cuda_device_ctx_     = nullptr;
-    AVBufferRef*                                                      frame_ctx_           = nullptr;
-    AVBufferRef*                                                      cuda_nv12_frame_ctx_ = nullptr;
-    AVBufferRef*                                                      cuda_bgra_frame_ctx_ = nullptr;
+    std::shared_ptr<vulkan::buffer_pool<data_format::pose::fast_head_pose_type>> buffer_pool_;
+    bool                                                                         use_depth_ = false;
+    std::vector<std::array<vulkan::ffmpeg_utils::ffmpeg_vk_frame, 2>>            avvk_color_frames_;
+    std::vector<std::array<vulkan::ffmpeg_utils::ffmpeg_vk_frame, 2>>            avvk_depth_frames_;
+    std::vector<std::array<VkCommandBuffer, 2>>                                  layout_transition_start_cmd_bufs_;
+    std::vector<std::array<VkCommandBuffer, 2>>                                  layout_transition_end_cmd_bufs_;
+    AVBufferRef*                                                                 device_ctx_          = nullptr;
+    AVBufferRef*                                                                 cuda_device_ctx_     = nullptr;
+    AVBufferRef*                                                                 frame_ctx_           = nullptr;
+    AVBufferRef*                                                                 cuda_nv12_frame_ctx_ = nullptr;
+    AVBufferRef*                                                                 cuda_bgra_frame_ctx_ = nullptr;
 
     AVCodecContext*          codec_color_ctx_               = nullptr;
     std::array<AVPacket*, 2> decode_src_color_packets_      = {nullptr, nullptr};
@@ -227,15 +221,16 @@ private:
     std::array<AVFrame*, 2>  decode_out_depth_frames_       = {nullptr, nullptr};
     std::array<AVFrame*, 2>  decode_converted_depth_frames_ = {nullptr, nullptr};
 
-    data_format::fast_pose_type decoded_frame_pose_;
+    data_format::pose::fast_head_pose_type decoded_frame_pose_;
 
-    VkCommandPool command_pool{};
-    Npp8u*        yuv420_y_plane_ = nullptr;
-    Npp8u*        yuv420_u_plane_ = nullptr;
-    Npp8u*        yuv420_v_plane_ = nullptr;
-    int           y_step_         = 0;
-    int           u_step_         = 0;
-    int           v_step_         = 0;
+    VkCommandPool    command_pool{};
+    Npp8u*           yuv420_y_plane_ = nullptr;
+    Npp8u*           yuv420_u_plane_ = nullptr;
+    Npp8u*           yuv420_v_plane_ = nullptr;
+    int              y_step_         = 0;
+    int              u_step_         = 0;
+    int              v_step_         = 0;
+    NppStreamContext npp_ctx_        = {};
 
     uint64_t frame_count_ = 0;
 

@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package input_proto;
+
+message Vec3 {
+	double x = 1;
+	double y = 2;
+	double z = 3;
+}

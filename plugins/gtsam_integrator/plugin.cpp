@@ -60,7 +60,7 @@ gtsam_integrator::pim_object::pim_object(const imu_int_t& imu_int_input)
     params.setBiasAccCovariance(std::pow(imu_int_input.params.acc_walk, 2.0) * Eigen::Matrix3d::Identity());
     params.setBiasOmegaCovariance(std::pow(imu_int_input.params.gyro_walk, 2.0) * Eigen::Matrix3d::Identity());
 
-    pim_ = new pim_t{std::make_shared<pim_t::Params>(std::move(params)), imu_bias_};
+    pim_ = new pim_t{boost::make_shared<pim_t::Params>(std::move(params)), imu_bias_};
     reset_integration_and_set_bias(imu_int_input);
 }
 

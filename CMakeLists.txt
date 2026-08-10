@@ -4,19 +4,25 @@
 # This will compile the main ILLIXR binary along with any requested plugins.
 #
 # See the documentation at https://illixr.github.io/ILLIXR/getting_started/
-# for complete build instructions.#
+# for complete build instructions.
 #
 ########################################################################################
 
 cmake_minimum_required(VERSION 3.22)
+set(CMAKE_POLICY_VERSION_MINIMUM 3.10)
+if(UNIX)
+    # since several plugins now require clang to compile themselves or their dependencies
+    # clang is now a required dependency
+    find_program(CLANG_EXE clang REQUIRED)
+    find_program(CLANG_CXX_EXE clang++ REQUIRED NAMES clang-cpp clang++)
 
-# since several plugins now require clang to compile themselves or their dependencies
-# clang is now a required dependency
-find_program(CLANG_EXE clang REQUIRED)
-find_program(CLANG_CXX_EXE clang++ REQUIRED NAMES clang-cpp clang++)
+    set(CMAKE_C_COMPILER ${CLANG_EXE} CACHE FILEPATH "" FORCE)
+    set(CMAKE_CXX_COMPILER ${CLANG_CXX_EXE} CACHE FILEPATH "" FORCE)
+endif()
 
-set(CMAKE_C_COMPILER ${CLANG_EXE} CACHE FILEPATH "" FORCE)
-set(CMAKE_CXX_COMPILER ${CLANG_CXX_EXE} CACHE FILEPATH "" FORCE)
+if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
+    message(FATAL_ERROR "In-source build prohibited.")
+endif("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
 
 set(CMAKE_VERBOSE_MAKEFILE True)
 
@@ -44,13 +50,29 @@ set(PACKAGE_VERSION_LABEL "")
 set(GPL_LICENSED_CODE "openvins;orb_slam3;offload_rendering_server;offload_rendering_client")
 set(LGPL_LICENSED_CODE "audio_pipeline")
 
-if(WIN32)
-    message(FATAL_ERROR "Windows is currently not supported")
+set(DEPENDENCY_BUILD_SUFFIX "")
+if(WIN32 OR MSVC)
+    if(NOT CMAKE_TOOLCHAIN_FILE)
+        message(FATAL_ERROR "For windows builds the CMAKE_TOOLCHAIN_FILE must be given, pointing to the toolchain file of vcpkg.")
+    endif()
+    set(VCPKG_OVERLAY_PORTS "${CMAKE_CURRENT_SOURCE_DIR}/cmake/ports")
+    add_compile_definitions("-DWIN_OS")
+    set(VCPKG_TARGET_TRIPLET "x64-windows")
+    set(VCPKG_POLICY_ALLOW_EXES_IN_BIN enabled)
+    set(DEPENDENCY_BUILD_TYPE ${CMAKE_BUILD_TYPE})
+    set(DEPENDENCY_BUILD_SUFFIX "$<IF:$<CONFIG:Debug>,d, >")
 elseif(APPLE)
     message(FATAL_ERROR "MacOS is currently not supported")
-elif(NOT UNIX)
+elseif(NOT UNIX)
     message(FATAL_ERROR "Unknown operating system")
+else()
+    set(DEPENDENCY_BUILD_TYPE Release)
+    #set(CMAKE_RC_COMPILER "D:/llvm/bin/llvm-rc.exe" CACHE FILEPATH "" FORCE)
+    #set(PKG_CONFIG_EXECUTABLE "D:/pkg-config/bin/pkg-config.exe" CACHE FILEPATH "" FORCE)
 endif()
+
+set(GPL_LICENSED_CODE "openvins;orb_slam3;offload_rendering_server;offload_rendering_client")
+set(LGPL_LICENSED_CODE "audio_pipeline")
 
 if(PACKAGE_VERSION_LABEL)
     set(PACKAGE_VERSION "${PACKAGE_VERSION_MAJOR}.${PACKAGE_VERSION_MINOR}.${PACKAGE_VERSION_PATCH}-${PACKAGE_VERSION_LABEL}")
@@ -61,18 +83,6 @@ endif()
 include(ExternalProject)
 include(FetchContent)
 include(CMakeDependentOption)
-
-project(ILLIXR VERSION 3.2.0)
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-add_definitions(-DGLSL_VERSION="330")
-
-# Vulkan flags
-add_compile_definitions(VK_ENABLE_BETA_EXTENSIONS)
-
-set(CMAKE_CXX_FLAGS_DEBUG "-ggdb -Wall -Wextra -rdynamic -Wno-attributes -Wno-unknown-pragmas -fPIC")
-set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG -Wall -Wextra -Wno-attributes -Wno-unknown-pragmas -fPIC")
-set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-ggdb -O3 -Wall -Wextra -Wno-attributes -Wno-unknown-pragmas -fPIC")
 
 # check for the Jetson platform
 if (CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64" AND EXISTS "/etc/nv_tegra_release")
@@ -85,7 +95,7 @@ endif()
 set(OPENXR_RUNTIME "")
 
 # set the CMake search path to include the local files
-list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_BINARY_DIR}")
 option(COLOR_OUTPUT "Produce color output to the screen" ON)
 option(DOWNLOAD_DATA_FILE "The data file to get" ON)
@@ -150,7 +160,7 @@ if(YAML_FILE)
     read_yaml(${YAML_FILE})
     string(REGEX MATCH "/all.yaml" MATCH_FOUND ${YAML_FILE})
     if (${YAML_FILE} STREQUAL "all.yaml" OR MATCH_FOUND)
-        set(BUILD_DEP_MAP ON)
+        set(BUILD_DEP_MAP OFF)
     endif()
     if(LOCAL_BUILD_FLAGS)
         add_compile_definitions("${LOCAL_BUILD_FLAGS}")
@@ -160,6 +170,7 @@ if(YAML_FILE)
         endforeach()
     endif()
 endif()
+#################################
 
 set(ILLIXR_BUILD_SUFFIX "")
 if(CMAKE_BUILD_TYPE STREQUAL "")
@@ -179,68 +190,14 @@ elseif(lower_type MATCHES "relwithdebinfo")
     set(ILLIXR_BUILD_SUFFIX ".optdbg")
 endif()
 
+set(ILLIXR_BUILD_TYPE ${CMAKE_BUILD_TYPE})
+set(ILLIXR_ROOT ${CMAKE_SOURCE_DIR}/include)
 set(ENV{PKG_CONFIG_PATH} "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig:${CMAKE_INSTALL_PREFIX}/lib64/pkgconfig")
 
-link_directories(BEFORE ${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_INSTALL_PREFIX}/lib64)
-include_directories(BEFORE ${CMAKE_SOURCE_DIR}/include)
 
-find_package(PkgConfig REQUIRED)
-
-if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
-    message(FATAL_ERROR "In-source build prohibited.")
-endif("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
-
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH};${PROJECT_SOURCE_DIR}/cmake;${CMAKE_INSTALL_PREFIX}/lib/cmake;${CMAKE_INSTALL_PREFIX}/share/cmake)
-
-add_definitions(-DILLIXR_BUILD_SUFFIX=${ILLIXR_BUILD_SUFFIX})
-##############
-# dependencies
-##############
-set(EXTERNAL_LIBRARIES "")
-
-find_package(OpenCV 4 REQUIRED)
-
-find_package(GLEW REQUIRED)
-
-pkg_check_modules(glu REQUIRED glu)
-
-find_package(SQLite3 REQUIRED)
-
-find_package(X11 REQUIRED)
-
-pkg_check_modules(gl REQUIRED gl)
-
-find_package(Eigen3 REQUIRED CONFIG)
-
-get_external(Vulkan)
-
-#############
-# plugin specific dependencies that are used by several plugins
-#############
-
-find_package(Git REQUIRED)
-if (CMAKE_VERSION VERSION_LESS "3.30.0")
-    find_package(Boost REQUIRED COMPONENTS filesystem serialization iostreams)
-else()
-    find_package(Boost REQUIRED COMPONENTS filesystem serialization iostreams CONFIG)
-endif()
-
-find_package(spdlog REQUIRED)
-add_definitions(-DFMT_HEADER_ONLY)
-
-set(THREADS_PREFER_PTHREAD_FLAG ON)
-find_package(Threads)
-
-# get any env flags for the build
-if($ENV{ILLIXR_BUILD_FLAGS})
-    string(REPLACE "-D" "" CLI_BUILD_FLAGS "$ENV{ILLIXR_BUILD_FLAGS}")
-    string(REPLACE " " "" CLI_BUILD_FLAGS "${CLI_BUILD_FLAGS}")
-    foreach(FLAG IN LISTS CLI_BUILD_FLAGS)
-        string(REPLACE "=" ";" FLAG_LIST "${FLAG}")
-        list(GET FLAG_LIST 0 ITEM)
-        list(GET FLAG_LIST 1 VALUE)
-        set(${ITEM} ${VALUE} CACHE BOOL "" FORCE)
-    endforeach()
+if(BUILD_DOCS)
+    set(DOCS_LIST "${CMAKE_SOURCE_DIR}/include/illixr;${CMAKE_SOURCE_DIR}/include/illixr/data_format;${CMAKE_SOURCE_DIR}/include/illixr/data_format/poses;${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization;${CMAKE_SOURCE_DIR}/include/illixr/network;${CMAKE_SOURCE_DIR}/include/illixr/vk;${CMAKE_SOURCE_DIR}/plugins/hand_tracking/viewer;${CMAKE_SOURCE_DIR}/plugins/zed/data_injection;${CMAKE_SOURCE_DIR}/plugins/zed/capture;${CMAKE_SOURCE_DIR}/src;${CMAKE_SOURCE_DIR}/src/display;${CMAKE_SOURCE_DIR}/utils")
+    set(DOCS_EXCLUDE_LIST "${CMAKE_SOURCE_DIR}/include/illixr/vk/vk_extension_request.hpp")
 endif()
 
 if(NO_GPL)
@@ -260,14 +217,167 @@ if(NO_ZED)
     set(USE_ZED OFF)
     set(USE_ZED_DATA_INJECTION OFF)
 endif()
+
+if(WIN32 OR MSVC)
+    # define the needed packages
+    set(VCPKG_MANIFEST_FEATURES "")
+    foreach(ITEM IN LISTS PLUGIN_LIST)
+        string(TOUPPER "USE_${ITEM}" ITEM_UPPER)
+        if(${ITEM_UPPER})
+            string(TOLOWER ${ITEM} ITEM_LOWER)
+            string(REPLACE "." "-" ITEM_LOWER_TMP ${ITEM_LOWER})
+            string(REPLACE "_" "-" ITEM_LOWER_REP ${ITEM_LOWER_TMP})
+            list(APPEND VCPKG_MANIFEST_FEATURES "plugin-${ITEM_LOWER_REP}")
+            unset(ITEM_LOWER)
+        endif()
+        unset(ITEM_UPPER)
+    endforeach()
+endif()
+
+
+project(ILLIXR VERSION 4.1.0 LANGUAGES CXX)
+
+if(WIN32 OR MSVC)
+    if(CMAKE_BUILD_TYPE MATCHES Debug)
+        set(MSVC_RUNTIME_FLAG "/MDd")
+    else()
+        set(MSVC_RUNTIME_FLAG "/MD")
+    endif()
+
+    # Set this so Boost won't override it
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
+
+    # CRITICAL: Prevent it from affecting CUDA
+    set(CMAKE_CUDA_RUNTIME_LIBRARY "None" CACHE STRING "" FORCE)
+
+    # Ensure C++ runtime is linked
+    if(CMAKE_BUILD_TYPE MATCHES Debug)
+        link_libraries(vcruntimed.lib msvcrtd.lib)
+    else()
+        link_libraries(vcruntime.lib msvcrt.lib)
+    endif()
+    # Remove conflicting static runtime libraries
+    add_link_options(/NODEFAULTLIB:libcmt.lib /NODEFAULTLIB:libcmtd.lib)
+
+    set(CMAKE_CXX_FLAGS "/EHsc /W3 ${CMAKE_CXX_FLAGS}" CACHE STRING "" FORCE)
+    set(CMAKE_CXX_FLAGS_DEBUG "/EHsc /W3 ${CMAKE_CXX_FLAGS_DEBUG}" CACHE STRING "" FORCE)
+    set(CMAKE_CXX_FLAGS_RELEASE "/EHsc /W3 ${CMAKE_CXX_FLAGS_RELEASE}" CACHE STRING "" FORCE)
+
+    # Set CUDA flags manually
+    if(CMAKE_BUILD_TYPE MATCHES Debug)
+        set(RT_FLAG "/MDd")
+    else()
+        set(RT_FLAG "/MD")
+    endif()
+
+    set(CMAKE_CUDA_FLAGS "-D_WINDOWS --expt-relaxed-constexpr --use_fast_math -Xcompiler=/W3 -Xcompiler=/EHsc -Xcompiler=${RT_FLAG} -Xcompiler=/wd4005 -Xcompiler=/DNOMINMAX -Xcompiler=/DWIN32_LEAN_AND_MEAN" CACHE STRING "" FORCE)
+    set(CMAKE_CUDA_FLAGS_DEBUG "-G -Xcompiler=/Zi -Xcompiler=/Od" CACHE STRING "" FORCE)
+    set(CMAKE_CUDA_FLAGS_RELEASE "-O3 -Xcompiler=/O2" CACHE STRING "" FORCE)
+
+    message(STATUS "CMAKE_CUDA_RUNTIME_LIBRARY = ${CMAKE_CUDA_RUNTIME_LIBRARY}")
+endif()
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+add_definitions(-DGLSL_VERSION="330")
+
+# Vulkan flags
+add_compile_definitions(VK_ENABLE_BETA_EXTENSIONS)
+
+if(WIN32 OR MSVC)
+    set(CMAKE_CXX_FLAGS_DEBUG "/Zi /Od /MDd")
+    set(CMAKE_EXE_LINKER_FLAGS_DEBUG "/DEBUG")
+    set(CMAKE_SHARED_LINKER_FLAGS_DEBUG "/DEBUG /STACK:8388608")
+    set(CMAKE_CXX_FLAGS_RELEASE "/O2 /MD /DNDEBUG")
+    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "/Zi /O2")
+else()
+    set(CMAKE_CXX_FLAGS_DEBUG "-ggdb -Wall -Wextra -Wno-attributes -Wno-unknown-pragmas -fPIC")
+    set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG -Wall -Wextra -Wno-attributes -Wno-unknown-pragmas -fPIC")
+    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-ggdb -O3 -Wall -Wextra -Wno-attributes -Wno-unknown-pragmas -fPIC")
+endif()
+
+##################################
+
+link_directories(BEFORE ${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_INSTALL_PREFIX}/lib64)
+include_directories(BEFORE ${CMAKE_SOURCE_DIR}/include)
+
+if(WIN32 OR MSVC)
+    set(PKG_CONFIG_EXECUTABLE "${CMAKE_BINARY_DIR}/vcpkg_installed/${VCPKG_TARGET_TRIPLET}/tools/pkgconf/pkgconf.exe")
+    find_package(PkgConfig REQUIRED)
+else()
+    find_package(PkgConfig REQUIRED)
+endif()
+
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH};${PROJECT_SOURCE_DIR}/cmake;${CMAKE_INSTALL_PREFIX}/lib/cmake;${CMAKE_INSTALL_PREFIX}/share/cmake)
+
+add_definitions(-DILLIXR_BUILD_SUFFIX=${ILLIXR_BUILD_SUFFIX})
+##############
+# dependencies
+##############
+set(EXTERNAL_LIBRARIES "")
+
+find_package(OpenCV 4 REQUIRED)
+
+find_package(SQLite3 REQUIRED)
+
+find_package(Eigen3 REQUIRED CONFIG)
+
+#############
+# plugin specific dependencies that are used by several plugins
+#############
+
+if(WIN32 OR MSVC)
+    find_package(OpenGL REQUIRED)
+    pkg_check_modules(X11 REQUIRED)
+    find_package(Vulkan REQUIRED)
+    find_package(VulkanMemoryAllocator CONFIG REQUIRED)
+    find_package(glslang REQUIRED)
+else()
+    find_package(X11 REQUIRED)
+    pkg_check_modules(gl REQUIRED gl)
+    pkg_check_modules(glu REQUIRED glu)
+    get_external(Vulkan)
+endif()
+
+find_package(GLEW REQUIRED)
+find_package(glfw3 REQUIRED CONFIG)
+
+find_package(Git REQUIRED)
+if(WIN32 OR MSVC)
+    set(Boost_USE_STATIC_LIBS ON)
+    add_definitions(-DBOOST_ALL_NO_LIB)
+    add_definitions(-DBOOST_SERIALIZATION_DYN_LINK)
+endif()
+if (CMAKE_VERSION VERSION_LESS "3.30.0")
+    find_package(Boost REQUIRED COMPONENTS filesystem serialization iostreams)
+else()
+    find_package(Boost REQUIRED COMPONENTS filesystem serialization iostreams CONFIG)
+endif()
+
+find_package(spdlog REQUIRED CONFIG)
+set(EXTERNAL_PROJECTS "")
+add_definitions(-DFMT_HEADER_ONLY)
+
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads)
+
+# get any env flags for the build
+if($ENV{ILLIXR_BUILD_FLAGS})
+    string(REPLACE "-D" "" CLI_BUILD_FLAGS "$ENV{ILLIXR_BUILD_FLAGS}")
+    string(REPLACE " " "" CLI_BUILD_FLAGS "${CLI_BUILD_FLAGS}")
+    foreach(FLAG IN LISTS CLI_BUILD_FLAGS)
+        string(REPLACE "=" ";" FLAG_LIST "${FLAG}")
+        list(GET FLAG_LIST 0 ITEM)
+        list(GET FLAG_LIST 1 VALUE)
+        set(${ITEM} ${VALUE} CACHE BOOL "" FORCE)
+    endforeach()
+endif()
+
 # set any plugins that are being built
 set(FULL_PLUGIN_LIST "")
 
 add_subdirectory(utils)
-if(BUILD_DOCS)
-    set(DOCS_LIST "${CMAKE_SOURCE_DIR}/include/illixr;${CMAKE_SOURCE_DIR}/include/illixr/data_format;${CMAKE_SOURCE_DIR}/include/illixr/network;${CMAKE_SOURCE_DIR}/include/illixr/vk;${CMAKE_SOURCE_DIR}/plugins/hand_tracking/viewer;${CMAKE_SOURCE_DIR}/plugins/zed/data_injection;${CMAKE_SOURCE_DIR}/plugins/zed/capture;${CMAKE_SOURCE_DIR}/src;${CMAKE_SOURCE_DIR}/src/display;${CMAKE_SOURCE_DIR}/utils")
-    set(DOCS_EXCLUDE_LIST "${CMAKE_SOURCE_DIR}/include/illixr/vk/vk_extension_request.hpp")
-endif()
 foreach(ITEM IN LISTS PLUGIN_LIST)
     string(TOUPPER "USE_${ITEM}" ITEM_UPPER)
     string(TOLOWER ${ITEM} ITEM_LOWER)

@@ -5,32 +5,42 @@ else()
     set(POSTFIX "")
 endif()
 
-externalproject_add(
-        hand_tracking_dependencies${POSTFIX}
-        GIT_REPOSITORY https://github.com/ILLIXR/hand_tracking_dependencies.git
-        GIT_TAG 8dc45876a9eebc3ad6900fafa5b6ca144e290a9f
-        PREFIX ${CMAKE_BINARY_DIR}/_deps/hand_tracking_deps
-        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=Release -DENABLE_GPU=${HT_ENABLE_GPU} -DLIBRARY_POSTFIX=ht -DCMAKE_CXX_COMPILER=${CLANG_CXX_EXE} -DCMAKE_C_COMPILER=${CLANG_EXE} -DCMAKE_POLICY_VERSION_MINIMUM=3.5
-        INSTALL_COMMAND ""
+fetch_git(NAME hand_tracking_dependencies${POSTFIX}
+          REPO https://github.com/ILLIXR/hand_tracking_dependencies.git
+          TAG 4fa06f9fff7610a0c686c06468b95da5bcf8aca5
 )
 
-set(Hand_Tracking_Deps${POSTFIX}_EXTERNAL Yes PARENT_SCOPE)
-list(APPEND EXTERNAL_LIBRARIES "Hand_Tracking_Deps${POSTFIX}")
-set(EXTERNAL_LIBRARIES ${EXTERNAL_LIBRARIES} PARENT_SCOPE)
+set(ENABLE_GPU ${HT_ENABLE_GPU})
+set(LIBRARY_POSTFIX ht)
+configure_target(NAME hand_tracking_dependencies${POSTFIX}
+                 NO_FIND
+)
+unset(ENABLE_GPU)
+unset(LIBRARY_POSTFIX)
 
-    # hand tracking plugin
+# hand tracking plugin
 set(PRFX ${CMAKE_BINARY_DIR}/_deps/hand_tracking)
 set(HT_TARGET_NAME "HAND_TRACKING")
-if(HT_ENABLE_GPU)
-    set(PRFX "${PRFX}_gpu")
-    set(HT_TARGET_NAME "${HT_TARGET_NAME}_GPU")
-endif()
+#if(HT_ENABLE_GPU)
+#    set(PRFX "${PRFX}_gpu")
+#    set(HT_TARGET_NAME "${HT_TARGET_NAME}_GPU")
+#endif()
 
-externalproject_add(
-        ${HT_TARGET_NAME}
-        GIT_REPOSITORY https://github.com/ILLIXR/hand_tracking.git
-        GIT_TAG 0cc6e2cb04514001f6ef8c3f3bea348cc1d965ea
-        PREFIX ${PRFX}
-        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DHT_ENABLE_GPU=${HT_ENABLE_GPU} -DTFLIBRARY_POSTFIX=ht -DILLIXR_ROOT=${CMAKE_SOURCE_DIR} -DILLIXR_BUILD_SUFFIX=${ILLIXR_BUILD_SUFFIX} -DBUILD_OXR_INTERFACE=${BUILD_OXR_INTERFACE} -DBUILD_OXR_TEST=${BUILD_OXR_TEST} -DCMAKE_CXX_COMPILER=${CLANG_CXX_EXE} -DCMAKE_C_COMPILER=${CLANG_EXE}
-        DEPENDS hand_tracking_dependencies${POSTFIX}
+fetch_git(NAME ${HT_TARGET_NAME}
+          REPO https://github.com/ILLIXR/hand_tracking.git
+          TAG 18ca57cbf0d8ff9dc34838e84612cfa1e1cfa9fb
+          DEPENDS hand_tracking_dependencies${POSTFIX}
 )
+
+set(HT_ENABLE_GPU ${HT_ENABLE_GPU})
+set(TFLIBRARY_POSTFIX ht)
+set(ILLIXR_ROOT ${CMAKE_SOURCE_DIR})
+
+configure_target(NAME ${HT_TARGET_NAME}
+                 MATCH_BUILD_TYPE
+                 NO_FIND
+)
+
+unset(HT_ENABLE_GPU)
+unset(TFLIBRARY_POSTFIX)
+unset(ILLIXR_ROOT)

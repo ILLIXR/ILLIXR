@@ -9,7 +9,7 @@ offload_rendering_server::offload_rendering_server(const std::string& name, phon
     , log_{spdlogger("debug")}
     , switchboard_{pb->lookup_impl<switchboard>()}
     , frames_topic_{switchboard_->get_network_writer<compressed_frame>("compressed_frames", {})}
-    , render_pose_{switchboard_->get_reader<fast_pose_type>("render_pose")} {
+    , render_pose_{switchboard_->get_reader<pose::fast_head_pose_type>("render_pose")} {
     // Only encode and pass depth if requested - otherwise skip it.
     use_pass_depth_ = switchboard_->get_env_char("ILLIXR_USE_DEPTH_IMAGES") != nullptr &&
         std::stoi(switchboard_->get_env_char("ILLIXR_USE_DEPTH_IMAGES"));
@@ -76,8 +76,8 @@ void offload_rendering_server::_p_thread_setup() {
 }
 
 void offload_rendering_server::setup(VkRenderPass render_pass, uint32_t subpass,
-                                     std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> buffer_pool,
-                                     bool                                                 input_texture_vulkan_coordinates) {
+                                     std::shared_ptr<vulkan::buffer_pool<pose::fast_head_pose_type>> buffer_pool,
+                                     bool input_texture_vulkan_coordinates) {
     (void) render_pass;
     (void) subpass;
     (void) input_texture_vulkan_coordinates;
@@ -125,7 +125,7 @@ void offload_rendering_server::destroy() {
     av_buffer_unref(&device_ctx_);
 }
 
-fast_pose_type offload_rendering_server::get_fast_pose() const {
+pose::fast_head_pose_type offload_rendering_server::get_fast_pose() const {
     auto pose = render_pose_.get_ro_nullable();
     if (pose == nullptr) {
         return {};
@@ -145,7 +145,7 @@ void offload_rendering_server::_p_one_iteration() {
     auto acquire_image_start_time = std::chrono::high_resolution_clock::now();
 
     // Acquire the latest frame and pose data
-    std::pair<ILLIXR::vulkan::image_index_t, fast_pose_type> res =
+    std::pair<ILLIXR::vulkan::image_index_t, pose::fast_head_pose_type> res =
         buffer_pool_->post_processing_acquire_image(static_cast<signed char>(last_frame_ind_));
     auto acquire_image_end_time = std::chrono::high_resolution_clock::now();
 
@@ -260,7 +260,7 @@ void offload_rendering_server::_p_one_iteration() {
     }
 }
 
-void offload_rendering_server::enqueue_for_network_send(fast_pose_type& pose) {
+void offload_rendering_server::enqueue_for_network_send(pose::fast_head_pose_type& pose) {
     uint64_t timestamp =
         std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch())
             .count();
@@ -268,7 +268,7 @@ void offload_rendering_server::enqueue_for_network_send(fast_pose_type& pose) {
     if (use_pass_depth_) {
         frames_topic_.put(std::make_shared<compressed_frame>(encode_out_color_packets_[0], encode_out_color_packets_[1],
                                                              encode_out_depth_packets_[0], encode_out_depth_packets_[1], pose,
-                                                             timestamp, nalu_only_));
+                                                             timestamp, 0.f, 0.f, nalu_only_));
     } else {
         frames_topic_.put(std::make_shared<compressed_frame>(encode_out_color_packets_[0], encode_out_color_packets_[1], pose,
                                                              timestamp, nalu_only_));

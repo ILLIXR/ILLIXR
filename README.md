@@ -13,7 +13,8 @@ system and testbed. The modular, extensible, and OpenXR-compatible ILLIXR runtim
 components into a complete XR system.
 
 The current ILLIXR release is [v4.1][E51]. Source code is available from our [GitHub repository][P68], which also contains
-instructions for building fully contained [Docker images][E56].
+instructions for building fully contained [Docker images][E56]. While ILLIXR was originally designed for Linux, Windows
+is now also supported by many of the plugins.
 
 ILLIXR provides its components in standalone configurations to enable architects and system designers to research each
 component in isolation. The standalone components are packaged together as of the v3.1.0 release of ILLIXR.
@@ -46,9 +47,6 @@ component. ILLIXR currently contains the following [plugins][P66] and [services]
     - [webcam][P37]
 - Scene provisioning
     - [Ada (scene provisioning)][P69]: collection of plugins that implement scene provisioning—combining InfiniTAM-based real-time scene reconstruction with delivery of mesh-based scene data to XR applications and other scene-consuming spatial computing components.
-
-
-      
 
 
 ### Visual
@@ -91,13 +89,14 @@ component. ILLIXR currently contains the following [plugins][P66] and [services]
 - [offload_rendering_client_jetson][P62]
 - [offload_rendering_server][P63]
 - [tcp_network_backend][P64]
+- [udp_network_backend][P70]
 - [Ada (scene provisioning)][P69] – supports distributed execution of the
   scene provisioning system, allowing reconstruction to run on a server and meshes
   to be delivered to the XR device over the network.
 
 ### Interfaces
 
-- [semantic_python][P70]
+- [semantic_python][P71]
 
 
 [^1]: Source is hosted in an external repository under the [ILLIXR project][E7].
@@ -442,7 +441,9 @@ request!
 
 [P69]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#ada
 
-[P70]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#semantic_python
+[P70]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#udp_network_backend
+
+[P71]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#semantic_python
 
 [//]: # (- Third Party Packages -)
 

@@ -8,7 +8,7 @@
 #include "illixr/switchboard.hpp"
 
 namespace ILLIXR {
-class rk4_integrator : public plugin {
+class MY_EXPORT_API rk4_integrator : public plugin {
 public:
     [[maybe_unused]] rk4_integrator(const std::string& name, phonebook* pb);
     void callback(const switchboard::ptr<const data_format::imu_type>& datum);

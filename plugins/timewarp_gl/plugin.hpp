@@ -1,10 +1,12 @@
 #pragma once
 #define VULKAN_REQUIRED
-
+#if defined(_WIN32) || defined(_WIN64)
+    #include <windows.h>
+#endif
 #include "illixr/data_format/frame.hpp"
 #include "illixr/data_format/misc.hpp"
-#include "illixr/data_format/pose.hpp"
 #include "illixr/data_format/pose_prediction.hpp"
+#include "illixr/data_format/poses/pose_base.hpp"
 #include "illixr/extended_window.hpp"
 #include "illixr/hmd.hpp"
 #include "illixr/phonebook.hpp"
@@ -53,10 +55,16 @@ private:
     const std::shared_ptr<data_format::pose_prediction> pose_prediction_;
     const std::shared_ptr<const relative_clock>         clock_;
 
+#if defined(_WIN32) || defined(_WIN64)
+    HWND  hwnd_;
+    HDC   hdc_;
+    HGLRC context_;
+#else
     // OpenGL objects
     Display*   display_;
     Window     root_window_;
     GLXContext context_;
+#endif
 
     // Shared objects between ILLIXR and the application (either gldemo or Monado)
     bool                      rendering_ready_;
@@ -91,7 +99,7 @@ private:
     switchboard::writer<switchboard::event_wrapper<time_point>> vsync_estimate_;
 
     // Switchboard plug for publishing offloaded data
-    switchboard::writer<data_format::texture_pose> offload_data_;
+    switchboard::writer<data_format::pose::texture_pose> offload_data_;
     // Timewarp only has vsync estimates with native-gl
     record_coalescer mtp_logger_;
 #endif

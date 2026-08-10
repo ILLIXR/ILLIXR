@@ -6,7 +6,10 @@ tcp_network_backend::tcp_network_backend(const std::string& name_, phonebook* pb
     : plugin(name_, pb_)
     , switchboard_{pb_->lookup_impl<switchboard>()} {
     // read environment variables
-    if (switchboard_->get_env_char("ILLIXR_TCP_SERVER_IP")) {
+    if (switchboard_->get_env_char("ILLIXR_SERVER_IP")) {
+        server_ip_ = switchboard_->get_env_char("ILLIXR_SERVER_IP");
+        spdlog::get("illixr")->info("[tcp_network_backend] Using server IP {}", server_ip_);
+    } else if (switchboard_->get_env_char("ILLIXR_TCP_SERVER_IP")) {
         server_ip_ = switchboard_->get_env_char("ILLIXR_TCP_SERVER_IP");
         spdlog::get("illixr")->info("[tcp_network_backend] Using TCP server IP {}", server_ip_);
     }
@@ -16,7 +19,10 @@ tcp_network_backend::tcp_network_backend(const std::string& name_, phonebook* pb
         spdlog::get("illixr")->info("[tcp_network_backend] Using TCP server port {}", server_port_);
     }
 
-    if (switchboard_->get_env_char("ILLIXR_TCP_CLIENT_IP")) {
+    if (switchboard_->get_env_char("ILLIXR_CLIENT_IP")) {
+        client_ip_ = switchboard_->get_env_char("ILLIXR_CLIENT_IP");
+        spdlog::get("illixr")->info("[tcp_network_backend] Using client IP {}", client_ip_);
+    } else if (switchboard_->get_env_char("ILLIXR_TCP_CLIENT_IP")) {
         client_ip_ = switchboard_->get_env_char("ILLIXR_TCP_CLIENT_IP");
         spdlog::get("illixr")->info("[tcp_network_backend] Using TCP client IP {}", client_ip_);
     }
@@ -28,7 +34,9 @@ tcp_network_backend::tcp_network_backend(const std::string& name_, phonebook* pb
 
     if (switchboard_->get_env_char("ILLIXR_IS_CLIENT")) {
         is_client_ = std::stoi(switchboard_->get_env_char("ILLIXR_IS_CLIENT"));
-        spdlog::get("illixr")->info("[tcp_network_backend] Is client", is_client_);
+        spdlog::get("illixr")->info("[tcp_network_backend] Is client {}", is_client_);
+    } else {
+        is_client_ = 0;
     }
 
     if (is_client_) {
@@ -78,6 +86,8 @@ void tcp_network_backend::start_server() {
     server_socket.socket_listen();
 
     auto* client_socket = new network::TCPSocket(server_socket.socket_accept());
+    client_socket->enable_no_delay();
+    spdlog::get("illixr")->info("[tcp_network_backend] TCP_NODELAY verified = {}", client_socket->is_no_delay());
     std::cout << "Accepted connection from client: " << client_socket->peer_address() << std::endl;
     peer_socket_ = client_socket;
     ready_       = true;
@@ -161,7 +171,6 @@ void tcp_network_backend::topic_receive(const std::string& topic_name, std::vect
     if (!switchboard_->topic_exists(topic_name)) {
         return;
     }
-
     switchboard_->get_topic(topic_name).deserialize_and_put(message, networked_topics_configs_[topic_name]);
 }
 
@@ -183,9 +192,9 @@ void tcp_network_backend::send_to_peer(const std::string& topic_name, std::strin
     peer_socket_->write_data(packet);
 }
 
-extern "C" plugin* this_plugin_factory(phonebook* pb) {
+extern "C" MY_EXPORT_API plugin* this_plugin_factory(phonebook* pb) {
     auto plugin_ptr = std::make_shared<tcp_network_backend>("tcp_network_backend", pb);
-    pb->register_impl<network::network_backend>(plugin_ptr);
+    pb->register_impl<network::tcp_backend>(std::static_pointer_cast<network::tcp_backend>(plugin_ptr));
     auto* obj = plugin_ptr.get();
     return obj;
 }

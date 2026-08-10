@@ -1,7 +1,7 @@
 #pragma once
 
 #include "illixr/data_format/misc.hpp"
-#include "illixr/data_format/pose.hpp"
+#include "illixr/data_format/poses/head_pose.hpp"
 #include "illixr/data_format/scene_reconstruction.hpp"
 #include "illixr/relative_clock.hpp"
 #include "illixr/switchboard.hpp"
@@ -50,10 +50,10 @@ private:
 
 struct sensor_types {
     // pyh since we are using groundtruth pose change the datatype
-    data_format::pose_type pose;
-    lazy_load_image        depth_cam;
-    lazy_load_image        color_cam;
-    [[maybe_unused]] bool  last_frame = false;
+    data_format::pose::head_pose_type pose;
+    lazy_load_image                   depth_cam;
+    lazy_load_image                   color_cam;
+    [[maybe_unused]] bool             last_frame = false;
 };
 
 class offline_scannet : public ILLIXR::threadloop {

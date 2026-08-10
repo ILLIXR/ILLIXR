@@ -48,7 +48,7 @@ typedef struct {
     lazy_load_image cam1;
 } sensor_types;
 
-class offline_cam : public threadloop {
+class MY_EXPORT_API offline_cam : public threadloop {
 public:
     [[maybe_unused]] offline_cam(const std::string& name, phonebook* pb);
     skip_option _p_should_skip() override;

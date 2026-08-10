@@ -36,5 +36,26 @@ public:
      * @param message The message to send.
      */
     virtual void topic_send(std::string topic_name, std::string&& message) = 0;
+
+    virtual void start_client() = 0;
+
+    virtual void start_server() = 0;
+
+    [[nodiscard]] virtual network::topic_config::TransportMethod transport_method() const = 0;
 };
+
+/**
+ * @brief Phonebook registration key for the TCP network backend.
+ *
+ * Plugins that want TCP transport register themselves under this tag.
+ */
+struct tcp_backend : public network_backend { };
+
+/**
+ * @brief Phonebook registration key for the UDP network backend.
+ *
+ * Plugins that want UDP transport register themselves under this tag.
+ */
+struct udp_backend : public network_backend { };
+
 } // namespace ILLIXR::network

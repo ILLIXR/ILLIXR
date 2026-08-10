@@ -1,10 +1,37 @@
 #include "offload_rendering_client.hpp"
 
+#include <cuda.h>
+#include <cuda_runtime.h>
+#include <nppi_color_conversion.h>
+
 #define OFFLOAD_RENDERING_FFMPEG_DECODER_NAME "hevc"
 
 using namespace ILLIXR;
 using namespace ILLIXR::data_format;
 using namespace ILLIXR::vulkan::ffmpeg_utils;
+
+NppStreamContext makeNppStreamContext(cudaStream_t stream = nullptr) {
+    NppStreamContext ctx{};
+#if CUDA_VERSION < 12090
+    nppGetStreamContext(&ctx);
+    ctx.hStream = stream; // override stream if needed
+#else
+    int device = 0;
+    cudaGetDevice(&device);
+    cudaDeviceProp prop{};
+    cudaGetDeviceProperties(&prop, device);
+
+    ctx.hStream                            = stream;
+    ctx.nCudaDeviceId                      = device;
+    ctx.nMultiProcessorCount               = prop.multiProcessorCount;
+    ctx.nMaxThreadsPerMultiProcessor       = prop.maxThreadsPerMultiProcessor;
+    ctx.nMaxThreadsPerBlock                = prop.maxThreadsPerBlock;
+    ctx.nSharedMemPerBlock                 = prop.sharedMemPerBlock;
+    ctx.nCudaDevAttrComputeCapabilityMajor = prop.major;
+    ctx.nCudaDevAttrComputeCapabilityMinor = prop.minor;
+#endif
+    return ctx;
+}
 
 offload_rendering_client::offload_rendering_client(const std::string& name, phonebook* pb)
     : threadloop{name, pb}
@@ -12,7 +39,7 @@ offload_rendering_client::offload_rendering_client(const std::string& name, phon
     , log_{spdlogger(nullptr)}
     , display_provider_{pb->lookup_impl<vulkan::display_provider>()}
     , frames_reader_{switchboard_->get_buffered_reader<compressed_frame>("compressed_frames")}
-    , pose_writer_{switchboard_->get_network_writer<fast_pose_type>("render_pose", {})}
+    , pose_writer_{switchboard_->get_network_writer<pose::fast_head_pose_type>("render_pose", {})}
     , pose_prediction_{pb->lookup_impl<pose_prediction>()}
     , clock_{pb->lookup_impl<relative_clock>()} {
     display_provider_ffmpeg = display_provider_;
@@ -29,7 +56,7 @@ void offload_rendering_client::start() {
 }
 
 void offload_rendering_client::setup(VkRenderPass render_pass, uint32_t subpass,
-                                     std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> buffer_pool) {
+                                     std::shared_ptr<vulkan::buffer_pool<pose::fast_head_pose_type>> buffer_pool) {
     (void) render_pass;
     (void) subpass;
     this->buffer_pool_ = buffer_pool;
@@ -317,12 +344,14 @@ void offload_rendering_client::_p_one_iteration() {
         dst_linesizes[1] = u_step_;
         dst_linesizes[2] = v_step_;
 
-        auto ret = nppiNV12ToYUV420_8u_P2P3R(pSrc, decode_out_color_frames_[eye]->linesize[0], pDst, dst_linesizes, roi);
+        auto ret =
+            nppiNV12ToYUV420_8u_P2P3R_Ctx(pSrc, decode_out_color_frames_[eye]->linesize[0], pDst, dst_linesizes, roi, npp_ctx_);
         assert(ret == NPP_SUCCESS);
 
         // Convert YUV420 to BGRA
         auto dst = reinterpret_cast<Npp8u*>(decode_converted_color_frames_[eye]->data[0]);
-        ret      = nppiYUV420ToBGR_8u_P3C4R(pDst, dst_linesizes, dst, decode_converted_color_frames_[eye]->linesize[0], roi);
+        ret      = nppiYUV420ToBGR_8u_P3C4R_Ctx(pDst, dst_linesizes, dst, decode_converted_color_frames_[eye]->linesize[0], roi,
+                                                npp_ctx_);
         assert(ret == NPP_SUCCESS);
 
         // Process depth frames if enabled
@@ -332,11 +361,12 @@ void offload_rendering_client::_p_one_iteration() {
             Npp8u* pSrc_depth[2];
             pSrc_depth[0] = reinterpret_cast<Npp8u*>(decode_out_depth_frames_[eye]->data[0]);
             pSrc_depth[1] = reinterpret_cast<Npp8u*>(decode_out_depth_frames_[eye]->data[1]);
-            ret = nppiNV12ToYUV420_8u_P2P3R(pSrc_depth, decode_out_depth_frames_[eye]->linesize[0], pDst, dst_linesizes, roi);
+            ret = nppiNV12ToYUV420_8u_P2P3R_Ctx(pSrc_depth, decode_out_depth_frames_[eye]->linesize[0], pDst, dst_linesizes,
+                                                roi, npp_ctx_);
             assert(ret == NPP_SUCCESS);
             auto dst_depth = reinterpret_cast<Npp8u*>(decode_converted_depth_frames_[eye]->data[0]);
-            ret =
-                nppiYUV420ToBGR_8u_P3C4R(pDst, dst_linesizes, dst_depth, decode_converted_depth_frames_[eye]->linesize[0], roi);
+            ret = nppiYUV420ToBGR_8u_P3C4R_Ctx(pDst, dst_linesizes, dst_depth, decode_converted_depth_frames_[eye]->linesize[0],
+                                               roi, npp_ctx_);
             assert(ret == NPP_SUCCESS);
         }
         cudaDeviceSynchronize();
@@ -492,7 +522,7 @@ void offload_rendering_client::push_pose() {
     current_pose.predict_target_time   = now;
     current_pose.predict_computed_time = now;
     std::cout << "Pushing new pose" << std::endl;
-    pose_writer_.put(std::make_shared<fast_pose_type>(current_pose));
+    pose_writer_.put(std::make_shared<pose::fast_head_pose_type>(current_pose));
 }
 
 bool offload_rendering_client::network_receive() {
@@ -798,6 +828,7 @@ void offload_rendering_client::ffmpeg_init_buffer_pool() {
                                        static_cast<int>(buffer_pool_->image_pool[0][0].image_info.extent.height) / 2, &v_step_);
     yuv420_y_plane_ = nppiMalloc_8u_C1(static_cast<int>(buffer_pool_->image_pool[0][0].image_info.extent.width),
                                        static_cast<int>(buffer_pool_->image_pool[0][0].image_info.extent.height), &y_step_);
+    npp_ctx_        = makeNppStreamContext(nullptr);
 }
 
 void offload_rendering_client::ffmpeg_init_decoder() {

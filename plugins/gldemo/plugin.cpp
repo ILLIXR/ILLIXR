@@ -1,12 +1,14 @@
+#if defined(_WIN32) || defined(_WIN64)
+    #include <windows.h>
+#endif
 // clang-format off
 #include <GL/glew.h> // GLEW has to be loaded before other GL libraries
 // clang-format on
 
-#include "plugin.hpp"
-
 #include "illixr/error_util.hpp"
 #include "illixr/global_module_defs.hpp"
 #include "illixr/math_util.hpp"
+#include "plugin.hpp"
 
 #include <array>
 #include <chrono>
@@ -91,8 +93,17 @@ void gldemo::_p_thread_setup() {
     last_time_ = clock_->now();
 
     // Note: glXMakeContextCurrent must be called from the thread which will be using it.
-    [[maybe_unused]] const bool gl_result =
+#if defined(_WIN32) || defined(_WIN64)
+    HGLRC ctx = wglGetCurrentContext();
+    HDC   dcx = wglGetCurrentDC();
+#endif
+    [[maybe_unused]] int gl_result =
+#if defined(_WIN32) || defined(_WIN64)
+        wglMakeCurrent(ext_window_->hdc_, ext_window_->context_);
+    DWORD error = GetLastError();
+#else
         static_cast<bool>(glXMakeCurrent(ext_window_->display_, ext_window_->window_, ext_window_->context_));
+#endif
     assert(gl_result && "glXMakeCurrent should not fail");
 }
 
@@ -114,8 +125,8 @@ void gldemo::_p_one_iteration() {
 
     Eigen::Matrix4f model_matrix = Eigen::Matrix4f::Identity();
 
-    const fast_pose_type fast_pose = pose_prediction_->get_fast_pose();
-    pose_type            pose      = fast_pose.pose;
+    const pose::fast_head_pose_type fast_pose = pose_prediction_->get_fast_pose();
+    pose::head_pose_type            pose      = fast_pose.pose;
 
     Eigen::Matrix3f head_rotation_matrix = pose.orientation.toRotationMatrix();
 
@@ -193,7 +204,11 @@ void gldemo::_p_one_iteration() {
 // We override start() to control our own lifecycle
 void gldemo::start() {
     [[maybe_unused]] const bool gl_result_0 =
+#if defined(_WIN32) || defined(_WIN64)
+        static_cast<bool>(wglMakeCurrent(ext_window_->hdc_, ext_window_->context_));
+#else
         static_cast<bool>(glXMakeCurrent(ext_window_->display_, ext_window_->window_, ext_window_->context_));
+#endif
     assert(gl_result_0 && "glXMakeCurrent should not fail");
 
     // Init and verify GLEW
@@ -244,7 +259,12 @@ void gldemo::start() {
                               display_params::fov_y / 2.0f, display_params::fov_y / 2.0f, rendering_params::near_z,
                               rendering_params::far_z);
 
-    [[maybe_unused]] const bool gl_result_1 = static_cast<bool>(glXMakeCurrent(ext_window_->display_, None, nullptr));
+    [[maybe_unused]] const bool gl_result_1 =
+#if defined(_WIN32) || defined(_WIN64)
+        static_cast<bool>(wglMakeCurrent(ext_window_->hdc_, ext_window_->context_));
+#else
+        static_cast<bool>(glXMakeCurrent(ext_window_->display_, None, nullptr));
+#endif
     assert(gl_result_1 && "glXMakeCurrent should not fail");
 
     // Effectively, last vsync was at zero.

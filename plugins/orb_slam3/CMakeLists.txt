@@ -1,1 +1,6 @@
-include(GetORB_SLAM3)
+if(WIN32 OR MSVC)
+    message(WARNING "orb_slam3 is not yet available for windows")
+    set(USE_ORB_SLAM3 OFF)
+else()
+    include(GetORB_SLAM3)
+endif()

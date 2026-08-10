@@ -3,7 +3,7 @@
 #include <GL/glew.h>    // GLEW has to be loaded before other GL libraries
 #include <GLFW/glfw3.h> // Also loading first, just to be safe
 // clang-format on
-#include "illixr/data_format/pose.hpp"
+#include "illixr/data_format/poses/head_pose.hpp"
 #include "illixr/imgui/imgui.h"
 
 #include <fstream>

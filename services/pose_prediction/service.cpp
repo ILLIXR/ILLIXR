@@ -12,9 +12,9 @@ using namespace ILLIXR::data_format;
 pose_prediction_impl::pose_prediction_impl(const phonebook* const pb)
     : switchboard_{pb->lookup_impl<switchboard>()}
     , clock_{pb->lookup_impl<relative_clock>()}
-    , slow_pose_{switchboard_->get_reader<pose_type>("slow_pose")}
+    , slow_pose_{switchboard_->get_reader<pose::head_pose_type>("slow_pose")}
     , imu_raw_{switchboard_->get_reader<imu_raw_type>("imu_raw")}
-    , true_pose_{switchboard_->get_reader<pose_type>("true_pose")}
+    , true_pose_{switchboard_->get_reader<pose::head_pose_type>("true_pose")}
     , ground_truth_offset_{switchboard_->get_reader<switchboard::event_wrapper<Eigen::Vector3f>>("ground_truth_offset")}
     , vsync_estimate_{switchboard_->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")}
     , using_lighthouse_{switchboard_->get_env_bool("ILLIXR_LIGHTHOUSE")} { }
@@ -22,7 +22,7 @@ pose_prediction_impl::pose_prediction_impl(const phonebook* const pb)
 // No parameter get_fast_pose() should just predict to the next vsync
 // However, we don't have vsync estimation yet.
 // So we will predict to `now()`, as a temporary approximation
-fast_pose_type pose_prediction_impl::get_fast_pose() const {
+pose::fast_head_pose_type pose_prediction_impl::get_fast_pose() const {
     switchboard::ptr<const switchboard::event_wrapper<time_point>> vsync_estimate = vsync_estimate_.get_ro_nullable();
 
     if (vsync_estimate == nullptr) {
@@ -32,11 +32,11 @@ fast_pose_type pose_prediction_impl::get_fast_pose() const {
     }
 }
 
-pose_type pose_prediction_impl::get_true_pose() const {
-    switchboard::ptr<const pose_type>                                   pose_ptr   = true_pose_.get_ro_nullable();
+pose::head_pose_type pose_prediction_impl::get_true_pose() const {
+    switchboard::ptr<const pose::head_pose_type>                        pose_ptr   = true_pose_.get_ro_nullable();
     switchboard::ptr<const switchboard::event_wrapper<Eigen::Vector3f>> offset_ptr = ground_truth_offset_.get_ro_nullable();
 
-    pose_type offset_pose;
+    pose::head_pose_type offset_pose;
 
     // Subtract offset if valid pose and offset, otherwise use zero pose.
     // Checking that pose and offset are both valid is safer than just
@@ -56,12 +56,12 @@ pose_type pose_prediction_impl::get_true_pose() const {
 }
 
 // future_time: An absolute timepoint in the future
-fast_pose_type pose_prediction_impl::get_fast_pose(time_point future_timestamp) const {
-    switchboard::ptr<const pose_type> slow_pose = slow_pose_.get_ro_nullable();
+pose::fast_head_pose_type pose_prediction_impl::get_fast_pose(time_point future_timestamp) const {
+    switchboard::ptr<const pose::head_pose_type> slow_pose = slow_pose_.get_ro_nullable();
     if (slow_pose == nullptr) {
         // No slow pose, return 0
-        return fast_pose_type{
-            correct_pose(pose_type{}),
+        return pose::fast_head_pose_type{
+            correct_pose(pose::head_pose_type{}),
             clock_->now(),
             future_timestamp,
         };
@@ -73,7 +73,7 @@ fast_pose_type pose_prediction_impl::get_fast_pose(time_point future_timestamp) 
             spdlog::get("illixr")->debug("[POSEPREDICTION] FAST POSE IS SLOW POSE!");
 
         // No imu_raw, return slow_pose
-        return fast_pose_type{
+        return pose::fast_head_pose_type{
             correct_pose(*slow_pose),
             clock_->now(),
             future_timestamp,
@@ -89,7 +89,7 @@ fast_pose_type pose_prediction_impl::get_fast_pose(time_point future_timestamp) 
     // predictor_imu_time is the most recent IMU sample that was used to compute the prediction.
     auto predictor_imu_time = imu_raw->imu_time;
 
-    pose_type predicted_pose =
+    pose::head_pose_type predicted_pose =
         correct_pose({predictor_imu_time, state_p.position.cast<float>(), state_p.orientation.cast<float>()});
 
     // Make the first valid fast pose be straight ahead.
@@ -105,7 +105,7 @@ fast_pose_type pose_prediction_impl::get_fast_pose(time_point future_timestamp) 
     // Several timestamps are logged:
     //       - the prediction compute time (time when this prediction was computed, i.e., now)
     //       - the prediction target (the time that was requested for this pose.)
-    return fast_pose_type{predicted_pose, clock_->now(), future_timestamp};
+    return pose::fast_head_pose_type{predicted_pose, clock_->now(), future_timestamp};
 }
 
 void pose_prediction_impl::set_offset(const Eigen::Quaternionf& raw_o_times_offset) {
@@ -162,11 +162,11 @@ Eigen::Quaternionf pose_prediction_impl::get_offset() {
 
 // Correct the orientation of the pose due to the lopsided IMU in the
 // current Dataset we are using (EuRoC)
-pose_type pose_prediction_impl::correct_pose(const pose_type& pose) const {
+pose::head_pose_type pose_prediction_impl::correct_pose(const pose::head_pose_type& pose) const {
     if (using_lighthouse_) // The lighthouse plugin should already apply the correct pose.
         return pose;
 
-    pose_type swapped_pose;
+    pose::head_pose_type swapped_pose;
 
     // Make any changes to the axes direction below
     // This is a mapping between the coordinate system of the current

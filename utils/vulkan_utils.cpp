@@ -10,13 +10,21 @@
 #include <vector>
 #include <vulkan/vulkan.h>
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Weverything"
+#ifdef __linux__
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Weverything"
+#endif
 #define VMA_STATIC_VULKAN_FUNCTIONS  0
 #define VMA_DYNAMIC_VULKAN_FUNCTIONS 1
 #include "illixr/switchboard.hpp"
-#include "illixr/vk/third_party/vk_mem_alloc.h"
-#pragma clang diagnostic pop
+#ifdef __linux__
+    #include "illixr/vk/third_party/vk_mem_alloc.h"
+#else
+    #include <vma/vk_mem_alloc.h>
+#endif
+#ifdef __linux__
+    #pragma clang diagnostic pop
+#endif
 
 using namespace ILLIXR::vulkan;
 

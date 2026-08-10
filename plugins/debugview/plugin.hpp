@@ -2,6 +2,9 @@
 
 #include <eigen3/Eigen/Core>
 #include <eigen3/Eigen/Geometry>
+#if defined(_WIN32) || defined(_WIN64)
+    #include <windows.h>
+#endif
 
 // clang-format off
 #include <GL/glew.h>    // GLEW has to be loaded before other GL libraries
@@ -54,7 +57,7 @@ private:
 
     const bool display_backend_manages_glfw_;
 
-    switchboard::reader<data_format::pose_type>                   slow_pose_reader_;
+    switchboard::reader<data_format::pose::head_pose_type>        slow_pose_reader_;
     switchboard::reader<data_format::imu_raw_type>                fast_pose_reader_;
     switchboard::reader<data_format::rgb_depth_type>              rgb_depth_reader_;
     switchboard::buffered_reader<data_format::binocular_cam_type> cam_reader_;

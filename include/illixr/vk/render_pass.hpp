@@ -1,13 +1,31 @@
 #pragma once
 
 #define GLFW_INCLUDE_VULKAN
+#if defined(_WIN32) || defined(_WIN64)
+    #include <windows.h>
+#endif
 #include "illixr/data_format/misc.hpp"
-#include "illixr/data_format/pose.hpp"
+#include "illixr/data_format/poses/head_pose.hpp"
 #include "illixr/phonebook.hpp"
 #include "vulkan_objects.hpp"
 
+#ifdef USING_OPENXR
+    #ifdef ENABLE_MONADO
+        #define BUFFER_TYPE std::array<xrt_pose, 2>
+    #else
+        #define BUFFER_TYPE std::array<XrPosef, 2>
+    #endif
+#else
+    #define BUFFER_TYPE data_format::pose::fast_head_pose_type
+#endif
+
 #include <GLFW/glfw3.h>
 #include <vector>
+
+#if defined(ENABLE_MONADO) || defined(BUILDING_MONADO_ILLIXR_DRIVER)
+// Forward declaration - full definition in illixr_framebuffer.h
+struct illixr_framebuffer;
+#endif
 
 namespace ILLIXR::vulkan {
 
@@ -30,7 +48,7 @@ public:
      * @param render_pose For an app pass, this is the pose to use for rendering. For a timewarp pass, this is the pose
      * previously supplied to the app pass.
      */
-    virtual void update_uniforms(const data_format::pose_type& render_pose) {
+    virtual void update_uniforms(const BUFFER_TYPE& render_pose) {
         (void) render_pose;
     };
 
@@ -49,6 +67,11 @@ public:
 // timewarp defines the interface for a warping render pass as a service.
 class timewarp : public render_pass {
 public:
+#if defined(ENABLE_MONADO) || defined(BUILDING_MONADO_ILLIXR_DRIVER)
+    virtual void setup(VkRenderPass render_pass, uint32_t subpass,
+                       std::shared_ptr<vulkan::buffer_pool<BUFFER_TYPE>> buffer_pool, bool input_texture_vulkan_coordinates,
+                       struct illixr_framebuffer* framebuffer_array, VkExtent2D extent) = 0;
+#else
     /**
      * @brief Setup the timewarp render pass and initailize required Vulkan resources.
      *
@@ -58,8 +81,9 @@ public:
      * @param input_texture_vulkan_coordinates Whether the input texture is in Vulkan coordinates.
      */
     virtual void setup(VkRenderPass render_pass, uint32_t subpass,
-                       std::shared_ptr<buffer_pool<data_format::fast_pose_type>> buffer_pool,
-                       bool                                                      input_texture_vulkan_coordinates) = 0;
+                       std::shared_ptr<buffer_pool<data_format::pose::fast_head_pose_type>> buffer_pool,
+                       bool input_texture_vulkan_coordinates) = 0;
+#endif
 };
 
 // app defines the interface for an application render pass as a service.
@@ -72,6 +96,6 @@ public:
      * @param subpass The subpass to use.
      */
     virtual void setup(VkRenderPass render_pass, uint32_t subpass,
-                       std::shared_ptr<buffer_pool<data_format::fast_pose_type>> buffer_pool) = 0;
+                       std::shared_ptr<buffer_pool<data_format::pose::fast_head_pose_type>> buffer_pool) = 0;
 };
 } // namespace ILLIXR::vulkan

@@ -1,5 +1,5 @@
 #pragma once
-
+// #define VMA_IMPLEMENTATION
 #include "display/glfw_extended.hpp"
 #include "display/headless.hpp"
 #include "display/x11_direct.hpp"
@@ -7,13 +7,21 @@
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
 #include "illixr/vk/display_provider.hpp"
-#include "illixr/vk/third_party/vk_mem_alloc.h"
 
 #include <set>
 #include <thread>
+
+#ifdef __linux__
+    #include "illixr/vk/third_party/vk_mem_alloc.h"
+#else
+    #include <vma/vk_mem_alloc.h>
+#endif
 #include <vulkan/vulkan.h>
 
 using namespace ILLIXR;
+#ifdef __linux__
+using namespace std;
+#endif
 
 class display_vk : public vulkan::display_provider {
 public:
@@ -465,7 +473,8 @@ private:
                                                   swapchain_details.capabilities.maxImageExtent.height);
         }
 
-        uint32_t image_count = std::max(swapchain_details.capabilities.minImageCount, 2u); // double buffering
+        uint32_t image_count = max(swapchain_details.capabilities.minImageCount, 2u); // double buffering
+
         if (swapchain_details.capabilities.maxImageCount > 0 && image_count > swapchain_details.capabilities.maxImageCount) {
             image_count = swapchain_details.capabilities.maxImageCount;
         }

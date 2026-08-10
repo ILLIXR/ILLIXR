@@ -52,7 +52,8 @@ void openwarp_vk::initialize() {
 }
 
 void openwarp_vk::setup(VkRenderPass render_pass, uint32_t subpass,
-                        std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> buffer_pool, bool input_texture_external) {
+                        std::shared_ptr<vulkan::buffer_pool<pose::fast_head_pose_type>> buffer_pool,
+                        bool                                                            input_texture_external) {
     std::lock_guard<std::mutex> lock{setup_mutex_};
 
     display_provider_ = phonebook_->lookup_impl<vulkan::display_provider>();
@@ -127,13 +128,13 @@ void openwarp_vk::partial_destroy() {
     descriptor_pool_ = VK_NULL_HANDLE;
 }
 
-void openwarp_vk::update_uniforms(const pose_type& render_pose) {
+void openwarp_vk::update_uniforms(const pose::fast_head_pose_type& render_pose) {
     num_update_uniforms_calls_++;
 
-    pose_type latest_pose = disable_warp_ ? render_pose : pose_prediction_->get_fast_pose().pose;
+    pose::head_pose_type latest_pose = disable_warp_ ? render_pose.pose : pose_prediction_->get_fast_pose().pose;
 
     for (int eye = 0; eye < 2; eye++) {
-        Eigen::Matrix4f renderedCameraMatrix = create_camera_matrix(render_pose, eye);
+        Eigen::Matrix4f renderedCameraMatrix = create_camera_matrix(render_pose.pose, eye);
         Eigen::Matrix4f currentCameraMatrix  = create_camera_matrix(latest_pose, eye);
 
         Eigen::Matrix4f warpVP =
@@ -1334,7 +1335,7 @@ VkPipeline openwarp_vk::create_distortion_correction_pipeline(VkRenderPass rende
 }
 
 /* Compute a view matrix with rotation and position */
-Eigen::Matrix4f openwarp_vk::create_camera_matrix(const pose_type& pose, int eye) {
+Eigen::Matrix4f openwarp_vk::create_camera_matrix(const pose::head_pose_type& pose, int eye) {
     Eigen::Matrix4f cameraMatrix   = Eigen::Matrix4f::Identity();
     auto            ipd            = display_params::ipd / 2.0f;
     cameraMatrix.block<3, 1>(0, 3) = pose.position + pose.orientation * Eigen::Vector3f(eye == 0 ? -ipd : ipd, 0, 0);
