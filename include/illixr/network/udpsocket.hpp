@@ -75,16 +75,19 @@ public:
         socket_bind("", port);
     }
 
-    // Allow reuse of local addresses
+    // Allow reuse of local addresses.
+    // On Linux/Android, also sets SO_REUSEPORT so that a new socket can bind
+    // to a port still in TIME_WAIT after a crash, without waiting ~60 seconds.
     void socket_set_reuseaddr() const {
 #if defined(_WIN32) || defined(_WIN64)
         int enable = 1;
-        // Use SO_EXCLUSIVEADDRUSE on Windows — SO_REUSEADDR has unsafe semantics there
+        // Use SO_EXCLUSIVEADDRUSE on Windows - SO_REUSEADDR has unsafe semantics there
         if (setsockopt(fd_, SOL_SOCKET, SO_EXCLUSIVEADDRUSE, reinterpret_cast<const char*>(&enable), sizeof(enable)) < 0)
             throw std::runtime_error("SO_EXCLUSIVEADDRUSE failed");
 #else
         const int enable = 1;
         setsockopt(fd_, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int));
+        setsockopt(fd_, SOL_SOCKET, SO_REUSEPORT, &enable, sizeof(int));
 #endif
     }
 
@@ -97,6 +100,15 @@ public:
         peer_addr_.sin_port   = htons(static_cast<uint16_t>(port));
         inet_pton(AF_INET, ip.c_str(), &peer_addr_.sin_addr);
         peer_set_ = true;
+    }
+
+    // Store the peer address directly from a sockaddr_in, e.g. the src_addr filled in
+    // by read_data(). This lets the server learn the client's address from an incoming
+    // datagram, since UDP is connectionless and the server has no peer until it hears
+    // from one.
+    void set_peer(const sockaddr_in& addr) {
+        peer_addr_ = addr;
+        peer_set_  = true;
     }
 
     // Send a datagram to the previously set peer address.
