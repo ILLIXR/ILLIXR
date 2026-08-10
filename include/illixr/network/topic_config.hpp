@@ -17,6 +17,8 @@ struct topic_config {
     std::optional<std::chrono::duration<long, std::nano>> latency;
 
     enum SerializationMethod { BOOST, PROTOBUF } serialization_method;
+
+    enum TransportMethod { TCP, UDP } transport_method;
 };
 
 } // namespace ILLIXR::network

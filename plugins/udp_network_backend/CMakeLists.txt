@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-set(PLUGIN_NAME plugin.tcp_network_backend${ILLIXR_BUILD_SUFFIX})
+set(PLUGIN_NAME plugin.udp_network_backend${ILLIXR_BUILD_SUFFIX})
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
             plugin.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/network/network_backend.hpp
-            ${CMAKE_SOURCE_DIR}/include/illixr/network/tcpsocket.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/network/udpsocket.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/network/topic_config.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/phonebook.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
