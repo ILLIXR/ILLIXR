@@ -158,13 +158,13 @@ void openwarp_vk::record_command_buffer(VkCommandBuffer commandBuffer, VkFramebu
     clear_colors[1].depthStencil.depth = rendering_params::reverse_z ? 0.0 : 1.0;
 
     // First render OpenWarp offscreen for a distortion correction pass later
-    VkRenderPassBeginInfo ow_render_pass_info{.sType           = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
-                                              .pNext           = nullptr,
-                                              .renderPass      = openwarp_render_pass_,
-                                              .framebuffer     = offscreen_framebuffers_[left ? 0 : 1],
-                                              .renderArea      = {.offset = {.x = 0, .y = 0},
-                                                                  .extent = {.width  = static_cast<uint32_t>(swapchain_width_ / 2),
-                                                                             .height = static_cast<uint32_t>(swapchain_height_)}},
+    VkRenderPassBeginInfo ow_render_pass_info{.sType       = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
+                                              .pNext       = nullptr,
+                                              .renderPass  = openwarp_render_pass_,
+                                              .framebuffer = offscreen_framebuffers_[left ? 0 : 1],
+                                              .renderArea  = {.offset = {.x = 0, .y = 0},
+                                                              .extent = {.width  = static_cast<uint32_t>(swapchain_width_ / 2),
+                                                                         .height = static_cast<uint32_t>(swapchain_height_)}},
                                               .clearValueCount = 2,
                                               .pClearValues    = clear_colors};
 
@@ -786,11 +786,11 @@ void openwarp_vk::create_descriptor_set_layouts() {
     std::array<VkDescriptorSetLayoutBinding, 3> ow_bindings    = {image_layout_binding, depth_layout_binding,
                                                                   matrix_ubo_layout_binding};
     VkDescriptorSetLayoutCreateInfo             ow_layout_info = {
-                    .sType        = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
-                    .pNext        = nullptr,
-                    .flags        = {},
-                    .bindingCount = static_cast<uint32_t>(ow_bindings.size()),
-                    .pBindings    = ow_bindings.data() // array of VkDescriptorSetLayoutBinding structs
+        .sType        = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
+        .pNext        = nullptr,
+        .flags        = {},
+        .bindingCount = static_cast<uint32_t>(ow_bindings.size()),
+        .pBindings    = ow_bindings.data() // array of VkDescriptorSetLayoutBinding structs
     };
 
     VK_ASSERT_SUCCESS(
@@ -809,11 +809,11 @@ void openwarp_vk::create_descriptor_set_layouts() {
 
     std::array<VkDescriptorSetLayoutBinding, 1> dc_bindings    = {offscreen_image_layout_binding};
     VkDescriptorSetLayoutCreateInfo             dc_layout_info = {
-                    .sType        = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
-                    .pNext        = nullptr,
-                    .flags        = {},
-                    .bindingCount = static_cast<uint32_t>(dc_bindings.size()),
-                    .pBindings    = dc_bindings.data() // array of VkDescriptorSetLayoutBinding structs
+        .sType        = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
+        .pNext        = nullptr,
+        .flags        = {},
+        .bindingCount = static_cast<uint32_t>(dc_bindings.size()),
+        .pBindings    = dc_bindings.data() // array of VkDescriptorSetLayoutBinding structs
     };
     VK_ASSERT_SUCCESS(
         vkCreateDescriptorSetLayout(display_provider_->vk_device_, &dc_layout_info, nullptr, &dp_descriptor_set_layout_))

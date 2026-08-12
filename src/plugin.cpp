@@ -177,15 +177,15 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
             std::cout << "Reading " << options["yaml"].as<std::string>() << std::endl;
             auto                     config_file_full = options["yaml"].as<std::string>();
             std::string              config_file      = config_file_full.substr(config_file_full.find_last_of("/\\") + 1);
-            std::vector<std::string> config_list      = {config_file,
-                                                         config_file_full,
-                                                         home_dir + "/.illixr/profiles/" + config_file_full,
-                                                         home_dir + "/.illixr/profiles/" + config_file,
-                                                         home_dir + "/" + config_file_full,
-                                                         home_dir + "/" + config_file,
-                                                         std::string(ILLIXR_INSTALL_PATH) + "/share/illixr/profiles/" +
-                                                             config_file_full,
-                                                         std::string(ILLIXR_INSTALL_PATH) + "/share/illixr/profiles/" + config_file};
+            std::vector<std::string> config_list = {config_file,
+                                                    config_file_full,
+                                                    home_dir + "/.illixr/profiles/" + config_file_full,
+                                                    home_dir + "/.illixr/profiles/" + config_file,
+                                                    home_dir + "/" + config_file_full,
+                                                    home_dir + "/" + config_file,
+                                                    std::string(ILLIXR_INSTALL_PATH) + "/share/illixr/profiles/" +
+                                                        config_file_full,
+                                                    std::string(ILLIXR_INSTALL_PATH) + "/share/illixr/profiles/" + config_file};
             for (auto& filepath : config_list) {
                 try {
                     config = YAML::LoadFile(filepath);
@@ -267,8 +267,8 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
         setenv("__GL_SYNC_TO_VBLANK", "1", false);
 
         std::vector<ILLIXR::Dependency> dep_map;
-        std::vector<std::string>        dep_list   = {"plugin_deps.yaml", home_dir + "/.illixr/profiles/plugin_deps.yaml",
-                                                      std::string(ILLIXR_INSTALL_PATH) + "/share/illixr/profiles/plugin_deps.yaml"
+        std::vector<std::string>        dep_list = {"plugin_deps.yaml", home_dir + "/.illixr/profiles/plugin_deps.yaml",
+                                                    std::string(ILLIXR_INSTALL_PATH) + "/share/illixr/profiles/plugin_deps.yaml"
 
         };
         bool                            dep_loaded = false;
