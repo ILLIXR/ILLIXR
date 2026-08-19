@@ -271,7 +271,7 @@ void offload_rendering_server::enqueue_for_network_send(pose::fast_head_pose_typ
                                                              timestamp, 0, 0.f, 0.f, nalu_only_));
     } else {
         frames_topic_.put(std::make_shared<compressed_frame>(encode_out_color_packets_[0], encode_out_color_packets_[1], pose,
-                                                             timestamp, 0,nalu_only_));
+                                                             timestamp, 0, nalu_only_));
     }
 }
 
