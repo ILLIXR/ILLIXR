@@ -38,18 +38,16 @@ static pybind11::scoped_interpreter make_interpreter() {
     const char* venv = switchboard_->get_env_char("VIRTUAL_ENV");
     if (venv) {
         pybind11::gil_scoped_acquire acquire;
-        pybind11::module_ sys  = pybind11::module_::import("sys");
-        pybind11::module_ site = pybind11::module_::import("site");
+        pybind11::module_            sys  = pybind11::module_::import("sys");
+        pybind11::module_            site = pybind11::module_::import("site");
 
-        auto prefix  = sys.attr("prefix").cast<std::string>();
-        auto version_info   = sys.attr("version_info");
-        int major = version_info.attr("major").cast<int>();
-        int minor = version_info.attr("minor").cast<int>();
+        auto prefix       = sys.attr("prefix").cast<std::string>();
+        auto version_info = sys.attr("version_info");
+        int  major        = version_info.attr("major").cast<int>();
+        int  minor        = version_info.attr("minor").cast<int>();
 
-        std::string site_packages = std::string(venv) + "/lib/python" +
-                                    std::to_string(major) + "." +
-                                    std::to_string(minor) +
-                                    "/site-packages";
+        std::string site_packages =
+            std::string(venv) + "/lib/python" + std::to_string(major) + "." + std::to_string(minor) + "/site-packages";
 
         pybind11::list path = sys.attr("path");
         path.attr("insert")(0, site_packages);
@@ -64,7 +62,8 @@ static pybind11::scoped_interpreter make_interpreter() {
             std::string::size_type start = 0;
             while (start < pp.size()) {
                 auto colon = pp.find(':', start);
-                if (colon == std::string::npos) colon = pp.size();
+                if (colon == std::string::npos)
+                    colon = pp.size();
                 std::string entry = pp.substr(start, colon - start);
                 if (!entry.empty())
                     path.attr("insert")(0, entry);
@@ -82,8 +81,7 @@ static pybind11::scoped_interpreter make_interpreter() {
     // Register decode callback — fires on the switchboard thread whenever a
     // new semantic_data frame arrives, decoding it immediately into the cache.
     switchboard_->schedule<data_format::semantic_data>(
-        id_, "semantic_data",
-        [this](const switchboard::ptr<const data_format::semantic_data>& frame, std::size_t idx) {
+        id_, "semantic_data", [this](const switchboard::ptr<const data_format::semantic_data>& frame, std::size_t idx) {
             on_semantic_data(frame, idx);
         });
 }
@@ -170,39 +168,31 @@ void semantic_python::parse_py_args(const std::string& input) {
     }
 }
 
-void semantic_python::on_semantic_data(
-        const switchboard::ptr<const data_format::semantic_data>& frame,
-        std::size_t /*idx*/) {
+void semantic_python::on_semantic_data(const switchboard::ptr<const data_format::semantic_data>& frame, std::size_t /*idx*/) {
     if (!frame) {
         spdlog::get("illixr")->warn("[semantic_python] on_semantic_data: null frame");
         return;
     }
     if (frame->image.empty()) {
-        spdlog::get("illixr")->warn(
-            "[semantic_python] on_semantic_data: frame={} has empty image",
-            frame->frame_number);
+        spdlog::get("illixr")->warn("[semantic_python] on_semantic_data: frame={} has empty image", frame->frame_number);
         return;
     }
 
-    spdlog::get("illixr")->debug(
-        "[semantic_python] on_semantic_data: frame={} image={}B depth={}B",
-        frame->frame_number, frame->image.size(), frame->depth.size());
+    spdlog::get("illixr")->debug("[semantic_python] on_semantic_data: frame={} image={}B depth={}B", frame->frame_number,
+                                 frame->image.size(), frame->depth.size());
 
     // Lazy decoder init — constructed on the first callback invocation so
     // its CUDA context is bound to the switchboard decode thread.
     {
         std::lock_guard<std::mutex> lock(decoder_init_mutex_);
         if (!decoder_initialized_) {
-            spdlog::get("illixr")->info(
-                "[semantic_python] Initializing NVDEC HEVC decoder...");
+            spdlog::get("illixr")->info("[semantic_python] Initializing NVDEC HEVC decoder...");
             try {
-                decoder_ = std::make_unique<nvdec_decoder>(cudaVideoCodec_HEVC);
+                decoder_             = std::make_unique<nvdec_decoder>(cudaVideoCodec_HEVC);
                 decoder_initialized_ = true;
-                spdlog::get("illixr")->info(
-                    "[semantic_python] NVDEC HEVC decoder initialized");
+                spdlog::get("illixr")->info("[semantic_python] NVDEC HEVC decoder initialized");
             } catch (const std::exception& e) {
-                spdlog::get("illixr")->error(
-                    "[semantic_python] NVDEC init failed: {}", e.what());
+                spdlog::get("illixr")->error("[semantic_python] NVDEC init failed: {}", e.what());
                 return;
             }
         }
@@ -212,28 +202,21 @@ void semantic_python::on_semantic_data(
         return;
 
     try {
-        const uint8_t* rgb = decoder_->decode(
-            frame->image.data(), frame->image.size());
+        const uint8_t* rgb = decoder_->decode(frame->image.data(), frame->image.size());
 
         if (rgb != nullptr) {
-            decoded_frames_.store(frame->frame_number,
-                                  decoder_->width(), decoder_->height(),
-                                  rgb);
-            spdlog::get("illixr")->debug(
-                "[semantic_python] frame={} decoded -> {}x{} RGB stored in cache",
-                frame->frame_number, decoder_->width(), decoder_->height());
+            decoded_frames_.store(frame->frame_number, decoder_->width(), decoder_->height(), rgb);
+            spdlog::get("illixr")->debug("[semantic_python] frame={} decoded -> {}x{} RGB stored in cache", frame->frame_number,
+                                         decoder_->width(), decoder_->height());
         } else {
             // nullptr is normal for SPS/PPS-only packets during decoder init —
             // log at debug level so the first few frames don't look like errors.
-            spdlog::get("illixr")->debug(
-                "[semantic_python] frame={} decode returned no output "
-                "(normal during decoder init with SPS/PPS packets)",
-                frame->frame_number);
+            spdlog::get("illixr")->debug("[semantic_python] frame={} decode returned no output "
+                                         "(normal during decoder init with SPS/PPS packets)",
+                                         frame->frame_number);
         }
     } catch (const std::exception& e) {
-        spdlog::get("illixr")->warn(
-            "[semantic_python] NVDEC decode failed frame={}: {}",
-            frame->frame_number, e.what());
+        spdlog::get("illixr")->warn("[semantic_python] NVDEC decode failed frame={}: {}", frame->frame_number, e.what());
     }
 }
 

@@ -29,8 +29,8 @@ void serialize(Archive& ar, ILLIXR::data_format::semantic_data& data, const unsi
     ar & data.depth;
     ar & data.depth_near_z;
     ar & data.depth_intrinsics;
-    ar & boost::serialization::make_array(data.rgb_camera_pose,  16);
-    ar & boost::serialization::make_array(data.depth_pose,       16);
+    ar& boost::serialization::make_array(data.rgb_camera_pose, 16);
+    ar& boost::serialization::make_array(data.depth_pose, 16);
     ar & data.max_depth;
     ar & data.frame_number;
     ar & data.rgb_timestamp_ns;
@@ -39,7 +39,7 @@ void serialize(Archive& ar, ILLIXR::data_format::semantic_data& data, const unsi
 
 template<class Archive>
 void serialize(Archive& ar, ILLIXR::data_format::voice_query& data, const unsigned int) {
-    ar & boost::serialization::base_object<ILLIXR::switchboard::event>(data);
+    ar& boost::serialization::base_object<ILLIXR::switchboard::event>(data);
     ar & data.query_id;
     ar & data.pcm_data;
     ar & data.similarity_threshold;
@@ -55,9 +55,9 @@ void serialize(Archive& ar, ILLIXR::data_format::point_cloud& data, const unsign
 
 template<class Archive>
 void serialize(Archive& ar, ILLIXR::data_format::query_response& data, const unsigned int) {
-    ar & boost::serialization::base_object<ILLIXR::switchboard::event>(data);
+    ar& boost::serialization::base_object<ILLIXR::switchboard::event>(data);
     ar & data.query_id;
-    ar & data.point_clouds;    // vector<point_cloud> — uses point_cloud serializer above
+    ar & data.point_clouds; // vector<point_cloud> — uses point_cloud serializer above
     ar & data.colors;
     ar & data.num_point_clouds;
     ar & data.server_query_processing;
