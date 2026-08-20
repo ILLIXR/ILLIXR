@@ -48,5 +48,5 @@ private:
 };
 } // namespace ILLIXR::zed_capture
 
-std::ostream& operator<<(std::ostream& os, ILLIXR::data_format::pose_type const& dt);
+std::ostream& operator<<(std::ostream& os, ILLIXR::data_format::pose::head_pose_type const& dt);
 std::ostream& operator<<(std::ostream& os, ILLIXR::data_format::camera_data const& cc);

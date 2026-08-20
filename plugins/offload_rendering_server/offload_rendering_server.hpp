@@ -2,7 +2,7 @@
 
 #define DOUBLE_INCLUDE
 #include "illixr/data_format/pose_prediction.hpp"
-#include "illixr/data_format/serializable_data.hpp"
+#include "illixr/data_format/serialization/frame.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
 #include "illixr/vk/display_provider.hpp"
@@ -45,9 +45,8 @@ public:
      * @param _buffer_pool Buffer pool for frame management
      * @param input_texture_vulkan_coordinates Whether input textures use Vulkan coordinates
      */
-    void setup(VkRenderPass render_pass, uint32_t subpass,
-               std::shared_ptr<vulkan::buffer_pool<data_format::fast_pose_type>> _buffer_pool,
-               bool                                                              input_texture_vulkan_coordinates) override;
+    void setup(VkRenderPass render_pass, uint32_t subpass, std::shared_ptr<vulkan::buffer_pool<BUFFER_TYPE>> _buffer_pool,
+               bool input_texture_vulkan_coordinates) override;
 
     /**
      * @brief Indicates this sink does not make use of the rendering pipeline in order for the access masks of the layout
@@ -65,19 +64,19 @@ public:
     /**
      * @brief Get the latest pose for rendering
      */
-    data_format::fast_pose_type get_fast_pose() const override;
+    POSE_TYPE get_fast_pose() const override;
 
     /**
      * @brief Get the true pose (same as fast pose in this implementation)
      */
-    data_format::pose_type get_true_pose() const override {
+    data_format::pose::head_pose_type get_true_pose() const override {
         return get_fast_pose().pose;
     }
 
     /**
      * @brief Get predicted pose for a future time point (returns current pose)
      */
-    data_format::fast_pose_type get_fast_pose(time_point future_time) const override {
+    POSE_TYPE get_fast_pose(time_point future_time) const override {
         (void) future_time;
         return get_fast_pose();
     }
@@ -113,7 +112,7 @@ public:
     /**
      * @brief Correct pose data (no-op in this implementation)
      */
-    data_format::pose_type correct_pose(const data_format::pose_type& pose) const override {
+    data_format::pose::head_pose_type correct_pose(const data_format::pose::head_pose_type& pose) const override {
         (void) pose;
         return {};
     }
@@ -131,7 +130,7 @@ public:
     /**
      * @brief Update uniforms (no-op in this implementation)
      */
-    void update_uniforms(const data_format::pose_type& r_pose) override {
+    void update_uniforms(const BUFFER_TYPE& r_pose) override {
         (void) r_pose;
     }
 
@@ -159,7 +158,7 @@ private:
      * @brief Sends encoded frame data to the client
      * @param pose The pose data associated with the frame
      */
-    void enqueue_for_network_send(data_format::fast_pose_type& pose);
+    void enqueue_for_network_send(BUFFER_TYPE& pose);
 
     /**
      * @brief Initializes the FFmpeg Vulkan device context
@@ -207,14 +206,14 @@ private:
      */
     void ffmpeg_init_encoder();
 
-    std::shared_ptr<spdlog::logger>                                   log_;
-    std::shared_ptr<vulkan::display_provider>                         display_provider_;
-    std::shared_ptr<switchboard>                                      switchboard_;
-    switchboard::network_writer<data_format::compressed_frame>        frames_topic_;
-    switchboard::reader<data_format::fast_pose_type>                  render_pose_;
-    std::shared_ptr<vulkan::buffer_pool<data_format::fast_pose_type>> buffer_pool_;
-    std::vector<std::array<vulkan::ffmpeg_utils::ffmpeg_vk_frame, 2>> avvk_color_frames_;
-    std::vector<std::array<vulkan::ffmpeg_utils::ffmpeg_vk_frame, 2>> avvk_depth_frames_;
+    std::shared_ptr<spdlog::logger>                                              log_;
+    std::shared_ptr<vulkan::display_provider>                                    display_provider_;
+    std::shared_ptr<switchboard>                                                 switchboard_;
+    switchboard::network_writer<data_format::compressed_frame>                   frames_topic_;
+    switchboard::reader<BUFFER_TYPE>                                             render_pose_;
+    std::shared_ptr<vulkan::buffer_pool<data_format::pose::fast_head_pose_type>> buffer_pool_;
+    std::vector<std::array<vulkan::ffmpeg_utils::ffmpeg_vk_frame, 2>>            avvk_color_frames_;
+    std::vector<std::array<vulkan::ffmpeg_utils::ffmpeg_vk_frame, 2>>            avvk_depth_frames_;
 
     int  framerate_ = 144;
     long bitrate_   = OFFLOAD_RENDERING_BITRATE;
@@ -227,13 +226,13 @@ private:
     AVBufferRef* frame_ctx_       = nullptr;
     AVBufferRef* cuda_frame_ctx_  = nullptr;
 
-    AVCodecContext*          codec_color_ctx_ = nullptr;
-    std::array<AVFrame*, 2>  encode_src_color_frames_{};
-    std::array<AVPacket*, 2> encode_out_color_packets_{};
+    AVCodecContext*            codec_color_ctx_ = nullptr;
+    std::array<AVFrame*, 2>    encode_src_color_frames_{};
+    std::array<PACKET_TYPE, 2> encode_out_color_packets_{};
 
-    AVCodecContext*          codec_depth_ctx_ = nullptr;
-    std::array<AVFrame*, 2>  encode_src_depth_frames_{};
-    std::array<AVPacket*, 2> encode_out_depth_packets_{};
+    AVCodecContext*            codec_depth_ctx_ = nullptr;
+    std::array<AVFrame*, 2>    encode_src_depth_frames_{};
+    std::array<PACKET_TYPE, 2> encode_out_depth_packets_{};
 
     uint64_t frame_count_ = 0;
 

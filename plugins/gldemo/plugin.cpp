@@ -125,8 +125,8 @@ void gldemo::_p_one_iteration() {
 
     Eigen::Matrix4f model_matrix = Eigen::Matrix4f::Identity();
 
-    const fast_pose_type fast_pose = pose_prediction_->get_fast_pose();
-    pose_type            pose      = fast_pose.pose;
+    const pose::fast_head_pose_type fast_pose = pose_prediction_->get_fast_pose();
+    pose::head_pose_type            pose      = fast_pose.pose;
 
     Eigen::Matrix3f head_rotation_matrix = pose.orientation.toRotationMatrix();
 

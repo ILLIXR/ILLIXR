@@ -1,7 +1,7 @@
 #pragma once
 
 #include "illixr/data_format/imu.hpp"
-#include "illixr/data_format/pose.hpp"
+#include "illixr/data_format/poses/head_pose.hpp"
 #include "illixr/network/tcpsocket.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/switchboard.hpp"
@@ -26,7 +26,7 @@ private:
     const std::shared_ptr<switchboard>                                    switchboard_;
     const std::shared_ptr<relative_clock>                                 clock_;
     switchboard::buffered_reader<switchboard::event_wrapper<std::string>> vio_pose_reader_;
-    switchboard::writer<data_format::pose_type>                           pose_;
+    switchboard::writer<data_format::pose::head_pose_type>                pose_;
     switchboard::writer<data_format::imu_integrator_input>                imu_integrator_input_;
 
     network::TCPSocket socket_;

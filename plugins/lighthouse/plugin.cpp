@@ -18,8 +18,8 @@ lighthouse* lighthouse_instance;
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
     , log_(spdlogger("info"))
     , clock_{phonebook_->lookup_impl<relative_clock>()}
-    , slow_pose_{switchboard_->get_writer<pose_type>("slow_pose")}
-    , fast_pose_{switchboard_->get_writer<fast_pose_type>("fast_pose")} {
+    , slow_pose_{switchboard_->get_writer<pose::head_pose_type>("slow_pose")}
+    , fast_pose_{switchboard_->get_writer<pose::fast_head_pose_type>("fast_pose")} {
     lighthouse_instance = this;
 }
 
@@ -52,7 +52,7 @@ void lighthouse::process_slow_pose(SurviveObject* so, survive_long_timecode time
 //     auto quat = Eigen::Quaterniond{pose->Rot[0], pose->Rot[1], pose->Rot[2], pose->Rot[3]}.cast<float>();
 //
 //     lighthouse_instance->_m_fast_pose.put(lighthouse_instance->_m_fast_pose.allocate(
-//         pose_type {lighthouse_instance->_m_clock->now(), Eigen::Vector3d{pose->Pos[0], pose->Pos[1],
+//         pose::head_pose_type {lighthouse_instance->_m_clock->now(), Eigen::Vector3d{pose->Pos[0], pose->Pos[1],
 //         pose->Pos[2]}.cast<float>(),
 //          quat},
 //         lighthouse_instance->_m_clock->now(), lighthouse_instance->_m_clock->now()));

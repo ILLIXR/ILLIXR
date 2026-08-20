@@ -22,9 +22,9 @@
 /*   * Add control of orbital plane as a control parameter                   */
 /*                                                                           */
 /* NOTES:                                                                    */
-/*   * get_fast_pose() method returns a "fast_pose_type"                     */
-/*   * "fast_pose_type" is a "pose_type" plus computed & target timestamps   */
-/*   * correct_pose() method returns a "pose_type"                           */
+/*   * get_fast_pose() method returns a "fast_head_pose_type"                     */
+/*   * "fast_head_pose_type" is a "head_pose_type" plus computed & target timestamps   */
+/*   * correct_pose() method returns a "head_pose_type"                           */
 /*   * (This version uploaded to ILLIXR GitHub)                              */
 /*                                                                           */
 
@@ -105,7 +105,7 @@ fauxpose_impl::~fauxpose_impl() {
 #endif
 }
 
-pose_type fauxpose_impl::correct_pose([[maybe_unused]] const pose_type& pose) const {
+pose::head_pose_type fauxpose_impl::correct_pose([[maybe_unused]] const pose::head_pose_type& pose) const {
 #ifndef NDEBUG
     spdlog::get("illixr")->debug("[fauxpose] Returning (passthru) pose");
 #endif
@@ -122,7 +122,7 @@ void fauxpose_impl::set_offset(const Eigen::Quaternionf& raw_o_times_offset) {
     offset_                  = raw_o.inverse();
 }
 
-fast_pose_type fauxpose_impl::get_fast_pose() const {
+pose::fast_head_pose_type fauxpose_impl::get_fast_pose() const {
     // In actual pose prediction, the semantics are that we return
     //   the pose for next vsync, not now.
     switchboard::ptr<const switchboard::event_wrapper<time_point>> vsync_estimate = vsync_estimate_.get_ro_nullable();
@@ -133,9 +133,9 @@ fast_pose_type fauxpose_impl::get_fast_pose() const {
     }
 }
 
-fast_pose_type fauxpose_impl::get_fast_pose(time_point time) const {
-    pose_type simulated_pose; /* The algorithmically calculated 6-DOF pose */
-    double    sim_time;       /* sim_time is used to regulate a consistent movement */
+pose::fast_head_pose_type fauxpose_impl::get_fast_pose(time_point time) const {
+    pose::head_pose_type simulated_pose; /* The algorithmically calculated 6-DOF pose */
+    double               sim_time;       /* sim_time is used to regulate a consistent movement */
 
     RAC_ERRNO_MSG("[fauxpose] at start of _p_one_iteration");
 
@@ -155,7 +155,7 @@ fast_pose_type fauxpose_impl::get_fast_pose(time_point time) const {
 #ifndef NDEBUG
     spdlog::get("illixr")->debug("[fauxpose] Returning pose");
 #endif
-    return fast_pose_type{simulated_pose, clock_->now(), time};
+    return pose::fast_head_pose_type{simulated_pose, clock_->now(), time};
 }
 
 [[maybe_unused]] fauxpose::fauxpose(const std::string& name, phonebook* pb)

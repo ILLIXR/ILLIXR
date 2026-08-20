@@ -1,7 +1,7 @@
 #pragma once
 
 // ILLIXR includes
-#include "illixr/data_format/pose.hpp"
+#include "illixr/data_format/poses/head_pose.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
 #include "survive.h"
@@ -25,12 +25,12 @@ protected:
     }
 
 private:
-    const std::shared_ptr<switchboard>               switchboard_;
-    const std::shared_ptr<spdlog::logger>            log_;
-    const std::shared_ptr<const relative_clock>      clock_;
-    switchboard::writer<data_format::pose_type>      slow_pose_;
-    switchboard::writer<data_format::fast_pose_type> fast_pose_;
-    SurviveContext*                                  s_context_;
+    const std::shared_ptr<switchboard>                          switchboard_;
+    const std::shared_ptr<spdlog::logger>                       log_;
+    const std::shared_ptr<const relative_clock>                 clock_;
+    switchboard::writer<data_format::pose::head_pose_type>      slow_pose_;
+    switchboard::writer<data_format::pose::fast_head_pose_type> fast_pose_;
+    SurviveContext*                                             s_context_;
 
     std::chrono::time_point<std::chrono::high_resolution_clock> last_time_;
     int                                                         slow_pose_count_ = 0;

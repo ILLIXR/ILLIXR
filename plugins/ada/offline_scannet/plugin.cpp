@@ -95,7 +95,7 @@ void offline_scannet::_p_one_iteration() {
         spdlog::get("illixr")->warn("color not loaded");
     }
 
-    data_format::pose_type pose = {time_point{}, sensor_datum.pose.position, sensor_datum.pose.orientation};
+    data_format::pose::head_pose_type pose = {time_point{}, sensor_datum.pose.position, sensor_datum.pose.orientation};
 
     // pyh test to verify the depth is loaded correctly
     // pyh verified that images and poses are load correctly

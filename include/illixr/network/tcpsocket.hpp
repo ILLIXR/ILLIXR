@@ -13,6 +13,8 @@
     #include <WindNS.h>
     #include <iphlpapi.h>
     #include <icmpapi.h>
+    #include <iphlpapi.h>
+    #include <mstcpip.h>
     #include <nldef.h>
 // clang-format on
     #pragma comment(lib, "Ws2_32.lib")

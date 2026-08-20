@@ -1,5 +1,6 @@
 #include "zed_camera_thread.hpp"
 
+#include "illixr/data_format/poses/head_pose.hpp"
 #include "include/zed_opencv.hpp"
 
 using namespace ILLIXR;
@@ -60,7 +61,7 @@ void zed_camera_thread::_p_one_iteration() {
     zed_cam_->retrieveImage(rgb_zed_, sl::VIEW::LEFT, sl::MEM::CPU, image_size_);
     zed_cam_->retrieveMeasure(confidence_zed_, sl::MEASURE::CONFIDENCE);
 
-    multi_pose_map poses;
+    pose::head_pose_map poses;
     if (zed_cam_->grab() == sl::ERROR_CODE::SUCCESS) {
         sl::Pose zed_pose_left;
         // Get the pose of the camera relative to the world frame
@@ -69,19 +70,17 @@ void zed_camera_thread::_p_one_iteration() {
         //     throw std::runtime_error("Tracking failed");
         sl::Pose zed_pose_right{zed_pose_left};
         transform_zed_pose(zed_pose_left.pose_data, zed_pose_right.pose_data, zed_cam_->getBaseline());
-        pose_type left_eye_pose{
+        pose::head_pose_type left_eye_pose{
             time_point(clock_duration_(zed_pose_left.timestamp.getNanoseconds())),
             {zed_pose_left.getTranslation().tx, zed_pose_left.getTranslation().ty, zed_pose_left.getTranslation().tz},
             {zed_pose_left.getOrientation().w, zed_pose_left.getOrientation().x, zed_pose_left.getOrientation().y,
-             zed_pose_left.getOrientation().z},
-            units::UNITS};
-        pose_type right_eye_pose{
+             zed_pose_left.getOrientation().z}};
+        pose::head_pose_type right_eye_pose{
             time_point(clock_duration_(zed_pose_right.timestamp.getNanoseconds())),
             {zed_pose_right.getTranslation().tx, zed_pose_right.getTranslation().ty, zed_pose_right.getTranslation().tz},
             {zed_pose_right.getOrientation().w, zed_pose_right.getOrientation().x, zed_pose_right.getOrientation().y,
-             zed_pose_right.getOrientation().z},
-            units::UNITS};
-        poses = {{units::LEFT_EYE, left_eye_pose}, {units::RIGHT_EYE, right_eye_pose}};
+             zed_pose_right.getOrientation().z}};
+        poses = {{pose::LEFT, left_eye_pose}, {pose::RIGHT, right_eye_pose}};
     }
 
     clock_duration_ ts = clock_duration_(zed_cam_->getTimestamp(sl::TIME_REFERENCE::IMAGE).getNanoseconds());

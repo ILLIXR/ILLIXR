@@ -1,5 +1,8 @@
 #include "plugin.hpp"
 
+#include "illixr/data_format/coordinate.hpp"
+#include "illixr/data_format/poses/hand_pose.hpp"
+
 #include <filesystem>
 #include <fstream>
 #include <opencv2/imgcodecs.hpp>
@@ -19,8 +22,8 @@ void data_injection::read_cam_data() {
         comma >> rcx >> comma >> rcy >> comma >> rvf >> comma >> rhf;
 
     data.close();
-    ccd_map cmap = {{units::LEFT_EYE, {lcx, lcy, lvf, lhf}}, {units::RIGHT_EYE, {rcx, rcy, rvf, rhf}}};
-    camera_data_ = {w, h, fps, bl, units::MILLIMETER, cmap};
+    ccd_map cmap = {{pose::LEFT, {lcx, lcy, lvf, lhf}}, {pose::RIGHT, {rcx, rcy, rvf, rhf}}};
+    camera_data_ = {w, h, fps, bl, cmap};
 }
 
 void data_injection::read_poses() {
@@ -38,8 +41,7 @@ void data_injection::read_poses() {
             base_time_ = tt - 1;
         t = tt - base_time_;
         timepoints_.push_back(t);
-        poses_[t] = new pose_data(Eigen::Vector3f{tx, ty, tx}, Eigen::Quaternionf{w, x, y, z}, units::MILLIMETER,
-                                  coordinates::RIGHT_HANDED_Y_UP, coordinates::WORLD, 1.);
+        poses_[t] = new pose::head_pose_data(Eigen::Vector3f{tx, ty, tx}, Eigen::Quaternionf{w, x, y, z}, true, 1.);
     }
 }
 
@@ -67,7 +69,7 @@ data_injection::data_injection(const std::string& name_, phonebook* pb_)
     : threadloop{name_, pb_}
     , switchboard_{pb_->lookup_impl<switchboard>()}
     , frame_img_writer_{switchboard_->get_writer<binocular_cam_type>("cam")}
-    , frame_pose_writer_{switchboard_->get_writer<pose_type>("pose")}
+    , frame_pose_writer_{switchboard_->get_writer<pose::head_pose_type>("pose")}
     , camera_data_writer_{switchboard_->get_writer<camera_data>("cam_data")}
     , counter_{0} {
     std::string test_data_root = switchboard_->get_env("ILLIXR_TEST_DATA");
@@ -101,8 +103,8 @@ void data_injection::_p_one_iteration() {
     frame_img_writer_.put(frame_img_writer_.allocate<binocular_cam_type>(
         binocular_cam_type{time_point{clock_duration_(timepoints_[current_] + offset_)}, images_.at(image::LEFT_EYE),
                            images_.at(image::RIGHT_EYE)}));
-    frame_pose_writer_.put(frame_pose_writer_.allocate<pose_type>(
-        pose_type{time_point{clock_duration_(timepoints_[current_] + offset_)}, *poses_.at(timepoints_[current_])}));
+    frame_pose_writer_.put(frame_pose_writer_.allocate<pose::head_pose_type>(
+        pose::head_pose_type{time_point{clock_duration_(timepoints_[current_] + offset_)}, *poses_.at(timepoints_[current_])}));
     current_++;
     if (current_ == timepoints_.size()) {
         current_ = 0;

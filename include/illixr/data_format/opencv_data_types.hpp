@@ -1,6 +1,5 @@
 #pragma once
 
-#include "illixr/data_format/unit.hpp"
 #include "illixr/switchboard.hpp"
 
 #include <fstream>
@@ -81,7 +80,7 @@ struct cam_base_type : switchboard::event {
  * For binocular images (left and right eyes).
  */
 struct [[maybe_unused]] binocular_cam_type : cam_base_type {
-    binocular_cam_type(time_point _time, cv::Mat _img0, cv::Mat _img1)
+    [[maybe_unused]] binocular_cam_type(time_point _time, cv::Mat _img0, cv::Mat _img1)
         : cam_base_type(_time, {{image::LEFT_EYE, _img0}, {image::RIGHT_EYE, _img1}}, camera::BINOCULAR) { }
 };
 
@@ -89,7 +88,7 @@ struct [[maybe_unused]] binocular_cam_type : cam_base_type {
  * For monocular (single) images, like from a webcam.
  */
 struct [[maybe_unused]] monocular_cam_type : cam_base_type {
-    monocular_cam_type(time_point _time, cv::Mat _img)
+    [[maybe_unused]] monocular_cam_type(time_point _time, cv::Mat _img)
         : cam_base_type(_time, {{image::RGB, _img}}, camera::MONOCULAR) { }
 
     [[nodiscard]] cv::Mat img() const {
@@ -101,21 +100,15 @@ struct [[maybe_unused]] monocular_cam_type : cam_base_type {
  * For RGB based depth images
  */
 struct [[maybe_unused]] rgb_depth_type : cam_base_type {
-    units::measurement_unit units;
-
-    rgb_depth_type(time_point _time, cv::Mat _rgb, cv::Mat _depth, units::measurement_unit units_ = units::UNSET)
-        : cam_base_type(_time, {{image::RGB, _rgb}, {image::DEPTH, _depth}}, camera::RGB_DEPTH)
-        , units{units_} { }
+    [[maybe_unused]] rgb_depth_type(time_point _time, cv::Mat _rgb, cv::Mat _depth)
+        : cam_base_type(_time, {{image::RGB, _rgb}, {image::DEPTH, _depth}}, camera::RGB_DEPTH) { }
 };
 
 /**
  * For "grey-scale" depth images
  */
 struct [[maybe_unused]] depth_type : cam_base_type {
-    units::measurement_unit units;
-
-    depth_type(time_point _time, cv::Mat _depth, units::measurement_unit units_)
-        : cam_base_type(_time, {{image::DEPTH, _depth}}, camera::DEPTH)
-        , units{units_} { }
+    [[maybe_unused]] depth_type(time_point _time, cv::Mat _depth)
+        : cam_base_type(_time, {{image::DEPTH, _depth}}, camera::DEPTH) { }
 };
 } // namespace ILLIXR::data_format

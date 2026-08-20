@@ -79,7 +79,7 @@ void native_renderer::_p_thread_setup() {
             create_depth_image(depth_attachment_images_[i][eye]);
         }
     }
-    this->buffer_pool_ = std::make_shared<vulkan::buffer_pool<fast_pose_type>>(offscreen_images_, depth_images_);
+    this->buffer_pool_ = std::make_shared<vulkan::buffer_pool<pose::fast_head_pose_type>>(offscreen_images_, depth_images_);
 
     command_pool_ =
         vulkan::create_command_pool(display_sink_->vk_device_, display_sink_->queues_[vulkan::queue::GRAPHICS].family);
@@ -128,7 +128,7 @@ void native_renderer::_p_one_iteration() {
     if (!app_->is_external()) {
         // Get the current fast pose and update the uniforms
         // log_->debug("Updating uniforms");
-        app_->update_uniforms(fast_pose.pose);
+        app_->update_uniforms(fast_pose);
 
         VK_ASSERT_SUCCESS(vkResetCommandBuffer(app_command_buffer_, 0))
 
@@ -207,7 +207,7 @@ void native_renderer::_p_one_iteration() {
         auto res          = buffer_pool_->post_processing_acquire_image();
         auto buffer_index = res.first;
         auto pose         = res.second;
-        timewarp_->update_uniforms(pose.pose);
+        timewarp_->update_uniforms(pose);
 
         if (buffer_index == -1) {
             return;

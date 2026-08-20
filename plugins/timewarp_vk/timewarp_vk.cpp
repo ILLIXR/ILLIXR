@@ -99,7 +99,8 @@ void timewarp_vk::initialize() {
 }
 
 void timewarp_vk::setup(VkRenderPass render_pass, uint32_t subpass,
-                        std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> buffer_pool, bool input_texture_external_in) {
+                        std::shared_ptr<vulkan::buffer_pool<pose::fast_head_pose_type>> buffer_pool,
+                        bool                                                            input_texture_external_in) {
     std::lock_guard<std::mutex> lock{setup_mutex_};
 
     display_provider_ = phonebook_->lookup_impl<vulkan::display_provider>();
@@ -147,12 +148,12 @@ void timewarp_vk::partial_destroy() {
     descriptor_pool_ = VK_NULL_HANDLE;
 }
 
-void timewarp_vk::update_uniforms(const pose_type& render_pose) {
+void timewarp_vk::update_uniforms(const BUFFER_TYPE& render_pose) {
     num_update_uniforms_calls_++;
 
     // Generate "starting" view matrix, from the pose sampled at the time of rendering the frame
     Eigen::Matrix4f view_matrix   = Eigen::Matrix4f::Identity();
-    view_matrix.block(0, 0, 3, 3) = render_pose.orientation.toRotationMatrix();
+    view_matrix.block(0, 0, 3, 3) = render_pose.pose.orientation.toRotationMatrix();
 
     // We simulate two asynchronous view matrices, one at the beginning of
     // display refresh, and one at the end of display refresh. The
@@ -162,9 +163,9 @@ void timewarp_vk::update_uniforms(const pose_type& render_pose) {
     Eigen::Matrix4f view_matrix_begin = Eigen::Matrix4f::Identity();
     Eigen::Matrix4f view_matrix_end   = Eigen::Matrix4f::Identity();
 
-    auto      next_vsync  = vsync_.get_ro_nullable().get();
-    pose_type latest_pose = disable_warp_
-        ? render_pose
+    auto                 next_vsync  = vsync_.get_ro_nullable().get();
+    pose::head_pose_type latest_pose = disable_warp_
+        ? render_pose.pose
         : (next_vsync == nullptr ? pose_prediction_->get_fast_pose().pose : pose_prediction_->get_fast_pose(**next_vsync).pose);
 
     view_matrix_begin.block(0, 0, 3, 3) = latest_pose.orientation.toRotationMatrix();

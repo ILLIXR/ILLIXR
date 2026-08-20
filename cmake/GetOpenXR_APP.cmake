@@ -2,7 +2,6 @@
 
 find_package(OpenXR REQUIRED)
 find_package(SDL2 REQUIRED)
-list(APPEND EXTERNAL_PROJECTS OpenXR)
 
 find_program(OPENXR_EXAMPLE_FOUND
              openxr-example
@@ -22,4 +21,3 @@ else()
     )
 endif ()
 set(OPENXR_RUNTIME "${CMAKE_INSTALL_PREFIX}/bin/openxr-example" PARENT_SCOPE)
-set(EXTERNAL_PROJECTS ${EXTERNAL_PROJECTS} PARENT_SCOPE)

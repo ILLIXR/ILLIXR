@@ -461,7 +461,7 @@ Topic details:
 
 &nbsp;&nbsp;[**Details**][P29]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C29]
 
-## webcam ![Linux Logo](images/tux.png)
+## udp_network_backend ![Linux Logo](images/tux.png) ![Windows logo](images/windows.png)
 
 Provides network communications over UDP.
 
@@ -715,9 +715,9 @@ See [Getting Started][I11] for more information on adding plugins to a [_profile
 
 [A10]:   api/classILLIXR_1_1switchboard.md
 
-[A11]:   api/structILLIXR_1_1data__format_1_1fast__pose__type.md
+[A11]:   api/structILLIXR_1_1data__format_1_1pose_1_1fast__head__pose__type.md
 
-[A12]:   api/structILLIXR_1_1data__format_1_1pose__type.md
+[A12]:   api/structILLIXR_1_1data__format_1_1pose_1_1head__pose__type.md
 
 [A13]:   api/structILLIXR_1_1data__format_1_1rgb__depth__type.md
 

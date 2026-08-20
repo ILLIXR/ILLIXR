@@ -6,7 +6,6 @@ if(NOT yaml-cpp_FOUND)
 endif()
 
 pkg_check_modules(yaml-cpp QUIET yaml-cpp)
-list(APPEND EXTERNAL_PROJECTS yaml-cpp)
 if(yaml-cpp_FOUND)
     set(Yamlcpp_VERSION "${yaml-cpp_VERSION}")   # set current version
 else()
@@ -27,5 +26,3 @@ else()
     find_package(yaml-cpp REQUIRED)
     add_dependencies(plugin.main${ILLIXR_BUILD_SUFFIX} cpp-yaml)
 endif()
-
-set(EXTERNAL_PROJECTS ${EXTERNAL_PROJECTS})

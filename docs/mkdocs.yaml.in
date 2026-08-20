@@ -60,6 +60,16 @@ plugins:
           api-path: ../api
           full-doc: True
           doxy-cfg-file: @MKDOCS_DOXY_CFG@
+        ILLIXR_OXR_API:
+          src-dirs: @DOXYGEN_OXR_SOURCE_DIR@
+          api-path: ../api/oxr
+          full-doc: True
+          doxy-cfg-file: @MKDOCS_DOXY_CFG@_oxr
+        ILLIXR_OXR_MONADO_API:
+          src-dirs: @DOXYGEN_OXR_SOURCE_DIR@
+          api-path: ../api/oxr_monado
+          full-doc: True
+          doxy-cfg-file: @MKDOCS_DOXY_CFG@_monado
   - include-markdown:
       encoding: ascii
       opening_tag: "{!"
@@ -106,6 +116,7 @@ nav:
           - 'Zed': plugin_README/README_zed.md
           - 'Zed Data Injection': plugin_README/README_zed_data_injection.md
           - 'Zed Data Capture': plugin_README/zed_capture.md
+      - 'Poses': structs/poses/intro.md
       - 'Working with ILLIXR':
           - 'Modifying a Plugin': working_with/modifying_a_plugin.md
           - 'Writing a Plugin':
@@ -158,11 +169,36 @@ nav:
                   - 'ccd_data' : api/structILLIXR_1_1data__format_1_1ccd__data.md
                   - 'camera_data' : api/structILLIXR_1_1data__format_1_1camera__data.md
               - 'Pose':
-                  - 'pose_data': api/structILLIXR_1_1data__format_1_1pose__data.md
-                  - 'pose_type': api/structILLIXR_1_1data__format_1_1pose__type.md
-                  - 'fast_pose_type': api/structILLIXR_1_1data__format_1_1fast__pose__type.md
-                  - 'raw_pose': api/structILLIXR_1_1data__format_1_1raw__pose.md
-                  - 'texture_pose': api/structILLIXR_1_1data__format_1_1texture__pose.md
+                  - 'ILLIXR':
+                      - 'pose_base': api/structILLIXR_1_1data__format_1_1pose_1_1pose__base.md
+                      - 'head_pose_data': api/structILLIXR_1_1data__format_1_1pose_1_1head__pose__data.md
+                      - 'head_pose_type': api/structILLIXR_1_1data__format_1_1pose_1_1head__pose__type.md
+                      - 'fast_head_pose_type': api/structILLIXR_1_1data__format_1_1pose_1_1fast__head__pose__type.md
+                      - 'texture_pose': api/structILLIXR_1_1data__format_1_1pose_1_1texture__pose.md
+                  - 'OpenXR':
+                      - 'combined_pose': api/oxr/structILLIXR_1_1data__format_1_1pose_1_1combined__pose.md
+                      - 'pose_base': api/oxr/structILLIXR_1_1data__format_1_1pose_1_1pose__base.md
+                      - 'fast_head_pose_type': api/oxr/structILLIXR_1_1data__format_1_1pose_1_1fast__head__pose__type.md
+                      - 'hand_interaction_pose': api/oxr/structILLIXR_1_1data__format_1_1pose_1_1hand__interaction__pose.md
+                      - 'hand_interaction_poses': api/oxr/structILLIXR_1_1data__format_1_1pose_1_1hand__interaction__poses.md
+                      - 'hand_interaction_poses_pair': api/oxr/structILLIXR_1_1data__format_1_1pose_1_1hand__interaction__poses__pair.md
+                      - 'hand_joint_pose': api/oxr/structILLIXR_1_1data__format_1_1pose_1_1hand__joint__pose.md
+                      - 'hand_joint_poses': api/oxr/structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses.md
+                      - 'hand_joint_poses_pair': api/oxr/structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses__pair.md
+                      - 'palm_pose': api/oxr/structILLIXR_1_1data__format_1_1pose_1_1palm__pose.md
+                      - 'palm_poses_pair': api/oxr/structILLIXR_1_1data__format_1_1pose_1_1palm__poses__pair.md
+                  - 'Monado':
+                      - 'combined_pose': api/oxr_monado/structILLIXR_1_1data__format_1_1pose_1_1combined__pose.md
+                      - 'pose_base': api/oxr_monado/structILLIXR_1_1data__format_1_1pose_1_1pose__base.md
+                      - 'fast_head_pose_type': api/oxr_monado/structILLIXR_1_1data__format_1_1pose_1_1fast__head__pose__type.md
+                      - 'hand_interaction_pose': api/oxr_monado/structILLIXR_1_1data__format_1_1pose_1_1hand__interaction__pose.md
+                      - 'hand_interaction_poses': api/oxr_monado/structILLIXR_1_1data__format_1_1pose_1_1hand__interaction__poses.md
+                      - 'hand_interaction_poses_pair': api/oxr_monado/structILLIXR_1_1data__format_1_1pose_1_1hand__interaction__poses__pair.md
+                      - 'hand_joint_pose': api/oxr/structILLIXR_1_1data__format_1_1pose_1_1hand__joint__pose.md
+                      - 'hand_joint_poses': api/oxr/structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses.md
+                      - 'hand_joint_poses_pair': api/oxr_monado/structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses__pair.md
+                      - 'palm_pose': api/oxr_monado/structILLIXR_1_1data__format_1_1pose_1_1palm__pose.md
+                      - 'palm_poses_pair': api/oxr_monado/structILLIXR_1_1data__format_1_1pose_1_1palm__poses__pair.md
               - 'IMU':
                   - 'imu_params': api/structILLIXR_1_1data__format_1_1imu__params.md
                   - 'imu_type': api/structILLIXR_1_1data__format_1_1imu__type.md
