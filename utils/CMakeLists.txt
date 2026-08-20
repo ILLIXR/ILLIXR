@@ -4,28 +4,46 @@ add_library(illixr_hmd OBJECT
 )
 
 target_include_directories(illixr_hmd PUBLIC ${CMAKE_SOURCE_DIR}/include)
+if(ANDROID)
+    add_library(egl_context_manager OBJECT
+                ${CMAKE_SOURCE_DIR}/include/illixr/egl/egl_context_manager.hpp
+                egl_context_manager.cpp
+    )
 
-add_library(illixr_hmd_gl OBJECT
-            hmd.cpp
-            ${CMAKE_SOURCE_DIR}/include/illixr/hmd.hpp
-)
+    target_include_directories(egl_context_manager PUBLIC ${CMAKE_SOURCE_DIR}/include)
 
-target_include_directories(illixr_hmd_gl PUBLIC ${CMAKE_SOURCE_DIR}/include)
-target_compile_definitions(illixr_hmd_gl PUBLIC USE_GL)
+    target_link_libraries(egl_context_manager PUBLIC
+                          spdlog::spdlog_android
+    )
 
-add_library(illixr_vulkan_utils STATIC
-            ${CMAKE_SOURCE_DIR}/include/illixr/vk/vulkan_utils.hpp
-            vulkan_utils.cpp
-)
-set_target_properties(illixr_vulkan_utils PROPERTIES POSITION_INDEPENDENT_CODE ON)
-target_include_directories(illixr_vulkan_utils PUBLIC ${CMAKE_SOURCE_DIR}/include)
-target_link_libraries(illixr_vulkan_utils PUBLIC
-                      spdlog::spdlog
-                      Boost::serialization
-)
-if(WIN32 OR MSVC)
-    target_link_libraries(illixr_vulkan_utils PUBLIC Vulkan::Vulkan GPUOpen::VulkanMemoryAllocator)
-    target_compile_options(illixr_vulkan_utils PRIVATE /EHsc)
+    target_include_directories(egl_context_manager PUBLIC ${CMAKE_SOURCE_DIR}/include)
+
+    target_link_libraries(egl_context_manager PUBLIC
+                          spdlog::spdlog_android
+    )
+else()
+    add_library(illixr_hmd_gl OBJECT
+                hmd.cpp
+                ${CMAKE_SOURCE_DIR}/include/illixr/hmd.hpp
+    )
+
+    target_include_directories(illixr_hmd_gl PUBLIC ${CMAKE_SOURCE_DIR}/include)
+    target_compile_definitions(illixr_hmd_gl PUBLIC USE_GL)
+
+    add_library(illixr_vulkan_utils STATIC
+                ${CMAKE_SOURCE_DIR}/include/illixr/vk/vulkan_utils.hpp
+                vulkan_utils.cpp
+    )
+    set_target_properties(illixr_vulkan_utils PROPERTIES POSITION_INDEPENDENT_CODE ON)
+    target_include_directories(illixr_vulkan_utils PUBLIC ${CMAKE_SOURCE_DIR}/include)
+    target_link_libraries(illixr_vulkan_utils PUBLIC
+                          spdlog::spdlog
+                          Boost::serialization
+    )
+    if(WIN32 OR MSVC)
+        target_link_libraries(illixr_vulkan_utils PUBLIC Vulkan::Vulkan GPUOpen::VulkanMemoryAllocator)
+        target_compile_options(illixr_vulkan_utils PRIVATE /EHsc)
+    endif()
 endif()
 if(USE_DEBUGVIEW)
     find_package(OpenGL REQUIRED)
