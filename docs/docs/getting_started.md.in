@@ -102,6 +102,22 @@ the same for NO_GPL).
 <input type="checkbox" onclick="updateGPL();" id="no_gpl">No GPL code<br>
 <input type="checkbox" onclick="updateLGPL();" id="no_lgpl">No LGPL code
 
+If you are using a Conda environment to build, be sure to add your Conda prefix path to your CMake arguments.
+
+=== "Linux"
+
+    ``` bash
+    -DCMAKE_PREFIX_PATH=$CONDA_PREFIX
+    ```
+
+=== "Windows"
+
+    ``` bash
+    -DCMAKE_PREFIX_PATH=%CONDA_PREFIX%
+    ```
+
+<br>
+
 === "Linux"
 
     Use the following to build and install ILLIXR. You can specify the install location by giving the path to `CMAKE_INSTALL_PREFIX`.
