@@ -1,6 +1,11 @@
 if(WIN32 OR MSVC)
     message(WARNING "timewarp_gl is not yet available for windows")
     set(USE_TIMEWARP_GL OFF)
+    return()
+elseif(ANDROID)
+    message(WARNING "timewarp_gl is not supported on Android")
+    set(USE_TIMEWARP_GL OFF)
+    return()
 endif()
 # module to build and install the timewarp_gl ILLIXR plugin
 if(NOT DEFINED BUILDING_ILLIXR)
