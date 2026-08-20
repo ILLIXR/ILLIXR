@@ -24,7 +24,11 @@ else()
                 ${CMAKE_SOURCE_DIR}/include/illixr/data_format/pose_prediction.hpp
                 ${CMAKE_SOURCE_DIR}/include/illixr/phonebook.hpp
                 ${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization/frame.hpp
+                ${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization/pose_base.hpp
+                ${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization/head_pose.hpp
                 ${CMAKE_SOURCE_DIR}/include/illixr/data_format/frame.hpp
+                ${CMAKE_SOURCE_DIR}/include/illixr/data_format/poses/pose_base.hpp
+                ${CMAKE_SOURCE_DIR}/include/illixr/data_format/poses/head_pose.hpp
                 ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
                 ${CMAKE_SOURCE_DIR}/include/illixr/threadloop.hpp
                 ${CMAKE_SOURCE_DIR}/include/illixr/vk/display_provider.hpp
@@ -33,6 +37,7 @@ else()
                 ${CMAKE_SOURCE_DIR}/include/illixr/vk/vk_extension_request.hpp
                 ${CMAKE_SOURCE_DIR}/include/illixr/vk/vulkan_utils.hpp
                 ${CMAKE_SOURCE_DIR}/utils/serialization/frame.cpp
+                ${CMAKE_SOURCE_DIR}/utils/serialization/head_pose.cpp
     )
 
     set_target_properties(${PLUGIN_NAME} PROPERTIES OUTPUT_NAME ${PLUGIN_NAME})
