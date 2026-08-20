@@ -89,7 +89,7 @@ profiles:
 # Defaults to offline datasets and OpenVINS.
 
   - native_timewarp_vk:
-    plugins: offline_imu,offline_cam,gtsam_integrator,openvins,pose_prediction,timewarp_vk,vkdemo,native_renderer,debugview
+    plugins: offline_imu,offline_cam,rk4_integrator,openvins,pose_prediction,timewarp_vk,vkdemo,native_renderer,debugview
     env_vars:
       enable_offload: false
       enable_alignment: false
