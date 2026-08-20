@@ -499,6 +499,13 @@
       ]
     },
     {
+      "name": "semantic_python",
+      "cmake_flag": "USE_SEMANTIC_PYTHON",
+      "dependencies": [
+        "pybind11"
+      ]
+    },
+    {
       "name": "tcp_network_backend",
       "cmake_flag": "USE_TCP_NETWORK_BACKEND=ON",
       "dependencies": [],
@@ -1616,6 +1623,22 @@
           },
           "Fedora": {
             "pkg": "protobuf-devel protobuf-compiler",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "pybind11": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "pybind11-dev python3-pybind11",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "pybind11-dev python3-pybind11",
             "postnotes": "",
             "notes": ""
           }
