@@ -7,15 +7,16 @@
 #include "illixr/switchboard.hpp"
 
 #ifdef USING_OPENXR
-    #include "openxr_defines.hpp"
+#    include "openxr_defines.hpp"
 #else // USING_OPENXR
-    #if __has_include(<Eigen/Dense>)
-        #include <Eigen/Dense>
-    #else // __has_include(<Eigen/Dense>)
-        #include <eigen3/Eigen/Dense>
-    #endif // __has_include(<Eigen/Dense>)
+#    if __has_include(<Eigen/Dense>)
+#        include <Eigen/Dense>
+#    else // __has_include(<Eigen/Dense>)
+#        include <eigen3/Eigen/Dense>
+#    endif // __has_include(<Eigen/Dense>)
 #endif     // USING_OPENXR
 #include <map>
+#include <utility>
 
 namespace ILLIXR::data_format::pose {
 
@@ -28,9 +29,9 @@ namespace ILLIXR::data_format::pose {
  */
 #ifdef USING_OPENXR
 typedef POSE_DATA_TYPE head_pose_data;
-    #define TIME_POINT int64_t
+#    define TIME_POINT int64_t
 #else
-    #define TIME_POINT time_point
+#    define TIME_POINT time_point
 
 struct head_pose_data : public pose_base {
     /**
@@ -51,11 +52,12 @@ struct head_pose_data : public pose_base {
         : pose_base{std::move(position_), std::move(orientation_), confidence_, valid_} { }
 };
 #endif
+
 #ifdef USING_OPENXR
 /**
  * @typedef head_pose_type
  *
- * Pose and velocity data for the head / HMD. Using @c xrt_space_relation to be Monado compatable
+ * Pose and velocity data for the head / HMD. Using @c xrt_space_relation to be Monado compatible
  */
 typedef xrt_space_relation head_pose_type;
 
@@ -183,24 +185,20 @@ struct fast_head_pose_type : public switchboard::event {
          * @param predict_target_time_ The target time
          */
         fast_head_pose_type(head_pose_type pose_, time_point predict_computed_time_, TIME_POINT predict_target_time_)
-#ifdef USING_OPENXR
-        : pose{pose_}
-#else
         : pose{std::move(pose_)}
-#endif
         , predict_computed_time{predict_computed_time_}
         , predict_target_time{predict_target_time_} {
     }
 
 #ifdef USING_OPENXR
     [[nodiscard]] bool is_valid() const {
-    #ifdef ENABLE_MONADO
+#    ifdef ENABLE_MONADO
         return (pose.relation_flags & XRT_SPACE_RELATION_POSITION_VALID_BIT) != 0u &&
             (pose.relation_flags & XRT_SPACE_RELATION_ORIENTATION_VALID_BIT) != 0u;
-    #else
+#    else
         return (pose.relation_flags & XR_SPACE_LOCATION_POSITION_VALID_BIT) != 0u &&
             (pose.relation_flags & XR_SPACE_LOCATION_ORIENTATION_VALID_BIT) != 0u;
-    #endif
+#    endif
     }
 #else
     [[nodiscard]] bool is_valid() const {

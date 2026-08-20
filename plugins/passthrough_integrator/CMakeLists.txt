@@ -1,8 +1,13 @@
+if(ANDROID)
+    message(WARNING "passthrough_integrator is not yet available for Android")
+    set(USE_PASSTHROUGH_INTEGRATOR OFF)
+    return()
+endif()
 # module to build and install the passthrough_integrator ILLIXR plugin
 set(PLUGIN_NAME plugin.passthrough_integrator${ILLIXR_BUILD_SUFFIX})
 
 # source files, listed individually so that any changes will trigger a rebuild
-add_library(${PLUGIN_NAME} SHARED 
+add_library(${PLUGIN_NAME} SHARED
             plugin.cpp
             plugin.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/plugin.hpp
@@ -12,7 +17,7 @@ add_library(${PLUGIN_NAME} SHARED
 )
 
 target_include_directories(${PLUGIN_NAME} PRIVATE ${ILLIXR_SOURCE_DIR}/include)
-target_link_libraries(${PLUGIN_NAME} 
+target_link_libraries(${PLUGIN_NAME}
         Eigen3::Eigen
         spdlog::spdlog
         Boost::serialization
