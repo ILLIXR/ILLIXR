@@ -1,0 +1,9 @@
+#pragma once
+
+#define HEADSET_WIDTH 1680
+// #define HEADSET_WIDTH  1344
+#define HEADSET_HEIGHT 1816
+// #define HEADSET_HEIGHT 1760
+// #define HEADSET_HEIGHT 1408
+#define MOTION_VEC_WIDTH  432
+#define MOTION_VEC_HEIGHT 432
