@@ -12,11 +12,12 @@ shuts down the interpreter.
 
     Due to the way the interpreter is shut down, internal Python cleanup (e.g. `finally:` blocks) are not guaranteed to be called.
 
-## Working Example
+## SemanticXR
 
-ILLIXR has a [SemnticXR][L01] python repository that provides a real-time semantic SLAM system with object detection, 
-segmentation, and CLIP-based understanding for interactive 3D scene mapping and querying. This code can be used with the
-`sematic_python` plugin to integrate it into ILLIXR.
+This plugin was developed in conjunction with the [SemnticXR][L01] python repository that provides a real-time semantic
+SLAM system with object detection, segmentation, and CLIP-based understanding for interactive 3D scene mapping and 
+querying. This code uses the `sematic_python` plugin to integrate it into ILLIXR. When enabling this plugin, the 
+[SemanticXR][L01] repository is downloaded to `${CMAKE_SROUCE_DIR}/python` for your convenience.
 
 ## Using the plugin
 

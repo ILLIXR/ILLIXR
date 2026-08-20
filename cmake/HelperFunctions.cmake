@@ -397,7 +397,7 @@ endmacro()
 
 function(fetch_git)
     set(options PATCH RECURSE NO_OVERRIDE OVERRIDE_UPDATE)
-    set(oneValueArgs NAME REPO TAG SUBDIR OVERRIDE_BUILD PREFIX)
+    set(oneValueArgs NAME REPO TAG SUBDIR OVERRIDE_BUILD SRC_DIR)
     cmake_parse_arguments(fetch "${options}" "${oneValueArgs}" "" ${ARGV})
 
     if(NOT fetch_NAME)
@@ -435,9 +435,10 @@ function(fetch_git)
         list(APPEND FCD_ARGS BUILD_COMMAND ${fetch_OVERRIDE_BUILD})
     endif()
 
-    if(fetch_PREFIX)
-        list(APPEND FCD_ARGS PREFIX ${fetch_PREFIX})
+    if(fetch_SRC_DIR)
+        list(APPEND FCD_ARGS "SOURCE_DIR ${fetch_SRC_DIR}")
     endif()
+
     report_build(${fetch_NAME})
     FetchContent_Declare(${fetch_NAME}
                          ${FCD_ARGS}
