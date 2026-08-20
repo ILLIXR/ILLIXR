@@ -9,8 +9,8 @@
 #include "illixr/data_format/frame.hpp"
 #include "illixr/data_format/pose_id.hpp"
 #include "illixr/data_format/pose_prediction.hpp"
-#include "illixr/data_format/serialization/head_pose.hpp"
 #include "illixr/data_format/serialization/frame.hpp"
+#include "illixr/data_format/serialization/head_pose.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
 #include "illixr/vk/display_provider.hpp"
@@ -319,13 +319,13 @@ private:
     std::vector<std::array<int, 2>> depth_imported_indices_;
     std::vector<std::array<int, 2>> motion_vec_imported_indices_;
 
-#  ifdef COMBINED_ENCODING
+    #ifdef COMBINED_ENCODING
     // Under COMBINED_ENCODING a single encoder handles both eyes at double width.
     // color_encoder_[0] is used; color_encoder_[1] is unused.
     // encode_out_combined_color_packet_ carries the single combined bitstream;
     // encode_out_color_packets_ is not used for color in this mode.
     PACKET_TYPE encode_out_combined_color_packet_{};
-#  endif // COMBINED_ENCODING
+    #endif // COMBINED_ENCODING
 
 #else
     // ========================================================================
