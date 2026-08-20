@@ -431,7 +431,7 @@
         }
       ]
     },
-    "plugin-offliad-rendering-client": {
+    "plugin-offload-rendering-client": {
       "description": "",
       "dependencies": [
         {

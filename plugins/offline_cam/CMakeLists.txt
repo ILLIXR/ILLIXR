@@ -18,18 +18,41 @@ add_library(${PLUGIN_NAME} SHARED
 )
 
 target_include_directories(${PLUGIN_NAME} PRIVATE 
-        ${OpenCV_INCLUDE_DIRS} 
-        ${ILLIXR_SOURCE_DIR}/include 
-        ${Eigen3_INCLUDE_DIRS}
+                           ${OpenCV_INCLUDE_DIRS} 
+                           ${ILLIXR_SOURCE_DIR}/include
 )
-target_link_libraries(${PLUGIN_NAME}
-        spdlog::spdlog
-        Boost::serialization
-        opencv_core
-        opencv_imgproc
-        opencv_imgcodecs
-        Eigen3::Eigen
+
+if(ANDROID)
+    target_include_directories(${PLUGIN_NAME} PRIVATE
+                               ${jnigraphics-lib}
+                               ${ANDROID_NDK}/sources/android/native_app_glue
+    )
+else()
+    target_include_directories(${PLUGIN_NAME} PRIVATE 
+                               ${Eigen3_INCLUDE_DIRS}
+    )
+endif()
+
+target_link_libraries(${PLUGIN_NAME} PUBLIC
+                      Boost::serialization
+                      opencv_core
+                      opencv_imgproc
+                      opencv_imgcodecs
+                      Eigen3::Eigen
 )
+if(ANDROID)
+    target_link_libraries(${PLUGIN_NAME} PUBLIC
+                          EGL
+                          GLESv3
+                          opencv_highgui
+                          spdlog::spdlog_android
+    )
+else()
+    target_link_libraries(${PLUGIN_NAME} PUBLIC
+                          spdlog::spdlog
+    )
+endif()
+
 
 if(WIN32 OR MSVC)
     target_compile_definitions(${PLUGIN_NAME} PRIVATE BUILDING_LIBRARY)
@@ -37,4 +60,6 @@ endif()
 
 target_compile_features(${PLUGIN_NAME} PRIVATE cxx_std_17)
 
-install(TARGETS ${PLUGIN_NAME} DESTINATION lib)
+if(NOT ANDROID)
+    install(TARGETS ${PLUGIN_NAME} DESTINATION lib)
+endif()
