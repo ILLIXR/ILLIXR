@@ -13,7 +13,7 @@
 #include <typeinfo>
 #include <utility>
 
-#ifndef DOUBLE_INCLUDE
+#if !defined(DOUBLE_INCLUDE) && !defined(BUILDING_MONADO_ILLIXR_DRIVER)
 extern "C" {
 MY_EXPORT_API bool needs_monado() {
     #ifdef MONADO_REQUIRED
