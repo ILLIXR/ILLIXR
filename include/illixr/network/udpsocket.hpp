@@ -1,12 +1,12 @@
 #pragma once
 
 #if defined(_WIN32) || defined(_WIN64)
-#  ifndef WIN32_LEAN_AND_MEAN
-#    define WIN32_LEAN_AND_MEAN
-#  endif
-#  ifndef _WINSOCKAPI_
-#    define _WINSOCKAPI_
-#  endif
+#    ifndef WIN32_LEAN_AND_MEAN
+#        define WIN32_LEAN_AND_MEAN
+#    endif
+#    ifndef _WINSOCKAPI_
+#        define _WINSOCKAPI_
+#    endif
 // clang-format off
 #  include <WinSock2.h>
 #  include <ws2def.h>
@@ -16,12 +16,12 @@
 #  define SOCKET_TYPE SOCKET
 // clang-format on
 #else
-#  include <arpa/inet.h>
-#  include <netinet/in.h>
-#  include <sys/socket.h>
-#  include <unistd.h>
-#  define BYTE_TYPE   ssize_t
-#  define SOCKET_TYPE int
+#    include <arpa/inet.h>
+#    include <netinet/in.h>
+#    include <sys/socket.h>
+#    include <unistd.h>
+#    define BYTE_TYPE   ssize_t
+#    define SOCKET_TYPE int
 #endif
 
 #include "illixr/export.hpp"
@@ -76,7 +76,9 @@ public:
         socket_bind("", port);
     }
 
-    // Allow reuse of local addresses
+    // Allow reuse of local addresses.
+    // On Linux/Android, also sets SO_REUSEPORT so that a new socket can bind
+    // to a port still in TIME_WAIT after a crash, without waiting ~60 seconds.
     void socket_set_reuseaddr() const {
 #if defined(_WIN32) || defined(_WIN64)
         int enable = 1;
@@ -86,6 +88,7 @@ public:
 #else
         const int enable = 1;
         setsockopt(fd_, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int));
+        setsockopt(fd_, SOL_SOCKET, SO_REUSEPORT, &enable, sizeof(int));
 #endif
     }
 
@@ -98,6 +101,15 @@ public:
         peer_addr_.sin_port   = htons(static_cast<uint16_t>(port));
         inet_pton(AF_INET, ip.c_str(), &peer_addr_.sin_addr);
         peer_set_ = true;
+    }
+
+    // Store the peer address directly from a sockaddr_in, e.g. the src_addr filled in
+    // by read_data(). This lets the server learn the client's address from an incoming
+    // datagram, since UDP is connectionless and the server has no peer until it hears
+    // from one.
+    void set_peer(const sockaddr_in& addr) {
+        peer_addr_ = addr;
+        peer_set_  = true;
     }
 
     // Send a datagram to the previously set peer address.
