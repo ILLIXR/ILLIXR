@@ -397,7 +397,7 @@ endmacro()
 
 function(fetch_git)
     set(options PATCH RECURSE NO_OVERRIDE OVERRIDE_UPDATE)
-    set(oneValueArgs NAME REPO TAG SUBDIR OVERRIDE_BUILD)
+    set(oneValueArgs NAME REPO TAG SUBDIR OVERRIDE_BUILD PREFIX)
     cmake_parse_arguments(fetch "${options}" "${oneValueArgs}" "" ${ARGV})
 
     if(NOT fetch_NAME)
@@ -434,7 +434,10 @@ function(fetch_git)
     if(fetch_OVERRIDE_BUILD)
         list(APPEND FCD_ARGS BUILD_COMMAND ${fetch_OVERRIDE_BUILD})
     endif()
-    message("LIBSURVIVE  ${FCD_ARGS}")
+
+    if(fetch_PREFIX)
+        list(APPEND FCD_ARGS PREFIX ${fetch_PREFIX})
+    endif()
     report_build(${fetch_NAME})
     FetchContent_Declare(${fetch_NAME}
                          ${FCD_ARGS}
