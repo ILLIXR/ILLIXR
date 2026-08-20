@@ -12,6 +12,12 @@ shuts down the interpreter.
 
     Due to the way the interpreter is shut down, internal Python cleanup (e.g. `finally:` blocks) are not guaranteed to be called.
 
+## Working Example
+
+ILLIXR has a [SemnticXR][L01] python repository that provides a real-time semantic SLAM system with object detection, 
+segmentation, and CLIP-based understanding for interactive 3D scene mapping and querying. This code can be used with the
+`sematic_python` plugin to integrate it into ILLIXR.
+
 ## Using the plugin
 
 This plugin requires a bit more setup than most, due to its interaction with Python. It uses two environment variables 
@@ -153,11 +159,11 @@ To read from the switchboard, call the `get()` method from each reader.
 while True:
     frame = illixr_semantic_reader.get()
     if frame is not None:
-       <process the data>
+       PROCESS THE DATA
 
     query = illixr_voice_reader.get()
     if query is not None:
-        <process the data>
+        PROCESS THE DATA
         
     time.sleep(0.001)
 ```
@@ -190,3 +196,5 @@ illixr_response_writer.put(
 [//]: # (- glossary -)
 
 [G10]: ../glossary.md#switchboard
+
+[L01]:  https://github.com/ILLIXR/SemanticXR/blob/illixr/integration
