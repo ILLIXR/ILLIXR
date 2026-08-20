@@ -7,9 +7,9 @@
 #    include "illixr/data_format/poses/combined_pose.hpp"
 #endif
 #include "illixr/data_format/frame.hpp"
-#include "illixr/data_format/hmd_config.hpp"
 #include "illixr/data_format/pose_id.hpp"
 #include "illixr/data_format/pose_prediction.hpp"
+#include "illixr/data_format/serialization/frame.hpp"
 #include "illixr/data_format/serialization/head_pose.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
@@ -270,7 +270,6 @@ private:
     std::shared_ptr<vulkan::display_provider>                  display_provider_;
     std::shared_ptr<switchboard>                               switchboard_;
     switchboard::network_writer<data_format::compressed_frame> frames_topic_;
-    switchboard::reader<data_format::hmd_config_data>          hmd_config_;
 
     /**
      * @brief Cached head pose extracted from pose_with_hands
@@ -298,6 +297,9 @@ private:
     bool nalu_only_               = false;
 
     std::atomic<bool> framebuffers_imported_{false};
+
+    // Set after each color encode call and copied into compressed_frame::is_keyframe.
+    bool color_frame_is_keyframe_ = false;
 
 #ifdef NVENC_ENCODER
     // ========================================================================
