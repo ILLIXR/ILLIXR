@@ -5,9 +5,11 @@ if(NOT yaml-cpp_FOUND)
     pkg_check_modules(yaml-cpp QUIET yaml-cpp)
 endif()
 
-pkg_check_modules(yaml-cpp QUIET yaml-cpp)
 if(yaml-cpp_FOUND)
     set(Yamlcpp_VERSION "${yaml-cpp_VERSION}")   # set current version
+    if(TARGET yaml-cpp AND NOT TARGET yaml-cpp::yaml-cpp)
+        add_library(yaml-cpp::yaml-cpp ALIAS yaml-cpp)
+    endif()
 else()
     if(WIN32 OR MSVC)
         message(FATAL_ERROR "yaml-cpp should be installed with vcpkg")

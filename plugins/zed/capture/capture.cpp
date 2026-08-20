@@ -1,11 +1,11 @@
 #include "capture.hpp"
 
+#include "../include/zed_opencv.hpp"
 #include "files.hpp"
-#include "illixr/data_format/unit.hpp"
+#include "illixr/data_format/camera_data.hpp"
 #include "illixr/imgui/backends/imgui_impl_glfw.h"
 #include "illixr/imgui/backends/imgui_impl_opengl3.h"
 #include "illixr/shader_util.hpp"
-#include "zed_opencv.hpp"
 
 using namespace ILLIXR::zed_capture;
 
@@ -14,7 +14,7 @@ static void glfw_error_callback(int error, const char* description) {
     ILLIXR::abort();
 }
 
-void capture::get_camera(const data_format::pose_data& wcf) {
+void capture::get_camera(const data_format::pose::head_pose_data& wcf) {
     sl::InitParameters params;
     params.camera_resolution      = sl::RESOLUTION::HD720;
     params.coordinate_units       = sl::UNIT::MILLIMETER;
@@ -50,10 +50,8 @@ void capture::get_config() {
         cam_conf.resolution.height,
         cam_conf.fps,
         cam_conf.calibration_parameters.getCameraBaseline(),
-        data_format::units::MILLIMETER,
-        {{data_format::units::eyes::LEFT_EYE,
-          {left_cam.cx, left_cam.cy, left_cam.v_fov * (M_PI / 180.), left_cam.h_fov * (M_PI / 180.)}},
-         {data_format::units::eyes::RIGHT_EYE,
+        {{data_format::pose::LEFT, {left_cam.cx, left_cam.cy, left_cam.v_fov * (M_PI / 180.), left_cam.h_fov * (M_PI / 180.)}},
+         {data_format::pose::RIGHT,
           {right_cam.cx, right_cam.cy, right_cam.v_fov * (M_PI / 180.), right_cam.h_fov * (M_PI / 180.)}}}};
     img_size_ = cam_conf.resolution;
     std::ofstream cam_of;
@@ -159,7 +157,7 @@ capture::~capture() {
     glfwTerminate();
 }
 
-capture::capture(const int fp, const data_format::pose_data& wcf)
+capture::capture(const int fp, const data_format::pose::head_pose_data& wcf)
     : timepoint_{0}
     , fps_{fp} {
     // runtime_params_ = sl::RuntimeParameters(true,   // enable depth

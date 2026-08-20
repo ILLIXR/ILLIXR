@@ -24,6 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#ifndef __ANDROID__
+
 #include <cstring>
 #include <memory>
 #include "sqlite3pp_interface.hpp"
@@ -617,3 +619,4 @@ namespace sqlite3pp
   }
 
 } // namespace sqlite3pp
+#endif
