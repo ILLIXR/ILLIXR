@@ -296,7 +296,7 @@ void pose_relay::_p_one_iteration() {
 
         if (should_log) {
             const char*      hand_names[] = {"LEFT", "RIGHT"};
-            const pose::hand hand_enums[] = {pose::LEFT, pose::RIGHT};
+            const pose::side hand_enums[] = {pose::LEFT, pose::RIGHT};
             for (int h = 0; h < 2; h++) {
                 const auto& hd = hand_data.hands.at(hand_enums[h]);
                 if (!hd.is_active) {
@@ -326,7 +326,7 @@ void pose_relay::_p_one_iteration() {
 
         if (should_log) {
             const char*      hand_names[] = {"LEFT", "RIGHT"};
-            const pose::hand hand_enums[] = {pose::LEFT, pose::RIGHT};
+            const pose::side hand_enums[] = {pose::LEFT, pose::RIGHT};
             for (int h = 0; h < 2; h++) {
                 const auto& pd = palm_data.hands.at(hand_enums[h]);
                 if (pd.relation_flags == 0) {
@@ -351,7 +351,7 @@ void pose_relay::_p_one_iteration() {
 
         if (should_log) {
             const char*                       hand_names[] = {"LEFT", "RIGHT"};
-            const pose::hand                  hand_enums[] = {pose::LEFT, pose::RIGHT};
+            const pose::side                  hand_enums[] = {pose::LEFT, pose::RIGHT};
             const char*                       type_names[] = {"AIM", "GRIP", "PINCH", "POKE"};
             const pose::interaction_pose_type type_enums[] = {pose::AIM, pose::GRIP, pose::PINCH, pose::POKE};
             for (int h = 0; h < 2; h++) {
