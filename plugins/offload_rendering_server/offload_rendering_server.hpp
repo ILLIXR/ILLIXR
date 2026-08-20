@@ -10,6 +10,7 @@
 #include "illixr/data_format/pose_id.hpp"
 #include "illixr/data_format/pose_prediction.hpp"
 #include "illixr/data_format/serialization/head_pose.hpp"
+#include "illixr/data_format/serialization/frame.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
 #include "illixr/vk/display_provider.hpp"
