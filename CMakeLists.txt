@@ -8,14 +8,14 @@
 #
 ########################################################################################
 
-cmake_minimum_required(VERSION 3.22)
+cmake_minimum_required(VERSION 3.22.1)
 set(CMAKE_POLICY_VERSION_MINIMUM 3.10)
-if(UNIX)
+
+if(UNIX AND NOT BUILD_ANDROID)
     # since several plugins now require clang to compile themselves or their dependencies
     # clang is now a required dependency
     find_program(CLANG_EXE clang REQUIRED)
     find_program(CLANG_CXX_EXE clang++ REQUIRED NAMES clang-cpp clang++)
-
     set(CMAKE_C_COMPILER ${CLANG_EXE} CACHE FILEPATH "" FORCE)
     set(CMAKE_CXX_COMPILER ${CLANG_CXX_EXE} CACHE FILEPATH "" FORCE)
 endif()
@@ -57,18 +57,19 @@ if(WIN32 OR MSVC)
     endif()
     set(VCPKG_OVERLAY_PORTS "${CMAKE_CURRENT_SOURCE_DIR}/cmake/ports")
     add_compile_definitions("-DWIN_OS")
+    add_compile_definitions(_CRT_SECURE_NO_WARNINGS _CRT_NONSTDC_NO_WARNINGS)
     set(VCPKG_TARGET_TRIPLET "x64-windows")
     set(VCPKG_POLICY_ALLOW_EXES_IN_BIN enabled)
     set(DEPENDENCY_BUILD_TYPE ${CMAKE_BUILD_TYPE})
     set(DEPENDENCY_BUILD_SUFFIX "$<IF:$<CONFIG:Debug>,d, >")
 elseif(APPLE)
     message(FATAL_ERROR "MacOS is currently not supported")
+elseif(BUILD_ANDROID)
+    message(STATUS "Android build enabled")
 elseif(NOT UNIX)
     message(FATAL_ERROR "Unknown operating system")
 else()
     set(DEPENDENCY_BUILD_TYPE Release)
-    #set(CMAKE_RC_COMPILER "D:/llvm/bin/llvm-rc.exe" CACHE FILEPATH "" FORCE)
-    #set(PKG_CONFIG_EXECUTABLE "D:/pkg-config/bin/pkg-config.exe" CACHE FILEPATH "" FORCE)
 endif()
 
 set(GPL_LICENSED_CODE "openvins;orb_slam3;offload_rendering_server;offload_rendering_client")
@@ -96,12 +97,24 @@ set(OPENXR_RUNTIME "")
 
 # set the CMake search path to include the local files
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_BINARY_DIR}")
+if(NOT BUILD_ANDROID)
+    list(APPEND CMAKE_MODULE_PATH "${CMAKE_BINARY_DIR}")
+endif()
 option(COLOR_OUTPUT "Produce color output to the screen" ON)
-option(DOWNLOAD_DATA_FILE "The data file to get" ON)
+if(BUILD_ANDROID)
+    option(DOWNLOAD_DATA_FILE "The data file to get" OFF)
+else()
+    option(DOWNLOAD_DATA_FILE "The data file to get" ON)
+endif()
 option(BUILD_OXR_INTERFACE "Build the OpenXR interface (hand tracking only)" OFF)
+if(BUILD_OXR_INTERFACE AND BUILD_ANDROID)
+    set(BUILD_OXR_INTERFACE OFF CACHE BOOL "Build the OpenXR interface (hand tracking only)" FORCE)
+endif()
 cmake_dependent_option(BUILD_OXR_TEST "Build the  test for the OpenXr interface (hand tracking only)" OFF BUILD_OXR_INTERFACE OFF)
 option(BUILD_ZED_CAPTURE "Build the ZED capture program" OFF)
+if(BUILD_ZED_CAPTURE AND BUILD_ANDROID)
+    set(BUILD_ZED_CAPTURE OFF CACHE BOOL "Build the ZED capture program" FORCE)
+endif()
 set(DATA_FILE "http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip")
 
 # docs variables
@@ -135,27 +148,28 @@ if(HT_ENABLE_GPU)
     message(WARNING "Currently gpu processing for hand tracking is not available, turning it off")
     set(HT_ENABLE_GPU OFF)
 endif()
-option(BUILD_PARALLEL_LEVEL "Number of parallel build jobs")
-option(ENABLE_MONADO "Build monado package" OFF)
-if(NOT BUILD_PARALLEL_LEVEL)
-    include(ProcessorCount)
-    ProcessorCount(N)
-    if(N GREATER 8)
-        set(BUILD_PARALLEL_LEVEL 4)
-    elseif(N GREATER 6)
-        set(BUILD_PARALLEL_LEVEL 2)
-    else()
-        set(BUILD_PARALLEL_LEVEL 1)
+if(NOT BUILD_ANDROID)
+    option(BUILD_PARALLEL_LEVEL "Number of parallel build jobs")
+    if(NOT BUILD_PARALLEL_LEVEL)
+        include(ProcessorCount)
+        ProcessorCount(N)
+        if(N GREATER 8)
+            set(BUILD_PARALLEL_LEVEL 4)
+        elseif(N GREATER 6)
+            set(BUILD_PARALLEL_LEVEL 2)
+        else()
+            set(BUILD_PARALLEL_LEVEL 1)
+        endif()
     endif()
 endif()
+
+option(ENABLE_MONADO "Build monado package" OFF)
 
 include(cmake/HelperFunctions.cmake)
 
 generate_yaml()
 check_plugins()
 
-set(CORE_PLUGINS OFF)
-set(RT_SLAM_PLUGINS OFF)
 if(YAML_FILE)
     read_yaml(${YAML_FILE})
     string(REGEX MATCH "/all.yaml" MATCH_FOUND ${YAML_FILE})
@@ -169,7 +183,30 @@ if(YAML_FILE)
             set(${B_FLAG} ON)
         endforeach()
     endif()
+elseif(BUILD_ANDROID)
+    add_compile_definitions(UNITY_LIBRARY)
+    set(USE_EXTENDED_WINDOW OFF)
+    set(USE_COMMON_LOCK OFF)
+    set(USE_POSE_PREDICTION OFF)
+    set(USE_POSE_LOOKUP OFF)
+    set(USE_FAUXPOSE OFF)
+    set(USE_OFFLINE_CAM OFF)
+    set(USE_OFFLINE_IMU OFF)
+    set(USE_OPENVINS OFF)
+    set(USE_ANDROID_DATA OFF)
+    set(USE_GLDEMO OFF)
+    set(USE_GTSAM_INTEGRATOR OFF)
+    set(USE_RK4_INTEGRATOR OFF)
+    set(USE_TIMEWARP_GL OFF)
+    set(USE_TCP_NETWORK_BACKEND ON)
+    set(USE_UDP_NETWORK_BACKEND ON)
+    set(USE_OPENXR_INTERFACE ON)
+    set(USE_OFFLOAD_RENDERING_CLIENT ON)
+    set(USE_NETWORK_LATENCY.TX ON)
 endif()
+
+set(ILLIXR_SOURCE_DIR ${CMAKE_SOURCE_DIR})
+
 #################################
 
 set(ILLIXR_BUILD_SUFFIX "")
@@ -189,11 +226,13 @@ elseif(lower_type MATCHES "relwithdebinfo")
     set(DO_DEBUG Yes)
     set(ILLIXR_BUILD_SUFFIX ".optdbg")
 endif()
+add_definitions(-DILLIXR_BUILD_SUFFIX=${ILLIXR_BUILD_SUFFIX})
 
 set(ILLIXR_BUILD_TYPE ${CMAKE_BUILD_TYPE})
 set(ILLIXR_ROOT ${CMAKE_SOURCE_DIR}/include)
-set(ENV{PKG_CONFIG_PATH} "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig:${CMAKE_INSTALL_PREFIX}/lib64/pkgconfig")
-
+if(NOT BUILD_ANDROID)
+    set(ENV{PKG_CONFIG_PATH} "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig:${CMAKE_INSTALL_PREFIX}/lib64/pkgconfig")
+endif()
 
 if(BUILD_DOCS)
     set(DOCS_LIST "${CMAKE_SOURCE_DIR}/include/illixr;${CMAKE_SOURCE_DIR}/include/illixr/data_format;${CMAKE_SOURCE_DIR}/include/illixr/data_format/poses;${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization;${CMAKE_SOURCE_DIR}/include/illixr/network;${CMAKE_SOURCE_DIR}/include/illixr/vk;${CMAKE_SOURCE_DIR}/plugins/hand_tracking/viewer;${CMAKE_SOURCE_DIR}/plugins/zed/data_injection;${CMAKE_SOURCE_DIR}/plugins/zed/capture;${CMAKE_SOURCE_DIR}/src;${CMAKE_SOURCE_DIR}/src/display;${CMAKE_SOURCE_DIR}/utils")
@@ -234,8 +273,12 @@ if(WIN32 OR MSVC)
     endforeach()
 endif()
 
-
-project(ILLIXR VERSION 4.1.0 LANGUAGES CXX)
+set(ILLIXR_VERSION 4.1.0)
+if(BUILD_ANDROID)
+    project(ILLIXR VERSION ${ILLIXR_VERSION} LANGUAGES C CXX)
+else()
+    project(ILLIXR VERSION ${ILLIXR_VERSION} LANGUAGES CXX)
+endif()
 
 if(WIN32 OR MSVC)
     if(CMAKE_BUILD_TYPE MATCHES Debug)
@@ -275,14 +318,21 @@ if(WIN32 OR MSVC)
     set(CMAKE_CUDA_FLAGS_RELEASE "-O3 -Xcompiler=/O2" CACHE STRING "" FORCE)
 
     message(STATUS "CMAKE_CUDA_RUNTIME_LIBRARY = ${CMAKE_CUDA_RUNTIME_LIBRARY}")
+elseif(ANDROID)
+    set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE BOTH)
+    set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)
+    set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE BOTH)
 endif()
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-add_definitions(-DGLSL_VERSION="330")
 
-# Vulkan flags
-add_compile_definitions(VK_ENABLE_BETA_EXTENSIONS)
+if(NOT ANDROID)
+    add_definitions(-DGLSL_VERSION="330")
+
+    # Vulkan flags
+    add_compile_definitions(VK_ENABLE_BETA_EXTENSIONS)
+endif()
 
 if(WIN32 OR MSVC)
     set(CMAKE_CXX_FLAGS_DEBUG "/Zi /Od /MDd")
@@ -290,6 +340,50 @@ if(WIN32 OR MSVC)
     set(CMAKE_SHARED_LINKER_FLAGS_DEBUG "/DEBUG /STACK:8388608")
     set(CMAKE_CXX_FLAGS_RELEASE "/O2 /MD /DNDEBUG")
     set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "/Zi /O2")
+elseif(ANDROID)
+    # Device-specific optimizations (optional)
+    if(NOT DEFINED ANDROID_DEVICE_TYPE)
+        set(ANDROID_DEVICE_TYPE "generic")
+    endif()
+
+    if(ANDROID_DEVICE_TYPE STREQUAL "quest3")
+        # Quest 3: Snapdragon XR2 Gen 2 (Cortex-A78 + Cortex-A55)
+        set(DEVICE_COMPILE_FLAGS "-march=armv8.2-a -mtune=cortex-a78")
+        set(ANDROID_ARM_NEON TRUE)
+    elseif(ANDROID_DEVICE_TYPE STREQUAL "quest2")
+        # Quest 2: Snapdragon XR2 (Cortex-A77 + Cortex-A55)
+        set(DEVICE_COMPILE_FLAGS "-march=armv8.2-a -mtune=cortex-a77")
+        set(ANDROID_ARM_NEON TRUE)
+    elseif(ANDROID_DEVICE_TYPE STREQUAL "phone")
+        # Generic modern phone (ARMv8, NEON)
+        set(DEVICE_COMPILE_FLAGS "-march=armv8-a")
+        set(ANDROID_ARM_NEON TRUE)
+    else()
+        # Generic: no specific tuning, maximum compatibility
+        set(DEVICE_COMPILE_FLAGS "")
+        if(ANDROID_ABI STREQUAL "arm64-v8a" OR ANDROID_ABI STREQUAL "armeabi-v7a")
+            set(ANDROID_ARM_NEON TRUE)
+        endif()
+    endif()
+
+    if(DEVICE_COMPILE_FLAGS)
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${DEVICE_COMPILE_FLAGS}")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${DEVICE_COMPILE_FLAGS}")
+    endif()
+
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ffast-math -fno-finite-math-only")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ffast-math -fno-finite-math-only")
+
+    set(VK_USE_PLATFORM_ANDROID_KHR TRUE)
+    if(NOT THIRD_PARTY_DIR)
+        message(FATAL_ERROR "The THIRD_PARTY_DIR must be specified")
+    endif()
+
+    set(OpenCV_DIR "${THIRD_PARTY_DIR}/sdk/native/jni" CACHE PATH "Path to OpenCV cmake configuration files")
+    set(Boost_DIR "${THIRD_PARTY_DIR}/lib/${ANDROID_ABI}/cmake/Boost-1.72.0" CACHE PATH "Path to Boost cmake configuration files")
+    set(protobuf_android_DIR "${THIRD_PARTY_DIR}/lib/${ANDROID_ABI}/cmake/protobuf_android" CACHE PATH "Path to protobuf configuration files")
+    set(spdlog_android_DIR "${THIRD_PARTY_DIR}/lib/${ANDROID_ABI}/cmake/spdlog_android" CACHE PATH "Path to spdlog cmake configuration files")
+    set(Boost_USE_STATIC_LIBS ON)
 else()
     set(CMAKE_CXX_FLAGS_DEBUG "-ggdb -Wall -Wextra -Wno-attributes -Wno-unknown-pragmas -fPIC")
     set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG -Wall -Wextra -Wno-attributes -Wno-unknown-pragmas -fPIC")
@@ -304,24 +398,32 @@ include_directories(BEFORE ${CMAKE_SOURCE_DIR}/include)
 if(WIN32 OR MSVC)
     set(PKG_CONFIG_EXECUTABLE "${CMAKE_BINARY_DIR}/vcpkg_installed/${VCPKG_TARGET_TRIPLET}/tools/pkgconf/pkgconf.exe")
     find_package(PkgConfig REQUIRED)
-else()
+elseif(NOT ANDROID)
     find_package(PkgConfig REQUIRED)
 endif()
 
+if(NOT ANDROID)
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH};${PROJECT_SOURCE_DIR}/cmake;${CMAKE_INSTALL_PREFIX}/lib/cmake;${CMAKE_INSTALL_PREFIX}/share/cmake)
+endif()
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH};${PROJECT_SOURCE_DIR}/cmake;${CMAKE_INSTALL_PREFIX}/lib/cmake;${CMAKE_INSTALL_PREFIX}/share/cmake)
-
-add_definitions(-DILLIXR_BUILD_SUFFIX=${ILLIXR_BUILD_SUFFIX})
 ##############
 # dependencies
 ##############
 set(EXTERNAL_LIBRARIES "")
 
-find_package(OpenCV 4 REQUIRED)
+if(ANDROID)
+    find_package(OpenCV 4.5.5 REQUIRED CONFIG COMPONENTS opencv_java)
+    include_directories(${OpenCV_INCLUDE_DIRS})
+else()
+    find_package(OpenCV 4 REQUIRED)
+    find_package(SQLite3 REQUIRED)
+endif()
 
-find_package(SQLite3 REQUIRED)
-
-find_package(Eigen3 REQUIRED CONFIG)
+if(ANDROID)
+    find_package(Eigen3 REQUIRED)
+else()
+    find_package(Eigen3 REQUIRED CONFIG)
+endif()
 
 #############
 # plugin specific dependencies that are used by several plugins
@@ -333,29 +435,46 @@ if(WIN32 OR MSVC)
     find_package(Vulkan REQUIRED)
     find_package(VulkanMemoryAllocator CONFIG REQUIRED)
     find_package(glslang REQUIRED)
-else()
+elseif(NOT ANDROID)
     find_package(X11 REQUIRED)
     pkg_check_modules(gl REQUIRED gl)
     pkg_check_modules(glu REQUIRED glu)
     get_external(Vulkan)
 endif()
 
-find_package(GLEW REQUIRED)
-find_package(glfw3 REQUIRED CONFIG)
+if(NOT ANDROID)
+    find_package(GLEW REQUIRED)
+    find_package(glfw3 REQUIRED CONFIG)
+endif()
 
 find_package(Git REQUIRED)
+
 if(WIN32 OR MSVC)
     set(Boost_USE_STATIC_LIBS ON)
     add_definitions(-DBOOST_ALL_NO_LIB)
     add_definitions(-DBOOST_SERIALIZATION_DYN_LINK)
 endif()
-if (CMAKE_VERSION VERSION_LESS "3.30.0")
+
+if(ANDROID)
+    find_package(Boost 1.72 REQUIRED CONFIG COMPONENTS chrono thread filesystem atomic iostreams serialization)
+    include_directories(${Boost_INCLUDE_DIRS})
+elseif (CMAKE_VERSION VERSION_LESS "3.30.0")
     find_package(Boost REQUIRED COMPONENTS filesystem serialization iostreams)
 else()
     find_package(Boost REQUIRED COMPONENTS filesystem serialization iostreams CONFIG)
 endif()
 
-find_package(spdlog REQUIRED CONFIG)
+if(ANDROID)
+    find_program(protoc_exe protoc HINTS /usr/bin REQUIRED)
+    add_executable(protobuf::protoc IMPORTED)
+    set_property(TARGET protobuf::protoc APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
+    set_target_properties(protobuf::protoc PROPERTIES IMPORTED_LOCATION_RELEASE ${protoc_exe})
+    find_package(protobuf_android REQUIRED CONFIG)
+
+    find_package(spdlog_android 1.15.3 REQUIRED)
+else()
+    find_package(spdlog REQUIRED CONFIG)
+endif()
 set(EXTERNAL_PROJECTS "")
 add_definitions(-DFMT_HEADER_ONLY)
 
@@ -405,6 +524,22 @@ foreach(ITEM IN LISTS PLUGIN_LIST)
     unset(ITEM_UPPER)
 endforeach()
 
+if(ANDROID)
+    # build native_app_glue as a static lib
+    add_library(native_app_glue STATIC
+                ${ANDROID_NDK}/sources/android/native_app_glue/android_native_app_glue.c
+    )
+
+    add_definitions(-DVK_USE_PLATFORM_ANDROID_KHR=1)
+
+    # now build app's shared lib
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++17 -Wall -Werror")
+
+    # Export ANativeActivity_onCreate(),
+    # Refer to: https://github.com/android-ndk/ndk/issues/381.
+    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS}  -latomic -u ANativeActivity_onCreate -v -fvisibility=hidden")
+endif()
+
 include(src/CMakeLists.txt)
 
 list(SORT FULL_PLUGIN_LIST COMPARE STRING CASE INSENSITIVE ORDER ASCENDING)
@@ -439,37 +574,39 @@ if(BUILD_ZED_CAPTURE)
     add_subdirectory(plugins/zed/capture)
 endif()
 
-# set up to install profile files
-if(ILLIXR_PROFILE_NAMES)
-    foreach(GRP IN LISTS ILLIXR_PROFILE_NAMES)
-        install(FILES "${CMAKE_SOURCE_DIR}/profiles/${GRP}.yaml"
-                DESTINATION $ENV{HOME}/.illixr/profiles)
-        install(FILES "${CMAKE_SOURCE_DIR}/profiles/${GRP}.yaml"
-                DESTINATION ${CMAKE_INSTALL_PREFIX}/share/illixr/profiles)
-    endforeach()
-endif()
+if(NOT ANDROID)
+    # set up to install profile files
+    if(ILLIXR_PROFILE_NAMES)
+        foreach(GRP IN LISTS ILLIXR_PROFILE_NAMES)
+            install(FILES "${CMAKE_SOURCE_DIR}/profiles/${GRP}.yaml"
+                    DESTINATION $ENV{HOME}/.illixr/profiles)
+            install(FILES "${CMAKE_SOURCE_DIR}/profiles/${GRP}.yaml"
+                    DESTINATION ${CMAKE_INSTALL_PREFIX}/share/illixr/profiles)
+        endforeach()
+    endif()
 
-if(BUILD_DEP_MAP)
-    find_package(Python3 COMPONENTS Interpreter)
-    if(Python3_FOUND)
-        set(DEP_MAP_PRODUCTS "${CMAKE_SOURCE_DIR}/plugins/plugin_deps.yaml ${CMAKE_SOURCE_DIR}/docs/dataflow.dot")
-        message(STATUS "Rebuilding dep_map")
-        add_custom_target(depmaker ALL
-                          BYPRODUCTS "${DEP_MAP_PRODUCTS}"
-                          COMMAND ${CMAKE_SOURCE_DIR}/dep_mapper.py ${CMAKE_BINARY_DIR}
-                          WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        )
-        if(USE_AUDIO_PIPELINE)
-            add_dependencies(depmaker "Audio_Pipeline")
-        endif()
-        if(USE_OPENVINS)
-            add_dependencies(depmaker "OpenVINS")
-        endif()
-        if(USE_HAND_TRACKING)
-            set(dependencies "${dependencies} ${HT_TARGET_NAME}")
-        endif()
-        if(USE_ORB_SLAM3)
-            set(dependencies "${dependencies} ORB_Slam3")
+    if(BUILD_DEP_MAP)
+        find_package(Python3 COMPONENTS Interpreter)
+        if(Python3_FOUND)
+            set(DEP_MAP_PRODUCTS "${CMAKE_SOURCE_DIR}/plugins/plugin_deps.yaml ${CMAKE_SOURCE_DIR}/docs/dataflow.dot")
+            message(STATUS "Rebuilding dep_map")
+            add_custom_target(depmaker ALL
+                              BYPRODUCTS "${DEP_MAP_PRODUCTS}"
+                              COMMAND ${CMAKE_SOURCE_DIR}/dep_mapper.py ${CMAKE_BINARY_DIR}
+                              WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+            )
+            if(USE_AUDIO_PIPELINE)
+                add_dependencies(depmaker "Audio_Pipeline")
+            endif()
+            if(USE_OPENVINS)
+                add_dependencies(depmaker "OpenVINS")
+            endif()
+            if(USE_HAND_TRACKING)
+                set(dependencies "${dependencies} ${HT_TARGET_NAME}")
+            endif()
+            if(USE_ORB_SLAM3)
+                set(dependencies "${dependencies} ORB_Slam3")
+            endif()
         endif()
     endif()
 endif()
@@ -480,11 +617,12 @@ add_subdirectory(docs)
 # give a summary of what will be done
 include(cmake/ConfigurationSummary.cmake)
 
-install(FILES "${CMAKE_SOURCE_DIR}/plugins/plugin_deps.yaml"
-        DESTINATION $ENV{HOME}/.illixr/profiles)
-install(FILES "${CMAKE_SOURCE_DIR}/plugins/plugin_deps.yaml"
-        DESTINATION ${CMAKE_INSTALL_PREFIX}/share/illixr/profiles)
-
+if(NOT ANDROID)
+    install(FILES "${CMAKE_SOURCE_DIR}/plugins/plugin_deps.yaml"
+            DESTINATION $ENV{HOME}/.illixr/profiles)
+    install(FILES "${CMAKE_SOURCE_DIR}/plugins/plugin_deps.yaml"
+            DESTINATION ${CMAKE_INSTALL_PREFIX}/share/illixr/profiles)
+endif()
 #get_cmake_property(_variableNames VARIABLES)
 #foreach (_variableName ${_variableNames})
 #    message(STATUS "${_variableName}=${${_variableName}}")
