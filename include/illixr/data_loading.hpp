@@ -4,7 +4,11 @@
 #include "illixr/error_util.hpp"
 #include "illixr/switchboard.hpp"
 
-#include <eigen3/Eigen/Dense>
+#ifdef __ANDROID__
+#    include <Eigen/Dense>
+#else
+#    include <eigen3/Eigen/Dense>
+#endif
 #include <fstream>
 #include <iostream>
 #include <map>
