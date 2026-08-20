@@ -5,7 +5,7 @@ if(ANDROID)
 endif()
 #set(DUMP_FRAMES ON)
 # Enable CUDA language only if using NVENC encoder
-option(USE_NVENC_ENCODER "Use direct NVENC encoder instead of FFmpeg" ON)
+option(USE_NVENC_ENCODER "Use direct NVENC encoder instead of FFmpeg" OFF)
 # NVENC is required for windows, ffmpeg is not supported on that platform.
 if(WIN32 OR MSVC)
     set(USE_NVENC_ENCODER ON)
@@ -200,7 +200,6 @@ else()
                 ${CMAKE_SOURCE_DIR}/include/illixr/vk/render_pass.hpp
                 ${CMAKE_SOURCE_DIR}/include/illixr/vk/vulkan_utils.hpp
                 ${CMAKE_SOURCE_DIR}/include/illixr/vk/vk_extension_request.hpp
-                ${CMAKE_SOURCE_DIR}/include/illixr/vk/shared_framebuffer.h
     )
 
     if(TARGET ILLIXR_FFmpeg_ext)
