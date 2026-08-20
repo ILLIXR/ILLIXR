@@ -70,16 +70,16 @@ struct semantic_data : switchboard::event {
     camera_intrinsics    depth_intrinsics;
 
     // ----- Poses (row-major 4x4 matrices) -----
-    float                rgb_camera_pose[16]{0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f};
-    float                depth_pose[16]{0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f};
+    float rgb_camera_pose[16]{0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f};
+    float depth_pose[16]{0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f};
 
     // ----- Metadata -----
-    float                max_depth{0.f};
-    int32_t              frame_number{0};
+    float   max_depth{0.f};
+    int32_t frame_number{0};
 
     // ----- Timestamps -----
-    int64_t  rgb_timestamp_ns   = 0;      //!< CLOCK_BOOTTIME ns (from encoder PTS)
-    int64_t  depth_timestamp_ns = 0;      //!< XrTime ns (from XrDepthSensorDataMETA)
+    int64_t rgb_timestamp_ns   = 0; //!< CLOCK_BOOTTIME ns (from encoder PTS)
+    int64_t depth_timestamp_ns = 0; //!< XrTime ns (from XrDepthSensorDataMETA)
 
     semantic_data() = default;
 };

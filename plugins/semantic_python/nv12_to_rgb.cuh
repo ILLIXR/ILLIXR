@@ -1,7 +1,7 @@
 #pragma once
 
-#include <cuda_runtime.h>
 #include <cstdint>
+#include <cuda_runtime.h>
 
 /*!
  * @brief Launch the NV12 -> packed RGB uint8 conversion kernel.
@@ -16,12 +16,5 @@
  * @param uv_pitch   UV plane row stride in bytes
  * @param stream     CUDA stream (0 for default)
  */
-void launch_nv12_to_rgb(
-        const uint8_t* y_plane,
-        const uint8_t* uv_plane,
-        uint8_t*       rgb_out,
-        int            width,
-        int            height,
-        int            y_pitch,
-        int            uv_pitch,
-        cudaStream_t   stream = 0);
+void launch_nv12_to_rgb(const uint8_t* y_plane, const uint8_t* uv_plane, uint8_t* rgb_out, int width, int height, int y_pitch,
+                        int uv_pitch, cudaStream_t stream = 0);

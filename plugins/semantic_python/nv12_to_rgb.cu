@@ -17,22 +17,15 @@
 
 #include "nv12_to_rgb.cuh"
 
-#include <cuda_runtime.h>
 #include <cstdint>
+#include <cuda_runtime.h>
 
 // ---------------------------------------------------------------------------
 // Kernel
 // ---------------------------------------------------------------------------
 
-__global__ void nv12_to_rgb_kernel(
-    const uint8_t* __restrict__ y_plane,
-    const uint8_t* __restrict__ uv_plane,
-    uint8_t*       __restrict__ rgb_out,
-    int width,
-    int height,
-    int y_pitch,
-    int uv_pitch)
-{
+__global__ void nv12_to_rgb_kernel(const uint8_t* __restrict__ y_plane, const uint8_t* __restrict__ uv_plane,
+                                   uint8_t* __restrict__ rgb_out, int width, int height, int y_pitch, int uv_pitch) {
     const int x = blockIdx.x * blockDim.x + threadIdx.x;
     const int y = blockIdx.y * blockDim.y + threadIdx.y;
 
@@ -40,18 +33,18 @@ __global__ void nv12_to_rgb_kernel(
         return;
 
     // Y sample — full-range, no offset needed
-    const float Y  = static_cast<float>(y_plane[y * y_pitch + x]);
+    const float Y = static_cast<float>(y_plane[y * y_pitch + x]);
 
     // UV sample — each UV pair covers a 2x2 block of Y pixels
     const int   uv_row = (y / 2) * uv_pitch;
     const int   uv_col = (x / 2) * 2;
-    const float Cb = static_cast<float>(uv_plane[uv_row + uv_col])     - 128.f;
-    const float Cr = static_cast<float>(uv_plane[uv_row + uv_col + 1]) - 128.f;
+    const float Cb     = static_cast<float>(uv_plane[uv_row + uv_col]) - 128.f;
+    const float Cr     = static_cast<float>(uv_plane[uv_row + uv_col + 1]) - 128.f;
 
     // BT.601 full-range conversion
-    const float R  = Y + 1.402f * Cr;
-    const float G  = Y - 0.344f * Cb - 0.714f * Cr;
-    const float B  = Y + 1.772f * Cb;
+    const float R = Y + 1.402f * Cr;
+    const float G = Y - 0.344f * Cb - 0.714f * Cr;
+    const float B = Y + 1.772f * Cb;
 
     // Clamp and pack RGB
     const int out_idx    = (y * width + x) * 3;
@@ -64,20 +57,10 @@ __global__ void nv12_to_rgb_kernel(
 // Host-callable wrapper
 // ---------------------------------------------------------------------------
 
-void launch_nv12_to_rgb(
-    const uint8_t* y_plane,
-    const uint8_t* uv_plane,
-    uint8_t*       rgb_out,
-    int            width,
-    int            height,
-    int            y_pitch,
-    int            uv_pitch,
-    cudaStream_t   stream)
-{
+void launch_nv12_to_rgb(const uint8_t* y_plane, const uint8_t* uv_plane, uint8_t* rgb_out, int width, int height, int y_pitch,
+                        int uv_pitch, cudaStream_t stream) {
     const dim3 block(16, 16);
-    const dim3 grid((width  + block.x - 1) / block.x,
-                    (height + block.y - 1) / block.y);
+    const dim3 grid((width + block.x - 1) / block.x, (height + block.y - 1) / block.y);
 
-    nv12_to_rgb_kernel<<<grid, block, 0, stream>>>(
-        y_plane, uv_plane, rgb_out, width, height, y_pitch, uv_pitch);
+    nv12_to_rgb_kernel<<<grid, block, 0, stream>>>(y_plane, uv_plane, rgb_out, width, height, y_pitch, uv_pitch);
 }

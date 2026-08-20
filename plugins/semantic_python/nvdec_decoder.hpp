@@ -20,11 +20,10 @@
 
 #include "nv12_to_rgb.cuh"
 
-#include <NvDecoder/NvDecoder.h>
+#include <cstdint>
 #include <cuda.h>
 #include <cuda_runtime.h>
-
-#include <cstdint>
+#include <NvDecoder/NvDecoder.h>
 #include <stdexcept>
 #include <string>
 
@@ -56,8 +55,13 @@ public:
      */
     const uint8_t* decode(const uint8_t* data, size_t size);
 
-    int width()  const { return width_;  }
-    int height() const { return height_; }
+    int width() const {
+        return width_;
+    }
+
+    int height() const {
+        return height_;
+    }
 
 private:
     void ensure_buffers(int w, int h);
@@ -65,11 +69,11 @@ private:
     void free_pinned();
 
     cudaVideoCodec             codec_;
-    CUcontext                  cuda_ctx_   = nullptr;
+    CUcontext                  cuda_ctx_ = nullptr;
     std::unique_ptr<NvDecoder> decoder_;
 
-    uint8_t*     pinned_rgb_ = nullptr;  // pinned host buffer, H*W*3 bytes
-    uint8_t*     device_rgb_ = nullptr;  // device buffer for GPU RGB conversion
+    uint8_t*     pinned_rgb_ = nullptr; // pinned host buffer, H*W*3 bytes
+    uint8_t*     device_rgb_ = nullptr; // device buffer for GPU RGB conversion
     cudaStream_t stream_     = nullptr;
     int          width_      = 0;
     int          height_     = 0;

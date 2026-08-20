@@ -1,7 +1,6 @@
 #pragma once
 
 #include "decoder_cache.hpp"
-
 #include "illixr/data_format/semantics.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/plugin.hpp"

@@ -3,8 +3,7 @@
 #include <NvCodecUtils.h>
 #include <spdlog/spdlog.h>
 
-simplelogger::Logger* logger =
-    simplelogger::LoggerFactory::CreateConsoleLogger(TRACE);
+simplelogger::Logger* logger = simplelogger::LoggerFactory::CreateConsoleLogger(TRACE);
 
 using namespace ILLIXR;
 
@@ -60,10 +59,8 @@ const uint8_t* nvdec_decoder::decode(const uint8_t* data, size_t size) {
         //   0x67 = SPS, 0x68 = PPS, 0x65 = IDR, 0x61 = non-IDR
         // If byte[4] looks like a length (e.g. 0x00) this is AVCC format.
         spdlog::get("illixr")->info(
-            "[nvdec] decode input: size={}B bytes=[{:02X} {:02X} {:02X} {:02X} {:02X} {:02X} {:02X} {:02X}]",
-            size,
-            data[0], data[1], data[2], data[3],
-            data[4], data[5], data[6], data[7]);
+            "[nvdec] decode input: size={}B bytes=[{:02X} {:02X} {:02X} {:02X} {:02X} {:02X} {:02X} {:02X}]", size, data[0],
+            data[1], data[2], data[3], data[4], data[5], data[6], data[7]);
     } else {
         spdlog::get("illixr")->warn("[nvdec] decode input too small: size={}B", size);
     }
@@ -72,12 +69,10 @@ const uint8_t* nvdec_decoder::decode(const uint8_t* data, size_t size) {
 
     // Log n_decoded before calling GetWidth()/GetHeight() — those assert
     // m_nWidth != 0 and must not be called until the decoder has parsed SPS/PPS.
-    spdlog::get("illixr")->debug(
-        "[nvdec] Decode() returned n_decoded={}", n_decoded);
+    spdlog::get("illixr")->debug("[nvdec] Decode() returned n_decoded={}", n_decoded);
 
     if (n_decoded <= 0) {
-        spdlog::get("illixr")->debug(
-            "[nvdec] no output: n_decoded={} (0=buffering, <0=error)", n_decoded);
+        spdlog::get("illixr")->debug("[nvdec] no output: n_decoded={} (0=buffering, <0=error)", n_decoded);
         return nullptr;
     }
 
@@ -85,8 +80,7 @@ const uint8_t* nvdec_decoder::decode(const uint8_t* data, size_t size) {
     const int w = decoder_->GetWidth();
     const int h = decoder_->GetHeight();
 
-    spdlog::get("illixr")->debug(
-        "[nvdec] decoded: n_decoded={} width={} height={}", n_decoded, w, h);
+    spdlog::get("illixr")->debug("[nvdec] decoded: n_decoded={} width={} height={}", n_decoded, w, h);
 
     // NvDecoder may return multiple frames at once (n_decoded > 1) when
     // bLowLatency=false. Drain all but the last — we only return the most
@@ -96,8 +90,7 @@ const uint8_t* nvdec_decoder::decode(const uint8_t* data, size_t size) {
 
     uint8_t* nv12_ptr = decoder_->GetFrame();
     if (nv12_ptr == nullptr) {
-        spdlog::get("illixr")->warn(
-            "[nvdec] GetFrame() returned nullptr despite n_decoded={}", n_decoded);
+        spdlog::get("illixr")->warn("[nvdec] GetFrame() returned nullptr despite n_decoded={}", n_decoded);
         return nullptr;
     }
 
@@ -110,31 +103,28 @@ const uint8_t* nvdec_decoder::decode(const uint8_t* data, size_t size) {
     // is correct but computing it explicitly makes the UV offset unambiguous
     // for any input resolution, including those where width is not a multiple
     // of 256 (e.g. 1920, 640, 320).
-    const int pitch    = ((w + 255) / 256) * 256;
+    const int      pitch    = ((w + 255) / 256) * 256;
     const uint8_t* y_plane  = nv12_ptr;
     const uint8_t* uv_plane = nv12_ptr + pitch * h;
 
-    spdlog::get("illixr")->debug(
-        "[nvdec] frame width={} height={} pitch={} (from decoder={})",
-        w, h, pitch, decoder_->GetDeviceFramePitch());
+    spdlog::get("illixr")->debug("[nvdec] frame width={} height={} pitch={} (from decoder={})", w, h, pitch,
+                                 decoder_->GetDeviceFramePitch());
 
-// Probe raw NV12 Y plane before conversion to confirm decoder output.
+    // Probe raw NV12 Y plane before conversion to confirm decoder output.
     {
         uint8_t probe[256] = {};
         cudaMemcpy(probe, y_plane, 256, cudaMemcpyDeviceToHost);
         int64_t y_sum = 0;
         for (int i = 0; i < 256; ++i)
             y_sum += probe[i];
-        spdlog::get("illixr")->info(
-            "[nvdec] raw NV12 Y plane mean over first 256 bytes = {:.1f}",
-            static_cast<double>(y_sum) / 256);
+        spdlog::get("illixr")->info("[nvdec] raw NV12 Y plane mean over first 256 bytes = {:.1f}",
+                                    static_cast<double>(y_sum) / 256);
     }
 
     launch_nv12_to_rgb(y_plane, uv_plane, device_rgb_, w, h, pitch, pitch, stream_);
 
     // Copy GPU RGB -> pinned host buffer
-    cudaMemcpyAsync(pinned_rgb_, device_rgb_, static_cast<size_t>(w * h * 3),
-                    cudaMemcpyDeviceToHost, stream_);
+    cudaMemcpyAsync(pinned_rgb_, device_rgb_, static_cast<size_t>(w * h * 3), cudaMemcpyDeviceToHost, stream_);
 
     // Synchronize so pinned_rgb_ is ready for the CPU to read
     cudaStreamSynchronize(stream_);
@@ -142,19 +132,18 @@ const uint8_t* nvdec_decoder::decode(const uint8_t* data, size_t size) {
     // Check for kernel errors
     cudaError_t err = cudaGetLastError();
     if (err != cudaSuccess)
-        spdlog::get("illixr")->error(
-            "[nvdec] CUDA kernel error: {}", cudaGetErrorString(err));
+        spdlog::get("illixr")->error("[nvdec] CUDA kernel error: {}", cudaGetErrorString(err));
 
-// Probe pinned buffer after conversion
+    // Probe pinned buffer after conversion
     {
         int64_t sum   = 0;
         int     count = std::min(w * h * 3, 3000);
         for (int i = 0; i < count; ++i)
             sum += pinned_rgb_[i];
-        spdlog::get("illixr")->info(
-            "[nvdec] pinned_rgb mean over first {} bytes = {:.1f}",
-            count, static_cast<double>(sum) / count);
-    }    width_  = w;
+        spdlog::get("illixr")->info("[nvdec] pinned_rgb mean over first {} bytes = {:.1f}", count,
+                                    static_cast<double>(sum) / count);
+    }
+    width_  = w;
     height_ = h;
     return pinned_rgb_;
 }
