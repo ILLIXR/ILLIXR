@@ -1,12 +1,11 @@
 #pragma once
+#include "gtsam/navigation/CombinedImuFactor.h" // Used if IMU combined is off.
+#include "gtsam/navigation/ImuFactor.h"
 #include "illixr/data_format/imu.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/plugin.hpp"
 #include "illixr/switchboard.hpp"
 #include "third_party/filter.h"
-
-#include "gtsam/navigation/CombinedImuFactor.h" // Used if IMU combined is off.
-#include "gtsam/navigation/ImuFactor.h"
 
 using ImuBias = gtsam::imuBias::ConstantBias;
 
