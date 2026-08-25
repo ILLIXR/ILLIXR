@@ -14,9 +14,9 @@ shuts down the interpreter.
 
 ## SemanticXR
 
-This plugin was developed in conjunction with the [SemnticXR][L01] python repository that provides a real-time semantic
+This plugin was developed in conjunction with the [SemanticXR][L01] python repository that provides a real-time semantic
 SLAM system with object detection, segmentation, and CLIP-based understanding for interactive 3D scene mapping and 
-querying. This code uses the `sematic_python` plugin to integrate it into ILLIXR. When enabling this plugin, the 
+querying. This code uses the `semantic_python` plugin to integrate it into ILLIXR. When enabling this plugin, the 
 [SemanticXR][L01] repository is downloaded to `${CMAKE_SROUCE_DIR}/python` for your convenience.
 
 ## Using the plugin
