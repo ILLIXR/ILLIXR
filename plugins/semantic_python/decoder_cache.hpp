@@ -106,8 +106,8 @@ public:
 
     struct Entry {
         switchboard::ptr<const data_format::semantic_data> data;
-        int32_t                                             frame_number = -1;
-        bool                                                 valid        = false;
+        int32_t                                            frame_number = -1;
+        bool                                               valid        = false;
     };
 
     // Store a frame's metadata, keyed by frame_number.

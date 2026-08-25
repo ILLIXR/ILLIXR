@@ -210,8 +210,8 @@ void semantic_python::on_semantic_data(const switchboard::ptr<const data_format:
 
     try {
         int64_t        decoded_frame_number = -1;
-        const uint8_t* rgb = decoder_->decode(frame->image.data(), frame->image.size(), frame->frame_number,
-                                              decoded_frame_number);
+        const uint8_t* rgb =
+            decoder_->decode(frame->image.data(), frame->image.size(), frame->frame_number, decoded_frame_number);
 
         if (rgb != nullptr) {
             decoded_frames_.store(static_cast<int32_t>(decoded_frame_number), decoder_->width(), decoder_->height(), rgb);
