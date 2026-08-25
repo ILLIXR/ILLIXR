@@ -500,9 +500,12 @@
     },
     {
       "name": "semantic_python",
-      "cmake_flag": "USE_SEMANTIC_PYTHON",
+      "cmake_flag": "USE_SEMANTIC_PYTHON=ON",
       "dependencies": [
         "pybind11"
+      ],
+      "OS": [
+        "linux"
       ]
     },
     {
