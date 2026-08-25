@@ -14,6 +14,13 @@
  * Supports SDK 12.x and 13.x. AV1 decode is conditionally compiled when
  * NVDEC_HAS_AV1 is defined (requires Ada Lovelace or newer GPU).
  *
+ * NvDecoder's parser buffers pictures internally for reordering (see
+ * ulMaxDisplayDelay in the SDK's NvDecoder.cpp), so the picture returned
+ * by a given decode() call is not necessarily the picture submitted by
+ * that same call. decode() threads the caller's frame number through as
+ * the NVDEC picture timestamp so the caller can recover which picture
+ * was actually returned.
+ *
  * Thread safety: not thread-safe. All calls must come from the same thread
  * (the switchboard decode callback thread).
  */
@@ -46,14 +53,26 @@ public:
      * packed RGB uint8 on the GPU, then copies to a pre-allocated pinned
      * host buffer.
      *
-     * @param data     Pointer to annexb bytes.
-     * @param size     Byte count.
-     * @return         Pointer to pinned host RGB buffer (H x W x 3, uint8,
-     *                 RGB order), or nullptr if no frame was output this
-     *                 call (e.g. during decoder init with SPS/PPS only).
-     *                 The pointer is valid until the next call to decode().
+     * NVDEC may hand back a different picture than the one just submitted
+     * (see the reordering note above), so frame_number is threaded through
+     * as the NVDEC picture timestamp and read back via GetFrame(&ts) —
+     * out_frame_number identifies which picture pinned_rgb_ actually holds.
+     *
+     * @param data              Pointer to annexb bytes.
+     * @param size              Byte count.
+     * @param frame_number      Frame number of the packet being submitted;
+     *                          passed through as the NVDEC picture timestamp.
+     * @param out_frame_number  Set to the frame number of the picture
+     *                          actually returned, which may lag frame_number
+     *                          while the reorder buffer is filling. Untouched
+     *                          if nullptr is returned.
+     * @return                  Pointer to pinned host RGB buffer (H x W x 3, uint8,
+     *                          RGB order), or nullptr if no frame was output this
+     *                          call (e.g. during decoder init with SPS/PPS only,
+     *                          or while the reorder buffer is filling).
+     *                          The pointer is valid until the next call to decode().
      */
-    const uint8_t* decode(const uint8_t* data, size_t size);
+    const uint8_t* decode(const uint8_t* data, size_t size, int64_t frame_number, int64_t& out_frame_number);
 
     int width() const {
         return width_;

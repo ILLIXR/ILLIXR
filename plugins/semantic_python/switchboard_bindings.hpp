@@ -4,8 +4,14 @@
  *
  *         Three proxy structs are registered as Python classes:
  *
- *           SemanticDataReader  - wraps switchboard::reader<semantic_data>
- *             .get() -> dict or None
+ *           SemanticDataReader  - pairs the most recently decoded RGB frame
+ *             (decoded_frame_cache) with the depth/pose/intrinsics metadata
+ *             for that same frame_number (semantic_metadata_cache). Decode
+ *             lags arrival by a variable amount, so pairing is done by
+ *             frame_number rather than by reading the most recently arrived
+ *             switchboard sample directly.
+ *             .get() -> dict or None (None if no frame has been decoded yet,
+ *                                      or its metadata has since been evicted)
  *               "image"           numpy uint8 (H,W,3)   decoded RGB - zero-copy from cache
  *               "depth"           numpy uint8 (N,)      raw R16_UNORM depth bytes
  *               "frame_number"    int
@@ -113,24 +119,31 @@ static pybind11::array_t<uint8_t> entry_to_numpy(const decode::decoded_frame_cac
 // ---------------------------------------------------------------------------
 
 struct py_semantic_data_reader {
-    switchboard::reader<data_format::semantic_data>* reader;
-    decode::decoded_frame_cache*                     cache;
+    decode::decoded_frame_cache*     cache;
+    decode::semantic_metadata_cache* metadata_cache;
 
     [[nodiscard]] pybind11::object get() const {
-        auto val = reader->get_ro_nullable();
-        if (!val)
+        // Pull from whichever frame decode has actually finished, rather
+        // than the most recently arrived frame — decode lags arrival by a
+        // variable amount (see nvdec_decoder::decode). metadata_cache is
+        // keyed by the same frame_number the decoder returns (see
+        // plugin.cpp on_semantic_data), so looking it up here guarantees
+        // the depth/pose returned below belong to the same frame as
+        // "image".
+        const decode::decoded_frame_cache::Entry* entry = cache ? cache->latest() : nullptr;
+        if (entry == nullptr)
             return pybind11::none();
 
-        pybind11::dict data;
-        // ---- Decoded RGB ----
-        // Decoded on arrival by on_semantic_data(). Look up by frame_number.
-        // Falls back to latest if the exact frame was evicted from the cache.
-        const decode::decoded_frame_cache::Entry* entry = cache ? cache->find(val->frame_number) : nullptr;
-        if (entry == nullptr && cache != nullptr)
-            entry = cache->latest();
+        const decode::semantic_metadata_cache::Entry* meta =
+            metadata_cache ? metadata_cache->find(entry->frame_number) : nullptr;
+        if (meta == nullptr)
+            return pybind11::none();
 
+        auto val = meta->data;
+
+        pybind11::dict data;
         data["image"]            = entry_to_numpy(entry);
-        data["frame_number"]     = val->frame_number;
+        data["frame_number"]     = entry->frame_number;
         data["image_width"]      = val->intrinsics.width;
         data["image_height"]     = val->intrinsics.height;
         data["depth"]            = to_numpy_flat_safe(val, val->depth.data(), val->depth.size());

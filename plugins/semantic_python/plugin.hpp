@@ -40,11 +40,13 @@ private:
     void parse_py_args(const std::string& input);
 
     // Fired by switchboard whenever a new semantic_data frame arrives.
-    // Decodes image -> RGB uint8 and stores in decoded_frames_ cache.
+    // Stores the frame's metadata (depth, poses, intrinsics) in
+    // frame_metadata_ keyed by frame_number, then decodes image -> RGB
+    // uint8 and stores it in decoded_frames_, keyed by the frame_number
+    // NVDEC actually returns (which may lag the submitted frame_number).
     void on_semantic_data(const switchboard::ptr<const data_format::semantic_data>& frame, std::size_t idx);
 
     const std::shared_ptr<switchboard>                       switchboard_;
-    switchboard::reader<data_format::semantic_data>          semantic_reader_;
     switchboard::reader<data_format::voice_query>            voice_query_reader_;
     switchboard::network_writer<data_format::query_response> response_writer_;
 
@@ -62,6 +64,11 @@ private:
 
     // Decoded RGB frame cache — written by decode callback, read by get().
     decode::decoded_frame_cache decoded_frames_;
+
+    // Frame metadata cache (depth, poses, intrinsics) keyed by frame_number —
+    // written by on_semantic_data() at arrival, read by get() to pair with
+    // whichever frame decoded_frames_ most recently received.
+    decode::semantic_metadata_cache frame_metadata_;
 };
 
 } // namespace ILLIXR

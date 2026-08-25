@@ -27,7 +27,6 @@ static pybind11::scoped_interpreter make_interpreter() {
 [[maybe_unused]] semantic_python::semantic_python(const std::string& name, ILLIXR::phonebook* pb)
     : plugin{name, pb}
     , switchboard_{pb->lookup_impl<switchboard>()}
-    , semantic_reader_{switchboard_->get_reader<semantic_data>("semantic_data")}
     , voice_query_reader_{switchboard_->get_reader<voice_query>("semantic_query")}
     , response_writer_{switchboard_->get_network_writer<query_response>("semantic_response", {})}
     , guard_{make_interpreter()}
@@ -116,7 +115,7 @@ void semantic_python::run_python_thread() {
         register_bindings(m);
         // inject the proxy objects — decoder_ is initialized by the decode
         // callback thread (on_semantic_data), not here.
-        py_semantic_data_reader  semantic_proxy{&semantic_reader_, &decoded_frames_};
+        py_semantic_data_reader  semantic_proxy{&decoded_frames_, &frame_metadata_};
         py_voice_query_reader    voice_proxy{&voice_query_reader_};
         py_query_response_writer response_proxy{&response_writer_};
 
@@ -173,6 +172,14 @@ void semantic_python::on_semantic_data(const switchboard::ptr<const data_format:
         spdlog::get("illixr")->warn("[semantic_python] on_semantic_data: null frame");
         return;
     }
+
+    // Store metadata (depth, poses, intrinsics) at arrival, before the
+    // slower decode call below. decode() may hand back a picture for an
+    // earlier frame than this one (see nvdec_decoder::decode), so get()
+    // pairs the decoded image with its metadata by frame_number rather
+    // than assuming the two arrive together.
+    frame_metadata_.store(frame->frame_number, frame);
+
     if (frame->image.empty()) {
         spdlog::get("illixr")->warn("[semantic_python] on_semantic_data: frame={} has empty image", frame->frame_number);
         return;
@@ -202,12 +209,14 @@ void semantic_python::on_semantic_data(const switchboard::ptr<const data_format:
         return;
 
     try {
-        const uint8_t* rgb = decoder_->decode(frame->image.data(), frame->image.size());
+        int64_t        decoded_frame_number = -1;
+        const uint8_t* rgb = decoder_->decode(frame->image.data(), frame->image.size(), frame->frame_number,
+                                              decoded_frame_number);
 
         if (rgb != nullptr) {
-            decoded_frames_.store(frame->frame_number, decoder_->width(), decoder_->height(), rgb);
-            spdlog::get("illixr")->debug("[semantic_python] frame={} decoded -> {}x{} RGB stored in cache", frame->frame_number,
-                                         decoder_->width(), decoder_->height());
+            decoded_frames_.store(static_cast<int32_t>(decoded_frame_number), decoder_->width(), decoder_->height(), rgb);
+            spdlog::get("illixr")->debug("[semantic_python] frame={} decoded (submitted frame={}) -> {}x{} RGB stored in cache",
+                                         decoded_frame_number, frame->frame_number, decoder_->width(), decoder_->height());
         } else {
             // nullptr is normal for SPS/PPS-only packets during decoder init —
             // log at debug level so the first few frames don't look like errors.

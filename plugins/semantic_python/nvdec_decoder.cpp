@@ -49,7 +49,7 @@ nvdec_decoder::~nvdec_decoder() {
         cuCtxDestroy(cuda_ctx_);
 }
 
-const uint8_t* nvdec_decoder::decode(const uint8_t* data, size_t size) {
+const uint8_t* nvdec_decoder::decode(const uint8_t* data, size_t size, int64_t frame_number, int64_t& out_frame_number) {
     // Log first 4 bytes to verify annexb start code [00 00 00 01]
     // and the input size so we can confirm what the server receives.
     if (size >= 8) {
@@ -65,7 +65,7 @@ const uint8_t* nvdec_decoder::decode(const uint8_t* data, size_t size) {
         spdlog::get("illixr")->warn("[nvdec] decode input too small: size={}B", size);
     }
 
-    int n_decoded = decoder_->Decode(const_cast<uint8_t*>(data), static_cast<int>(size));
+    int n_decoded = decoder_->Decode(const_cast<uint8_t*>(data), static_cast<int>(size), 0, frame_number);
 
     // Log n_decoded before calling GetWidth()/GetHeight() — those assert
     // m_nWidth != 0 and must not be called until the decoder has parsed SPS/PPS.
@@ -88,7 +88,8 @@ const uint8_t* nvdec_decoder::decode(const uint8_t* data, size_t size) {
     for (int i = 0; i < n_decoded - 1; ++i)
         decoder_->GetFrame(); // discard older buffered frames
 
-    uint8_t* nv12_ptr = decoder_->GetFrame();
+    int64_t  ts       = -1;
+    uint8_t* nv12_ptr = decoder_->GetFrame(&ts);
     if (nv12_ptr == nullptr) {
         spdlog::get("illixr")->warn("[nvdec] GetFrame() returned nullptr despite n_decoded={}", n_decoded);
         return nullptr;
@@ -107,8 +108,8 @@ const uint8_t* nvdec_decoder::decode(const uint8_t* data, size_t size) {
     const uint8_t* y_plane  = nv12_ptr;
     const uint8_t* uv_plane = nv12_ptr + pitch * h;
 
-    spdlog::get("illixr")->debug("[nvdec] frame width={} height={} pitch={} (from decoder={})", w, h, pitch,
-                                 decoder_->GetDeviceFramePitch());
+    spdlog::get("illixr")->debug("[nvdec] frame width={} height={} pitch={} (from decoder={}) timestamp={}", w, h, pitch,
+                                 decoder_->GetDeviceFramePitch(), ts);
 
     // Probe raw NV12 Y plane before conversion to confirm decoder output.
     {
@@ -143,8 +144,9 @@ const uint8_t* nvdec_decoder::decode(const uint8_t* data, size_t size) {
         spdlog::get("illixr")->info("[nvdec] pinned_rgb mean over first {} bytes = {:.1f}", count,
                                     static_cast<double>(sum) / count);
     }
-    width_  = w;
-    height_ = h;
+    width_           = w;
+    height_          = h;
+    out_frame_number = ts;
     return pinned_rgb_;
 }
 

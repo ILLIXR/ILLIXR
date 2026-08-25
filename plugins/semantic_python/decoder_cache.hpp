@@ -1,5 +1,8 @@
 #pragma once
 
+#include "illixr/data_format/semantics.hpp"
+#include "illixr/switchboard.hpp"
+
 #include <array>
 #include <cstdint>
 #include <cstring>
@@ -70,6 +73,62 @@ public:
             }
         }
         return best;
+    }
+
+private:
+    mutable std::mutex          mutex_;
+    std::array<Entry, CAPACITY> entries_;
+    size_t                      next_slot_ = 0;
+};
+
+// ---------------------------------------------------------------------------
+// semantic_metadata_cache
+//
+// Ring buffer storing each semantic_data frame (depth, poses, intrinsics,
+// etc.), keyed by frame_number. Holds a switchboard::ptr to the frame
+// itself rather than copying individual fields out, so the frame's other
+// data stays alive and zero-copy-accessible for as long as the slot is
+// valid.
+//
+// decode lags arrival by a variable amount (see nvdec_decoder::decode), so
+// the frame most recently decoded is not the frame most recently arrived.
+// This cache lets get() look up the arrival-time data (depth/pose/etc.)
+// for whichever frame_number the decoder actually finished decoding,
+// rather than assuming the two arrive together.
+//
+// Written by on_semantic_data() (switchboard thread), at arrival, before
+// the decode call. Read by get() (Python thread).
+// Protected by a mutex.
+// ---------------------------------------------------------------------------
+class semantic_metadata_cache {
+public:
+    static constexpr size_t CAPACITY = 256;
+
+    struct Entry {
+        switchboard::ptr<const data_format::semantic_data> data;
+        int32_t                                             frame_number = -1;
+        bool                                                 valid        = false;
+    };
+
+    // Store a frame's metadata, keyed by frame_number.
+    void store(int32_t frame_number, const switchboard::ptr<const data_format::semantic_data>& frame) {
+        std::lock_guard<std::mutex> lock(mutex_);
+        Entry&                      slot = entries_[next_slot_];
+        slot.data                        = frame;
+        slot.frame_number                = frame_number;
+        slot.valid                       = true;
+        next_slot_                       = (next_slot_ + 1) % CAPACITY;
+    }
+
+    // Find a frame's metadata by frame_number.
+    // Returns nullptr if not found (evicted or not yet arrived).
+    const Entry* find(int32_t frame_number) const {
+        std::lock_guard<std::mutex> lock(mutex_);
+        for (const auto& e : entries_) {
+            if (e.valid && e.frame_number == frame_number)
+                return &e;
+        }
+        return nullptr;
     }
 
 private:

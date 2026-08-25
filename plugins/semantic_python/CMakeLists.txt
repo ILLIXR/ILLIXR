@@ -7,7 +7,7 @@ if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.27.0")
 endif()
 set(CMAKE_CUDA_ARCHITECTURES native)
 find_package(pybind11 CONFIG REQUIRED)
-
+get_external_for_plugin(SemanticXR)
 # ---- NVDEC / CUDA ----
 # NVDEC_SDK_DIR must point to the NVIDIA Video Codec SDK root, e.g.:
 #   -DNVDEC_SDK_DIR="C:/dev/NvidiaVideoCodecSDK"
