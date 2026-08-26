@@ -292,8 +292,11 @@ private:
 #endif
     long bitrate_ = OFFLOAD_RENDERING_BITRATE;
 
-    bool use_pass_depth_          = false;
+    bool use_pass_depth_ = false;
+#ifdef _WIN32
+    // These are currently only supported with Unity, which only supports OpenXR on Windows
     bool use_pass_motion_vectors_ = false;
+#endif
     bool nalu_only_               = false;
 
     std::atomic<bool> framebuffers_imported_{false};
