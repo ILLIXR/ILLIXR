@@ -41,3 +41,21 @@ vcpkg_*
 .vs/
 .vscode/
 *.bak
+
+# Android excludes
+app/.cxx/
+app/build/
+app/build/intermediates/javac/debug/classes/
+
+.gradle/
+
+build/reports/problems/problems-report.html
+
+*.apk
+*.so
+
+local.properties
+
+third_party/include
+third_party/**/*.a
+third_party/sdk/etc/haarcascades/
