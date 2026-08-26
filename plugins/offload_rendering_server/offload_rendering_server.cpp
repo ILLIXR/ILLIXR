@@ -476,20 +476,20 @@ void offload_rendering_server::enqueue_for_network_send(BUFFER_TYPE& pose, uint6
     std::shared_ptr<compressed_frame> frame;
     #ifdef _WIN32
     if (use_pass_motion_vectors_) {
-    #ifdef COMBINED_ENCODING
+        #ifdef COMBINED_ENCODING
         frame = std::make_shared<compressed_frame>(encode_out_combined_color_packet_, PACKET_TYPE{},
                                                    encode_out_depth_packets_[0], encode_out_depth_packets_[1],
                                                    encode_out_motion_vec_packets_[0], encode_out_motion_vec_packets_[1], pose,
                                                    timestamp, frame_number_, near_z_, far_z_, nalu_only_);
-    #else
+        #else
         frame = std::make_shared<compressed_frame>(encode_out_color_packets_[0], encode_out_color_packets_[1],
                                                    encode_out_depth_packets_[0], encode_out_depth_packets_[1],
                                                    encode_out_motion_vec_packets_[0], encode_out_motion_vec_packets_[1], pose,
                                                    timestamp, frame_number_, near_z_, far_z_, nalu_only_);
-    #endif // COMBINED_ENCODING
+        #endif // COMBINED_ENCODING
     } else if (use_pass_depth_) {
     #else
-        if (use_pass_depth_) {
+    if (use_pass_depth_) {
     #endif
     #ifdef COMBINED_ENCODING
         frame = std::make_shared<compressed_frame>(encode_out_combined_color_packet_, PACKET_TYPE{},
@@ -534,16 +534,16 @@ void offload_rendering_server::enqueue_for_network_send(BUFFER_TYPE& pose, uint6
     // FFmpeg path: build the same compressed_frame shape as NVENC and route it
     // through the send queue so the encoding thread is never blocked on network I/O.
     std::shared_ptr<compressed_frame> frame;
-#ifdef _WIN32
+    #ifdef _WIN32
     if (use_pass_motion_vectors_) {
         frame = std::make_shared<compressed_frame>(encode_out_color_packets_[0], encode_out_color_packets_[1],
                                                    encode_out_depth_packets_[0], encode_out_depth_packets_[1],
                                                    encode_out_motion_vec_packets_[0], encode_out_motion_vec_packets_[1], pose,
                                                    timestamp, frame_number_, near_z_, far_z_, nalu_only_);
     } else if (use_pass_depth_) {
-#else
-        if (use_pass_depth_) {
-#endif
+    #else
+    if (use_pass_depth_) {
+    #endif
         frame = std::make_shared<compressed_frame>(encode_out_color_packets_[0], encode_out_color_packets_[1],
                                                    encode_out_depth_packets_[0], encode_out_depth_packets_[1], pose, timestamp,
                                                    frame_number_, near_z_, far_z_, nalu_only_);
@@ -674,7 +674,7 @@ void offload_rendering_server::nvenc_init_encoders() {
         }
     }
     #endif // COMBINED_ENCODING
-#ifdef _WIN32
+    #ifdef _WIN32
     if (use_pass_motion_vectors_) {
         // Motion vectors are encoded at a fixed 432x432 (the resolution produced by
         // comp_renderer when it blits the Unity quad layer into illixr_framebuffer).
@@ -699,7 +699,7 @@ void offload_rendering_server::nvenc_init_encoders() {
             log_->info("NVENC: Motion-vector encoder {} initialized", eye);
         }
     }
-#endif
+    #endif
     if (use_pass_depth_) {
         // Depth uses lower bitrate (RG format compresses better than color)
         // Color: 50-100 Mbps, Depth: 15-25 Mbps
@@ -795,7 +795,7 @@ void offload_rendering_server::nvenc_import_buffer_pool_images() {
                     log_->info("Imported depth buffer {} eye {} -> encoder index {}", buffer_idx, eye, depth_idx);
                 }
             }
-#ifdef _WIN32
+    #ifdef _WIN32
             // Import MOTION VECTORS
             if (use_pass_motion_vectors_ && fb->motion_vec_image != VK_NULL_HANDLE) {
                 vulkan_image_info mv_vk_image;
@@ -818,7 +818,7 @@ void offload_rendering_server::nvenc_import_buffer_pool_images() {
             } else {
                 log_->warn("No MV in buffer");
             }
-#endif
+    #endif
         }
     }
 }
@@ -889,7 +889,7 @@ void offload_rendering_server::nvenc_encode_frames(int ind) {
         }
 
         // Encode motion vector frame if enabled
-#ifdef _WIN32
+    #ifdef _WIN32
         if (use_pass_motion_vectors_) {
             int mv_index = motion_vec_imported_indices_[ind][eye];
             if (mv_index >= 0) {
@@ -899,7 +899,7 @@ void offload_rendering_server::nvenc_encode_frames(int ind) {
                 log_->warn("Motion-vector buffer {} eye {} not imported, skipping", ind, eye);
             }
         }
-#endif
+    #endif
     }
 }
 

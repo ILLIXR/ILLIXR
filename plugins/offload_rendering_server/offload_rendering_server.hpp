@@ -297,7 +297,7 @@ private:
     // These are currently only supported with Unity, which only supports OpenXR on Windows
     bool use_pass_motion_vectors_ = false;
 #endif
-    bool nalu_only_               = false;
+    bool nalu_only_ = false;
 
     std::atomic<bool> framebuffers_imported_{false};
 
