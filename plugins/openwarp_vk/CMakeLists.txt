@@ -1,6 +1,7 @@
-if(WIN32 OR MSVC)
-    message(WARNING "openwarp_vk is not yet available for windows")
+if(WIN32 OR MSVC OR ANDROID)
+    message(WARNING "openwarp_vk is not yet available for Windows or Android")
     set(USE_OPENWARP_VK OFF)
+    return()
 endif()
 
 cmake_minimum_required(VERSION 3.16)
