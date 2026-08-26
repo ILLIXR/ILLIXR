@@ -6,6 +6,8 @@ endif()
 #set(DUMP_FRAMES ON)
 # Enable CUDA language only if using NVENC encoder
 option(USE_NVENC_ENCODER "Use direct NVENC encoder instead of FFmpeg" OFF)
+option(USE_OPENXR_DEFINITIONS "Use the OpenXR pose definitions" OFF)
+
 # NVENC is required for windows, ffmpeg is not supported on that platform.
 if(WIN32 OR MSVC)
     set(USE_NVENC_ENCODER ON)
@@ -260,7 +262,10 @@ else()
     set_property(TARGET ${PLUGIN_NAME} PROPERTY POSITION_INDEPENDENT_CODE ON)
 endif()
 
-target_compile_definitions(${PLUGIN_NAME} PUBLIC USING_OPENXR OPENXR_CLIENT ENABLE_MONADO)
+target_compile_definitions(${PLUGIN_NAME} PUBLIC ENABLE_MONADO)
+if(USE_OPENXR_DEFINITIONS)
+    target_compile_definitions(${PLUGIN_NAME} PUBLIC USING_OPENXR OPENXR_CLIENT)
+endif()
 get_target_property(INC_DIRS ${PLUGIN_NAME} INCLUDE_DIRECTORIES)
 install(TARGETS ${PLUGIN_NAME} DESTINATION lib)
 
