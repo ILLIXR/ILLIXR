@@ -10,16 +10,16 @@
 #include "vulkan_objects.hpp"
 
 #ifdef USING_OPENXR
-    #ifdef ENABLE_MONADO
-        #define BUFFER_TYPE   std::array<xrt_pose, 2>
-        #define POSE_RTN_TYPE std::array<xrt_pose, 2>
-    #else
-        #define BUFFER_TYPE   std::array<XrPosef, 2>
-        #define POSE_RTN_TYPE std::array<xrt_pose, 2>
-    #endif
+#    ifdef ENABLE_MONADO
+#        define BUFFER_TYPE   std::array<xrt_pose, 2>
+#        define POSE_RTN_TYPE std::array<xrt_pose, 2>
+#    else
+#        define BUFFER_TYPE   std::array<XrPosef, 2>
+#        define POSE_RTN_TYPE std::array<xrt_pose, 2>
+#    endif
 #else
-    #define BUFFER_TYPE   data_format::pose::fast_head_pose_type
-    #define POSE_RTN_TYPE data_format::pose::head_pose_type
+#    define BUFFER_TYPE   data_format::pose::fast_head_pose_type
+#    define POSE_RTN_TYPE data_format::pose::head_pose_type
 #endif
 
 #include <GLFW/glfw3.h>
