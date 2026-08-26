@@ -1,6 +1,6 @@
 if(WIN32 OR MSVC OR ANDROID)
     message(WARNING "ada.infinitam is not yet available for Windows or Android")
-    set(USE_ADA.INFINITAM OFF)
+    set(USE_ADA_INFINITAM OFF)
     return()
 endif()
 include(GetInfiniTAM)

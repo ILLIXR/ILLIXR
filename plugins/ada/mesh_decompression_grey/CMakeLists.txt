@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.22)
 if(WIN32 OR MSVC OR ANDROID)
     message(WARNING "ada.mesh_decompression_grey is not yet available for Windows or Android")
-    set(USE_ADA.MESH_DECOMPRESSION_GREY OFF)
+    set(USE_ADA_MESH_DECOMPRESSION_GREY OFF)
     return()
 endif()
 

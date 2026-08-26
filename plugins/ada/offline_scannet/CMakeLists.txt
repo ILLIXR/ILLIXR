@@ -1,7 +1,7 @@
 set(PLUGIN_NAME plugin.ada.offline_scannet${ILLIXR_BUILD_SUFFIX})
 if(WIN32 OR MSVC OR ANDROID)
     message(WARNING "ada.offline_scannet is not yet available for Windows or Android")
-    set(USE_ADA.OFFLINE_SCANNET OFF)
+    set(USE_ADA_OFFLINE_SCANNET OFF)
     return()
 endif()
 
