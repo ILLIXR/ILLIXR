@@ -1,38 +1,38 @@
 #pragma once
 #if defined(_WIN32) || defined(_WIN64)
-    #define _WINSOCKAPI_
-    #define WIN32_LEAN_AND_MEAN
-#endif
-#include <stdexcept>
-#if defined(_WIN32) || defined(_WIN64)
+#    ifndef WIN32_LEAN_AND_MEAN
+#        define WIN32_LEAN_AND_MEAN
+#    endif
+#    ifndef _WINSOCKAPI_
+#        define _WINSOCKAPI_
+#    endif
 // clang-format off
-    #include <WinSock2.h>  // Must come FIRST
-    #include <ws2def.h>
-    #include <ws2tcpip.h>
-    #include <mstcpip.h>
-    #include <WindNS.h>
-    #include <iphlpapi.h>
-    #include <icmpapi.h>
-    #include <iphlpapi.h>
-    #include <mstcpip.h>
-    #include <nldef.h>
+#  include <WinSock2.h>  // Must come FIRST
+#  include <ws2def.h>
+#  include <ws2tcpip.h>
+#  include <mstcpip.h>
+#  include <WindNS.h>
+#  include <iphlpapi.h>
+#  include <icmpapi.h>
+#  include <nldef.h>
+#  pragma comment(lib, "Ws2_32.lib")
+#  pragma comment(lib, "Iphlpapi.lib")
+#  define BYTE_TYPE   int
+#  define SOCKET_TYPE SOCKET
 // clang-format on
-    #pragma comment(lib, "Ws2_32.lib")
-    #pragma comment(lib, "Iphlpapi.lib")
-    #define BYTE_TYPE   int
-    #define SOCKET_TYPE SOCKET
 #else
-    #include <arpa/inet.h>
-    #include <netinet/in.h>
-    #include <netinet/tcp.h>
-    #include <sys/socket.h>
-    #include <unistd.h>
-    #define BYTE_TYPE   ssize_t
-    #define SOCKET_TYPE int
+#    include <arpa/inet.h>
+#    include <netinet/in.h>
+#    include <netinet/tcp.h>
+#    include <sys/socket.h>
+#    include <unistd.h>
+#    define BYTE_TYPE   ssize_t
+#    define SOCKET_TYPE int
 #endif
 
 #include "illixr/export.hpp"
 
+#include <stdexcept>
 #include <string>
 
 namespace ILLIXR::network {
@@ -134,17 +134,21 @@ public:
     }
 
     // Read data from the socket
-    [[nodiscard]] std::string read_data(const size_t limit = BUFFER_SIZE) const {
-        char      buffer[BUFFER_SIZE];
+    [[nodiscard]] std::string read_data(const size_t limit = BUFFER_SIZE) {
+#ifndef __ANDROID__
+        char buffer_[BUFFER_SIZE];
+#endif
         BYTE_TYPE bytes_read =
 #if defined(_WIN32) || defined(_WIN64)
-            recv(fd_, buffer, static_cast<int>(min(BUFFER_SIZE, limit)), 0);
+            recv(fd_, buffer_, static_cast<int>(min(BUFFER_SIZE, limit)), 0);
+#elif defined(__ANDROID__)
+            read(fd_, static_cast<void* const>(buffer_), std::min(BUFFER_SIZE, limit));
 #else
-            read(fd_, buffer, static_cast<int>(std::min(BUFFER_SIZE, limit)));
+            read(fd_, buffer_, static_cast<int>(std::min(BUFFER_SIZE, limit)));
 #endif
         if (bytes_read <= 0)
             return {};
-        return std::string(buffer, bytes_read);
+        return std::string(buffer_, bytes_read);
     }
 
     // Write data to the socket
@@ -163,7 +167,8 @@ public:
             throw std::runtime_error("No delay failed");
 #else
         const int enable = 1;
-        setsockopt(fd_, IPPROTO_TCP, TCP_NODELAY, &enable, sizeof(int));
+        if (setsockopt(fd_, IPPROTO_TCP, TCP_NODELAY, &enable, sizeof(int)) < 0)
+            throw std::runtime_error("TCPSocket] TCP_NODELAY setsockopt failed");
 #endif
     }
 
@@ -225,7 +230,10 @@ private:
 
     SOCKET_TYPE fd_;
     /* maximum size of a read */
-    static constexpr size_t BUFFER_SIZE = 1024 * 256;
+    static constexpr size_t BUFFER_SIZE = 1024 * 1024;
+#ifdef __ANDROID__
+    char buffer_[BUFFER_SIZE];
+#endif
 };
 
 } // namespace ILLIXR::network
