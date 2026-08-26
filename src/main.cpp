@@ -83,7 +83,7 @@ int main(int argc, const char* argv[]) {
         setenv("ILLIXR_UDP_SERVER_PORT", "9003", true);
         setenv("ILLIXR_IS_CLIENT", "1", true);
         setenv("ILLIXR_USE_DEPTH_IMAGES", "0", true);
-        setenv("ILLIXR_USE_MOTION_VECTORS", "0", true);
+        setenv("ILLIXR_USE_MOTION_VECTOR_IMAGES", "0", true);
 #    else
     cxxopts::Options options("ILLIXR", "Main program");
     options.show_positional_help();
