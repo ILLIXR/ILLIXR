@@ -1,6 +1,6 @@
 #define GL_GLEXT_PROTOTYPES
 #if defined(_WIN32) || defined(_WIN64)
-    #include <windows.h>
+#    include <windows.h>
 #endif
 // clang-format off
 #include <GL/glew.h> // GLEW has to be loaded before other GL libraries
@@ -75,13 +75,13 @@ timewarp_gl::timewarp_gl(const std::string& name, phonebook* pb)
     spdlogger(switchboard_->get_env_char("TIMEWARP_GL_LOG_LEVEL"));
 #ifndef ENABLE_MONADO
     const std::shared_ptr<xlib_gl_extended_window> x_win = phonebook_->lookup_impl<xlib_gl_extended_window>();
-    #if defined(_WIN32) || defined(_WIN64)
+#    if defined(_WIN32) || defined(_WIN64)
     hwnd_ = x_win->hwnd_;
     hdc_  = x_win->hdc_;
-    #else
+#    else
     display_     = x_win->display_;
     root_window_ = x_win->window_;
-    #endif
+#    endif
     context_ = x_win->context_;
 #else
     // If we use Monado, timewarp_gl must create its own GL context because the extended window isn't used
@@ -711,11 +711,11 @@ void timewarp_gl::warp(const switchboard::ptr<const rendered_frame>& most_recent
     // Call swap buffers; when vsync is enabled, this will return to the
     // CPU thread once the buffers have been successfully swapped.
     [[maybe_unused]] time_point time_before_swap = clock_->now();
-    #if defined(_WIN32) || defined(_WIN64)
+#    if defined(_WIN32) || defined(_WIN64)
     SwapBuffers(hdc_);
-    #else
+#    else
     glXSwapBuffers(display_, root_window_);
-    #endif
+#    endif
 
     // The swap time needs to be obtained and published as soon as possible
     time_last_swap_                             = clock_->now();
@@ -738,7 +738,7 @@ void timewarp_gl::warp(const switchboard::ptr<const rendered_frame>& most_recent
                                {render_to_display},
                            }});
 
-    #ifndef NDEBUG // Timewarp only has vsync estimates if we're running with native-gl
+#    ifndef NDEBUG // Timewarp only has vsync estimates if we're running with native-gl
 
     if (log_count_ > LOG_PERIOD_) {
         const double     time_swap         = duration_to_double<std::milli>(time_after_swap - time_before_swap);
@@ -754,7 +754,7 @@ void timewarp_gl::warp(const switchboard::ptr<const rendered_frame>& most_recent
         spdlog::get(name_)->debug("Render-to-display latency: {} ms", latency_rtd);
         spdlog::get(name_)->debug("Next swap in: {} ms in the future", timewarp_estimate);
     }
-    #endif
+#    endif
 
     // For now, it only makes sense to enable offloading in native mode
     // because running timewarp with Monado will not produce a single texture.

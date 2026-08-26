@@ -1,18 +1,25 @@
 #pragma once
+#ifndef _USE_MATH_DEFINES
+#    define _USE_MATH_DEFINES
+#endif
 
 #include <cmath>
 #ifndef M_PI
-    #define M_PI 3.14159265358979323846
+#    define M_PI 3.14159265358979323846
 #endif
 #ifdef Success
-    #undef Success
+#    undef Success
 #endif
-#include <eigen3/Eigen/Core>
+#ifdef __ANDROID__
+#    include <Eigen/Core>
+#else
+#    include <eigen3/Eigen/Core>
+#endif
 
 namespace ILLIXR::math_util {
 /// Calculates a projection matrix with the given tangent angles and clip planes
-void projection(Eigen::Matrix4f* result, const float tan_left, const float tan_right, const float tan_up, float const tan_down,
-                const float near_z, const float far_z) {
+inline void projection(Eigen::Matrix4f* result, const float tan_left, const float tan_right, const float tan_up,
+                       float const tan_down, const float near_z, const float far_z) {
     const float tan_width  = tan_right - tan_left;
     const float tan_height = tan_up - tan_down;
 
@@ -39,8 +46,8 @@ void projection(Eigen::Matrix4f* result, const float tan_left, const float tan_r
 }
 
 /// Calculates a projection matrix with the given tangent angles and clip planes, with reversed depth
-void projection_reverse_z(Eigen::Matrix4f* result, const float tan_left, const float tan_right, const float tan_up,
-                          float const tan_down, const float near_z, const float far_z) {
+inline void projection_reverse_z(Eigen::Matrix4f* result, const float tan_left, const float tan_right, const float tan_up,
+                                 float const tan_down, const float near_z, const float far_z) {
     const float tan_width  = tan_right - tan_left;
     const float tan_height = tan_up - tan_down;
 
@@ -67,8 +74,8 @@ void projection_reverse_z(Eigen::Matrix4f* result, const float tan_left, const f
 }
 
 /// Calculates a projection matrix with the given FoVs and clip planes
-void projection_fov(Eigen::Matrix4f* result, const float fov_left, const float fov_right, const float fov_up,
-                    const float fov_down, const float near_z, const float far_z, bool reverse_z = false) {
+inline void projection_fov(Eigen::Matrix4f* result, const float fov_left, const float fov_right, const float fov_up,
+                           const float fov_down, const float near_z, const float far_z, bool reverse_z = false) {
     const float tan_left  = -tanf(static_cast<float>(fov_left * (M_PI / 180.0f)));
     const float tan_right = tanf(static_cast<float>(fov_right * (M_PI / 180.0f)));
 
@@ -83,10 +90,10 @@ void projection_fov(Eigen::Matrix4f* result, const float fov_left, const float f
 }
 
 // Expects FoVs in radians
-void unreal_projection(Eigen::Matrix4f* result, const float fov_left, const float fov_right, const float fov_up,
-                       const float fov_down) {
+inline void unreal_projection(Eigen::Matrix4f* result, const float fov_left, const float fov_right, const float fov_up,
+                              const float fov_down) {
     // Unreal uses a far plane at infinity and a near plane of 10 centimeters (0.1 meters)
-    constexpr float near_z = 0.1;
+    constexpr float near_z = 0.1f;
 
     const float angle_left  = tanf(static_cast<float>(fov_left));
     const float angle_right = tanf(static_cast<float>(fov_right));
@@ -120,13 +127,13 @@ void unreal_projection(Eigen::Matrix4f* result, const float fov_left, const floa
 }
 
 // TODO: this is just a complicated version to achieve reverse Z with a finite far plane.
-[[maybe_unused]] void godot_projection(Eigen::Matrix4f* result, const float fov_left, const float fov_right, const float fov_up,
-                                       const float fov_down) {
+[[maybe_unused]] inline void godot_projection(Eigen::Matrix4f* result, const float fov_left, const float fov_right,
+                                              const float fov_up, const float fov_down) {
     // Godot's default far and near planes are 4000m and 0.05m respectively.
     // https://github.com/godotengine/godot/blob/e96ad5af98547df71b50c4c4695ac348638113e0/modules/openxr/openxr_util.cpp#L97
     // The Vulkan implementation passes in GRAPHICS_OPENGL for some reason.
-    constexpr float near_z   = 0.05;
-    constexpr float far_z    = 4000;
+    constexpr float near_z   = 0.05f;
+    constexpr float far_z    = 4000.f;
     constexpr float offset_z = near_z;
 
     const float angle_left  = tanf(static_cast<float>(fov_left));
