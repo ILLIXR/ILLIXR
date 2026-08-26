@@ -854,7 +854,7 @@ void timewarp_gl::warp(const switchboard::ptr<const rendered_frame>& most_recent
                               (void*) (eye * num_distortion_vertices_ * sizeof(HMD::mesh_coord2d_t)));
         glEnableVertexAttribArray(distortion_uv2_attr_);
 
-#if defined(__ANDROID_ ) && !defined(USE_ALT_EYE_FORMAT) // If we are using normal ILLIXR-format eyebuffers
+#if defined(__ANDROID_) && !defined(USE_ALT_EYE_FORMAT) // If we are using normal ILLIXR-format eyebuffers
         // Specify which layer of the eye texture we're going to be using.
         // Each eye has its own layer.
         glUniform1i(tw_eye_index_uniform_, eye);
