@@ -2,7 +2,7 @@
 
 #define GLFW_INCLUDE_VULKAN
 #if defined(_WIN32) || defined(_WIN64)
-    #include <windows.h>
+#    include <windows.h>
 #endif
 #include "illixr/data_format/misc.hpp"
 #include "illixr/data_format/poses/head_pose.hpp"
@@ -10,13 +10,13 @@
 #include "vulkan_objects.hpp"
 
 #ifdef USING_OPENXR
-    #ifdef ENABLE_MONADO
-        #define BUFFER_TYPE std::array<xrt_pose, 2>
-    #else
-        #define BUFFER_TYPE std::array<XrPosef, 2>
-    #endif
+#    ifdef ENABLE_MONADO
+#        define BUFFER_TYPE std::array<xrt_pose, 2>
+#    else
+#        define BUFFER_TYPE std::array<XrPosef, 2>
+#    endif
 #else
-    #define BUFFER_TYPE data_format::pose::fast_head_pose_type
+#    define BUFFER_TYPE data_format::pose::fast_head_pose_type
 #endif
 
 #include <GLFW/glfw3.h>
