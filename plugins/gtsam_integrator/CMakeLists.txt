@@ -9,7 +9,7 @@ get_external_for_plugin(GTSAM)
 set(PLUGIN_NAME plugin.gtsam_integrator${ILLIXR_BUILD_SUFFIX})
 
 # source files, listed individually so that any changes will trigger a rebuild
-add_library(${PLUGIN_NAME} SHARED 
+add_library(${PLUGIN_NAME} SHARED
             plugin.cpp
             plugin.hpp
             third_party/filter.h
@@ -33,5 +33,5 @@ target_link_libraries(${PLUGIN_NAME} ${GTSAM_LIBRARIES} Eigen3::Eigen spdlog::sp
 #        Eigen3
 #        spdlog::spdlog_android
 #)
-endif()
+#endif()
 install(TARGETS ${PLUGIN_NAME} DESTINATION lib)

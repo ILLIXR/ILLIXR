@@ -787,7 +787,7 @@ void timewarp_gl::warp(const switchboard::ptr<const rendered_frame>& most_recent
     glUniform1i(glGetUniformLocation(timewarp_shader_program_, "ArrayIndex"), 0);
     glUniform1i(static_cast<GLint>(eye_sampler_0_), 0);
 
-#if defined(__ANDROID__ && !defined(USE_ALT_EYE_FORMAT)
+#if defined(__ANDROID__) && !defined(USE_ALT_EYE_FORMAT)
     // Bind the shared texture handle
     glBindTexture(GL_TEXTURE_2D_ARRAY, most_recent_frame->texture_handle);
 #endif
@@ -854,7 +854,7 @@ void timewarp_gl::warp(const switchboard::ptr<const rendered_frame>& most_recent
                               (void*) (eye * num_distortion_vertices_ * sizeof(HMD::mesh_coord2d_t)));
         glEnableVertexAttribArray(distortion_uv2_attr_);
 
-#if defined(__ANDROID_ && !defined(USE_ALT_EYE_FORMAT) // If we are using normal ILLIXR-format eyebuffers
+#if defined(__ANDROID_ ) && !defined(USE_ALT_EYE_FORMAT) // If we are using normal ILLIXR-format eyebuffers
         // Specify which layer of the eye texture we're going to be using.
         // Each eye has its own layer.
         glUniform1i(tw_eye_index_uniform_, eye);
@@ -896,7 +896,7 @@ void timewarp_gl::warp(const switchboard::ptr<const rendered_frame>& most_recent
     [[maybe_unused]] time_point time_before_swap = clock_->now();
 #    if defined(_WIN32) || defined(_WIN64)
     SwapBuffers(hdc_);
-#    elif defined(__ANDROID__
+#    elif defined(__ANDROID__)
     eglSwapBuffers(display_, surface_);
 #    else
     glXSwapBuffers(display_, root_window_);
