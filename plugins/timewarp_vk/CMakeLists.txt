@@ -1,4 +1,8 @@
-cmake_minimum_required(VERSION 3.22)
+if(ANDROID)
+    message(WARNING "timewarp_vk is not yet available for Android")
+    set(USE_TIMEWARP_VK OFF)
+    return()
+endif()
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

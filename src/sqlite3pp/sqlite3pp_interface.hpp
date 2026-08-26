@@ -22,6 +22,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#ifndef __ANDROID__
+
 #ifndef SQLITE3PP_H
 #define SQLITE3PP_H
 
@@ -340,5 +342,7 @@ namespace sqlite3pp
   };
 
 } // namespace sqlite3pp
+
+#endif
 
 #endif

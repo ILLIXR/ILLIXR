@@ -20,14 +20,37 @@ add_library(${PLUGIN_NAME} SHARED
 )
 
 target_include_directories(${PLUGIN_NAME} PRIVATE ${ILLIXR_SOURCE_DIR}/include)
+
+if(ANDROID)
+    target_include_directories(${PLUGIN_NAME} PRIVATE
+                               ${jnigraphics-lib}
+                               ${ANDROID_NDK}/sources/android/native_app_glue
+    )
+endif()
 target_link_libraries(${PLUGIN_NAME} PUBLIC
                       Eigen3::Eigen
-                      spdlog::spdlog
                       Boost::serialization
 )
+
+if(ANDROID)
+    target_link_libraries(${PLUGIN_NAME} PUBLIC
+                          EGL
+                          GLESv3
+                          Eigen3::Eigen
+                          spdlog::spdlog_android
+    )
+
+else()
+    target_link_libraries(${PLUGIN_NAME} PUBLIC
+                          spdlog::spdlog
+    )
+endif()
+
 if(WIN32 OR MSVC)
     target_compile_definitions(${PLUGIN_NAME} PRIVATE BUILDING_LIBRARY)
 endif()
 target_compile_features(${PLUGIN_NAME} PRIVATE cxx_std_17)
 
-install(TARGETS ${PLUGIN_NAME} DESTINATION lib)
+if(NOT ANDROID)
+    install(TARGETS ${PLUGIN_NAME} DESTINATION lib)
+endif()
