@@ -1,7 +1,7 @@
 #pragma once
 
 #if defined(_WIN32) || defined(_WIN64)
-    #include <cstdlib>
+#    include <cstdlib>
 #endif
 #include "concurrentqueue/blockingconcurrentqueue.hpp"
 #include "export.hpp"
@@ -12,23 +12,32 @@
 #include "record_logger.hpp"
 
 #ifdef Success
-    #undef Success // For 'Success' conflict
+#    undef Success // For 'Success' conflict
 #endif
 
-#include <eigen3/Eigen/Core>
-#include <eigen3/Eigen/Geometry>
+#ifdef __ANDROID__
+#    include <Eigen/Core>
+#    include <Eigen/Geometry>
+#else
+#    include <eigen3/Eigen/Core>
+#    include <eigen3/Eigen/Geometry>
+#endif
 #include <iostream>
 #include <list>
 #include <mutex>
 #include <shared_mutex>
 #include <utility>
 
+#ifdef __ANDROID__
+#    include <android_native_app_glue.h>
+#endif
+
 #ifndef NDEBUG
-    #include <spdlog/spdlog.h>
+#    include <spdlog/spdlog.h>
 #endif
 
 #if __has_include("cpu_timer.hpp")
-    #include "cpu_timer.hpp"
+#    include "cpu_timer.hpp"
 #else
 static std::chrono::nanoseconds thread_cpu_time() {
     return {};
@@ -408,7 +417,8 @@ private:
          */
         void put(ptr<const event>&& this_event) {
             assert(this_event != nullptr);
-            assert(this_event.use_count() <= 2); /// <-- TODO: Revisit for solution that guarantees uniqueness
+            assert(this_event.unique() ||
+                   this_event.use_count() <= 2); /// <-- TODO: Revisit for solution that guarantees uniqueness
 
             /* The pointer that this gets exchanged with needs to get dropped. */
             size_t index          = (latest_index_.load() + 1) % latest_buffer_size_;
@@ -619,10 +629,11 @@ public:
         virtual void put(ptr<Specific_event>&& this_specific_event) {
             assert(typeid(Specific_event) == topic_.ty());
             assert(this_specific_event != nullptr);
-            assert(this_specific_event.use_count() == 1);
+            assert(this_specific_event.unique());
             ptr<const event> this_event =
                 std::const_pointer_cast<const event>(std::static_pointer_cast<event>(std::move(this_specific_event)));
-            assert(this_event.use_count() <= 2); /// TODO: Revisit for solution that guarantees uniqueness
+            assert(this_event.unique() ||
+                   this_event.use_count() <= 2); /// TODO: Revisit for solution that guarantees uniqueness
             topic_.put(std::move(this_event));
         }
 
@@ -781,31 +792,39 @@ public:
     }
 
     [[maybe_unused]] int get_env_int(const std::string& var, const int _default = 0) {
-        std::string val = get_env(var, "");
-        if (val.empty())
-            return _default;
-        return std::stoi(val);
+        std::string val = get_env(var, std::to_string(_default));
+        try {
+            int res = std::stoi(val);
+            return res;
+        } catch (...) { }
+        return _default;
     }
 
     [[maybe_unused]] long get_env_long(const std::string& var, const long _default = 0) {
-        std::string val = get_env(var, "");
-        if (val.empty())
-            return _default;
-        return std::stol(val);
+        std::string val = get_env(var, std::to_string(_default));
+        try {
+            int res = std::stol(val);
+            return res;
+        } catch (...) { }
+        return _default;
     }
 
     [[maybe_unused]] unsigned long get_env_ulong(const std::string& var, const unsigned long _default = 0) {
-        std::string val = get_env(var, "");
-        if (val.empty())
-            return _default;
-        return std::stoul(val);
+        std::string val = get_env(var, std::to_string(_default));
+        try {
+            int res = std::stoul(val);
+            return res;
+        } catch (...) { }
+        return _default;
     }
 
     [[maybe_unused]] double get_env_double(const std::string& var, const double _default = 0.) {
-        std::string val = get_env(var, "");
-        if (val.empty())
-            return _default;
-        return std::stod(val);
+        std::string val = get_env(var, std::to_string(_default));
+        try {
+            int res = std::stod(val);
+            return res;
+        } catch (...) { }
+        return _default;
     }
 
     /**
@@ -917,13 +936,28 @@ public:
         }
     }
 
+#ifdef __ANDROID__
+    void set_android_app(android_app* app) {
+        if (app_) {
+            spdlog::get("illixr")->error("Android app already set");
+            return;
+        }
+        app_ = app;
+    }
+
+    android_app* get_android_app() {
+        return app_;
+    }
+#endif
 private:
     const phonebook*                             phonebook_;
     std::unordered_map<std::string, topic>       registry_;
     std::shared_mutex                            registry_lock_;
     std::shared_ptr<record_logger>               record_logger_;
     std::unordered_map<std::string, std::string> env_vars_;
-
+#ifdef __ANDROID__
+    android_app* app_ = nullptr;
+#endif
     template<typename Specific_event>
     topic& try_register_topic(const std::string& topic_name) {
         {

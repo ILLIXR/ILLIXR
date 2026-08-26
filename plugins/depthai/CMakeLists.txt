@@ -1,7 +1,7 @@
 # module to build and install the depthai ILLIXR plugin
 if(WIN32 OR MSVC)
     message(WARNING "depthai is not yet available for windows")
-    set(USE_ADA.DEPTHAI OFF)
+    set(USE_DEPTHAI OFF)
 else()
 
     get_external_for_plugin(DepthAI)
