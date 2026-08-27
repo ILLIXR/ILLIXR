@@ -6,9 +6,9 @@
 
 #define DOUBLE_INCLUDE
 #ifdef USING_OPENXR
-    #include "illixr/data_format/poses/combined_pose.hpp"
+#    include "illixr/data_format/poses/combined_pose.hpp"
 #else
-    #include "illixr/data_format/poses/head_pose.hpp"
+#    include "illixr/data_format/poses/head_pose.hpp"
 #endif
 
 #include "illixr/switchboard.hpp"
