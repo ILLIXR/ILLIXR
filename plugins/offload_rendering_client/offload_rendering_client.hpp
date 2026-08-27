@@ -108,7 +108,7 @@ public:
     /**
      * @brief Update uniforms (no-op in this implementation)
      */
-    void update_uniforms(const data_format::pose::head_pose_type& render_pose) override {
+    void update_uniforms(const BUFFER_TYPE& render_pose) override {
         (void) render_pose;
     }
 
