@@ -20,9 +20,9 @@
 #include <map>
 
 #ifdef USING_OPENXR
-    #include "auxiliary/os/os_time.h"
+#    include "auxiliary/os/os_time.h"
 #else
-    #ifndef XrTime
+#    ifndef XrTime
 typedef int64_t XrTime;
 #    endif
 #endif
