@@ -1,5 +1,6 @@
 #include "plugin.hpp"
 
+#include "nvdec_decoder.hpp"
 #include "switchboard_bindings.hpp"
 
 #include <pybind11/pybind11.h>
@@ -13,7 +14,7 @@ static pybind11::scoped_interpreter make_interpreter() {
 
     const char* python_home = std::getenv("PYTHONHOME");
     if (python_home) {
-        PyConfig_SetBytesString(&config, &config.home,  python_home);
+        PyConfig_SetBytesString(&config, &config.home, python_home);
     }
     const char* python_path = std::getenv("PYTHONPATH");
     if (python_path) {
@@ -26,36 +27,62 @@ static pybind11::scoped_interpreter make_interpreter() {
 [[maybe_unused]] semantic_python::semantic_python(const std::string& name, ILLIXR::phonebook* pb)
     : plugin{name, pb}
     , switchboard_{pb->lookup_impl<switchboard>()}
-    , semantic_reader_{switchboard_->get_reader<semantic_frame>("semantic_data")}
     , voice_query_reader_{switchboard_->get_reader<semantic_xr::voice_query>("semantic_query")}
     , response_writer_{switchboard_->get_network_writer<semantic_xr::query_response>("semantic_response", {})}
     , guard_{make_interpreter()}
     , release_{} {
     // Fix sys.path to use the venv Python rather than system Python.
     // Must be done before any Python imports, including in the thread.
-    {
+    // Get the venv path from the environment
+    const char* venv = switchboard_->get_env_char("VIRTUAL_ENV");
+    if (venv) {
         pybind11::gil_scoped_acquire acquire;
-        pybind11::module_ sys = pybind11::module_::import("sys");
-        pybind11::module_ site = pybind11::module_::import("site");
+        pybind11::module_            sys  = pybind11::module_::import("sys");
+        pybind11::module_            site = pybind11::module_::import("site");
 
-        // Get the venv path from environment or hardcode
-        const char* venv = std::getenv("VIRTUAL_ENV");
-        if (venv) {
-            std::string site_packages = std::string(venv) +
-                                        "/lib/python3.12/site-packages";
-            pybind11::list path = sys.attr("path");
-            path.attr("insert")(0, site_packages);
-            // Also call site.addsitedir to pick up .pth files
-            site.attr("addsitedir")(site_packages);
+        auto prefix       = sys.attr("prefix").cast<std::string>();
+        auto version_info = sys.attr("version_info");
+        int  major        = version_info.attr("major").cast<int>();
+        int  minor        = version_info.attr("minor").cast<int>();
+
+        std::string site_packages =
+            std::string(venv) + "/lib/python" + std::to_string(major) + "." + std::to_string(minor) + "/site-packages";
+
+        pybind11::list path = sys.attr("path");
+        path.attr("insert")(0, site_packages);
+        // Also call site.addsitedir to pick up .pth files
+        site.attr("addsitedir")(site_packages);
+
+        // Also add PYTHONPATH entries if set
+        const char* python_path = std::getenv("PYTHONPATH");
+        if (python_path) {
+            std::string pp(python_path);
+            // Split on ':' and insert each entry
+            std::string::size_type start = 0;
+            while (start < pp.size()) {
+                auto colon = pp.find(':', start);
+                if (colon == std::string::npos)
+                    colon = pp.size();
+                std::string entry = pp.substr(start, colon - start);
+                if (!entry.empty())
+                    path.attr("insert")(0, entry);
+                start = colon + 1;
+            }
         }
     }
     std::string arg_string = switchboard_->get_env("SEMANTIC_PYTHON_ARGS", "");
     parse_py_args(arg_string);
-    py_exe_ = switchboard_->get_env("SEMANTIC_PYTHON_EXE", "");
+    py_exe_ = switchboard_->get_env("SEMANTIC_PYTHON_SCRIPT", "");
     spdlog::get("illixr")->debug("Python script: {} with args {}", py_exe_, arg_string);
     if (py_exe_.empty())
-        throw std::runtime_error("No SEMANTIC_PYTHON_EXE given.");
+        throw std::runtime_error("No SEMANTIC_PYTHON_SCRIPT given.");
 
+    // Register decode callback — fires on the switchboard thread whenever a
+    // new semantic_frame frame arrives, decoding it immediately into the cache.
+    switchboard_->schedule<data_format::semantic_frame>(
+        id_, "semantic_frame", [this](const switchboard::ptr<const data_format::semantic_frame>& frame, std::size_t idx) {
+            on_semantic_data(frame, idx);
+        });
 }
 
 semantic_python::~semantic_python() {
@@ -86,8 +113,9 @@ void semantic_python::run_python_thread() {
         // register the module
         auto m = pybind11::module_::create_extension_module("illixr_bridge", nullptr, new pybind11::module_::module_def{});
         register_bindings(m);
-        // inject the proxy objects
-        py_semantic_frame_reader  semantic_proxy{&semantic_reader_};
+        // inject the proxy objects — decoder_ is initialized by the decode
+        // callback thread (on_semantic_data), not here.
+        py_semantic_data_reader  semantic_proxy{&decoded_frames_, &frame_metadata_};
         py_voice_query_reader    voice_proxy{&voice_query_reader_};
         py_query_response_writer response_proxy{&response_writer_};
 
@@ -99,10 +127,10 @@ void semantic_python::run_python_thread() {
         spdlog::get("illixr")->info("[python_bridge] Starting script: {}", py_exe_);
         // Remove the script directory from sys.path before running the script
         // to prevent it from shadowing installed packages like numpy.
-        pybind11::module_ sys_mod = pybind11::module_::import("sys");
-        pybind11::list path = sys_mod.attr("path");
-        std::string script_dir = py_exe_.substr(0, py_exe_.find_last_of("/\\"));
-        pybind11::list new_path;
+        pybind11::module_ sys_mod    = pybind11::module_::import("sys");
+        pybind11::list    path       = sys_mod.attr("path");
+        std::string       script_dir = py_exe_.substr(0, py_exe_.find_last_of("/\\"));
+        pybind11::list    new_path;
         for (auto item : path) {
             std::string p = pybind11::str(item);
             if (p != script_dir && p != "." && !p.empty())
@@ -136,6 +164,68 @@ void semantic_python::parse_py_args(const std::string& input) {
             }
         }
         start = comma + 1;
+    }
+}
+
+void semantic_python::on_semantic_data(const switchboard::ptr<const data_format::semantic_frame>& frame, std::size_t /*idx*/) {
+    if (!frame) {
+        spdlog::get("illixr")->warn("[semantic_python] on_semantic_data: null frame");
+        return;
+    }
+
+    // Store metadata (depth, poses, intrinsics) at arrival, before the
+    // slower decode call below. decode() may hand back a picture for an
+    // earlier frame than this one (see nvdec_decoder::decode), so get()
+    // pairs the decoded image with its metadata by frame_number rather
+    // than assuming the two arrive together.
+    frame_metadata_.store(frame->frame_number, frame);
+
+    if (frame->image.empty()) {
+        spdlog::get("illixr")->warn("[semantic_python] on_semantic_data: frame={} has empty image", frame->frame_number);
+        return;
+    }
+
+    spdlog::get("illixr")->debug("[semantic_python] on_semantic_data: frame={} image={}B depth={}B", frame->frame_number,
+                                 frame->image.size(), frame->depth.size());
+
+    // Lazy decoder init — constructed on the first callback invocation so
+    // its CUDA context is bound to the switchboard decode thread.
+    {
+        std::lock_guard<std::mutex> lock(decoder_init_mutex_);
+        if (!decoder_initialized_) {
+            spdlog::get("illixr")->info("[semantic_python] Initializing NVDEC HEVC decoder...");
+            try {
+                decoder_             = std::make_unique<nvdec_decoder>(cudaVideoCodec_HEVC);
+                decoder_initialized_ = true;
+                spdlog::get("illixr")->info("[semantic_python] NVDEC HEVC decoder initialized");
+            } catch (const std::exception& e) {
+                spdlog::get("illixr")->error("[semantic_python] NVDEC init failed: {}", e.what());
+                return;
+            }
+        }
+    }
+
+    if (!decoder_)
+        return;
+
+    try {
+        int64_t        decoded_frame_number = -1;
+        const uint8_t* rgb =
+            decoder_->decode(frame->image.data(), frame->image.size(), frame->frame_number, decoded_frame_number);
+
+        if (rgb != nullptr) {
+            decoded_frames_.store(static_cast<int32_t>(decoded_frame_number), decoder_->width(), decoder_->height(), rgb);
+            spdlog::get("illixr")->debug("[semantic_python] frame={} decoded (submitted frame={}) -> {}x{} RGB stored in cache",
+                                         decoded_frame_number, frame->frame_number, decoder_->width(), decoder_->height());
+        } else {
+            // nullptr is normal for SPS/PPS-only packets during decoder init —
+            // log at debug level so the first few frames don't look like errors.
+            spdlog::get("illixr")->debug("[semantic_python] frame={} decode returned no output "
+                                         "(normal during decoder init with SPS/PPS packets)",
+                                         frame->frame_number);
+        }
+    } catch (const std::exception& e) {
+        spdlog::get("illixr")->warn("[semantic_python] NVDEC decode failed frame={}: {}", frame->frame_number, e.what());
     }
 }
 

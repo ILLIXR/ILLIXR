@@ -29,8 +29,8 @@ void serialize(Archive& ar, ILLIXR::data_format::semantic_frame& data, const uns
     ar & data.depth;
     ar & data.depth_near_z;
     ar & data.depth_intrinsics;
-    ar & boost::serialization::make_array(data.rgb_camera_pose,  16);
-    ar & boost::serialization::make_array(data.depth_pose,       16);
+    ar& boost::serialization::make_array(data.rgb_camera_pose, 16);
+    ar& boost::serialization::make_array(data.depth_pose, 16);
     ar & data.max_depth;
     ar & data.frame_number;
     ar & data.rgb_timestamp_ns;
