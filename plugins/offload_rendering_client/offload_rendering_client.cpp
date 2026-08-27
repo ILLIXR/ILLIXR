@@ -39,10 +39,6 @@ using namespace ILLIXR::vulkan::ffmpeg_utils;
 
 NppStreamContext makeNppStreamContext(cudaStream_t stream = nullptr) {
     NppStreamContext ctx{};
-#    if CUDA_VERSION < 12090
-    nppGetStreamContext(&ctx);
-    ctx.hStream = stream; // override stream if needed
-#    else
     int device = 0;
     cudaGetDevice(&device);
     cudaDeviceProp prop{};
@@ -56,7 +52,6 @@ NppStreamContext makeNppStreamContext(cudaStream_t stream = nullptr) {
     ctx.nSharedMemPerBlock                 = prop.sharedMemPerBlock;
     ctx.nCudaDevAttrComputeCapabilityMajor = prop.major;
     ctx.nCudaDevAttrComputeCapabilityMinor = prop.minor;
-#    endif
     return ctx;
 }
 #endif
@@ -88,7 +83,9 @@ offload_rendering_client::offload_rendering_client(const std::string& name, phon
     display_provider_ffmpeg = display_provider_;
 #endif
 
-    // Configure depth frame handling
+#ifdef __ANDROID__
+    // Motion vectors are decoded through the Android MediaCodec path and also
+    // require the depth-image path to be active.
     use_motion_vectors_ = switchboard_->get_env_bool("ILLIXR_USE_MOTION_VECTORS");
     if (use_motion_vectors_) {
         use_depth_ = true;
@@ -97,6 +94,9 @@ offload_rendering_client::offload_rendering_client(const std::string& name, phon
     }
     log_->debug(use_motion_vectors_ ? "Encoding motion vector images for the client"
                                     : "Not encoding motion vector images for the client");
+#else
+    use_depth_ = switchboard_->get_env_bool("ILLIXR_USE_DEPTH_IMAGES");
+#endif
     log_->debug(use_depth_ ? "Encoding depth images for the client" : "Not encoding depth images for the client");
 }
 
@@ -650,7 +650,7 @@ void offload_rendering_client::_p_one_iteration() {
     }
     // Send latest pose to server
 #ifndef USING_OPENXR
-    push_poses();
+    push_pose();
 #endif
 
 #ifdef __ANDROID__
@@ -925,7 +925,7 @@ void offload_rendering_client::_p_one_iteration() {
 }
 
 #ifndef USING_OPENXR
-void offload_rendering_client::push_poses() {
+void offload_rendering_client::push_pose() {
     auto current_pose = pose_prediction_->get_fast_pose();
 
     auto now = time_point{std::chrono::duration<long, std::nano>{std::chrono::high_resolution_clock::now().time_since_epoch()}};
@@ -1070,12 +1070,7 @@ bool offload_rendering_client::network_receive() {
     } else {
         log_->info("Network latency not available");
     }
-    current_frame_time_   = current_frame->sent_time;
-    decoded_frame_pose_   = current_frame->pose;
-    current_frame_number_ = current_frame->frame_number;
-    decoded_near_z_       = current_frame->near_z;
-    decoded_far_z_        = current_frame->far_z;
-    decoded_pose_id_      = current_frame->pose_id;
+    decoded_frame_pose_ = current_frame->pose;
     return true;
 }
 
