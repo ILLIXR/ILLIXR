@@ -12,7 +12,6 @@
 #endif
 
 #include "illixr/data_format/pose_prediction.hpp"
-
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
 
