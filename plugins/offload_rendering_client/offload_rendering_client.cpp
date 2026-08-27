@@ -39,7 +39,7 @@ using namespace ILLIXR::vulkan::ffmpeg_utils;
 
 NppStreamContext makeNppStreamContext(cudaStream_t stream = nullptr) {
     NppStreamContext ctx{};
-    int device = 0;
+    int              device = 0;
     cudaGetDevice(&device);
     cudaDeviceProp prop{};
     cudaGetDeviceProperties(&prop, device);
