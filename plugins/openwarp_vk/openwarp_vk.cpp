@@ -128,13 +128,13 @@ void openwarp_vk::partial_destroy() {
     descriptor_pool_ = VK_NULL_HANDLE;
 }
 
-void openwarp_vk::update_uniforms(const POSE_RTN_TYPE& render_pose) {
+void openwarp_vk::update_uniforms(const data_format::pose::fast_head_pose_type& render_pose) {
     num_update_uniforms_calls_++;
 
-    pose::head_pose_type latest_pose = disable_warp_ ? render_pose : pose_prediction_->get_fast_pose().pose;
+    pose::head_pose_type latest_pose = disable_warp_ ? render_pose.pose : pose_prediction_->get_fast_pose().pose;
 
     for (int eye = 0; eye < 2; eye++) {
-        Eigen::Matrix4f renderedCameraMatrix = create_camera_matrix(render_pose, eye);
+        Eigen::Matrix4f renderedCameraMatrix = create_camera_matrix(render_pose.pose, eye);
         Eigen::Matrix4f currentCameraMatrix  = create_camera_matrix(latest_pose, eye);
 
         Eigen::Matrix4f warpVP =

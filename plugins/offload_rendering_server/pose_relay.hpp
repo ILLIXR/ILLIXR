@@ -11,6 +11,7 @@
 #    include "illixr/data_format/poses/head_pose.hpp"
 #endif
 
+#include "illixr/data_format/pose_prediction.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
 
@@ -19,19 +20,14 @@
 #include <map>
 
 #ifdef USING_OPENXR
-#    include "auxiliary/os/os_time.h"
-#    include "xrt/xrt_defines.h"
-
-#    include <openxr/openxr.h>
-#    define POSE_TIME_TYPE XrTime
-#    define POSE_TYPE      xrt_space_relation
+    #include "auxiliary/os/os_time.h"
 #else
-#    define POSE_TIME_TYPE time_point
-#    define POSE_TYPE      ILLIXR::data_format::pose::fast_head_pose_type
-#    ifndef XrTime
+    #ifndef XrTime
 typedef int64_t XrTime;
 #    endif
 #endif
+
+namespace ILLIXR {
 
 /// Entry stored in pose_map_, associating an extrapolated pose with the
 /// id of the original combined_pose it was derived from.
@@ -58,8 +54,6 @@ struct velocity_filter {
     int                  count                       = 0;
     bool                 initialized                 = false;
 };
-
-namespace ILLIXR {
 
 class MY_EXPORT_API pose_relay : public threadloop {
 public:
