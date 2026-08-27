@@ -102,6 +102,13 @@ public:
     }
 
     /**
+     * @brief Get the true pose (same as fast pose in this implementation)
+     */
+    ILLIXR::data_format::pose::head_pose_type get_true_pose() const override {
+        return get_fast_pose().pose;
+    }
+
+    /**
      * @brief Get predicted pose for a future time point (returns current pose)
      */
     POSE_TYPE get_fast_pose(POSE_TIME_TYPE future_time) const override {
@@ -154,13 +161,6 @@ public:
         (void) left;
     }
 
-    /**
-     * @brief Update uniforms (no-op in this implementation)
-     */
-    void update_uniforms(const BUFFER_TYPE& r_pose) override {
-        (void) r_pose;
-    }
-
 protected:
     /**
      * @brief Determines if the current iteration should be skipped
@@ -185,7 +185,12 @@ private:
      * @brief Sends encoded frame data to the client
      * @param pose The pose data associated with the frame
      */
-    void enqueue_for_network_send(BUFFER_TYPE& pose, uint64_t pose_id);
+    void enqueue_for_network_send(BUFFER_TYPE& pose
+#ifdef USING_OPENXR
+                                  ,
+                                  uint64_t pose_id
+#endif
+    );
 
 #ifdef NVENC_ENCODER
     // ========================================================================
@@ -374,7 +379,9 @@ private:
     VkExtent2D                 extent_            = {0, 0};
 
     std::shared_ptr<pose_relay> pose_relay_;
-    hmd_config                  hmd_setup_;
+#ifdef OPENXR_CLIENT
+    hmd_config hmd_setup_;
+#endif
 
     std::atomic<bool> ready_{false};
     uint64_t          frame_number_{0};
@@ -382,13 +389,17 @@ private:
 
     std::deque<std::shared_ptr<data_format::compressed_frame>> send_queue_;
 
-    std::mutex                                                send_queue_mutex_;
-    std::condition_variable                                   send_queue_cv_;
-    std::thread                                               sender_thread_;
-    static constexpr size_t                                   MAX_QUEUE_DEPTH = 6;
-    std::atomic<bool>                                         sender_running_{false};
-    std::map<uint64_t, uint8_t>                               pose_usage_{};
+    std::mutex                  send_queue_mutex_;
+    std::condition_variable     send_queue_cv_;
+    std::thread                 sender_thread_;
+    static constexpr size_t     MAX_QUEUE_DEPTH = 6;
+    std::atomic<bool>           sender_running_{false};
+    std::map<uint64_t, uint8_t> pose_usage_{};
+#ifdef _WIN32
     std::map<uint64_t, std::chrono::steady_clock::time_point> frame_timing_{};
+#else
+    std::map<uint64_t, std::chrono::time_point<std::chrono::high_resolution_clock>> frame_timing_{};
+#endif
 #ifdef OPENXR_CLIENT
     float overscan_ = 1.f;
 #endif
