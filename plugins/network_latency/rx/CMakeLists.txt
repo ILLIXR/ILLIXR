@@ -45,6 +45,6 @@ if(WIN32)
     )
 endif()
 
-if(NOT ANDROID)
-    install(TARGETS ${PLUGIN_NAME} DESTINATION lib)
-endif()
+target_compile_definitions(${PLUGIN_NAME} PRIVATE NVENC_ENCODER)
+
+install(TARGETS ${PLUGIN_NAME} DESTINATION lib)

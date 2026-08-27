@@ -57,6 +57,15 @@ void network_latency_pong_rx::process_pong(const switchboard::ptr<const latency_
     spdlog::get("illixr")->warn("  Server time: {}ns", pong->server_timestamp_ns);
     spdlog::get("illixr")->warn("  Clock offset: {:.3f}ms", clock_offset_ms);
 
+    // spdlog::get("illixr")->warn("Rx time: {}ns  Client time: {}ns  RTT: {.3f}ms  Latency: {.3f}ms  Server time: {}ns  Clock
+    // offset: {.3f}ms",
+    //                              receive_time,
+    //                              pong->client_timestamp_ns,
+    //                              rtt_ms,
+    //                              c2s_ms,
+    //                              pong->server_timestamp_ns,
+    //                              clock_offset_ms);
+
     // Reject samples where RTT is implausibly large (> 500ms on a local
     // network indicates a clock jump or network anomaly)
     if (rtt_ms > 500.0 || rtt_ms < 0.0) {

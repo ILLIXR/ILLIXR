@@ -22,8 +22,14 @@ namespace ILLIXR {
  * responds with pong packets containing timing information. This allows
  * the client to measure round-trip network latency.
  *
- * No local switchboard publishing is done here - the server side
- * time conversion data arrives via the combined_pose topic instead.
+ * The tcp_network_backend plugin handles the actual network transport.
+ * This plugin reads pings from a switchboard topic (which tcp_network_backend
+ * populates from network data) and publishes pongs to another topic (which
+ * tcp_network_backend transmits over the network).
+ *
+ * Environment Variables:
+ *   - NETWORK_LATENCY_TX_TOPIC: Topic name for receiving pings (default: "latency_ping")
+ *   - NETWORK_LATENCY_RX_TOPIC: Topic name for sending pongs (default: "latency_pong")
  */
 class MY_EXPORT_API network_latency_rx : public threadloop {
 public:
