@@ -10,18 +10,13 @@
 #include <boost/serialization/vector.hpp>
 #include <vector>
 
-namespace ILLIXR {
-namespace bridge {
-    namespace semantic_xr {
+namespace ILLIXR::data_format::semantic_xr {
+struct point_cloud : switchboard::event {
+    std::vector<float> points;
+    std::vector<float> centroid;
+    int32_t            num_points;
 
-        struct point_cloud : switchboard::event {
-            std::vector<float> points_;
-            std::vector<float> centroid_;
-            int32_t            num_points_;
+    point_cloud() = default;
+};
 
-            point_cloud() = default;
-        };
-
-    } // namespace semantic_xr
-} // namespace bridge
-} // namespace ILLIXR
+} // namespace ILLIXR::data_format::semantic_xr

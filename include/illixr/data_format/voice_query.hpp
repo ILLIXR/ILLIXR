@@ -10,19 +10,15 @@
 #include <boost/serialization/vector.hpp>
 #include <vector>
 
-namespace ILLIXR {
-namespace bridge {
-namespace semantic_xr {
+namespace ILLIXR::data_format::semantic_xr {
 
 struct voice_query : switchboard::event {
-    uint64_t query_id_;
-    std::vector<uint8_t> pcm_data_;
-    float similarity_threshold_;
-    float min_match_similarity_;
+    uint64_t             query_id;
+    std::vector<uint8_t> pcm_data;
+    float                similarity_threshold;
+    float                min_match_similarity;
 
     voice_query() = default;
 };
 
-} // namespace semantic_xr
-} // namespace bridge
-} // namespace ILLIXR
+} // namespace ILLIXR::data_format::semantic_xr

@@ -26,9 +26,9 @@ static pybind11::scoped_interpreter make_interpreter() {
 [[maybe_unused]] semantic_python::semantic_python(const std::string& name, ILLIXR::phonebook* pb)
     : plugin{name, pb}
     , switchboard_{pb->lookup_impl<switchboard>()}
-    , semantic_reader_{switchboard_->get_reader<semantic_data>("semantic_data")}
-    , voice_query_reader_{switchboard_->get_reader<voice_query>("semantic_query")}
-    , response_writer_{switchboard_->get_network_writer<query_response>("semantic_response", {})}
+    , semantic_reader_{switchboard_->get_reader<semantic_frame>("semantic_data")}
+    , voice_query_reader_{switchboard_->get_reader<semantic_xr::voice_query>("semantic_query")}
+    , response_writer_{switchboard_->get_network_writer<semantic_xr::query_response>("semantic_response", {})}
     , guard_{make_interpreter()}
     , release_{} {
     // Fix sys.path to use the venv Python rather than system Python.
@@ -87,7 +87,7 @@ void semantic_python::run_python_thread() {
         auto m = pybind11::module_::create_extension_module("illixr_bridge", nullptr, new pybind11::module_::module_def{});
         register_bindings(m);
         // inject the proxy objects
-        py_semantic_data_reader  semantic_proxy{&semantic_reader_};
+        py_semantic_frame_reader  semantic_proxy{&semantic_reader_};
         py_voice_query_reader    voice_proxy{&voice_query_reader_};
         py_query_response_writer response_proxy{&response_writer_};
 

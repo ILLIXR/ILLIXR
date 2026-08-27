@@ -13,21 +13,17 @@
 #include <boost/serialization/vector.hpp>
 #include <vector>
 
-namespace ILLIXR {
-namespace bridge {
-namespace semantic_xr {
+namespace ILLIXR::data_format::semantic_xr {
 
 struct query_response : switchboard::event {
-    uint64_t query_id_;
-    std::vector<ILLIXR::bridge::semantic_xr::point_cloud> point_clouds_;
-    std::vector<float> colors_;
-    int32_t num_point_clouds_;
-    float server_query_processing_;
-    std::string text_query_;
+    uint64_t query_id;
+    std::vector<ILLIXR::data_format::semantic_xr::point_cloud> point_clouds;
+    std::vector<float> colors;
+    int32_t num_point_clouds;
+    float server_query_processing;
+    std::string text_query;
 
     query_response() = default;
 };
 
-} // namespace semantic_xr
-} // namespace bridge
-} // namespace ILLIXR
+} // namespace ILLIXR::data_format::semantic_xr

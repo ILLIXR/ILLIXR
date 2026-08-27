@@ -4,7 +4,7 @@
  *
  *         Three proxy structs are registered as Python classes:
  *
- *           SemanticDataReader  - wraps switchboard::reader<semantic_data>
+ *           SemanticDataReader  - wraps switchboard::reader<semantic_frame>
  *             .get() -> dict or None
  *               "image"           numpy uint8 (N,)      encoded RGB bytes
  *               "depth"           numpy uint8 (N,)      encoded depth bytes
@@ -50,27 +50,27 @@
 
 namespace ILLIXR {
 
-static pybind11::array_t<uint8_t> to_numpy_flat_safe(std::shared_ptr<const data_format::semantic_data> owner,
+static pybind11::array_t<uint8_t> to_numpy_flat_safe(std::shared_ptr<const data_format::semantic_frame> owner,
                                                      const uint8_t* data, size_t size) {
-    pybind11::capsule base(new std::shared_ptr<const data_format::semantic_data>(owner), [](void* p) {
-        delete static_cast<std::shared_ptr<const data_format::semantic_data>*>(p);
+    pybind11::capsule base(new std::shared_ptr<const data_format::semantic_frame>(owner), [](void* p) {
+        delete static_cast<std::shared_ptr<const data_format::semantic_frame>*>(p);
     });
 
     return pybind11::array_t<uint8_t>({static_cast<pybind11::ssize_t>(size)}, {static_cast<pybind11::ssize_t>(1)}, data, base);
 }
 
-static pybind11::array_t<float> to_numpy_1d_safe(std::shared_ptr<const data_format::semantic_data> owner, const float* data,
+static pybind11::array_t<float> to_numpy_1d_safe(std::shared_ptr<const data_format::semantic_frame> owner, const float* data,
                                                  pybind11::size_t size) {
-    pybind11::capsule base(new std::shared_ptr<const data_format::semantic_data>(owner), [](void* p) {
-        delete static_cast<std::shared_ptr<const data_format::semantic_data>*>(p);
+    pybind11::capsule base(new std::shared_ptr<const data_format::semantic_frame>(owner), [](void* p) {
+        delete static_cast<std::shared_ptr<const data_format::semantic_frame>*>(p);
     });
 
     return pybind11::array_t<float>({size}, {static_cast<pybind11::size_t>(sizeof(float))}, data, base);
 }
 
-static pybind11::array_t<float> to_numpy_4x4_safe(std::shared_ptr<const data_format::semantic_data> owner, const float* data) {
-    pybind11::capsule base(new std::shared_ptr<const data_format::semantic_data>(owner), [](void* p) {
-        delete static_cast<std::shared_ptr<const data_format::semantic_data>*>(p);
+static pybind11::array_t<float> to_numpy_4x4_safe(std::shared_ptr<const data_format::semantic_frame> owner, const float* data) {
+    pybind11::capsule base(new std::shared_ptr<const data_format::semantic_frame>(owner), [](void* p) {
+        delete static_cast<std::shared_ptr<const data_format::semantic_frame>*>(p);
     });
 
     return pybind11::array_t<float>(
@@ -78,8 +78,8 @@ static pybind11::array_t<float> to_numpy_4x4_safe(std::shared_ptr<const data_for
         {static_cast<pybind11::ssize_t>(sizeof(float) * 4), static_cast<pybind11::ssize_t>(sizeof(float))}, data, base);
 }
 
-struct py_semantic_data_reader {
-    switchboard::reader<data_format::semantic_data>* reader;
+struct py_semantic_frame_reader {
+    switchboard::reader<data_format::semantic_frame>* reader;
 
     [[nodiscard]] pybind11::object get() const {
         auto val = reader->get_ro_nullable();
@@ -89,14 +89,17 @@ struct py_semantic_data_reader {
         pybind11::dict data;
         data["image"]              = to_numpy_flat_safe(val, val->image.data(), val->image.size());
         data["frame_number"]       = val->frame_number;
-        data["image_width"]        = val->width;
-        data["image_height"]       = val->height;
+        data["image_width"]        = val->intrinsics.width;
+        data["image_height"]       = val->intrinsics.height;
         data["depth"]              = to_numpy_flat_safe(val, val->depth.data(), val->depth.size());
-        data["depth_width"]        = val->depth_width;
-        data["depth_height"]       = val->depth_height;
+        data["depth_width"]        = val->depth_intrinsics.width;
+        data["depth_height"]       = val->depth_intrinsics.height;
         data["depth_near_z"]       = val->depth_near_z;
-        data["intrinsics"]         = to_numpy_1d_safe(val, val->intrinsics, 4);
-        data["depth_intrinsics"]   = to_numpy_1d_safe(val, val->depth_intrinsics, 4);
+        std::vector<float> intrinsics = {val->intrinsics.fx, val->intrinsics.fy, val->intrinsics.cx, val->intrinsics.cy};
+        std::vector<float> depth_intrinsics = {val->depth_intrinsics.fx, val->depth_intrinsics.fy, val->depth_intrinsics.cx,
+                                               val->depth_intrinsics.cy};
+        data["intrinsics"]         = to_numpy_1d_safe(val, intrinsics.data(), intrinsics.size());
+        data["depth_intrinsics"]   = to_numpy_1d_safe(val, depth_intrinsics.data(), depth_intrinsics.size());
         data["rgb_camera_pose"]    = to_numpy_4x4_safe(val, val->rgb_camera_pose);
         data["depth_pose"]         = to_numpy_4x4_safe(val, val->depth_pose);
         data["max_depth_m"]        = val->max_depth;
@@ -110,7 +113,7 @@ struct py_semantic_data_reader {
 // -----------------------------------------------------------------------
 
 struct py_voice_query_reader {
-    switchboard::reader<data_format::voice_query>* reader_;
+    switchboard::reader<data_format::semantic_xr::voice_query>* reader_;
     uint64_t                          last_query_id_ = 0;
 
     pybind11::object get() {
@@ -131,8 +134,8 @@ struct py_voice_query_reader {
 
         // PCM data — zero-copy with capsule
         pybind11::capsule base(
-            new std::shared_ptr<const data_format::voice_query>(val),
-            [](void* p) { delete static_cast<std::shared_ptr<const data_format::voice_query>*>(p); });
+            new std::shared_ptr<const data_format::semantic_xr::voice_query>(val),
+            [](void* p) { delete static_cast<std::shared_ptr<const data_format::semantic_xr::voice_query>*>(p); });
         d["pcm_data"] = pybind11::array_t<uint8_t>(
             {static_cast<pybind11::ssize_t>(val->pcm_data.size())},
             {static_cast<pybind11::ssize_t>(1)},
@@ -148,7 +151,7 @@ struct py_voice_query_reader {
 // -----------------------------------------------------------------------
 
 struct py_query_response_writer {
-    switchboard::writer<data_format::query_response>* writer_;
+    switchboard::writer<data_format::semantic_xr::query_response>* writer_;
 
     /*!
      * @brief Write a query response to the switchboard.
@@ -163,7 +166,7 @@ struct py_query_response_writer {
              pybind11::list         colors,
              float            server_latency,
              const std::string& text_query) {
-        auto resp = std::make_shared<data_format::query_response>();
+        auto resp = std::make_shared<data_format::semantic_xr::query_response>();
         resp->query_id               = query_id;
         resp->server_query_processing = server_latency;
         resp->text_query             = text_query;
@@ -172,7 +175,7 @@ struct py_query_response_writer {
         resp->point_clouds.reserve(point_clouds.size());
         for (auto& item : point_clouds) {
             pybind11::dict pc_dict = item.cast<pybind11::dict>();
-            data_format::point_cloud pc;
+            data_format::semantic_xr::point_cloud pc;
 
             auto points_list = pc_dict["points"].cast<std::vector<float>>();
             pc.points        = std::move(points_list);
@@ -191,7 +194,7 @@ struct py_query_response_writer {
 };
 
 inline void register_bindings(pybind11::module_& m) {
-    pybind11::class_<py_semantic_data_reader>(m, "DnnInputReader").def("get", &py_semantic_data_reader::get);
+    pybind11::class_<py_semantic_frame_reader>(m, "DnnInputReader").def("get", &py_semantic_frame_reader::get);
 
     pybind11::class_<py_voice_query_reader>(m, "VoiceQueryReader")
         .def("get", &py_voice_query_reader::get,

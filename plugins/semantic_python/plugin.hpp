@@ -1,6 +1,10 @@
 #pragma once
 
+#include "illixr/data_format/point_cloud.hpp"
+#include "illixr/data_format/query_response.hpp"
 #include "illixr/data_format/semantics.hpp"
+#include "illixr/data_format/voice_query.hpp"
+
 #include "illixr/phonebook.hpp"
 #include "illixr/plugin.hpp"
 #include "illixr/switchboard.hpp"
@@ -31,10 +35,10 @@ private:
      */
     void parse_py_args(const std::string& input);
 
-    const std::shared_ptr<switchboard>               switchboard_;
-    switchboard::reader<data_format::semantic_data>  semantic_reader_;
-    switchboard::reader<data_format::voice_query>    voice_query_reader_;
-    switchboard::network_writer<data_format::query_response> response_writer_;
+    const std::shared_ptr<switchboard>                                    switchboard_;
+    switchboard::reader<data_format::semantic_frame>                      semantic_reader_;
+    switchboard::reader<data_format::semantic_xr::voice_query>            voice_query_reader_;
+    switchboard::network_writer<data_format::semantic_xr::query_response> response_writer_;
 
     pybind11::scoped_interpreter                 guard_;
     pybind11::gil_scoped_release                 release_;

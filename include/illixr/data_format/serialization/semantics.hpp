@@ -36,35 +36,6 @@ void serialize(Archive& ar, ILLIXR::data_format::semantic_frame& data, const uns
     ar & data.rgb_timestamp_ns;
     ar & data.depth_timestamp_ns;
 }
-/*
-template<class Archive>
-void serialize(Archive& ar, ILLIXR::data_format::voice_query& data, const unsigned int) {
-    ar & boost::serialization::base_object<ILLIXR::switchboard::event>(data);
-    ar & data.query_id;
-    ar & data.pcm_data;
-    ar & data.similarity_threshold;
-    ar & data.min_match_similarity;
-}
-
-template<class Archive>
-void serialize(Archive& ar, ILLIXR::data_format::point_cloud& data, const unsigned int) {
-    ar & data.points;
-    ar & data.centroid;
-    ar & data.num_points;
-}
-
-template<class Archive>
-void serialize(Archive& ar, ILLIXR::data_format::query_response& data, const unsigned int) {
-    ar & boost::serialization::base_object<ILLIXR::switchboard::event>(data);
-    ar & data.query_id;
-    ar & data.point_clouds;    // vector<point_cloud> — uses point_cloud serializer above
-    ar & data.colors;
-    ar & data.num_point_clouds;
-    ar & data.server_query_processing;
-    ar & data.text_query;
-}*/
 } // namespace boost::serialization
 
 BOOST_CLASS_EXPORT_KEY(ILLIXR::data_format::semantic_frame)
-//BOOST_CLASS_EXPORT_KEY(ILLIXR::data_format::voice_query)
-//BOOST_CLASS_EXPORT_KEY(ILLIXR::data_format::query_response)
