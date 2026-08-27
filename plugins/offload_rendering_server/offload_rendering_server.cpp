@@ -98,15 +98,6 @@ void offload_rendering_server::_p_thread_setup() {
         hmd_setup_.fov_angle_up[eye]    = overscan_ * ILLIXR::server_params::fov_up[eye];
         hmd_setup_.fov_angle_down[eye]  = overscan_ * ILLIXR::server_params::fov_down[eye];
     }
-#else
-    hmd_setup_.recommended_image_width  = 1680;
-    hmd_setup_.recommended_image_height = 1760;
-    for (int eye = 0; eye < 2; eye++) {
-        hmd_setup_.fov_angle_left[eye]  = ILLIXR::server_params::fov_left[eye];
-        hmd_setup_.fov_angle_right[eye] = ILLIXR::server_params::fov_right[eye];
-        hmd_setup_.fov_angle_up[eye]    = ILLIXR::server_params::fov_up[eye];
-        hmd_setup_.fov_angle_down[eye]  = ILLIXR::server_params::fov_down[eye];
-    }
 #endif
 
     // Wait for display provider to be ready
@@ -311,6 +302,7 @@ void offload_rendering_server::_p_one_iteration() {
     }
 
     last_frame_ind_ = ind;
+#ifdef USING_OPENXR
     last_sent_pose_ = poses[0];
 
     // Find the combined_pose id that corresponds to the eye poses Unity
@@ -319,6 +311,9 @@ void offload_rendering_server::_p_one_iteration() {
     Eigen::Quaternionf render_q{poses[0].orientation.w, poses[0].orientation.x, poses[0].orientation.y, poses[0].orientation.z};
 
     uint64_t frame_pose_id = pose_relay_->find_pose_id_by_orientation(render_q);
+#else
+    last_sent_pose_ = poses;
+#endif
 
     // Record encode operation timing
     auto encode_start_time = std::chrono::high_resolution_clock::now();
@@ -414,8 +409,12 @@ void offload_rendering_server::_p_one_iteration() {
     metrics_["encode_time"] += encode_time;
     metrics_["acquire_image_time"] += acquire_image_time;
 
-    // Send the encoded frame to the client
+// Send the encoded frame to the client
+#ifdef USING_OPENXR
     enqueue_for_network_send(poses, frame_pose_id);
+#else
+    enqueue_for_network_send(poses);
+#endif
     current_encode_time_ = (double) encode_time / 1000.;
 
     // Update boxcar FPS window and log per-frame encode time + FPS.
@@ -458,7 +457,12 @@ void offload_rendering_server::_p_one_iteration() {
     frame_number_++;
 }
 
-void offload_rendering_server::enqueue_for_network_send(BUFFER_TYPE& pose, uint64_t pose_id) {
+void offload_rendering_server::enqueue_for_network_send(BUFFER_TYPE& pose
+#ifdef USING_OPENXR
+                                                        ,
+                                                        uint64_t pose_id
+#endif
+) {
     uint64_t timestamp =
         std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch())
             .count();
@@ -560,7 +564,7 @@ void offload_rendering_server::enqueue_for_network_send(BUFFER_TYPE& pose, uint6
         frame->fov_down[eye]  = hmd_setup_.fov_angle_down[eye];
     }
 #    endif
-    frame->pose_id     = pose_id;
+    // frame->pose_id     = pose_id;
     frame->is_keyframe = color_frame_is_keyframe_;
     frame->encode_time = current_encode_time_;
 
@@ -1254,15 +1258,7 @@ void offload_rendering_server::sender_loop() {
         } else {
             pose_usage_[frame->pose_id]++;
         }
-        if (frame->pose_id > 0) {
-            auto now = std::chrono::steady_clock::now();
-            auto pose_time =
-                std::chrono::duration_cast<std::chrono::microseconds>(now - pose_relay_->get_pose_time(frame->pose_id)).count();
-            auto pose_delta = (double) pose_time / 1000.;
-            auto frame_t =
-                std::chrono::duration_cast<std::chrono::microseconds>(now - frame_timing_[frame->frame_number]).count();
-            auto frame_delta = (double) frame_t / 1000.;
-        }
+
         frames_topic_.put(std::move(frame));
     }
 }

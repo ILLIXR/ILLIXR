@@ -5,7 +5,12 @@
 #endif
 
 #define DOUBLE_INCLUDE
-#include "illixr/data_format/poses/combined_pose.hpp"
+#ifdef USING_OPENXR
+    #include "illixr/data_format/poses/combined_pose.hpp"
+#else
+    #include "illixr/data_format/poses/head_pose.hpp"
+#endif
+
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
 
@@ -22,26 +27,28 @@
 #    define POSE_TYPE      xrt_space_relation
 #else
 #    define POSE_TIME_TYPE time_point
-#    define POSE_TYPE      data_format::pose::fast_head_pose_type
+#    define POSE_TYPE      ILLIXR::data_format::pose::fast_head_pose_type
+#    ifndef XrTime
+typedef int64_t XrTime;
+#    endif
 #endif
 
 /// Entry stored in pose_map_, associating an extrapolated pose with the
 /// id of the original combined_pose it was derived from.
 struct pose_map_entry {
-    uint64_t           id; ///< combined_pose.id this pose was based on
-    xrt_space_relation pose;
+    uint64_t  id{0}; ///< combined_pose.id this pose was based on
+    POSE_TYPE pose;
 };
 
-struct pose_point {
 #ifdef USING_OPENXR
+struct pose_point {
     XrTime             time;
     uint64_t           id; ///< combined_pose.id for this measurement
     xrt_space_relation pose;
-#else
-    time_point                             time;
-    data_format::pose::fast_head_pose_type pose;
-#endif
 };
+#else
+typedef ILLIXR::data_format::pose::fast_head_pose_type pose_point;
+#endif
 
 struct velocity_filter {
     static constexpr int MAX_WINDOW                  = 16;
@@ -67,6 +74,7 @@ public:
 
     bool fast_pose_reliable() const;
 
+#ifdef USING_OPENXR
     /// Returns the combined_pose id associated with the extrapolated pose
     /// that was computed for the given Monado XrTime, or 0 if not found.
     /// Used by illixr_src_release to tag released frames with their source pose id.
@@ -79,6 +87,7 @@ public:
     uint64_t find_pose_id_by_orientation(const Eigen::Quaternionf& q) const;
 
     std::chrono::steady_clock::time_point get_pose_time(uint64_t id) const;
+#endif
 
 protected:
     threadloop::skip_option _p_should_skip() override;
@@ -86,8 +95,9 @@ protected:
     void _p_one_iteration() override;
 
 private:
+#ifdef USING_OPENXR
     void calibrate_monado_time_offset();
-
+#endif
     std::shared_ptr<spdlog::logger> log_;
     std::shared_ptr<switchboard>    switchboard_;
 
@@ -111,7 +121,7 @@ private:
     mutable switchboard::writer<data_format::pose::hand_interaction_poses_pair> hand_interaction_writer_;
     mutable switchboard::writer<data_format::pose::palm_poses_pair>             palm_pose_writer_;
 #else
-    switchboard::reader<data_format::fast_head_pose_type> render_pose_;
+    switchboard::reader<POSE_TYPE> render_pose_;
 #endif
 
     // Pipeline latency constants (will be replaced with measured values later)
@@ -119,9 +129,13 @@ private:
     static constexpr double DECODE_LATENCY_NS = 5.0 * 1'000'000.0;
     static constexpr double UNITY_LATENCY_NS  = 5.0 * 1'000'000.0;
 
-    /// Bounded history of poses in Monado timebase, oldest to newest.
+/// Bounded history of poses in Monado timebase, oldest to newest.
+#ifdef USING_OPENXR
     std::vector<pose_point> current_poses_;
     uint64_t                last_pose_id_ = 0;
+#else
+    POSE_TYPE current_pose_;
+#endif
 
     /// Offset such that: monado_time_ns = os_monotonic_get_ns() timebase
     ///                   system_clock_ns = monado_time_ns + windows_epoch_offset_ns_

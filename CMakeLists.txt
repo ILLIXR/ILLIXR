@@ -514,7 +514,7 @@ foreach(ITEM IN LISTS PLUGIN_LIST)
         add_subdirectory(${CURRENT_PLUGIN_SRC})
         if (${ITEM_UPPER})  # this can change when adding the target
             list(FIND PLUGIN_UNORDERED ${ITEM_LOWER} ITEM_FOUND)
-            if(${ITEM_FOUND} GREATER_EQUAL 0)
+            if(${ITEM_FOUND} EQUAL -1)
                 list(APPEND PLUGIN_UNORDERED ${ITEM_LOWER})
             endif()
             message("Adding plugins/${ITEM_LOWER}")
