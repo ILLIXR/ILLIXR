@@ -166,7 +166,7 @@ struct py_semantic_data_reader {
 
 struct py_voice_query_reader {
     switchboard::reader<data_format::semantic_xr::voice_query>* reader_;
-    uint64_t                          last_query_id_ = 0;
+    uint64_t                                                    last_query_id_ = 0;
 
     pybind11::object get() {
         auto val = reader_->get_ro_nullable();
@@ -185,14 +185,11 @@ struct py_voice_query_reader {
         d["min_match_similarity"] = val->min_match_similarity;
 
         // PCM data — zero-copy with capsule
-        pybind11::capsule base(
-            new std::shared_ptr<const data_format::semantic_xr::voice_query>(val),
-            [](void* p) { delete static_cast<std::shared_ptr<const data_format::semantic_xr::voice_query>*>(p); });
-        d["pcm_data"] = pybind11::array_t<uint8_t>(
-            {static_cast<pybind11::ssize_t>(val->pcm_data.size())},
-            {static_cast<pybind11::ssize_t>(1)},
-            val->pcm_data.data(),
-            base);
+        pybind11::capsule base(new std::shared_ptr<const data_format::semantic_xr::voice_query>(val), [](void* p) {
+            delete static_cast<std::shared_ptr<const data_format::semantic_xr::voice_query>*>(p);
+        });
+        d["pcm_data"] = pybind11::array_t<uint8_t>({static_cast<pybind11::ssize_t>(val->pcm_data.size())},
+                                                   {static_cast<pybind11::ssize_t>(1)}, val->pcm_data.data(), base);
 
         return d;
     }
@@ -223,7 +220,7 @@ struct py_query_response_writer {
 
         resp->point_clouds.reserve(point_clouds.size());
         for (auto& item : point_clouds) {
-            auto                     pc_dict = item.cast<pybind11::dict>();
+            auto                                  pc_dict = item.cast<pybind11::dict>();
             data_format::semantic_xr::point_cloud pc;
             pc.points     = pc_dict["points"].cast<std::vector<float>>();
             pc.num_points = static_cast<int32_t>(pc.points.size() / 3);

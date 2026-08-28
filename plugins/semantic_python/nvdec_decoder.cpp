@@ -104,7 +104,7 @@ const uint8_t* nvdec_decoder::decode(const uint8_t* data, size_t size, int64_t f
     // is correct but computing it explicitly makes the UV offset unambiguous
     // for any input resolution, including those where width is not a multiple
     // of 256 (e.g. 1920, 640, 320).
-    const int      pitch    = ((w + 255) / 256) * 256;
+    const int      pitch    = decoder_->GetDeviceFramePitch();
     const uint8_t* y_plane  = nv12_ptr;
     const uint8_t* uv_plane = nv12_ptr + pitch * h;
 
