@@ -47,10 +47,8 @@ struct camera_intrinsics {
  *
  * Depth data
  * ----------
- * R16_UNORM (uint16), 2 bytes/pixel, top-down, unencoded.
- * Values are inverted NDC normalized uint16:
- *   depth_m = depth_near_z / (uint16_value / 65535.0)
- * XR_META_environment_depth on Quest 3 with Vulkan delivers VK_FORMAT_R16_UNORM.
+ * R16_SFloat (IEEE 754 float16), 2 bytes/pixel, top-down, unencoded.
+ * Values are inverted NDC: depth_m = depth_near_z / r_value.
  * CPU-side as delivered by XR_META_depth_sensor.
  *
  * Poses
@@ -59,13 +57,13 @@ struct camera_intrinsics {
  * Coordinate conversion to Unity left-handed world space is the server's
  * responsibility, consistent with the existing LhToRh convention.
  */
-struct semantic_data : switchboard::event {
+struct semantic_frame : switchboard::event {
     // ----- RGB -----
     std::vector<uint8_t> image;      //!< H.265 annexb bytes
     camera_intrinsics    intrinsics; //!< RGB camera intrinsics (includes width/height)
 
     // ----- Depth -----
-    std::vector<uint8_t> depth; //!< R16_UNORM uint16, inverted NDC, top-down
+    std::vector<uint8_t> depth; //!< R16_SFloat, inverted NDC, top-down
     float                depth_near_z{0.f};
     camera_intrinsics    depth_intrinsics;
 
@@ -81,35 +79,6 @@ struct semantic_data : switchboard::event {
     int64_t rgb_timestamp_ns   = 0; //!< CLOCK_BOOTTIME ns (from encoder PTS)
     int64_t depth_timestamp_ns = 0; //!< XrTime ns (from XrDepthSensorDataMETA)
 
-    semantic_data() = default;
+    semantic_frame() = default;
 };
-
-struct voice_query : switchboard::event {
-    uint64_t             query_id{0};               // for correlating response
-    std::vector<uint8_t> pcm_data;                  // PCM16 mono 12kHz bytes
-    float                similarity_threshold{0.f}; // default 0.95
-    float                min_match_similarity{0.f}; // default 0.25
-
-    voice_query() = default;
-};
-
-struct point_cloud {
-    std::vector<float> points;   // flat array of XYZ triples
-    std::vector<float> centroid; // [x, y, z]
-    int32_t            num_points{0};
-
-    point_cloud() = default;
-};
-
-struct query_response : switchboard::event {
-    uint64_t                 query_id{0}; // matches voice_query::query_id
-    std::vector<point_cloud> point_clouds;
-    std::vector<float>       colors; // per-point-cloud colors
-    int32_t                  num_point_clouds{0};
-    float                    server_query_processing{0.f}; // latency in seconds
-    std::string              text_query;                   // original query echoed back
-
-    query_response() = default;
-};
-
 } // namespace ILLIXR::data_format

@@ -1,10 +1,15 @@
 #pragma once
 
-#include "decoder_cache.hpp"
+#include "illixr/data_format/point_cloud.hpp"
+#include "illixr/data_format/query_response.hpp"
 #include "illixr/data_format/semantics.hpp"
+#include "illixr/data_format/voice_query.hpp"
+
 #include "illixr/phonebook.hpp"
 #include "illixr/plugin.hpp"
 #include "illixr/switchboard.hpp"
+
+#include "decoder_cache.hpp"
 #include "nvdec_decoder.hpp"
 
 #include <array>
@@ -44,11 +49,11 @@ private:
     // frame_metadata_ keyed by frame_number, then decodes image -> RGB
     // uint8 and stores it in decoded_frames_, keyed by the frame_number
     // NVDEC actually returns (which may lag the submitted frame_number).
-    void on_semantic_data(const switchboard::ptr<const data_format::semantic_data>& frame, std::size_t idx);
+    void on_semantic_data(const switchboard::ptr<const data_format::semantic_frame>& frame, std::size_t idx);
 
     const std::shared_ptr<switchboard>                       switchboard_;
-    switchboard::reader<data_format::voice_query>            voice_query_reader_;
-    switchboard::network_writer<data_format::query_response> response_writer_;
+    switchboard::reader<data_format::semantic_xr::voice_query>            voice_query_reader_;
+    switchboard::network_writer<data_format::semantic_xr::query_response> response_writer_;
 
     pybind11::scoped_interpreter                 guard_;
     pybind11::gil_scoped_release                 release_;
@@ -62,7 +67,7 @@ private:
     std::mutex                     decoder_init_mutex_;
     bool                           decoder_initialized_ = false;
 
-    // Decoded RGB frame cache — written by decode callback, read by get().
+    // Decoded RGB frame cache — written by the decode callback, read by get().
     decode::decoded_frame_cache decoded_frames_;
 
     // Frame metadata cache (depth, poses, intrinsics) keyed by frame_number —

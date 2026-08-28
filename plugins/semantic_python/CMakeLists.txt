@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.24)
 
 set(PLUGIN_NAME plugin.semantic_python${ILLIXR_BUILD_SUFFIX})
 
+# make sure the correct path for pybind11 is followed
 if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.27.0")
     cmake_minimum_required(VERSION 3.27)
 endif()
@@ -39,13 +40,22 @@ add_library(${PLUGIN_NAME} SHARED
             decoder_cache.hpp
             ${NVDEC_SDK_DIR}/Samples/NvCodec/NvDecoder/NvDecoder.cpp
             ${NVDEC_SDK_DIR}/Samples/NvCodec/NvDecoder/NvDecoder.h
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/point_cloud.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/query_response.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/data_format/semantics.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/voice_query.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/plugin.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/phonebook.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/relative_clock.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/threadloop.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization/point_cloud.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization/query_response.hpp
             ${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization/semantics.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization/voice_query.hpp
+            ${CMAKE_SOURCE_DIR}/utils/serialization/point_cloud.cpp
+            ${CMAKE_SOURCE_DIR}/utils/serialization/query_response.cpp
             ${CMAKE_SOURCE_DIR}/utils/serialization/semantics.cpp
+            ${CMAKE_SOURCE_DIR}/utils/serialization/voice_query.cpp
 )
 
 set_target_properties(${PLUGIN_NAME} PROPERTIES

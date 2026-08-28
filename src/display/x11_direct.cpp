@@ -1,11 +1,13 @@
-#include "x11_direct.hpp"
+#ifndef __ANDROID__
 
-#include "illixr/vk/vulkan_utils.hpp"
-#include "X11/extensions/Xrandr.h"
+#    include "x11_direct.hpp"
 
-#include <vulkan/vulkan.h>
-#include <vulkan/vulkan_xlib_xrandr.h>
-#include <X11/Xlib.h>
+#    include "illixr/vk/vulkan_utils.hpp"
+#    include "X11/extensions/Xrandr.h"
+
+#    include <vulkan/vulkan.h>
+#    include <vulkan/vulkan_xlib_xrandr.h>
+#    include <X11/Xlib.h>
 
 using namespace ILLIXR::display;
 
@@ -185,3 +187,5 @@ std::set<const char*> x11_direct::get_required_device_extensions() {
 display_backend::display_backend_type x11_direct::get_type() {
     return X11_DIRECT;
 }
+
+#endif

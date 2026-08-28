@@ -12,6 +12,9 @@ udp_network_backend::udp_network_backend(const std::string& name_, phonebook* pb
     } else if (switchboard_->get_env_char("ILLIXR_UDP_SERVER_IP")) {
         server_ip_ = switchboard_->get_env_char("ILLIXR_UDP_SERVER_IP");
         spdlog::get("illixr")->info("[udp_network_backend] Using UDP server IP {}", server_ip_);
+    } else if (switchboard_->get_env_char("ILLIXR_TCP_SERVER_IP")) {
+        server_ip_ = switchboard_->get_env_char("ILLIXR_TCP_SERVER_IP");
+        spdlog::get("illixr")->info("[udp_network_backend] Using TCP/UDP server IP {}", server_ip_);
     }
 
     if (switchboard_->get_env_char("ILLIXR_UDP_SERVER_PORT")) {
@@ -25,6 +28,9 @@ udp_network_backend::udp_network_backend(const std::string& name_, phonebook* pb
     } else if (switchboard_->get_env_char("ILLIXR_UDP_CLIENT_IP")) {
         client_ip_ = switchboard_->get_env_char("ILLIXR_UDP_CLIENT_IP");
         spdlog::get("illixr")->info("[udp_network_backend] Using UDP client IP {}", client_ip_);
+    } else if (switchboard_->get_env_char("ILLIXR_TCP_CLIENT_IP")) {
+        server_ip_ = switchboard_->get_env_char("ILLIXR_TCP_CLIENT_IP");
+        spdlog::get("illixr")->info("[udp_network_backend] Using TCP/UDP client IP {}", server_ip_);
     }
 
     if (switchboard_->get_env_char("ILLIXR_UDP_CLIENT_PORT")) {
@@ -41,6 +47,26 @@ udp_network_backend::udp_network_backend(const std::string& name_, phonebook* pb
 
     if (is_client_) {
         client = true;
+        // Android needs to hand the threads differently
+#ifdef __ANDROID__
+        auto* socket = new network::UDPSocket();
+        socket->socket_set_reuseaddr();
+        // Always bind so the OS assigns a local port, making the client reachable for
+        // server -> client datagrams (e.g., future round-trip topics).  If
+        // ILLIXR_UDP_CLIENT_PORT is set, bind to that specific port; otherwise bind to
+        // port 0 and let the OS assign an ephemeral port.
+        if (!client_ip_.empty())
+            socket->socket_bind(client_ip_, client_port_);
+        else
+            socket->socket_bind(0);
+
+        socket->set_peer(server_ip_, server_port_);
+        peer_socket_ = socket;
+
+        spdlog::get("illixr")->info("[udp_network_backend] Connecting to {}:{}", server_ip_, server_port_);
+        // UDP is connectionless � set_peer() is sufficient; no connect() needed
+        spdlog::get("illixr")->info("[udp_network_backend] Client ready");
+#else
         std::thread([this]() {
             start_client();
         }).detach();
@@ -49,8 +75,20 @@ udp_network_backend::udp_network_backend(const std::string& name_, phonebook* pb
         while (!ready_) {
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
+
+#endif
     } else {
         client = false;
+        // Android needs to handl;e the threads differently
+#ifdef __ANDROID__
+        auto* socket = new network::UDPSocket();
+        socket->socket_set_reuseaddr();
+        socket->socket_bind(server_ip_, server_port_);
+
+        spdlog::get("illixr")->info("[udp_network_backend] Listening on UDP port {}", server_port_);
+
+        peer_socket_ = socket;
+#else
         std::thread([this]() {
             start_server();
         }).detach();
@@ -58,8 +96,19 @@ udp_network_backend::udp_network_backend(const std::string& name_, phonebook* pb
         while (!ready_) {
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
+
+#endif
     }
 }
+
+#ifdef __ANDROID__
+void udp_network_backend::start() {
+    plugin::start();
+    std::thread([this]() {
+        read_loop(peer_socket_);
+    }).detach();
+}
+#else
 
 void udp_network_backend::start_client() {
     auto* socket = new network::UDPSocket();
@@ -103,6 +152,7 @@ void udp_network_backend::start_server() {
     ready_       = true;
     read_loop(socket);
 }
+#endif
 
 void udp_network_backend::read_loop(network::UDPSocket* socket) {
     std::string buffer;

@@ -55,7 +55,7 @@ public:
      *
      * NVDEC may hand back a different picture than the one just submitted
      * (see the reordering note above), so frame_number is threaded through
-     * as the NVDEC picture timestamp and read back via GetFrame(&ts) —
+     * as the NVDEC picture timestamp and read back via GetFrame(&ts)
      * out_frame_number identifies which picture pinned_rgb_ actually holds.
      *
      * @param data              Pointer to annexb bytes.

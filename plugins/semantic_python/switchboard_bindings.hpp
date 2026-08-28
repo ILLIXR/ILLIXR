@@ -59,18 +59,18 @@ namespace ILLIXR {
 // Helpers
 // ---------------------------------------------------------------------------
 
-static pybind11::array_t<uint8_t> to_numpy_flat_safe(std::shared_ptr<const data_format::semantic_data> owner,
+static pybind11::array_t<uint8_t> to_numpy_flat_safe(std::shared_ptr<const data_format::semantic_frame> owner,
                                                      const uint8_t* data, size_t size) {
-    pybind11::capsule base(new std::shared_ptr<const data_format::semantic_data>(std::move(owner)), [](void* p) {
-        delete static_cast<std::shared_ptr<const data_format::semantic_data>*>(p);
+    pybind11::capsule base(new std::shared_ptr<const data_format::semantic_frame>(std::move(owner)), [](void* p) {
+        delete static_cast<std::shared_ptr<const data_format::semantic_frame>*>(p);
     });
 
     return pybind11::array_t<uint8_t>({static_cast<pybind11::ssize_t>(size)}, {static_cast<pybind11::ssize_t>(1)}, data, base);
 }
 
-static pybind11::array_t<float> to_numpy_4x4_safe(std::shared_ptr<const data_format::semantic_data> owner, const float* data) {
-    pybind11::capsule base(new std::shared_ptr<const data_format::semantic_data>(std::move(owner)), [](void* p) {
-        delete static_cast<std::shared_ptr<const data_format::semantic_data>*>(p);
+static pybind11::array_t<float> to_numpy_4x4_safe(std::shared_ptr<const data_format::semantic_frame> owner, const float* data) {
+    pybind11::capsule base(new std::shared_ptr<const data_format::semantic_frame>(std::move(owner)), [](void* p) {
+        delete static_cast<std::shared_ptr<const data_format::semantic_frame>*>(p);
     });
 
     return pybind11::array_t<float>(
@@ -165,8 +165,8 @@ struct py_semantic_data_reader {
 // -----------------------------------------------------------------------
 
 struct py_voice_query_reader {
-    switchboard::reader<data_format::voice_query>* reader_;
-    uint64_t                                       last_query_id_ = 0;
+    switchboard::reader<data_format::semantic_xr::voice_query>* reader_;
+    uint64_t                                                    last_query_id_ = 0;
 
     pybind11::object get() {
         auto val = reader_->get_ro_nullable();
@@ -185,8 +185,8 @@ struct py_voice_query_reader {
         d["min_match_similarity"] = val->min_match_similarity;
 
         // PCM data — zero-copy with capsule
-        pybind11::capsule base(new std::shared_ptr<const data_format::voice_query>(val), [](void* p) {
-            delete static_cast<std::shared_ptr<const data_format::voice_query>*>(p);
+        pybind11::capsule base(new std::shared_ptr<const data_format::semantic_xr::voice_query>(val), [](void* p) {
+            delete static_cast<std::shared_ptr<const data_format::semantic_xr::voice_query>*>(p);
         });
         d["pcm_data"] = pybind11::array_t<uint8_t>({static_cast<pybind11::ssize_t>(val->pcm_data.size())},
                                                    {static_cast<pybind11::ssize_t>(1)}, val->pcm_data.data(), base);
@@ -200,7 +200,7 @@ struct py_voice_query_reader {
 // -----------------------------------------------------------------------
 
 struct py_query_response_writer {
-    switchboard::writer<data_format::query_response>* writer_;
+    switchboard::writer<data_format::semantic_xr::query_response>* writer_;
 
     /*!
      * @brief Write a query response to the switchboard.
@@ -212,7 +212,7 @@ struct py_query_response_writer {
      */
     void put(uint64_t query_id, pybind11::list point_clouds, pybind11::list colors, float server_latency,
              const std::string& text_query) const {
-        auto resp                     = std::make_shared<data_format::query_response>();
+        auto resp                     = std::make_shared<data_format::semantic_xr::query_response>();
         resp->query_id                = query_id;
         resp->server_query_processing = server_latency;
         resp->text_query              = text_query;
@@ -220,8 +220,8 @@ struct py_query_response_writer {
 
         resp->point_clouds.reserve(point_clouds.size());
         for (auto& item : point_clouds) {
-            auto                     pc_dict = item.cast<pybind11::dict>();
-            data_format::point_cloud pc;
+            auto                                  pc_dict = item.cast<pybind11::dict>();
+            data_format::semantic_xr::point_cloud pc;
             pc.points     = pc_dict["points"].cast<std::vector<float>>();
             pc.num_points = static_cast<int32_t>(pc.points.size() / 3);
             pc.centroid   = pc_dict["centroid"].cast<std::vector<float>>();

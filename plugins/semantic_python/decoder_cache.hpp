@@ -105,13 +105,13 @@ public:
     static constexpr size_t CAPACITY = 256;
 
     struct Entry {
-        switchboard::ptr<const data_format::semantic_data> data;
+        switchboard::ptr<const data_format::semantic_frame> data;
         int32_t                                            frame_number = -1;
         bool                                               valid        = false;
     };
 
     // Store a frame's metadata, keyed by frame_number.
-    void store(int32_t frame_number, const switchboard::ptr<const data_format::semantic_data>& frame) {
+    void store(int32_t frame_number, const switchboard::ptr<const data_format::semantic_frame>& frame) {
         std::lock_guard<std::mutex> lock(mutex_);
         Entry&                      slot = entries_[next_slot_];
         slot.data                        = frame;

@@ -1,3 +1,12 @@
+if (NOT ANDROID)
+    find_package(glfw3 QUIET)
+    if (NOT glfw3_FOUND)
+        pkg_search_module(glfw3 REQUIRED glfw3)
+    endif ()
+
+    find_package(OpenGL REQUIRED)
+endif()
+
 add_library(illixr_hmd OBJECT
             hmd.cpp
             ${CMAKE_SOURCE_DIR}/include/illixr/hmd.hpp
@@ -5,30 +14,20 @@ add_library(illixr_hmd OBJECT
 
 target_include_directories(illixr_hmd PUBLIC ${CMAKE_SOURCE_DIR}/include)
 
-add_library(illixr_hmd_gl OBJECT
-            hmd.cpp
-            ${CMAKE_SOURCE_DIR}/include/illixr/hmd.hpp
-)
+if (NOT ANDROID)
+    add_library(illixr_hmd_gl OBJECT hmd.cpp
+                ${CMAKE_SOURCE_DIR}/include/illixr/hmd.hpp
+    )
 
-target_include_directories(illixr_hmd_gl PUBLIC ${CMAKE_SOURCE_DIR}/include)
-target_compile_definitions(illixr_hmd_gl PUBLIC USE_GL)
+    target_include_directories(illixr_hmd_gl PUBLIC ${CMAKE_SOURCE_DIR}/include)
+    target_compile_definitions(illixr_hmd_gl PUBLIC USE_GL)
 
-add_library(illixr_vulkan_utils STATIC
-            ${CMAKE_SOURCE_DIR}/include/illixr/vk/vulkan_utils.hpp
-            vulkan_utils.cpp
-)
-set_target_properties(illixr_vulkan_utils PROPERTIES POSITION_INDEPENDENT_CODE ON)
-target_include_directories(illixr_vulkan_utils PUBLIC ${CMAKE_SOURCE_DIR}/include)
-target_link_libraries(illixr_vulkan_utils PUBLIC
-                      spdlog::spdlog
-                      Boost::serialization
-)
-if(WIN32 OR MSVC)
-    target_link_libraries(illixr_vulkan_utils PUBLIC Vulkan::Vulkan GPUOpen::VulkanMemoryAllocator)
-    target_compile_options(illixr_vulkan_utils PRIVATE /EHsc)
-endif()
-if(USE_DEBUGVIEW)
-    find_package(OpenGL REQUIRED)
+    add_library(illixr_vulkan_utils STATIC vulkan_utils.cpp
+                ${CMAKE_SOURCE_DIR}/include/illixr/vk/vulkan_utils.hpp
+    )
+
+    target_include_directories(illixr_vulkan_utils PUBLIC ${CMAKE_SOURCE_DIR}/include)
+    target_link_libraries(illixr_vulkan_utils PUBLIC spdlog::spdlog)
 
     add_library(illixr_imgui STATIC
                 imgui/imconfig.h
@@ -42,8 +41,10 @@ if(USE_DEBUGVIEW)
                 imgui/imstb_rectpack.h
                 imgui/imstb_textedit.h
                 imgui/imstb_truetype.h
-                #imgui/backends/imgui_impl_glfw.cpp
-                #imgui/backends/imgui_impl_glfw.h
+                imgui/backends/imgui_impl_glfw.cpp
+                imgui/backends/imgui_impl_glfw.h
+                #imgui/backends/imgui_impl_glut.cpp
+                #imgui/backends/imgui_impl_glut.h
                 imgui/backends/imgui_impl_opengl3.cpp
                 imgui/backends/imgui_impl_opengl3.h
                 imgui/backends/imgui_impl_opengl3_loader.h
@@ -59,6 +60,9 @@ if(USE_DEBUGVIEW)
                 #imgui/backends/imgui_impl_vulkan.h
                 imgui/misc/cpp/imgui_stdlib.cpp
                 imgui/misc/cpp/imgui_stdlib.h
+                #imgui/misc/fonts/binary_to_compressed_c.cpp
+                #imgui/misc/freetype/imgui_freetype.cpp
+                #imgui/misc/freetype/imgui_freetype.h
     )
 
     target_include_directories(illixr_imgui PUBLIC
@@ -75,99 +79,100 @@ if(USE_DEBUGVIEW)
                           glfw
                           OpenGL::GL
     )
-endif()
 
-if(USE_ADA.DEVICE_TX OR USE_ADA.SERVER_RX OR USE_OFFLOAD_VIO.SERVER_RX OR USE_OFFLOAD_VIO.DEVICE_TX)
-    pkg_search_module(GLIB REQUIRED glib-2.0)
-    pkg_check_modules(GSTREAMER REQUIRED gstreamer-1.0)
-    pkg_check_modules(GST_APP REQUIRED gstreamer-app-1.0)
-    pkg_check_modules(GST_VIDEO REQUIRED gstreamer-video-1.0)
-    pkg_check_modules(GST_AUDIO REQUIRED gstreamer-audio-1.0)
+    if(USE_ADA.DEVICE_TX OR USE_ADA.SERVER_RX OR USE_OFFLOAD_VIO.SERVER_RX OR USE_OFFLOAD_VIO.DEVICE_TX)
+        pkg_search_module(GLIB REQUIRED glib-2.0)
+        pkg_check_modules(GSTREAMER REQUIRED gstreamer-1.0)
+        pkg_check_modules(GST_APP REQUIRED gstreamer-app-1.0)
+        pkg_check_modules(GST_VIDEO REQUIRED gstreamer-video-1.0)
+        pkg_check_modules(GST_AUDIO REQUIRED gstreamer-audio-1.0)
 
-    set(INC_DIRS ${GLIB_INCLUDE_DIRS} ${GSTREAMER_INCLUDE_DIRS} ${GST_APP_INCLUDE_DIRS} ${GST_AUDIO_INCLUDE_DIRS} ${GST_VIDEO_INCLUDE_DIRS})
-    # remove duplicates
-    list(REMOVE_DUPLICATES INC_DIRS)
+        set(INC_DIRS ${GLIB_INCLUDE_DIRS} ${GSTREAMER_INCLUDE_DIRS} ${GST_APP_INCLUDE_DIRS} ${GST_AUDIO_INCLUDE_DIRS} ${GST_VIDEO_INCLUDE_DIRS})
+        # remove duplicates
+        list(REMOVE_DUPLICATES INC_DIRS)
 
-    # gather the libraries
-    set(LINK_LIBS ${GLIB_LIBRARIES} ${GSTREAMER_LIBRARIES} ${GST_APP_LIBRARIES} ${GST_VIDEO_LIBRARIES} ${GST_AUDIO_LIBRARIES})
-    # reverse to maintain order in final list
-    list(REVERSE LINK_LIBS)
-    # remove the copious duplicates
-    list(REMOVE_DUPLICATES LINK_LIBS)
-    # reverse back to original order
-    list(REVERSE LINK_LIBS)
+        # gather the libraries
+        set(LINK_LIBS ${GLIB_LIBRARIES} ${GSTREAMER_LIBRARIES} ${GST_APP_LIBRARIES} ${GST_VIDEO_LIBRARIES} ${GST_AUDIO_LIBRARIES})
+        # reverse to maintain order in final list
+        list(REVERSE LINK_LIBS)
+        # remove the copious duplicates
+        list(REMOVE_DUPLICATES LINK_LIBS)
+        # reverse back to original order
+        list(REVERSE LINK_LIBS)
 
-    if(USE_ADA.DEVICE_TX)
-        add_library(video_encoder_ada OBJECT
-                    ${CMAKE_SOURCE_DIR}/include/illixr/video_encoder.hpp
-                    video_encoder.cpp
-        )
+        if(USE_ADA.DEVICE_TX)
+            add_library(video_encoder_ada OBJECT
+                        ${CMAKE_SOURCE_DIR}/include/illixr/video_encoder.hpp
+                        video_encoder.cpp
+            )
 
-        target_include_directories(video_encoder_ada PUBLIC
-                                   ${OpenCV_INCLUDE_DIRS}
-                                   ${INC_DIRS}
-        )
+            target_include_directories(video_encoder_ada PUBLIC
+                                       ${OpenCV_INCLUDE_DIRS}
+                                       ${INC_DIRS}
+            )
 
-        target_link_libraries(video_encoder_ada PUBLIC
-                              ${OpenCV_LIBS}
-                              ${LINK_LIBS}
-        )
+            target_link_libraries(video_encoder_ada PUBLIC
+                                  ${OpenCV_LIBS}
+                                  ${LINK_LIBS}
+            )
 
-        target_compile_definitions(video_encoder_ada PUBLIC ADA)
+            target_compile_definitions(video_encoder_ada PUBLIC ADA)
+        endif()
+
+        if(USE_ADA.SERVER_RX)
+            add_library(video_decoder_ada OBJECT
+                        ${CMAKE_SOURCE_DIR}/include/illixr/video_decoder.hpp
+                        video_decoder.cpp
+            )
+
+            target_include_directories(video_decoder_ada PUBLIC
+                                       ${OpenCV_INCLUDE_DIRS}
+                                       ${INC_DIRS}
+            )
+
+            target_link_libraries(video_decoder_ada PUBLIC
+                                  ${OpenCV_LIBS}
+                                  ${LINK_LIBS}
+            )
+            target_compile_definitions(video_decoder_ada PUBLIC ADA)
+        endif()
+
+        if(USE_OFFLOAD_VIO.DEVICE_TX)
+            add_library(video_encoder_vio OBJECT
+                        video_encoder.hpp
+                        ${CMAKE_SOURCE_DIR}/include/illixr/video_encoder.cpp
+            )
+
+            target_include_directories(video_encoder_vio PUBLIC
+                                       ${OpenCV_INCLUDE_DIRS}
+                                       ${INC_DIRS}
+            )
+
+            target_link_libraries(video_encoder_vio PUBLIC
+                                  ${OpenCV_LIBS}
+                                  ${LINK_LIBS}
+            )
+
+            target_compile_definitions(video_encoder_vio PUBLIC VIO)
+        endif()
+
+        if(USE_OFFLOAD_VIO.SERVER_RX)
+            add_library(video_decoder_vio OBJECT
+                        ${CMAKE_SOURCE_DIR}/include/illixr/video_decoder.hpp
+                        video_decoder.cpp
+            )
+
+            target_include_directories(video_decoder_vio PUBLIC
+                                       ${OpenCV_INCLUDE_DIRS}
+                                       ${INC_DIRS}
+            )
+
+            target_link_libraries(video_decoder_vio PUBLIC
+                                  ${OpenCV_LIBS}
+                                  ${LINK_LIBS}
+            )
+            target_compile_definitions(video_decoder_vio PUBLIC VIO)
+        endif()
     endif()
 
-    if(USE_ADA.SERVER_RX)
-        add_library(video_decoder_ada OBJECT
-                    ${CMAKE_SOURCE_DIR}/include/illixr/video_decoder.hpp
-                    video_decoder.cpp
-        )
-
-        target_include_directories(video_decoder_ada PUBLIC
-                                   ${OpenCV_INCLUDE_DIRS}
-                                   ${INC_DIRS}
-        )
-
-        target_link_libraries(video_decoder_ada PUBLIC
-                              ${OpenCV_LIBS}
-                              ${LINK_LIBS}
-        )
-        target_compile_definitions(video_decoder_ada PUBLIC ADA)
-    endif()
-
-    if(USE_OFFLOAD_VIO.DEVICE_TX)
-        add_library(video_encoder_vio OBJECT
-                    ${CMAKE_SOURCE_DIR}/include/illixr/video_encoder.hpp
-                    video_encoder.cpp
-        )
-
-        target_include_directories(video_encoder_vio PUBLIC
-                                   ${OpenCV_INCLUDE_DIRS}
-                                   ${INC_DIRS}
-        )
-
-        target_link_libraries(video_encoder_vio PUBLIC
-                              ${OpenCV_LIBS}
-                              ${LINK_LIBS}
-        )
-
-        target_compile_definitions(video_encoder_vio PUBLIC VIO)
-    endif()
-
-    if(USE_OFFLOAD_VIO.SERVER_RX)
-        add_library(video_decoder_vio OBJECT
-                    ${CMAKE_SOURCE_DIR}/include/illixr/video_decoder.hpp
-                    video_decoder.cpp
-        )
-
-        target_include_directories(video_decoder_vio PUBLIC
-                                   ${OpenCV_INCLUDE_DIRS}
-                                   ${INC_DIRS}
-        )
-
-        target_link_libraries(video_decoder_vio PUBLIC
-                              ${OpenCV_LIBS}
-                              ${LINK_LIBS}
-        )
-        target_compile_definitions(video_decoder_vio PUBLIC VIO)
-    endif()
 endif()

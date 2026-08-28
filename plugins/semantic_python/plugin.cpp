@@ -27,8 +27,8 @@ static pybind11::scoped_interpreter make_interpreter() {
 [[maybe_unused]] semantic_python::semantic_python(const std::string& name, ILLIXR::phonebook* pb)
     : plugin{name, pb}
     , switchboard_{pb->lookup_impl<switchboard>()}
-    , voice_query_reader_{switchboard_->get_reader<voice_query>("semantic_query")}
-    , response_writer_{switchboard_->get_network_writer<query_response>("semantic_response", {})}
+    , voice_query_reader_{switchboard_->get_reader<semantic_xr::voice_query>("semantic_query")}
+    , response_writer_{switchboard_->get_network_writer<semantic_xr::query_response>("semantic_response", {})}
     , guard_{make_interpreter()}
     , release_{} {
     // Fix sys.path to use the venv Python rather than system Python.
@@ -78,9 +78,9 @@ static pybind11::scoped_interpreter make_interpreter() {
         throw std::runtime_error("No SEMANTIC_PYTHON_SCRIPT given.");
 
     // Register decode callback — fires on the switchboard thread whenever a
-    // new semantic_data frame arrives, decoding it immediately into the cache.
-    switchboard_->schedule<data_format::semantic_data>(
-        id_, "semantic_data", [this](const switchboard::ptr<const data_format::semantic_data>& frame, std::size_t idx) {
+    // new semantic_frame frame arrives, decoding it immediately into the cache.
+    switchboard_->schedule<data_format::semantic_frame>(
+        id_, "semantic_frame", [this](const switchboard::ptr<const data_format::semantic_frame>& frame, std::size_t idx) {
             on_semantic_data(frame, idx);
         });
 }
@@ -167,7 +167,7 @@ void semantic_python::parse_py_args(const std::string& input) {
     }
 }
 
-void semantic_python::on_semantic_data(const switchboard::ptr<const data_format::semantic_data>& frame, std::size_t /*idx*/) {
+void semantic_python::on_semantic_data(const switchboard::ptr<const data_format::semantic_frame>& frame, std::size_t /*idx*/) {
     if (!frame) {
         spdlog::get("illixr")->warn("[semantic_python] on_semantic_data: null frame");
         return;

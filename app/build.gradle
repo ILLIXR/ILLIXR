@@ -1,0 +1,83 @@
+plugins {
+    id 'com.android.application'
+}
+
+def root_path = rootProject.getLayout().getProjectDirectory().getAsFile().getPath()
+def root_library_path = "${root_path}/android_libraries/third_party/"
+
+def home = System.getenv('HOME') ?: System.getenv('USERPROFILE')
+
+android {
+    signingConfigs {
+        debug {
+            storeFile file("${home}/illixr.keystore")
+            storePassword 'illixr'
+            keyAlias 'illixr'
+            keyPassword 'illixr'
+        }
+        release {
+            storeFile file("${home}/illixr.keystore")
+            storePassword 'illixr'
+            keyAlias 'illixr'
+            keyPassword 'illixr'
+        }
+    }
+    compileSdkVersion 33
+    ndkVersion '27.2.12479018'
+
+    defaultConfig {
+        applicationId = 'com.example.native_activity'
+        minSdk 32
+        targetSdkVersion 32
+        ndk {
+            //noinspection ChromeOsAbiSupport
+            abiFilters  "arm64-v8a"
+        }
+        externalNativeBuild {
+            cmake {
+                version '3.22.1'
+                cppFlags '-std=c++17', '-frtti', '-fexceptions'
+                arguments "-DUNITY_PLUGIN_API_DIR=C:/Program Files/Unity/Hub/Editor/6000.4.0f1/Editor/Data/PluginAPI",
+                          "-DTHIRD_PARTY_DIR=${root_library_path}",
+                          "-DBUILD_ANDROID=ON",
+                          "-DBUILD_UNITY_INTERFACE=ON"
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+//            debuggable true
+            minifyEnabled false
+            debuggable false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'),
+                    'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'),
+                    'proguard-rules.pro'
+            signingConfig signingConfigs.debug
+        }
+    }
+    externalNativeBuild {
+        cmake {
+            version '3.22.1'
+            path "${root_path}/CMakeLists.txt"
+
+        }
+    }
+    namespace 'com.example.ILLIXR'
+    buildFeatures {
+        prefab = true
+    }
+
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'androidx.appcompat:appcompat:1.0.2'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation 'org.khronos.openxr:openxr_loader_for_android:1.1.54'
+}
