@@ -44,13 +44,13 @@ public:
 private:
     const std::shared_ptr<switchboard> switchboard_;
     // switchboard::network_writer<data_format::semantic_data> semantic_writer_;
-    switchboard::network_writer<bridge::semantic_xr::voice_query> query_writer_;
-    switchboard::reader<bridge::semantic_xr::query_response>      response_reader_;
+    switchboard::network_writer<data_format::semantic_xr::voice_query> query_writer_;
+    switchboard::reader<data_format::semantic_xr::query_response>      response_reader_;
 
     // Sequence number of the last query_response we delivered to Unity,
     // used to detect when a new response has arrived.
-    std::atomic<uint64_t>                                      last_delivered_query_id_{0};
-    std::shared_ptr<const bridge::semantic_xr::query_response> cached_response_;
+    std::atomic<uint64_t>                                           last_delivered_query_id_{0};
+    std::shared_ptr<const data_format::semantic_xr::query_response> cached_response_;
 };
 
 } // namespace ILLIXR

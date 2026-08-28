@@ -1,7 +1,7 @@
 #include "plugin.hpp"
 
-#include "illixr/data_format/query_response_ser.hpp"
-#include "illixr/data_format/voice_query_ser.hpp"
+#include "illixr/data_format/serialization/query_response.hpp"
+#include "illixr/data_format/serialization/voice_query.hpp"
 #include "illixr/error_util.hpp"
 
 #include <algorithm>
