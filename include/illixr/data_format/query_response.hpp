@@ -6,7 +6,6 @@
 #pragma once
 
 #include "illixr/switchboard.hpp"
-
 #include "point_cloud.hpp"
 
 #include <boost/serialization/string.hpp>
@@ -16,12 +15,12 @@
 namespace ILLIXR::data_format::semantic_xr {
 
 struct query_response : switchboard::event {
-    uint64_t query_id;
+    uint64_t                                                   query_id;
     std::vector<ILLIXR::data_format::semantic_xr::point_cloud> point_clouds;
-    std::vector<float> colors;
-    int32_t num_point_clouds;
-    float server_query_processing;
-    std::string text_query;
+    std::vector<float>                                         colors;
+    int32_t                                                    num_point_clouds;
+    float                                                      server_query_processing;
+    std::string                                                text_query;
 
     query_response() = default;
 };

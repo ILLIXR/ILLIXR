@@ -8,21 +8,22 @@
 #include "illixr/data_format/voice_query.hpp"
 
 #include <boost/serialization/array.hpp>
+#include <boost/serialization/base_object.hpp>
 #include <boost/serialization/export.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/split_free.hpp>
-#include <boost/serialization/base_object.hpp>
+
 namespace boost {
 namespace serialization {
 
-template<class Archive>
-void serialize(Archive& ar, ILLIXR::data_format::semantic_xr::voice_query& data, const unsigned int) {
-    ar & boost::serialization::base_object<ILLIXR::switchboard::event>(data);
-    ar & data.query_id;
-    ar & data.pcm_data;
-    ar & data.similarity_threshold;
-    ar & data.min_match_similarity;
-}
+    template<class Archive>
+    void serialize(Archive& ar, ILLIXR::data_format::semantic_xr::voice_query& data, const unsigned int) {
+        ar& boost::serialization::base_object<ILLIXR::switchboard::event>(data);
+        ar & data.query_id;
+        ar & data.pcm_data;
+        ar & data.similarity_threshold;
+        ar & data.min_match_similarity;
+    }
 
 } // namespace serialization
 } // namespace boost

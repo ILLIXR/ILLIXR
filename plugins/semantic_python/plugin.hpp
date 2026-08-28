@@ -1,15 +1,13 @@
 #pragma once
 
+#include "decoder_cache.hpp"
 #include "illixr/data_format/point_cloud.hpp"
 #include "illixr/data_format/query_response.hpp"
 #include "illixr/data_format/semantics.hpp"
 #include "illixr/data_format/voice_query.hpp"
-
 #include "illixr/phonebook.hpp"
 #include "illixr/plugin.hpp"
 #include "illixr/switchboard.hpp"
-
-#include "decoder_cache.hpp"
 #include "nvdec_decoder.hpp"
 
 #include <array>
@@ -51,7 +49,7 @@ private:
     // NVDEC actually returns (which may lag the submitted frame_number).
     void on_semantic_data(const switchboard::ptr<const data_format::semantic_frame>& frame, std::size_t idx);
 
-    const std::shared_ptr<switchboard>                       switchboard_;
+    const std::shared_ptr<switchboard>                                    switchboard_;
     switchboard::reader<data_format::semantic_xr::voice_query>            voice_query_reader_;
     switchboard::network_writer<data_format::semantic_xr::query_response> response_writer_;
 

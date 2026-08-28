@@ -8,20 +8,21 @@
 #include "illixr/data_format/point_cloud.hpp"
 
 #include <boost/serialization/array.hpp>
+#include <boost/serialization/base_object.hpp>
 #include <boost/serialization/export.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/split_free.hpp>
-#include <boost/serialization/base_object.hpp>
+
 namespace boost {
 namespace serialization {
 
-template<class Archive>
-void serialize(Archive& ar, ILLIXR::data_format::semantic_xr::point_cloud& data, const unsigned int) {
-    ar & boost::serialization::base_object<ILLIXR::switchboard::event>(data);
-    ar & data.points;
-    ar & data.centroid;
-    ar & data.num_points;
-}
+    template<class Archive>
+    void serialize(Archive& ar, ILLIXR::data_format::semantic_xr::point_cloud& data, const unsigned int) {
+        ar& boost::serialization::base_object<ILLIXR::switchboard::event>(data);
+        ar & data.points;
+        ar & data.centroid;
+        ar & data.num_points;
+    }
 
 } // namespace serialization
 } // namespace boost
