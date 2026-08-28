@@ -23,7 +23,7 @@ if (MONADO_VK_FOUND AND MONADO_VK_OXR_LIB_FOUND AND MONADO_LIBRARY_FOUND)
 else ()
     fetch_git(NAME Monado_VK
               REPO https://github.com/ILLIXR/monado_update.git
-              TAG  866d03408130c84f4d46f3da985a27ec59d62c55
+              TAG  356e53a81229af502c4a3801f35f622945ba7b75
     )
     if (UNIX)
         set(XRT_HAVE_LIBUDEV ON)
