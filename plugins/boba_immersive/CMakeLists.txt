@@ -16,11 +16,6 @@ else()
                 ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
     )
 
-    get_filename_component(DEFAULT_BOBA_LAUNCHER
-                           "${CMAKE_SOURCE_DIR}/../Boba-Demo/boba_app.sh"
-                           ABSOLUTE)
-    target_compile_definitions(${PLUGIN_NAME} PRIVATE
-                               ILLIXR_DEFAULT_BOBA_LAUNCHER="${DEFAULT_BOBA_LAUNCHER}")
     target_link_libraries(${PLUGIN_NAME} PRIVATE
                           Eigen3::Eigen
                           Threads::Threads
@@ -29,4 +24,5 @@ else()
     target_compile_features(${PLUGIN_NAME} PRIVATE cxx_std_17)
 
     install(TARGETS ${PLUGIN_NAME} DESTINATION lib)
+    install(PROGRAMS ${CMAKE_SOURCE_DIR}/scripts/setup_boba_immersive.sh DESTINATION bin)
 endif()

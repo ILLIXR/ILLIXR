@@ -8,6 +8,7 @@
 #include <cerrno>
 #include <chrono>
 #include <csignal>
+#include <cstdlib>
 #include <cstring>
 #include <fcntl.h>
 #include <filesystem>
@@ -26,10 +27,6 @@
 
 extern char** environ;
 
-#ifndef ILLIXR_DEFAULT_BOBA_LAUNCHER
-#define ILLIXR_DEFAULT_BOBA_LAUNCHER "boba_app.sh"
-#endif
-
 namespace {
 
 constexpr std::uint32_t kInputVersion = 1;
@@ -44,6 +41,7 @@ constexpr std::uint32_t kFlagOrientationValid   = 1U << 2U;
 constexpr std::uint32_t kFlagPositionTracked    = 1U << 3U;
 constexpr std::uint32_t kFlagOrientationTracked = 1U << 4U;
 constexpr std::uint32_t kFlagPressed            = 1U << 1U;
+constexpr char          kBobaRuntimeEnvironment[] = "boba-cu132";
 
 constexpr std::uint32_t kFrameVersion          = 3;
 constexpr std::uint32_t kOverlayVersion        = 2;
@@ -285,6 +283,33 @@ bool same_magic(const char actual[8], const char expected[8]) {
     return std::memcmp(actual, expected, 8) == 0;
 }
 
+std::filesystem::path default_boba_install_root() {
+    if (const char* xdg_data_home = std::getenv("XDG_DATA_HOME");
+        xdg_data_home != nullptr && *xdg_data_home != '\0') {
+        return std::filesystem::path{xdg_data_home} / "illixr" / "boba_immersive";
+    }
+    if (const char* home = std::getenv("HOME"); home != nullptr && *home != '\0') {
+        return std::filesystem::path{home} / ".local" / "share" / "illixr" / "boba_immersive";
+    }
+    return {};
+}
+
+std::string resolve_boba_launcher(const std::shared_ptr<ILLIXR::switchboard>& switchboard) {
+    const std::string launcher_override = switchboard->get_env("BOBA_DEMO_LAUNCHER");
+    if (!launcher_override.empty()) {
+        return launcher_override;
+    }
+
+    std::filesystem::path install_root{switchboard->get_env("BOBA_IMMERSIVE_ROOT")};
+    if (install_root.empty()) {
+        install_root = default_boba_install_root();
+    }
+    if (install_root.empty()) {
+        return "Boba-Demo/boba_app.sh";
+    }
+    return (install_root / "Boba-Demo" / "boba_app.sh").string();
+}
+
 } // namespace
 
 namespace ILLIXR {
@@ -313,7 +338,7 @@ boba_immersive::boba_immersive(const std::string& name, phonebook* pb)
     , controller_reader_{switchboard_->get_reader<controller_input>("quest_controller")}
     , view_reader_{switchboard_->get_reader<view_frame>("openxr_view")}
     , stereo_writer_{switchboard_->get_writer<stereo_frame>("stereo_frame")}
-    , boba_launcher_{switchboard_->get_env("BOBA_DEMO_LAUNCHER", ILLIXR_DEFAULT_BOBA_LAUNCHER)} {
+    , boba_launcher_{resolve_boba_launcher(switchboard_)} {
     spdlogger(switchboard_->get_env_char("BOBA_IMMERSIVE_LOG_LEVEL", "info"));
 }
 
@@ -416,7 +441,10 @@ bool boba_immersive::create_input_socket() {
 
 bool boba_immersive::launch_boba() {
     if (!std::filesystem::is_regular_file(boba_launcher_)) {
-        plugin_logger_->error("Boba launcher was not found: {} (set BOBA_DEMO_LAUNCHER to override)", boba_launcher_);
+        plugin_logger_->error(
+            "Boba launcher was not found: {}. Run setup_boba_immersive.sh, set BOBA_IMMERSIVE_ROOT, or set "
+            "BOBA_DEMO_LAUNCHER to override the launcher directly.",
+            boba_launcher_);
         return false;
     }
 
@@ -426,7 +454,8 @@ bool boba_immersive::launch_boba() {
         if (value.rfind("BOBA_ILLIXR_INPUT_SOCKET=", 0) == 0 ||
             value.rfind("BOBA_ILLIXR_FRAME_PATH=", 0) == 0 ||
             value.rfind("BOBA_ILLIXR_OVERLAY_PATH=", 0) == 0 ||
-            value.rfind("BOBA_ILLIXR_MODAL_PATH=", 0) == 0) {
+            value.rfind("BOBA_ILLIXR_MODAL_PATH=", 0) == 0 ||
+            value.rfind("BOBA_RUNTIME_ENV=", 0) == 0) {
             continue;
         }
         environment_storage.emplace_back(*entry);
@@ -435,6 +464,7 @@ bool boba_immersive::launch_boba() {
     environment_storage.emplace_back("BOBA_ILLIXR_FRAME_PATH=" + frame_path_);
     environment_storage.emplace_back("BOBA_ILLIXR_OVERLAY_PATH=" + overlay_path_);
     environment_storage.emplace_back("BOBA_ILLIXR_MODAL_PATH=" + modal_path_);
+    environment_storage.emplace_back(std::string{"BOBA_RUNTIME_ENV="} + kBobaRuntimeEnvironment);
 
     std::vector<char*> environment;
     environment.reserve(environment_storage.size() + 1);
@@ -464,7 +494,8 @@ bool boba_immersive::launch_boba() {
         plugin_logger_->error("Unable to launch Boba: {}", std::strerror(result));
         return false;
     }
-    plugin_logger_->info("Launched the existing Boba immersive demo (pid={}, launcher={})", boba_pid_, boba_launcher_);
+    plugin_logger_->info("Launched the existing Boba immersive demo (pid={}, launcher={}, conda_env={})",
+                         boba_pid_, boba_launcher_, kBobaRuntimeEnvironment);
     return true;
 }
 
