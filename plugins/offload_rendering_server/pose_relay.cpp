@@ -356,8 +356,8 @@ void pose_relay::_p_one_iteration() {
         log_->info("[POSE_DIAG][server_pose_relay] received render_pose count={} valid={} "
                    "pos=({:.3f},{:.3f},{:.3f}) ori=({:.3f},{:.3f},{:.3f},{:.3f})",
                    pose_diag_recv_count, pose->pose.valid, pose->pose.position.x(), pose->pose.position.y(),
-                   pose->pose.position.z(), pose->pose.orientation.x(), pose->pose.orientation.y(),
-                   pose->pose.orientation.z(), pose->pose.orientation.w());
+                   pose->pose.position.z(), pose->pose.orientation.x(), pose->pose.orientation.y(), pose->pose.orientation.z(),
+                   pose->pose.orientation.w());
     }
     current_pose_ = *pose;
 #endif

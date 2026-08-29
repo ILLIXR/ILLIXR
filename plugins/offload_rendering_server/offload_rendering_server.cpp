@@ -1032,7 +1032,7 @@ void offload_rendering_server::ffmpeg_populate_buffer_pool_from_framebuffers() {
 
     for (size_t buffer_idx = 0; buffer_idx < buffer_pool_->image_pool.size(); buffer_idx++) {
         for (size_t eye = 0; eye < 2; eye++) {
-            const size_t                    fb_idx = buffer_idx * 2 + eye;
+            const size_t                     fb_idx = buffer_idx * 2 + eye;
             const struct illixr_framebuffer& fb     = framebuffer_array_[fb_idx];
 
             if (fb.image == VK_NULL_HANDLE || fb.memory == VK_NULL_HANDLE || fb.image_extent.width == 0 ||

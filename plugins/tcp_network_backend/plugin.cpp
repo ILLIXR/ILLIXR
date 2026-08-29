@@ -188,8 +188,8 @@ void tcp_network_backend::topic_send(std::string topic_name, std::string&& messa
     if (topic_name == "render_pose") {
         static uint64_t pose_diag_send_count = 0;
         if (++pose_diag_send_count % 300 == 1) {
-            spdlog::get("illixr")->info("[POSE_DIAG][tcp_send] topic=render_pose count={} bytes={}",
-                                        pose_diag_send_count, message.size());
+            spdlog::get("illixr")->info("[POSE_DIAG][tcp_send] topic=render_pose count={} bytes={}", pose_diag_send_count,
+                                        message.size());
         }
     }
     send_to_peer(topic_name, std::move(message));
@@ -200,8 +200,8 @@ void tcp_network_backend::topic_receive(const std::string& topic_name, std::vect
     if (topic_name == "render_pose") {
         static uint64_t pose_diag_recv_count = 0;
         if (++pose_diag_recv_count % 300 == 1) {
-            spdlog::get("illixr")->info("[POSE_DIAG][tcp_receive] topic=render_pose count={} bytes={}",
-                                        pose_diag_recv_count, message.size());
+            spdlog::get("illixr")->info("[POSE_DIAG][tcp_receive] topic=render_pose count={} bytes={}", pose_diag_recv_count,
+                                        message.size());
         }
     }
     if (topic_name == "illixr_control") {

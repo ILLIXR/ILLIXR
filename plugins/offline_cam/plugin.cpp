@@ -54,8 +54,7 @@ ILLIXR::threadloop::skip_option offline_cam::_p_should_skip() {
         return skip_option::stop;
     }
 
-    const auto target_time =
-        std::chrono::nanoseconds{next_row_->first - dataset_first_time_};
+    const auto target_time = std::chrono::nanoseconds{next_row_->first - dataset_first_time_};
     std::this_thread::sleep_for(target_time - clock_->now().time_since_epoch());
     return skip_option::run;
 }

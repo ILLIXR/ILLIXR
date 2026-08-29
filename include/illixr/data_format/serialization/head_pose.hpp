@@ -10,15 +10,13 @@ namespace boost::serialization {
 
 #ifndef USING_OPENXR
 template<class Archive>
-[[maybe_unused]] void serialize(Archive& ar, ILLIXR::data_format::pose::head_pose_data& pose,
-                                const unsigned int version) {
+[[maybe_unused]] void serialize(Archive& ar, ILLIXR::data_format::pose::head_pose_data& pose, const unsigned int version) {
     (void) version;
     ar& boost::serialization::base_object<ILLIXR::data_format::pose::pose_base>(pose);
 }
 
 template<class Archive>
-[[maybe_unused]] void serialize(Archive& ar, ILLIXR::data_format::pose::head_pose_type& pose,
-                                const unsigned int version) {
+[[maybe_unused]] void serialize(Archive& ar, ILLIXR::data_format::pose::head_pose_type& pose, const unsigned int version) {
     (void) version;
     ar& boost::serialization::base_object<ILLIXR::switchboard::event>(pose);
     ar& boost::serialization::base_object<ILLIXR::data_format::pose::head_pose_data>(pose);
@@ -31,8 +29,7 @@ template<class Archive>
 #endif
 
 template<class Archive>
-[[maybe_unused]] void serialize(Archive& ar, ILLIXR::data_format::pose::fast_head_pose_type& pose,
-                                const unsigned int version) {
+[[maybe_unused]] void serialize(Archive& ar, ILLIXR::data_format::pose::fast_head_pose_type& pose, const unsigned int version) {
     (void) version;
     ar& boost::serialization::base_object<ILLIXR::switchboard::event>(pose);
     ar & pose.pose;
