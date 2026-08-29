@@ -2,9 +2,9 @@
 
 #include "illixr/switchboard.hpp"
 
+#include <cstdint>
 #include <Eigen/Core>
 #include <Eigen/Geometry>
-#include <cstdint>
 
 namespace ILLIXR::data_format {
 

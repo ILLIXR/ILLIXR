@@ -12,9 +12,8 @@
 #include <cstddef>
 #include <cstdint>
 #include <string>
-#include <thread>
-
 #include <sys/types.h>
+#include <thread>
 
 namespace ILLIXR {
 
@@ -36,8 +35,8 @@ private:
         const std::uint8_t* data{nullptr};
         std::size_t         size{0};
 
-        mapped_file() = default;
-        mapped_file(const mapped_file&) = delete;
+        mapped_file()                              = default;
+        mapped_file(const mapped_file&)            = delete;
         mapped_file& operator=(const mapped_file&) = delete;
         ~mapped_file();
 

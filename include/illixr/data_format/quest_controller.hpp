@@ -2,9 +2,9 @@
 
 #include "illixr/switchboard.hpp"
 
+#include <cstdint>
 #include <Eigen/Core>
 #include <Eigen/Geometry>
-#include <cstdint>
 
 namespace ILLIXR::data_format {
 
@@ -50,10 +50,10 @@ struct quest_controller_button {
 
 /** Two-dimensional controller input such as a thumbstick. */
 struct quest_controller_axis2d {
-    bool              active{false};
-    bool              changed_since_last_sync{false};
-    Eigen::Vector2f   value{Eigen::Vector2f::Zero()};
-    std::int64_t      last_change_time{0}; //!< OpenXR runtime time domain.
+    bool            active{false};
+    bool            changed_since_last_sync{false};
+    Eigen::Vector2f value{Eigen::Vector2f::Zero()};
+    std::int64_t    last_change_time{0}; //!< OpenXR runtime time domain.
 };
 
 /** State for one physical hand controller. */
@@ -68,10 +68,10 @@ struct quest_hand_controller {
 
     quest_controller_button trigger;
     quest_controller_button squeeze;
-    quest_controller_button primary;        //!< X on the left controller, A on the right.
-    quest_controller_button secondary;      //!< Y on the left controller, B on the right.
+    quest_controller_button primary;   //!< X on the left controller, A on the right.
+    quest_controller_button secondary; //!< Y on the left controller, B on the right.
     quest_controller_button thumbstick_click;
-    quest_controller_axis2d  thumbstick;
+    quest_controller_axis2d thumbstick;
 
     [[nodiscard]] bool tracked() const {
         return grip_pose.tracked() || aim_pose.tracked();

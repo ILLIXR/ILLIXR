@@ -1,8 +1,5 @@
 #include "plugin.hpp"
 
-#include <Eigen/Core>
-#include <Eigen/Geometry>
-
 #include <algorithm>
 #include <array>
 #include <cerrno>
@@ -10,50 +7,52 @@
 #include <csignal>
 #include <cstdlib>
 #include <cstring>
+#include <Eigen/Core>
+#include <Eigen/Geometry>
 #include <fcntl.h>
 #include <filesystem>
 #include <spawn.h>
 #include <stdexcept>
 #include <string_view>
-#include <thread>
-#include <vector>
-
 #include <sys/mman.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
 #include <sys/un.h>
 #include <sys/wait.h>
+#include <thread>
 #include <unistd.h>
+#include <vector>
 
 extern char** environ;
 
 namespace {
 
-constexpr std::uint32_t kInputVersion = 1;
-constexpr char          kInputMagic[8] = {'I', 'L', 'L', 'I', 'X', 'R', 'I', '1'};
-constexpr char          kFrameMagic[8] = {'B', 'O', 'B', 'A', 'Q', 'I', 'M', '1'};
+constexpr std::uint32_t kInputVersion    = 1;
+constexpr char          kInputMagic[8]   = {'I', 'L', 'L', 'I', 'X', 'R', 'I', '1'};
+constexpr char          kFrameMagic[8]   = {'B', 'O', 'B', 'A', 'Q', 'I', 'M', '1'};
 constexpr char          kOverlayMagic[8] = {'B', 'O', 'B', 'A', 'O', 'V', 'L', '1'};
-constexpr char          kModalMagic[8] = {'B', 'O', 'B', 'A', 'M', 'O', 'D', '1'};
+constexpr char          kModalMagic[8]   = {'B', 'O', 'B', 'A', 'M', 'O', 'D', '1'};
 
-constexpr std::uint32_t kFlagActive             = 1U << 0U;
-constexpr std::uint32_t kFlagPositionValid      = 1U << 1U;
-constexpr std::uint32_t kFlagOrientationValid   = 1U << 2U;
-constexpr std::uint32_t kFlagPositionTracked    = 1U << 3U;
-constexpr std::uint32_t kFlagOrientationTracked = 1U << 4U;
-constexpr std::uint32_t kFlagPressed            = 1U << 1U;
+constexpr std::uint32_t kFlagActive               = 1U << 0U;
+constexpr std::uint32_t kFlagPositionValid        = 1U << 1U;
+constexpr std::uint32_t kFlagOrientationValid     = 1U << 2U;
+constexpr std::uint32_t kFlagPositionTracked      = 1U << 3U;
+constexpr std::uint32_t kFlagOrientationTracked   = 1U << 4U;
+constexpr std::uint32_t kFlagPressed              = 1U << 1U;
 constexpr char          kBobaRuntimeEnvironment[] = "boba-cu132";
 
-constexpr std::uint32_t kFrameVersion          = 3;
-constexpr std::uint32_t kOverlayVersion        = 2;
-constexpr std::uint32_t kModalVersion          = 1;
-constexpr std::uint32_t kEyeCount              = 2;
-constexpr std::uint32_t kChannelCount          = 4;
-constexpr std::uint32_t kOverlayCommandFloats  = 14;
-constexpr std::uint32_t kModalVisibleFlag      = 1U << 0U;
-constexpr std::uint32_t kModalLeftValidFlag    = 1U << 1U;
-constexpr std::uint32_t kModalRightValidFlag   = 1U << 2U;
+constexpr std::uint32_t kFrameVersion         = 3;
+constexpr std::uint32_t kOverlayVersion       = 2;
+constexpr std::uint32_t kModalVersion         = 1;
+constexpr std::uint32_t kEyeCount             = 2;
+constexpr std::uint32_t kChannelCount         = 4;
+constexpr std::uint32_t kOverlayCommandFloats = 14;
+constexpr std::uint32_t kModalVisibleFlag     = 1U << 0U;
+constexpr std::uint32_t kModalLeftValidFlag   = 1U << 1U;
+constexpr std::uint32_t kModalRightValidFlag  = 1U << 2U;
 
 #pragma pack(push, 1)
+
 struct InputHeader {
     char          magic[8];
     std::uint32_t version;
@@ -180,6 +179,7 @@ struct SharedModalSlotMetadata {
     float         height_m;
     std::uint8_t  padding[32];
 };
+
 #pragma pack(pop)
 
 static_assert(sizeof(InputHeader) == 32);
@@ -232,7 +232,7 @@ void copy_button(const ILLIXR::data_format::quest_controller_button& source, Inp
 }
 
 void copy_controller(const ILLIXR::data_format::quest_hand_controller& source, InputController* destination) {
-    destination->available_flags = source.available ? kFlagActive : 0U;
+    destination->available_flags     = source.available ? kFlagActive : 0U;
     destination->interaction_profile = static_cast<std::uint32_t>(source.interaction_profile);
     copy_pose(source.grip_pose, &destination->grip);
     copy_pose(source.aim_pose, &destination->aim);
@@ -247,9 +247,7 @@ void copy_controller(const ILLIXR::data_format::quest_hand_controller& source, I
 }
 
 void copy_eye(const ILLIXR::data_format::openxr_eye_view& source, InputEye* destination) {
-    destination->flags = source.pose_valid
-        ? (kFlagActive | kFlagPositionValid | kFlagOrientationValid)
-        : 0U;
+    destination->flags = source.pose_valid ? (kFlagActive | kFlagPositionValid | kFlagOrientationValid) : 0U;
     if (source.pose_tracked) {
         destination->flags |= kFlagPositionTracked | kFlagOrientationTracked;
     }
@@ -262,10 +260,10 @@ void copy_eye(const ILLIXR::data_format::openxr_eye_view& source, InputEye* dest
     destination->orientation[1] = source.orientation.y();
     destination->orientation[2] = source.orientation.z();
     destination->orientation[3] = source.orientation.w();
-    destination->fov[0] = source.angle_left;
-    destination->fov[1] = source.angle_right;
-    destination->fov[2] = source.angle_up;
-    destination->fov[3] = source.angle_down;
+    destination->fov[0]         = source.angle_left;
+    destination->fov[1]         = source.angle_right;
+    destination->fov[2]         = source.angle_up;
+    destination->fov[3]         = source.angle_down;
 }
 
 void copy_render_view(const float position[3], const float orientation[4], const float fov[4], bool valid,
@@ -284,8 +282,7 @@ bool same_magic(const char actual[8], const char expected[8]) {
 }
 
 std::filesystem::path default_boba_install_root() {
-    if (const char* xdg_data_home = std::getenv("XDG_DATA_HOME");
-        xdg_data_home != nullptr && *xdg_data_home != '\0') {
+    if (const char* xdg_data_home = std::getenv("XDG_DATA_HOME"); xdg_data_home != nullptr && *xdg_data_home != '\0') {
         return std::filesystem::path{xdg_data_home} / "illixr" / "boba_immersive";
     }
     if (const char* home = std::getenv("HOME"); home != nullptr && *home != '\0') {
@@ -377,7 +374,7 @@ void boba_immersive::run() {
 
     plugin_logger_->info("Boba immersive producer started; input={} output={}", input_socket_path_, frame_path_);
     while (!stop_requested_.load() && !stoplight_->check_should_stop()) {
-        int status = 0;
+        int         status      = 0;
         const pid_t wait_result = waitpid(boba_pid_, &status, WNOHANG);
         if (wait_result == boba_pid_) {
             if (WIFEXITED(status)) {
@@ -411,7 +408,7 @@ void boba_immersive::run() {
 
 bool boba_immersive::create_runtime_directory() {
     std::array<char, 64> template_path{};
-    const char* prefix = "/tmp/illixr-boba-XXXXXX";
+    const char*          prefix = "/tmp/illixr-boba-XXXXXX";
     std::copy(prefix, prefix + std::strlen(prefix) + 1, template_path.begin());
     char* result = mkdtemp(template_path.data());
     if (result == nullptr) {
@@ -419,10 +416,10 @@ bool boba_immersive::create_runtime_directory() {
         return false;
     }
     runtime_directory_ = result;
-    input_socket_path_  = runtime_directory_ + "/input.sock";
-    frame_path_         = runtime_directory_ + "/stereo.bin";
-    overlay_path_       = runtime_directory_ + "/overlay.bin";
-    modal_path_         = runtime_directory_ + "/modal.bin";
+    input_socket_path_ = runtime_directory_ + "/input.sock";
+    frame_path_        = runtime_directory_ + "/stereo.bin";
+    overlay_path_      = runtime_directory_ + "/overlay.bin";
+    modal_path_        = runtime_directory_ + "/modal.bin";
     return true;
 }
 
@@ -441,20 +438,17 @@ bool boba_immersive::create_input_socket() {
 
 bool boba_immersive::launch_boba() {
     if (!std::filesystem::is_regular_file(boba_launcher_)) {
-        plugin_logger_->error(
-            "Boba launcher was not found: {}. Run setup_boba_immersive.sh, set BOBA_IMMERSIVE_ROOT, or set "
-            "BOBA_DEMO_LAUNCHER to override the launcher directly.",
-            boba_launcher_);
+        plugin_logger_->error("Boba launcher was not found: {}. Run setup_boba_immersive.sh, set BOBA_IMMERSIVE_ROOT, or set "
+                              "BOBA_DEMO_LAUNCHER to override the launcher directly.",
+                              boba_launcher_);
         return false;
     }
 
     std::vector<std::string> environment_storage;
     for (char** entry = environ; entry != nullptr && *entry != nullptr; ++entry) {
         const std::string_view value{*entry};
-        if (value.rfind("BOBA_ILLIXR_INPUT_SOCKET=", 0) == 0 ||
-            value.rfind("BOBA_ILLIXR_FRAME_PATH=", 0) == 0 ||
-            value.rfind("BOBA_ILLIXR_OVERLAY_PATH=", 0) == 0 ||
-            value.rfind("BOBA_ILLIXR_MODAL_PATH=", 0) == 0 ||
+        if (value.rfind("BOBA_ILLIXR_INPUT_SOCKET=", 0) == 0 || value.rfind("BOBA_ILLIXR_FRAME_PATH=", 0) == 0 ||
+            value.rfind("BOBA_ILLIXR_OVERLAY_PATH=", 0) == 0 || value.rfind("BOBA_ILLIXR_MODAL_PATH=", 0) == 0 ||
             value.rfind("BOBA_RUNTIME_ENV=", 0) == 0) {
             continue;
         }
@@ -494,8 +488,8 @@ bool boba_immersive::launch_boba() {
         plugin_logger_->error("Unable to launch Boba: {}", std::strerror(result));
         return false;
     }
-    plugin_logger_->info("Launched the existing Boba immersive demo (pid={}, launcher={}, conda_env={})",
-                         boba_pid_, boba_launcher_, kBobaRuntimeEnvironment);
+    plugin_logger_->info("Launched the existing Boba immersive demo (pid={}, launcher={}, conda_env={})", boba_pid_,
+                         boba_launcher_, kBobaRuntimeEnvironment);
     return true;
 }
 
@@ -506,7 +500,7 @@ void boba_immersive::terminate_boba() {
     kill(-boba_pid_, SIGTERM);
     const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds{5};
     while (std::chrono::steady_clock::now() < deadline) {
-        int status = 0;
+        int         status = 0;
         const pid_t result = waitpid(boba_pid_, &status, WNOHANG);
         if (result == boba_pid_ || (result < 0 && errno == ECHILD)) {
             boba_pid_ = -1;
@@ -580,7 +574,7 @@ bool boba_immersive::map_if_ready(const std::string& path, mapped_file* mapping)
     if (fd < 0) {
         return false;
     }
-    struct stat status {};
+    struct stat status{};
     if (fstat(fd, &status) != 0 || status.st_size <= 0) {
         close(fd);
         return false;
@@ -609,16 +603,14 @@ bool boba_immersive::publish_latest_frame() {
     }
 
     SharedFrameHeader header{};
-    if (!read_struct(frame_mapping_.data, frame_mapping_.size, 0, &header) ||
-        !same_magic(header.magic, kFrameMagic) || header.version != kFrameVersion ||
-        header.channels != kChannelCount || header.slot_count == 0 ||
-        header.latest_slot >= header.slot_count || header.latest_frame_id == 0 ||
-        header.latest_frame_id <= last_frame_id_) {
+    if (!read_struct(frame_mapping_.data, frame_mapping_.size, 0, &header) || !same_magic(header.magic, kFrameMagic) ||
+        header.version != kFrameVersion || header.channels != kChannelCount || header.slot_count == 0 ||
+        header.latest_slot >= header.slot_count || header.latest_frame_id == 0 || header.latest_frame_id <= last_frame_id_) {
         return false;
     }
 
-    const std::size_t slot = static_cast<std::size_t>(header.latest_slot);
-    const std::size_t metadata_offset = sizeof(SharedFrameHeader) + slot * sizeof(SharedFramePoseMetadataSlot);
+    const std::size_t           slot            = static_cast<std::size_t>(header.latest_slot);
+    const std::size_t           metadata_offset = sizeof(SharedFrameHeader) + slot * sizeof(SharedFramePoseMetadataSlot);
     SharedFramePoseMetadataSlot pose_metadata{};
     if (!read_struct(frame_mapping_.data, frame_mapping_.size, metadata_offset, &pose_metadata) ||
         pose_metadata.frame_id != header.latest_frame_id) {
@@ -630,13 +622,13 @@ bool boba_immersive::publish_latest_frame() {
         header.metadata_bytes < header.slot_count * sizeof(SharedFramePoseMetadataSlot)) {
         return false;
     }
-    const std::uint64_t slot_offset = sizeof(SharedFrameHeader) + header.metadata_bytes
-        + static_cast<std::uint64_t>(slot) * header.frame_bytes;
+    const std::uint64_t slot_offset =
+        sizeof(SharedFrameHeader) + header.metadata_bytes + static_cast<std::uint64_t>(slot) * header.frame_bytes;
     if (slot_offset > frame_mapping_.size || header.frame_bytes > frame_mapping_.size - slot_offset) {
         return false;
     }
 
-    auto output = stereo_writer_.allocate();
+    auto output             = stereo_writer_.allocate();
     output->sequence        = header.latest_frame_id;
     output->sample_time     = clock_->now();
     output->source_frame_id = header.latest_frame_id;
@@ -647,34 +639,32 @@ bool boba_immersive::publish_latest_frame() {
     }
     output->pixel_buffer_path       = frame_path_;
     output->pixel_generation_offset = metadata_offset;
-    output->left = {slot_offset, eye_bytes, header.width, header.height, header.width * header.channels};
-    output->right = {slot_offset + eye_bytes, eye_bytes, header.width, header.height,
-                     header.width * header.channels};
+    output->left                    = {slot_offset, eye_bytes, header.width, header.height, header.width * header.channels};
+    output->right = {slot_offset + eye_bytes, eye_bytes, header.width, header.height, header.width * header.channels};
     copy_render_view(pose_metadata.left_position, pose_metadata.left_orientation, pose_metadata.left_fov,
                      (pose_metadata.valid_flags & 1U) != 0, &output->left_render_view);
     copy_render_view(pose_metadata.right_position, pose_metadata.right_orientation, pose_metadata.right_fov,
                      (pose_metadata.valid_flags & 2U) != 0, &output->right_render_view);
 
-    SharedOverlayHeader overlay_header{};
-    const std::size_t overlay_metadata_offset = sizeof(SharedOverlayHeader) + slot * sizeof(SharedOverlaySlotMetadata);
+    SharedOverlayHeader       overlay_header{};
+    const std::size_t         overlay_metadata_offset = sizeof(SharedOverlayHeader) + slot * sizeof(SharedOverlaySlotMetadata);
     SharedOverlaySlotMetadata overlay_metadata{};
     if (read_struct(overlay_mapping_.data, overlay_mapping_.size, 0, &overlay_header) &&
         same_magic(overlay_header.magic, kOverlayMagic) && overlay_header.version == kOverlayVersion &&
-        overlay_header.command_stride_floats == kOverlayCommandFloats &&
-        overlay_header.slot_count == header.slot_count &&
+        overlay_header.command_stride_floats == kOverlayCommandFloats && overlay_header.slot_count == header.slot_count &&
         read_struct(overlay_mapping_.data, overlay_mapping_.size, overlay_metadata_offset, &overlay_metadata) &&
         overlay_metadata.frame_id == header.latest_frame_id) {
         const std::uint64_t command_stride_bytes =
             static_cast<std::uint64_t>(overlay_header.command_stride_floats) * sizeof(float);
         const std::uint64_t eye_stride_bytes =
             static_cast<std::uint64_t>(overlay_header.max_commands_per_eye) * command_stride_bytes;
-        const std::uint64_t payload_offset = sizeof(SharedOverlayHeader)
-            + static_cast<std::uint64_t>(overlay_header.slot_count) * sizeof(SharedOverlaySlotMetadata)
-            + static_cast<std::uint64_t>(slot) * kEyeCount * eye_stride_bytes;
+        const std::uint64_t payload_offset = sizeof(SharedOverlayHeader) +
+            static_cast<std::uint64_t>(overlay_header.slot_count) * sizeof(SharedOverlaySlotMetadata) +
+            static_cast<std::uint64_t>(slot) * kEyeCount * eye_stride_bytes;
         if (payload_offset <= overlay_mapping_.size && kEyeCount * eye_stride_bytes <= overlay_mapping_.size - payload_offset) {
             output->overlay_buffer_path       = overlay_path_;
             output->overlay_generation_offset = overlay_metadata_offset;
-            output->left_overlay_commands = {
+            output->left_overlay_commands     = {
                 payload_offset,
                 std::min(overlay_metadata.left_count, overlay_header.max_commands_per_eye),
                 overlay_header.command_stride_floats,
@@ -687,8 +677,8 @@ bool boba_immersive::publish_latest_frame() {
         }
     }
 
-    SharedModalHeader modal_header{};
-    const std::size_t modal_metadata_offset = sizeof(SharedModalHeader) + slot * sizeof(SharedModalSlotMetadata);
+    SharedModalHeader       modal_header{};
+    const std::size_t       modal_metadata_offset = sizeof(SharedModalHeader) + slot * sizeof(SharedModalSlotMetadata);
     SharedModalSlotMetadata modal_metadata{};
     if (read_struct(modal_mapping_.data, modal_mapping_.size, 0, &modal_header) &&
         same_magic(modal_header.magic, kModalMagic) && modal_header.version == kModalVersion &&
@@ -698,31 +688,31 @@ bool boba_immersive::publish_latest_frame() {
         modal_metadata.height <= modal_header.max_height) {
         const std::uint64_t modal_slot_bytes =
             static_cast<std::uint64_t>(modal_header.max_width) * modal_header.max_height * kChannelCount;
-        const std::uint64_t modal_payload_offset = sizeof(SharedModalHeader)
-            + static_cast<std::uint64_t>(modal_header.slot_count) * sizeof(SharedModalSlotMetadata)
-            + static_cast<std::uint64_t>(slot) * modal_slot_bytes;
+        const std::uint64_t modal_payload_offset = sizeof(SharedModalHeader) +
+            static_cast<std::uint64_t>(modal_header.slot_count) * sizeof(SharedModalSlotMetadata) +
+            static_cast<std::uint64_t>(slot) * modal_slot_bytes;
         if (modal_payload_offset <= modal_mapping_.size && modal_slot_bytes <= modal_mapping_.size - modal_payload_offset) {
-            output->modal_buffer_path       = modal_path_;
-            output->modal_generation_offset = modal_metadata_offset;
-            output->modal.visible     = (modal_metadata.valid_flags & kModalVisibleFlag) != 0;
-            output->modal.left_valid  = (modal_metadata.valid_flags & kModalLeftValidFlag) != 0;
-            output->modal.right_valid = (modal_metadata.valid_flags & kModalRightValidFlag) != 0;
-            output->modal.byte_offset = modal_payload_offset;
-            output->modal.width       = modal_metadata.width;
-            output->modal.height      = modal_metadata.height;
+            output->modal_buffer_path             = modal_path_;
+            output->modal_generation_offset       = modal_metadata_offset;
+            output->modal.visible                 = (modal_metadata.valid_flags & kModalVisibleFlag) != 0;
+            output->modal.left_valid              = (modal_metadata.valid_flags & kModalLeftValidFlag) != 0;
+            output->modal.right_valid             = (modal_metadata.valid_flags & kModalRightValidFlag) != 0;
+            output->modal.byte_offset             = modal_payload_offset;
+            output->modal.width                   = modal_metadata.width;
+            output->modal.height                  = modal_metadata.height;
             output->modal.source_row_stride_bytes = modal_header.max_width * kChannelCount;
             for (std::size_t index = 0; index < 4; ++index) {
-                output->modal.left_quad_pixels[index] = {
-                    modal_metadata.left_quad[index * 2], modal_metadata.left_quad[index * 2 + 1]};
-                output->modal.right_quad_pixels[index] = {
-                    modal_metadata.right_quad[index * 2], modal_metadata.right_quad[index * 2 + 1]};
+                output->modal.left_quad_pixels[index]  = {modal_metadata.left_quad[index * 2],
+                                                          modal_metadata.left_quad[index * 2 + 1]};
+                output->modal.right_quad_pixels[index] = {modal_metadata.right_quad[index * 2],
+                                                          modal_metadata.right_quad[index * 2 + 1]};
             }
             output->modal.width_m  = modal_metadata.width_m;
             output->modal.height_m = modal_metadata.height_m;
         }
     }
 
-    SharedFrameHeader confirm_header{};
+    SharedFrameHeader           confirm_header{};
     SharedFramePoseMetadataSlot confirm_metadata{};
     if (!read_struct(frame_mapping_.data, frame_mapping_.size, 0, &confirm_header) ||
         !read_struct(frame_mapping_.data, frame_mapping_.size, metadata_offset, &confirm_metadata) ||
@@ -731,16 +721,14 @@ bool boba_immersive::publish_latest_frame() {
         return false;
     }
 
-    last_frame_id_ = header.latest_frame_id;
+    last_frame_id_                               = header.latest_frame_id;
     const std::uint32_t published_left_overlays  = output->left_overlay_commands.command_count;
     const std::uint32_t published_right_overlays = output->right_overlay_commands.command_count;
     const bool          published_modal          = output->modal.visible;
     stereo_writer_.put(std::move(output));
     if (last_frame_id_ == 1 || last_frame_id_ % 300 == 0) {
-        plugin_logger_->info("Published Boba stereo_frame id={} size={}x{} overlays={}/{} modal={}",
-                             last_frame_id_, header.width, header.height,
-                             published_left_overlays, published_right_overlays,
-                             published_modal);
+        plugin_logger_->info("Published Boba stereo_frame id={} size={}x{} overlays={}/{} modal={}", last_frame_id_,
+                             header.width, header.height, published_left_overlays, published_right_overlays, published_modal);
     }
     return true;
 }

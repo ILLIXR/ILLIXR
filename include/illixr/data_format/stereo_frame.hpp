@@ -2,11 +2,11 @@
 
 #include "illixr/switchboard.hpp"
 
-#include <Eigen/Core>
-#include <Eigen/Geometry>
 #include <array>
 #include <cstddef>
 #include <cstdint>
+#include <Eigen/Core>
+#include <Eigen/Geometry>
 #include <string>
 
 namespace ILLIXR::data_format {
@@ -22,7 +22,7 @@ enum class stereo_image_origin : std::uint8_t {
 
 enum class stereo_presentation_mode : std::uint8_t {
     stereo_fullscreen = 0,
-    mono_panel = 1,
+    mono_panel        = 1,
     head_locked_panel = 2,
 };
 
@@ -59,14 +59,14 @@ struct stereo_modal_overlay {
     bool left_valid{false};
     bool right_valid{false};
 
-    std::uint64_t byte_offset{0};
-    std::uint32_t width{0};
-    std::uint32_t height{0};
-    std::uint32_t source_row_stride_bytes{0};
+    std::uint64_t                  byte_offset{0};
+    std::uint32_t                  width{0};
+    std::uint32_t                  height{0};
+    std::uint32_t                  source_row_stride_bytes{0};
     std::array<Eigen::Vector2f, 4> left_quad_pixels{};
     std::array<Eigen::Vector2f, 4> right_quad_pixels{};
-    float width_m{0.0F};
-    float height_m{0.0F};
+    float                          width_m{0.0F};
+    float                          height_m{0.0F};
 };
 
 /**
@@ -84,24 +84,24 @@ struct stereo_frame : public switchboard::event {
     time_point    sample_time{};
     std::uint64_t source_frame_id{0};
 
-    stereo_pixel_format     format{stereo_pixel_format::rgba8_unorm};
-    stereo_image_origin     origin{stereo_image_origin::upper_left};
+    stereo_pixel_format      format{stereo_pixel_format::rgba8_unorm};
+    stereo_image_origin      origin{stereo_image_origin::upper_left};
     stereo_presentation_mode presentation_mode{stereo_presentation_mode::stereo_fullscreen};
 
-    std::string   pixel_buffer_path;
-    std::uint64_t pixel_generation_offset{0};
+    std::string         pixel_buffer_path;
+    std::uint64_t       pixel_generation_offset{0};
     stereo_shared_image left;
     stereo_shared_image right;
     stereo_render_view  left_render_view;
     stereo_render_view  right_render_view;
 
-    std::string   overlay_buffer_path;
-    std::uint64_t overlay_generation_offset{0};
+    std::string                  overlay_buffer_path;
+    std::uint64_t                overlay_generation_offset{0};
     stereo_overlay_command_range left_overlay_commands;
     stereo_overlay_command_range right_overlay_commands;
 
-    std::string   modal_buffer_path;
-    std::uint64_t modal_generation_offset{0};
+    std::string          modal_buffer_path;
+    std::uint64_t        modal_generation_offset{0};
     stereo_modal_overlay modal;
 };
 

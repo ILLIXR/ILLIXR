@@ -6,14 +6,6 @@
 #define GLFW_EXPOSE_NATIVE_X11
 #define GLFW_EXPOSE_NATIVE_GLX
 
-#include <X11/Xlib.h>
-#include <GL/gl.h>
-#include <GL/glx.h>
-#include <GLFW/glfw3.h>
-#include <GLFW/glfw3native.h>
-#include <openxr.h>
-#include <openxr_platform.h>
-
 #include "illixr/data_format/openxr_view_frame.hpp"
 #include "illixr/data_format/quest_controller.hpp"
 #include "illixr/data_format/stereo_frame.hpp"
@@ -26,9 +18,16 @@
 #include <atomic>
 #include <cstddef>
 #include <cstdint>
+#include <GL/gl.h>
+#include <GL/glx.h>
+#include <GLFW/glfw3.h>
+#include <GLFW/glfw3native.h>
+#include <openxr.h>
+#include <openxr_platform.h>
 #include <string>
 #include <thread>
 #include <vector>
+#include <X11/Xlib.h>
 
 namespace ILLIXR {
 
@@ -57,8 +56,8 @@ private:
         std::size_t         size{0};
         std::string         path;
 
-        mapped_file() = default;
-        mapped_file(const mapped_file&) = delete;
+        mapped_file()                              = default;
+        mapped_file(const mapped_file&)            = delete;
         mapped_file& operator=(const mapped_file&) = delete;
         ~mapped_file();
 
@@ -66,9 +65,9 @@ private:
     };
 
     struct swapchain_view {
-        XrSwapchain                             handle{XR_NULL_HANDLE};
-        std::uint32_t                           width{0};
-        std::uint32_t                           height{0};
+        XrSwapchain                            handle{XR_NULL_HANDLE};
+        std::uint32_t                          width{0};
+        std::uint32_t                          height{0};
         std::vector<XrSwapchainImageOpenGLKHR> images;
     };
 
@@ -91,7 +90,7 @@ private:
     bool update_stereo_frame();
     bool ensure_mapped(const std::string& path, mapped_file* mapping);
     bool ensure_source_textures(std::uint32_t width, std::uint32_t height);
-    bool render_projection_layer(XrCompositionLayerProjection* layer,
+    bool render_projection_layer(XrCompositionLayerProjection*                    layer,
                                  std::array<XrCompositionLayerProjectionView, 2>* projection_views);
     bool render_eye(std::size_t eye_index, GLuint swapchain_image);
 
@@ -103,16 +102,15 @@ private:
     bool suggest_profile_bindings(const char* profile_string, const std::vector<XrActionSuggestedBinding>& bindings);
 
     bool query_hand(std::size_t hand_index, XrTime sample_time, hand_controller* hand);
-    bool query_pose(XrAction action, XrSpace action_space, XrPath hand_path, XrTime sample_time,
-                    controller_pose* pose);
+    bool query_pose(XrAction action, XrSpace action_space, XrPath hand_path, XrTime sample_time, controller_pose* pose);
     bool query_boolean(XrAction action, XrPath hand_path, controller_button* button);
     bool query_float(XrAction action, XrPath hand_path, float pressed_threshold, controller_button* button);
     bool query_axis2d(XrAction action, XrPath hand_path, controller_axis2d* axis);
     bool refresh_interaction_profiles();
 
     void log_input_changes(const controller_input& input);
-    void log_hand_changes(const char* hand_name, bool left, const hand_controller& current,
-                          const hand_controller& previous, bool first_sample);
+    void log_hand_changes(const char* hand_name, bool left, const hand_controller& current, const hand_controller& previous,
+                          bool first_sample);
     void log_button_change(const char* hand_name, const char* button_name, const controller_button& current,
                            const controller_button& previous, bool first_sample);
 
@@ -125,23 +123,23 @@ private:
     static const char*        session_state_label(XrSessionState state);
     static void               merge_button(controller_button* destination, const controller_button& source);
 
-    const std::shared_ptr<switchboard>              switchboard_;
-    const std::shared_ptr<const relative_clock>     clock_;
-    const std::shared_ptr<const stoplight>          stoplight_;
-    switchboard::writer<controller_input>           controller_writer_;
-    switchboard::writer<view_frame>                 view_writer_;
-    switchboard::reader<stereo_frame>               stereo_reader_;
+    const std::shared_ptr<switchboard>          switchboard_;
+    const std::shared_ptr<const relative_clock> clock_;
+    const std::shared_ptr<const stoplight>      stoplight_;
+    switchboard::writer<controller_input>       controller_writer_;
+    switchboard::writer<view_frame>             view_writer_;
+    switchboard::reader<stereo_frame>           stereo_reader_;
 
-    bool             log_input_{true};
+    bool              log_input_{true};
     std::atomic<bool> stop_requested_{false};
     std::thread       worker_;
 
-    bool        glfw_initialized_{false};
-    GLFWwindow* window_{nullptr};
-    Display*    x_display_{nullptr};
-    GLXFBConfig glx_fb_config_{nullptr};
-    GLXDrawable glx_drawable_{0};
-    GLXContext  glx_context_{nullptr};
+    bool          glfw_initialized_{false};
+    GLFWwindow*   window_{nullptr};
+    Display*      x_display_{nullptr};
+    GLXFBConfig   glx_fb_config_{nullptr};
+    GLXDrawable   glx_drawable_{0};
+    GLXContext    glx_context_{nullptr};
     std::uint32_t visual_id_{0};
 
     XrInstance instance_{XR_NULL_HANDLE};
@@ -160,17 +158,17 @@ private:
     XrAction    thumbstick_axis_action_{XR_NULL_HANDLE};
     XrAction    squeeze_value_action_{XR_NULL_HANDLE};
 
-    std::array<XrPath, 2> hand_paths_{XR_NULL_PATH, XR_NULL_PATH};
-    std::array<XrSpace, 2> grip_spaces_{XR_NULL_HANDLE, XR_NULL_HANDLE};
-    std::array<XrSpace, 2> aim_spaces_{XR_NULL_HANDLE, XR_NULL_HANDLE};
+    std::array<XrPath, 2>             hand_paths_{XR_NULL_PATH, XR_NULL_PATH};
+    std::array<XrSpace, 2>            grip_spaces_{XR_NULL_HANDLE, XR_NULL_HANDLE};
+    std::array<XrSpace, 2>            aim_spaces_{XR_NULL_HANDLE, XR_NULL_HANDLE};
     std::array<controller_profile, 2> interaction_profiles_{controller_profile::none, controller_profile::none};
 
-    XrViewConfigurationType view_configuration_type_{XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO};
-    XrEnvironmentBlendMode  blend_mode_{XR_ENVIRONMENT_BLEND_MODE_OPAQUE};
-    XrSessionState          session_state_{XR_SESSION_STATE_UNKNOWN};
-    bool                    session_running_{false};
-    bool                    exit_requested_{false};
-    bool                    interaction_profiles_dirty_{true};
+    XrViewConfigurationType                view_configuration_type_{XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO};
+    XrEnvironmentBlendMode                 blend_mode_{XR_ENVIRONMENT_BLEND_MODE_OPAQUE};
+    XrSessionState                         session_state_{XR_SESSION_STATE_UNKNOWN};
+    bool                                   session_running_{false};
+    bool                                   exit_requested_{false};
+    bool                                   interaction_profiles_dirty_{true};
     std::array<XrViewConfigurationView, 2> view_configuration_views_{};
     std::array<XrView, 2>                  located_views_{};
     bool                                   located_views_valid_{false};
@@ -182,16 +180,15 @@ private:
     mapped_file overlay_mapping_;
     mapped_file modal_mapping_;
 
-    std::array<std::array<GLuint, 2>, 2> source_textures_{};
-    std::array<GLuint, 2>                modal_textures_{};
-    int                                  active_texture_set_{-1};
-    std::uint32_t                        source_width_{0};
-    std::uint32_t                        source_height_{0};
-    std::uint64_t                        active_stereo_frame_id_{0};
-    bool                                 active_stereo_frame_valid_{false};
-    data_format::stereo_image_origin     active_origin_{data_format::stereo_image_origin::upper_left};
-    data_format::stereo_presentation_mode active_presentation_mode_{
-        data_format::stereo_presentation_mode::stereo_fullscreen};
+    std::array<std::array<GLuint, 2>, 2>  source_textures_{};
+    std::array<GLuint, 2>                 modal_textures_{};
+    int                                   active_texture_set_{-1};
+    std::uint32_t                         source_width_{0};
+    std::uint32_t                         source_height_{0};
+    std::uint64_t                         active_stereo_frame_id_{0};
+    bool                                  active_stereo_frame_valid_{false};
+    data_format::stereo_image_origin      active_origin_{data_format::stereo_image_origin::upper_left};
+    data_format::stereo_presentation_mode active_presentation_mode_{data_format::stereo_presentation_mode::stereo_fullscreen};
     std::array<data_format::stereo_render_view, 2> active_render_views_{};
     std::array<std::vector<float>, 2>              active_overlay_commands_{};
     data_format::stereo_modal_overlay              active_modal_{};
@@ -214,7 +211,7 @@ private:
     GLint  modal_source_size_location_{-1};
     GLint  modal_texture_location_{-1};
 
-    std::uint64_t  sequence_{0};
+    std::uint64_t    sequence_{0};
     controller_input previous_input_{};
     bool             have_previous_input_{false};
 };

@@ -9,30 +9,29 @@
 #include <fcntl.h>
 #include <iostream>
 #include <stdexcept>
-#include <utility>
-
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <utility>
 
 namespace {
 
-constexpr float kTriggerPressedThreshold = 0.75F;
-constexpr float kSqueezePressedThreshold = 0.85F;
-constexpr float kThumbstickMoveThreshold  = 0.15F;
-constexpr int   kWindowSize               = 64;
-constexpr float kPanelDistanceMeters      = 1.1F;
-constexpr float kPanelWidthMeters         = 1.2F;
-constexpr float kPanelYOffsetMeters       = 0.0F;
-constexpr float kNearZ                    = 0.02F;
-constexpr float kFarZ                     = 100.0F;
+constexpr float         kTriggerPressedThreshold    = 0.75F;
+constexpr float         kSqueezePressedThreshold    = 0.85F;
+constexpr float         kThumbstickMoveThreshold    = 0.15F;
+constexpr int           kWindowSize                 = 64;
+constexpr float         kPanelDistanceMeters        = 1.1F;
+constexpr float         kPanelWidthMeters           = 1.2F;
+constexpr float         kPanelYOffsetMeters         = 0.0F;
+constexpr float         kNearZ                      = 0.02F;
+constexpr float         kFarZ                       = 100.0F;
 constexpr std::uint32_t kOverlayCommandStrideFloats = 14;
 
 constexpr const char* kSimpleControllerProfile = "/interaction_profiles/khr/simple_controller";
 constexpr const char* kOculusTouchProfile      = "/interaction_profiles/oculus/touch_controller";
-constexpr const char* kHtcViveProfile           = "/interaction_profiles/htc/vive_controller";
-constexpr const char* kValveIndexProfile        = "/interaction_profiles/valve/index_controller";
-constexpr const char* kMicrosoftMotionProfile   = "/interaction_profiles/microsoft/motion_controller";
+constexpr const char* kHtcViveProfile          = "/interaction_profiles/htc/vive_controller";
+constexpr const char* kValveIndexProfile       = "/interaction_profiles/valve/index_controller";
+constexpr const char* kMicrosoftMotionProfile  = "/interaction_profiles/microsoft/motion_controller";
 
 template<typename T>
 T make_xr_struct(XrStructureType type) {
@@ -65,8 +64,7 @@ mat4 multiply(const mat4& left, const mat4& right) {
     for (int column = 0; column < 4; ++column) {
         for (int row = 0; row < 4; ++row) {
             for (int index = 0; index < 4; ++index) {
-                result.values[column * 4 + row] +=
-                    left.values[index * 4 + row] * right.values[column * 4 + index];
+                result.values[column * 4 + row] += left.values[index * 4 + row] * right.values[column * 4 + index];
             }
         }
     }
@@ -74,7 +72,7 @@ mat4 multiply(const mat4& left, const mat4& right) {
 }
 
 mat4 translation_matrix(float x, float y, float z) {
-    mat4 result      = identity_matrix();
+    mat4 result       = identity_matrix();
     result.values[12] = x;
     result.values[13] = y;
     result.values[14] = z;
@@ -133,9 +131,9 @@ mat4 inverse_rigid_transform(const mat4& matrix) {
     result.values[9]  = matrix.values[6];
     result.values[10] = matrix.values[10];
 
-    const float x = matrix.values[12];
-    const float y = matrix.values[13];
-    const float z = matrix.values[14];
+    const float x     = matrix.values[12];
+    const float y     = matrix.values[13];
+    const float z     = matrix.values[14];
     result.values[12] = -(result.values[0] * x + result.values[4] * y + result.values[8] * z);
     result.values[13] = -(result.values[1] * x + result.values[5] * y + result.values[9] * z);
     result.values[14] = -(result.values[2] * x + result.values[6] * y + result.values[10] * z);
@@ -212,7 +210,7 @@ GLuint link_program(const char* vertex_source, const char* fragment_source) {
 }
 
 GLuint create_panel_program() {
-    constexpr const char* vertex_source = R"GLSL(
+    constexpr const char* vertex_source   = R"GLSL(
         #version 330 core
         out vec2 uv;
         uniform mat4 uMvp;
@@ -244,7 +242,7 @@ GLuint create_panel_program() {
 }
 
 GLuint create_overlay_program() {
-    constexpr const char* vertex_source = R"GLSL(
+    constexpr const char* vertex_source   = R"GLSL(
         #version 330 core
         layout(location = 0) in vec2 aPos;
         layout(location = 1) in vec4 aColor;
@@ -269,7 +267,7 @@ GLuint create_overlay_program() {
 }
 
 GLuint create_modal_program() {
-    constexpr const char* vertex_source = R"GLSL(
+    constexpr const char* vertex_source   = R"GLSL(
         #version 330 core
         layout(location = 0) in vec2 aPos;
         layout(location = 1) in vec2 aUv;
@@ -294,27 +292,26 @@ GLuint create_modal_program() {
     return link_program(vertex_source, fragment_source);
 }
 
-void append_overlay_vertex(std::vector<float>* vertices, float x, float y, float red, float green, float blue,
-                           float alpha) {
-    vertices->insert(vertices->end(), {x, y, std::clamp(red / 255.0F, 0.0F, 1.0F),
-                                      std::clamp(green / 255.0F, 0.0F, 1.0F),
-                                      std::clamp(blue / 255.0F, 0.0F, 1.0F), std::clamp(alpha, 0.0F, 1.0F)});
+void append_overlay_vertex(std::vector<float>* vertices, float x, float y, float red, float green, float blue, float alpha) {
+    vertices->insert(vertices->end(),
+                     {x, y, std::clamp(red / 255.0F, 0.0F, 1.0F), std::clamp(green / 255.0F, 0.0F, 1.0F),
+                      std::clamp(blue / 255.0F, 0.0F, 1.0F), std::clamp(alpha, 0.0F, 1.0F)});
 }
 
-void append_overlay_triangle(std::vector<float>* vertices, float x0, float y0, float x1, float y1, float x2,
-                             float y2, float red, float green, float blue, float alpha) {
+void append_overlay_triangle(std::vector<float>* vertices, float x0, float y0, float x1, float y1, float x2, float y2,
+                             float red, float green, float blue, float alpha) {
     append_overlay_vertex(vertices, x0, y0, red, green, blue, alpha);
     append_overlay_vertex(vertices, x1, y1, red, green, blue, alpha);
     append_overlay_vertex(vertices, x2, y2, red, green, blue, alpha);
 }
 
 void append_overlay_command(std::vector<float>* vertices, const float* command) {
-    const int command_type = static_cast<int>(std::round(command[0]));
-    const float radius     = std::max(command_type == 0 ? 0.5F : 1.0F, command[5]);
-    const float alpha      = command[6];
-    const float red        = command[7];
-    const float green      = command[8];
-    const float blue       = command[9];
+    const int   command_type = static_cast<int>(std::round(command[0]));
+    const float radius       = std::max(command_type == 0 ? 0.5F : 1.0F, command[5]);
+    const float alpha        = command[6];
+    const float red          = command[7];
+    const float green        = command[8];
+    const float blue         = command[9];
     if (command_type == 1) {
         const float x0 = command[1] - radius;
         const float y0 = command[2] - radius;
@@ -335,12 +332,10 @@ void append_overlay_command(std::vector<float>* vertices, const float* command) 
     }
     const float normal_x = -delta_y / length * radius;
     const float normal_y = delta_x / length * radius;
-    append_overlay_triangle(vertices, command[1] + normal_x, command[2] + normal_y,
-                            command[3] + normal_x, command[4] + normal_y,
-                            command[3] - normal_x, command[4] - normal_y, red, green, blue, alpha);
-    append_overlay_triangle(vertices, command[1] + normal_x, command[2] + normal_y,
-                            command[3] - normal_x, command[4] - normal_y,
-                            command[1] - normal_x, command[2] - normal_y, red, green, blue, alpha);
+    append_overlay_triangle(vertices, command[1] + normal_x, command[2] + normal_y, command[3] + normal_x,
+                            command[4] + normal_y, command[3] - normal_x, command[4] - normal_y, red, green, blue, alpha);
+    append_overlay_triangle(vertices, command[1] + normal_x, command[2] + normal_y, command[3] - normal_x,
+                            command[4] - normal_y, command[1] - normal_x, command[2] - normal_y, red, green, blue, alpha);
 }
 
 void draw_overlay_commands(const std::vector<float>& commands, GLuint program, GLuint vao, GLuint vbo,
@@ -349,7 +344,7 @@ void draw_overlay_commands(const std::vector<float>& commands, GLuint program, G
         return;
     }
     std::vector<float> vertices;
-    const std::size_t command_count = commands.size() / kOverlayCommandStrideFloats;
+    const std::size_t  command_count = commands.size() / kOverlayCommandStrideFloats;
     vertices.reserve(command_count * 36);
     for (std::size_t command_index = 0; command_index < command_count; ++command_index) {
         append_overlay_command(&vertices, commands.data() + command_index * kOverlayCommandStrideFloats);
@@ -363,8 +358,7 @@ void draw_overlay_commands(const std::vector<float>& commands, GLuint program, G
     glUniform2f(source_size_location, static_cast<float>(source_width), static_cast<float>(source_height));
     glBindVertexArray(vao);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(vertices.size() * sizeof(float)), vertices.data(),
-                 GL_STREAM_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(vertices.size() * sizeof(float)), vertices.data(), GL_STREAM_DRAW);
     glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(vertices.size() / 6));
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
@@ -372,22 +366,18 @@ void draw_overlay_commands(const std::vector<float>& commands, GLuint program, G
     glDisable(GL_BLEND);
 }
 
-void draw_modal_overlay(const ILLIXR::data_format::stereo_modal_overlay& modal, GLuint texture, GLuint program,
-                        GLuint vao, GLuint vbo, GLint source_size_location, GLint texture_location,
-                        std::size_t eye_index, std::uint32_t source_width, std::uint32_t source_height) {
+void draw_modal_overlay(const ILLIXR::data_format::stereo_modal_overlay& modal, GLuint texture, GLuint program, GLuint vao,
+                        GLuint vbo, GLint source_size_location, GLint texture_location, std::size_t eye_index,
+                        std::uint32_t source_width, std::uint32_t source_height) {
     const bool eye_valid = eye_index == 0 ? modal.left_valid : modal.right_valid;
-    if (!modal.visible || !eye_valid || modal.width == 0 || modal.height == 0 || texture == 0 || program == 0 ||
-        vao == 0 || vbo == 0) {
+    if (!modal.visible || !eye_valid || modal.width == 0 || modal.height == 0 || texture == 0 || program == 0 || vao == 0 ||
+        vbo == 0) {
         return;
     }
-    const auto& quad = eye_index == 0 ? modal.left_quad_pixels : modal.right_quad_pixels;
+    const auto& quad       = eye_index == 0 ? modal.left_quad_pixels : modal.right_quad_pixels;
     const float vertices[] = {
-        quad[0].x(), quad[0].y(), 0.0F, 0.0F,
-        quad[1].x(), quad[1].y(), 1.0F, 0.0F,
-        quad[2].x(), quad[2].y(), 1.0F, 1.0F,
-        quad[0].x(), quad[0].y(), 0.0F, 0.0F,
-        quad[2].x(), quad[2].y(), 1.0F, 1.0F,
-        quad[3].x(), quad[3].y(), 0.0F, 1.0F,
+        quad[0].x(), quad[0].y(), 0.0F, 0.0F, quad[1].x(), quad[1].y(), 1.0F, 0.0F, quad[2].x(), quad[2].y(), 1.0F, 1.0F,
+        quad[0].x(), quad[0].y(), 0.0F, 0.0F, quad[2].x(), quad[2].y(), 1.0F, 1.0F, quad[3].x(), quad[3].y(), 0.0F, 1.0F,
     };
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -511,8 +501,7 @@ void openxr_quest_controller::initialize_graphics() {
         const char* description = nullptr;
         glfwGetError(&description);
         destroy_graphics();
-        throw std::runtime_error{std::string{"glfwCreateWindow failed"} +
-                                 (description ? ": " + std::string{description} : "")};
+        throw std::runtime_error{std::string{"glfwCreateWindow failed"} + (description ? ": " + std::string{description} : "")};
     }
 
     glfwMakeContextCurrent(window_);
@@ -562,15 +551,15 @@ bool openxr_quest_controller::resolve_glx_binding() {
         return false;
     }
 
-    const int attribs[] = {GLX_FBCONFIG_ID, static_cast<int>(fb_config_id), None};
-    int       config_count = 0;
-    GLXFBConfig* configs = glXChooseFBConfig(x_display_, DefaultScreen(x_display_), attribs, &config_count);
+    const int    attribs[]    = {GLX_FBCONFIG_ID, static_cast<int>(fb_config_id), None};
+    int          config_count = 0;
+    GLXFBConfig* configs      = glXChooseFBConfig(x_display_, DefaultScreen(x_display_), attribs, &config_count);
     if (configs == nullptr || config_count < 1) {
         plugin_logger_->error("glXChooseFBConfig failed for GLX_FBCONFIG_ID={}", fb_config_id);
         return false;
     }
 
-    glx_fb_config_          = configs[0];
+    glx_fb_config_           = configs[0];
     XVisualInfo* visual_info = glXGetVisualFromFBConfig(x_display_, glx_fb_config_);
     if (visual_info == nullptr) {
         XFree(configs);
@@ -635,10 +624,9 @@ bool openxr_quest_controller::initialize_openxr() {
         return false;
     }
 
-    const char* enabled_extensions[] = {XR_KHR_OPENGL_ENABLE_EXTENSION_NAME};
-    XrInstanceCreateInfo instance_info = make_xr_struct<XrInstanceCreateInfo>(XR_TYPE_INSTANCE_CREATE_INFO);
-    std::strncpy(instance_info.applicationInfo.applicationName, "ILLIXR Quest Controller",
-                 XR_MAX_APPLICATION_NAME_SIZE - 1);
+    const char*          enabled_extensions[] = {XR_KHR_OPENGL_ENABLE_EXTENSION_NAME};
+    XrInstanceCreateInfo instance_info        = make_xr_struct<XrInstanceCreateInfo>(XR_TYPE_INSTANCE_CREATE_INFO);
+    std::strncpy(instance_info.applicationInfo.applicationName, "ILLIXR Quest Controller", XR_MAX_APPLICATION_NAME_SIZE - 1);
     std::strncpy(instance_info.applicationInfo.engineName, "ILLIXR", XR_MAX_ENGINE_NAME_SIZE - 1);
     instance_info.applicationInfo.applicationVersion = 1;
     instance_info.applicationInfo.engineVersion      = 1;
@@ -688,29 +676,29 @@ bool openxr_quest_controller::initialize_openxr() {
 
     XrGraphicsBindingOpenGLXlibKHR graphics_binding =
         make_xr_struct<XrGraphicsBindingOpenGLXlibKHR>(XR_TYPE_GRAPHICS_BINDING_OPENGL_XLIB_KHR);
-    graphics_binding.xDisplay     = x_display_;
+    graphics_binding.xDisplay    = x_display_;
     graphics_binding.visualid    = visual_id_;
     graphics_binding.glxFBConfig = glx_fb_config_;
     graphics_binding.glxDrawable = glx_drawable_;
     graphics_binding.glxContext  = glx_context_;
 
     XrSessionCreateInfo session_info = make_xr_struct<XrSessionCreateInfo>(XR_TYPE_SESSION_CREATE_INFO);
-    session_info.next                 = &graphics_binding;
-    session_info.systemId             = system_id_;
+    session_info.next                = &graphics_binding;
+    session_info.systemId            = system_id_;
     if (!check_xr(xrCreateSession(instance_, &session_info, &session_), "xrCreateSession")) {
         return false;
     }
 
     std::uint32_t blend_mode_count = 0;
-    if (check_xr(xrEnumerateEnvironmentBlendModes(instance_, system_id_, view_configuration_type_, 0,
-                                                  &blend_mode_count, nullptr),
-                 "xrEnumerateEnvironmentBlendModes(count)") &&
+    if (check_xr(
+            xrEnumerateEnvironmentBlendModes(instance_, system_id_, view_configuration_type_, 0, &blend_mode_count, nullptr),
+            "xrEnumerateEnvironmentBlendModes(count)") &&
         blend_mode_count > 0) {
         std::vector<XrEnvironmentBlendMode> blend_modes(blend_mode_count);
         if (check_xr(xrEnumerateEnvironmentBlendModes(instance_, system_id_, view_configuration_type_, blend_mode_count,
                                                       &blend_mode_count, blend_modes.data()),
                      "xrEnumerateEnvironmentBlendModes(list)")) {
-            blend_mode_ = blend_modes.front();
+            blend_mode_       = blend_modes.front();
             const auto opaque = std::find(blend_modes.begin(), blend_modes.end(), XR_ENVIRONMENT_BLEND_MODE_OPAQUE);
             if (opaque != blend_modes.end()) {
                 blend_mode_ = *opaque;
@@ -726,8 +714,7 @@ bool openxr_quest_controller::initialize_openxr() {
         make_xr_struct<XrReferenceSpaceCreateInfo>(XR_TYPE_REFERENCE_SPACE_CREATE_INFO);
     local_space_info.referenceSpaceType                 = XR_REFERENCE_SPACE_TYPE_LOCAL;
     local_space_info.poseInReferenceSpace.orientation.w = 1.0F;
-    if (!check_xr(xrCreateReferenceSpace(session_, &local_space_info, &local_space_),
-                  "xrCreateReferenceSpace(LOCAL)")) {
+    if (!check_xr(xrCreateReferenceSpace(session_, &local_space_info, &local_space_), "xrCreateReferenceSpace(LOCAL)")) {
         return false;
     }
 
@@ -743,8 +730,7 @@ bool openxr_quest_controller::initialize_openxr() {
 bool openxr_quest_controller::create_actions() {
     XrActionSetCreateInfo action_set_info = make_xr_struct<XrActionSetCreateInfo>(XR_TYPE_ACTION_SET_CREATE_INFO);
     std::strncpy(action_set_info.actionSetName, "quest_controller", XR_MAX_ACTION_SET_NAME_SIZE - 1);
-    std::strncpy(action_set_info.localizedActionSetName, "Quest Controller Input",
-                 XR_MAX_LOCALIZED_ACTION_SET_NAME_SIZE - 1);
+    std::strncpy(action_set_info.localizedActionSetName, "Quest Controller Input", XR_MAX_LOCALIZED_ACTION_SET_NAME_SIZE - 1);
     if (!check_xr(xrCreateActionSet(instance_, &action_set_info, &action_set_), "xrCreateActionSet")) {
         return false;
     }
@@ -760,8 +746,7 @@ bool openxr_quest_controller::create_actions() {
         !create_action(XR_ACTION_TYPE_FLOAT_INPUT, "trigger_value", "Trigger Value", &trigger_value_action_) ||
         !create_action(XR_ACTION_TYPE_BOOLEAN_INPUT, "primary_click", "Primary Button", &primary_click_action_) ||
         !create_action(XR_ACTION_TYPE_BOOLEAN_INPUT, "secondary_click", "Secondary Button", &secondary_click_action_) ||
-        !create_action(XR_ACTION_TYPE_BOOLEAN_INPUT, "thumbstick_click", "Thumbstick Click",
-                       &thumbstick_click_action_) ||
+        !create_action(XR_ACTION_TYPE_BOOLEAN_INPUT, "thumbstick_click", "Thumbstick Click", &thumbstick_click_action_) ||
         !create_action(XR_ACTION_TYPE_VECTOR2F_INPUT, "thumbstick_axis", "Thumbstick Axis", &thumbstick_axis_action_) ||
         !create_action(XR_ACTION_TYPE_FLOAT_INPUT, "squeeze_value", "Squeeze Value", &squeeze_value_action_)) {
         return false;
@@ -790,8 +775,7 @@ bool openxr_quest_controller::create_actions() {
     return true;
 }
 
-bool openxr_quest_controller::create_action(XrActionType type, const char* name, const char* localized_name,
-                                            XrAction* action) {
+bool openxr_quest_controller::create_action(XrActionType type, const char* name, const char* localized_name, XrAction* action) {
     XrActionCreateInfo action_info = make_xr_struct<XrActionCreateInfo>(XR_TYPE_ACTION_CREATE_INFO);
     std::strncpy(action_info.actionName, name, XR_MAX_ACTION_NAME_SIZE - 1);
     std::strncpy(action_info.localizedActionName, localized_name, XR_MAX_LOCALIZED_ACTION_NAME_SIZE - 1);
@@ -860,8 +844,8 @@ bool openxr_quest_controller::add_binding(std::vector<XrActionSuggestedBinding>*
     return true;
 }
 
-bool openxr_quest_controller::suggest_profile_bindings(
-    const char* profile_string, const std::vector<XrActionSuggestedBinding>& bindings) {
+bool openxr_quest_controller::suggest_profile_bindings(const char*                                  profile_string,
+                                                       const std::vector<XrActionSuggestedBinding>& bindings) {
     XrPath profile_path = XR_NULL_PATH;
     if (!check_xr(xrStringToPath(instance_, profile_string, &profile_path), profile_string)) {
         return false;
@@ -869,7 +853,7 @@ bool openxr_quest_controller::suggest_profile_bindings(
 
     XrInteractionProfileSuggestedBinding suggested =
         make_xr_struct<XrInteractionProfileSuggestedBinding>(XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING);
-    suggested.interactionProfile = profile_path;
+    suggested.interactionProfile     = profile_path;
     suggested.countSuggestedBindings = static_cast<std::uint32_t>(bindings.size());
     suggested.suggestedBindings      = bindings.data();
 
@@ -881,11 +865,10 @@ bool openxr_quest_controller::suggest_profile_bindings(
     return check_xr(result, "xrSuggestInteractionProfileBindings");
 }
 
-bool openxr_quest_controller::create_action_space(XrAction action, XrPath hand_path, XrSpace* space,
-                                                  const char* label) {
-    XrActionSpaceCreateInfo space_info = make_xr_struct<XrActionSpaceCreateInfo>(XR_TYPE_ACTION_SPACE_CREATE_INFO);
-    space_info.action                    = action;
-    space_info.subactionPath             = hand_path;
+bool openxr_quest_controller::create_action_space(XrAction action, XrPath hand_path, XrSpace* space, const char* label) {
+    XrActionSpaceCreateInfo space_info         = make_xr_struct<XrActionSpaceCreateInfo>(XR_TYPE_ACTION_SPACE_CREATE_INFO);
+    space_info.action                          = action;
+    space_info.subactionPath                   = hand_path;
     space_info.poseInActionSpace.orientation.w = 1.0F;
     return check_xr(xrCreateActionSpace(session_, &space_info, space), label);
 }
@@ -908,12 +891,12 @@ bool openxr_quest_controller::pump_events() {
             plugin_logger_->info("OpenXR session state -> {}", session_state_label(session_state_));
 
             if (session_state_ == XR_SESSION_STATE_READY && !session_running_) {
-                XrSessionBeginInfo begin_info = make_xr_struct<XrSessionBeginInfo>(XR_TYPE_SESSION_BEGIN_INFO);
+                XrSessionBeginInfo begin_info           = make_xr_struct<XrSessionBeginInfo>(XR_TYPE_SESSION_BEGIN_INFO);
                 begin_info.primaryViewConfigurationType = view_configuration_type_;
                 if (!check_xr(xrBeginSession(session_, &begin_info), "xrBeginSession")) {
                     return false;
                 }
-                session_running_ = true;
+                session_running_            = true;
                 interaction_profiles_dirty_ = true;
             } else if (session_state_ == XR_SESSION_STATE_STOPPING && session_running_) {
                 if (!check_xr(xrEndSession(session_), "xrEndSession")) {
@@ -946,7 +929,7 @@ bool openxr_quest_controller::pump_events() {
 }
 
 bool openxr_quest_controller::process_frame() {
-    XrFrameWaitInfo wait_info = make_xr_struct<XrFrameWaitInfo>(XR_TYPE_FRAME_WAIT_INFO);
+    XrFrameWaitInfo wait_info   = make_xr_struct<XrFrameWaitInfo>(XR_TYPE_FRAME_WAIT_INFO);
     XrFrameState    frame_state = make_xr_struct<XrFrameState>(XR_TYPE_FRAME_STATE);
     if (!check_xr(xrWaitFrame(session_, &wait_info, &frame_state), "xrWaitFrame")) {
         return false;
@@ -957,9 +940,9 @@ bool openxr_quest_controller::process_frame() {
         return false;
     }
 
-    bool sample_ok = true;
+    bool              sample_ok = true;
     XrActiveActionSet active_action_set{action_set_, XR_NULL_PATH};
-    XrActionsSyncInfo sync_info = make_xr_struct<XrActionsSyncInfo>(XR_TYPE_ACTIONS_SYNC_INFO);
+    XrActionsSyncInfo sync_info     = make_xr_struct<XrActionsSyncInfo>(XR_TYPE_ACTIONS_SYNC_INFO);
     sync_info.countActiveActionSets = 1;
     sync_info.activeActionSets      = &active_action_set;
     if (!check_xr(xrSyncActions(session_, &sync_info), "xrSyncActions")) {
@@ -991,9 +974,9 @@ bool openxr_quest_controller::process_frame() {
     }
 
     update_stereo_frame();
-    XrCompositionLayerProjection projection_layer{};
+    XrCompositionLayerProjection                    projection_layer{};
     std::array<XrCompositionLayerProjectionView, 2> projection_views{};
-    const XrCompositionLayerBaseHeader* submitted_layer = nullptr;
+    const XrCompositionLayerBaseHeader*             submitted_layer = nullptr;
     if (sample_ok && views.should_render && active_stereo_frame_valid_ && located_views_valid_) {
         if (render_projection_layer(&projection_layer, &projection_views)) {
             submitted_layer = reinterpret_cast<const XrCompositionLayerBaseHeader*>(&projection_layer);
@@ -1002,11 +985,11 @@ bool openxr_quest_controller::process_frame() {
         }
     }
 
-    XrFrameEndInfo end_info = make_xr_struct<XrFrameEndInfo>(XR_TYPE_FRAME_END_INFO);
-    end_info.displayTime         = frame_state.predictedDisplayTime;
+    XrFrameEndInfo end_info       = make_xr_struct<XrFrameEndInfo>(XR_TYPE_FRAME_END_INFO);
+    end_info.displayTime          = frame_state.predictedDisplayTime;
     end_info.environmentBlendMode = blend_mode_;
-    end_info.layerCount          = submitted_layer == nullptr ? 0U : 1U;
-    end_info.layers              = submitted_layer == nullptr ? nullptr : &submitted_layer;
+    end_info.layerCount           = submitted_layer == nullptr ? 0U : 1U;
+    end_info.layers               = submitted_layer == nullptr ? nullptr : &submitted_layer;
     if (!check_xr(xrEndFrame(session_, &end_info), "xrEndFrame")) {
         return false;
     }
@@ -1023,8 +1006,7 @@ bool openxr_quest_controller::process_frame() {
 
 bool openxr_quest_controller::enumerate_view_configuration() {
     std::uint32_t view_count = 0;
-    if (!check_xr(xrEnumerateViewConfigurationViews(instance_, system_id_, view_configuration_type_, 0,
-                                                     &view_count, nullptr),
+    if (!check_xr(xrEnumerateViewConfigurationViews(instance_, system_id_, view_configuration_type_, 0, &view_count, nullptr),
                   "xrEnumerateViewConfigurationViews(count)")) {
         return false;
     }
@@ -1035,23 +1017,21 @@ bool openxr_quest_controller::enumerate_view_configuration() {
     for (XrViewConfigurationView& view : view_configuration_views_) {
         view = make_xr_struct<XrViewConfigurationView>(XR_TYPE_VIEW_CONFIGURATION_VIEW);
     }
-    if (!check_xr(xrEnumerateViewConfigurationViews(instance_, system_id_, view_configuration_type_, view_count,
-                                                     &view_count, view_configuration_views_.data()),
+    if (!check_xr(xrEnumerateViewConfigurationViews(instance_, system_id_, view_configuration_type_, view_count, &view_count,
+                                                    view_configuration_views_.data()),
                   "xrEnumerateViewConfigurationViews(list)")) {
         return false;
     }
-    plugin_logger_->info("OpenXR recommended eye sizes: left={}x{}, right={}x{}",
-                         view_configuration_views_[0].recommendedImageRectWidth,
-                         view_configuration_views_[0].recommendedImageRectHeight,
-                         view_configuration_views_[1].recommendedImageRectWidth,
-                         view_configuration_views_[1].recommendedImageRectHeight);
+    plugin_logger_->info(
+        "OpenXR recommended eye sizes: left={}x{}, right={}x{}", view_configuration_views_[0].recommendedImageRectWidth,
+        view_configuration_views_[0].recommendedImageRectHeight, view_configuration_views_[1].recommendedImageRectWidth,
+        view_configuration_views_[1].recommendedImageRectHeight);
     return true;
 }
 
 bool openxr_quest_controller::create_swapchains() {
     std::uint32_t format_count = 0;
-    if (!check_xr(xrEnumerateSwapchainFormats(session_, 0, &format_count, nullptr),
-                  "xrEnumerateSwapchainFormats(count)")) {
+    if (!check_xr(xrEnumerateSwapchainFormats(session_, 0, &format_count, nullptr), "xrEnumerateSwapchainFormats(count)")) {
         return false;
     }
     std::vector<std::int64_t> formats(format_count);
@@ -1079,21 +1059,20 @@ bool openxr_quest_controller::create_swapchains() {
     }
 
     for (std::size_t eye_index = 0; eye_index < swapchain_views_.size(); ++eye_index) {
-        swapchain_view& destination = swapchain_views_[eye_index];
+        swapchain_view&                destination   = swapchain_views_[eye_index];
         const XrViewConfigurationView& configuration = view_configuration_views_[eye_index];
-        destination.width  = configuration.recommendedImageRectWidth;
-        destination.height = configuration.recommendedImageRectHeight;
+        destination.width                            = configuration.recommendedImageRectWidth;
+        destination.height                           = configuration.recommendedImageRectHeight;
 
-        XrSwapchainCreateInfo create_info =
-            make_xr_struct<XrSwapchainCreateInfo>(XR_TYPE_SWAPCHAIN_CREATE_INFO);
-        create_info.usageFlags = XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT | XR_SWAPCHAIN_USAGE_SAMPLED_BIT;
-        create_info.format      = swapchain_format_;
-        create_info.sampleCount = 1;
-        create_info.width       = destination.width;
-        create_info.height      = destination.height;
-        create_info.faceCount   = 1;
-        create_info.arraySize   = 1;
-        create_info.mipCount    = 1;
+        XrSwapchainCreateInfo create_info = make_xr_struct<XrSwapchainCreateInfo>(XR_TYPE_SWAPCHAIN_CREATE_INFO);
+        create_info.usageFlags            = XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT | XR_SWAPCHAIN_USAGE_SAMPLED_BIT;
+        create_info.format                = swapchain_format_;
+        create_info.sampleCount           = 1;
+        create_info.width                 = destination.width;
+        create_info.height                = destination.height;
+        create_info.faceCount             = 1;
+        create_info.arraySize             = 1;
+        create_info.mipCount              = 1;
         if (!check_xr(xrCreateSwapchain(session_, &create_info, &destination.handle), "xrCreateSwapchain(eye)")) {
             return false;
         }
@@ -1107,9 +1086,8 @@ bool openxr_quest_controller::create_swapchains() {
         for (XrSwapchainImageOpenGLKHR& image : destination.images) {
             image = make_xr_struct<XrSwapchainImageOpenGLKHR>(XR_TYPE_SWAPCHAIN_IMAGE_OPENGL_KHR);
         }
-        if (!check_xr(xrEnumerateSwapchainImages(
-                          destination.handle, image_count, &image_count,
-                          reinterpret_cast<XrSwapchainImageBaseHeader*>(destination.images.data())),
+        if (!check_xr(xrEnumerateSwapchainImages(destination.handle, image_count, &image_count,
+                                                 reinterpret_cast<XrSwapchainImageBaseHeader*>(destination.images.data())),
                       "xrEnumerateSwapchainImages(list)")) {
             return false;
         }
@@ -1122,9 +1100,8 @@ bool openxr_quest_controller::create_swapchains() {
         }
     }
     glBindTexture(GL_TEXTURE_2D, 0);
-    plugin_logger_->info("Created OpenXR eye swapchains: left={}x{}, right={}x{}, format={}",
-                         swapchain_views_[0].width, swapchain_views_[0].height,
-                         swapchain_views_[1].width, swapchain_views_[1].height, swapchain_format_);
+    plugin_logger_->info("Created OpenXR eye swapchains: left={}x{}, right={}x{}, format={}", swapchain_views_[0].width,
+                         swapchain_views_[0].height, swapchain_views_[1].width, swapchain_views_[1].height, swapchain_format_);
     return true;
 }
 
@@ -1150,9 +1127,9 @@ bool openxr_quest_controller::initialize_stereo_renderer() {
         return false;
     }
 
-    panel_source_location_ = glGetUniformLocation(panel_program_, "uSource");
-    panel_mvp_location_    = glGetUniformLocation(panel_program_, "uMvp");
-    panel_flip_y_location_ = glGetUniformLocation(panel_program_, "uFlipY");
+    panel_source_location_        = glGetUniformLocation(panel_program_, "uSource");
+    panel_mvp_location_           = glGetUniformLocation(panel_program_, "uMvp");
+    panel_flip_y_location_        = glGetUniformLocation(panel_program_, "uFlipY");
     overlay_source_size_location_ = glGetUniformLocation(overlay_program_, "uSourceSize");
     modal_source_size_location_   = glGetUniformLocation(modal_program_, "uSourceSize");
     modal_texture_location_       = glGetUniformLocation(modal_program_, "uModal");
@@ -1165,8 +1142,7 @@ bool openxr_quest_controller::initialize_stereo_renderer() {
     glBindVertexArray(overlay_vao_);
     glBindBuffer(GL_ARRAY_BUFFER, overlay_vbo_);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, static_cast<GLsizei>(6 * sizeof(float)),
-                          reinterpret_cast<void*>(0));
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, static_cast<GLsizei>(6 * sizeof(float)), reinterpret_cast<void*>(0));
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, static_cast<GLsizei>(6 * sizeof(float)),
                           reinterpret_cast<void*>(2 * sizeof(float)));
@@ -1176,8 +1152,7 @@ bool openxr_quest_controller::initialize_stereo_renderer() {
     glBindVertexArray(modal_vao_);
     glBindBuffer(GL_ARRAY_BUFFER, modal_vbo_);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, static_cast<GLsizei>(4 * sizeof(float)),
-                          reinterpret_cast<void*>(0));
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, static_cast<GLsizei>(4 * sizeof(float)), reinterpret_cast<void*>(0));
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, static_cast<GLsizei>(4 * sizeof(float)),
                           reinterpret_cast<void*>(2 * sizeof(float)));
@@ -1194,8 +1169,8 @@ bool openxr_quest_controller::initialize_stereo_renderer() {
     }
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    if (framebuffer_ == 0 || panel_vao_ == 0 || overlay_vao_ == 0 || overlay_vbo_ == 0 || modal_vao_ == 0 ||
-        modal_vbo_ == 0 || modal_textures_[0] == 0 || modal_textures_[1] == 0) {
+    if (framebuffer_ == 0 || panel_vao_ == 0 || overlay_vao_ == 0 || overlay_vbo_ == 0 || modal_vao_ == 0 || modal_vbo_ == 0 ||
+        modal_textures_[0] == 0 || modal_textures_[1] == 0) {
         plugin_logger_->error("Failed to allocate OpenGL resources for Quest stereo submission");
         return false;
     }
@@ -1273,7 +1248,7 @@ bool openxr_quest_controller::ensure_mapped(const std::string& path, mapped_file
     if (fd < 0) {
         return false;
     }
-    struct stat status {};
+    struct stat status{};
     if (fstat(fd, &status) != 0 || status.st_size <= 0) {
         close(fd);
         return false;
@@ -1294,13 +1269,12 @@ bool openxr_quest_controller::ensure_source_textures(std::uint32_t width, std::u
     if (width == 0 || height == 0 || width > 8192 || height > 8192) {
         return false;
     }
-    if (source_width_ == width && source_height_ == height && source_textures_[0][0] != 0 &&
-        source_textures_[0][1] != 0 && source_textures_[1][0] != 0 && source_textures_[1][1] != 0) {
+    if (source_width_ == width && source_height_ == height && source_textures_[0][0] != 0 && source_textures_[0][1] != 0 &&
+        source_textures_[1][0] != 0 && source_textures_[1][1] != 0) {
         return true;
     }
 
-    while (glGetError() != GL_NO_ERROR) {
-    }
+    while (glGetError() != GL_NO_ERROR) { }
     for (std::array<GLuint, 2>& texture_set : source_textures_) {
         glDeleteTextures(static_cast<GLsizei>(texture_set.size()), texture_set.data());
         texture_set = {};
@@ -1311,8 +1285,8 @@ bool openxr_quest_controller::ensure_source_textures(std::uint32_t width, std::u
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, static_cast<GLsizei>(width), static_cast<GLsizei>(height), 0,
-                         GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, static_cast<GLsizei>(width), static_cast<GLsizei>(height), 0, GL_RGBA,
+                         GL_UNSIGNED_BYTE, nullptr);
         }
     }
     glBindTexture(GL_TEXTURE_2D, 0);
@@ -1330,10 +1304,9 @@ bool openxr_quest_controller::update_stereo_frame() {
     if (frame == nullptr || frame->source_frame_id == 0 || frame->source_frame_id <= active_stereo_frame_id_) {
         return false;
     }
-    if (frame->format != data_format::stereo_pixel_format::rgba8_unorm ||
-        frame->left.width != frame->right.width || frame->left.height != frame->right.height ||
-        frame->left.width == 0 || frame->left.height == 0 || frame->left.width > 8192 ||
-        frame->left.height > 8192 || frame->left.row_stride_bytes < frame->left.width * 4U ||
+    if (frame->format != data_format::stereo_pixel_format::rgba8_unorm || frame->left.width != frame->right.width ||
+        frame->left.height != frame->right.height || frame->left.width == 0 || frame->left.height == 0 ||
+        frame->left.width > 8192 || frame->left.height > 8192 || frame->left.row_stride_bytes < frame->left.width * 4U ||
         frame->right.row_stride_bytes < frame->right.width * 4U || frame->left.row_stride_bytes % 4U != 0 ||
         frame->right.row_stride_bytes % 4U != 0) {
         plugin_logger_->warn("Rejected malformed stereo_frame id={}", frame->source_frame_id);
@@ -1344,8 +1317,8 @@ bool openxr_quest_controller::update_stereo_frame() {
     }
 
     const auto image_required_bytes = [](const data_format::stereo_shared_image& image) -> std::uint64_t {
-        return static_cast<std::uint64_t>(image.height - 1U) * image.row_stride_bytes
-            + static_cast<std::uint64_t>(image.width) * 4U;
+        return static_cast<std::uint64_t>(image.height - 1U) * image.row_stride_bytes +
+            static_cast<std::uint64_t>(image.width) * 4U;
     };
     const std::uint64_t left_required_bytes  = image_required_bytes(frame->left);
     const std::uint64_t right_required_bytes = image_required_bytes(frame->right);
@@ -1357,25 +1330,21 @@ bool openxr_quest_controller::update_stereo_frame() {
     }
 
     std::uint64_t pixel_generation = 0;
-    if (!read_generation(pixel_mapping_.data, pixel_mapping_.size, frame->pixel_generation_offset,
-                         &pixel_generation) ||
-        pixel_generation != frame->source_frame_id ||
-        !ensure_source_textures(frame->left.width, frame->left.height)) {
+    if (!read_generation(pixel_mapping_.data, pixel_mapping_.size, frame->pixel_generation_offset, &pixel_generation) ||
+        pixel_generation != frame->source_frame_id || !ensure_source_textures(frame->left.width, frame->left.height)) {
         return false;
     }
 
     const int candidate_texture_set = active_texture_set_ == 0 ? 1 : 0;
-    while (glGetError() != GL_NO_ERROR) {
-    }
+    while (glGetError() != GL_NO_ERROR) { }
     const data_format::stereo_shared_image* images[] = {&frame->left, &frame->right};
     for (std::size_t eye_index = 0; eye_index < 2; ++eye_index) {
         const data_format::stereo_shared_image& image = *images[eye_index];
         glBindTexture(GL_TEXTURE_2D, source_textures_[candidate_texture_set][eye_index]);
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
         glPixelStorei(GL_UNPACK_ROW_LENGTH, static_cast<GLint>(image.row_stride_bytes / 4U));
-        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, static_cast<GLsizei>(image.width),
-                        static_cast<GLsizei>(image.height), GL_RGBA, GL_UNSIGNED_BYTE,
-                        pixel_mapping_.data + image.byte_offset);
+        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, static_cast<GLsizei>(image.width), static_cast<GLsizei>(image.height), GL_RGBA,
+                        GL_UNSIGNED_BYTE, pixel_mapping_.data + image.byte_offset);
     }
     glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
     glBindTexture(GL_TEXTURE_2D, 0);
@@ -1385,7 +1354,7 @@ bool openxr_quest_controller::update_stereo_frame() {
     }
 
     std::array<std::vector<float>, 2> candidate_overlay_commands;
-    bool overlay_generation_required = false;
+    bool                              overlay_generation_required = false;
     if (!frame->overlay_buffer_path.empty()) {
         if (!ensure_mapped(frame->overlay_buffer_path, &overlay_mapping_)) {
             return false;
@@ -1396,7 +1365,7 @@ bool openxr_quest_controller::update_stereo_frame() {
             overlay_generation != frame->source_frame_id) {
             return false;
         }
-        overlay_generation_required = true;
+        overlay_generation_required                               = true;
         const data_format::stereo_overlay_command_range* ranges[] = {
             &frame->left_overlay_commands,
             &frame->right_overlay_commands,
@@ -1406,16 +1375,15 @@ bool openxr_quest_controller::update_stereo_frame() {
             if (range.command_stride_floats != kOverlayCommandStrideFloats && range.command_count != 0) {
                 return false;
             }
-            const std::uint64_t float_count =
-                static_cast<std::uint64_t>(range.command_count) * range.command_stride_floats;
-            const std::uint64_t byte_count = float_count * sizeof(float);
+            const std::uint64_t float_count = static_cast<std::uint64_t>(range.command_count) * range.command_stride_floats;
+            const std::uint64_t byte_count  = float_count * sizeof(float);
             if (!byte_range_valid(overlay_mapping_.size, range.byte_offset, byte_count)) {
                 return false;
             }
             candidate_overlay_commands[eye_index].resize(static_cast<std::size_t>(float_count));
             if (byte_count != 0) {
-                std::memcpy(candidate_overlay_commands[eye_index].data(),
-                            overlay_mapping_.data + range.byte_offset, static_cast<std::size_t>(byte_count));
+                std::memcpy(candidate_overlay_commands[eye_index].data(), overlay_mapping_.data + range.byte_offset,
+                            static_cast<std::size_t>(byte_count));
             }
         }
     } else {
@@ -1423,28 +1391,26 @@ bool openxr_quest_controller::update_stereo_frame() {
     }
 
     data_format::stereo_modal_overlay candidate_modal = frame->modal;
-    std::vector<std::uint8_t> candidate_modal_pixels;
-    bool modal_generation_required = false;
+    std::vector<std::uint8_t>         candidate_modal_pixels;
+    bool                              modal_generation_required = false;
     if (!frame->modal_buffer_path.empty()) {
         if (!ensure_mapped(frame->modal_buffer_path, &modal_mapping_)) {
             return false;
         }
         std::uint64_t modal_generation = 0;
-        if (!read_generation(modal_mapping_.data, modal_mapping_.size, frame->modal_generation_offset,
-                             &modal_generation) ||
+        if (!read_generation(modal_mapping_.data, modal_mapping_.size, frame->modal_generation_offset, &modal_generation) ||
             modal_generation != frame->source_frame_id) {
             return false;
         }
         modal_generation_required = true;
         if (candidate_modal.visible) {
-            if (candidate_modal.width == 0 || candidate_modal.height == 0 ||
-                candidate_modal.width > 8192 || candidate_modal.height > 8192 ||
-                candidate_modal.source_row_stride_bytes < candidate_modal.width * 4U) {
+            if (candidate_modal.width == 0 || candidate_modal.height == 0 || candidate_modal.width > 8192 ||
+                candidate_modal.height > 8192 || candidate_modal.source_row_stride_bytes < candidate_modal.width * 4U) {
                 return false;
             }
             const std::uint64_t modal_required_bytes =
-                static_cast<std::uint64_t>(candidate_modal.height - 1U) * candidate_modal.source_row_stride_bytes
-                + static_cast<std::uint64_t>(candidate_modal.width) * 4U;
+                static_cast<std::uint64_t>(candidate_modal.height - 1U) * candidate_modal.source_row_stride_bytes +
+                static_cast<std::uint64_t>(candidate_modal.width) * 4U;
             if (!byte_range_valid(modal_mapping_.size, candidate_modal.byte_offset, modal_required_bytes)) {
                 return false;
             }
@@ -1452,8 +1418,8 @@ bool openxr_quest_controller::update_stereo_frame() {
             candidate_modal_pixels.resize(tight_row_bytes * candidate_modal.height);
             for (std::uint32_t row = 0; row < candidate_modal.height; ++row) {
                 std::memcpy(candidate_modal_pixels.data() + static_cast<std::size_t>(row) * tight_row_bytes,
-                            modal_mapping_.data + candidate_modal.byte_offset
-                                + static_cast<std::uint64_t>(row) * candidate_modal.source_row_stride_bytes,
+                            modal_mapping_.data + candidate_modal.byte_offset +
+                                static_cast<std::uint64_t>(row) * candidate_modal.source_row_stride_bytes,
                             tight_row_bytes);
             }
         }
@@ -1465,8 +1431,7 @@ bool openxr_quest_controller::update_stereo_frame() {
     }
 
     std::uint64_t confirmed_generation = 0;
-    if (!read_generation(pixel_mapping_.data, pixel_mapping_.size, frame->pixel_generation_offset,
-                         &confirmed_generation) ||
+    if (!read_generation(pixel_mapping_.data, pixel_mapping_.size, frame->pixel_generation_offset, &confirmed_generation) ||
         confirmed_generation != frame->source_frame_id) {
         return false;
     }
@@ -1477,8 +1442,7 @@ bool openxr_quest_controller::update_stereo_frame() {
         return false;
     }
     if (modal_generation_required &&
-        (!read_generation(modal_mapping_.data, modal_mapping_.size, frame->modal_generation_offset,
-                          &confirmed_generation) ||
+        (!read_generation(modal_mapping_.data, modal_mapping_.size, frame->modal_generation_offset, &confirmed_generation) ||
          confirmed_generation != frame->source_frame_id)) {
         return false;
     }
@@ -1487,8 +1451,7 @@ bool openxr_quest_controller::update_stereo_frame() {
         glBindTexture(GL_TEXTURE_2D, modal_textures_[candidate_texture_set]);
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, static_cast<GLsizei>(candidate_modal.width),
-                     static_cast<GLsizei>(candidate_modal.height), 0, GL_RGBA, GL_UNSIGNED_BYTE,
-                     candidate_modal_pixels.data());
+                     static_cast<GLsizei>(candidate_modal.height), 0, GL_RGBA, GL_UNSIGNED_BYTE, candidate_modal_pixels.data());
         glBindTexture(GL_TEXTURE_2D, 0);
         if (glGetError() != GL_NO_ERROR) {
             return false;
@@ -1508,8 +1471,8 @@ bool openxr_quest_controller::update_stereo_frame() {
     active_overlay_commands_   = std::move(candidate_overlay_commands);
     active_modal_              = std::move(candidate_modal);
     if (active_stereo_frame_id_ == 1 || active_stereo_frame_id_ % 300 == 0) {
-        plugin_logger_->info("Uploaded stereo_frame id={} size={}x{} for OpenXR submission",
-                             active_stereo_frame_id_, source_width_, source_height_);
+        plugin_logger_->info("Uploaded stereo_frame id={} size={}x{} for OpenXR submission", active_stereo_frame_id_,
+                             source_width_, source_height_);
     }
     return true;
 }
@@ -1518,8 +1481,7 @@ bool openxr_quest_controller::render_eye(std::size_t eye_index, GLuint swapchain
     if (!active_stereo_frame_valid_ || active_texture_set_ < 0 || eye_index >= 2) {
         return false;
     }
-    while (glGetError() != GL_NO_ERROR) {
-    }
+    while (glGetError() != GL_NO_ERROR) { }
     glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, swapchain_image, 0);
     glDrawBuffer(GL_COLOR_ATTACHMENT0);
@@ -1529,37 +1491,34 @@ bool openxr_quest_controller::render_eye(std::size_t eye_index, GLuint swapchain
         return false;
     }
 
-    const bool render_as_panel =
-        active_presentation_mode_ != data_format::stereo_presentation_mode::stereo_fullscreen;
-    mat4 mvp = scale_matrix(2.0F, 2.0F, 1.0F);
+    const bool  render_as_panel   = active_presentation_mode_ != data_format::stereo_presentation_mode::stereo_fullscreen;
+    mat4        mvp               = scale_matrix(2.0F, 2.0F, 1.0F);
     std::size_t texture_eye_index = eye_index;
     if (render_as_panel) {
-        texture_eye_index = 0;
-        const float panel_height = kPanelWidthMeters
-            * static_cast<float>(source_height_) / static_cast<float>(std::max<std::uint32_t>(source_width_, 1));
+        texture_eye_index        = 0;
+        const float panel_height = kPanelWidthMeters * static_cast<float>(source_height_) /
+            static_cast<float>(std::max<std::uint32_t>(source_width_, 1));
         const mat4 eye_pose = pose_matrix(located_views_[eye_index].pose);
-        mat4 panel_model{};
+        mat4       panel_model{};
         if (active_presentation_mode_ == data_format::stereo_presentation_mode::mono_panel) {
             if (!world_panel_initialized_) {
                 const mat4 initial_head_pose = pose_matrix(located_views_[0].pose);
-                panel_model = multiply(
-                    initial_head_pose,
-                    multiply(translation_matrix(0.0F, kPanelYOffsetMeters, -kPanelDistanceMeters),
-                             scale_matrix(kPanelWidthMeters, panel_height, 1.0F)));
+                panel_model                  = multiply(initial_head_pose,
+                                                        multiply(translation_matrix(0.0F, kPanelYOffsetMeters, -kPanelDistanceMeters),
+                                                                 scale_matrix(kPanelWidthMeters, panel_height, 1.0F)));
                 std::copy(std::begin(panel_model.values), std::end(panel_model.values), world_panel_model_.begin());
                 world_panel_initialized_ = true;
             } else {
                 std::copy(world_panel_model_.begin(), world_panel_model_.end(), std::begin(panel_model.values));
             }
         } else {
-            panel_model = multiply(
-                eye_pose,
-                multiply(translation_matrix(0.0F, kPanelYOffsetMeters, -kPanelDistanceMeters),
-                         scale_matrix(kPanelWidthMeters, panel_height, 1.0F)));
+            panel_model = multiply(eye_pose,
+                                   multiply(translation_matrix(0.0F, kPanelYOffsetMeters, -kPanelDistanceMeters),
+                                            scale_matrix(kPanelWidthMeters, panel_height, 1.0F)));
         }
         const mat4 view       = inverse_rigid_transform(eye_pose);
         const mat4 projection = projection_matrix(located_views_[eye_index].fov, kNearZ, kFarZ);
-        mvp = multiply(projection, multiply(view, panel_model));
+        mvp                   = multiply(projection, multiply(view, panel_model));
     }
 
     glViewport(0, 0, static_cast<GLsizei>(swapchain_views_[eye_index].width),
@@ -1582,8 +1541,7 @@ bool openxr_quest_controller::render_eye(std::size_t eye_index, GLuint swapchain
         draw_overlay_commands(active_overlay_commands_[eye_index], overlay_program_, overlay_vao_, overlay_vbo_,
                               overlay_source_size_location_, source_width_, source_height_);
         draw_modal_overlay(active_modal_, modal_textures_[active_texture_set_], modal_program_, modal_vao_, modal_vbo_,
-                           modal_source_size_location_, modal_texture_location_, eye_index, source_width_,
-                           source_height_);
+                           modal_source_size_location_, modal_texture_location_, eye_index, source_width_, source_height_);
     }
     glBindTexture(GL_TEXTURE_2D, 0);
     glBindVertexArray(0);
@@ -1593,43 +1551,39 @@ bool openxr_quest_controller::render_eye(std::size_t eye_index, GLuint swapchain
     return glGetError() == GL_NO_ERROR;
 }
 
-bool openxr_quest_controller::render_projection_layer(
-    XrCompositionLayerProjection* layer,
-    std::array<XrCompositionLayerProjectionView, 2>* projection_views) {
+bool openxr_quest_controller::render_projection_layer(XrCompositionLayerProjection*                    layer,
+                                                      std::array<XrCompositionLayerProjectionView, 2>* projection_views) {
     if (!active_stereo_frame_valid_ || !located_views_valid_) {
         return false;
     }
-    *layer          = make_xr_struct<XrCompositionLayerProjection>(XR_TYPE_COMPOSITION_LAYER_PROJECTION);
-    layer->space    = local_space_;
+    *layer           = make_xr_struct<XrCompositionLayerProjection>(XR_TYPE_COMPOSITION_LAYER_PROJECTION);
+    layer->space     = local_space_;
     layer->viewCount = static_cast<std::uint32_t>(projection_views->size());
     layer->views     = projection_views->data();
 
     for (std::size_t eye_index = 0; eye_index < projection_views->size(); ++eye_index) {
         XrCompositionLayerProjectionView& projection_view = (*projection_views)[eye_index];
-        projection_view = make_xr_struct<XrCompositionLayerProjectionView>(
-            XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW);
+        projection_view      = make_xr_struct<XrCompositionLayerProjectionView>(XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW);
         projection_view.pose = located_views_[eye_index].pose;
         projection_view.fov  = located_views_[eye_index].fov;
         if (active_presentation_mode_ == data_format::stereo_presentation_mode::stereo_fullscreen &&
             active_render_views_[eye_index].valid) {
-            const auto& source = active_render_views_[eye_index];
-            projection_view.pose.position = {source.position.x(), source.position.y(), source.position.z()};
-            projection_view.pose.orientation = {
-                source.orientation.x(), source.orientation.y(), source.orientation.z(), source.orientation.w()};
-            projection_view.fov = {source.angle_left, source.angle_right, source.angle_up, source.angle_down};
+            const auto& source               = active_render_views_[eye_index];
+            projection_view.pose.position    = {source.position.x(), source.position.y(), source.position.z()};
+            projection_view.pose.orientation = {source.orientation.x(), source.orientation.y(), source.orientation.z(),
+                                                source.orientation.w()};
+            projection_view.fov              = {source.angle_left, source.angle_right, source.angle_up, source.angle_down};
         }
 
-        swapchain_view& swapchain = swapchain_views_[eye_index];
+        swapchain_view&             swapchain = swapchain_views_[eye_index];
         XrSwapchainImageAcquireInfo acquire_info =
             make_xr_struct<XrSwapchainImageAcquireInfo>(XR_TYPE_SWAPCHAIN_IMAGE_ACQUIRE_INFO);
         std::uint32_t image_index = 0;
-        if (!check_xr(xrAcquireSwapchainImage(swapchain.handle, &acquire_info, &image_index),
-                      "xrAcquireSwapchainImage")) {
+        if (!check_xr(xrAcquireSwapchainImage(swapchain.handle, &acquire_info, &image_index), "xrAcquireSwapchainImage")) {
             return false;
         }
-        XrSwapchainImageWaitInfo wait_info =
-            make_xr_struct<XrSwapchainImageWaitInfo>(XR_TYPE_SWAPCHAIN_IMAGE_WAIT_INFO);
-        wait_info.timeout = XR_INFINITE_DURATION;
+        XrSwapchainImageWaitInfo wait_info = make_xr_struct<XrSwapchainImageWaitInfo>(XR_TYPE_SWAPCHAIN_IMAGE_WAIT_INFO);
+        wait_info.timeout                  = XR_INFINITE_DURATION;
         if (!check_xr(xrWaitSwapchainImage(swapchain.handle, &wait_info), "xrWaitSwapchainImage")) {
             return false;
         }
@@ -1645,11 +1599,11 @@ bool openxr_quest_controller::render_projection_layer(
             return false;
         }
 
-        projection_view.subImage.swapchain = swapchain.handle;
+        projection_view.subImage.swapchain        = swapchain.handle;
         projection_view.subImage.imageRect.offset = {0, 0};
-        projection_view.subImage.imageRect.extent = {
-            static_cast<std::int32_t>(swapchain.width), static_cast<std::int32_t>(swapchain.height)};
-        projection_view.subImage.imageArrayIndex = 0;
+        projection_view.subImage.imageRect.extent = {static_cast<std::int32_t>(swapchain.width),
+                                                     static_cast<std::int32_t>(swapchain.height)};
+        projection_view.subImage.imageArrayIndex  = 0;
     }
     return true;
 }
@@ -1659,16 +1613,15 @@ bool openxr_quest_controller::query_views(XrTime sample_time, view_frame* frame)
         view = make_xr_struct<XrView>(XR_TYPE_VIEW);
     }
 
-    XrViewLocateInfo locate_info = make_xr_struct<XrViewLocateInfo>(XR_TYPE_VIEW_LOCATE_INFO);
+    XrViewLocateInfo locate_info      = make_xr_struct<XrViewLocateInfo>(XR_TYPE_VIEW_LOCATE_INFO);
     locate_info.viewConfigurationType = view_configuration_type_;
     locate_info.displayTime           = sample_time;
     locate_info.space                 = local_space_;
 
-    XrViewState view_state = make_xr_struct<XrViewState>(XR_TYPE_VIEW_STATE);
+    XrViewState   view_state = make_xr_struct<XrViewState>(XR_TYPE_VIEW_STATE);
     std::uint32_t view_count = 0;
-    if (!check_xr(xrLocateViews(session_, &locate_info, &view_state,
-                                static_cast<std::uint32_t>(located_views_.size()), &view_count,
-                                located_views_.data()),
+    if (!check_xr(xrLocateViews(session_, &locate_info, &view_state, static_cast<std::uint32_t>(located_views_.size()),
+                                &view_count, located_views_.data()),
                   "xrLocateViews")) {
         located_views_valid_ = false;
         return false;
@@ -1679,29 +1632,26 @@ bool openxr_quest_controller::query_views(XrTime sample_time, view_frame* frame)
         return false;
     }
 
-    const bool pose_valid =
-        (view_state.viewStateFlags & XR_VIEW_STATE_POSITION_VALID_BIT) != 0 &&
+    const bool pose_valid = (view_state.viewStateFlags & XR_VIEW_STATE_POSITION_VALID_BIT) != 0 &&
         (view_state.viewStateFlags & XR_VIEW_STATE_ORIENTATION_VALID_BIT) != 0;
-    const bool pose_tracked =
-        (view_state.viewStateFlags & XR_VIEW_STATE_POSITION_TRACKED_BIT) != 0 &&
+    const bool pose_tracked = (view_state.viewStateFlags & XR_VIEW_STATE_POSITION_TRACKED_BIT) != 0 &&
         (view_state.viewStateFlags & XR_VIEW_STATE_ORIENTATION_TRACKED_BIT) != 0;
     located_views_valid_ = pose_valid;
 
-    const auto copy_view = [pose_valid, pose_tracked](const XrView& source,
-                                                      const XrViewConfigurationView& configuration,
+    const auto copy_view = [pose_valid, pose_tracked](const XrView& source, const XrViewConfigurationView& configuration,
                                                       eye_view* destination) {
-        destination->pose_valid  = pose_valid;
-        destination->pose_tracked = pose_tracked;
+        destination->pose_valid         = pose_valid;
+        destination->pose_tracked       = pose_tracked;
         destination->recommended_width  = configuration.recommendedImageRectWidth;
         destination->recommended_height = configuration.recommendedImageRectHeight;
-        destination->angle_left  = source.fov.angleLeft;
-        destination->angle_right = source.fov.angleRight;
-        destination->angle_up    = source.fov.angleUp;
-        destination->angle_down  = source.fov.angleDown;
+        destination->angle_left         = source.fov.angleLeft;
+        destination->angle_right        = source.fov.angleRight;
+        destination->angle_up           = source.fov.angleUp;
+        destination->angle_down         = source.fov.angleDown;
         if (pose_valid) {
-            destination->position = {source.pose.position.x, source.pose.position.y, source.pose.position.z};
-            destination->orientation = {source.pose.orientation.w, source.pose.orientation.x,
-                                        source.pose.orientation.y, source.pose.orientation.z};
+            destination->position    = {source.pose.position.x, source.pose.position.y, source.pose.position.z};
+            destination->orientation = {source.pose.orientation.w, source.pose.orientation.x, source.pose.orientation.y,
+                                        source.pose.orientation.z};
         }
     };
     copy_view(located_views_[0], view_configuration_views_[0], &frame->left);
@@ -1713,8 +1663,7 @@ bool openxr_quest_controller::query_hand(std::size_t hand_index, XrTime sample_t
     *hand                     = hand_controller{};
     hand->interaction_profile = interaction_profiles_[hand_index];
 
-    if (!query_pose(grip_pose_action_, grip_spaces_[hand_index], hand_paths_[hand_index], sample_time,
-                    &hand->grip_pose) ||
+    if (!query_pose(grip_pose_action_, grip_spaces_[hand_index], hand_paths_[hand_index], sample_time, &hand->grip_pose) ||
         !query_pose(aim_pose_action_, aim_spaces_[hand_index], hand_paths_[hand_index], sample_time, &hand->aim_pose)) {
         return false;
     }
@@ -1740,7 +1689,7 @@ bool openxr_quest_controller::query_hand(std::size_t hand_index, XrTime sample_t
 
 bool openxr_quest_controller::query_pose(XrAction action, XrSpace action_space, XrPath hand_path, XrTime sample_time,
                                          controller_pose* pose) {
-    *pose = controller_pose{};
+    *pose                         = controller_pose{};
     XrActionStateGetInfo get_info = make_xr_struct<XrActionStateGetInfo>(XR_TYPE_ACTION_STATE_GET_INFO);
     get_info.action               = action;
     get_info.subactionPath        = hand_path;
@@ -1759,9 +1708,9 @@ bool openxr_quest_controller::query_pose(XrAction action, XrSpace action_space, 
         return false;
     }
 
-    pose->position_valid = (location.locationFlags & XR_SPACE_LOCATION_POSITION_VALID_BIT) != 0;
-    pose->orientation_valid = (location.locationFlags & XR_SPACE_LOCATION_ORIENTATION_VALID_BIT) != 0;
-    pose->position_tracked = (location.locationFlags & XR_SPACE_LOCATION_POSITION_TRACKED_BIT) != 0;
+    pose->position_valid      = (location.locationFlags & XR_SPACE_LOCATION_POSITION_VALID_BIT) != 0;
+    pose->orientation_valid   = (location.locationFlags & XR_SPACE_LOCATION_ORIENTATION_VALID_BIT) != 0;
+    pose->position_tracked    = (location.locationFlags & XR_SPACE_LOCATION_POSITION_TRACKED_BIT) != 0;
     pose->orientation_tracked = (location.locationFlags & XR_SPACE_LOCATION_ORIENTATION_TRACKED_BIT) != 0;
 
     if (pose->position_valid) {
@@ -1775,7 +1724,7 @@ bool openxr_quest_controller::query_pose(XrAction action, XrSpace action_space, 
 }
 
 bool openxr_quest_controller::query_boolean(XrAction action, XrPath hand_path, controller_button* button) {
-    *button = controller_button{};
+    *button                       = controller_button{};
     XrActionStateGetInfo get_info = make_xr_struct<XrActionStateGetInfo>(XR_TYPE_ACTION_STATE_GET_INFO);
     get_info.action               = action;
     get_info.subactionPath        = hand_path;
@@ -1794,7 +1743,7 @@ bool openxr_quest_controller::query_boolean(XrAction action, XrPath hand_path, c
 
 bool openxr_quest_controller::query_float(XrAction action, XrPath hand_path, float pressed_threshold,
                                           controller_button* button) {
-    *button = controller_button{};
+    *button                       = controller_button{};
     XrActionStateGetInfo get_info = make_xr_struct<XrActionStateGetInfo>(XR_TYPE_ACTION_STATE_GET_INFO);
     get_info.action               = action;
     get_info.subactionPath        = hand_path;
@@ -1812,7 +1761,7 @@ bool openxr_quest_controller::query_float(XrAction action, XrPath hand_path, flo
 }
 
 bool openxr_quest_controller::query_axis2d(XrAction action, XrPath hand_path, controller_axis2d* axis) {
-    *axis = controller_axis2d{};
+    *axis                         = controller_axis2d{};
     XrActionStateGetInfo get_info = make_xr_struct<XrActionStateGetInfo>(XR_TYPE_ACTION_STATE_GET_INFO);
     get_info.action               = action;
     get_info.subactionPath        = hand_path;
@@ -1833,9 +1782,8 @@ bool openxr_quest_controller::query_axis2d(XrAction action, XrPath hand_path, co
 bool openxr_quest_controller::refresh_interaction_profiles() {
     bool success = true;
     for (std::size_t hand_index = 0; hand_index < hand_paths_.size(); ++hand_index) {
-        XrInteractionProfileState state =
-            make_xr_struct<XrInteractionProfileState>(XR_TYPE_INTERACTION_PROFILE_STATE);
-        const XrResult result = xrGetCurrentInteractionProfile(session_, hand_paths_[hand_index], &state);
+        XrInteractionProfileState state  = make_xr_struct<XrInteractionProfileState>(XR_TYPE_INTERACTION_PROFILE_STATE);
+        const XrResult            result = xrGetCurrentInteractionProfile(session_, hand_paths_[hand_index], &state);
         if (XR_FAILED(result)) {
             plugin_logger_->warn("xrGetCurrentInteractionProfile({}) failed: {}", hand_index == 0 ? "left" : "right",
                                  xr_result_string(result));
@@ -1843,8 +1791,8 @@ bool openxr_quest_controller::refresh_interaction_profiles() {
             continue;
         }
 
-        const std::string raw_profile = path_string(state.interactionProfile);
-        const controller_profile profile = profile_from_path(raw_profile);
+        const std::string        raw_profile = path_string(state.interactionProfile);
+        const controller_profile profile     = profile_from_path(raw_profile);
         if (profile != interaction_profiles_[hand_index]) {
             interaction_profiles_[hand_index] = profile;
             plugin_logger_->info("{} interaction profile -> {}", hand_index == 0 ? "left" : "right",
@@ -1857,7 +1805,7 @@ bool openxr_quest_controller::refresh_interaction_profiles() {
 
 void openxr_quest_controller::log_input_changes(const controller_input& input) {
     if (log_input_) {
-        const controller_input empty_previous;
+        const controller_input  empty_previous;
         const controller_input& previous = have_previous_input_ ? previous_input_ : empty_previous;
         log_hand_changes("left", true, input.left, previous.left, !have_previous_input_);
         log_hand_changes("right", false, input.right, previous.right, !have_previous_input_);
@@ -1867,7 +1815,7 @@ void openxr_quest_controller::log_input_changes(const controller_input& input) {
 }
 
 void openxr_quest_controller::log_hand_changes(const char* hand_name, bool left, const hand_controller& current,
-                                                const hand_controller& previous, bool first_sample) {
+                                               const hand_controller& previous, bool first_sample) {
     if ((!first_sample && current.available != previous.available) || (first_sample && current.available)) {
         plugin_logger_->info("{} controller {}", hand_name, current.available ? "AVAILABLE" : "UNAVAILABLE");
     }
@@ -1876,7 +1824,7 @@ void openxr_quest_controller::log_hand_changes(const char* hand_name, bool left,
         plugin_logger_->info("{} controller profile {}", hand_name, profile_label(current.interaction_profile));
     }
 
-    const bool tracked          = current.tracked();
+    const bool tracked            = current.tracked();
     const bool previously_tracked = previous.tracked();
     if ((!first_sample && tracked != previously_tracked) || (first_sample && tracked)) {
         plugin_logger_->info("{} controller tracking {}", hand_name, tracked ? "ACQUIRED" : "LOST");
@@ -1885,12 +1833,11 @@ void openxr_quest_controller::log_hand_changes(const char* hand_name, bool left,
     log_button_change(hand_name, "trigger", current.trigger, previous.trigger, first_sample);
     log_button_change(hand_name, "squeeze", current.squeeze, previous.squeeze, first_sample);
     log_button_change(hand_name, left ? "primary (X)" : "primary (A)", current.primary, previous.primary, first_sample);
-    log_button_change(hand_name, left ? "secondary (Y)" : "secondary (B)", current.secondary, previous.secondary,
-                      first_sample);
+    log_button_change(hand_name, left ? "secondary (Y)" : "secondary (B)", current.secondary, previous.secondary, first_sample);
     log_button_change(hand_name, "thumbstick click", current.thumbstick_click, previous.thumbstick_click, first_sample);
 
     const bool thumbstick_moved = current.thumbstick.active && current.thumbstick.value.norm() >= kThumbstickMoveThreshold;
-    const bool previous_moved = previous.thumbstick.active && previous.thumbstick.value.norm() >= kThumbstickMoveThreshold;
+    const bool previous_moved   = previous.thumbstick.active && previous.thumbstick.value.norm() >= kThumbstickMoveThreshold;
     if ((!first_sample && thumbstick_moved != previous_moved) || (first_sample && thumbstick_moved)) {
         if (thumbstick_moved) {
             plugin_logger_->info("{} thumbstick MOVED x={:.2f} y={:.2f}", hand_name, current.thumbstick.value.x(),
@@ -1902,8 +1849,8 @@ void openxr_quest_controller::log_hand_changes(const char* hand_name, bool left,
 }
 
 void openxr_quest_controller::log_button_change(const char* hand_name, const char* button_name,
-                                                 const controller_button& current, const controller_button& previous,
-                                                 bool first_sample) {
+                                                const controller_button& current, const controller_button& previous,
+                                                bool first_sample) {
     if ((!first_sample && current.pressed != previous.pressed) || (first_sample && current.pressed)) {
         plugin_logger_->info("{} {} {} value={:.2f}", hand_name, button_name, current.pressed ? "PRESSED" : "RELEASED",
                              current.value);
@@ -1950,12 +1897,12 @@ void openxr_quest_controller::destroy_openxr() {
         instance_ = XR_NULL_HANDLE;
     }
 
-    system_id_                    = XR_NULL_SYSTEM_ID;
-    session_running_              = false;
-    session_state_                = XR_SESSION_STATE_UNKNOWN;
-    interaction_profiles_dirty_   = true;
-    interaction_profiles_         = {controller_profile::none, controller_profile::none};
-    located_views_valid_           = false;
+    system_id_                  = XR_NULL_SYSTEM_ID;
+    session_running_            = false;
+    session_state_              = XR_SESSION_STATE_UNKNOWN;
+    interaction_profiles_dirty_ = true;
+    interaction_profiles_       = {controller_profile::none, controller_profile::none};
+    located_views_valid_        = false;
 }
 
 bool openxr_quest_controller::check_xr(XrResult result, const char* operation) const {
