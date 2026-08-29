@@ -26,6 +26,7 @@ dependencies:
   - boost-cpp
   - eigen =3.4
   - opencv >=4,<5
+  - openxr-sdk >=1.1,<2
   - spdlog
   - sqlite
   - yaml-cpp

@@ -11,10 +11,11 @@ readonly GDOWN_VERSION="6.1.0"
 readonly DEMO_LFS_PATH="assets/sloth/sloth.ply"
 readonly DEMO_LFS_SHA256="fc0301db3e5fd077d153e3bb2d68cf609db1ebc6968932101f34d731b6aec5d2"
 readonly DEMO_LFS_URL="https://media.githubusercontent.com/media/jianxiapyh/Boba-Demo/${BOBA_DEMO_REF}/${DEMO_LFS_PATH}"
-readonly DEMO_MANAGED_PATHS="${DEMO_LFS_PATH}:boba_app.sh:boba_quest_immersive.py:tools/fetch_demo_case_assets.py:qqtt/garden_assets.py"
+readonly DEMO_MANAGED_PATHS="${DEMO_LFS_PATH}:boba_app.sh:boba_quest_immersive.py:gaussian_splatting/_gsplat_vendor.py:tools/fetch_demo_case_assets.py:qqtt/garden_assets.py"
 
 readonly PATCHED_BOBA_APP_SHA256="d9193820fb1c79ee87d22389dbef9624d5631d5a4ddc93c116f74a0004a6b9b2"
 readonly PATCHED_BOBA_MAIN_SHA256="bb486ed6643813a2346e5e624dd9a07fa50b76a5d8785ebf8bff6f891a9619d5"
+readonly PATCHED_GSPLAT_VENDOR_SHA256="c4e1b07377bb0993c321cdb6cb5ce0bf2b1b0ecdafb941bd0172500ef8fdc3e0"
 readonly PATCHED_DEMO_ASSETS_SHA256="0f42bf6eef01f341f9f9dc6a67f69eef24eefb6879da355b74560b8d8ed6fdde"
 readonly PATCHED_GARDEN_ASSETS_SHA256="3431640e18d85f8ccd38b8501fc9e7ed3ed185b75bea76ffad2f4ac7d7b6803d"
 
@@ -237,8 +238,8 @@ tracked_checkout_changes() {
             {
                 path = substr($0, 4)
                 should_ignore = 0
-                for (index = 1; index <= ignored_count; ++index) {
-                    if (path == ignored_list[index]) {
+                for (ignored_index = 1; ignored_index <= ignored_count; ++ignored_index) {
+                    if (path == ignored_list[ignored_index]) {
                         should_ignore = 1
                     }
                 }
@@ -277,6 +278,17 @@ diff --git a/boba_quest_immersive.py b/boba_quest_immersive.py
 @@ -123 +123 @@ def ensure_direct_launch_runtime_env(argv: list[str] | None = None) -> None:
 -        "[startup] re-executing with phystwin-cu132 CUDA runtime libraries: "
 +        f"[startup] re-executing with {REQUIRED_RUNTIME_ENV} CUDA runtime libraries: "
+PATCH
+}
+
+patch_gsplat_vendor_environment() {
+    git -C "${BOBA_DEMO_ROOT}" apply --unidiff-zero <<'PATCH'
+diff --git a/gaussian_splatting/_gsplat_vendor.py b/gaussian_splatting/_gsplat_vendor.py
+--- a/gaussian_splatting/_gsplat_vendor.py
++++ b/gaussian_splatting/_gsplat_vendor.py
+@@ -13 +13 @@
+-EXPECTED_CONDA_ENV = "phystwin-cu132"
++EXPECTED_CONDA_ENV = os.environ.get("BOBA_RUNTIME_ENV", "boba-cu132")
 PATCH
 }
 
@@ -350,6 +362,7 @@ ensure_demo_patched_file() {
 apply_demo_environment_patch() {
     ensure_demo_patched_file "boba_app.sh" "${PATCHED_BOBA_APP_SHA256}" patch_boba_app_environment
     ensure_demo_patched_file "boba_quest_immersive.py" "${PATCHED_BOBA_MAIN_SHA256}" patch_boba_main_environment
+    ensure_demo_patched_file "gaussian_splatting/_gsplat_vendor.py" "${PATCHED_GSPLAT_VENDOR_SHA256}" patch_gsplat_vendor_environment
     ensure_demo_patched_file "tools/fetch_demo_case_assets.py" "${PATCHED_DEMO_ASSETS_SHA256}" patch_demo_asset_hint_environment
     ensure_demo_patched_file "qqtt/garden_assets.py" "${PATCHED_GARDEN_ASSETS_SHA256}" patch_garden_asset_hint_environment
     log "Boba-Demo is configured to use Conda environment ${BOBA_ENVIRONMENT}"
@@ -614,6 +627,13 @@ install_demo_dependencies() {
             --disable-pip-version-check \
             --no-input \
             -r requirements-demo.txt
+    )
+
+    log "Validating Boba-Demo's vendored gsplat runtime"
+    (
+        cd "${BOBA_DEMO_ROOT}"
+        run_in_boba_environment env "BOBA_RUNTIME_ENV=${BOBA_ENVIRONMENT}" \
+            python -c 'import gaussian_splatting._gsplat_vendor'
     )
 
     log "Validating the packaged Rope, Sloth, and Lab assets"

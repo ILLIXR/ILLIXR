@@ -20,8 +20,8 @@ The script installs Boba below
 - checks out pinned, compatible revisions of Boba-Public and Boba-Demo;
 - creates or validates the dedicated `boba-cu132` Conda environment using
   Boba-Public's pinned CUDA 13.2 environment specification;
-- applies a checksum-verified compatibility patch to the setup-managed
-  Boba-Demo checkout so its launcher and Python environment guard use
+- applies checksum-verified compatibility patches to the setup-managed
+  Boba-Demo checkout so its launcher and Python environment guards use
   `boba-cu132`;
 - builds Boba's CUDA extensions;
 - downloads and extracts all five archives listed under Boba-Public's
