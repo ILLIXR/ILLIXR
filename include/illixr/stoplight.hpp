@@ -117,6 +117,10 @@ public:
         return should_stop_.is_set();
     }
 
+    void wait_for_should_stop() const {
+        should_stop_.wait();
+    }
+
     void signal_should_stop() {
         should_stop_.set();
     }

@@ -1,0 +1,11 @@
+# This file was auto generated, take caution if manually editing.
+plugins: openxr_quest_controller,boba_immersive
+env_vars:
+  ENABLE_OFFLOAD: false
+  ENABLE_ALIGNMENT: false
+  ENABLE_VERBOSE_ERRORS: false
+  ENABLE_PRE_SLEEP: false
+  ILLIXR_DISPLAY_MODE: none
+  OPENXR_QUEST_CONTROLLER_LOG_INPUT: true
+  OPENXR_QUEST_CONTROLLER_LOG_LEVEL: info
+  BOBA_IMMERSIVE_LOG_LEVEL: info
