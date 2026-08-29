@@ -345,7 +345,19 @@ void pose_relay::_p_one_iteration() {
 #else
     auto pose = render_pose_.get_ro_nullable();
     if (pose == nullptr) {
+        static uint64_t pose_diag_null_count = 0;
+        if (++pose_diag_null_count % 300 == 1) {
+            log_->warn("[POSE_DIAG][server_pose_relay] render_pose is null count={}", pose_diag_null_count);
+        }
         return;
+    }
+    static uint64_t pose_diag_recv_count = 0;
+    if (++pose_diag_recv_count % 300 == 1) {
+        log_->info("[POSE_DIAG][server_pose_relay] received render_pose count={} valid={} "
+                   "pos=({:.3f},{:.3f},{:.3f}) ori=({:.3f},{:.3f},{:.3f},{:.3f})",
+                   pose_diag_recv_count, pose->pose.valid, pose->pose.position.x(), pose->pose.position.y(),
+                   pose->pose.position.z(), pose->pose.orientation.x(), pose->pose.orientation.y(),
+                   pose->pose.orientation.z(), pose->pose.orientation.w());
     }
     current_pose_ = *pose;
 #endif

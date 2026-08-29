@@ -22,6 +22,8 @@
 // clang-format on
 #else
 #    include <arpa/inet.h>
+#    include <cerrno>
+#    include <cstring>
 #    include <netinet/in.h>
 #    include <netinet/tcp.h>
 #    include <sys/socket.h>
@@ -95,8 +97,13 @@ public:
         peer_addr.sin_family      = AF_INET;
         peer_addr.sin_port        = htons(port);
         peer_addr.sin_addr.s_addr = inet_addr(ip.c_str());
-        if (connect(fd_, (struct sockaddr*) &peer_addr, sizeof(peer_addr)) < 0)
+        if (connect(fd_, (struct sockaddr*) &peer_addr, sizeof(peer_addr)) < 0) {
+#if defined(_WIN32) || defined(_WIN64)
             throw std::runtime_error("Connect failed");
+#else
+            throw std::runtime_error("Connect failed to " + ip + ":" + std::to_string(port) + ": " + std::strerror(errno));
+#endif
+        }
     }
 
     // Accept connect from the client. It is typically called from the server socket.
@@ -223,7 +230,13 @@ private:
         if (bytes_written < 0)
             throw std::runtime_error("Write failed");
 #else
-            write(fd_, &*begin, end - begin);
+            send(fd_, &*begin, end - begin, MSG_NOSIGNAL);
+        if (bytes_written < 0) {
+            if (errno == EINTR) {
+                return begin;
+            }
+            throw std::runtime_error(std::string{"Write failed: "} + std::strerror(errno));
+        }
 #endif
         return begin + bytes_written;
     }

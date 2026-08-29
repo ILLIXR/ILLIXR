@@ -54,6 +54,38 @@ NppStreamContext makeNppStreamContext(cudaStream_t stream = nullptr) {
     ctx.nCudaDevAttrComputeCapabilityMinor = prop.minor;
     return ctx;
 }
+
+const Npp8u* nv12_chroma_plane(const AVFrame* frame) {
+    if (frame->data[1] != nullptr) {
+        return reinterpret_cast<const Npp8u*>(frame->data[1]);
+    }
+    if (frame->data[0] == nullptr || frame->linesize[0] <= 0 || frame->height <= 0) {
+        return nullptr;
+    }
+    return reinterpret_cast<const Npp8u*>(frame->data[0]) + static_cast<size_t>(frame->linesize[0]) * frame->height;
+}
+
+void assert_npp_success(NppStatus status, const char* operation, int eye, const AVFrame* src, const AVFrame* dst = nullptr) {
+    if (status == NPP_SUCCESS) {
+        return;
+    }
+
+    std::string message = std::string{operation} + " failed with NPP status " +
+                          std::to_string(static_cast<int>(status)) + " eye=" + std::to_string(eye);
+    if (src != nullptr) {
+        message += " src_format=" + std::to_string(src->format) + " src=" + std::to_string(src->width) + "x" +
+                   std::to_string(src->height) + " src_linesize0=" + std::to_string(src->linesize[0]) +
+                   " src_linesize1=" + std::to_string(src->linesize[1]) +
+                   " src_data0=" + std::to_string(reinterpret_cast<uintptr_t>(src->data[0])) +
+                   " src_data1=" + std::to_string(reinterpret_cast<uintptr_t>(src->data[1]));
+    }
+    if (dst != nullptr) {
+        message += " dst=" + std::to_string(dst->width) + "x" + std::to_string(dst->height) +
+                   " dst_linesize0=" + std::to_string(dst->linesize[0]) +
+                   " dst_data0=" + std::to_string(reinterpret_cast<uintptr_t>(dst->data[0]));
+    }
+    throw std::runtime_error{message};
+}
 #endif
 
 const int log_interval = 300; // pose logging interval in frames
@@ -733,12 +765,46 @@ void offload_rendering_client::_p_one_iteration() {
 
     // Perform color space conversion
     for (auto eye = 0; eye < 2; eye++) {
-        // Convert NV12 to YUV420
-        NppiSize roi = {static_cast<int>(decode_out_color_frames_[eye]->width),
-                        static_cast<int>(decode_out_color_frames_[eye]->height)};
-        Npp8u*   pSrc[2];
-        pSrc[0] = reinterpret_cast<Npp8u*>(decode_out_color_frames_[eye]->data[0]);
-        pSrc[1] = reinterpret_cast<Npp8u*>(decode_out_color_frames_[eye]->data[1]);
+        AVFrame* color_src = decode_out_color_frames_[eye];
+        AVFrame* color_dst = decode_converted_color_frames_[eye];
+        if (color_src->width <= 0 || color_src->height <= 0 || (color_src->width % 2) != 0 || (color_src->height % 2) != 0) {
+            throw std::runtime_error{"Invalid NV12 decode dimensions for NPP conversion: " + std::to_string(color_src->width) +
+                                     "x" + std::to_string(color_src->height)};
+        }
+        if (color_src->data[0] == nullptr || color_src->linesize[0] <= 0 || color_dst->data[0] == nullptr ||
+            color_dst->linesize[0] <= 0) {
+            throw std::runtime_error{"Invalid CUDA frame pointers or strides before NPP conversion"};
+        }
+
+        const int dst_width          = color_dst->width;
+        const int dst_height         = color_dst->height;
+        const bool stereo_color_src  = color_src->width != dst_width && (color_src->width % 2) == 0;
+        const int src_eye_width      = stereo_color_src ? color_src->width / 2 : color_src->width;
+        const bool can_copy_eye_roi  = src_eye_width >= dst_width && (src_eye_width % 2) == 0;
+        if (dst_width <= 0 || dst_height <= 0 || color_src->height != dst_height || !can_copy_eye_roi) {
+            throw std::runtime_error{"Decoded frame dimensions do not match destination: src=" + std::to_string(color_src->width) +
+                                     "x" + std::to_string(color_src->height) + " dst=" + std::to_string(dst_width) + "x" +
+                                     std::to_string(dst_height)};
+        }
+
+        if (src_eye_width != dst_width) {
+            static bool warned_color_crop = false;
+            if (!warned_color_crop) {
+                log_->warn("Decoded color eye width {} is larger than destination width {}; using left-side ROI for each eye",
+                           src_eye_width, dst_width);
+                warned_color_crop = true;
+            }
+        }
+
+        const int   source_x_offset = stereo_color_src ? eye * src_eye_width : 0;
+        NppiSize    roi             = {dst_width, dst_height};
+        const Npp8u* pSrc[2];
+        pSrc[0] = reinterpret_cast<const Npp8u*>(color_src->data[0]) + source_x_offset;
+        const Npp8u* chroma = nv12_chroma_plane(color_src);
+        if (chroma == nullptr) {
+            throw std::runtime_error{"Invalid NV12 chroma plane before NPP conversion"};
+        }
+        pSrc[1] = chroma + source_x_offset;
         Npp8u* pDst[3];
         pDst[0] = yuv420_y_plane_;
         pDst[1] = yuv420_u_plane_;
@@ -749,29 +815,54 @@ void offload_rendering_client::_p_one_iteration() {
         dst_linesizes[2] = v_step_;
 
         auto ret =
-            nppiNV12ToYUV420_8u_P2P3R_Ctx(pSrc, decode_out_color_frames_[eye]->linesize[0], pDst, dst_linesizes, roi, npp_ctx_);
-        assert(ret == NPP_SUCCESS);
+            nppiNV12ToYUV420_8u_P2P3R_Ctx(pSrc, color_src->linesize[0], pDst, dst_linesizes, roi, npp_ctx_);
+        assert_npp_success(ret, "nppiNV12ToYUV420_8u_P2P3R_Ctx color", eye, color_src, color_dst);
 
         // Convert YUV420 to BGRA
-        auto dst = reinterpret_cast<Npp8u*>(decode_converted_color_frames_[eye]->data[0]);
-        ret      = nppiYUV420ToBGR_8u_P3C4R_Ctx(pDst, dst_linesizes, dst, decode_converted_color_frames_[eye]->linesize[0], roi,
-                                                npp_ctx_);
-        assert(ret == NPP_SUCCESS);
+        auto dst = reinterpret_cast<Npp8u*>(color_dst->data[0]);
+        ret      = nppiYUV420ToBGR_8u_P3C4R_Ctx(pDst, dst_linesizes, dst, color_dst->linesize[0], roi, npp_ctx_);
+        assert_npp_success(ret, "nppiYUV420ToBGR_8u_P3C4R_Ctx color", eye, color_src, color_dst);
 
         // Process depth frames if enabled
         if (use_depth_) {
-            // NppiSize roi_depth = {static_cast<int>(decode_out_depth_frames_[eye]->width),
-            //                       static_cast<int>(decode_out_depth_frames_[eye]->height)};
-            Npp8u* pSrc_depth[2];
-            pSrc_depth[0] = reinterpret_cast<Npp8u*>(decode_out_depth_frames_[eye]->data[0]);
-            pSrc_depth[1] = reinterpret_cast<Npp8u*>(decode_out_depth_frames_[eye]->data[1]);
-            ret = nppiNV12ToYUV420_8u_P2P3R_Ctx(pSrc_depth, decode_out_depth_frames_[eye]->linesize[0], pDst, dst_linesizes,
-                                                roi, npp_ctx_);
-            assert(ret == NPP_SUCCESS);
-            auto dst_depth = reinterpret_cast<Npp8u*>(decode_converted_depth_frames_[eye]->data[0]);
-            ret = nppiYUV420ToBGR_8u_P3C4R_Ctx(pDst, dst_linesizes, dst_depth, decode_converted_depth_frames_[eye]->linesize[0],
-                                               roi, npp_ctx_);
-            assert(ret == NPP_SUCCESS);
+            AVFrame* depth_src = decode_out_depth_frames_[eye];
+            AVFrame* depth_dst = decode_converted_depth_frames_[eye];
+            const int depth_dst_width     = depth_dst->width;
+            const int depth_dst_height    = depth_dst->height;
+            const bool stereo_depth_src   = depth_src->width != depth_dst_width && (depth_src->width % 2) == 0;
+            const int depth_src_eye_width = stereo_depth_src ? depth_src->width / 2 : depth_src->width;
+            const bool can_copy_depth_roi = depth_src_eye_width >= depth_dst_width && (depth_src_eye_width % 2) == 0;
+            if (depth_dst_width <= 0 || depth_dst_height <= 0 || depth_src->height != depth_dst_height ||
+                !can_copy_depth_roi) {
+                throw std::runtime_error{"Decoded depth dimensions do not match destination: src=" +
+                                         std::to_string(depth_src->width) + "x" + std::to_string(depth_src->height) +
+                                         " dst=" + std::to_string(depth_dst_width) + "x" +
+                                         std::to_string(depth_dst_height)};
+            }
+
+            if (depth_src_eye_width != depth_dst_width) {
+                static bool warned_depth_crop = false;
+                if (!warned_depth_crop) {
+                    log_->warn("Decoded depth eye width {} is larger than destination width {}; using left-side ROI for each eye",
+                               depth_src_eye_width, depth_dst_width);
+                    warned_depth_crop = true;
+                }
+            }
+
+            const int depth_source_x_offset = stereo_depth_src ? eye * depth_src_eye_width : 0;
+            const Npp8u* pSrc_depth[2];
+            pSrc_depth[0] = reinterpret_cast<const Npp8u*>(depth_src->data[0]) + depth_source_x_offset;
+            const Npp8u* depth_chroma = nv12_chroma_plane(depth_src);
+            pSrc_depth[1] = depth_chroma == nullptr ? nullptr : depth_chroma + depth_source_x_offset;
+            if (pSrc_depth[0] == nullptr || pSrc_depth[1] == nullptr) {
+                throw std::runtime_error{"Invalid NV12 depth planes before NPP conversion"};
+            }
+            NppiSize roi_depth = {depth_dst_width, depth_dst_height};
+            ret = nppiNV12ToYUV420_8u_P2P3R_Ctx(pSrc_depth, depth_src->linesize[0], pDst, dst_linesizes, roi_depth, npp_ctx_);
+            assert_npp_success(ret, "nppiNV12ToYUV420_8u_P2P3R_Ctx depth", eye, depth_src, depth_dst);
+            auto dst_depth = reinterpret_cast<Npp8u*>(depth_dst->data[0]);
+            ret = nppiYUV420ToBGR_8u_P3C4R_Ctx(pDst, dst_linesizes, dst_depth, depth_dst->linesize[0], roi_depth, npp_ctx_);
+            assert_npp_success(ret, "nppiYUV420ToBGR_8u_P3C4R_Ctx depth", eye, depth_src, depth_dst);
         }
         cudaDeviceSynchronize();
     }
@@ -931,6 +1022,14 @@ void offload_rendering_client::push_pose() {
     auto now = time_point{std::chrono::duration<long, std::nano>{std::chrono::high_resolution_clock::now().time_since_epoch()}};
     current_pose.predict_target_time   = now;
     current_pose.predict_computed_time = now;
+    static uint64_t pose_diag_push_count = 0;
+    if (++pose_diag_push_count % 300 == 1) {
+        log_->info("[POSE_DIAG][client_push_pose] count={} valid={} pos=({:.3f},{:.3f},{:.3f}) "
+                   "ori=({:.3f},{:.3f},{:.3f},{:.3f})",
+                   pose_diag_push_count, current_pose.pose.valid, current_pose.pose.position.x(), current_pose.pose.position.y(),
+                   current_pose.pose.position.z(), current_pose.pose.orientation.x(), current_pose.pose.orientation.y(),
+                   current_pose.pose.orientation.z(), current_pose.pose.orientation.w());
+    }
     pose_writer_.put(std::make_shared<pose::fast_head_pose_type>(current_pose));
 }
 #endif
@@ -1164,10 +1263,11 @@ void offload_rendering_client::ffmpeg_init_frame_ctx() {
     hwframe_ctx->format = AV_PIX_FMT_VULKAN;
     auto pix_format     = vulkan::ffmpeg_utils::get_pix_format_from_vk_format(buffer_pool_->image_pool[0][0].image_info.format);
     if (!pix_format) {
-        throw std::runtime_error{"Unsupported Vulkan image format when creating FFmpeg Vulkan hwframe context"};
+        throw std::runtime_error{"Unsupported Vulkan image format " +
+                                 std::to_string(buffer_pool_->image_pool[0][0].image_info.format) +
+                                 " when creating FFmpeg Vulkan hwframe context"};
     }
-    assert(pix_format == AV_PIX_FMT_BGRA);
-    hwframe_ctx->sw_format         = AV_PIX_FMT_BGRA;
+    hwframe_ctx->sw_format         = *pix_format;
     hwframe_ctx->width             = static_cast<int>(buffer_pool_->image_pool[0][0].image_info.extent.width);
     hwframe_ctx->height            = static_cast<int>(buffer_pool_->image_pool[0][0].image_info.extent.height);
     hwframe_ctx->initial_pool_size = 0;
@@ -1337,6 +1437,10 @@ void offload_rendering_client::ffmpeg_init_buffer_pool() {
                                        static_cast<int>(buffer_pool_->image_pool[0][0].image_info.extent.height) / 2, &v_step_);
     yuv420_y_plane_ = nppiMalloc_8u_C1(static_cast<int>(buffer_pool_->image_pool[0][0].image_info.extent.width),
                                        static_cast<int>(buffer_pool_->image_pool[0][0].image_info.extent.height), &y_step_);
+    if (yuv420_y_plane_ == nullptr || yuv420_u_plane_ == nullptr || yuv420_v_plane_ == nullptr || y_step_ <= 0 ||
+        u_step_ <= 0 || v_step_ <= 0) {
+        throw std::runtime_error{"Failed to allocate NPP YUV420 conversion buffers"};
+    }
     npp_ctx_        = makeNppStreamContext(nullptr);
 }
 

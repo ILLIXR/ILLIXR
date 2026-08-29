@@ -182,19 +182,7 @@ void offload_rendering_server::setup(VkRenderPass render_pass, uint32_t subpass,
     log_->info("Initialized index vectors for {} buffers", OFFLOAD_BUFFER_POOL_SIZE);
 
 #else
-    // Initialize FFmpeg frame contexts and encoders
-    ffmpeg_init_frame_ctx();
-    ffmpeg_init_cuda_frame_ctx();
-    ffmpeg_init_buffer_pool();
-    ffmpeg_init_encoder();
-
-    // Allocate output packets for encoded frames
-    for (auto eye = 0; eye < 2; eye++) {
-        encode_out_color_packets_[eye] = av_packet_alloc();
-        if (use_pass_depth_) {
-            encode_out_depth_packets_[eye] = av_packet_alloc();
-        }
-    }
+    log_->info("Deferring FFmpeg frame/encoder initialization until first framebuffer is available");
 #endif
 }
 
@@ -271,7 +259,19 @@ void offload_rendering_server::_p_one_iteration() {
         nvenc_init_encoders();
         nvenc_import_buffer_pool_images();
 #else
-        log_->info("First frame available - FFmpeg encoders already initialized in setup()");
+        log_->info("First frame available - initializing FFmpeg frame contexts and encoders");
+        ffmpeg_populate_buffer_pool_from_framebuffers();
+        ffmpeg_init_frame_ctx();
+        ffmpeg_init_cuda_frame_ctx();
+        ffmpeg_init_buffer_pool();
+        ffmpeg_init_encoder();
+
+        for (auto eye = 0; eye < 2; eye++) {
+            encode_out_color_packets_[eye] = av_packet_alloc();
+            if (use_pass_depth_) {
+                encode_out_depth_packets_[eye] = av_packet_alloc();
+            }
+        }
 #endif
         framebuffers_imported_.store(true);
     }
@@ -990,12 +990,13 @@ void offload_rendering_server::ffmpeg_init_frame_ctx() {
     // Configure pixel format based on Vulkan image format
     auto pix_format = vulkan::ffmpeg_utils::get_pix_format_from_vk_format(buffer_pool_->image_pool[0][0].image_info.format);
     if (!pix_format) {
-        throw std::runtime_error{"Unsupported Vulkan image format when creating FFmpeg Vulkan hwframe context"};
+        throw std::runtime_error{"Unsupported Vulkan image format " +
+                                 std::to_string(buffer_pool_->image_pool[0][0].image_info.format) +
+                                 " when creating FFmpeg Vulkan hwframe context"};
     }
-    assert(pix_format == AV_PIX_FMT_BGRA);
 
     // Set frame properties
-    hwframe_ctx->sw_format         = AV_PIX_FMT_BGRA;
+    hwframe_ctx->sw_format         = *pix_format;
     hwframe_ctx->width             = static_cast<int>(buffer_pool_->image_pool[0][0].image_info.extent.width);
     hwframe_ctx->height            = static_cast<int>(buffer_pool_->image_pool[0][0].image_info.extent.height);
     hwframe_ctx->initial_pool_size = 0;
@@ -1021,6 +1022,76 @@ void offload_rendering_server::ffmpeg_init_cuda_frame_ctx() {
     auto ret = av_hwframe_ctx_init(cuda_frame_ref);
     AV_ASSERT_SUCCESS(ret);
     this->cuda_frame_ctx_ = cuda_frame_ref;
+}
+
+void offload_rendering_server::ffmpeg_populate_buffer_pool_from_framebuffers() {
+    assert(this->buffer_pool_ != nullptr);
+    if (framebuffer_array_ == nullptr) {
+        throw std::runtime_error{"Cannot initialize FFmpeg frames before Monado framebuffer array is available"};
+    }
+
+    for (size_t buffer_idx = 0; buffer_idx < buffer_pool_->image_pool.size(); buffer_idx++) {
+        for (size_t eye = 0; eye < 2; eye++) {
+            const size_t                    fb_idx = buffer_idx * 2 + eye;
+            const struct illixr_framebuffer& fb     = framebuffer_array_[fb_idx];
+
+            if (fb.image == VK_NULL_HANDLE || fb.memory == VK_NULL_HANDLE || fb.image_extent.width == 0 ||
+                fb.image_extent.height == 0) {
+                throw std::runtime_error{"Monado framebuffer " + std::to_string(fb_idx) +
+                                         " is not ready for FFmpeg initialization"};
+            }
+
+            auto& image                        = buffer_pool_->image_pool[buffer_idx][eye];
+            image.image                        = fb.image;
+            image.image_view                   = fb.view;
+            image.allocation_info.deviceMemory = fb.memory;
+            image.allocation_info.size         = fb.image_size;
+            image.allocation_info.offset       = fb.image_offset;
+            image.image_info                   = {
+                VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
+                nullptr,
+                0,
+                VK_IMAGE_TYPE_2D,
+                VK_FORMAT_R8G8B8A8_UNORM,
+                {fb.image_extent.width, fb.image_extent.height, 1},
+                1,
+                1,
+                VK_SAMPLE_COUNT_1_BIT,
+                VK_IMAGE_TILING_OPTIMAL,
+                VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+                VK_SHARING_MODE_EXCLUSIVE,
+                0,
+                nullptr,
+                VK_IMAGE_LAYOUT_UNDEFINED,
+            };
+
+            if (use_pass_depth_ && fb.depth_image != VK_NULL_HANDLE) {
+                auto& depth_image                        = buffer_pool_->depth_image_pool[buffer_idx][eye];
+                depth_image.image                        = fb.depth_image;
+                depth_image.image_view                   = fb.depth_view;
+                depth_image.allocation_info.deviceMemory = fb.depth_memory;
+                depth_image.allocation_info.size         = fb.depth_size;
+                depth_image.allocation_info.offset       = fb.depth_offset;
+                depth_image.image_info                   = {
+                    VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
+                    nullptr,
+                    0,
+                    VK_IMAGE_TYPE_2D,
+                    VK_FORMAT_R8G8_UNORM,
+                    {fb.depth_extent.width, fb.depth_extent.height, 1},
+                    1,
+                    1,
+                    VK_SAMPLE_COUNT_1_BIT,
+                    VK_IMAGE_TILING_OPTIMAL,
+                    VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+                    VK_SHARING_MODE_EXCLUSIVE,
+                    0,
+                    nullptr,
+                    VK_IMAGE_LAYOUT_UNDEFINED,
+                };
+            }
+        }
+    }
 }
 
 void offload_rendering_server::ffmpeg_init_buffer_pool() {

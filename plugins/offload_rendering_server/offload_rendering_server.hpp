@@ -268,6 +268,11 @@ private:
      * frames if depth transmission is enabled.
      */
     void ffmpeg_init_encoder();
+
+    /**
+     * @brief Copies Monado framebuffer metadata into the ILLIXR buffer pool before FFmpeg setup.
+     */
+    void ffmpeg_populate_buffer_pool_from_framebuffers();
 #endif
     void sender_loop();
 
