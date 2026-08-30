@@ -2,9 +2,8 @@
 
 `boba_immersive` adds physics-based Gaussian digital twin support to ILLIXR,
 using [Boba](https://jianxiapyh.github.io/Boba-project-page/) as the simulation
-and rendering backend. Boba's core code remains in pinned upstream repositories;
-ILLIXR manages XR input, switchboard exchange, stereo-frame submission, and
-process lifecycle.
+and rendering backend. Boba remains upstream, while ILLIXR manages XR input,
+switchboard exchange, stereo-frame submission, and process lifecycle.
 
 For the current Quest 3 MVP, ALVR supplies the Quest-side OpenXR client and the
 network pipeline that carries tracking/controller input to the PC and rendered
