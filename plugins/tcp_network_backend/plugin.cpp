@@ -185,25 +185,11 @@ void tcp_network_backend::topic_send(std::string topic_name, std::string&& messa
         std::cout << "Topic not networked" << std::endl;
         return;
     }
-    if (topic_name == "render_pose") {
-        static uint64_t pose_diag_send_count = 0;
-        if (++pose_diag_send_count % 300 == 1) {
-            spdlog::get("illixr")->info("[POSE_DIAG][tcp_send] topic=render_pose count={} bytes={}", pose_diag_send_count,
-                                        message.size());
-        }
-    }
     send_to_peer(topic_name, std::move(message));
 }
 
 // Helper function to queue a received message into the corresponding topic
 void tcp_network_backend::topic_receive(const std::string& topic_name, std::vector<char>& message) {
-    if (topic_name == "render_pose") {
-        static uint64_t pose_diag_recv_count = 0;
-        if (++pose_diag_recv_count % 300 == 1) {
-            spdlog::get("illixr")->info("[POSE_DIAG][tcp_receive] topic=render_pose count={} bytes={}", pose_diag_recv_count,
-                                        message.size());
-        }
-    }
     if (topic_name == "illixr_control") {
         std::string message_str(message.begin(), message.end());
         // check if message starts with "create_topic"
