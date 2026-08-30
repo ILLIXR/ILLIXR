@@ -2,9 +2,9 @@
 set -Eeuo pipefail
 
 readonly BOBA_PUBLIC_REPOSITORY="https://github.com/jianxiapyh/Boba-Public.git"
-readonly BOBA_PUBLIC_REF="7f9ef3bdc648751f40e50bf8df6160bbd0b73e5c"
+readonly BOBA_PUBLIC_REF="9aa739542a2f85a8a6c207d1b6991bcc757b78b0"
 readonly BOBA_DEMO_REPOSITORY="https://github.com/jianxiapyh/Boba-Demo.git"
-readonly BOBA_DEMO_REF="077a95bb591152f63b0d392f00ef8001e2d7106f"
+readonly BOBA_DEMO_REF="4612027e4dd2931d5860e5c27b0d36ddc7d6ee3b"
 readonly BOBA_ENVIRONMENT="boba-cu132"
 readonly GDOWN_VERSION="6.1.0"
 

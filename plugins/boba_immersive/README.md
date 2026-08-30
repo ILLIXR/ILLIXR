@@ -1,10 +1,24 @@
-# Boba immersive plugin
+# Boba physics-based Gaussian digital twins
 
-`boba_immersive` launches the existing Boba Quest demo as a child process,
-forwards Quest controller/view input from the ILLIXR switchboard, and publishes
-the demo's rendered output as `stereo_frame`. The
+`boba_immersive` adds physics-based Gaussian digital twin support to ILLIXR,
+using [Boba](https://jianxiapyh.github.io/Boba-project-page/) as the simulation
+and rendering backend. Boba's core code remains in pinned upstream repositories;
+ILLIXR manages XR input, switchboard exchange, stereo-frame submission, and
+process lifecycle.
+
+For the current Quest 3 MVP, ALVR supplies the Quest-side OpenXR client and the
+network pipeline that carries tracking/controller input to the PC and rendered
+frames back to the headset. ALVR's PC endpoint is a SteamVR driver, so the
+`boba_quest` profile uses SteamVR as its OpenXR runtime. Monado alone does not
+provide this Quest-to-PC bridge; an equivalent Monado deployment would require
+a separate streaming stack with a Quest client and a Monado-compatible PC
+endpoint. ILLIXR's existing Monado support is unchanged.
+
+At runtime, `boba_immersive` launches the existing Boba Quest application as a
+child process, forwards Quest controller/view input from the ILLIXR switchboard,
+and publishes Boba's rendered output as `stereo_frame`. The
 `openxr_quest_controller` plugin consumes that frame and submits it through the
-SteamVR OpenXR runtime to the Quest over ALVR.
+SteamVR OpenXR runtime for delivery to the Quest over ALVR.
 
 ## One-time Boba setup
 
