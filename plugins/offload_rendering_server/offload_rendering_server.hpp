@@ -339,7 +339,7 @@ private:
     // Using last_frame_was_keyframe() from the encoder is authoritative for both
     // HEVC (IDR) and AV1 (KEY_FRAME / auto-GOP I-frame), avoiding any need for
     // bitstream parsing on the client side.
-    bool color_frame_is_keyframe_ = false;
+    // bool color_frame_is_keyframe_ = false;
 
 #    ifdef COMBINED_ENCODING
     // Under COMBINED_ENCODING a single encoder handles both eyes at double width.
