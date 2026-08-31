@@ -12,6 +12,7 @@
 #    include "illixr/data_format/latency_data.hpp"
 #    include "illixr/data_format/poses/combined_pose.hpp"
 #    include "illixr/data_format/vulkan_context.hpp"
+#    include "illixr/stoplight.hpp"
 #    include "illixr/switchboard.hpp"
 #    include "illixr/threadloop.hpp"
 #    include "illixr/vk/vulkan_context_provider.hpp"
@@ -84,11 +85,14 @@ private:
     const std::shared_ptr<switchboard>    switchboard_;
     struct android_app*                   app_;
     const std::shared_ptr<relative_clock> clock_;
+    const std::shared_ptr<stoplight>      stoplight_;
 
     // Frame reading
     switchboard::reader<data_format::dual_frames> frame_reader_;
+    switchboard::reader<switchboard::event_wrapper<std::string>> boba_client_control_reader_;
 
     std::shared_ptr<const data_format::dual_frames> current_frames_ = nullptr;
+    bool                                             client_shutdown_requested_{false};
 
     // OpenXR handles
     XrSession               session_         = XR_NULL_HANDLE;
@@ -100,6 +104,10 @@ private:
     XrBool32                session_running_ = XR_FALSE;
     XrViewConfigurationView view_configs_[2]{};
     XrView                  views_[2]{};
+    bool                    world_panel_anchor_initialized_{false};
+    XrPosef                 world_panel_pose_{};
+    data_format::stereo_presentation_mode previous_presentation_mode_{
+        data_format::stereo_presentation_mode::stereo_fullscreen};
 
     // Vulkan device objects
     VkInstance       vk_instance_        = VK_NULL_HANDLE;

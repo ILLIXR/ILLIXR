@@ -11,6 +11,8 @@
 #include <atomic>
 #include <cstddef>
 #include <cstdint>
+#include <memory>
+#include <optional>
 #include <string>
 #include <sys/types.h>
 #include <thread>
@@ -54,6 +56,7 @@ private:
     bool map_if_ready(const std::string& path, mapped_file* mapping);
     bool map_output_files();
     bool publish_latest_frame();
+    void notify_native_client_shutdown();
 
     const std::shared_ptr<switchboard>          switchboard_;
     const std::shared_ptr<const relative_clock> clock_;
@@ -61,6 +64,8 @@ private:
     switchboard::reader<controller_input>       controller_reader_;
     switchboard::reader<view_frame>             view_reader_;
     switchboard::writer<stereo_frame>           stereo_writer_;
+    std::optional<switchboard::network_writer<switchboard::event_wrapper<std::string>>>
+        native_client_control_writer_;
 
     std::string boba_launcher_;
     std::string runtime_directory_;
@@ -81,6 +86,7 @@ private:
     std::uint64_t     last_input_sequence_{0};
     std::uint64_t     last_frame_id_{0};
     bool              have_input_sequence_{false};
+    bool              native_client_shutdown_sent_{false};
 };
 
 } // namespace ILLIXR

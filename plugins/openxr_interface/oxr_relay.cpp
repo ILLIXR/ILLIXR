@@ -1,12 +1,39 @@
 #include "oxr_relay.hpp"
 const int log_interval = 300; // pose logging interval in frames
+#include <algorithm>
 #include <chrono>
+#include <cstring>
 #include <spdlog/spdlog.h>
+#include <vector>
 
 using namespace ILLIXR;
 using namespace ILLIXR::data_format;
 
 #define TIME_CUTOFF 3.0
+
+namespace {
+
+constexpr float kControllerTriggerThreshold = 0.75F;
+constexpr float kControllerSqueezeThreshold = 0.85F;
+
+ILLIXR::data_format::quest_controller_profile controller_profile_from_path(const std::string& path) {
+    using profile = ILLIXR::data_format::quest_controller_profile;
+    if (path.empty())
+        return profile::none;
+    if (path == "/interaction_profiles/khr/simple_controller")
+        return profile::simple_controller;
+    if (path == "/interaction_profiles/oculus/touch_controller")
+        return profile::oculus_touch;
+    if (path == "/interaction_profiles/htc/vive_controller")
+        return profile::htc_vive;
+    if (path == "/interaction_profiles/valve/index_controller")
+        return profile::valve_index;
+    if (path == "/interaction_profiles/microsoft/motion_controller")
+        return profile::microsoft_motion;
+    return profile::unknown;
+}
+
+} // namespace
 
 oxr_relay::oxr_relay(const std::string& name, phonebook* pb)
     : threadloop{name, pb}
@@ -15,6 +42,12 @@ oxr_relay::oxr_relay(const std::string& name, phonebook* pb)
     , combined_pose_writer_{switchboard_->get_network_writer<data_format::pose::combined_pose>(
           "combined_pose",
           {.serialization_method = network::topic_config::BOOST, .transport_method = network::topic_config::UDP})}
+    , quest_controller_writer_{switchboard_->get_network_writer<data_format::quest_controller_input>(
+          "quest_controller",
+          {.serialization_method = network::topic_config::BOOST, .transport_method = network::topic_config::UDP})}
+    , openxr_view_writer_{switchboard_->get_network_writer<data_format::openxr_view_frame>(
+          "openxr_view", {.serialization_method = network::topic_config::BOOST,
+                          .transport_method     = network::topic_config::UDP})}
     , latency_reader_{switchboard_->get_reader<network_latency_result>("network_latency")} { }
 
 void oxr_relay::destroy() {
@@ -522,6 +555,11 @@ bool oxr_relay::init_hand_interaction() {
         OXR(xrCreateAction(hand_interaction_action_set_, &ai, &palm_pose_action_))
     }
 
+    if (!create_controller_actions()) {
+        spdlog::get("illixr")->error("Failed to create Quest controller actions");
+        return false;
+    }
+
     // Suggest bindings
     // Each profile gets its own xrSuggestInteractionProfileBindings call because
     // the spec requires a separate call per profile.  We suggest:
@@ -603,6 +641,11 @@ bool oxr_relay::init_hand_interaction() {
                 OXR(xrStringToPath(instance_, s.c_str(), &path))
                 bindings.push_back({palm_pose_action_, path});
             }
+
+            XrPath      select_path;
+            std::string select = std::string(hand_path_string) + "/input/select/click";
+            OXR(xrStringToPath(instance_, select.c_str(), &select_path))
+            bindings.push_back({controller_trigger_click_action_, select_path});
         }
 
         XrInteractionProfileSuggestedBinding suggested = {XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING};
@@ -615,6 +658,11 @@ bool oxr_relay::init_hand_interaction() {
         } else {
             spdlog::get("illixr")->info("Suggested {} bindings for simple_controller profile", bindings.size());
         }
+    }
+
+    if (!suggest_controller_bindings()) {
+        spdlog::get("illixr")->error("Failed to suggest Quest Touch controller bindings");
+        return false;
     }
 
     // Attach action set to session
@@ -649,11 +697,106 @@ bool oxr_relay::init_hand_interaction() {
         OXR(xrCreateActionSpace(session_, &palm_space_info, &palm_pose_spaces_[h]))
     }
 
-    spdlog::get("illixr")->info("Hand interaction action set and action spaces created");
+    controller_actions_initialized_ = true;
+    spdlog::get("illixr")->info("Hand interaction and Quest Touch controller actions initialized");
+    return true;
+}
+
+bool oxr_relay::create_controller_actions() {
+    const XrPath subaction_paths[2] = {hand_subaction_paths_[0], hand_subaction_paths_[1]};
+    const auto create_action = [&](XrActionType type, const char* name, const char* localized_name, XrAction* action) {
+        XrActionCreateInfo info = {XR_TYPE_ACTION_CREATE_INFO};
+        std::strncpy(info.actionName, name, XR_MAX_ACTION_NAME_SIZE - 1);
+        std::strncpy(info.localizedActionName, localized_name, XR_MAX_LOCALIZED_ACTION_NAME_SIZE - 1);
+        info.actionType          = type;
+        info.countSubactionPaths = 2;
+        info.subactionPaths      = subaction_paths;
+        const XrResult result    = xrCreateAction(hand_interaction_action_set_, &info, action);
+        if (XR_FAILED(result)) {
+            spdlog::get("illixr")->error("xrCreateAction({}) failed: {}", name, static_cast<int>(result));
+            return false;
+        }
+        return true;
+    };
+
+    return create_action(XR_ACTION_TYPE_BOOLEAN_INPUT, "controller_trigger_click", "Controller Trigger Click",
+                         &controller_trigger_click_action_) &&
+        create_action(XR_ACTION_TYPE_FLOAT_INPUT, "controller_trigger_value", "Controller Trigger Value",
+                      &controller_trigger_value_action_) &&
+        create_action(XR_ACTION_TYPE_FLOAT_INPUT, "controller_squeeze_value", "Controller Squeeze Value",
+                      &controller_squeeze_value_action_) &&
+        create_action(XR_ACTION_TYPE_BOOLEAN_INPUT, "controller_primary_click", "Controller Primary Button",
+                      &controller_primary_click_action_) &&
+        create_action(XR_ACTION_TYPE_BOOLEAN_INPUT, "controller_secondary_click", "Controller Secondary Button",
+                      &controller_secondary_click_action_) &&
+        create_action(XR_ACTION_TYPE_BOOLEAN_INPUT, "controller_stick_click", "Controller Thumbstick Click",
+                      &controller_thumbstick_click_action_) &&
+        create_action(XR_ACTION_TYPE_VECTOR2F_INPUT, "controller_stick_axis", "Controller Thumbstick Axis",
+                      &controller_thumbstick_axis_action_);
+}
+
+bool oxr_relay::suggest_controller_bindings() {
+    XrPath profile_path = XR_NULL_PATH;
+    XrResult result = xrStringToPath(instance_, "/interaction_profiles/oculus/touch_controller", &profile_path);
+    if (XR_FAILED(result)) {
+        spdlog::get("illixr")->error("Could not create Oculus Touch interaction profile path: {}",
+                                     static_cast<int>(result));
+        return false;
+    }
+
+    std::vector<XrActionSuggestedBinding> bindings;
+    const auto add = [&](XrAction action, const std::string& path_string) {
+        XrPath path = XR_NULL_PATH;
+        const XrResult path_result = xrStringToPath(instance_, path_string.c_str(), &path);
+        if (XR_FAILED(path_result)) {
+            spdlog::get("illixr")->error("Could not create controller binding path {}: {}", path_string,
+                                         static_cast<int>(path_result));
+            return false;
+        }
+        bindings.push_back({action, path});
+        return true;
+    };
+
+    const char* hands[2] = {"/user/hand/left", "/user/hand/right"};
+    for (const char* hand : hands) {
+        const std::string prefix{hand};
+        if (!add(interaction_pose_actions_[pose::GRIP], prefix + "/input/grip/pose") ||
+            !add(interaction_pose_actions_[pose::AIM], prefix + "/input/aim/pose") ||
+            !add(controller_trigger_click_action_, prefix + "/input/trigger/value") ||
+            !add(controller_trigger_value_action_, prefix + "/input/trigger/value") ||
+            !add(controller_squeeze_value_action_, prefix + "/input/squeeze/value") ||
+            !add(controller_thumbstick_click_action_, prefix + "/input/thumbstick/click") ||
+            !add(controller_thumbstick_axis_action_, prefix + "/input/thumbstick")) {
+            return false;
+        }
+    }
+    if (!add(controller_primary_click_action_, "/user/hand/left/input/x/click") ||
+        !add(controller_primary_click_action_, "/user/hand/right/input/a/click") ||
+        !add(controller_secondary_click_action_, "/user/hand/left/input/y/click") ||
+        !add(controller_secondary_click_action_, "/user/hand/right/input/b/click")) {
+        return false;
+    }
+
+    XrInteractionProfileSuggestedBinding suggested = {XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING};
+    suggested.interactionProfile                   = profile_path;
+    suggested.countSuggestedBindings               = static_cast<std::uint32_t>(bindings.size());
+    suggested.suggestedBindings                    = bindings.data();
+    result                                          = xrSuggestInteractionProfileBindings(instance_, &suggested);
+    if (result == XR_ERROR_PATH_UNSUPPORTED || result == XR_ERROR_PATH_INVALID) {
+        spdlog::get("illixr")->warn("Quest runtime did not accept Oculus Touch bindings: {}", static_cast<int>(result));
+        return true;
+    }
+    if (XR_FAILED(result)) {
+        spdlog::get("illixr")->error("xrSuggestInteractionProfileBindings(Oculus Touch) failed: {}",
+                                     static_cast<int>(result));
+        return false;
+    }
+    spdlog::get("illixr")->info("Suggested {} bindings for Oculus Touch controllers", bindings.size());
     return true;
 }
 
 void oxr_relay::destroy_hand_interaction() {
+    controller_actions_initialized_ = false;
     for (int h = 0; h < 2; h++) {
         for (int p = 0; p < pose::NUM_INTERACTION_POSES; p++) {
             if (interaction_pose_spaces_[h][p] != XR_NULL_HANDLE) {
@@ -678,27 +821,8 @@ void oxr_relay::update_hand_interaction(XrTime predicted_time) {
         return;
     }
 
-    // Sync actions
-    XrActiveActionSet active_set = {};
-    active_set.actionSet         = hand_interaction_action_set_;
-    active_set.subactionPath     = XR_NULL_PATH; // all sub-action paths
-
-    XrActionsSyncInfo sync_info     = {XR_TYPE_ACTIONS_SYNC_INFO};
-    sync_info.countActiveActionSets = 1;
-    sync_info.activeActionSets      = &active_set;
-
-    auto     t0          = std::chrono::steady_clock::now();
-    XrResult sync_result = xrSyncActions(session_, &sync_info);
-    auto     t1          = std::chrono::steady_clock::now();
-    auto     ms          = std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count() / 1000.0;
-    if (ms > TIME_CUTOFF)
-        spdlog::get("illixr")->warn("[oxr_timing] xrSyncActions took {:.2f}ms", ms);
-    if (sync_result == XR_SESSION_NOT_FOCUSED) {
-        spdlog::get("illixr")->debug("update_hand_interaction: session not focused, skipping");
-        return;
-    }
-    if (XR_FAILED(sync_result)) {
-        spdlog::get("illixr")->warn("xrSyncActions failed: {}", static_cast<int>(sync_result));
+    std::lock_guard<std::mutex> actions_lock{actions_mutex_};
+    if (!sync_actions()) {
         return;
     }
 
@@ -879,6 +1003,250 @@ void oxr_relay::update_hand_interaction(XrTime predicted_time) {
             }
         }
     }
+}
+
+bool oxr_relay::sync_actions() {
+    if (hand_interaction_action_set_ == XR_NULL_HANDLE || session_ == XR_NULL_HANDLE) {
+        return false;
+    }
+    XrActiveActionSet active_set{};
+    active_set.actionSet     = hand_interaction_action_set_;
+    active_set.subactionPath = XR_NULL_PATH;
+
+    XrActionsSyncInfo sync_info{XR_TYPE_ACTIONS_SYNC_INFO};
+    sync_info.countActiveActionSets = 1;
+    sync_info.activeActionSets      = &active_set;
+    const auto start                = std::chrono::steady_clock::now();
+    const XrResult result           = xrSyncActions(session_, &sync_info);
+    const auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - start)
+                             .count() /
+        1000.0;
+    if (elapsed > TIME_CUTOFF) {
+        spdlog::get("illixr")->warn("[oxr_timing] xrSyncActions took {:.2f}ms", elapsed);
+    }
+    if (result == XR_SESSION_NOT_FOCUSED) {
+        return false;
+    }
+    if (XR_FAILED(result)) {
+        spdlog::get("illixr")->warn("xrSyncActions failed: {}", static_cast<int>(result));
+        return false;
+    }
+    return true;
+}
+
+void oxr_relay::refresh_controller_profiles() {
+    for (std::size_t hand = 0; hand < controller_profiles_.size(); ++hand) {
+        XrInteractionProfileState state{XR_TYPE_INTERACTION_PROFILE_STATE};
+        const XrResult result = xrGetCurrentInteractionProfile(session_, hand_subaction_paths_[hand], &state);
+        if (XR_FAILED(result)) {
+            continue;
+        }
+
+        std::string path;
+        if (state.interactionProfile != XR_NULL_PATH) {
+            std::uint32_t size = 0;
+            if (XR_SUCCEEDED(xrPathToString(instance_, state.interactionProfile, 0, &size, nullptr)) && size > 0) {
+                std::vector<char> buffer(size);
+                if (XR_SUCCEEDED(xrPathToString(instance_, state.interactionProfile, size, &size, buffer.data()))) {
+                    path.assign(buffer.data());
+                }
+            }
+        }
+        const auto profile = controller_profile_from_path(path);
+        if (controller_profiles_[hand] != profile) {
+            controller_profiles_[hand] = profile;
+            spdlog::get("illixr")->info("{} controller profile -> {}", hand == 0 ? "left" : "right",
+                                         path.empty() ? "none" : path);
+        }
+    }
+}
+
+bool oxr_relay::query_controller_pose(XrAction action, XrSpace space, XrPath hand_path, XrTime sample_time,
+                                      quest_controller_pose* pose_out) {
+    *pose_out                      = quest_controller_pose{};
+    XrActionStateGetInfo get_info{XR_TYPE_ACTION_STATE_GET_INFO};
+    get_info.action        = action;
+    get_info.subactionPath = hand_path;
+
+    XrActionStatePose state{XR_TYPE_ACTION_STATE_POSE};
+    XrResult result = xrGetActionStatePose(session_, &get_info, &state);
+    if (XR_FAILED(result)) {
+        spdlog::get("illixr")->warn("xrGetActionStatePose(controller) failed: {}", static_cast<int>(result));
+        return false;
+    }
+    pose_out->active = state.isActive == XR_TRUE;
+    if (!pose_out->active) {
+        return true;
+    }
+
+    XrSpaceLocation location{XR_TYPE_SPACE_LOCATION};
+    result = xrLocateSpace(space, local_space_, sample_time, &location);
+    if (XR_FAILED(result)) {
+        spdlog::get("illixr")->warn("xrLocateSpace(controller) failed: {}", static_cast<int>(result));
+        return false;
+    }
+    pose_out->position_valid      = (location.locationFlags & XR_SPACE_LOCATION_POSITION_VALID_BIT) != 0;
+    pose_out->orientation_valid   = (location.locationFlags & XR_SPACE_LOCATION_ORIENTATION_VALID_BIT) != 0;
+    pose_out->position_tracked    = (location.locationFlags & XR_SPACE_LOCATION_POSITION_TRACKED_BIT) != 0;
+    pose_out->orientation_tracked = (location.locationFlags & XR_SPACE_LOCATION_ORIENTATION_TRACKED_BIT) != 0;
+    if (pose_out->position_valid) {
+        pose_out->position = {location.pose.position.x, location.pose.position.y, location.pose.position.z};
+    }
+    if (pose_out->orientation_valid) {
+        pose_out->orientation = {location.pose.orientation.w, location.pose.orientation.x, location.pose.orientation.y,
+                                 location.pose.orientation.z};
+    }
+    return true;
+}
+
+bool oxr_relay::query_controller_boolean(XrAction action, XrPath hand_path, quest_controller_button* button) {
+    *button                       = quest_controller_button{};
+    XrActionStateGetInfo get_info{XR_TYPE_ACTION_STATE_GET_INFO};
+    get_info.action        = action;
+    get_info.subactionPath = hand_path;
+    XrActionStateBoolean state{XR_TYPE_ACTION_STATE_BOOLEAN};
+    const XrResult result = xrGetActionStateBoolean(session_, &get_info, &state);
+    if (XR_FAILED(result)) {
+        return false;
+    }
+    button->active                  = state.isActive == XR_TRUE;
+    button->pressed                 = button->active && state.currentState == XR_TRUE;
+    button->changed_since_last_sync = state.changedSinceLastSync == XR_TRUE;
+    button->value                   = button->pressed ? 1.0F : 0.0F;
+    button->last_change_time        = static_cast<std::int64_t>(state.lastChangeTime);
+    return true;
+}
+
+bool oxr_relay::query_controller_float(XrAction action, XrPath hand_path, float threshold,
+                                       quest_controller_button* button) {
+    *button                       = quest_controller_button{};
+    XrActionStateGetInfo get_info{XR_TYPE_ACTION_STATE_GET_INFO};
+    get_info.action        = action;
+    get_info.subactionPath = hand_path;
+    XrActionStateFloat state{XR_TYPE_ACTION_STATE_FLOAT};
+    const XrResult result = xrGetActionStateFloat(session_, &get_info, &state);
+    if (XR_FAILED(result)) {
+        return false;
+    }
+    button->active                  = state.isActive == XR_TRUE;
+    button->value                   = button->active ? state.currentState : 0.0F;
+    button->pressed                 = button->active && state.currentState >= threshold;
+    button->changed_since_last_sync = state.changedSinceLastSync == XR_TRUE;
+    button->last_change_time        = static_cast<std::int64_t>(state.lastChangeTime);
+    return true;
+}
+
+bool oxr_relay::query_controller_axis(XrAction action, XrPath hand_path, quest_controller_axis2d* axis) {
+    *axis                         = quest_controller_axis2d{};
+    XrActionStateGetInfo get_info{XR_TYPE_ACTION_STATE_GET_INFO};
+    get_info.action        = action;
+    get_info.subactionPath = hand_path;
+    XrActionStateVector2f state{XR_TYPE_ACTION_STATE_VECTOR2F};
+    const XrResult result = xrGetActionStateVector2f(session_, &get_info, &state);
+    if (XR_FAILED(result)) {
+        return false;
+    }
+    axis->active                  = state.isActive == XR_TRUE;
+    axis->changed_since_last_sync = state.changedSinceLastSync == XR_TRUE;
+    axis->last_change_time        = static_cast<std::int64_t>(state.lastChangeTime);
+    if (axis->active) {
+        axis->value = {state.currentState.x, state.currentState.y};
+    }
+    return true;
+}
+
+void oxr_relay::merge_controller_button(quest_controller_button* destination, const quest_controller_button& source) {
+    destination->active                  = destination->active || source.active;
+    destination->pressed                 = destination->pressed || source.pressed;
+    destination->changed_since_last_sync = destination->changed_since_last_sync || source.changed_since_last_sync;
+    destination->value                   = std::max(destination->value, source.value);
+    destination->last_change_time        = std::max(destination->last_change_time, source.last_change_time);
+}
+
+bool oxr_relay::query_controller_hand(std::size_t hand_index, XrTime sample_time, quest_hand_controller* hand) {
+    *hand                     = quest_hand_controller{};
+    hand->interaction_profile = controller_profiles_[hand_index];
+    if (!query_controller_pose(interaction_pose_actions_[pose::GRIP], interaction_pose_spaces_[hand_index][pose::GRIP],
+                               hand_subaction_paths_[hand_index], sample_time, &hand->grip_pose) ||
+        !query_controller_pose(interaction_pose_actions_[pose::AIM], interaction_pose_spaces_[hand_index][pose::AIM],
+                               hand_subaction_paths_[hand_index], sample_time, &hand->aim_pose)) {
+        return false;
+    }
+
+    quest_controller_button trigger_click;
+    quest_controller_button trigger_value;
+    if (!query_controller_boolean(controller_trigger_click_action_, hand_subaction_paths_[hand_index], &trigger_click) ||
+        !query_controller_float(controller_trigger_value_action_, hand_subaction_paths_[hand_index],
+                                kControllerTriggerThreshold, &trigger_value) ||
+        !query_controller_float(controller_squeeze_value_action_, hand_subaction_paths_[hand_index],
+                                kControllerSqueezeThreshold, &hand->squeeze) ||
+        !query_controller_boolean(controller_primary_click_action_, hand_subaction_paths_[hand_index], &hand->primary) ||
+        !query_controller_boolean(controller_secondary_click_action_, hand_subaction_paths_[hand_index],
+                                  &hand->secondary) ||
+        !query_controller_boolean(controller_thumbstick_click_action_, hand_subaction_paths_[hand_index],
+                                  &hand->thumbstick_click) ||
+        !query_controller_axis(controller_thumbstick_axis_action_, hand_subaction_paths_[hand_index], &hand->thumbstick)) {
+        return false;
+    }
+    hand->trigger = trigger_click;
+    merge_controller_button(&hand->trigger, trigger_value);
+    hand->available = hand->grip_pose.active || hand->aim_pose.active || hand->trigger.active || hand->squeeze.active ||
+        hand->primary.active || hand->secondary.active || hand->thumbstick_click.active || hand->thumbstick.active;
+    return true;
+}
+
+void oxr_relay::publish_boba_input(XrTime predicted_time, XrDuration predicted_period, XrBool32 should_render,
+                                   XrViewStateFlags view_flags, const XrView views[2],
+                                   const XrViewConfigurationView view_configs[2]) {
+    const std::uint64_t sequence = boba_input_sequence_.fetch_add(1, std::memory_order_relaxed);
+    const time_point    now      = clock_->now();
+
+    quest_controller_input controller;
+    controller.sequence       = sequence;
+    controller.sample_time    = now;
+    controller.xr_sample_time = static_cast<std::int64_t>(predicted_time);
+    if (controller_actions_initialized_) {
+        std::lock_guard<std::mutex> actions_lock{actions_mutex_};
+        if (sync_actions()) {
+            refresh_controller_profiles();
+            if (!query_controller_hand(0, predicted_time, &controller.left) ||
+                !query_controller_hand(1, predicted_time, &controller.right)) {
+                spdlog::get("illixr")->warn("Could not sample all Quest controller actions");
+            }
+        }
+    }
+
+    openxr_view_frame frame;
+    frame.sequence                    = sequence;
+    frame.sample_time                 = now;
+    frame.xr_sample_time              = static_cast<std::int64_t>(predicted_time);
+    frame.xr_predicted_display_period = static_cast<std::int64_t>(predicted_period);
+    frame.should_render               = should_render == XR_TRUE;
+    const bool pose_valid = (view_flags & XR_VIEW_STATE_POSITION_VALID_BIT) != 0 &&
+        (view_flags & XR_VIEW_STATE_ORIENTATION_VALID_BIT) != 0;
+    const bool pose_tracked = (view_flags & XR_VIEW_STATE_POSITION_TRACKED_BIT) != 0 &&
+        (view_flags & XR_VIEW_STATE_ORIENTATION_TRACKED_BIT) != 0;
+    const auto copy_view = [pose_valid, pose_tracked](const XrView& source, const XrViewConfigurationView& config,
+                                                      openxr_eye_view* destination) {
+        destination->pose_valid         = pose_valid;
+        destination->pose_tracked       = pose_tracked;
+        destination->recommended_width  = config.recommendedImageRectWidth;
+        destination->recommended_height = config.recommendedImageRectHeight;
+        destination->angle_left         = source.fov.angleLeft;
+        destination->angle_right        = source.fov.angleRight;
+        destination->angle_up           = source.fov.angleUp;
+        destination->angle_down         = source.fov.angleDown;
+        if (pose_valid) {
+            destination->position = {source.pose.position.x, source.pose.position.y, source.pose.position.z};
+            destination->orientation = {source.pose.orientation.w, source.pose.orientation.x, source.pose.orientation.y,
+                                        source.pose.orientation.z};
+        }
+    };
+    copy_view(views[0], view_configs[0], &frame.left);
+    copy_view(views[1], view_configs[1], &frame.right);
+
+    quest_controller_writer_.put(std::make_shared<quest_controller_input>(std::move(controller)));
+    openxr_view_writer_.put(std::make_shared<openxr_view_frame>(std::move(frame)));
 }
 
 void oxr_relay::calibrate_time_offsets() {

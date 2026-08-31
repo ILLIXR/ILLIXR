@@ -337,6 +337,14 @@ boba_immersive::boba_immersive(const std::string& name, phonebook* pb)
     , stereo_writer_{switchboard_->get_writer<stereo_frame>("stereo_frame")}
     , boba_launcher_{resolve_boba_launcher(switchboard_)} {
     spdlogger(switchboard_->get_env_char("BOBA_IMMERSIVE_LOG_LEVEL", "info"));
+    if (switchboard_->get_env_bool("BOBA_NATIVE_QUEST_STREAM", "false")) {
+        network::topic_config control_config{};
+        control_config.serialization_method = network::topic_config::SerializationMethod::PROTOBUF;
+        control_config.transport_method      = network::topic_config::TransportMethod::TCP;
+        native_client_control_writer_.emplace(
+            switchboard_->get_network_writer<switchboard::event_wrapper<std::string>>(
+                "boba_client_control", control_config));
+    }
 }
 
 boba_immersive::~boba_immersive() {
@@ -368,6 +376,7 @@ void boba_immersive::run() {
         terminate_boba();
         cleanup_runtime_directory();
         plugin_logger_->error("Boba immersive startup failed; requesting ILLIXR shutdown");
+        notify_native_client_shutdown();
         stoplight_->signal_should_stop();
         return;
     }
@@ -389,6 +398,7 @@ void boba_immersive::run() {
             }
             boba_pid_ = -1;
             plugin_logger_->info("Boba immersive stopped; requesting ILLIXR shutdown");
+            notify_native_client_shutdown();
             stoplight_->signal_should_stop();
             break;
         }
@@ -400,10 +410,21 @@ void boba_immersive::run() {
     }
 
     terminate_boba();
+    notify_native_client_shutdown();
     frame_mapping_.reset();
     overlay_mapping_.reset();
     modal_mapping_.reset();
     cleanup_runtime_directory();
+}
+
+void boba_immersive::notify_native_client_shutdown() {
+    if (!native_client_control_writer_.has_value() || native_client_shutdown_sent_) {
+        return;
+    }
+    auto message = native_client_control_writer_->allocate(std::string{"shutdown"});
+    native_client_control_writer_->put(std::move(message));
+    native_client_shutdown_sent_ = true;
+    plugin_logger_->info("Requested native Quest client shutdown");
 }
 
 bool boba_immersive::create_runtime_directory() {

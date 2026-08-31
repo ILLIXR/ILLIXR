@@ -5,6 +5,8 @@
 
 #include <android/hardware_buffer.h>
 #include <array>
+#include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <unordered_map>
 #include <vector>
@@ -156,7 +158,7 @@ public:
      * The vertex shader must accept a third push-constant float (u_offset) at
      * byte offset 8.  The shader generates UVs as:
      *   u = u_offset + frag_u * crop_scale_x
-     *   v = frag_v * crop_scale_y
+     *   v = (1 - frag_v) * crop_scale_y
      * where crop_scale_x = 0.5 * (original_width / padded_half_width).
      */
     void set_combined_encoding(bool enabled) {
@@ -196,6 +198,35 @@ private:
     bool create_command_pool();
     bool allocate_command_buffers();
     bool create_descriptor_pool();
+
+    // ── Boba vector/modal overlay helpers ────────────────────────────────────
+    struct overlay_vertex {
+        float x;
+        float y;
+        float red;
+        float green;
+        float blue;
+        float alpha;
+    };
+
+    struct modal_vertex {
+        float x;
+        float y;
+        float u;
+        float v;
+    };
+
+    bool create_boba_overlay_resources();
+    bool create_overlay_pipeline();
+    bool create_modal_pipeline();
+    bool create_host_visible_buffer(VkDeviceSize size, VkBufferUsageFlags usage, VkBuffer* buffer,
+                                    VkDeviceMemory* memory, void** mapped);
+    bool upload_modal_texture(std::uint64_t texture_id, std::uint32_t width, std::uint32_t height,
+                              const std::vector<std::uint8_t>& rgba);
+    void destroy_modal_texture();
+    void update_boba_overlay_state(const data_format::dual_frames& frame);
+    void record_boba_overlays(VkCommandBuffer command_buffer, int eye);
+    std::uint32_t find_memory_type(std::uint32_t type_filter, VkMemoryPropertyFlags properties) const;
 
     // ── Depth pipeline helpers ─────────────────────────────────────────────────
     bool create_depth_render_pass(VkFormat depth_format);
@@ -242,6 +273,35 @@ private:
     // because Vulkan requires them to outlive their command buffer submission.
     std::array<VkFramebuffer, 2> prev_framebuffers_{VK_NULL_HANDLE, VK_NULL_HANDLE};
     std::array<VkImageView, 2>   prev_swapchain_views_{VK_NULL_HANDLE, VK_NULL_HANDLE};
+
+    // Boba vector overlays (controller rays, placement rectangle, markers).
+    VkPipelineLayout overlay_pipeline_layout_ = VK_NULL_HANDLE;
+    VkPipeline       overlay_pipeline_        = VK_NULL_HANDLE;
+    std::array<VkBuffer, 2>       overlay_vertex_buffers_{VK_NULL_HANDLE, VK_NULL_HANDLE};
+    std::array<VkDeviceMemory, 2> overlay_vertex_memories_{VK_NULL_HANDLE, VK_NULL_HANDLE};
+    std::array<void*, 2>          overlay_vertex_mapped_{nullptr, nullptr};
+    std::array<std::vector<overlay_vertex>, 2> overlay_vertices_{};
+
+    // Boba modal bitmap card.
+    VkDescriptorSetLayout modal_desc_set_layout_ = VK_NULL_HANDLE;
+    VkDescriptorPool      modal_descriptor_pool_ = VK_NULL_HANDLE;
+    VkDescriptorSet       modal_descriptor_set_  = VK_NULL_HANDLE;
+    VkPipelineLayout      modal_pipeline_layout_ = VK_NULL_HANDLE;
+    VkPipeline            modal_pipeline_        = VK_NULL_HANDLE;
+    VkSampler             modal_sampler_         = VK_NULL_HANDLE;
+    VkImage               modal_image_           = VK_NULL_HANDLE;
+    VkDeviceMemory        modal_image_memory_    = VK_NULL_HANDLE;
+    VkImageView           modal_image_view_      = VK_NULL_HANDLE;
+    std::array<VkBuffer, 2>       modal_vertex_buffers_{VK_NULL_HANDLE, VK_NULL_HANDLE};
+    std::array<VkDeviceMemory, 2> modal_vertex_memories_{VK_NULL_HANDLE, VK_NULL_HANDLE};
+    std::array<void*, 2>          modal_vertex_mapped_{nullptr, nullptr};
+    std::array<std::array<modal_vertex, 6>, 2> modal_vertices_{};
+    std::array<std::uint32_t, 2>                modal_vertex_counts_{0, 0};
+    data_format::boba_modal_overlay             active_modal_{};
+    std::uint64_t                               modal_texture_id_{0};
+    std::uint32_t                               overlay_source_width_{0};
+    std::uint32_t                               overlay_source_height_{0};
+    bool                                        render_boba_overlays_{false};
 
     // Depth pipeline resources (owned)
     VkRenderPass          depth_render_pass_     = VK_NULL_HANDLE;

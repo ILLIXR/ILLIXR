@@ -9,6 +9,7 @@
 #    include <deque>
 #    include <media/NdkImageReader.h>
 #    include <media/NdkMediaCodec.h>
+#    include <map>
 #    include <mutex>
 #    include <queue>
 #    include <thread>
@@ -138,12 +139,9 @@ public:
     /**
      * @brief Acquire the latest decoded AHardwareBuffer and its frame number.
      *
-     * Returns the buffer and the server frame_number that was recorded by the
-     * drainer at the moment it released this output buffer to the AImageReader
-     * surface.  Both values come from the same drainer event so they are
-     * guaranteed to be consistent — there is no window where the drainer can
-     * update last_decoded_frame_number_ to the next frame between the buffer
-     * acquisition and the frame-number read.
+     * Returns the buffer and the server frame_number associated with the
+     * AImage's exact presentation timestamp. The drainer records the mapping
+     * before releasing each MediaCodec output to the AImageReader surface.
      *
      * The returned buffer is retained (AHardwareBuffer_acquire called).
      * The caller MUST call AHardwareBuffer_release() when finished.
@@ -159,7 +157,7 @@ public:
      * @return true if decoder is ready to decode.
      */
     [[nodiscard]] bool is_ready() const {
-        return initialized_.load();
+        return initialized_.load() && !codec_failed_.load();
     }
 
     /**
@@ -261,7 +259,7 @@ private:
         int64_t                               timestamp_us;
         bool                                  is_keyframe;
         std::chrono::steady_clock::time_point queue_time;
-        uint64_t                              frame_number; // ← add this
+        uint64_t                              frame_number;
     };
 
     // Internal helpers
@@ -289,6 +287,7 @@ private:
     // Lifecycle
     std::atomic<bool> running_{false};
     std::atomic<bool> initialized_{false};
+    std::atomic<bool> codec_failed_{false};
 
     // Input queue (encoded packets waiting to be fed to the codec)
     mutable std::mutex         input_mutex_;
@@ -334,12 +333,15 @@ private:
     mutable std::mutex                           pending_timestamps_mutex_;
     std::unordered_map<int64_t, timestamp_entry> pending_timestamps_;
 
-    // Written by the drainer with release ordering BEFORE calling
-    // releaseOutputBuffer, and read by acquire_latest_buffer() with acquire
-    // ordering AFTER AImageReader_acquireLatestImage returns.  This ordering
-    // guarantee ensures the frame number always corresponds to an image that
-    // is already available in the AImageReader — no mutex required.
+    // Latest decoded frame, retained for diagnostics only. Exact image/frame
+    // association uses released_frame_numbers_by_timestamp_ns_ below.
     std::atomic<uint64_t> last_decoded_frame_number_{0};
+
+    // MediaCodec PTS is supplied in microseconds; AImage exposes the matching
+    // timestamp in nanoseconds. Mapping by timestamp avoids pairing an acquired
+    // image with a newer frame number when the drainer advances concurrently.
+    std::mutex                  released_frame_numbers_mutex_;
+    std::map<int64_t, uint64_t> released_frame_numbers_by_timestamp_ns_;
 
     float last_decode_time_{0.f};
 

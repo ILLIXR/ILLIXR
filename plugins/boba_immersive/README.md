@@ -2,22 +2,18 @@
 
 `boba_immersive` adds physics-based Gaussian digital twin support to ILLIXR,
 using [Boba](https://jianxiapyh.github.io/Boba-project-page/) as the simulation
-and rendering backend. Boba remains upstream, while ILLIXR manages XR input,
-switchboard exchange, stereo-frame submission, and process lifecycle.
+and rendering backend. The Boba simulation and rendering code stays in the Boba
+repository; the ILLIXR plugins launch it, deliver headset/controller poses to
+it, and return its rendered stereo images to the headset.
 
-For the current Quest 3 MVP, ALVR supplies the Quest-side OpenXR client and the
-network pipeline that carries tracking/controller input to the PC and rendered
-frames back to the headset. ALVR's PC endpoint is a SteamVR driver, so the
-`boba_quest` profile uses SteamVR as its OpenXR runtime. Monado alone does not
-provide this Quest-to-PC bridge; an equivalent Monado deployment would require
-a separate streaming stack with a Quest client and a Monado-compatible PC
-endpoint. ILLIXR's existing Monado support is unchanged.
+Two Quest 3 paths are available:
 
-At runtime, `boba_immersive` launches the existing Boba Quest application as a
-child process, forwards Quest controller/view input from the ILLIXR switchboard,
-and publishes Boba's rendered output as `stereo_frame`. The
-`openxr_quest_controller` plugin consumes that frame and submits it through the
-SteamVR OpenXR runtime for delivery to the Quest over ALVR.
+- `boba_quest_native_server` uses the native ILLIXR Quest app and ILLIXR's
+  existing network backends. Meta OpenXR runs directly on the Quest. It does
+  not require ALVR or SteamVR.
+- `boba_quest` preserves the original ALVR/SteamVR path as a working baseline.
+  The desktop OpenXR plugin receives input and submits images through SteamVR,
+  while ALVR transports them between SteamVR and its Quest client.
 
 ## One-time Boba setup
 
@@ -63,6 +59,51 @@ export BOBA_IMMERSIVE_ROOT=/path/to/boba_immersive
 `BOBA_DEMO_LAUNCHER` remains available as a direct launcher override. No
 machine-specific path is compiled into the plugin.
 
-Steam, SteamVR, and ALVR are outside this setup script. The current MVP assumes
-the desktop streamer/runtime and matching Quest client are already installed,
-paired, and working before ILLIXR starts.
+## Install the native Quest app
+
+The first installation requires a Quest with developer mode enabled, connected
+and authorized once through USB. Activate the ILLIXR Conda environment so the
+host-side `protoc` compiler is available, then run from the source checkout:
+
+```bash
+conda activate illixr
+./scripts/install_quest_app.sh
+```
+
+The script builds the APK, installs it, launches `ILLIXRApp`, and prints the
+Quest's Wi-Fi address and the corresponding desktop option. Use `--no-build` to
+reinstall an existing APK, `--no-launch` to install without opening the app, or
+`--serial SERIAL` when multiple Android devices are connected. Run
+`./scripts/install_quest_app.sh --help` for Android SDK and JDK overrides.
+
+The installed development APK appears in the Quest's **Unknown Sources** app
+list. USB is not used by the runtime and may be disconnected after installation.
+
+## Run over Wi-Fi without ALVR or SteamVR
+
+Put the Quest and desktop on the same local network, open `ILLIXRApp` on an
+awake Quest, and pass its Wi-Fi address to the desktop process:
+
+```bash
+./main.opt.exe \
+  --yaml=profiles/boba_quest_native_server.yaml \
+  --quest-ip 192.168.x.x
+```
+
+Adjust the executable and profile paths for the selected build or install
+directory. The desktop sends a small configuration handshake to the Quest; the
+Quest learns the desktop address from that packet and connects back through the
+existing ILLIXR transport. No desktop address needs to be entered on the
+headset. The desktop waits up to 120 seconds for the app by default; change this
+with `--quest-connect-timeout SECONDS`.
+
+Allow UDP ports 9010 and 9003 and TCP port 9001 on the local firewall. The app
+must be open because a stopped Android application cannot be awakened over an
+ordinary LAN connection. The headset must also be awake for OpenXR to supply
+valid tracking and controller data.
+
+## ALVR/SteamVR baseline
+
+For the `boba_quest` profile, Steam, SteamVR, and ALVR are outside the setup
+script. Start the paired ALVR Quest client and SteamVR before launching ILLIXR.
+This path remains available for comparison and rollback.

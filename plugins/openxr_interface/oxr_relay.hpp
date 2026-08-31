@@ -5,12 +5,21 @@
 
 #define DOUBLE_INCLUDE
 #include "illixr/data_format/latency_data.hpp"
+#include "illixr/data_format/openxr_view_frame.hpp"
 #include "illixr/data_format/poses/combined_pose.hpp"
+#include "illixr/data_format/quest_controller.hpp"
+#include "illixr/data_format/serialization/openxr_view_frame.hpp"
+#include "illixr/data_format/serialization/quest_controller.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
 #undef DOUBLE_INCLUDE
 
 #include <openxr/openxr.h>
+
+#include <array>
+#include <atomic>
+#include <map>
+#include <mutex>
 
 #define OXR_CheckErrors(cmd, pfunc)                                                                                     \
     do {                                                                                                                \
@@ -45,6 +54,11 @@ public:
     /// Returns true and populates out_entry if found, false otherwise.
     /// Thread-safe.
     bool get_pose_history(uint64_t id, pose_history_entry& out_entry) const;
+
+    /** Publish a coherent Quest controller + stereo-view sample for Boba. */
+    void publish_boba_input(XrTime predicted_time, XrDuration predicted_period, XrBool32 should_render,
+                            XrViewStateFlags view_flags, const XrView views[2],
+                            const XrViewConfigurationView view_configs[2]);
 
 protected:
     skip_option _p_should_skip() override;
@@ -142,6 +156,21 @@ private:
      */
     void update_hand_interaction(XrTime predicted_time);
 
+    bool create_controller_actions();
+    bool suggest_controller_bindings();
+    bool sync_actions();
+    void refresh_controller_profiles();
+    bool query_controller_hand(std::size_t hand_index, XrTime sample_time,
+                               data_format::quest_hand_controller* hand);
+    bool query_controller_pose(XrAction action, XrSpace space, XrPath hand_path, XrTime sample_time,
+                               data_format::quest_controller_pose* pose);
+    bool query_controller_boolean(XrAction action, XrPath hand_path, data_format::quest_controller_button* button);
+    bool query_controller_float(XrAction action, XrPath hand_path, float threshold,
+                                data_format::quest_controller_button* button);
+    bool query_controller_axis(XrAction action, XrPath hand_path, data_format::quest_controller_axis2d* axis);
+    static void merge_controller_button(data_format::quest_controller_button* destination,
+                                        const data_format::quest_controller_button& source);
+
     /**
      * @brief Send the latest pose to the server.
      *
@@ -164,6 +193,8 @@ private:
      * the head pose, hand tracking data, and time conversion fields.
      */
     switchboard::network_writer<data_format::pose::combined_pose> combined_pose_writer_;
+    switchboard::network_writer<data_format::quest_controller_input> quest_controller_writer_;
+    switchboard::network_writer<data_format::openxr_view_frame>      openxr_view_writer_;
 
     /// Reader for network latency results published by network_latency_pong_rx.
     /// Used to populate smoothed_clock_offset_ns and smoothed_rtt_ns in
@@ -269,6 +300,21 @@ private:
      * Created in init_hand_interaction() once the action and session are ready.
      */
     XrSpace palm_pose_spaces_[2]{XR_NULL_HANDLE, XR_NULL_HANDLE};
+
+    // Quest Touch inputs share hand_interaction_action_set_ so the session has
+    // exactly one xrAttachSessionActionSets call.
+    XrAction controller_trigger_click_action_{XR_NULL_HANDLE};
+    XrAction controller_trigger_value_action_{XR_NULL_HANDLE};
+    XrAction controller_squeeze_value_action_{XR_NULL_HANDLE};
+    XrAction controller_primary_click_action_{XR_NULL_HANDLE};
+    XrAction controller_secondary_click_action_{XR_NULL_HANDLE};
+    XrAction controller_thumbstick_click_action_{XR_NULL_HANDLE};
+    XrAction controller_thumbstick_axis_action_{XR_NULL_HANDLE};
+    std::array<data_format::quest_controller_profile, 2> controller_profiles_{
+        data_format::quest_controller_profile::none, data_format::quest_controller_profile::none};
+    bool controller_actions_initialized_{false};
+    std::mutex actions_mutex_;
+    std::atomic<std::uint64_t> boba_input_sequence_{0};
 
     bool                                  initialized_{false};
     bool                                  xr_time_verified_{false};

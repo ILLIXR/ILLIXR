@@ -77,6 +77,15 @@ cudaError_t launch_bgra_texture_to_nv12_scaled(cudaTextureObject_t tex_obj, uint
 cudaError_t launch_bgra_stereo_to_nv12(cudaTextureObject_t left_tex, cudaTextureObject_t right_tex, uint8_t* dst_nv12,
                                        size_t dst_pitch, uint32_t dst_eye_width, uint32_t dst_height, uint32_t aligned_height,
                                        cudaStream_t stream);
+
+/// Convert two host-originated RGBA8 eye images, previously copied into pitched
+/// CUDA memory, into one side-by-side NV12 image. Source and destination sizes
+/// may differ; bilinear sampling performs the resize in the conversion pass.
+cudaError_t launch_rgba_stereo_linear_to_nv12(const uint8_t* left_rgba, size_t left_pitch, const uint8_t* right_rgba,
+                                              size_t right_pitch, uint32_t source_width, uint32_t source_height,
+                                              uint8_t* dst_nv12, size_t dst_pitch, uint32_t dst_eye_width,
+                                              uint32_t dst_height, uint32_t aligned_height, bool flip_y,
+                                              cudaStream_t stream);
 #endif // COMBINED_ENCODING
 
 cudaError_t launch_rg_depth_to_nv12_scaled(cudaTextureObject_t tex_obj, uint8_t* dst_nv12, size_t dst_pitch, uint32_t dst_width,
@@ -237,7 +246,17 @@ public:
     /// @param right_index  Index returned from import_vulkan_image for the right eye.
     /// @return Encoded bitstream data (HEVC) for the combined stereo frame.
     std::vector<uint8_t> encode_stereo(int left_index, int right_index);
+
+    /// Encode two CPU-accessible RGBA8 eye images as one side-by-side frame.
+    /// The images are copied to persistent CUDA buffers, resized/color-converted
+    /// on the GPU, and passed directly to NVENC.
+    std::vector<uint8_t> encode_rgba_stereo(const uint8_t* left_rgba, size_t left_pitch, const uint8_t* right_rgba,
+                                            size_t right_pitch, uint32_t source_width, uint32_t source_height,
+                                            bool flip_y);
 #endif // COMBINED_ENCODING
+
+    /// Force the next encoded picture to be an independently decodable keyframe.
+    void request_idr();
 
     /// Encode a Vulkan image directly (imports temporarily)
     /// @param vk_image Vulkan image info
@@ -283,6 +302,7 @@ private:
     void create_buffers();
     void get_sequence_headers();
     void send_startup_idrs(int count);
+    [[nodiscard]] uint32_t nvenc_struct_version(uint32_t compiled_version) const;
 
 #ifdef DUMP_FRAMES
     // Frame saving (debug)
@@ -302,6 +322,9 @@ private:
     /// GPU stereo blit: converts left and right eye textures into the combined NV12 buffer in
     /// one CUDA kernel launch.  width_ must equal the per-eye target width (half of the total).
     void convert_stereo_to_nv12_gpu(const cuda_imported_vulkan_image& left, const cuda_imported_vulkan_image& right);
+    void ensure_rgba_input_buffers(uint32_t source_width, uint32_t source_height);
+    void convert_rgba_stereo_to_nv12_gpu(const uint8_t* left_rgba, size_t left_pitch, const uint8_t* right_rgba,
+                                         size_t right_pitch, uint32_t source_width, uint32_t source_height, bool flip_y);
 #endif // COMBINED_ENCODING
 
     // Error checking
@@ -321,12 +344,21 @@ private:
     // CUDA buffers for encoding
     CUdeviceptr cuda_nv12_buffer_ = 0;
     size_t      cuda_nv12_pitch_  = 0;
+#ifdef COMBINED_ENCODING
+    CUdeviceptr cuda_left_rgba_buffer_  = 0;
+    CUdeviceptr cuda_right_rgba_buffer_ = 0;
+    size_t      cuda_left_rgba_pitch_   = 0;
+    size_t      cuda_right_rgba_pitch_  = 0;
+    uint32_t    rgba_source_width_      = 0;
+    uint32_t    rgba_source_height_     = 0;
+#endif
 
     // NVENC state
     void*                       encoder_ = nullptr;
     NV_ENCODE_API_FUNCTION_LIST nvenc_{};
     NV_ENC_REGISTERED_PTR       registered_nv12_ = nullptr;
     NV_ENC_OUTPUT_PTR           output_buffer_   = nullptr;
+    uint32_t                    nvenc_api_version_{NVENCAPI_VERSION};
 
     // Encoder parameters
     uint32_t width_;

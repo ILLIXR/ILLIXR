@@ -9,15 +9,20 @@ else()
                 plugin.hpp
                 ${CMAKE_SOURCE_DIR}/include/illixr/data_format/openxr_view_frame.hpp
                 ${CMAKE_SOURCE_DIR}/include/illixr/data_format/quest_controller.hpp
+                ${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization/openxr_view_frame.hpp
+                ${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization/quest_controller.hpp
                 ${CMAKE_SOURCE_DIR}/include/illixr/data_format/stereo_frame.hpp
                 ${CMAKE_SOURCE_DIR}/include/illixr/plugin.hpp
                 ${CMAKE_SOURCE_DIR}/include/illixr/relative_clock.hpp
                 ${CMAKE_SOURCE_DIR}/include/illixr/stoplight.hpp
                 ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
+                ${CMAKE_SOURCE_DIR}/utils/serialization/openxr_view_frame.cpp
+                ${CMAKE_SOURCE_DIR}/utils/serialization/quest_controller.cpp
     )
 
     target_link_libraries(${PLUGIN_NAME} PRIVATE
                           Eigen3::Eigen
+                          Boost::serialization
                           Threads::Threads
                           spdlog::spdlog
     )

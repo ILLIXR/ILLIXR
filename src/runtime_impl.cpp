@@ -200,8 +200,10 @@ public:
             phonebook_.lookup_impl<switchboard>()->stop();
             // After this point, Switchboard's internal thread-workers which power synchronous callbacks are stopped and joined.
 
-            for (const std::shared_ptr<plugin>& plugin : plugins_) {
-                plugin->stop();
+            // Stop consumers before the services they depend on. In particular,
+            // network producers must finish before their backend sockets close.
+            for (auto plugin = plugins_.rbegin(); plugin != plugins_.rend(); ++plugin) {
+                (*plugin)->stop();
                 // Each plugin gets joined in its stop
             }
 
@@ -214,6 +216,10 @@ public:
         if (!phonebook_.lookup_impl<stoplight>()->check_shutdown_complete()) {
             stop();
         }
+        // The base runtime also retains the switchboard. Release that reference
+        // now so phonebook-owned topics are destroyed before plugin libraries
+        // (which supplied some inline queue code) are unloaded.
+        switchboard_.reset();
         // This will be re-enabled in #225
         // assert(errno == 0 && "errno was set during run. Maybe spurious?");
         /*

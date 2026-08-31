@@ -8,6 +8,9 @@
 #include "illixr/plugin.hpp"
 #include "illixr/switchboard.hpp"
 
+#include <mutex>
+#include <thread>
+
 namespace ILLIXR {
 
 class MY_EXPORT_API tcp_network_backend
@@ -15,6 +18,7 @@ class MY_EXPORT_API tcp_network_backend
     , public network::tcp_backend {
 public:
     explicit tcp_network_backend(const std::string& name_, phonebook* pb_);
+    ~tcp_network_backend() override;
 #ifdef __ANDROID__
     void start() override;
 #else
@@ -27,9 +31,6 @@ public:
     void topic_send(std::string topic_name, std::string&& message) override;
     void topic_receive(const std::string& topic_name, std::vector<char>& message);
     void stop() override;
-#ifdef __ANDROID__
-    ~tcp_network_backend() override;
-#endif
     network::topic_config::TransportMethod transport_method() const override {
         return network::topic_config::TransportMethod::TCP;
     }
@@ -45,12 +46,14 @@ private:
     std::atomic<bool> ready_ = false;
 #endif
     network::TCPSocket* peer_socket_ = nullptr;
+    std::thread         io_thread_;
+    std::mutex          send_mutex_;
 
     std::string server_ip_;
-    int         server_port_;
+    int         server_port_{9001};
     std::string client_ip_;
-    int         client_port_;
-    int         is_client_;
+    int         client_port_{0};
+    int         is_client_{0};
 
     std::vector<std::string>                               networked_topics_;
     std::unordered_map<std::string, network::topic_config> networked_topics_configs_;

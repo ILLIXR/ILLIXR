@@ -172,6 +172,16 @@ public:
 #endif
     }
 
+    /// Interrupt a blocking read without destroying the socket object out from
+    /// under the reader thread.
+    void socket_shutdown() const noexcept {
+#if defined(_WIN32) || defined(_WIN64)
+        shutdown(fd_, SD_BOTH);
+#else
+        shutdown(fd_, SHUT_RDWR);
+#endif
+    }
+
     /* accessors */
     [[maybe_unused]] [[nodiscard]] std::string local_address() const {
         sockaddr_in local_address;

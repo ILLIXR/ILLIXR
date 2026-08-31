@@ -3,6 +3,8 @@
 #    include "illixr.hpp"
 #    ifdef __ANDROID__
 #        include <EGL/egl.h>
+#        include <condition_variable>
+#        include <mutex>
 #        include <thread>
 #        include <vector>
 #    else
@@ -49,9 +51,36 @@ static void sigint_handler([[maybe_unused]] int sig) {
 using namespace ILLIXR;
 
 #    ifdef __ANDROID__
+namespace {
+std::mutex              quest_config_mutex;
+std::condition_variable quest_config_cv;
+bool                    quest_config_ready        = false;
+bool                    android_destroy_requested = false;
+} // namespace
+
 extern "C" {
 // called from Java after permission is granted
 JNIEXPORT void JNICALL Java_com_example_ILLIXR_ILLIXRNativeActivity_nativeOnPermissionGranted(JNIEnv* env, jobject activity) { }
+
+JNIEXPORT void JNICALL Java_com_example_ILLIXR_ILLIXRNativeActivity_nativeConfigure(JNIEnv* env, jobject activity,
+                                                                                     jstring server_ip) {
+    (void) activity;
+    if (server_ip == nullptr) {
+        return;
+    }
+    const char* value = env->GetStringUTFChars(server_ip, nullptr);
+    if (value != nullptr) {
+        if (value[0] != '\0') {
+            setenv("ILLIXR_SERVER_IP", value, true);
+            {
+                const std::lock_guard<std::mutex> lock{quest_config_mutex};
+                quest_config_ready = true;
+            }
+            quest_config_cv.notify_all();
+        }
+        env->ReleaseStringUTFChars(server_ip, value);
+    }
+}
 }
 
 /// Holds the ILLIXR runtime thread so it can be joined from android_main() once shutdown is
@@ -80,12 +109,15 @@ int main(int argc, const char* argv[]) {
         setenv("ILLIXR_RUN_DURATION", "1000000", true);
         setenv("ILLIXR_ENABLE_PRE_SLEEP", "False", true);
         setenv("ILLIXR_ENABLE_PRE_SLEEP", "False", true);
-        setenv("ILLIXR_TCP_CLIENT_IP", "192.168.8.140", true);
-        setenv("ILLIXR_TCP_SERVER_IP", "192.168.8.158", true);
-        setenv("ILLIXR_TCP_CLIENT_PORT", "9000", true);
+        // ILLIXR_SERVER_IP is supplied either through the legacy Android intent
+        // extra or through the LAN configuration handshake. The runtime thread
+        // waits below until one of those paths provides the desktop address.
         setenv("ILLIXR_UDP_CLIENT_PORT", "9002", true);
         setenv("ILLIXR_TCP_SERVER_PORT", "9001", true);
         setenv("ILLIXR_UDP_SERVER_PORT", "9003", true);
+        setenv("ILLIXR_UDP_PACKET_SIZE", "1400", true);
+        setenv("ILLIXR_UDP_SOCKET_BUFFER_BYTES", "4194304", true);
+        setenv("ILLIXR_UDP_DSCP", "true", true);
         setenv("ILLIXR_IS_CLIENT", "1", true);
         setenv("ILLIXR_USE_DEPTH_IMAGES", "0", true);
         setenv("ILLIXR_USE_MOTION_VECTOR_IMAGES", "0", true);
@@ -103,7 +135,9 @@ int main(int argc, const char* argv[]) {
         "enable_offload", "")("enable_alignment", "")("enable_verbose_errors", "")("enable_pre_sleep", "")(
         "h,help", "Produce help message")("realsense_cam", "", cxxopts::value<std::string>()->default_value("auto"))(
         "p,plugins", "The plugins to use",
-        cxxopts::value<std::vector<std::string>>())("y,yaml", "Yaml config file", cxxopts::value<std::string>())("openxr", "");
+        cxxopts::value<std::vector<std::string>>())("y,yaml", "Yaml config file", cxxopts::value<std::string>())(
+        "openxr", "")("quest-ip", "Quest IP address for native ILLIXR wireless setup", cxxopts::value<std::string>())(
+        "quest-connect-timeout", "Seconds to wait for ILLIXRApp", cxxopts::value<int>()->default_value("120"));
     auto result = options.parse(argc, argv);
     if (result.count("help")) {
         std::cout << options.help() << std::endl;
@@ -119,11 +153,28 @@ int main(int argc, const char* argv[]) {
         /// Shutting down method 1: Ctrl+C
         std::signal(SIGINT, sigint_handler);
 #    ifdef __ANDROID__
-        /// Run the ILLIXR runtime on its own thread and return control to the caller immediately;
-        /// it is joined later, from android_main(), once APP_CMD_DESTROY has been processed.
-        runtime_thread_ = std::thread(ILLIXR::run, plugins, app);
+        /// Run the ILLIXR runtime on its own thread and return control to the caller immediately.
+        /// Keep the Android looper responsive while the app waits for the desktop's
+        /// wireless configuration packet.
+        runtime_thread_ = std::thread([plugins, app]() {
+            {
+                std::unique_lock<std::mutex> lock{quest_config_mutex};
+                quest_config_cv.wait(lock, []() {
+                    return quest_config_ready || android_destroy_requested;
+                });
+                if (android_destroy_requested) {
+                    return;
+                }
+            }
+            ILLIXR::run(plugins, app);
+        });
     } else if (cmd == APP_CMD_DESTROY) {
         /// Shutting down method 2: the activity is being destroyed
+        {
+            const std::lock_guard<std::mutex> lock{quest_config_mutex};
+            android_destroy_requested = true;
+        }
+        quest_config_cv.notify_all();
         if (runtime_) {
             runtime_->stop();
         }

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "illixr/data_format/stereo_presentation.hpp"
 #include "illixr/switchboard.hpp"
 
 #include <array>
@@ -18,12 +19,6 @@ enum class stereo_pixel_format : std::uint8_t {
 enum class stereo_image_origin : std::uint8_t {
     upper_left,
     lower_left,
-};
-
-enum class stereo_presentation_mode : std::uint8_t {
-    stereo_fullscreen = 0,
-    mono_panel        = 1,
-    head_locked_panel = 2,
 };
 
 /** A byte range containing one tightly packed image in a shared-memory file. */

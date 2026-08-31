@@ -37,6 +37,7 @@
 #    include <mutex>
 #    include <openxr/openxr.h>
 #    include <thread>
+#    include <unordered_map>
 #    ifdef __ANDROID__
 #        include "android/stereo_surface_decoder.hpp"
 #        include "illixr/quest3_params.hpp"
@@ -175,7 +176,22 @@ private:
         float       near_z{0.f};
         float       far_z{0.f};
         double      encode_time{0.};
-        bool        consumed{false};
+        data_format::stereo_presentation_mode presentation_mode{
+            data_format::stereo_presentation_mode::stereo_fullscreen};
+        float                           content_aspect_ratio{0.0F};
+        data_format::boba_frame_overlay boba_overlay{};
+        data_format::boba_modal_overlay boba_modal{};
+        std::array<float, 2>             fov_left{0.0F, 0.0F};
+        std::array<float, 2>             fov_right{0.0F, 0.0F};
+        std::array<float, 2>             fov_up{0.0F, 0.0F};
+        std::array<float, 2>             fov_down{0.0F, 0.0F};
+        bool                             consumed{false};
+    };
+
+    struct modal_texture_cache_entry {
+        std::uint32_t                                     width{0};
+        std::uint32_t                                     height{0};
+        std::shared_ptr<const std::vector<std::uint8_t>> rgba;
     };
 
     /**
@@ -184,6 +200,9 @@ private:
      *        to the hardware decoders, and updates frame_meta_map_.
      */
     void receiver_loop();
+
+    /** Drain reliable modal-texture updates and cache them by content ID. */
+    void drain_modal_texture_updates();
 
     /**
      * @brief Log Android decode timing statistics.
@@ -279,6 +298,7 @@ private:
     std::shared_ptr<vulkan::display_provider> display_provider_;
 #endif
     switchboard::buffered_reader<data_format::compressed_frame> frames_reader_;
+    switchboard::buffered_reader<data_format::boba_modal_texture> modal_texture_reader_;
     switchboard::reader<data_format::network_latency_result>    network_latency_reader_;
 
 #ifndef USING_OPENXR
@@ -318,6 +338,7 @@ private:
     // the same time, so the map stays bounded even if the decoder skips frames.
     std::map<uint64_t, frame_meta> frame_meta_map_;
     std::mutex                     frame_meta_map_mutex_;
+    std::unordered_map<std::uint64_t, modal_texture_cache_entry> modal_texture_cache_;
 
     android_app* app_;
 
@@ -374,13 +395,6 @@ private:
     uint16_t                                       fps_counter_    = 0;
     std::chrono::high_resolution_clock::time_point fps_start_time_ = std::chrono::high_resolution_clock::now();
     std::map<std::string, uint32_t>                metrics_{};
-#ifdef USING_OPENXR
-    std::array<float, 2> cached_fov_left_  = {0.0f, 0.0f};
-    std::array<float, 2> cached_fov_right_ = {0.0f, 0.0f};
-    std::array<float, 2> cached_fov_up_    = {0.0f, 0.0f};
-    std::array<float, 2> cached_fov_down_  = {0.0f, 0.0f};
-    bool                 fov_cached_       = false;
-#endif
     uint64_t last_submitted_frame_{0};
 };
 

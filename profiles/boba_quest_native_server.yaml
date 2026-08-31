@@ -1,0 +1,21 @@
+# This file was auto generated, take caution if manually editing.
+plugins: tcp_network_backend,udp_network_backend,network_latency.rx,boba_immersive,boba_streaming_server
+env_vars:
+  ENABLE_OFFLOAD: false
+  ENABLE_ALIGNMENT: false
+  ENABLE_VERBOSE_ERRORS: false
+  ENABLE_PRE_SLEEP: false
+  ILLIXR_SERVER_IP: 0.0.0.0
+  ILLIXR_TCP_SERVER_PORT: 9001
+  ILLIXR_UDP_SERVER_PORT: 9003
+  ILLIXR_UDP_CLIENT_PORT: 9002
+  ILLIXR_UDP_PACKET_SIZE: 1400
+  ILLIXR_UDP_SOCKET_BUFFER_BYTES: 4194304
+  ILLIXR_UDP_DSCP: true
+  ILLIXR_IS_CLIENT: 0
+  ILLIXR_DISPLAY_MODE: none
+  BOBA_STREAM_BITRATE: 30000000
+  BOBA_STREAM_FRAMERATE: 72
+  BOBA_NATIVE_QUEST_STREAM: true
+  BOBA_IMMERSIVE_LOG_LEVEL: info
+  BOBA_STREAMING_SERVER_LOG_LEVEL: info
