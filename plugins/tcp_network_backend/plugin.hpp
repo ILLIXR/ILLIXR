@@ -31,6 +31,7 @@ public:
     void topic_send(std::string topic_name, std::string&& message) override;
     void topic_receive(const std::string& topic_name, std::vector<char>& message);
     void stop() override;
+
     network::topic_config::TransportMethod transport_method() const override {
         return network::topic_config::TransportMethod::TCP;
     }

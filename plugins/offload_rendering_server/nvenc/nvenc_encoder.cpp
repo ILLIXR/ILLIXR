@@ -180,7 +180,7 @@ void nvenc_encoder::init_nvenc() {
     }
 
     using get_max_supported_version_fn = NVENCSTATUS(NVENCAPI*)(uint32_t*);
-    auto get_max_supported_version = reinterpret_cast<get_max_supported_version_fn>(
+    auto get_max_supported_version     = reinterpret_cast<get_max_supported_version_fn>(
 #ifdef _WIN32
         GetProcAddress(nvenc_lib_, "NvEncodeAPIGetMaxSupportedVersion")
 #else
@@ -192,10 +192,10 @@ void nvenc_encoder::init_nvenc() {
         check_nvenc(get_max_supported_version(&driver_version), "Query maximum NVENC API version failed");
         const uint32_t compiled_version = (NVENCAPI_MAJOR_VERSION << 4U) | NVENCAPI_MINOR_VERSION;
         const uint32_t selected_version = std::min(driver_version, compiled_version);
-        nvenc_api_version_ = (selected_version >> 4U) | ((selected_version & 0xFU) << 24U);
+        nvenc_api_version_              = (selected_version >> 4U) | ((selected_version & 0xFU) << 24U);
         spdlog::get("illixr")->info("nvenc_encoder: NVENC API header {}.{}, driver {}.{}, selected {}.{}",
-                                    NVENCAPI_MAJOR_VERSION, NVENCAPI_MINOR_VERSION, driver_version >> 4U,
-                                    driver_version & 0xFU, selected_version >> 4U, selected_version & 0xFU);
+                                    NVENCAPI_MAJOR_VERSION, NVENCAPI_MINOR_VERSION, driver_version >> 4U, driver_version & 0xFU,
+                                    selected_version >> 4U, selected_version & 0xFU);
     }
 
     memset(&nvenc_, 0, sizeof(nvenc_));
@@ -312,11 +312,10 @@ void nvenc_encoder::init_encoder() {
         // Boba's RGBA source is converted with a full-range BT.709 matrix. The
         // sequence header must describe that exact conversion or MediaCodec may
         // assume limited range and produce a bright, clipped image.
-        encode_config.encodeCodecConfig.av1Config.colorPrimaries = NV_ENC_VUI_COLOR_PRIMARIES_BT709;
-        encode_config.encodeCodecConfig.av1Config.transferCharacteristics =
-            NV_ENC_VUI_TRANSFER_CHARACTERISTIC_SRGB;
-        encode_config.encodeCodecConfig.av1Config.matrixCoefficients = NV_ENC_VUI_MATRIX_COEFFS_BT709;
-        encode_config.encodeCodecConfig.av1Config.colorRange         = 1;
+        encode_config.encodeCodecConfig.av1Config.colorPrimaries          = NV_ENC_VUI_COLOR_PRIMARIES_BT709;
+        encode_config.encodeCodecConfig.av1Config.transferCharacteristics = NV_ENC_VUI_TRANSFER_CHARACTERISTIC_SRGB;
+        encode_config.encodeCodecConfig.av1Config.matrixCoefficients      = NV_ENC_VUI_MATRIX_COEFFS_BT709;
+        encode_config.encodeCodecConfig.av1Config.colorRange              = 1;
         // Single reference frame: sufficient for low-latency VR streaming and
         // reduces per-frame motion search work compared to 2 reference frames.
         encode_config.encodeCodecConfig.av1Config.maxNumRefFramesInDPB = 1;
@@ -1267,12 +1266,12 @@ void nvenc_encoder::ensure_rgba_input_buffers(uint32_t source_width, uint32_t so
         cuda_right_rgba_buffer_ = 0;
     }
 
-    check_cuda(cuMemAllocPitch(&cuda_left_rgba_buffer_, &cuda_left_rgba_pitch_,
-                               static_cast<size_t>(source_width) * 4, source_height, 16),
+    check_cuda(cuMemAllocPitch(&cuda_left_rgba_buffer_, &cuda_left_rgba_pitch_, static_cast<size_t>(source_width) * 4,
+                               source_height, 16),
                "Allocate left RGBA input buffer failed");
     try {
-        check_cuda(cuMemAllocPitch(&cuda_right_rgba_buffer_, &cuda_right_rgba_pitch_,
-                                   static_cast<size_t>(source_width) * 4, source_height, 16),
+        check_cuda(cuMemAllocPitch(&cuda_right_rgba_buffer_, &cuda_right_rgba_pitch_, static_cast<size_t>(source_width) * 4,
+                                   source_height, 16),
                    "Allocate right RGBA input buffer failed");
     } catch (...) {
         cuMemFree(cuda_left_rgba_buffer_);
@@ -1281,13 +1280,13 @@ void nvenc_encoder::ensure_rgba_input_buffers(uint32_t source_width, uint32_t so
     }
     rgba_source_width_  = source_width;
     rgba_source_height_ = source_height;
-    spdlog::get("illixr")->info("nvenc_encoder: allocated persistent RGBA input buffers for {}x{} eye images",
-                                 source_width, source_height);
+    spdlog::get("illixr")->info("nvenc_encoder: allocated persistent RGBA input buffers for {}x{} eye images", source_width,
+                                source_height);
 }
 
-void nvenc_encoder::convert_rgba_stereo_to_nv12_gpu(const uint8_t* left_rgba, size_t left_pitch,
-                                                    const uint8_t* right_rgba, size_t right_pitch,
-                                                    uint32_t source_width, uint32_t source_height, bool flip_y) {
+void nvenc_encoder::convert_rgba_stereo_to_nv12_gpu(const uint8_t* left_rgba, size_t left_pitch, const uint8_t* right_rgba,
+                                                    size_t right_pitch, uint32_t source_width, uint32_t source_height,
+                                                    bool flip_y) {
     if (left_rgba == nullptr || right_rgba == nullptr || left_pitch < static_cast<size_t>(source_width) * 4 ||
         right_pitch < static_cast<size_t>(source_width) * 4) {
         throw std::invalid_argument("Invalid RGBA stereo input pointer or row pitch");
@@ -1307,15 +1306,15 @@ void nvenc_encoder::convert_rgba_stereo_to_nv12_gpu(const uint8_t* left_rgba, si
     const size_t uv_plane_size = cuda_nv12_pitch_ * (aligned_height_ / 2);
     check_cuda_runtime(cudaMemsetAsync(reinterpret_cast<void*>(cuda_nv12_buffer_), 16, y_plane_size, cu_stream_),
                        "Clear RGBA stereo Y plane failed");
-    check_cuda_runtime(cudaMemsetAsync(reinterpret_cast<void*>(cuda_nv12_buffer_ + y_plane_size), 128, uv_plane_size,
-                                       cu_stream_),
-                       "Clear RGBA stereo UV plane failed");
+    check_cuda_runtime(
+        cudaMemsetAsync(reinterpret_cast<void*>(cuda_nv12_buffer_ + y_plane_size), 128, uv_plane_size, cu_stream_),
+        "Clear RGBA stereo UV plane failed");
 
-    const cudaError_t conversion = launch_rgba_stereo_linear_to_nv12(
-        reinterpret_cast<const uint8_t*>(cuda_left_rgba_buffer_), cuda_left_rgba_pitch_,
-        reinterpret_cast<const uint8_t*>(cuda_right_rgba_buffer_), cuda_right_rgba_pitch_, source_width, source_height,
-        reinterpret_cast<uint8_t*>(cuda_nv12_buffer_), cuda_nv12_pitch_, width_ / 2, height_, aligned_height_, flip_y,
-        cu_stream_);
+    const cudaError_t conversion =
+        launch_rgba_stereo_linear_to_nv12(reinterpret_cast<const uint8_t*>(cuda_left_rgba_buffer_), cuda_left_rgba_pitch_,
+                                          reinterpret_cast<const uint8_t*>(cuda_right_rgba_buffer_), cuda_right_rgba_pitch_,
+                                          source_width, source_height, reinterpret_cast<uint8_t*>(cuda_nv12_buffer_),
+                                          cuda_nv12_pitch_, width_ / 2, height_, aligned_height_, flip_y, cu_stream_);
     check_cuda_runtime(conversion, "RGBA stereo conversion kernel failed");
     check_cuda_runtime(cudaStreamSynchronize(cu_stream_), "RGBA stereo conversion synchronization failed");
 }
@@ -1403,9 +1402,9 @@ std::vector<uint8_t> nvenc_encoder::encode_stereo(int left_index, int right_inde
     return encoded_data;
 }
 
-std::vector<uint8_t> nvenc_encoder::encode_rgba_stereo(const uint8_t* left_rgba, size_t left_pitch,
-                                                       const uint8_t* right_rgba, size_t right_pitch,
-                                                       uint32_t source_width, uint32_t source_height, bool flip_y) {
+std::vector<uint8_t> nvenc_encoder::encode_rgba_stereo(const uint8_t* left_rgba, size_t left_pitch, const uint8_t* right_rgba,
+                                                       size_t right_pitch, uint32_t source_width, uint32_t source_height,
+                                                       bool flip_y) {
     std::lock_guard<std::mutex> lock(encode_mutex_);
     if (!initialized_.load()) {
         throw std::runtime_error("Encoder not initialized");
@@ -1416,8 +1415,7 @@ std::vector<uint8_t> nvenc_encoder::encode_rgba_stereo(const uint8_t* left_rgba,
     NV_ENC_MAP_INPUT_RESOURCE map_resource{};
     map_resource.version            = nvenc_struct_version(NV_ENC_MAP_INPUT_RESOURCE_VER);
     map_resource.registeredResource = registered_nv12_;
-    check_nvenc(nvenc_.nvEncMapInputResource(encoder_, &map_resource),
-                "Map input resource failed (encode_rgba_stereo)");
+    check_nvenc(nvenc_.nvEncMapInputResource(encoder_, &map_resource), "Map input resource failed (encode_rgba_stereo)");
 
     NV_ENC_PIC_PARAMS pic_params{};
     pic_params.version         = nvenc_struct_version(NV_ENC_PIC_PARAMS_VER);
@@ -1448,8 +1446,7 @@ std::vector<uint8_t> nvenc_encoder::encode_rgba_stereo(const uint8_t* left_rgba,
     bitstream.outputBitstream = output_buffer_;
     check_nvenc(nvenc_.nvEncLockBitstream(encoder_, &bitstream), "Lock bitstream failed (encode_rgba_stereo)");
 
-    const bool is_keyframe =
-        bitstream.pictureType == NV_ENC_PIC_TYPE_IDR || bitstream.pictureType == NV_ENC_PIC_TYPE_I;
+    const bool is_keyframe   = bitstream.pictureType == NV_ENC_PIC_TYPE_IDR || bitstream.pictureType == NV_ENC_PIC_TYPE_I;
     last_frame_was_keyframe_ = is_keyframe;
 #    ifdef USE_AV1
     const bool prepend_headers = codec_ != encoder_codec::av1 && is_keyframe && !vps_sps_pps_.empty();
@@ -1462,8 +1459,7 @@ std::vector<uint8_t> nvenc_encoder::encode_rgba_stereo(const uint8_t* left_rgba,
     }
     const auto* bytes = static_cast<const uint8_t*>(bitstream.bitstreamBufferPtr);
     encoded.insert(encoded.end(), bytes, bytes + bitstream.bitstreamSizeInBytes);
-    check_nvenc(nvenc_.nvEncUnlockBitstream(encoder_, output_buffer_),
-                "Unlock bitstream failed (encode_rgba_stereo)");
+    check_nvenc(nvenc_.nvEncUnlockBitstream(encoder_, output_buffer_), "Unlock bitstream failed (encode_rgba_stereo)");
     return encoded;
 }
 

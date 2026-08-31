@@ -37,8 +37,7 @@ static void save_sized_vector(Archive& ar, const std::vector<T>& values) {
 }
 
 template<class Archive, typename T>
-static void load_sized_vector(Archive& ar, std::vector<T>& values, std::uint64_t maximum_size,
-                              const char* field_name) {
+static void load_sized_vector(Archive& ar, std::vector<T>& values, std::uint64_t maximum_size, const char* field_name) {
     std::uint64_t size = 0;
     ar >> size;
     if (size > maximum_size || size > static_cast<std::uint64_t>(std::numeric_limits<std::size_t>::max())) {
@@ -75,8 +74,7 @@ static void save_boba_metadata(Archive& ar, const data_format::boba_frame_overla
 }
 
 template<class Archive>
-static void load_boba_metadata(Archive& ar, data_format::boba_frame_overlay& overlay,
-                               data_format::boba_modal_overlay& modal) {
+static void load_boba_metadata(Archive& ar, data_format::boba_frame_overlay& overlay, data_format::boba_modal_overlay& modal) {
     ar >> overlay.source_width;
     ar >> overlay.source_height;
     load_sized_vector(ar, overlay.left_commands, kMaxBobaOverlayFloats, "left Boba overlay");
@@ -385,14 +383,12 @@ void load(Archive& ar, ILLIXR::data_format::boba_modal_texture& texture, const u
     ar >> texture.texture_id;
     ar >> texture.width;
     ar >> texture.height;
-    ILLIXR::detail::load_sized_vector(ar, texture.rgba, ILLIXR::detail::kMaxBobaModalTextureBytes,
-                                     "Boba modal texture");
+    ILLIXR::detail::load_sized_vector(ar, texture.rgba, ILLIXR::detail::kMaxBobaModalTextureBytes, "Boba modal texture");
     ar >> texture.magic;
 
     const std::uint64_t required_bytes = static_cast<std::uint64_t>(texture.width) * texture.height * 4ULL;
-    if (texture.magic != ILLIXR::data_format::boba_modal_texture::wire_magic || texture.texture_id == 0 ||
-        texture.width == 0 || texture.height == 0 || texture.width > 8192 || texture.height > 8192 ||
-        required_bytes != texture.rgba.size()) {
+    if (texture.magic != ILLIXR::data_format::boba_modal_texture::wire_magic || texture.texture_id == 0 || texture.width == 0 ||
+        texture.height == 0 || texture.width > 8192 || texture.height > 8192 || required_bytes != texture.rgba.size()) {
         throw std::runtime_error("boba_modal_texture: invalid payload");
     }
 }

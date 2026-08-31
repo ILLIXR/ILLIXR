@@ -81,9 +81,9 @@ struct boba_modal_overlay {
     bool left_valid{false};
     bool right_valid{false};
 
-    std::uint64_t       texture_id{0};
-    std::uint32_t       width{0};
-    std::uint32_t       height{0};
+    std::uint64_t        texture_id{0};
+    std::uint32_t        width{0};
+    std::uint32_t        height{0};
     std::array<float, 8> left_quad_pixels{};
     std::array<float, 8> right_quad_pixels{};
     float                width_m{0.0F};
@@ -137,8 +137,8 @@ struct compressed_frame : public switchboard::event {
     int32_t left_depth_nalu_size{0};
     int32_t right_depth_nalu_size{0};
 
-    bool use_depth{false};
-    bool use_motion_vectors{false};
+    bool                     use_depth{false};
+    bool                     use_motion_vectors{false};
     stereo_presentation_mode presentation_mode{stereo_presentation_mode::stereo_fullscreen};
     float                    content_aspect_ratio{0.0F};
     boba_frame_overlay       boba_overlay{};
@@ -385,12 +385,12 @@ struct [[maybe_unused]] dual_frames : public switchboard::event {
     // ID of the combined_pose that was used to render this frame on the server.
     // Used by oxr_interface to look up the original headset pose measurement
     // for latency and accuracy logging.
-    uint64_t pose_id{0};
-    double   encode_time{0.};
-    stereo_presentation_mode presentation_mode{stereo_presentation_mode::stereo_fullscreen};
-    float                    content_aspect_ratio{0.0F};
-    boba_frame_overlay       boba_overlay{};
-    boba_modal_overlay       boba_modal{};
+    uint64_t                                         pose_id{0};
+    double                                           encode_time{0.};
+    stereo_presentation_mode                         presentation_mode{stereo_presentation_mode::stereo_fullscreen};
+    float                                            content_aspect_ratio{0.0F};
+    boba_frame_overlay                               boba_overlay{};
+    boba_modal_overlay                               boba_modal{};
     std::shared_ptr<const std::vector<std::uint8_t>> boba_modal_rgba{};
     // Projection clip planes forwarded from the server's compressed_frame.
     // Required by XrCompositionLayerDepthInfoKHR and

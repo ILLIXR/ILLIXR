@@ -55,8 +55,7 @@ tcp_network_backend::tcp_network_backend(const std::string& name_, phonebook* pb
                 socket->socket_connect(server_ip_, server_port_);
                 socket->enable_no_delay();
                 peer_socket_ = socket;
-                spdlog::get("illixr")->info("[tcp_network_backend] Connected; TCP_NODELAY={}",
-                                             socket->is_no_delay());
+                spdlog::get("illixr")->info("[tcp_network_backend] Connected; TCP_NODELAY={}", socket->is_no_delay());
                 break;
             } catch (const std::exception& error) {
                 delete socket;
@@ -265,6 +264,6 @@ extern "C" MY_EXPORT_API plugin* this_plugin_factory(phonebook* pb) {
     // The runtime owns the plugin returned by this factory. Register a non-owning
     // service alias so the phonebook does not try to delete the same object again.
     pb->register_impl<network::tcp_backend>(
-        std::shared_ptr<network::tcp_backend>(static_cast<network::tcp_backend*>(obj), [](network::tcp_backend*) {}));
+        std::shared_ptr<network::tcp_backend>(static_cast<network::tcp_backend*>(obj), [](network::tcp_backend*) { }));
     return obj;
 }

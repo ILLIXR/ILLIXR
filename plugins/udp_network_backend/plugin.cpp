@@ -289,8 +289,8 @@ void udp_network_backend::send_packet(std::uint16_t stream_id, std::string&& pac
         return;
     }
 
-    const std::size_t   shard_payload_size = packet_size_ - kShardPrefixSize;
-    const std::size_t   shard_count_size   = (packet.size() + shard_payload_size - 1) / shard_payload_size;
+    const std::size_t shard_payload_size = packet_size_ - kShardPrefixSize;
+    const std::size_t shard_count_size   = (packet.size() + shard_payload_size - 1) / shard_payload_size;
     if (shard_count_size == 0 || shard_count_size > std::numeric_limits<std::uint32_t>::max()) {
         spdlog::get("illixr")->warn("[udp_network_backend] Message is too large to shard ({} bytes)", packet.size());
         return;
@@ -317,7 +317,7 @@ void udp_network_backend::send_packet(std::uint16_t stream_id, std::string&& pac
         std::lock_guard<std::mutex> lock(send_mutex_);
         if (!peer_socket_->write_data(shard)) {
             spdlog::get("illixr")->warn("[udp_network_backend] Failed to send message {} shard {}/{}", message_id,
-                                         shard_index + 1, shard_count);
+                                        shard_index + 1, shard_count);
             return;
         }
     }
@@ -331,8 +331,8 @@ void udp_network_backend::receive_packet(std::string&& packet) {
         return;
     }
 
-    const std::uint16_t stream_id   = load_wire_value<std::uint16_t>(packet.data() + sizeof(std::uint16_t));
-    const std::uint32_t message_id  = load_wire_value<std::uint32_t>(packet.data() + 2 * sizeof(std::uint16_t));
+    const std::uint16_t stream_id  = load_wire_value<std::uint16_t>(packet.data() + sizeof(std::uint16_t));
+    const std::uint32_t message_id = load_wire_value<std::uint32_t>(packet.data() + 2 * sizeof(std::uint16_t));
     const std::uint32_t shard_count =
         load_wire_value<std::uint32_t>(packet.data() + 2 * sizeof(std::uint16_t) + sizeof(std::uint32_t));
     const std::uint32_t shard_index =
@@ -350,10 +350,10 @@ void udp_network_backend::receive_packet(std::string&& packet) {
     auto                found       = in_progress_messages_.find(message_key);
     if (found == in_progress_messages_.end()) {
         if (in_progress_messages_.size() >= MAX_CONCURRENT_MESSAGES) {
-            auto oldest = std::min_element(in_progress_messages_.begin(), in_progress_messages_.end(), [](const auto& a,
-                                                                                                          const auto& b) {
-                return a.second.first_received < b.second.first_received;
-            });
+            auto oldest =
+                std::min_element(in_progress_messages_.begin(), in_progress_messages_.end(), [](const auto& a, const auto& b) {
+                    return a.second.first_received < b.second.first_received;
+                });
             if (oldest != in_progress_messages_.end()) {
                 in_progress_messages_.erase(oldest);
             }
@@ -363,7 +363,7 @@ void udp_network_backend::receive_packet(std::string&& packet) {
         state.received_shards.resize(shard_count, false);
         state.shard_count    = shard_count;
         state.first_received = std::chrono::steady_clock::now();
-        found = in_progress_messages_.emplace(message_key, std::move(state)).first;
+        found                = in_progress_messages_.emplace(message_key, std::move(state)).first;
     }
 
     in_progress_message& state = found->second;
@@ -379,8 +379,8 @@ void udp_network_backend::receive_packet(std::string&& packet) {
     }
 
     if (state.received_count == state.shard_count && state.last_shard_size > 0) {
-        const std::size_t complete_size = (static_cast<std::size_t>(state.shard_count) - 1) * max_payload +
-            state.last_shard_size;
+        const std::size_t complete_size =
+            (static_cast<std::size_t>(state.shard_count) - 1) * max_payload + state.last_shard_size;
         state.buffer.resize(complete_size);
         std::string complete(state.buffer.begin(), state.buffer.end());
         in_progress_messages_.erase(found);
@@ -414,7 +414,7 @@ void udp_network_backend::receive_complete_packet(std::string&& packet) {
     const std::uint32_t topic_name_length = load_wire_value<std::uint32_t>(packet.data() + 4);
     if (total_length > packet.size() || total_length < 8 + topic_name_length) {
         spdlog::get("illixr")->warn("[udp_network_backend] Truncated message (got={} expected={}), dropping", packet.size(),
-                                     total_length);
+                                    total_length);
         return;
     }
 
@@ -454,7 +454,7 @@ void udp_network_backend::topic_receive(const std::string& topic_name, std::vect
         network::topic_config fallback;
         fallback.serialization_method = network::topic_config::SerializationMethod::BOOST;
         fallback.transport_method     = network::topic_config::TransportMethod::UDP;
-        config = networked_topics_configs_.emplace(topic_name, fallback).first;
+        config                        = networked_topics_configs_.emplace(topic_name, fallback).first;
         if (std::find(networked_topics_.begin(), networked_topics_.end(), topic_name) == networked_topics_.end()) {
             networked_topics_.push_back(topic_name);
         }
@@ -503,6 +503,6 @@ extern "C" MY_EXPORT_API plugin* this_plugin_factory(phonebook* pb) {
     // The runtime owns the plugin returned by this factory. Register a non-owning
     // service alias so the phonebook does not try to delete the same object again.
     pb->register_impl<network::udp_backend>(
-        std::shared_ptr<network::udp_backend>(static_cast<network::udp_backend*>(obj), [](network::udp_backend*) {}));
+        std::shared_ptr<network::udp_backend>(static_cast<network::udp_backend*>(obj), [](network::udp_backend*) { }));
     return obj;
 }

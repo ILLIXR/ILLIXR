@@ -44,12 +44,12 @@ public:
 
 private:
     struct in_progress_message {
-        std::vector<char>                         buffer;
-        std::vector<bool>                         received_shards;
-        std::uint32_t                             shard_count{0};
-        std::uint32_t                             received_count{0};
-        std::size_t                               last_shard_size{0};
-        std::chrono::steady_clock::time_point     first_received{};
+        std::vector<char>                     buffer;
+        std::vector<bool>                     received_shards;
+        std::uint32_t                         shard_count{0};
+        std::uint32_t                         received_count{0};
+        std::size_t                           last_shard_size{0};
+        std::chrono::steady_clock::time_point first_received{};
     };
 
     void send_packet(std::uint16_t stream_id, std::string&& packet);
@@ -72,13 +72,13 @@ private:
     int         client_port_{9002};
     int         is_client_{0};
 
-    std::size_t                 packet_size_{1400};
-    std::size_t                 socket_buffer_size_{4 * 1024 * 1024};
-    std::atomic<std::uint32_t>  next_message_id_{0};
-    std::mutex                  send_mutex_;
+    std::size_t                                            packet_size_{1400};
+    std::size_t                                            socket_buffer_size_{4 * 1024 * 1024};
+    std::atomic<std::uint32_t>                             next_message_id_{0};
+    std::mutex                                             send_mutex_;
     std::unordered_map<std::uint64_t, in_progress_message> in_progress_messages_;
-    static constexpr std::size_t MAX_CONCURRENT_MESSAGES = 10;
-    static constexpr std::size_t MAX_MESSAGE_BYTES       = 64 * 1024 * 1024;
+    static constexpr std::size_t                           MAX_CONCURRENT_MESSAGES = 10;
+    static constexpr std::size_t                           MAX_MESSAGE_BYTES       = 64 * 1024 * 1024;
 
     std::vector<std::string>                               networked_topics_;
     std::unordered_map<std::string, network::topic_config> networked_topics_configs_;

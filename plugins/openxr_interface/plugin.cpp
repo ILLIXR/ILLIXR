@@ -14,8 +14,8 @@
 using namespace ILLIXR;
 using namespace ILLIXR::data_format;
 
-constexpr int I_HEADSET_WIDTH  = NATIVE_STREAM_EYE_WIDTH;
-constexpr int I_HEADSET_HEIGHT = NATIVE_STREAM_EYE_HEIGHT;
+constexpr int   I_HEADSET_WIDTH            = NATIVE_STREAM_EYE_WIDTH;
+constexpr int   I_HEADSET_HEIGHT           = NATIVE_STREAM_EYE_HEIGHT;
 constexpr float BOBA_PANEL_DISTANCE_METERS = 1.1F;
 constexpr float BOBA_PANEL_WIDTH_METERS    = 1.2F;
 
@@ -27,15 +27,13 @@ static XrPosef identity_pose() {
 }
 
 static XrVector3f rotate_vector(const XrQuaternionf& q, const XrVector3f& v) {
-    const XrVector3f t{2.0F * (q.y * v.z - q.z * v.y), 2.0F * (q.z * v.x - q.x * v.z),
-                       2.0F * (q.x * v.y - q.y * v.x)};
-    return {v.x + q.w * t.x + (q.y * t.z - q.z * t.y),
-            v.y + q.w * t.y + (q.z * t.x - q.x * t.z),
+    const XrVector3f t{2.0F * (q.y * v.z - q.z * v.y), 2.0F * (q.z * v.x - q.x * v.z), 2.0F * (q.x * v.y - q.y * v.x)};
+    return {v.x + q.w * t.x + (q.y * t.z - q.z * t.y), v.y + q.w * t.y + (q.z * t.x - q.x * t.z),
             v.z + q.w * t.z + (q.x * t.y - q.y * t.x)};
 }
 
 static XrPosef panel_pose_from_view(const XrPosef& view_pose) {
-    XrPosef pose = view_pose;
+    XrPosef          pose   = view_pose;
     const XrVector3f offset = rotate_vector(view_pose.orientation, {0.0F, 0.0F, -BOBA_PANEL_DISTANCE_METERS});
     pose.position.x += offset.x;
     pose.position.y += offset.y;
@@ -50,8 +48,7 @@ static XrPosef panel_pose_from_view(const XrPosef& view_pose) {
     , clock_{phonebook_->lookup_impl<relative_clock>()}
     , stoplight_{phonebook_->lookup_impl<stoplight>()}
     , frame_reader_{switchboard_->get_reader<dual_frames>("unity_rendered_frame")}
-    , boba_client_control_reader_{
-          switchboard_->get_reader<switchboard::event_wrapper<std::string>>("boba_client_control")}
+    , boba_client_control_reader_{switchboard_->get_reader<switchboard::event_wrapper<std::string>>("boba_client_control")}
     , oxr_relay_{std::make_shared<oxr_relay>(name_, pb_)} {
     use_depth_ = switchboard_->get_env_bool("ILLIXR_USE_DEPTH_IMAGES");
     init_xr();
@@ -451,17 +448,16 @@ void oxr_interface::run_frame() {
         oxr_relay_->update_time(frame_state.predictedDisplayTime);
         view_locate_info.space = local_space_;
 
-        uint32_t view_count = 2;
-        views_[0].type      = XR_TYPE_VIEW;
-        views_[1].type      = XR_TYPE_VIEW;
-        const XrResult locate_views_result =
-            xrLocateViews(session_, &view_locate_info, &view_state, 2, &view_count, views_);
+        uint32_t view_count                = 2;
+        views_[0].type                     = XR_TYPE_VIEW;
+        views_[1].type                     = XR_TYPE_VIEW;
+        const XrResult locate_views_result = xrLocateViews(session_, &view_locate_info, &view_state, 2, &view_count, views_);
         if (XR_SUCCEEDED(locate_views_result) && view_count == 2) {
             oxr_relay_->publish_boba_input(frame_state.predictedDisplayTime, frame_state.predictedDisplayPeriod,
                                            frame_state.shouldRender, view_state.viewStateFlags, views_, view_configs_);
         } else {
             spdlog::get("illixr")->warn("xrLocateViews failed or returned {} views: {}", view_count,
-                                         static_cast<int>(locate_views_result));
+                                        static_cast<int>(locate_views_result));
         }
 
         auto latest = frame_reader_.get_ro_nullable();
@@ -532,8 +528,8 @@ void oxr_interface::run_frame() {
                     spdlog::get("illixr")->debug("[pose_tracker]  No current pose");
                 }
             }
-            const bool render_as_panel = current_frames_->presentation_mode !=
-                data_format::stereo_presentation_mode::stereo_fullscreen;
+            const bool render_as_panel =
+                current_frames_->presentation_mode != data_format::stereo_presentation_mode::stereo_fullscreen;
             if (current_frames_->presentation_mode == data_format::stereo_presentation_mode::mono_panel &&
                 (previous_presentation_mode_ != data_format::stereo_presentation_mode::mono_panel ||
                  !world_panel_anchor_initialized_)) {
@@ -564,28 +560,26 @@ void oxr_interface::run_frame() {
                 OXR(xrReleaseSwapchainImage(sc.swapchain, &rel))
 
                 if (render_as_panel) {
-                    panelLayer.layerFlags = XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT |
-                        XR_COMPOSITION_LAYER_UNPREMULTIPLIED_ALPHA_BIT;
-                    panelLayer.space         = current_frames_->presentation_mode ==
-                            data_format::stereo_presentation_mode::head_locked_panel
+                    panelLayer.layerFlags =
+                        XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT | XR_COMPOSITION_LAYER_UNPREMULTIPLIED_ALPHA_BIT;
+                    panelLayer.space =
+                        current_frames_->presentation_mode == data_format::stereo_presentation_mode::head_locked_panel
                         ? view_space_
                         : local_space_;
                     panelLayer.eyeVisibility = XR_EYE_VISIBILITY_BOTH;
-                    panelLayer.pose          = current_frames_->presentation_mode ==
-                            data_format::stereo_presentation_mode::head_locked_panel
+                    panelLayer.pose =
+                        current_frames_->presentation_mode == data_format::stereo_presentation_mode::head_locked_panel
                         ? identity_pose()
                         : world_panel_pose_;
                     if (current_frames_->presentation_mode == data_format::stereo_presentation_mode::head_locked_panel) {
                         panelLayer.pose.position.z = -BOBA_PANEL_DISTANCE_METERS;
                     }
-                    const float aspect = current_frames_->content_aspect_ratio > 0.0F
-                        ? current_frames_->content_aspect_ratio
-                        : 1.0F;
-                    panelLayer.size = {BOBA_PANEL_WIDTH_METERS, BOBA_PANEL_WIDTH_METERS / aspect};
+                    const float aspect =
+                        current_frames_->content_aspect_ratio > 0.0F ? current_frames_->content_aspect_ratio : 1.0F;
+                    panelLayer.size                      = {BOBA_PANEL_WIDTH_METERS, BOBA_PANEL_WIDTH_METERS / aspect};
                     panelLayer.subImage.swapchain        = sc.swapchain;
                     panelLayer.subImage.imageRect.offset = {0, 0};
-                    panelLayer.subImage.imageRect.extent = {static_cast<int32_t>(sc.width),
-                                                            static_cast<int32_t>(sc.height)};
+                    panelLayer.subImage.imageRect.extent = {static_cast<int32_t>(sc.width), static_cast<int32_t>(sc.height)};
                     panelLayer.subImage.imageArrayIndex  = 0;
                     continue;
                 }
@@ -899,7 +893,7 @@ extern "C" plugin* this_plugin_factory(phonebook* pb) {
     // The runtime owns the plugin returned by this factory. Register a non-owning
     // service alias so the phonebook does not try to delete the same object again.
     pb->register_impl<vk::vulkan_context_provider>(std::shared_ptr<vk::vulkan_context_provider>(
-        static_cast<vk::vulkan_context_provider*>(obj), [](vk::vulkan_context_provider*) {}));
+        static_cast<vk::vulkan_context_provider*>(obj), [](vk::vulkan_context_provider*) { }));
     return obj;
 }
 #endif

@@ -16,13 +16,14 @@
 #    ifndef BOOST_DATE_TIME_NO_LIB
 #        define BOOST_DATE_TIME_NO_LIB
 #    endif
+#    include "illixr/network/udpsocket.hpp"
+
 #    include <algorithm>
 #    include <boost/algorithm/string/join.hpp>
 #    include <cerrno>
 #    include <chrono>
 #    include <cstdlib>
 #    include <iostream>
-#    include "illixr/network/udpsocket.hpp"
 #    ifdef __linux__
 #        include <pwd.h>
 #        include <unistd.h>

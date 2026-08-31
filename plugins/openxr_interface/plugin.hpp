@@ -88,26 +88,25 @@ private:
     const std::shared_ptr<stoplight>      stoplight_;
 
     // Frame reading
-    switchboard::reader<data_format::dual_frames> frame_reader_;
+    switchboard::reader<data_format::dual_frames>                frame_reader_;
     switchboard::reader<switchboard::event_wrapper<std::string>> boba_client_control_reader_;
 
     std::shared_ptr<const data_format::dual_frames> current_frames_ = nullptr;
-    bool                                             client_shutdown_requested_{false};
+    bool                                            client_shutdown_requested_{false};
 
     // OpenXR handles
-    XrSession               session_         = XR_NULL_HANDLE;
-    XrInstance              instance_        = XR_NULL_HANDLE;
-    XrSystemId              system_id_       = XR_NULL_SYSTEM_ID;
-    XrSpace                 local_space_     = XR_NULL_HANDLE;
-    XrSpace                 view_space_      = XR_NULL_HANDLE;
-    XrSessionState          session_state_   = XR_SESSION_STATE_UNKNOWN;
-    XrBool32                session_running_ = XR_FALSE;
-    XrViewConfigurationView view_configs_[2]{};
-    XrView                  views_[2]{};
-    bool                    world_panel_anchor_initialized_{false};
-    XrPosef                 world_panel_pose_{};
-    data_format::stereo_presentation_mode previous_presentation_mode_{
-        data_format::stereo_presentation_mode::stereo_fullscreen};
+    XrSession                             session_         = XR_NULL_HANDLE;
+    XrInstance                            instance_        = XR_NULL_HANDLE;
+    XrSystemId                            system_id_       = XR_NULL_SYSTEM_ID;
+    XrSpace                               local_space_     = XR_NULL_HANDLE;
+    XrSpace                               view_space_      = XR_NULL_HANDLE;
+    XrSessionState                        session_state_   = XR_SESSION_STATE_UNKNOWN;
+    XrBool32                              session_running_ = XR_FALSE;
+    XrViewConfigurationView               view_configs_[2]{};
+    XrView                                views_[2]{};
+    bool                                  world_panel_anchor_initialized_{false};
+    XrPosef                               world_panel_pose_{};
+    data_format::stereo_presentation_mode previous_presentation_mode_{data_format::stereo_presentation_mode::stereo_fullscreen};
 
     // Vulkan device objects
     VkInstance       vk_instance_        = VK_NULL_HANDLE;

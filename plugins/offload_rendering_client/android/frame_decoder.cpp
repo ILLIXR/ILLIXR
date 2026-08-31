@@ -275,7 +275,7 @@ std::pair<AHardwareBuffer*, uint64_t> frame_decoder::acquire_latest_buffer() {
         const uint64_t               count = missing_timestamp_count.fetch_add(1, std::memory_order_relaxed) + 1;
         if (count % 120 == 1) {
             spdlog::get("illixr")->warn("[frame_decoder][{}] No exact frame number for AImage timestamp {} (count={})",
-                                         eye_index_, image_timestamp_ns, count);
+                                        eye_index_, image_timestamp_ns, count);
         }
     }
 
@@ -376,10 +376,10 @@ void frame_decoder::feeder_loop() {
                     uint8_t* cfg_buf      = AMediaCodec_getInputBuffer(codec_, static_cast<size_t>(cfg_idx), &cfg_buf_size);
                     if (cfg_buf && cfg_buf_size >= seq_hdr_end) {
                         std::memcpy(cfg_buf, d, seq_hdr_end);
-                        const media_status_t queue_status = AMediaCodec_queueInputBuffer(
-                            codec_, static_cast<size_t>(cfg_idx),
-                            /*offset=*/0, seq_hdr_end,
-                            /*presentationTimeUs=*/0, AMEDIACODEC_BUFFER_FLAG_CODEC_CONFIG);
+                        const media_status_t queue_status =
+                            AMediaCodec_queueInputBuffer(codec_, static_cast<size_t>(cfg_idx),
+                                                         /*offset=*/0, seq_hdr_end,
+                                                         /*presentationTimeUs=*/0, AMEDIACODEC_BUFFER_FLAG_CODEC_CONFIG);
                         if (queue_status != AMEDIA_OK) {
                             spdlog::get("illixr")->error("[frame_decoder][{}] AV1 CODEC_CONFIG queue failed: {}", eye_index_,
                                                          static_cast<int>(queue_status));
@@ -449,9 +449,9 @@ void frame_decoder::feeder_loop() {
                 std::lock_guard<std::mutex> ts_lock(pending_timestamps_mutex_);
                 pending_timestamps_[pkt.timestamp_us] = {pkt.queue_time, submit_time, pkt.frame_number};
             }
-            const media_status_t queue_status = AMediaCodec_queueInputBuffer(
-                codec_, static_cast<size_t>(buf_idx),
-                /*offset=*/0, pkt.data.size(), static_cast<uint64_t>(pkt.timestamp_us), flags);
+            const media_status_t queue_status =
+                AMediaCodec_queueInputBuffer(codec_, static_cast<size_t>(buf_idx),
+                                             /*offset=*/0, pkt.data.size(), static_cast<uint64_t>(pkt.timestamp_us), flags);
             if (queue_status != AMEDIA_OK) {
                 {
                     std::lock_guard<std::mutex> ts_lock(pending_timestamps_mutex_);
@@ -467,7 +467,7 @@ void frame_decoder::feeder_loop() {
             packets_fed++;
 
             const auto now = std::chrono::steady_clock::now();
-            uint64_t queue_us =
+            uint64_t   queue_us =
                 static_cast<uint64_t>(std::chrono::duration_cast<std::chrono::microseconds>(now - pkt.queue_time).count());
 
             {
@@ -501,9 +501,9 @@ void frame_decoder::drainer_loop() {
         if (out_idx >= 0) {
             // Decode latency: submit_time → output available.
             // Total latency:  queue_time  → output available.
-            auto     drain_start          = std::chrono::steady_clock::now();
-            uint64_t decode_us            = 0;                          // submit → output
-            uint64_t total_us             = 0;                          // queue_encoded_data → output
+            auto     drain_start = std::chrono::steady_clock::now();
+            uint64_t decode_us   = 0; // submit → output
+            uint64_t total_us    = 0; // queue_encoded_data → output
             // A missing timestamp entry must remain unmatched. Falling back to
             // the previous output number can pair a valid image with another
             // frame's pose/FOV and causes visible world-locked jitter.
@@ -551,7 +551,7 @@ void frame_decoder::drainer_loop() {
             // this precise frame number even if newer outputs are released while
             // it is acquiring the image.
             if (decoded_frame_number != 0) {
-                const int64_t timestamp_ns = info.presentationTimeUs * 1'000LL;
+                const int64_t               timestamp_ns = info.presentationTimeUs * 1'000LL;
                 std::lock_guard<std::mutex> released_lock(released_frame_numbers_mutex_);
                 released_frame_numbers_by_timestamp_ns_[timestamp_ns] = decoded_frame_number;
                 while (released_frame_numbers_by_timestamp_ns_.size() > 64) {
@@ -593,10 +593,9 @@ void frame_decoder::drainer_loop() {
                                         output_format_changes, fmt_str);
             if (fmt)
                 AMediaFormat_delete(fmt);
-        } else if (out_idx != AMEDIACODEC_INFO_TRY_AGAIN_LATER &&
-                   out_idx != AMEDIACODEC_INFO_OUTPUT_BUFFERS_CHANGED) {
-            spdlog::get("illixr")->error("[frame_decoder][{}] Fatal dequeueOutputBuffer error {} after {} outputs",
-                                         eye_index_, out_idx, output_drained);
+        } else if (out_idx != AMEDIACODEC_INFO_TRY_AGAIN_LATER && out_idx != AMEDIACODEC_INFO_OUTPUT_BUFFERS_CHANGED) {
+            spdlog::get("illixr")->error("[frame_decoder][{}] Fatal dequeueOutputBuffer error {} after {} outputs", eye_index_,
+                                         out_idx, output_drained);
             codec_failed_.store(true);
             input_cv_.notify_all();
             break;

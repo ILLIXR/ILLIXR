@@ -7,9 +7,9 @@
 #    include <condition_variable>
 #    include <cstdint>
 #    include <deque>
+#    include <map>
 #    include <media/NdkImageReader.h>
 #    include <media/NdkMediaCodec.h>
-#    include <map>
 #    include <mutex>
 #    include <queue>
 #    include <thread>

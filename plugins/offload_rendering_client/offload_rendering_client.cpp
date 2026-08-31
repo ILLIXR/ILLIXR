@@ -358,8 +358,8 @@ void offload_rendering_client::receiver_loop() {
             if (use_motion_vectors_ && motion_vec_decoder_ && current_frame->use_motion_vectors) {
                 const auto& mv_pkt = (eye == 0) ? current_frame->left_motion_vec : current_frame->right_motion_vec;
                 if (!mv_pkt.empty()) {
-                    motion_vec_decoder_->queue_encoded_data(eye, mv_pkt.data(), mv_pkt.size(), presentation_time_us,
-                                                            is_key_mv, current_frame->frame_number);
+                    motion_vec_decoder_->queue_encoded_data(eye, mv_pkt.data(), mv_pkt.size(), presentation_time_us, is_key_mv,
+                                                            current_frame->frame_number);
                 }
             }
         }
@@ -367,8 +367,8 @@ void offload_rendering_client::receiver_loop() {
         for (int eye = 0; eye < 2; eye++) {
             const auto& color_pkt = (eye == 0) ? current_frame->left_color : current_frame->right_color;
             if (color_decoder_ && !color_pkt.empty()) {
-                color_decoder_->queue_encoded_data(eye, color_pkt.data(), color_pkt.size(), presentation_time_us,
-                                                   is_key_color, current_frame->frame_number);
+                color_decoder_->queue_encoded_data(eye, color_pkt.data(), color_pkt.size(), presentation_time_us, is_key_color,
+                                                   current_frame->frame_number);
             }
 
             if (use_depth_ && depth_decoder_) {
@@ -382,13 +382,12 @@ void offload_rendering_client::receiver_loop() {
             if (use_motion_vectors_ && motion_vec_decoder_ && current_frame->use_motion_vectors) {
                 const auto& mv_pkt = (eye == 0) ? current_frame->left_motion_vec : current_frame->right_motion_vec;
                 if (!mv_pkt.empty()) {
-                    motion_vec_decoder_->queue_encoded_data(eye, mv_pkt.data(), mv_pkt.size(), presentation_time_us,
-                                                            is_key_mv, current_frame->frame_number);
+                    motion_vec_decoder_->queue_encoded_data(eye, mv_pkt.data(), mv_pkt.size(), presentation_time_us, is_key_mv,
+                                                            current_frame->frame_number);
                 }
             }
         }
 #    endif // COMBINED_ENCODING
-
     }
 }
 #else
@@ -996,8 +995,8 @@ data_format::dual_frames offload_rendering_client::construct_dual_frames(time_po
         std::lock_guard<std::mutex> lock(frame_meta_map_mutex_);
         auto                        it = frame_meta_map_.find(decoded_frame_number);
         if (it != frame_meta_map_.end() && !it->second.consumed) {
-            meta                = it->second;
-            it->second.consumed = true;
+            meta                 = it->second;
+            it->second.consumed  = true;
             exact_metadata_found = true;
 
             if (meta.boba_modal.visible) {
@@ -1020,8 +1019,8 @@ data_format::dual_frames offload_rendering_client::construct_dual_frames(time_po
         static std::uint64_t missing_metadata_count = 0;
         if (++missing_metadata_count % 120 == 1) {
             spdlog::get("illixr")->warn("[offload_rendering_client] Dropping decoded frame {} without exact metadata "
-                                         "(count={})",
-                                         decoded_frame_number, missing_metadata_count);
+                                        "(count={})",
+                                        decoded_frame_number, missing_metadata_count);
         }
         color_decoder_->release_frame(frame);
         return {};

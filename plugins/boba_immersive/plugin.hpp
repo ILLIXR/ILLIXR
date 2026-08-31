@@ -58,14 +58,13 @@ private:
     bool publish_latest_frame();
     void notify_native_client_shutdown();
 
-    const std::shared_ptr<switchboard>          switchboard_;
-    const std::shared_ptr<const relative_clock> clock_;
-    const std::shared_ptr<stoplight>            stoplight_;
-    switchboard::reader<controller_input>       controller_reader_;
-    switchboard::reader<view_frame>             view_reader_;
-    switchboard::writer<stereo_frame>           stereo_writer_;
-    std::optional<switchboard::network_writer<switchboard::event_wrapper<std::string>>>
-        native_client_control_writer_;
+    const std::shared_ptr<switchboard>                                                  switchboard_;
+    const std::shared_ptr<const relative_clock>                                         clock_;
+    const std::shared_ptr<stoplight>                                                    stoplight_;
+    switchboard::reader<controller_input>                                               controller_reader_;
+    switchboard::reader<view_frame>                                                     view_reader_;
+    switchboard::writer<stereo_frame>                                                   stereo_writer_;
+    std::optional<switchboard::network_writer<switchboard::event_wrapper<std::string>>> native_client_control_writer_;
 
     std::string boba_launcher_;
     std::string runtime_directory_;

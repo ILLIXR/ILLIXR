@@ -236,10 +236,10 @@ public:
     }
 
 private:
-    SOCKET_TYPE fd_;
+    SOCKET_TYPE        fd_;
     mutable std::mutex peer_mutex_;
-    sockaddr_in peer_addr_{};
-    bool        peer_set_{false};
+    sockaddr_in        peer_addr_{};
+    bool               peer_set_{false};
 
     static constexpr size_t BUFFER_SIZE = 1024 * 64; // 64 KB max datagram
 };

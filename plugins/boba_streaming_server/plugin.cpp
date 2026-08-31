@@ -15,27 +15,27 @@ namespace ILLIXR {
 
 namespace {
 
-constexpr std::uint32_t kPerEyeVisibleWidth  = NATIVE_STREAM_EYE_WIDTH;
-constexpr std::uint32_t kPerEyeVisibleHeight = NATIVE_STREAM_EYE_HEIGHT;
-constexpr std::uint32_t kPerEyeEncodeWidth   = (kPerEyeVisibleWidth + 31U) & ~31U;
-constexpr std::uint32_t kEncodeHeight        = (kPerEyeVisibleHeight + 31U) & ~31U;
-constexpr std::uint32_t kOverlayCommandStrideFloats = data_format::boba_frame_overlay::command_stride_floats;
-constexpr std::uint64_t kModalTextureResendFrames   = 300;
+    constexpr std::uint32_t kPerEyeVisibleWidth         = NATIVE_STREAM_EYE_WIDTH;
+    constexpr std::uint32_t kPerEyeVisibleHeight        = NATIVE_STREAM_EYE_HEIGHT;
+    constexpr std::uint32_t kPerEyeEncodeWidth          = (kPerEyeVisibleWidth + 31U) & ~31U;
+    constexpr std::uint32_t kEncodeHeight               = (kPerEyeVisibleHeight + 31U) & ~31U;
+    constexpr std::uint32_t kOverlayCommandStrideFloats = data_format::boba_frame_overlay::command_stride_floats;
+    constexpr std::uint64_t kModalTextureResendFrames   = 300;
 
-XrPosef to_xr_pose(const data_format::stereo_render_view& view) {
-    XrPosef pose{};
-    pose.orientation.w = 1.0F;
-    if (view.valid) {
-        pose.position = {view.position.x(), view.position.y(), view.position.z()};
-        pose.orientation = {view.orientation.x(), view.orientation.y(), view.orientation.z(), view.orientation.w()};
+    XrPosef to_xr_pose(const data_format::stereo_render_view& view) {
+        XrPosef pose{};
+        pose.orientation.w = 1.0F;
+        if (view.valid) {
+            pose.position    = {view.position.x(), view.position.y(), view.position.z()};
+            pose.orientation = {view.orientation.x(), view.orientation.y(), view.orientation.z(), view.orientation.w()};
+        }
+        return pose;
     }
-    return pose;
-}
 
-std::uint64_t system_time_ns() {
-    return static_cast<std::uint64_t>(
-        std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
-}
+    std::uint64_t system_time_ns() {
+        return static_cast<std::uint64_t>(
+            std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+    }
 
 } // namespace
 
@@ -69,10 +69,10 @@ boba_streaming_server::boba_streaming_server(const std::string& name, phonebook*
           {.serialization_method = network::topic_config::SerializationMethod::BOOST,
            .transport_method     = network::topic_config::TransportMethod::TCP})} {
     spdlogger(switchboard_->get_env_char("BOBA_STREAMING_SERVER_LOG_LEVEL", "info"));
-    bitrate_  = std::max<std::int64_t>(1, switchboard_->get_env_int("BOBA_STREAM_BITRATE", 30'000'000));
+    bitrate_   = std::max<std::int64_t>(1, switchboard_->get_env_int("BOBA_STREAM_BITRATE", 30'000'000));
     framerate_ = std::max(1, switchboard_->get_env_int("BOBA_STREAM_FRAMERATE", 72));
-    plugin_logger_->info("Boba native Quest stream configured for AV1 {}x{} at {} fps / {:.1f} Mbps",
-                         kPerEyeEncodeWidth * 2, kEncodeHeight, framerate_, static_cast<double>(bitrate_) / 1'000'000.0);
+    plugin_logger_->info("Boba native Quest stream configured for AV1 {}x{} at {} fps / {:.1f} Mbps", kPerEyeEncodeWidth * 2,
+                         kEncodeHeight, framerate_, static_cast<double>(bitrate_) / 1'000'000.0);
 }
 
 boba_streaming_server::~boba_streaming_server() = default;
@@ -129,9 +129,8 @@ bool boba_streaming_server::generation_matches(const mapped_file& mapping, std::
 
 bool boba_streaming_server::image_range_valid(const data_format::stereo_shared_image& image) const {
     const std::uint64_t minimum_stride = static_cast<std::uint64_t>(image.width) * 4U;
-    const std::uint64_t required = image.height == 0
-        ? 0
-        : static_cast<std::uint64_t>(image.row_stride_bytes) * (image.height - 1U) + minimum_stride;
+    const std::uint64_t required =
+        image.height == 0 ? 0 : static_cast<std::uint64_t>(image.row_stride_bytes) * (image.height - 1U) + minimum_stride;
     return image.width > 0 && image.height > 0 && image.row_stride_bytes >= minimum_stride && image.byte_count >= required &&
         image.byte_offset <= frame_mapping_.size && required <= frame_mapping_.size - image.byte_offset;
 }
@@ -144,8 +143,8 @@ bool boba_streaming_server::overlay_range_valid(const data_format::stereo_overla
         range.command_count > data_format::boba_frame_overlay::max_commands_per_eye) {
         return false;
     }
-    const std::uint64_t byte_count = static_cast<std::uint64_t>(range.command_count) * range.command_stride_floats *
-        sizeof(float);
+    const std::uint64_t byte_count =
+        static_cast<std::uint64_t>(range.command_count) * range.command_stride_floats * sizeof(float);
     return range.byte_offset <= overlay_mapping_.size && byte_count <= overlay_mapping_.size - range.byte_offset;
 }
 
@@ -155,16 +154,15 @@ bool boba_streaming_server::modal_range_valid(const data_format::stereo_modal_ov
     }
     const std::uint64_t tight_row_bytes = static_cast<std::uint64_t>(modal.width) * 4U;
     const std::uint64_t required_bytes  = modal.height == 0
-        ? 0
-        : static_cast<std::uint64_t>(modal.source_row_stride_bytes) * (modal.height - 1U) + tight_row_bytes;
+         ? 0
+         : static_cast<std::uint64_t>(modal.source_row_stride_bytes) * (modal.height - 1U) + tight_row_bytes;
     return modal.width > 0 && modal.height > 0 && modal.width <= 8192 && modal.height <= 8192 &&
         modal.source_row_stride_bytes >= tight_row_bytes && modal.byte_offset <= modal_mapping_.size &&
         required_bytes <= modal_mapping_.size - modal.byte_offset;
 }
 
-std::vector<float>
-boba_streaming_server::copy_overlay_commands(const data_format::stereo_overlay_command_range& range) const {
-    const std::size_t float_count = static_cast<std::size_t>(range.command_count) * range.command_stride_floats;
+std::vector<float> boba_streaming_server::copy_overlay_commands(const data_format::stereo_overlay_command_range& range) const {
+    const std::size_t  float_count = static_cast<std::size_t>(range.command_count) * range.command_stride_floats;
     std::vector<float> commands(float_count);
     if (float_count != 0) {
         std::memcpy(commands.data(), overlay_mapping_.data + range.byte_offset, float_count * sizeof(float));
@@ -172,14 +170,12 @@ boba_streaming_server::copy_overlay_commands(const data_format::stereo_overlay_c
     return commands;
 }
 
-std::vector<std::uint8_t>
-boba_streaming_server::copy_modal_pixels(const data_format::stereo_modal_overlay& modal) const {
-    const std::size_t tight_row_bytes = static_cast<std::size_t>(modal.width) * 4U;
+std::vector<std::uint8_t> boba_streaming_server::copy_modal_pixels(const data_format::stereo_modal_overlay& modal) const {
+    const std::size_t         tight_row_bytes = static_cast<std::size_t>(modal.width) * 4U;
     std::vector<std::uint8_t> rgba(tight_row_bytes * modal.height);
     for (std::uint32_t row = 0; row < modal.height; ++row) {
         std::memcpy(rgba.data() + static_cast<std::size_t>(row) * tight_row_bytes,
-                    modal_mapping_.data + modal.byte_offset +
-                        static_cast<std::uint64_t>(row) * modal.source_row_stride_bytes,
+                    modal_mapping_.data + modal.byte_offset + static_cast<std::uint64_t>(row) * modal.source_row_stride_bytes,
                     tight_row_bytes);
     }
     return rgba;
@@ -190,7 +186,7 @@ std::uint64_t boba_streaming_server::modal_texture_id(const std::vector<std::uin
     // FNV-1a gives the modal a stable content identity across reconnects. A
     // repeated ID therefore always refers to the same dimensions and bytes.
     std::uint64_t hash = 1469598103934665603ULL;
-    const auto mix = [&hash](std::uint8_t value) {
+    const auto    mix  = [&hash](std::uint8_t value) {
         hash ^= value;
         hash *= 1099511628211ULL;
     };
@@ -205,17 +201,16 @@ std::uint64_t boba_streaming_server::modal_texture_id(const std::vector<std::uin
 }
 
 void boba_streaming_server::publish_modal_texture_if_needed(const data_format::boba_modal_overlay& modal,
-                                                            const std::vector<std::uint8_t>& rgba) {
+                                                            const std::vector<std::uint8_t>&       rgba) {
     if (!modal.visible) {
-        last_modal_visible_       = false;
+        last_modal_visible_        = false;
         modal_visible_frame_count_ = 0;
         return;
     }
 
     ++modal_visible_frame_count_;
     const bool changed = modal.texture_id != last_modal_texture_id_;
-    const bool resend  = changed || !last_modal_visible_ ||
-        modal_visible_frame_count_ % kModalTextureResendFrames == 0;
+    const bool resend  = changed || !last_modal_visible_ || modal_visible_frame_count_ % kModalTextureResendFrames == 0;
     if (resend) {
         auto update        = modal_writer_.allocate();
         update->texture_id = modal.texture_id;
@@ -234,8 +229,8 @@ void boba_streaming_server::initialize_encoder() {
     if (encoder_) {
         return;
     }
-    encoder_ = std::make_unique<nvenc_encoder>(kPerEyeEncodeWidth * 2, kEncodeHeight, bitrate_, framerate_,
-                                               encoder_mode::color, encoder_codec::av1);
+    encoder_ = std::make_unique<nvenc_encoder>(kPerEyeEncodeWidth * 2, kEncodeHeight, bitrate_, framerate_, encoder_mode::color,
+                                               encoder_codec::av1);
     if (!encoder_->initialize(vulkan_context{})) {
         encoder_.reset();
         throw std::runtime_error("Could not initialize the Boba NVENC AV1 encoder");
@@ -243,30 +238,30 @@ void boba_streaming_server::initialize_encoder() {
 }
 
 void boba_streaming_server::publish_encoded(const data_format::stereo_frame& frame, std::vector<std::uint8_t>&& encoded,
-                                            data_format::boba_frame_overlay&& overlay,
+                                            data_format::boba_frame_overlay&&      overlay,
                                             const data_format::boba_modal_overlay& modal, double encode_time_us) {
-    auto output               = std::make_shared<data_format::compressed_frame>();
-    output->left_color        = std::move(encoded);
-    output->right_color       = {};
-    output->nalu_only         = false;
-    output->use_depth         = false;
-    output->use_motion_vectors = false;
-    output->presentation_mode = frame.presentation_mode;
+    auto output                  = std::make_shared<data_format::compressed_frame>();
+    output->left_color           = std::move(encoded);
+    output->right_color          = {};
+    output->nalu_only            = false;
+    output->use_depth            = false;
+    output->use_motion_vectors   = false;
+    output->presentation_mode    = frame.presentation_mode;
     output->content_aspect_ratio = static_cast<float>(frame.left.width) / static_cast<float>(frame.left.height);
-    output->boba_overlay      = std::move(overlay);
-    output->boba_modal        = modal;
-    output->pose[0]           = to_xr_pose(frame.left_render_view);
-    output->pose[1]           = to_xr_pose(frame.right_render_view);
-    output->fov_left          = {frame.left_render_view.angle_left, frame.right_render_view.angle_left};
-    output->fov_right         = {frame.left_render_view.angle_right, frame.right_render_view.angle_right};
-    output->fov_up            = {frame.left_render_view.angle_up, frame.right_render_view.angle_up};
-    output->fov_down          = {frame.left_render_view.angle_down, frame.right_render_view.angle_down};
-    output->sent_time         = system_time_ns();
-    output->frame_number      = frame.source_frame_id;
-    output->pose_id           = 0;
-    output->encode_time       = encode_time_us;
-    output->is_keyframe       = encoder_->last_frame_was_keyframe();
-    output->magic             = 0xdeadbeef;
+    output->boba_overlay         = std::move(overlay);
+    output->boba_modal           = modal;
+    output->pose[0]              = to_xr_pose(frame.left_render_view);
+    output->pose[1]              = to_xr_pose(frame.right_render_view);
+    output->fov_left             = {frame.left_render_view.angle_left, frame.right_render_view.angle_left};
+    output->fov_right            = {frame.left_render_view.angle_right, frame.right_render_view.angle_right};
+    output->fov_up               = {frame.left_render_view.angle_up, frame.right_render_view.angle_up};
+    output->fov_down             = {frame.left_render_view.angle_down, frame.right_render_view.angle_down};
+    output->sent_time            = system_time_ns();
+    output->frame_number         = frame.source_frame_id;
+    output->pose_id              = 0;
+    output->encode_time          = encode_time_us;
+    output->is_keyframe          = encoder_->last_frame_was_keyframe();
+    output->magic                = 0xdeadbeef;
 
     metrics_bytes_ += output->left_color.size();
     frames_writer_.put(std::move(output));
@@ -347,11 +342,11 @@ void boba_streaming_server::_p_one_iteration() {
     }
 
     initialize_encoder();
-    const auto*       left        = frame_mapping_.data + frame->left.byte_offset;
-    const auto*       right       = frame_mapping_.data + frame->right.byte_offset;
-    const std::size_t left_pitch  = frame->left.row_stride_bytes;
-    const std::size_t right_pitch = frame->right.row_stride_bytes;
-    const auto  start = std::chrono::steady_clock::now();
+    const auto*               left        = frame_mapping_.data + frame->left.byte_offset;
+    const auto*               right       = frame_mapping_.data + frame->right.byte_offset;
+    const std::size_t         left_pitch  = frame->left.row_stride_bytes;
+    const std::size_t         right_pitch = frame->right.row_stride_bytes;
+    const auto                start       = std::chrono::steady_clock::now();
     std::vector<std::uint8_t> encoded =
         encoder_->encode_rgba_stereo(left, left_pitch, right, right_pitch, frame->left.width, frame->left.height,
                                      frame->origin == data_format::stereo_image_origin::upper_left);
@@ -374,7 +369,7 @@ void boba_streaming_server::_p_one_iteration() {
 
     ++metrics_frames_;
     metrics_encode_us_ += encode_us;
-    const auto now = std::chrono::steady_clock::now();
+    const auto   now      = std::chrono::steady_clock::now();
     const double interval = std::chrono::duration<double>(now - metrics_start_).count();
     if (interval >= 1.0) {
         plugin_logger_->info("Boba native stream: {:.1f} fps, {:.2f} ms encode, {:.1f} Mbps",

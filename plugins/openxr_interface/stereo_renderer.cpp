@@ -324,8 +324,8 @@ bool stereo_renderer::create_host_visible_buffer(VkDeviceSize size, VkBufferUsag
 
     VkMemoryRequirements requirements{};
     vkGetBufferMemoryRequirements(device_, *buffer, &requirements);
-    const std::uint32_t memory_type =
-        find_memory_type(requirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+    const std::uint32_t memory_type = find_memory_type(
+        requirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
     if (memory_type == UINT32_MAX) {
         vkDestroyBuffer(device_, *buffer, nullptr);
         *buffer = VK_NULL_HANDLE;
@@ -367,10 +367,10 @@ bool stereo_renderer::create_overlay_pipeline() {
         return false;
     }
     VkPipelineShaderStageCreateInfo stages[2]{};
-    stages[0] = {VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO, nullptr, 0, VK_SHADER_STAGE_VERTEX_BIT, vert, "main",
-                 nullptr};
-    stages[1] = {VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO, nullptr, 0, VK_SHADER_STAGE_FRAGMENT_BIT, frag,
-                 "main", nullptr};
+    stages[0] = {
+        VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO, nullptr, 0, VK_SHADER_STAGE_VERTEX_BIT, vert, "main", nullptr};
+    stages[1] = {
+        VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO, nullptr, 0, VK_SHADER_STAGE_FRAGMENT_BIT, frag, "main", nullptr};
 
     VkVertexInputBindingDescription binding{};
     binding.binding   = 0;
@@ -407,13 +407,13 @@ bool stereo_renderer::create_overlay_pipeline() {
     blend_attachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
     blend_attachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
     blend_attachment.alphaBlendOp        = VK_BLEND_OP_ADD;
-    blend_attachment.colorWriteMask      = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
-        VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+    blend_attachment.colorWriteMask =
+        VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
     VkPipelineColorBlendStateCreateInfo blend{VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO};
     blend.attachmentCount = 1;
     blend.pAttachments    = &blend_attachment;
 
-    constexpr VkDynamicState dynamic_states[] = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
+    constexpr VkDynamicState         dynamic_states[] = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
     VkPipelineDynamicStateCreateInfo dynamic{VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO};
     dynamic.dynamicStateCount = 2;
     dynamic.pDynamicStates    = dynamic_states;
@@ -431,8 +431,7 @@ bool stereo_renderer::create_overlay_pipeline() {
     pipeline_info.layout              = overlay_pipeline_layout_;
     pipeline_info.renderPass          = render_pass_;
     pipeline_info.subpass             = 0;
-    const VkResult result =
-        vkCreateGraphicsPipelines(device_, VK_NULL_HANDLE, 1, &pipeline_info, nullptr, &overlay_pipeline_);
+    const VkResult result = vkCreateGraphicsPipelines(device_, VK_NULL_HANDLE, 1, &pipeline_info, nullptr, &overlay_pipeline_);
     vkDestroyShaderModule(device_, vert, nullptr);
     vkDestroyShaderModule(device_, frag, nullptr);
     return result == VK_SUCCESS;
@@ -488,10 +487,10 @@ bool stereo_renderer::create_modal_pipeline() {
         return false;
     }
     VkPipelineShaderStageCreateInfo stages[2]{};
-    stages[0] = {VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO, nullptr, 0, VK_SHADER_STAGE_VERTEX_BIT, vert, "main",
-                 nullptr};
-    stages[1] = {VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO, nullptr, 0, VK_SHADER_STAGE_FRAGMENT_BIT, frag,
-                 "main", nullptr};
+    stages[0] = {
+        VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO, nullptr, 0, VK_SHADER_STAGE_VERTEX_BIT, vert, "main", nullptr};
+    stages[1] = {
+        VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO, nullptr, 0, VK_SHADER_STAGE_FRAGMENT_BIT, frag, "main", nullptr};
 
     VkVertexInputBindingDescription binding{};
     binding.binding   = 0;
@@ -527,12 +526,12 @@ bool stereo_renderer::create_modal_pipeline() {
     blend_attachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
     blend_attachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
     blend_attachment.alphaBlendOp        = VK_BLEND_OP_ADD;
-    blend_attachment.colorWriteMask      = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
-        VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+    blend_attachment.colorWriteMask =
+        VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
     VkPipelineColorBlendStateCreateInfo blend{VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO};
-    blend.attachmentCount = 1;
-    blend.pAttachments    = &blend_attachment;
-    constexpr VkDynamicState dynamic_states[] = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
+    blend.attachmentCount                             = 1;
+    blend.pAttachments                                = &blend_attachment;
+    constexpr VkDynamicState         dynamic_states[] = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
     VkPipelineDynamicStateCreateInfo dynamic{VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO};
     dynamic.dynamicStateCount = 2;
     dynamic.pDynamicStates    = dynamic_states;
@@ -550,8 +549,7 @@ bool stereo_renderer::create_modal_pipeline() {
     pipeline_info.layout              = modal_pipeline_layout_;
     pipeline_info.renderPass          = render_pass_;
     pipeline_info.subpass             = 0;
-    const VkResult result =
-        vkCreateGraphicsPipelines(device_, VK_NULL_HANDLE, 1, &pipeline_info, nullptr, &modal_pipeline_);
+    const VkResult result = vkCreateGraphicsPipelines(device_, VK_NULL_HANDLE, 1, &pipeline_info, nullptr, &modal_pipeline_);
     vkDestroyShaderModule(device_, vert, nullptr);
     vkDestroyShaderModule(device_, frag, nullptr);
     return result == VK_SUCCESS;
@@ -563,16 +561,14 @@ bool stereo_renderer::create_boba_overlay_resources() {
         return false;
     }
 
-    constexpr VkDeviceSize overlay_buffer_bytes = sizeof(overlay_vertex) *
-        data_format::boba_frame_overlay::max_commands_per_eye * 6ULL;
+    constexpr VkDeviceSize overlay_buffer_bytes =
+        sizeof(overlay_vertex) * data_format::boba_frame_overlay::max_commands_per_eye * 6ULL;
     constexpr VkDeviceSize modal_buffer_bytes = sizeof(modal_vertex) * 6ULL;
     for (int eye = 0; eye < 2; ++eye) {
-        if (!create_host_visible_buffer(overlay_buffer_bytes, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
-                                        &overlay_vertex_buffers_[eye],
+        if (!create_host_visible_buffer(overlay_buffer_bytes, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, &overlay_vertex_buffers_[eye],
                                         &overlay_vertex_memories_[eye], &overlay_vertex_mapped_[eye]) ||
-            !create_host_visible_buffer(modal_buffer_bytes, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
-                                        &modal_vertex_buffers_[eye], &modal_vertex_memories_[eye],
-                                        &modal_vertex_mapped_[eye])) {
+            !create_host_visible_buffer(modal_buffer_bytes, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, &modal_vertex_buffers_[eye],
+                                        &modal_vertex_memories_[eye], &modal_vertex_mapped_[eye])) {
             spdlog::get("illixr")->error("[stereo_renderer] Could not allocate Boba overlay vertex buffers");
             return false;
         }
@@ -617,9 +613,9 @@ bool stereo_renderer::upload_modal_texture(std::uint64_t texture_id, std::uint32
     vkUnmapMemory(device_, staging_memory);
     staging_mapped = nullptr;
 
-    VkImage        new_image = VK_NULL_HANDLE;
-    VkDeviceMemory new_memory = VK_NULL_HANDLE;
-    VkImageView    new_view = VK_NULL_HANDLE;
+    VkImage         new_image      = VK_NULL_HANDLE;
+    VkDeviceMemory  new_memory     = VK_NULL_HANDLE;
+    VkImageView     new_view       = VK_NULL_HANDLE;
     VkCommandBuffer upload_command = VK_NULL_HANDLE;
 
     const auto release_new_resources = [&] {
@@ -709,15 +705,14 @@ bool stereo_renderer::upload_modal_texture(std::uint64_t texture_id, std::uint32
     to_transfer.subresourceRange.levelCount = 1;
     to_transfer.subresourceRange.layerCount = 1;
     to_transfer.dstAccessMask               = VK_ACCESS_TRANSFER_WRITE_BIT;
-    vkCmdPipelineBarrier(upload_command, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0,
-                         nullptr, 0, nullptr, 1, &to_transfer);
+    vkCmdPipelineBarrier(upload_command, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0,
+                         nullptr, 1, &to_transfer);
 
     VkBufferImageCopy copy_region{};
     copy_region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
     copy_region.imageSubresource.layerCount = 1;
     copy_region.imageExtent                 = {width, height, 1};
-    vkCmdCopyBufferToImage(upload_command, staging_buffer, new_image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1,
-                           &copy_region);
+    vkCmdCopyBufferToImage(upload_command, staging_buffer, new_image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &copy_region);
 
     VkImageMemoryBarrier to_shader_read{VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER};
     to_shader_read.oldLayout                   = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
@@ -730,8 +725,8 @@ bool stereo_renderer::upload_modal_texture(std::uint64_t texture_id, std::uint32
     to_shader_read.subresourceRange.layerCount = 1;
     to_shader_read.srcAccessMask               = VK_ACCESS_TRANSFER_WRITE_BIT;
     to_shader_read.dstAccessMask               = VK_ACCESS_SHADER_READ_BIT;
-    vkCmdPipelineBarrier(upload_command, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0, 0,
-                         nullptr, 0, nullptr, 1, &to_shader_read);
+    vkCmdPipelineBarrier(upload_command, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0, 0, nullptr,
+                         0, nullptr, 1, &to_shader_read);
 
     if (vkEndCommandBuffer(upload_command) != VK_SUCCESS) {
         release_new_resources();
@@ -782,8 +777,7 @@ bool stereo_renderer::upload_modal_texture(std::uint64_t texture_id, std::uint32
     vkUpdateDescriptorSets(device_, 1, &descriptor_write, 0, nullptr);
 
     release_new_resources();
-    spdlog::get("illixr")->info("[stereo_renderer] Uploaded Boba modal texture id={} size={}x{}", texture_id,
-                                 width, height);
+    spdlog::get("illixr")->info("[stereo_renderer] Uploaded Boba modal texture id={} size={}x{}", texture_id, width, height);
     return true;
 }
 
@@ -794,14 +788,13 @@ void stereo_renderer::update_boba_overlay_state(const data_format::dual_frames& 
         overlay_source_width_ > 0 && overlay_source_height_ > 0;
     active_modal_ = frame.boba_modal;
 
-    const auto append_vertex = [](std::vector<overlay_vertex>& vertices, float x, float y, float red, float green,
-                                  float blue, float alpha) {
-        vertices.push_back({x, y, std::clamp(red / 255.0F, 0.0F, 1.0F),
-                            std::clamp(green / 255.0F, 0.0F, 1.0F),
+    const auto append_vertex = [](std::vector<overlay_vertex>& vertices, float x, float y, float red, float green, float blue,
+                                  float alpha) {
+        vertices.push_back({x, y, std::clamp(red / 255.0F, 0.0F, 1.0F), std::clamp(green / 255.0F, 0.0F, 1.0F),
                             std::clamp(blue / 255.0F, 0.0F, 1.0F), std::clamp(alpha, 0.0F, 1.0F)});
     };
-    const auto append_triangle = [&](std::vector<overlay_vertex>& vertices, float x0, float y0, float x1, float y1,
-                                     float x2, float y2, float red, float green, float blue, float alpha) {
+    const auto append_triangle = [&](std::vector<overlay_vertex>& vertices, float x0, float y0, float x1, float y1, float x2,
+                                     float y2, float red, float green, float blue, float alpha) {
         append_vertex(vertices, x0, y0, red, green, blue, alpha);
         append_vertex(vertices, x1, y1, red, green, blue, alpha);
         append_vertex(vertices, x2, y2, red, green, blue, alpha);
@@ -817,14 +810,15 @@ void stereo_renderer::update_boba_overlay_state(const data_format::dual_frames& 
             continue;
         }
 
-        const auto& commands = *command_lists[eye];
-        const std::size_t command_count = std::min<std::size_t>(
-            commands.size() / data_format::boba_frame_overlay::command_stride_floats,
-            data_format::boba_frame_overlay::max_commands_per_eye);
+        const auto&       commands = *command_lists[eye];
+        const std::size_t command_count =
+            std::min<std::size_t>(commands.size() / data_format::boba_frame_overlay::command_stride_floats,
+                                  data_format::boba_frame_overlay::max_commands_per_eye);
         for (std::size_t command_index = 0; command_index < command_count; ++command_index) {
-            const float* command = commands.data() +
-                command_index * data_format::boba_frame_overlay::command_stride_floats;
-            if (!std::all_of(command, command + 10, [](float value) { return std::isfinite(value); })) {
+            const float* command = commands.data() + command_index * data_format::boba_frame_overlay::command_stride_floats;
+            if (!std::all_of(command, command + 10, [](float value) {
+                    return std::isfinite(value);
+                })) {
                 continue;
             }
 
@@ -847,10 +841,10 @@ void stereo_renderer::update_boba_overlay_state(const data_format::dual_frames& 
                 }
                 const float normal_x = -delta_y / length * radius;
                 const float normal_y = delta_x / length * radius;
-                append_triangle(vertices, start_x + normal_x, start_y + normal_y, end_x + normal_x,
-                                end_y + normal_y, end_x - normal_x, end_y - normal_y, red, green, blue, alpha);
-                append_triangle(vertices, start_x + normal_x, start_y + normal_y, end_x - normal_x,
-                                end_y - normal_y, start_x - normal_x, start_y - normal_y, red, green, blue, alpha);
+                append_triangle(vertices, start_x + normal_x, start_y + normal_y, end_x + normal_x, end_y + normal_y,
+                                end_x - normal_x, end_y - normal_y, red, green, blue, alpha);
+                append_triangle(vertices, start_x + normal_x, start_y + normal_y, end_x - normal_x, end_y - normal_y,
+                                start_x - normal_x, start_y - normal_y, red, green, blue, alpha);
             } else if (command_type == 1) {
                 const float center_x = command[1];
                 const float center_y = command[2];
@@ -864,26 +858,29 @@ void stereo_renderer::update_boba_overlay_state(const data_format::dual_frames& 
             }
         }
 
-        const bool eye_valid = eye == 0 ? active_modal_.left_valid : active_modal_.right_valid;
+        const bool  eye_valid = eye == 0 ? active_modal_.left_valid : active_modal_.right_valid;
         const auto& quad      = eye == 0 ? active_modal_.left_quad_pixels : active_modal_.right_quad_pixels;
-        if (active_modal_.visible && eye_valid &&
-            std::all_of(quad.begin(), quad.end(), [](float value) { return std::isfinite(value); })) {
-            modal_vertices_[eye] = {{{quad[0], quad[1], 0.0F, 0.0F}, {quad[2], quad[3], 1.0F, 0.0F},
-                                     {quad[4], quad[5], 1.0F, 1.0F}, {quad[0], quad[1], 0.0F, 0.0F},
-                                     {quad[4], quad[5], 1.0F, 1.0F}, {quad[6], quad[7], 0.0F, 1.0F}}};
+        if (active_modal_.visible && eye_valid && std::all_of(quad.begin(), quad.end(), [](float value) {
+                return std::isfinite(value);
+            })) {
+            modal_vertices_[eye]      = {{{quad[0], quad[1], 0.0F, 0.0F},
+                                          {quad[2], quad[3], 1.0F, 0.0F},
+                                          {quad[4], quad[5], 1.0F, 1.0F},
+                                          {quad[0], quad[1], 0.0F, 0.0F},
+                                          {quad[4], quad[5], 1.0F, 1.0F},
+                                          {quad[6], quad[7], 0.0F, 1.0F}}};
             modal_vertex_counts_[eye] = 6;
         }
     }
 
     if (render_boba_overlays_ && active_modal_.visible && active_modal_.texture_id != 0 &&
         active_modal_.texture_id != modal_texture_id_ && frame.boba_modal_rgba != nullptr) {
-        const std::uint64_t expected_size =
-            static_cast<std::uint64_t>(active_modal_.width) * active_modal_.height * 4ULL;
+        const std::uint64_t expected_size = static_cast<std::uint64_t>(active_modal_.width) * active_modal_.height * 4ULL;
         if (expected_size == frame.boba_modal_rgba->size() &&
             !upload_modal_texture(active_modal_.texture_id, active_modal_.width, active_modal_.height,
                                   *frame.boba_modal_rgba)) {
             spdlog::get("illixr")->warn("[stereo_renderer] Could not upload Boba modal texture id={}",
-                                         active_modal_.texture_id);
+                                        active_modal_.texture_id);
         }
     }
 }
@@ -893,15 +890,14 @@ void stereo_renderer::record_boba_overlays(VkCommandBuffer command_buffer, int e
         return;
     }
 
-    const float source_size[2] = {static_cast<float>(overlay_source_width_),
-                                  static_cast<float>(overlay_source_height_)};
-    const auto& overlay = overlay_vertices_[eye];
+    const float source_size[2] = {static_cast<float>(overlay_source_width_), static_cast<float>(overlay_source_height_)};
+    const auto& overlay        = overlay_vertices_[eye];
     if (!overlay.empty()) {
         std::memcpy(overlay_vertex_mapped_[eye], overlay.data(), overlay.size() * sizeof(overlay_vertex));
         const VkDeviceSize offset = 0;
         vkCmdBindPipeline(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, overlay_pipeline_);
-        vkCmdPushConstants(command_buffer, overlay_pipeline_layout_, VK_SHADER_STAGE_VERTEX_BIT, 0,
-                           sizeof(source_size), source_size);
+        vkCmdPushConstants(command_buffer, overlay_pipeline_layout_, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(source_size),
+                           source_size);
         vkCmdBindVertexBuffers(command_buffer, 0, 1, &overlay_vertex_buffers_[eye], &offset);
         vkCmdDraw(command_buffer, static_cast<std::uint32_t>(overlay.size()), 1, 0, 0);
     }

@@ -340,10 +340,9 @@ boba_immersive::boba_immersive(const std::string& name, phonebook* pb)
     if (switchboard_->get_env_bool("BOBA_NATIVE_QUEST_STREAM", "false")) {
         network::topic_config control_config{};
         control_config.serialization_method = network::topic_config::SerializationMethod::PROTOBUF;
-        control_config.transport_method      = network::topic_config::TransportMethod::TCP;
+        control_config.transport_method     = network::topic_config::TransportMethod::TCP;
         native_client_control_writer_.emplace(
-            switchboard_->get_network_writer<switchboard::event_wrapper<std::string>>(
-                "boba_client_control", control_config));
+            switchboard_->get_network_writer<switchboard::event_wrapper<std::string>>("boba_client_control", control_config));
     }
 }
 

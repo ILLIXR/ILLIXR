@@ -83,9 +83,8 @@ cudaError_t launch_bgra_stereo_to_nv12(cudaTextureObject_t left_tex, cudaTexture
 /// may differ; bilinear sampling performs the resize in the conversion pass.
 cudaError_t launch_rgba_stereo_linear_to_nv12(const uint8_t* left_rgba, size_t left_pitch, const uint8_t* right_rgba,
                                               size_t right_pitch, uint32_t source_width, uint32_t source_height,
-                                              uint8_t* dst_nv12, size_t dst_pitch, uint32_t dst_eye_width,
-                                              uint32_t dst_height, uint32_t aligned_height, bool flip_y,
-                                              cudaStream_t stream);
+                                              uint8_t* dst_nv12, size_t dst_pitch, uint32_t dst_eye_width, uint32_t dst_height,
+                                              uint32_t aligned_height, bool flip_y, cudaStream_t stream);
 #endif // COMBINED_ENCODING
 
 cudaError_t launch_rg_depth_to_nv12_scaled(cudaTextureObject_t tex_obj, uint8_t* dst_nv12, size_t dst_pitch, uint32_t dst_width,
@@ -251,8 +250,7 @@ public:
     /// The images are copied to persistent CUDA buffers, resized/color-converted
     /// on the GPU, and passed directly to NVENC.
     std::vector<uint8_t> encode_rgba_stereo(const uint8_t* left_rgba, size_t left_pitch, const uint8_t* right_rgba,
-                                            size_t right_pitch, uint32_t source_width, uint32_t source_height,
-                                            bool flip_y);
+                                            size_t right_pitch, uint32_t source_width, uint32_t source_height, bool flip_y);
 #endif // COMBINED_ENCODING
 
     /// Force the next encoded picture to be an independently decodable keyframe.
@@ -295,13 +293,13 @@ public:
     void set_current_eye(int eye);
 
 private:
-    void init_cuda();
-    void init_nvenc();
-    void query_capabilities();
-    void init_encoder();
-    void create_buffers();
-    void get_sequence_headers();
-    void send_startup_idrs(int count);
+    void                   init_cuda();
+    void                   init_nvenc();
+    void                   query_capabilities();
+    void                   init_encoder();
+    void                   create_buffers();
+    void                   get_sequence_headers();
+    void                   send_startup_idrs(int count);
     [[nodiscard]] uint32_t nvenc_struct_version(uint32_t compiled_version) const;
 
 #ifdef DUMP_FRAMES

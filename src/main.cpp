@@ -2,8 +2,8 @@
 
 #    include "illixr.hpp"
 #    ifdef __ANDROID__
-#        include <EGL/egl.h>
 #        include <condition_variable>
+#        include <EGL/egl.h>
 #        include <mutex>
 #        include <thread>
 #        include <vector>
@@ -63,7 +63,7 @@ extern "C" {
 JNIEXPORT void JNICALL Java_com_example_ILLIXR_ILLIXRNativeActivity_nativeOnPermissionGranted(JNIEnv* env, jobject activity) { }
 
 JNIEXPORT void JNICALL Java_com_example_ILLIXR_ILLIXRNativeActivity_nativeConfigure(JNIEnv* env, jobject activity,
-                                                                                     jstring server_ip) {
+                                                                                    jstring server_ip) {
     (void) activity;
     if (server_ip == nullptr) {
         return;
@@ -135,8 +135,8 @@ int main(int argc, const char* argv[]) {
         "enable_offload", "")("enable_alignment", "")("enable_verbose_errors", "")("enable_pre_sleep", "")(
         "h,help", "Produce help message")("realsense_cam", "", cxxopts::value<std::string>()->default_value("auto"))(
         "p,plugins", "The plugins to use",
-        cxxopts::value<std::vector<std::string>>())("y,yaml", "Yaml config file", cxxopts::value<std::string>())(
-        "openxr", "")("quest-ip", "Quest IP address for native ILLIXR wireless setup", cxxopts::value<std::string>())(
+        cxxopts::value<std::vector<std::string>>())("y,yaml", "Yaml config file", cxxopts::value<std::string>())("openxr", "")(
+        "quest-ip", "Quest IP address for native ILLIXR wireless setup", cxxopts::value<std::string>())(
         "quest-connect-timeout", "Seconds to wait for ILLIXRApp", cxxopts::value<int>()->default_value("120"));
     auto result = options.parse(argc, argv);
     if (result.count("help")) {

@@ -219,8 +219,8 @@ private:
     bool create_boba_overlay_resources();
     bool create_overlay_pipeline();
     bool create_modal_pipeline();
-    bool create_host_visible_buffer(VkDeviceSize size, VkBufferUsageFlags usage, VkBuffer* buffer,
-                                    VkDeviceMemory* memory, void** mapped);
+    bool create_host_visible_buffer(VkDeviceSize size, VkBufferUsageFlags usage, VkBuffer* buffer, VkDeviceMemory* memory,
+                                    void** mapped);
     bool upload_modal_texture(std::uint64_t texture_id, std::uint32_t width, std::uint32_t height,
                               const std::vector<std::uint8_t>& rgba);
     void destroy_modal_texture();
@@ -275,33 +275,33 @@ private:
     std::array<VkImageView, 2>   prev_swapchain_views_{VK_NULL_HANDLE, VK_NULL_HANDLE};
 
     // Boba vector overlays (controller rays, placement rectangle, markers).
-    VkPipelineLayout overlay_pipeline_layout_ = VK_NULL_HANDLE;
-    VkPipeline       overlay_pipeline_        = VK_NULL_HANDLE;
-    std::array<VkBuffer, 2>       overlay_vertex_buffers_{VK_NULL_HANDLE, VK_NULL_HANDLE};
-    std::array<VkDeviceMemory, 2> overlay_vertex_memories_{VK_NULL_HANDLE, VK_NULL_HANDLE};
-    std::array<void*, 2>          overlay_vertex_mapped_{nullptr, nullptr};
+    VkPipelineLayout                           overlay_pipeline_layout_ = VK_NULL_HANDLE;
+    VkPipeline                                 overlay_pipeline_        = VK_NULL_HANDLE;
+    std::array<VkBuffer, 2>                    overlay_vertex_buffers_{VK_NULL_HANDLE, VK_NULL_HANDLE};
+    std::array<VkDeviceMemory, 2>              overlay_vertex_memories_{VK_NULL_HANDLE, VK_NULL_HANDLE};
+    std::array<void*, 2>                       overlay_vertex_mapped_{nullptr, nullptr};
     std::array<std::vector<overlay_vertex>, 2> overlay_vertices_{};
 
     // Boba modal bitmap card.
-    VkDescriptorSetLayout modal_desc_set_layout_ = VK_NULL_HANDLE;
-    VkDescriptorPool      modal_descriptor_pool_ = VK_NULL_HANDLE;
-    VkDescriptorSet       modal_descriptor_set_  = VK_NULL_HANDLE;
-    VkPipelineLayout      modal_pipeline_layout_ = VK_NULL_HANDLE;
-    VkPipeline            modal_pipeline_        = VK_NULL_HANDLE;
-    VkSampler             modal_sampler_         = VK_NULL_HANDLE;
-    VkImage               modal_image_           = VK_NULL_HANDLE;
-    VkDeviceMemory        modal_image_memory_    = VK_NULL_HANDLE;
-    VkImageView           modal_image_view_      = VK_NULL_HANDLE;
-    std::array<VkBuffer, 2>       modal_vertex_buffers_{VK_NULL_HANDLE, VK_NULL_HANDLE};
-    std::array<VkDeviceMemory, 2> modal_vertex_memories_{VK_NULL_HANDLE, VK_NULL_HANDLE};
-    std::array<void*, 2>          modal_vertex_mapped_{nullptr, nullptr};
+    VkDescriptorSetLayout                      modal_desc_set_layout_ = VK_NULL_HANDLE;
+    VkDescriptorPool                           modal_descriptor_pool_ = VK_NULL_HANDLE;
+    VkDescriptorSet                            modal_descriptor_set_  = VK_NULL_HANDLE;
+    VkPipelineLayout                           modal_pipeline_layout_ = VK_NULL_HANDLE;
+    VkPipeline                                 modal_pipeline_        = VK_NULL_HANDLE;
+    VkSampler                                  modal_sampler_         = VK_NULL_HANDLE;
+    VkImage                                    modal_image_           = VK_NULL_HANDLE;
+    VkDeviceMemory                             modal_image_memory_    = VK_NULL_HANDLE;
+    VkImageView                                modal_image_view_      = VK_NULL_HANDLE;
+    std::array<VkBuffer, 2>                    modal_vertex_buffers_{VK_NULL_HANDLE, VK_NULL_HANDLE};
+    std::array<VkDeviceMemory, 2>              modal_vertex_memories_{VK_NULL_HANDLE, VK_NULL_HANDLE};
+    std::array<void*, 2>                       modal_vertex_mapped_{nullptr, nullptr};
     std::array<std::array<modal_vertex, 6>, 2> modal_vertices_{};
-    std::array<std::uint32_t, 2>                modal_vertex_counts_{0, 0};
-    data_format::boba_modal_overlay             active_modal_{};
-    std::uint64_t                               modal_texture_id_{0};
-    std::uint32_t                               overlay_source_width_{0};
-    std::uint32_t                               overlay_source_height_{0};
-    bool                                        render_boba_overlays_{false};
+    std::array<std::uint32_t, 2>               modal_vertex_counts_{0, 0};
+    data_format::boba_modal_overlay            active_modal_{};
+    std::uint64_t                              modal_texture_id_{0};
+    std::uint32_t                              overlay_source_width_{0};
+    std::uint32_t                              overlay_source_height_{0};
+    bool                                       render_boba_overlays_{false};
 
     // Depth pipeline resources (owned)
     VkRenderPass          depth_render_pass_     = VK_NULL_HANDLE;
