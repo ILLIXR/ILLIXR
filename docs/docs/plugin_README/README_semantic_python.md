@@ -63,20 +63,28 @@ In ILLIXR, the switchboard readers and writers usually publish `struct` data obj
 C++ struct
 
 ```c++
-struct semantic_data : switchboard::event {
-    std::vector<uint8_t> image;
-    int32_t frame_number;
+struct camera_intrinsics {
+    float   fx;
+    float   fy;
+    float   cx;
+    float   cy;
     int32_t width;
     int32_t height;
+};
+
+struct semantic_frame : switchboard::event {
+    std::vector<uint8_t> image;
+    camera_intrinsics    intrinsics;
     std::vector<uint8_t> depth;
-    int32_t depth_width;
-    int32_t depth_height;
-    float depth_near_z;
-    float intrinsics[4];
-    float depth_intrinsics[4];
+    float                depth_near_z;
+    camera_intrinsics    depth_intrinsics;
+
     float rgb_camera_pose[16];
     float depth_pose[16];
-    float max_depth;
+    float   max_depth;
+    int32_t frame_number;
+    int64_t rgb_timestamp_ns;
+    int64_t depth_timestamp_ns;
 };
 ```
 
@@ -84,16 +92,16 @@ becomes (assuming the `struct` instance id named `mydata`)
 
 ```
 {
-    "image":              = numpy 1D array of mydata.image
+    "image":              = numpy 2D array containing the decoded RGB image
     "frame_number":       = mydata.frame_number
-    "image_width":        = mydata.width;
-    "image_height":       = mydata.height;
-    "depth":              = numpy 1D array of mydata.depth
-    "depth_width":        = mydata.depth_width;
-    "depth_height":       = mydata.depth_height;
+    "image_width":        = mydata.camera_intrinsics.width;
+    "image_height":       = mydata.camera_intrinsics.height;
+    "depth":              = numpy 2D array containing the decoded depth image
+    "depth_width":        = mydata.depth_intrinsics.width;
+    "depth_height":       = mydata.depth_intrinsics.height;
     "depth_near_z":       = mydata.depth_near_z;
-    "intrinsics":         = numpy 1x4 array of mydata.intrinsics
-    "depth_intrinsics":   = numpy 1x4 array of mydata.depth_intrinsics
+    "intrinsics":         = numpy 1x4 array of mydata.intrinsics (fx, fy, cx, cy)
+    "depth_intrinsics":   = numpy 1x4 array of mydata.depth_intrinsics (fx, fy, cx, cy)
     "rgb_camera_pose":    = numpy 4x4 array of mydata.rgb_camera_pose
     "depth_pose":         = numpy 4x4 array of mydata.depth_pose
     "max_depth_m":        = mydata.max_depth
