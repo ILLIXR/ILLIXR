@@ -123,27 +123,23 @@ struct py_semantic_data_reader {
     decode::semantic_metadata_cache* metadata_cache;
 
     [[nodiscard]] pybind11::object get() const {
-        // Pull from whichever frame decode has actually finished, rather
-        // than the most recently arrived frame — decode lags arrival by a
-        // variable amount (see nvdec_decoder::decode). metadata_cache is
-        // keyed by the same frame_number the decoder returns (see
-        // plugin.cpp on_semantic_data), so looking it up here guarantees
-        // the depth/pose returned below belong to the same frame as
-        // "image".
-        const decode::decoded_frame_cache::Entry* entry = cache ? cache->latest() : nullptr;
-        if (entry == nullptr)
+        auto entry_opt = cache ? cache->latest() : std::nullopt;
+        if (!entry_opt)
             return pybind11::none();
 
-        const decode::semantic_metadata_cache::Entry* meta =
-            metadata_cache ? metadata_cache->find(entry->frame_number) : nullptr;
-        if (meta == nullptr)
+        auto meta_opt = metadata_cache
+                        ? metadata_cache->find(entry_opt->frame_number)
+                        : std::nullopt;
+        if (!meta_opt)
             return pybind11::none();
 
-        auto val = meta->data;
+        // entry_opt->rgb is our own copy — safe to use without any lock.
+        // meta_opt->data is a shared_ptr — refcount keeps the frame alive.
+        auto val = meta_opt->data;
 
         pybind11::dict data;
-        data["image"]            = entry_to_numpy(entry);
-        data["frame_number"]     = entry->frame_number;
+        data["image"]            = entry_to_numpy(&*entry_opt);
+        data["frame_number"]     = entry_opt->frame_number;
         data["image_width"]      = val->intrinsics.width;
         data["image_height"]     = val->intrinsics.height;
         data["depth"]            = to_numpy_flat_safe(val, val->depth.data(), val->depth.size());

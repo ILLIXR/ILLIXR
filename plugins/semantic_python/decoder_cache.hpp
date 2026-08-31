@@ -7,9 +7,11 @@
 #include <cstdint>
 #include <cstring>
 #include <mutex>
+#include <optional>
 #include <vector>
 
 namespace ILLIXR::decode {
+
 // ---------------------------------------------------------------------------
 // decoded_frame_cache
 //
@@ -17,7 +19,7 @@ namespace ILLIXR::decode {
 // Sized to match the switchboard topic history depth (256).
 //
 // Written by the decode callback (switchboard thread).
-// Read by get() (Python thread).
+// Read by latest() (Python thread).
 // Protected by a mutex.
 //
 // Each slot owns a std::vector<uint8_t> that holds a copy of the pinned
@@ -50,29 +52,21 @@ public:
         next_slot_ = (next_slot_ + 1) % CAPACITY;
     }
 
-    // Find a decoded frame by frame_number.
-    // Returns nullptr if not found (evicted or not yet decoded).
-    const Entry* find(int32_t frame_number) const {
+    // Return a copy of the most recently stored entry, taken under the lock.
+    // Returns nullopt if no frame has been stored yet.
+    std::optional<Entry> latest() const {
         std::lock_guard<std::mutex> lock(mutex_);
-        for (const auto& e : entries_) {
-            if (e.valid && e.frame_number == frame_number)
-                return &e;
-        }
-        return nullptr;
-    }
-
-    // Return the most recently stored entry.
-    const Entry* latest() const {
-        std::lock_guard<std::mutex> lock(mutex_);
-        int32_t                     best_fn = -1;
-        const Entry*                best    = nullptr;
+        int32_t      best_fn = -1;
+        const Entry* best    = nullptr;
         for (const auto& e : entries_) {
             if (e.valid && e.frame_number > best_fn) {
                 best_fn = e.frame_number;
                 best    = &e;
             }
         }
-        return best;
+        if (best == nullptr)
+            return std::nullopt;
+        return *best; // copy made while lock is held
     }
 
 private:
@@ -84,11 +78,10 @@ private:
 // ---------------------------------------------------------------------------
 // semantic_metadata_cache
 //
-// Ring buffer storing each semantic_data frame (depth, poses, intrinsics,
-// etc.), keyed by frame_number. Holds a switchboard::ptr to the frame
-// itself rather than copying individual fields out, so the frame's other
-// data stays alive and zero-copy-accessible for as long as the slot is
-// valid.
+// Ring buffer storing each semantic_frame (depth, poses, intrinsics, etc.),
+// keyed by frame_number. Holds a switchboard::ptr to the frame itself rather
+// than copying individual fields out, so the frame's other data stays alive
+// and zero-copy-accessible for as long as the slot is valid.
 //
 // decode lags arrival by a variable amount (see nvdec_decoder::decode), so
 // the frame most recently decoded is not the frame most recently arrived.
@@ -97,7 +90,7 @@ private:
 // rather than assuming the two arrive together.
 //
 // Written by on_semantic_data() (switchboard thread), at arrival, before
-// the decode call. Read by get() (Python thread).
+// the decode call. Read by find() (Python thread).
 // Protected by a mutex.
 // ---------------------------------------------------------------------------
 class semantic_metadata_cache {
@@ -120,15 +113,15 @@ public:
         next_slot_                       = (next_slot_ + 1) % CAPACITY;
     }
 
-    // Find a frame's metadata by frame_number.
-    // Returns nullptr if not found (evicted or not yet arrived).
-    const Entry* find(int32_t frame_number) const {
+    // Return a copy of the entry matching frame_number, taken under the lock.
+    // Returns nullopt if not found (evicted or not yet arrived).
+    std::optional<Entry> find(int32_t frame_number) const {
         std::lock_guard<std::mutex> lock(mutex_);
         for (const auto& e : entries_) {
             if (e.valid && e.frame_number == frame_number)
-                return &e;
+                return e; // copy made while lock is held
         }
-        return nullptr;
+        return std::nullopt;
     }
 
 private:
@@ -136,4 +129,5 @@ private:
     std::array<Entry, CAPACITY> entries_;
     size_t                      next_slot_ = 0;
 };
+
 } // namespace ILLIXR::decode
