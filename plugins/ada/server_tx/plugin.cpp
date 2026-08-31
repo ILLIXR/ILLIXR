@@ -12,8 +12,8 @@ using namespace ILLIXR::data_format;
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
     , ada_writer_{switchboard_->get_network_writer<switchboard::event_wrapper<std::string>>(
           "ada_processed",
-          network::topic_config{.latency              = std::chrono::milliseconds(0),
-                                .serialization_method = network::topic_config::SerializationMethod::PROTOBUF})} {
+          network::topic_config{network::topic_config::SerializationMethod::PROTOBUF, network::topic_config::TransportMethod::TCP,
+                                std::chrono::milliseconds(0)})} {
     if (!std::filesystem::exists(data_path)) {
         if (!std::filesystem::create_directory(data_path)) {
             spdlog::get("illixr")->error("Failed to create data directory.");
