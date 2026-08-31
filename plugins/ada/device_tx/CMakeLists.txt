@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.22)
 if(WIN32 OR MSVC OR ANDROID)
     message(WARNING "ada.device_tx is not yet available for Windows or Android")
-    set(USE_ADA_DEVICE_TX OFF)
+    set(USE_ADA.DEVICE_TX OFF)
     return()
 endif()
 

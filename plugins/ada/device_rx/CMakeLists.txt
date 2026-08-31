@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.22)
 if(WIN32 OR MSVC OR ANDROID)
     message(WARNING "ada.device_rx is not yet available for Windows or Android")
-    set(USE_ADA_DEVICE_RX OFF)
+    set(USE_ADA.DEVICE_RX OFF)
     return()
 endif()
 set(PLUGIN_NAME plugin.ada.device_rx${ILLIXR_BUILD_SUFFIX})

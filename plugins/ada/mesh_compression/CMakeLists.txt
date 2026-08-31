@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.22)
 if(WIN32 OR MSVC OR ANDROID)
     message(WARNING "ada.mesh_compression is not yet available for Windows or Android")
-    set(USE_ADA_MESH_COMPRESSION OFF)
+    set(USE_ADA.MESH_COMPRESSION OFF)
     return()
 endif()
 
