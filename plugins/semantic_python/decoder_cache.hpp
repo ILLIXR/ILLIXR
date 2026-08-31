@@ -56,8 +56,8 @@ public:
     // Returns nullopt if no frame has been stored yet.
     std::optional<Entry> latest() const {
         std::lock_guard<std::mutex> lock(mutex_);
-        int32_t      best_fn = -1;
-        const Entry* best    = nullptr;
+        int32_t                     best_fn = -1;
+        const Entry*                best    = nullptr;
         for (const auto& e : entries_) {
             if (e.valid && e.frame_number > best_fn) {
                 best_fn = e.frame_number;

@@ -127,9 +127,7 @@ struct py_semantic_data_reader {
         if (!entry_opt)
             return pybind11::none();
 
-        auto meta_opt = metadata_cache
-                        ? metadata_cache->find(entry_opt->frame_number)
-                        : std::nullopt;
+        auto meta_opt = metadata_cache ? metadata_cache->find(entry_opt->frame_number) : std::nullopt;
         if (!meta_opt)
             return pybind11::none();
 
