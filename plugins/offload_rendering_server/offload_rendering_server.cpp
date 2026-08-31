@@ -28,7 +28,7 @@ offload_rendering_server::offload_rendering_server(const std::string& name, phon
     , log_{spdlogger("debug")}
     , switchboard_{pb->lookup_impl<switchboard>()}
     , frames_topic_{switchboard_->get_network_writer<compressed_frame>("compressed_frames",
-                                                                       {.serialization_method = network::topic_config::BOOST})}
+                                                                       {network::topic_config::BOOST})}
     , pose_relay_{std::make_shared<pose_relay>(name, pb)} {
     // Only encode and pass depth if requested - otherwise skip it.
     use_pass_depth_ = switchboard_->get_env_char("ILLIXR_USE_DEPTH_IMAGES") != nullptr &&

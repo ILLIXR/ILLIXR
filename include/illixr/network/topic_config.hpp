@@ -19,6 +19,12 @@ struct topic_config {
     enum SerializationMethod { BOOST, PROTOBUF } serialization_method;
 
     enum TransportMethod { TCP, UDP } transport_method;
+
+    topic_config() = default;
+
+    topic_config(SerializationMethod method, TransportMethod transport = TCP)
+        : serialization_method{method}
+        , transport_method{transport} {}
 };
 
 } // namespace ILLIXR::network
