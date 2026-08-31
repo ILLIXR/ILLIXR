@@ -7,6 +7,7 @@
 #    include "illixr/data_format/poses/combined_pose.hpp"
 #endif
 #include "illixr/data_format/frame.hpp"
+#include "illixr/data_format/hmd_config.hpp"
 #include "illixr/data_format/pose_id.hpp"
 #include "illixr/data_format/pose_prediction.hpp"
 #include "illixr/data_format/serialization/frame.hpp"
@@ -54,8 +55,7 @@ namespace ILLIXR {
 class MY_EXPORT_API offload_rendering_server
     : public threadloop
     , public vulkan::timewarp
-    , public data_format::pose_prediction
-    , std::enable_shared_from_this<plugin> {
+    , public data_format::pose_prediction {
 public:
     /**
      * @brief Constructor initializes the server with configuration from environment variables
@@ -104,9 +104,11 @@ public:
     /**
      * @brief Get the true pose (same as fast pose in this implementation)
      */
+#ifndef USING_OPENXR
     ILLIXR::data_format::pose::head_pose_type get_true_pose() const override {
         return get_fast_pose().pose;
     }
+#endif
 
     /**
      * @brief Get predicted pose for a future time point (returns current pose)

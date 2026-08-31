@@ -17,7 +17,6 @@ void serialize(Archive& ar, ILLIXR::data_format::pose::combined_pose& data, cons
     ar & data.hand_poses;
     ar & data.palm_poses;
     ar & data.hand_interactions;
-    ar & data.ipd_;
     ar & data.valid_data;
     ar & data.id;
     ar & data.pose_xr_time_ns;

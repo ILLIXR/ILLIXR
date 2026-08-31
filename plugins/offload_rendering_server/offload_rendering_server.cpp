@@ -27,7 +27,9 @@ offload_rendering_server::offload_rendering_server(const std::string& name, phon
     : threadloop{name, pb}
     , log_{spdlogger("debug")}
     , switchboard_{pb->lookup_impl<switchboard>()}
-    , frames_topic_{switchboard_->get_network_writer<compressed_frame>("compressed_frames", {})}
+    , frames_topic_{switchboard_->get_network_writer<compressed_frame>(
+          "compressed_frames", {.serialization_method = network::topic_config::BOOST,
+                                .transport_method     = network::topic_config::UDP})}
     , pose_relay_{std::make_shared<pose_relay>(name, pb)} {
     // Only encode and pass depth if requested - otherwise skip it.
     use_pass_depth_ = switchboard_->get_env_char("ILLIXR_USE_DEPTH_IMAGES") != nullptr &&
@@ -522,7 +524,9 @@ void offload_rendering_server::enqueue_for_network_send(BUFFER_TYPE& pose
         frame->fov_down[eye]  = hmd_setup_.fov_angle_down[eye];
     }
 #    endif
-    frame->pose_id     = pose_id;
+#    ifdef USING_OPENXR
+    frame->pose_id = pose_id;
+#    endif
     frame->is_keyframe = color_frame_is_keyframe_;
     frame->encode_time = current_encode_time_;
 
@@ -565,6 +569,9 @@ void offload_rendering_server::enqueue_for_network_send(BUFFER_TYPE& pose
     }
 #    endif
     // frame->pose_id     = pose_id;
+#    ifdef USING_OPENXR
+        frame->pose_id = pose_id;
+#    endif
     frame->is_keyframe = color_frame_is_keyframe_;
     frame->encode_time = current_encode_time_;
 
