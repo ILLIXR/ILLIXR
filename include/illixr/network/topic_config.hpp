@@ -21,13 +21,14 @@ struct topic_config {
     enum TransportMethod { TCP, UDP } transport_method;
 
     topic_config()
-            : serialization_method{BOOST}
-            , transport_method{TCP} {}
+        : serialization_method{BOOST}
+        , transport_method{TCP} { }
 
-    explicit topic_config(SerializationMethod method, TransportMethod transport = TCP, std::chrono::duration<long, std::nano> late = std::chrono::duration<long, std::nano>{})
+    explicit topic_config(SerializationMethod method, TransportMethod transport = TCP,
+                          std::chrono::duration<long, std::nano> late = std::chrono::duration<long, std::nano>{})
         : latency{late}
         , serialization_method{method}
-        , transport_method{transport} {}
+        , transport_method{transport} { }
 };
 
 } // namespace ILLIXR::network
