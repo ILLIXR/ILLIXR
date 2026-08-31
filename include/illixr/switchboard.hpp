@@ -417,8 +417,7 @@ private:
          */
         void put(ptr<const event>&& this_event) {
             assert(this_event != nullptr);
-            assert(this_event.unique() ||
-                   this_event.use_count() <= 2); /// <-- TODO: Revisit for solution that guarantees uniqueness
+            assert(this_event.use_count() <= 2); /// <-- TODO: Revisit for solution that guarantees uniqueness
 
             /* The pointer that this gets exchanged with needs to get dropped. */
             size_t index          = (latest_index_.load() + 1) % latest_buffer_size_;
@@ -629,11 +628,10 @@ public:
         virtual void put(ptr<Specific_event>&& this_specific_event) {
             assert(typeid(Specific_event) == topic_.ty());
             assert(this_specific_event != nullptr);
-            assert(this_specific_event.unique());
+            assert(this_specific_event.use_count() == 1);
             ptr<const event> this_event =
                 std::const_pointer_cast<const event>(std::static_pointer_cast<event>(std::move(this_specific_event)));
-            assert(this_event.unique() ||
-                   this_event.use_count() <= 2); /// TODO: Revisit for solution that guarantees uniqueness
+            assert(this_event.use_count() <= 2); /// TODO: Revisit for solution that guarantees uniqueness
             topic_.put(std::move(this_event));
         }
 

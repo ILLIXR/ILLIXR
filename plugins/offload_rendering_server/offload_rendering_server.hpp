@@ -2,6 +2,12 @@
 #define MONADO_IS_SOURCE
 #define DOUBLE_INCLUDE
 
+#ifdef _WIN32
+#    ifndef XRT_OS_WINDOWS
+#        define XRT_OS_WINDOWS
+#    endif
+#endif
+
 #include "drivers/illixr/illixr_framebuffer.h"
 #ifdef USING_OPENXR
 #    include "illixr/data_format/poses/combined_pose.hpp"
