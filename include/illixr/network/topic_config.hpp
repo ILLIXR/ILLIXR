@@ -24,7 +24,7 @@ struct topic_config {
 
     topic_config(SerializationMethod method, TransportMethod transport = TCP)
         : serialization_method{method}
-        , transport_method{transport} {}
+        , transport_method{transport} { }
 };
 
 } // namespace ILLIXR::network
