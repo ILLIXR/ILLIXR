@@ -315,6 +315,11 @@ void offload_rendering_server::_p_one_iteration() {
 #else
     last_sent_pose_ = poses;
 #endif
+    log_->info("[POSE_DIAG][current_pose] valid={} pos=({:.3f},{:.3f},{:.3f}) "
+                   "ori=({:.3f},{:.3f},{:.3f},{:.3f})",
+                   poses.pose.valid, poses.pose.position.x(),
+                   poses.pose.position.y(), poses.pose.position.z(), poses.pose.orientation.x(),
+                   poses.pose.orientation.y(), poses.pose.orientation.z(), poses.pose.orientation.w());
 
     // Record encode operation timing
     auto encode_start_time = std::chrono::high_resolution_clock::now();
@@ -554,6 +559,12 @@ void offload_rendering_server::enqueue_for_network_send(BUFFER_TYPE& pose
         frame = std::make_shared<compressed_frame>(encode_out_color_packets_[0], encode_out_color_packets_[1],
                                                    encode_out_depth_packets_[0], encode_out_depth_packets_[1], pose, timestamp,
                                                    frame_number_, near_z_, far_z_, nalu_only_);
+        log_->info("[POSE_DIAG][current_pose] valid={} pos=({:.3f},{:.3f},{:.3f}) "
+               "ori=({:.3f},{:.3f},{:.3f},{:.3f})",
+               pose.pose.valid, pose.pose.position.x(),
+               pose.pose.position.y(), pose.pose.position.z(), pose.pose.orientation.x(),
+               pose.pose.orientation.y(), pose.pose.orientation.z(), pose.pose.orientation.w());
+
     } else {
         frame = std::make_shared<compressed_frame>(encode_out_color_packets_[0], encode_out_color_packets_[1], pose, timestamp,
                                                    frame_number_, nalu_only_);
@@ -1018,10 +1029,19 @@ void offload_rendering_server::ffmpeg_init_cuda_frame_ctx() {
         throw std::runtime_error{"Failed to create FFmpeg CUDA hwframe context"};
     }
 
+    // sw_format must match the actual Vulkan source pixel layout: the Vulkan->CUDA
+    // transfer is a zero-copy remap of the same GPU memory, not a format conversion.
+    auto pix_format = vulkan::ffmpeg_utils::get_pix_format_from_vk_format(buffer_pool_->image_pool[0][0].image_info.format);
+    if (!pix_format) {
+        throw std::runtime_error{"Unsupported Vulkan image format " +
+                                 std::to_string(buffer_pool_->image_pool[0][0].image_info.format) +
+                                 " when creating FFmpeg CUDA hwframe context"};
+    }
+
     // Configure CUDA frame properties
     auto cuda_hwframe_ctx       = reinterpret_cast<AVHWFramesContext*>(cuda_frame_ref->data);
     cuda_hwframe_ctx->format    = AV_PIX_FMT_CUDA;
-    cuda_hwframe_ctx->sw_format = AV_PIX_FMT_BGRA;
+    cuda_hwframe_ctx->sw_format = *pix_format;
     cuda_hwframe_ctx->width     = static_cast<int>(buffer_pool_->image_pool[0][0].image_info.extent.width);
     cuda_hwframe_ctx->height    = static_cast<int>(buffer_pool_->image_pool[0][0].image_info.extent.height);
 
@@ -1251,7 +1271,11 @@ void offload_rendering_server::ffmpeg_init_encoder() {
 
     // Configure pixel format and hardware acceleration
     codec_color_ctx_->pix_fmt       = AV_PIX_FMT_CUDA;
-    codec_color_ctx_->sw_pix_fmt    = AV_PIX_FMT_BGRA;
+    auto color_pix_format = vulkan::ffmpeg_utils::get_pix_format_from_vk_format(buffer_pool_->image_pool[0][0].image_info.format);
+    if (!color_pix_format) {
+        throw std::runtime_error{"Unsupported Vulkan image format when configuring FFmpeg encoder"};
+    }
+    codec_color_ctx_->sw_pix_fmt    = *color_pix_format;
     codec_color_ctx_->hw_frames_ctx = av_buffer_ref(cuda_frame_ctx_);
 
     // Set frame dimensions and timing
