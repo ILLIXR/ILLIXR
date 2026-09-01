@@ -41,7 +41,8 @@ function loadModules() {
             document.getElementById("windows_plugins").innerHTML += "<li>" + item.name + "</li>";
         }
         if (item.OS.includes("android")) {
-            
+            plugins_android.add(item.name);
+            document.getElementById("android_plugins").innerHTML += "<li>" + item.name + "</li>";
         }
     }
     for (let grp of module_json["profiles"]) {
@@ -302,7 +303,7 @@ async function setUpPage() {
         cell.appendChild(y);
         count += 1;
     }
-    
+
     let andrRef = document.getElementById("listing_table_android");
     for (const dep of plugins_android) {
         const li = document.createElement("li");

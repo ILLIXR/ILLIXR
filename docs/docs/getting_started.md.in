@@ -73,7 +73,7 @@ required only for specific plugins.
     them run the following:
 
     ``` { .bash .copy }
-    cd <your repo location>
+    cd your repo location
     git submodule init
     git submodule update
     cd android_libraries/third_party
