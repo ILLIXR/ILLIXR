@@ -1,24 +1,29 @@
 #pragma once
 #if defined(_WIN32) || defined(_WIN64)
-#    ifndef WIN32_LEAN_AND_MEAN
-#        define WIN32_LEAN_AND_MEAN
-#    endif
 #    ifndef _WINSOCKAPI_
 #        define _WINSOCKAPI_
 #    endif
+#    ifndef WIN32_LEAN_AND_MEAN
+#        define WIN32_LEAN_AND_MEAN
+#    endif
+#endif
+
+#include <stdexcept>
+
+#if defined(_WIN32) || defined(_WIN64)
 // clang-format off
-#  include <WinSock2.h>  // Must come FIRST
-#  include <ws2def.h>
-#  include <ws2tcpip.h>
-#  include <mstcpip.h>
-#  include <WindNS.h>
-#  include <iphlpapi.h>
-#  include <icmpapi.h>
-#  include <nldef.h>
-#  pragma comment(lib, "Ws2_32.lib")
-#  pragma comment(lib, "Iphlpapi.lib")
-#  define BYTE_TYPE   int
-#  define SOCKET_TYPE SOCKET
+#    include <WinSock2.h>  // Must come FIRST
+#    include <ws2def.h>
+#    include <ws2tcpip.h>
+#    include <mstcpip.h>
+#    include <WindNS.h>
+#    include <iphlpapi.h>
+#    include <icmpapi.h>
+#    include <nldef.h>
+#    pragma comment(lib, "Ws2_32.lib")
+#    pragma comment(lib, "Iphlpapi.lib")
+#    define BYTE_TYPE   int
+#    define SOCKET_TYPE SOCKET
 // clang-format on
 #else
 #    include <arpa/inet.h>
@@ -34,7 +39,6 @@
 
 #include "illixr/export.hpp"
 
-#include <stdexcept>
 #include <string>
 
 namespace ILLIXR::network {
@@ -243,7 +247,12 @@ private:
 
     SOCKET_TYPE fd_;
     /* maximum size of a read */
+#if defined(_WIN32) || defined(_WIN64)
+    static constexpr size_t BUFFER_SIZE = 1024 * 256;
+#else
     static constexpr size_t BUFFER_SIZE = 1024 * 1024;
+#endif
+    
 #ifdef __ANDROID__
     char buffer_[BUFFER_SIZE];
 #endif

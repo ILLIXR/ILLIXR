@@ -314,11 +314,12 @@ void offload_rendering_server::_p_one_iteration() {
     uint64_t frame_pose_id = pose_relay_->find_pose_id_by_orientation(render_q);
 #else
     last_sent_pose_ = poses;
-#endif
     log_->info("[POSE_DIAG][current_pose] valid={} pos=({:.3f},{:.3f},{:.3f}) "
                "ori=({:.3f},{:.3f},{:.3f},{:.3f})",
                poses.pose.valid, poses.pose.position.x(), poses.pose.position.y(), poses.pose.position.z(),
                poses.pose.orientation.x(), poses.pose.orientation.y(), poses.pose.orientation.z(), poses.pose.orientation.w());
+
+#endif
 
     // Record encode operation timing
     auto encode_start_time = std::chrono::high_resolution_clock::now();
