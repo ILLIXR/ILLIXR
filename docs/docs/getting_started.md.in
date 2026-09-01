@@ -56,17 +56,19 @@ required only for specific plugins.
 
     You will need to change one of the settings in Visual Studio, otherwise the CMake generation will fail. Under Tools, open the Options item. Then select CMake in the left hand panel. There should be an option titled 'CMake configuration file', select 'Never use CMake Presets'.
 
+    It is also possible to use CLion as the IDE, but it needs to be configured to use `vcpkg` and still requires the installation of Visual Studio.
+
 === "Android"
 
-    To build ILLIXR for Android platforms you will need a recent version of [Android Studio][E25]. ILLIXR is known to build 
+    To build ILLIXR for Android platforms you will need a recent version of [Android Studio][E25]. ILLIXR is known to build
     for the Quest 3 headset with:
-    
+
     - Android NDK, version 27.2.12479018
     - Android SDK, version 13.0 (API 33)
-    
+
     Other combinations may work as well, depending on your Android device. The [Eigen libraries][E26] (v 3.4.1) will need
     to be available on the host Linux of Windows system.
-    
+
     For Android we provide some of the dependencies as precompiled libraries for the 4 most common architectures. To download
     them run the following:
 
@@ -117,20 +119,20 @@ required only for specific plugins.
 === "Android"
 
     The following plugins are available for Android:
-    
+
     <ul id="listing_table_android"></ul>
-    
+
     For the Android platform any plugins being used have to be manually selected in a few files.
-    
-    - `CMakeLists.txt`: Near line 186, for any plugin you wish to use set the corresponding `USE_` variable to ON. This 
+
+    - `CMakeLists.txt`: Near line 186, for any plugin you wish to use set the corresponding `USE_` variable to ON. This
       ensures they will be configured and built.
-    - `src/CMakeLists.txt`: In the `target_link_libraries(native-activity` call comment/uncomment the plugin list to 
-      match what you selected above. This ensures that all libraries are properly linked, this is an Android specific 
+    - `src/CMakeLists.txt`: In the `target_link_libraries(native-activity` call comment/uncomment the plugin list to
+      match what you selected above. This ensures that all libraries are properly linked, this is an Android specific
       requirement.
     - `src/main.cpp`: Change the contents of `const std::vector<std::string> plugins` to reflect your choice above. Since
       Android programs cannot be run with command line arguments, this code replaces the command line capabilities of
       Linux and Windows.
-    
+
 <br>
 
 #### Build command
@@ -229,7 +231,7 @@ The current list of plugins is:
 === "Windows"
 
     <ul name="windows_plugins" id="windows_plugins"></ul>
-    
+
 === "Android"
 
     <ul name="android_plugins" id="android_plugins"></ul>
@@ -315,7 +317,7 @@ In general, you should not edit a [profile][G23] file directly. The exception to
 
 Since you cannot use command line-based environment variables when running on Android, all environment variables have to be hard coded.
  All variables are set in main.cpp and are compiled in.
- 
+
 ILLIXR and several of its dependencies use environment variables to steer processing and define quasi-constant values. Traditionally, one would use std::getenv and std::setenv to get and set these items. However, in ILLIXR the switchboard acts as an interface to these functions with `get_env` (returns std::string), `get_env_bool` (returns bool), `get_env_char` (returns char*), and `set_env`. Using the switchboard interfaces allows for environment variables to be set from the command line and/or yaml file. It is strongly encouraged to the switchboard interface wherever possible. Any items given on the command line which do not match expected command line arguments are considered to be environment variables. For example:
 
 ```bash
