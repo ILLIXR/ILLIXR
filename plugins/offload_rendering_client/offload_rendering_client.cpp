@@ -1040,13 +1040,13 @@ data_format::dual_frames offload_rendering_client::construct_dual_frames(time_po
     // Vulkan path: acquire AHardwareBuffers from both decoders
     dual_frames frame = color_decoder_->get_current_frame(render_time);
     frame_meta  meta;
-
+    uint64_t decoded_frame_number;
     if (frame.is_valid()) {
         // frame.frame_number was set atomically with the buffer acquisition
         // inside acquire_latest_buffer() - no separate call needed.
         if (frame.frame_number <= last_submitted_frame_)
             return {};
-        const uint64_t decoded_frame_number = frame.frame_number;
+        decoded_frame_number = frame.frame_number;
         {
             std::lock_guard<std::mutex> lock(frame_meta_map_mutex_);
             auto                        it = frame_meta_map_.find(decoded_frame_number);
@@ -1090,18 +1090,39 @@ data_format::dual_frames offload_rendering_client::construct_dual_frames(time_po
     frame.fov_up      = cached_fov_up_;
     frame.fov_down    = cached_fov_down_;
 
-    if (use_depth_ && depth_decoder_ && depth_decoder_->is_ready()) {
+    // Depth and motion-vector buffers are only attached when they carry the
+    // same server frame_number as the color frame above.  Each decoder is an
+    // independent MediaCodec/AImageReader pipeline, so "latest available" from
+    // each is not guaranteed to line up - explicit matching here is what
+    // actually guarantees cadence, rather than relying on the three decoders
+    // happening to drain in lockstep.  RGB is always submitted regardless;
+    // depth/motion-vectors are simply omitted for this frame when unmatched.
+    if (frame.is_valid() && use_depth_ && depth_decoder_ && depth_decoder_->is_ready()) {
         dual_frames depth_frame = depth_decoder_->get_current_frame(render_time);
         if (depth_frame.is_valid()) {
-            frame.left_depth.hw_buffer  = depth_frame.left_eye.hw_buffer;
-            frame.right_depth.hw_buffer = depth_frame.right_eye.hw_buffer;
-            frame.has_depth             = true;
+            if (depth_frame.frame_number == decoded_frame_number) {
+                frame.left_depth.hw_buffer  = depth_frame.left_eye.hw_buffer;
+                frame.right_depth.hw_buffer = depth_frame.right_eye.hw_buffer;
+                frame.has_depth             = true;
 
-            static uint64_t log_counter = 0;
-            if (++log_counter % log_interval == 1) {
-                spdlog::get("illixr")->debug("[construct_dual_frames] depth: L={} R={}",
-                                             static_cast<void*>(frame.left_depth.hw_buffer),
-                                             static_cast<void*>(frame.right_depth.hw_buffer));
+                static uint64_t log_counter = 0;
+                if (++log_counter % log_interval == 1) {
+                    spdlog::get("illixr")->debug("[construct_dual_frames] depth: L={} R={}",
+                                                 static_cast<void*>(frame.left_depth.hw_buffer),
+                                                 static_cast<void*>(frame.right_depth.hw_buffer));
+                }
+            } else {
+                // Depth decoder is ahead of or behind color for this render_time.
+                // Drop depth for this frame rather than pairing mismatched data,
+                // and release what was just acquired so it isn't leaked.
+                depth_decoder_->release_frame(depth_frame);
+
+                static uint64_t depth_mismatch_log_counter = 0;
+                if (++depth_mismatch_log_counter % log_interval == 1) {
+                    spdlog::get("illixr")->debug("[construct_dual_frames] depth frame_number {} != color {}, "
+                                                 "submitting color-only this frame",
+                                                 depth_frame.frame_number, decoded_frame_number);
+                }
             }
         }
 
@@ -1109,16 +1130,27 @@ data_format::dual_frames offload_rendering_client::construct_dual_frames(time_po
         if (use_motion_vectors_ && motion_vec_decoder_ && motion_vec_decoder_->is_ready()) {
             dual_frames mv_frame = motion_vec_decoder_->get_current_frame(render_time);
             if (mv_frame.is_valid()) {
-                frame.left_motion_vec.hw_buffer  = mv_frame.left_eye.hw_buffer;
-                frame.right_motion_vec.hw_buffer = mv_frame.right_eye.hw_buffer;
-                frame.has_motion_vectors         = true;
+                if (mv_frame.frame_number == decoded_frame_number) {
+                    frame.left_motion_vec.hw_buffer  = mv_frame.left_eye.hw_buffer;
+                    frame.right_motion_vec.hw_buffer = mv_frame.right_eye.hw_buffer;
+                    frame.has_motion_vectors         = true;
 
-                static uint64_t mv_log_counter = 0;
-                if (++mv_log_counter % log_interval == 1) {
-                    spdlog::get("illixr")->debug("[construct_dual_frames] Vulkan frame with motion vectors: "
-                                                 "MV L={} R={}",
-                                                 static_cast<void*>(frame.left_motion_vec.hw_buffer),
-                                                 static_cast<void*>(frame.right_motion_vec.hw_buffer));
+                    static uint64_t mv_log_counter = 0;
+                    if (++mv_log_counter % log_interval == 1) {
+                        spdlog::get("illixr")->debug("[construct_dual_frames] Vulkan frame with motion vectors: "
+                                                     "MV L={} R={}",
+                                                     static_cast<void*>(frame.left_motion_vec.hw_buffer),
+                                                     static_cast<void*>(frame.right_motion_vec.hw_buffer));
+                    }
+                } else {
+                    motion_vec_decoder_->release_frame(mv_frame);
+
+                    static uint64_t mv_mismatch_log_counter = 0;
+                    if (++mv_mismatch_log_counter % log_interval == 1) {
+                        spdlog::get("illixr")->debug("[construct_dual_frames] motion-vector frame_number {} != color {}, "
+                                                     "submitting without motion vectors this frame",
+                                                     mv_frame.frame_number, decoded_frame_number);
+                    }
                 }
             }
         }
