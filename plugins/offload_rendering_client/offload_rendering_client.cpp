@@ -142,6 +142,18 @@ offload_rendering_client::~offload_rendering_client() {
     if (receiver_thread_.joinable()) {
         receiver_thread_.join();
     }
+
+    // Release whatever in_flight_frames_ hadn't yet aged past
+    // MAX_IN_FLIGHT_FRAMES.  AHardwareBuffer_release() doesn't depend on the
+    // decoders' MediaCodec/AImageReader state, so this is safe to do before
+    // stop() below.
+    while (!in_flight_frames_.empty()) {
+        if (color_decoder_) {
+            color_decoder_->release_frame(in_flight_frames_.front());
+        }
+        in_flight_frames_.pop_front();
+    }
+
     // Log final timing statistics
     if (color_decoder_) {
         auto color_stats = color_decoder_->get_timing_stats();
@@ -707,7 +719,11 @@ void offload_rendering_client::_p_one_iteration() {
 
     if (frame.is_valid()) {
         last_submitted_frame_ = frame.frame_number;
+        // Keep a copy for delayed release before frame is moved into the
+        // switchboard event - see in_flight_frames_.
+        in_flight_frames_.push_back(frame);
         frame_writer_.put(frame_writer_.allocate(std::move(frame)));
+        release_stale_frames();
         frame_count_++;
     } else {
         std::this_thread::sleep_for(std::chrono::microseconds(500));
@@ -1156,6 +1172,19 @@ data_format::dual_frames offload_rendering_client::construct_dual_frames(time_po
         }
     }
     return frame;
+}
+
+void offload_rendering_client::release_stale_frames() {
+    // color_decoder_->release_frame() is decoder-agnostic (see
+    // stereo_surface_decoder.hpp) - it releases whichever of color, depth,
+    // and motion-vector hw_buffer fields are populated on the given
+    // dual_frames, so one call per queued frame covers all three streams.
+    while (in_flight_frames_.size() > MAX_IN_FLIGHT_FRAMES) {
+        if (color_decoder_) {
+            color_decoder_->release_frame(in_flight_frames_.front());
+        }
+        in_flight_frames_.pop_front();
+    }
 }
 
 #else
