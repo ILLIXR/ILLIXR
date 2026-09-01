@@ -252,7 +252,7 @@ private:
 #else
     static constexpr size_t BUFFER_SIZE = 1024 * 1024;
 #endif
-    
+
 #ifdef __ANDROID__
     char buffer_[BUFFER_SIZE];
 #endif
