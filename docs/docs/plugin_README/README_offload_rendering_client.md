@@ -10,3 +10,7 @@ Note that there is a known color shift issue (to be fixed), where the decoded fr
 the original frame (likely due to the many conversions between YUV and RGBA).
 
 Please refer to the README in `tcp_network_backend` for setting the server and client IP address and port number.
+
+!!! note
+
+    Note that the Android version of this plugin has only been tested with a Windows server.

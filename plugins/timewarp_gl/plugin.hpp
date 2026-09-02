@@ -79,8 +79,8 @@ private:
                                               const Eigen::Matrix4f& render_view_matrix,
                                               const Eigen::Matrix4f& new_view_matrix);
 #ifndef ENABLE_MONADO
-    [[nodiscard]] time_point get_next_swap_time_estimate();
-    [[nodiscard]] duration   estimate_time_to_sleep(double frame_percentage);
+    [[nodiscard]] time_point get_next_swap_time_estimate() const;
+    [[nodiscard]] duration   estimate_time_to_sleep(double frame_percentage) const;
 #elif defined(__ANDROID__)
     void import_vulkan_semaphore(const data_format::semaphore_handle& vk_handle);
 #endif

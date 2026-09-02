@@ -123,7 +123,7 @@ struct hand_interaction_pose : xrt_space_relation {
         predicted_time = p_time;
     }
 #    endif
-    [[maybe_unused]] [[nodiscard]] bool valid() const override {
+    [[maybe_unused]] [[nodiscard]] bool valid() const {
         return (relation_flags & XRT_SPACE_RELATION_POSITION_VALID_BIT) != 0u &&
             (relation_flags & XRT_SPACE_RELATION_ORIENTATION_VALID_BIT) != 0u;
     }

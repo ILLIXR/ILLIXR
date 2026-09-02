@@ -20,11 +20,24 @@ target_compile_features(${PLUGIN_NAME} PRIVATE cxx_std_17)
 target_include_directories(${PLUGIN_NAME} PRIVATE ${ILLIXR_SOURCE_DIR}/include)
 target_link_libraries(${PLUGIN_NAME} PUBLIC
                       Boost::serialization
-                      Eigen3::Eigen spdlog::spdlog
+                      Eigen3::Eigen
 )
 
-if(WIN32 OR MSVC)
-    target_compile_definitions(${PLUGIN_NAME} PRIVATE BUILDING_LIBRARY)
+if(ANDROID)
+    target_include_directories(${PLUGIN_NAME} PRIVATE
+                               ${ANDROID_NDK}/sources/android/native_app_glue
+    )
+    target_link_libraries(${PLUGIN_NAME} PUBLIC
+                          spdlog::spdlog_android
+    )
+else()
+    target_link_libraries(${PLUGIN_NAME} PUBLIC
+                          spdlog::spdlog
+    )
+
+    if(WIN32 OR MSVC)
+        target_compile_definitions(${PLUGIN_NAME} PRIVATE BUILDING_LIBRARY)
+    endif()
 endif()
 
 install(TARGETS ${PLUGIN_NAME} DESTINATION lib)

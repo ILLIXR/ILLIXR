@@ -19,15 +19,12 @@ if(NOT PLUGIN_NAME)
     set(PLUGIN_NAME "plugin.openwarp_vk${ILLIXR_BUILD_SUFFIX}")
     set(PLUGIN_SOURCE "plugin.cpp")
     set(OW_PREFIX "")
-    set(OW_POSTFIX "")
 endif()
 
 file(GLOB_RECURSE GLSL_SOURCE_FILES
      "${OW_PREFIX}shaders/*.frag"
      "${OW_PREFIX}shaders/*.vert"
 )
-
-set(PROJECT_BINARY_DIR "${PROJECT_BINARY_DIR}${OW_POSTFIX}")
 
 foreach(GLSL ${GLSL_SOURCE_FILES})
     get_filename_component(FILE_NAME ${GLSL} NAME)
