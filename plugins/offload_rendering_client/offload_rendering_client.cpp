@@ -31,8 +31,8 @@ static bool is_hevc_keyframe(const uint8_t* data, size_t size) {
     return nal_type == 19 || nal_type == 20;
 }
 
-constexpr int I_HEADSET_WIDTH  = static_cast<int>(HEADSET_WIDTH * 1.1);
-constexpr int I_HEADSET_HEIGHT = static_cast<int>(HEADSET_HEIGHT * 1.1);
+constexpr int I_HEADSET_WIDTH  = NATIVE_STREAM_EYE_WIDTH;
+constexpr int I_HEADSET_HEIGHT = NATIVE_STREAM_EYE_HEIGHT;
 
 #else
 using namespace ILLIXR::vulkan::ffmpeg_utils;
@@ -100,6 +100,7 @@ offload_rendering_client::offload_rendering_client(const std::string& name, phon
     , display_provider_{pb->lookup_impl<vulkan::display_provider>()}
 #endif
     , frames_reader_{switchboard_->get_buffered_reader<compressed_frame>("compressed_frames")}
+    , modal_texture_reader_{switchboard_->get_buffered_reader<boba_modal_texture>("boba_modal_texture")}
     , network_latency_reader_{switchboard_->get_reader<network_latency_result>("network_latency")}
 #ifndef USING_OPENXR
     , pose_writer_{switchboard_->get_network_writer<pose::fast_head_pose_type>("render_pose", {})}
@@ -259,6 +260,32 @@ void offload_rendering_client::log_android_decode_timing() {
     // android_timing_frame_count_ = 0;
 }
 
+void offload_rendering_client::drain_modal_texture_updates() {
+    while (auto update = modal_texture_reader_.try_dequeue()) {
+        const std::uint64_t expected_bytes = static_cast<std::uint64_t>(update->width) * update->height * 4ULL;
+        if (update->texture_id == 0 || update->magic != boba_modal_texture::wire_magic || update->width == 0 ||
+            update->height == 0 || expected_bytes != update->rgba.size()) {
+            log_->warn("[receiver_loop] Ignoring invalid Boba modal texture update");
+            continue;
+        }
+
+        auto pixels = std::make_shared<const std::vector<std::uint8_t>>(update->rgba);
+        {
+            std::lock_guard<std::mutex> lock(frame_meta_map_mutex_);
+            modal_texture_cache_[update->texture_id] = {update->width, update->height, std::move(pixels)};
+            while (modal_texture_cache_.size() > 8) {
+                auto stale = modal_texture_cache_.begin();
+                if (stale->first == update->texture_id && modal_texture_cache_.size() > 1) {
+                    ++stale;
+                }
+                modal_texture_cache_.erase(stale);
+            }
+        }
+        log_->info("[receiver_loop] Cached Boba modal texture id={} size={}x{}", update->texture_id, update->width,
+                   update->height);
+    }
+}
+
 // receiver_loop
 // Runs on receiver_thread_. Dequeues compressed frames from the network,
 // drops frames when the decoder input queue is full to prevent growing latency,
@@ -273,11 +300,13 @@ void offload_rendering_client::receiver_loop() {
     // spdlog::get("illixr")->info("[receiver_loop] Starting");
 
     while (receiver_running_) {
+        drain_modal_texture_updates();
         auto current_frame = frames_reader_.dequeue();
         if (current_frame == nullptr) {
             spdlog::get("illixr")->debug("[receiver_loop] No frame available");
             continue;
         }
+        drain_modal_texture_updates();
 
         // spdlog::get("illixr")->info("Rx Frame {}", current_frame->frame_number);
         //  Determine keyframe status for each stream.
@@ -290,6 +319,12 @@ void offload_rendering_client::receiver_loop() {
         //  Depth / motion-vector streams are always HEVC regardless of USE_AV1,
         //  so they continue to use the NAL-unit scan.
         const bool is_key_color = current_frame->is_keyframe;
+
+        // compressed_frame::sent_time is expressed in nanoseconds, whereas
+        // MediaCodec presentation timestamps are expressed in microseconds.
+        // Passing the nanosecond value through unchanged overflows the codec's
+        // internal time conversion and breaks decoded-frame metadata matching.
+        const int64_t presentation_time_us = static_cast<int64_t>(current_frame->sent_time / 1'000U);
 
         const bool is_key_depth = (use_depth_ && !current_frame->left_depth.empty())
             ? is_hevc_keyframe(current_frame->left_depth.data(), current_frame->left_depth.size())
@@ -317,64 +352,10 @@ void offload_rendering_client::receiver_loop() {
             }
         }
 
-        // Queue encoded data to the hardware decoders.
-        // All stream types are submitted together so they stay in sync -
-        // if we drop above, we drop all three atomically.
-#    ifdef COMBINED_ENCODING
-        // Combined mode: left_color holds the full side-by-side bitstream;
-        // right_color is empty on the wire.  Feed only eye=0.
-        if (color_decoder_ && !current_frame->left_color.empty()) {
-            color_decoder_->queue_encoded_data(0, current_frame->left_color.data(), current_frame->left_color.size(),
-                                               current_frame->sent_time, is_key_color, current_frame->frame_number);
-        }
-
-        // Depth and motion-vector streams remain per-eye even under
-        // COMBINED_ENCODING (server sends them as separate streams).
-        for (int eye = 0; eye < 2; eye++) {
-            if (use_depth_ && depth_decoder_) {
-                const auto& depth_pkt = (eye == 0) ? current_frame->left_depth : current_frame->right_depth;
-                if (!depth_pkt.empty()) {
-                    depth_decoder_->queue_encoded_data(eye, depth_pkt.data(), depth_pkt.size(), current_frame->sent_time,
-                                                       is_key_depth, current_frame->frame_number);
-                }
-            }
-
-            if (use_motion_vectors_ && motion_vec_decoder_ && current_frame->use_motion_vectors) {
-                const auto& mv_pkt = (eye == 0) ? current_frame->left_motion_vec : current_frame->right_motion_vec;
-                if (!mv_pkt.empty()) {
-                    motion_vec_decoder_->queue_encoded_data(eye, mv_pkt.data(), mv_pkt.size(), current_frame->sent_time,
-                                                            is_key_mv, current_frame->frame_number);
-                }
-            }
-        }
-#    else
-        for (int eye = 0; eye < 2; eye++) {
-            const auto& color_pkt = (eye == 0) ? current_frame->left_color : current_frame->right_color;
-            if (color_decoder_ && !color_pkt.empty()) {
-                color_decoder_->queue_encoded_data(eye, color_pkt.data(), color_pkt.size(), current_frame->sent_time,
-                                                   is_key_color, current_frame->frame_number);
-            }
-
-            if (use_depth_ && depth_decoder_) {
-                const auto& depth_pkt = (eye == 0) ? current_frame->left_depth : current_frame->right_depth;
-                if (!depth_pkt.empty()) {
-                    depth_decoder_->queue_encoded_data(eye, depth_pkt.data(), depth_pkt.size(), current_frame->sent_time,
-                                                       is_key_depth, current_frame->frame_number);
-                }
-            }
-
-            if (use_motion_vectors_ && motion_vec_decoder_ && current_frame->use_motion_vectors) {
-                const auto& mv_pkt = (eye == 0) ? current_frame->left_motion_vec : current_frame->right_motion_vec;
-                if (!mv_pkt.empty()) {
-                    motion_vec_decoder_->queue_encoded_data(eye, mv_pkt.data(), mv_pkt.size(), current_frame->sent_time,
-                                                            is_key_mv, current_frame->frame_number);
-                }
-            }
-        }
-#    endif // COMBINED_ENCODING
-
-        // Store metadata so _p_one_iteration can populate dual_frames.
-        // The mutex ensures _p_one_iteration always sees a consistent snapshot.
+        // Publish the complete metadata snapshot before queueing the bitstream.
+        // A fast decoder may make the output image visible immediately; storing
+        // first guarantees that an acquired image can only be paired with its
+        // own pose/FOV/overlay metadata.
         {
             std::lock_guard<std::mutex> lock(frame_meta_map_mutex_);
             frame_meta&                 meta = frame_meta_map_[current_frame->frame_number];
@@ -385,16 +366,72 @@ void offload_rendering_client::receiver_loop() {
             meta.near_z                      = current_frame->near_z;
             meta.far_z                       = current_frame->far_z;
             meta.encode_time                 = current_frame->encode_time;
+            meta.presentation_mode           = current_frame->presentation_mode;
+            meta.content_aspect_ratio        = current_frame->content_aspect_ratio;
+            meta.boba_overlay                = current_frame->boba_overlay;
+            meta.boba_modal                  = current_frame->boba_modal;
+            meta.fov_left                    = current_frame->fov_left;
+            meta.fov_right                   = current_frame->fov_right;
+            meta.fov_up                      = current_frame->fov_up;
+            meta.fov_down                    = current_frame->fov_down;
+            meta.consumed                    = false;
+        }
 
-            // Cache first non-zero FOV received from server
-            if (!fov_cached_ && current_frame->fov_left[0] != 0.0f) {
-                cached_fov_left_  = current_frame->fov_left;
-                cached_fov_right_ = current_frame->fov_right;
-                cached_fov_up_    = current_frame->fov_up;
-                cached_fov_down_  = current_frame->fov_down;
-                fov_cached_       = true;
+        // Queue encoded data to the hardware decoders.
+        // All stream types are submitted together so they stay in sync -
+        // if we drop above, we drop all three atomically.
+#    ifdef COMBINED_ENCODING
+        // Combined mode: left_color holds the full side-by-side bitstream;
+        // right_color is empty on the wire.  Feed only eye=0.
+        if (color_decoder_ && !current_frame->left_color.empty()) {
+            color_decoder_->queue_encoded_data(0, current_frame->left_color.data(), current_frame->left_color.size(),
+                                               presentation_time_us, is_key_color, current_frame->frame_number);
+        }
+
+        // Depth and motion-vector streams remain per-eye even under
+        // COMBINED_ENCODING (server sends them as separate streams).
+        for (int eye = 0; eye < 2; eye++) {
+            if (use_depth_ && depth_decoder_) {
+                const auto& depth_pkt = (eye == 0) ? current_frame->left_depth : current_frame->right_depth;
+                if (!depth_pkt.empty()) {
+                    depth_decoder_->queue_encoded_data(eye, depth_pkt.data(), depth_pkt.size(), presentation_time_us,
+                                                       is_key_depth, current_frame->frame_number);
+                }
+            }
+
+            if (use_motion_vectors_ && motion_vec_decoder_ && current_frame->use_motion_vectors) {
+                const auto& mv_pkt = (eye == 0) ? current_frame->left_motion_vec : current_frame->right_motion_vec;
+                if (!mv_pkt.empty()) {
+                    motion_vec_decoder_->queue_encoded_data(eye, mv_pkt.data(), mv_pkt.size(), presentation_time_us, is_key_mv,
+                                                            current_frame->frame_number);
+                }
             }
         }
+#    else
+        for (int eye = 0; eye < 2; eye++) {
+            const auto& color_pkt = (eye == 0) ? current_frame->left_color : current_frame->right_color;
+            if (color_decoder_ && !color_pkt.empty()) {
+                color_decoder_->queue_encoded_data(eye, color_pkt.data(), color_pkt.size(), presentation_time_us, is_key_color,
+                                                   current_frame->frame_number);
+            }
+
+            if (use_depth_ && depth_decoder_) {
+                const auto& depth_pkt = (eye == 0) ? current_frame->left_depth : current_frame->right_depth;
+                if (!depth_pkt.empty()) {
+                    depth_decoder_->queue_encoded_data(eye, depth_pkt.data(), depth_pkt.size(), presentation_time_us,
+                                                       is_key_depth, current_frame->frame_number);
+                }
+            }
+
+            if (use_motion_vectors_ && motion_vec_decoder_ && current_frame->use_motion_vectors) {
+                const auto& mv_pkt = (eye == 0) ? current_frame->left_motion_vec : current_frame->right_motion_vec;
+                if (!mv_pkt.empty()) {
+                    motion_vec_decoder_->queue_encoded_data(eye, mv_pkt.data(), mv_pkt.size(), presentation_time_us, is_key_mv,
+                                                            current_frame->frame_number);
+                }
+            }
+        }
+#    endif // COMBINED_ENCODING
     }
 }
 #else
@@ -1049,62 +1086,72 @@ void offload_rendering_client::push_pose() {
 #endif
 
 #ifdef __ANDROID__
-// construct_dual_frames now takes frame_meta by const-ref instead of reading
-// stale member variables, so receiver_thread_ and _p_one_iteration never race
-// on the same pose/frame_number/etc. fields.
+// Match each acquired decoder image to the metadata snapshot carried by that
+// same server frame. The shared maps are protected because receiver_thread_
+// populates them while this thread consumes them.
 data_format::dual_frames offload_rendering_client::construct_dual_frames(time_point render_time) {
     // Vulkan path: acquire AHardwareBuffers from both decoders
     dual_frames frame = color_decoder_->get_current_frame(render_time);
-    frame_meta  meta;
-    uint64_t    decoded_frame_number;
-    if (frame.is_valid()) {
-        // frame.frame_number was set atomically with the buffer acquisition
-        // inside acquire_latest_buffer() - no separate call needed.
-        if (frame.frame_number <= last_submitted_frame_)
-            return {};
-        decoded_frame_number = frame.frame_number;
-        {
-            std::lock_guard<std::mutex> lock(frame_meta_map_mutex_);
-            auto                        it = frame_meta_map_.find(decoded_frame_number);
-            if (it != frame_meta_map_.end()) {
-                meta = it->second;
-                // Erase this entry and everything older - the map is ordered by
-                // frame_number so begin()..next(it) covers all stale entries.
-                auto it2 = frame_meta_map_.begin();
-                while (it2 != frame_meta_map_.end()) {
-                    if (it2->first < decoded_frame_number) {
-                        it2 = frame_meta_map_.erase(it2);
-                    } else {
-                        ++it2;
-                    }
+    if (!frame.is_valid()) {
+        return {};
+    }
+
+    if (frame.frame_number == 0 || frame.frame_number <= last_submitted_frame_) {
+        color_decoder_->release_frame(frame);
+        return {};
+    }
+
+    const uint64_t decoded_frame_number = frame.frame_number;
+    frame_meta     meta;
+    bool           exact_metadata_found = false;
+    {
+        std::lock_guard<std::mutex> lock(frame_meta_map_mutex_);
+        auto                        it = frame_meta_map_.find(decoded_frame_number);
+        if (it != frame_meta_map_.end() && !it->second.consumed) {
+            meta                 = it->second;
+            it->second.consumed  = true;
+            exact_metadata_found = true;
+
+            if (meta.boba_modal.visible) {
+                const auto texture = modal_texture_cache_.find(meta.boba_modal.texture_id);
+                if (texture != modal_texture_cache_.end() && texture->second.width == meta.boba_modal.width &&
+                    texture->second.height == meta.boba_modal.height) {
+                    frame.boba_modal_rgba = texture->second.rgba;
                 }
-            } else if (!frame_meta_map_.empty()) {
-                spdlog::get("illixr")->debug("Could not find meta for {}", decoded_frame_number);
-                // Decoded frame not in map (dropped or not yet arrived).
-                // Use the most recent available entry as the best approximation.
-                meta = frame_meta_map_.rbegin()->second;
-            } else if (it == frame_meta_map_.end()) {
-                spdlog::get("illixr")->error("[openxr_interface] No meta for frame {}, dropping", decoded_frame_number);
-                return {};
-            } else {
-                spdlog::get("illixr")->debug("meta map empty");
             }
-            // If map is empty, meta stays default-constructed - frame will likely
-            // fail is_valid() and be discarded by the caller.
-        }
-        if (meta.consumed) {
-            return {}; // another thread already claimed this frame
+
+            // Everything older than the decoded image can no longer be used.
+            auto stale = frame_meta_map_.begin();
+            while (stale != frame_meta_map_.end() && stale->first < decoded_frame_number) {
+                stale = frame_meta_map_.erase(stale);
+            }
         }
     }
-    frame.pose        = meta.pose;
-    frame.near_z      = meta.near_z;
-    frame.far_z       = meta.far_z;
-    frame.pose_id     = meta.pose_id;
-    frame.encode_time = meta.encode_time;
-    frame.fov_left    = cached_fov_left_;
-    frame.fov_right   = cached_fov_right_;
-    frame.fov_up      = cached_fov_up_;
-    frame.fov_down    = cached_fov_down_;
+
+    if (!exact_metadata_found) {
+        static std::uint64_t missing_metadata_count = 0;
+        if (++missing_metadata_count % 120 == 1) {
+            spdlog::get("illixr")->warn("[offload_rendering_client] Dropping decoded frame {} without exact metadata "
+                                        "(count={})",
+                                        decoded_frame_number, missing_metadata_count);
+        }
+        color_decoder_->release_frame(frame);
+        return {};
+    }
+
+    frame.pose                 = meta.pose;
+    frame.near_z               = meta.near_z;
+    frame.far_z                = meta.far_z;
+    frame.pose_id              = meta.pose_id;
+    frame.encode_time          = meta.encode_time;
+    frame.presentation_mode    = meta.presentation_mode;
+    frame.content_aspect_ratio = meta.content_aspect_ratio;
+    frame.boba_overlay         = std::move(meta.boba_overlay);
+    frame.boba_modal           = meta.boba_modal;
+    frame.fov_left             = meta.fov_left;
+    frame.fov_right            = meta.fov_right;
+    frame.fov_up               = meta.fov_up;
+    frame.fov_down             = meta.fov_down;
 
     // Depth and motion-vector buffers are only attached when they carry the
     // same server frame_number as the color frame above.  Each decoder is an

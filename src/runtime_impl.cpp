@@ -19,6 +19,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <mutex>
 #ifndef __ANDROID__
 #    include <set>
 #endif
@@ -180,32 +181,45 @@ public:
     }
 
     void wait() override {
-        // We don't want wait() returning before all the plugin threads have been joined.
-        // That would cause a nasty race-condition if the client tried to delete the runtime right after wait() returned.
-        phonebook_.lookup_impl<stoplight>()->wait_for_shutdown_complete();
+        const std::shared_ptr<stoplight> stoplight = phonebook_.lookup_impl<ILLIXR::stoplight>();
+        // Plugins request an application-wide shutdown by signaling should_stop.
+        // Coordinate the actual stop from this caller thread so a requesting
+        // plugin never attempts to join its own worker thread.
+        stoplight->wait_for_should_stop();
+        _stop();
+        // Do not return until every plugin thread has been joined.
+        stoplight->wait_for_shutdown_complete();
     }
 
     void _stop() override {
-        phonebook_.lookup_impl<stoplight>()->signal_should_stop();
-        // After this point, threads may exit their main loops
-        // They still have destructors and still have to be joined.
+        std::call_once(stop_once_, [this]() {
+            phonebook_.lookup_impl<stoplight>()->signal_should_stop();
+            // After this point, threads may exit their main loops
+            // They still have destructors and still have to be joined.
 
-        phonebook_.lookup_impl<switchboard>()->stop();
-        // After this point, Switchboard's internal thread-workers which power synchronous callbacks are stopped and joined.
+            phonebook_.lookup_impl<switchboard>()->stop();
+            // After this point, Switchboard's internal thread-workers which power synchronous callbacks are stopped and joined.
 
-        for (const std::shared_ptr<plugin>& plugin : plugins_) {
-            plugin->stop();
-            // Each plugin gets joined in its stop
-        }
+            // Stop consumers before the services they depend on. In particular,
+            // network producers must finish before their backend sockets close.
+            for (auto plugin = plugins_.rbegin(); plugin != plugins_.rend(); ++plugin) {
+                (*plugin)->stop();
+                // Each plugin gets joined in its stop
+            }
 
-        // Tell runtime::wait() that it can return
-        phonebook_.lookup_impl<stoplight>()->signal_shutdown_complete();
+            // Tell runtime::wait() that it can return
+            phonebook_.lookup_impl<stoplight>()->signal_shutdown_complete();
+        });
     }
 
     ~runtime_impl() override {
         if (!phonebook_.lookup_impl<stoplight>()->check_shutdown_complete()) {
             stop();
         }
+        // The base runtime also retains the switchboard. Release that reference
+        // now so phonebook-owned topics are destroyed before plugin libraries
+        // (which supplied some inline queue code) are unloaded.
+        switchboard_.reset();
         // This will be re-enabled in #225
         // assert(errno == 0 && "errno was set during run. Maybe spurious?");
         /*
@@ -227,6 +241,7 @@ private:
     std::vector<dynamic_lib>             libraries_;
     phonebook                            phonebook_;
     std::vector<std::shared_ptr<plugin>> plugins_;
+    std::once_flag                       stop_once_;
 };
 
 extern "C" [[maybe_unused]] MY_EXPORT_API runtime* runtime_factory() {

@@ -15,19 +15,16 @@ if(ANDROID)
     target_link_libraries(egl_context_manager PUBLIC
                           spdlog::spdlog_android
     )
-
-    target_include_directories(egl_context_manager PUBLIC ${CMAKE_SOURCE_DIR}/include)
-
-    target_link_libraries(egl_context_manager PUBLIC
-                          spdlog::spdlog_android
-    )
 else()
     add_library(illixr_hmd_gl OBJECT
                 hmd.cpp
                 ${CMAKE_SOURCE_DIR}/include/illixr/hmd.hpp
     )
 
-    target_include_directories(illixr_hmd_gl PUBLIC ${CMAKE_SOURCE_DIR}/include)
+    target_include_directories(illixr_hmd_gl PUBLIC
+                               ${CMAKE_SOURCE_DIR}/include
+                               ${gl_INCLUDE_DIRS}
+    )
     target_compile_definitions(illixr_hmd_gl PUBLIC USE_GL)
 
     add_library(illixr_vulkan_utils STATIC

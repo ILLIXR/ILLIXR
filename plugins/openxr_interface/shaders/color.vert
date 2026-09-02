@@ -45,11 +45,12 @@ void main() {
 
     gl_Position = vec4(fx - 1.0, fy - 1.0, 0.0, 1.0);
 
-    // UV: map NDC position to [0,1] texture coordinates.
-    // In Vulkan NDC, Y=-1 is the TOP of the screen and Y=+1 is the bottom,
-    // which already matches texture V=0 (top) -> V=1 (bottom) directly.
-    // No Y-flip is needed — applying one (as in OpenGL) would invert the image.
+    // UV: map NDC position to [0,1] texture coordinates. MediaCodec's
+    // AHardwareBuffer output is vertically opposite to the OpenXR swapchain
+    // presentation used here, so sample V from bottom to top. Apply the crop
+    // after flipping so codec-alignment padding remains outside the sampled
+    // region.
     float u = fx * 0.5;
-    float v = fy * 0.5;
+    float v = 1.0 - fy * 0.5;
     v_texcoord = vec2(pc.u_offset + u * pc.crop_scale_x, v * pc.crop_scale_y);
 }

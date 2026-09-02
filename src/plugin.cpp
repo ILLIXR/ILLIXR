@@ -16,8 +16,12 @@
 #    ifndef BOOST_DATE_TIME_NO_LIB
 #        define BOOST_DATE_TIME_NO_LIB
 #    endif
+#    include "illixr/network/udpsocket.hpp"
+
 #    include <algorithm>
 #    include <boost/algorithm/string/join.hpp>
+#    include <cerrno>
+#    include <chrono>
 #    include <cstdlib>
 #    include <iostream>
 #    ifdef __linux__
@@ -26,6 +30,7 @@
 #    endif
 #    include <sstream>
 #    include <stdexcept>
+#    include <thread>
 #    include <yaml-cpp/yaml.h>
 #endif
 
@@ -44,6 +49,63 @@ struct Dependency {
     }
 };
 } // namespace ILLIXR
+
+namespace {
+constexpr int         QUEST_CONFIGURATION_PORT = 9010;
+constexpr const char* QUEST_CONNECT_REQUEST    = "ILLIXR_CONNECT_V1";
+constexpr const char* QUEST_CONNECT_RESPONSE   = "ILLIXR_READY_V1";
+
+/**
+ * Bootstrap the native Quest client before desktop plugins are constructed.
+ *
+ * Requests are retransmitted because UDP delivery is not guaranteed. The
+ * response must come from the exact address supplied by `--quest-ip`; the Quest
+ * simultaneously learns the correct desktop address from each packet's source.
+ */
+void configure_native_quest(const cxxopts::ParseResult& options) {
+    if (!options.count("quest-ip")) {
+        return;
+    }
+
+    const std::string quest_ip = options["quest-ip"].as<std::string>();
+    sockaddr_in       parsed_address{};
+    if (inet_pton(AF_INET, quest_ip.c_str(), &parsed_address.sin_addr) != 1) {
+        throw std::runtime_error("Invalid Quest IPv4 address: " + quest_ip);
+    }
+
+    const int timeout_seconds = options["quest-connect-timeout"].as<int>();
+    if (timeout_seconds <= 0 || timeout_seconds > 3600) {
+        throw std::runtime_error("--quest-connect-timeout must be between 1 and 3600 seconds");
+    }
+
+    ILLIXR::network::UDPSocket socket;
+    socket.socket_set_reuseaddr();
+    socket.socket_bind(0);
+    socket.socket_set_receive_timeout(500);
+    socket.set_peer(quest_ip, QUEST_CONFIGURATION_PORT);
+
+    std::cout << "Waiting for ILLIXRApp at " << quest_ip << ':' << QUEST_CONFIGURATION_PORT
+              << ". Open the app on the Quest if it is not already running." << std::endl;
+
+    const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds{timeout_seconds};
+    while (std::chrono::steady_clock::now() < deadline) {
+        if (!socket.write_data(QUEST_CONNECT_REQUEST)) {
+            throw std::runtime_error("Could not send wireless configuration to Quest " + quest_ip);
+        }
+
+        sockaddr_in source{};
+        std::string response = socket.read_data(&source);
+        if (response == QUEST_CONNECT_RESPONSE && source.sin_addr.s_addr == parsed_address.sin_addr.s_addr) {
+            std::cout << "ILLIXRApp acknowledged the desktop at " << quest_ip << ". Starting ILLIXR." << std::endl;
+            errno = 0;
+            return;
+        }
+    }
+
+    throw std::runtime_error("Timed out waiting for ILLIXRApp at " + quest_ip +
+                             ". Confirm that the app is open and both devices are on the same network.");
+}
+} // namespace
 
 namespace YAML {
 template<>
@@ -175,6 +237,10 @@ int ILLIXR::run(
 #endif
     try {
         runtime_ = ILLIXR::runtime_factory();
+
+#ifndef __ANDROID__
+        configure_native_quest(options);
+#endif
 
         // set internal env_vars
         std::shared_ptr<switchboard> switchboard_ = runtime_->get_switchboard();

@@ -7,7 +7,9 @@
 #include <boost/serialization/binary_object.hpp>
 #include <boost/serialization/split_free.hpp>
 #include <boost/serialization/vector.hpp>
+#include <limits>
 #include <spdlog/spdlog.h>
+#include <stdexcept>
 #ifdef ILLIXR_LIBAV
 extern "C" {
 #    include "libavcodec_illixr/avcodec.h"
@@ -19,6 +21,92 @@ extern "C" {
 // as free functions so they can be used from the non-member serializers below.
 // ---------------------------------------------------------------------------
 namespace ILLIXR::detail {
+
+constexpr std::uint64_t kMaxBobaOverlayFloats =
+    static_cast<std::uint64_t>(data_format::boba_frame_overlay::max_commands_per_eye) *
+    data_format::boba_frame_overlay::command_stride_floats;
+constexpr std::uint64_t kMaxBobaModalTextureBytes = 16ULL * 1024ULL * 1024ULL;
+
+/** Encode a vector with an explicit fixed-width length for cross-device transport. */
+template<class Archive, typename T>
+static void save_sized_vector(Archive& ar, const std::vector<T>& values) {
+    const std::uint64_t size = values.size();
+    ar << size;
+    if (size != 0) {
+        ar << boost::serialization::make_array(values.data(), values.size());
+    }
+}
+
+/** Decode a length-prefixed vector only after enforcing a caller-supplied limit. */
+template<class Archive, typename T>
+static void load_sized_vector(Archive& ar, std::vector<T>& values, std::uint64_t maximum_size, const char* field_name) {
+    std::uint64_t size = 0;
+    ar >> size;
+    if (size > maximum_size || size > static_cast<std::uint64_t>(std::numeric_limits<std::size_t>::max())) {
+        throw std::runtime_error(std::string{"compressed_frame: invalid "} + field_name + " size");
+    }
+    values.resize(static_cast<std::size_t>(size));
+    if (size != 0) {
+        ar >> boost::serialization::make_array(values.data(), values.size());
+    }
+}
+
+/** Append Boba's small per-frame overlay placement metadata to a frame packet. */
+template<class Archive>
+static void save_boba_metadata(Archive& ar, const data_format::boba_frame_overlay& overlay,
+                               const data_format::boba_modal_overlay& modal) {
+    ar << overlay.source_width;
+    ar << overlay.source_height;
+    save_sized_vector(ar, overlay.left_commands);
+    save_sized_vector(ar, overlay.right_commands);
+
+    ar << modal.visible;
+    ar << modal.left_valid;
+    ar << modal.right_valid;
+    ar << modal.texture_id;
+    ar << modal.width;
+    ar << modal.height;
+    for (float value : modal.left_quad_pixels) {
+        ar << value;
+    }
+    for (float value : modal.right_quad_pixels) {
+        ar << value;
+    }
+    ar << modal.width_m;
+    ar << modal.height_m;
+}
+
+/** Decode and structurally validate Boba's untrusted network metadata. */
+template<class Archive>
+static void load_boba_metadata(Archive& ar, data_format::boba_frame_overlay& overlay, data_format::boba_modal_overlay& modal) {
+    ar >> overlay.source_width;
+    ar >> overlay.source_height;
+    load_sized_vector(ar, overlay.left_commands, kMaxBobaOverlayFloats, "left Boba overlay");
+    load_sized_vector(ar, overlay.right_commands, kMaxBobaOverlayFloats, "right Boba overlay");
+    if (overlay.left_commands.size() % data_format::boba_frame_overlay::command_stride_floats != 0 ||
+        overlay.right_commands.size() % data_format::boba_frame_overlay::command_stride_floats != 0) {
+        throw std::runtime_error("compressed_frame: malformed Boba overlay command vector");
+    }
+
+    ar >> modal.visible;
+    ar >> modal.left_valid;
+    ar >> modal.right_valid;
+    ar >> modal.texture_id;
+    ar >> modal.width;
+    ar >> modal.height;
+    for (float& value : modal.left_quad_pixels) {
+        ar >> value;
+    }
+    for (float& value : modal.right_quad_pixels) {
+        ar >> value;
+    }
+    ar >> modal.width_m;
+    ar >> modal.height_m;
+    if (modal.width > 8192 || modal.height > 8192 ||
+        (modal.visible && (modal.texture_id == 0 || modal.width == 0 || modal.height == 0))) {
+        throw std::runtime_error("compressed_frame: invalid Boba modal metadata");
+    }
+}
 
 #ifdef ILLIXR_LIBAV
 template<class Archive>
@@ -109,6 +197,10 @@ void save(Archive& ar, const ILLIXR::data_format::compressed_frame& f, const uns
     ar << f.nalu_only;
     ar << f.use_depth;
     ar << f.use_motion_vectors;
+    const auto presentation_mode = static_cast<std::uint8_t>(f.presentation_mode);
+    ar << presentation_mode;
+    ar << f.content_aspect_ratio;
+    ILLIXR::detail::save_boba_metadata(ar, f.boba_overlay, f.boba_modal);
 #ifdef ILLIXR_LIBAV
     if (f.nalu_only) {
         int32_t left_size  = f.left_color->size;  // Use fixed-width type
@@ -186,6 +278,14 @@ void load(Archive& ar, ILLIXR::data_format::compressed_frame& f, const unsigned 
     ar >> f.nalu_only;
     ar >> f.use_depth;
     ar >> f.use_motion_vectors;
+    std::uint8_t presentation_mode = 0;
+    ar >> presentation_mode;
+    if (presentation_mode > static_cast<std::uint8_t>(ILLIXR::data_format::stereo_presentation_mode::head_locked_panel)) {
+        throw std::runtime_error("compressed_frame: invalid presentation mode");
+    }
+    f.presentation_mode = static_cast<ILLIXR::data_format::stereo_presentation_mode>(presentation_mode);
+    ar >> f.content_aspect_ratio;
+    ILLIXR::detail::load_boba_metadata(ar, f.boba_overlay, f.boba_modal);
 
     if (f.nalu_only) {
         ar >> f.left_color_nalu_size;
@@ -269,6 +369,42 @@ void serialize(Archive& ar, ILLIXR::data_format::compressed_frame& f, const unsi
     boost::serialization::split_free(ar, f, version);
 }
 
+/** Encode a content-addressed modal texture for the reliable TCP topic. */
+template<class Archive>
+void save(Archive& ar, const ILLIXR::data_format::boba_modal_texture& texture, const unsigned int version) {
+    (void) version;
+    ar << boost::serialization::base_object<ILLIXR::switchboard::event>(texture);
+    ar << texture.texture_id;
+    ar << texture.width;
+    ar << texture.height;
+    ILLIXR::detail::save_sized_vector(ar, texture.rgba);
+    ar << texture.magic;
+}
+
+/** Decode a reliable modal texture and reject oversized or inconsistent payloads. */
+template<class Archive>
+void load(Archive& ar, ILLIXR::data_format::boba_modal_texture& texture, const unsigned int version) {
+    (void) version;
+    ar >> boost::serialization::base_object<ILLIXR::switchboard::event>(texture);
+    ar >> texture.texture_id;
+    ar >> texture.width;
+    ar >> texture.height;
+    ILLIXR::detail::load_sized_vector(ar, texture.rgba, ILLIXR::detail::kMaxBobaModalTextureBytes, "Boba modal texture");
+    ar >> texture.magic;
+
+    const std::uint64_t required_bytes = static_cast<std::uint64_t>(texture.width) * texture.height * 4ULL;
+    if (texture.magic != ILLIXR::data_format::boba_modal_texture::wire_magic || texture.texture_id == 0 || texture.width == 0 ||
+        texture.height == 0 || texture.width > 8192 || texture.height > 8192 || required_bytes != texture.rgba.size()) {
+        throw std::runtime_error("boba_modal_texture: invalid payload");
+    }
+}
+
+template<class Archive>
+void serialize(Archive& ar, ILLIXR::data_format::boba_modal_texture& texture, const unsigned int version) {
+    boost::serialization::split_free(ar, texture, version);
+}
+
 } // namespace boost::serialization
 
 BOOST_CLASS_EXPORT_KEY(ILLIXR::data_format::compressed_frame)
+BOOST_CLASS_EXPORT_KEY(ILLIXR::data_format::boba_modal_texture)

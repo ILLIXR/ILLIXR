@@ -1,6 +1,7 @@
 #ifdef USING_OPENXR
 #    include "plugin.hpp"
 
+#    include <algorithm>
 #    include <array>
 #    include <spdlog/spdlog.h>
 #    include <vector>
@@ -13,8 +14,10 @@
 using namespace ILLIXR;
 using namespace ILLIXR::data_format;
 
-constexpr int I_HEADSET_WIDTH  = static_cast<int>(HEADSET_WIDTH * 1.1);
-constexpr int I_HEADSET_HEIGHT = static_cast<int>(HEADSET_HEIGHT * 1.1);
+constexpr int   I_HEADSET_WIDTH            = NATIVE_STREAM_EYE_WIDTH;
+constexpr int   I_HEADSET_HEIGHT           = NATIVE_STREAM_EYE_HEIGHT;
+constexpr float BOBA_PANEL_DISTANCE_METERS = 1.1F;
+constexpr float BOBA_PANEL_WIDTH_METERS    = 1.2F;
 
 // Identity pose helper
 static XrPosef identity_pose() {
@@ -23,12 +26,32 @@ static XrPosef identity_pose() {
     return pose;
 }
 
+// Rotate a local-space panel offset into the current view orientation without
+// pulling another math library into the Android OpenXR entry point.
+static XrVector3f rotate_vector(const XrQuaternionf& q, const XrVector3f& v) {
+    const XrVector3f t{2.0F * (q.y * v.z - q.z * v.y), 2.0F * (q.z * v.x - q.x * v.z), 2.0F * (q.x * v.y - q.y * v.x)};
+    return {v.x + q.w * t.x + (q.y * t.z - q.z * t.y), v.y + q.w * t.y + (q.z * t.x - q.x * t.z),
+            v.z + q.w * t.z + (q.x * t.y - q.y * t.x)};
+}
+
+// Capture the world-space anchor used by mono_panel when that mode is entered.
+static XrPosef panel_pose_from_view(const XrPosef& view_pose) {
+    XrPosef          pose   = view_pose;
+    const XrVector3f offset = rotate_vector(view_pose.orientation, {0.0F, 0.0F, -BOBA_PANEL_DISTANCE_METERS});
+    pose.position.x += offset.x;
+    pose.position.y += offset.y;
+    pose.position.z += offset.z;
+    return pose;
+}
+
 [[maybe_unused]] oxr_interface::oxr_interface(const std::string& name_, phonebook* pb_)
     : threadloop{name_, pb_}
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
     , app_{switchboard_->get_android_app()}
     , clock_{phonebook_->lookup_impl<relative_clock>()}
+    , stoplight_{phonebook_->lookup_impl<stoplight>()}
     , frame_reader_{switchboard_->get_reader<dual_frames>("unity_rendered_frame")}
+    , boba_client_control_reader_{switchboard_->get_reader<switchboard::event_wrapper<std::string>>("boba_client_control")}
     , oxr_relay_{std::make_shared<oxr_relay>(name_, pb_)} {
     use_depth_ = switchboard_->get_env_bool("ILLIXR_USE_DEPTH_IMAGES");
     init_xr();
@@ -383,6 +406,15 @@ void oxr_interface::poll_events() {
 }
 
 void oxr_interface::run_frame() {
+    const auto client_control = boba_client_control_reader_.get_ro_nullable();
+    if (!client_shutdown_requested_ && client_control != nullptr && **client_control == "shutdown") {
+        client_shutdown_requested_ = true;
+        spdlog::get("illixr")->info("Boba host requested native Quest shutdown");
+        ANativeActivity_finish(app_->activity);
+        stoplight_->signal_should_stop();
+        return;
+    }
+
     if (!session_running_)
         return;
 
@@ -396,6 +428,7 @@ void oxr_interface::run_frame() {
     xrBeginFrame(session_, &begin_info);
 
     XrCompositionLayerProjection     projectionLayer    = {XR_TYPE_COMPOSITION_LAYER_PROJECTION};
+    XrCompositionLayerQuad           panelLayer         = {XR_TYPE_COMPOSITION_LAYER_QUAD};
     XrCompositionLayerProjectionView projectionViews[2] = {{XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW},
                                                            {XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW}};
     XrCompositionLayerDepthInfoKHR   depth_infos[2]{{XR_TYPE_COMPOSITION_LAYER_DEPTH_INFO_KHR},
@@ -418,10 +451,17 @@ void oxr_interface::run_frame() {
         oxr_relay_->update_time(frame_state.predictedDisplayTime);
         view_locate_info.space = local_space_;
 
-        uint32_t view_count = 2;
-        views_[0].type      = XR_TYPE_VIEW;
-        views_[1].type      = XR_TYPE_VIEW;
-        xrLocateViews(session_, &view_locate_info, &view_state, 2, &view_count, views_);
+        uint32_t view_count                = 2;
+        views_[0].type                     = XR_TYPE_VIEW;
+        views_[1].type                     = XR_TYPE_VIEW;
+        const XrResult locate_views_result = xrLocateViews(session_, &view_locate_info, &view_state, 2, &view_count, views_);
+        if (XR_SUCCEEDED(locate_views_result) && view_count == 2) {
+            oxr_relay_->publish_boba_input(frame_state.predictedDisplayTime, frame_state.predictedDisplayPeriod,
+                                           frame_state.shouldRender, view_state.viewStateFlags, views_, view_configs_);
+        } else {
+            spdlog::get("illixr")->warn("xrLocateViews failed or returned {} views: {}", view_count,
+                                        static_cast<int>(locate_views_result));
+        }
 
         auto latest = frame_reader_.get_ro_nullable();
         if (latest != nullptr) {
@@ -491,8 +531,19 @@ void oxr_interface::run_frame() {
                     spdlog::get("illixr")->debug("[pose_tracker]  No current pose");
                 }
             }
-            // OpenXR render loop for each eye (Quest 3 supports 72Hz and 90Hz, and lower with spacewarp)
-            for (int eye = 0; eye < 2; eye++) {
+            const bool render_as_panel =
+                current_frames_->presentation_mode != data_format::stereo_presentation_mode::stereo_fullscreen;
+            if (current_frames_->presentation_mode == data_format::stereo_presentation_mode::mono_panel &&
+                (previous_presentation_mode_ != data_format::stereo_presentation_mode::mono_panel ||
+                 !world_panel_anchor_initialized_)) {
+                world_panel_pose_               = panel_pose_from_view(views_[0].pose);
+                world_panel_anchor_initialized_ = true;
+            }
+            previous_presentation_mode_ = current_frames_->presentation_mode;
+
+            // Panel modes are monoscopic and use one compositor quad. Fullscreen mode renders both projection eyes.
+            const int render_eye_count = render_as_panel ? 1 : 2;
+            for (int eye = 0; eye < render_eye_count; eye++) {
                 swapchain_info& sc = swapchains_[eye];
 
                 uint32_t                    img_idx = 0;
@@ -510,6 +561,31 @@ void oxr_interface::run_frame() {
 
                 XrSwapchainImageReleaseInfo rel{XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO};
                 OXR(xrReleaseSwapchainImage(sc.swapchain, &rel))
+
+                if (render_as_panel) {
+                    panelLayer.layerFlags =
+                        XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT | XR_COMPOSITION_LAYER_UNPREMULTIPLIED_ALPHA_BIT;
+                    panelLayer.space =
+                        current_frames_->presentation_mode == data_format::stereo_presentation_mode::head_locked_panel
+                        ? view_space_
+                        : local_space_;
+                    panelLayer.eyeVisibility = XR_EYE_VISIBILITY_BOTH;
+                    panelLayer.pose =
+                        current_frames_->presentation_mode == data_format::stereo_presentation_mode::head_locked_panel
+                        ? identity_pose()
+                        : world_panel_pose_;
+                    if (current_frames_->presentation_mode == data_format::stereo_presentation_mode::head_locked_panel) {
+                        panelLayer.pose.position.z = -BOBA_PANEL_DISTANCE_METERS;
+                    }
+                    const float aspect =
+                        current_frames_->content_aspect_ratio > 0.0F ? current_frames_->content_aspect_ratio : 1.0F;
+                    panelLayer.size                      = {BOBA_PANEL_WIDTH_METERS, BOBA_PANEL_WIDTH_METERS / aspect};
+                    panelLayer.subImage.swapchain        = sc.swapchain;
+                    panelLayer.subImage.imageRect.offset = {0, 0};
+                    panelLayer.subImage.imageRect.extent = {static_cast<int32_t>(sc.width), static_cast<int32_t>(sc.height)};
+                    panelLayer.subImage.imageArrayIndex  = 0;
+                    continue;
+                }
 
                 // Set up projection layer
                 projectionViews[eye].pose = current_frames_->pose[eye];
@@ -609,13 +685,16 @@ void oxr_interface::run_frame() {
                 }
             }
 
-            projectionLayer.space      = local_space_;
-            projectionLayer.viewCount  = 2;
-            projectionLayer.views      = projectionViews;
-            projectionLayer.layerFlags = XR_COMPOSITION_LAYER_CORRECT_CHROMATIC_ABERRATION_BIT |
-                XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT | XR_COMPOSITION_LAYER_UNPREMULTIPLIED_ALPHA_BIT;
-
-            layers[0]   = reinterpret_cast<XrCompositionLayerBaseHeader*>(&projectionLayer);
+            if (render_as_panel) {
+                layers[0] = reinterpret_cast<XrCompositionLayerBaseHeader*>(&panelLayer);
+            } else {
+                projectionLayer.space      = local_space_;
+                projectionLayer.viewCount  = 2;
+                projectionLayer.views      = projectionViews;
+                projectionLayer.layerFlags = XR_COMPOSITION_LAYER_CORRECT_CHROMATIC_ABERRATION_BIT |
+                    XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT | XR_COMPOSITION_LAYER_UNPREMULTIPLIED_ALPHA_BIT;
+                layers[0] = reinterpret_cast<XrCompositionLayerBaseHeader*>(&projectionLayer);
+            }
             layer_count = 1;
         }
     }
@@ -640,19 +719,18 @@ void oxr_interface::create_swapchains() {
     std::vector<int64_t> formats(fmt_count);
     xrEnumerateSwapchainFormats(session_, fmt_count, &fmt_count, formats.data());
 
-    // Prefer R8G8B8A8_SRGB → R8G8B8A8_UNORM → B8G8R8A8_UNORM
-    VkFormat chosen_fmt = VK_FORMAT_R8G8B8A8_UNORM;
-    for (int64_t f : formats) {
-        if (f == VK_FORMAT_R8G8B8A8_SRGB) {
-            chosen_fmt = VK_FORMAT_R8G8B8A8_SRGB;
-            break;
-        }
-        if (f == VK_FORMAT_R8G8B8A8_UNORM) {
-            chosen_fmt = VK_FORMAT_R8G8B8A8_UNORM;
-            break;
-        }
-        if (f == VK_FORMAT_B8G8R8A8_SRGB) {
-            chosen_fmt = VK_FORMAT_B8G8R8A8_SRGB;
+    // Prefer an sRGB swapchain. The decoded video is converted back to linear
+    // RGB in color.frag before this attachment applies its output transfer.
+    VkFormat chosen_fmt = formats.empty() ? VK_FORMAT_R8G8B8A8_UNORM : static_cast<VkFormat>(formats.front());
+    const std::array<VkFormat, 4> preferred_formats{
+        VK_FORMAT_R8G8B8A8_SRGB,
+        VK_FORMAT_R8G8B8A8_UNORM,
+        VK_FORMAT_B8G8R8A8_SRGB,
+        VK_FORMAT_B8G8R8A8_UNORM,
+    };
+    for (const VkFormat preferred : preferred_formats) {
+        if (std::find(formats.begin(), formats.end(), static_cast<int64_t>(preferred)) != formats.end()) {
+            chosen_fmt = preferred;
             break;
         }
     }
@@ -814,9 +892,11 @@ void oxr_interface::create_swapchains() {
 }
 
 extern "C" plugin* this_plugin_factory(phonebook* pb) {
-    auto plugin_ptr = std::make_shared<oxr_interface>("openxr_interface", pb);
-    pb->register_impl<vk::vulkan_context_provider>(plugin_ptr);
-    auto* obj = plugin_ptr.get();
+    auto* obj = new oxr_interface("openxr_interface", pb);
+    // The runtime owns the plugin returned by this factory. Register a non-owning
+    // service alias so the phonebook does not try to delete the same object again.
+    pb->register_impl<vk::vulkan_context_provider>(std::shared_ptr<vk::vulkan_context_provider>(
+        static_cast<vk::vulkan_context_provider*>(obj), [](vk::vulkan_context_provider*) { }));
     return obj;
 }
 #endif

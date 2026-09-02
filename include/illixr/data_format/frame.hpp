@@ -5,11 +5,14 @@
 #endif
 
 #include "illixr/data_format/poses/head_pose.hpp"
+#include "illixr/data_format/stereo_presentation.hpp"
 #include "illixr/switchboard.hpp"
 
 #include <array>
 #include <boost/serialization/export.hpp>
 #include <cstdint>
+#include <memory>
+#include <vector>
 #ifdef __ANDROID__
 #    include <GLES/gl.h>
 #    ifndef NVDEC_DECODER
@@ -56,6 +59,57 @@ extern "C" {
 
 namespace ILLIXR::data_format {
 
+/**
+ * Boba's lightweight per-eye viewer overlays. Each command retains the
+ * producer's 14-float layout and is interpreted in source-image pixels.
+ * Keeping these commands out of the video bitstream lets the Quest render
+ * controller rays and placement markers at the OpenXR swapchain resolution.
+ */
+struct boba_frame_overlay {
+    static constexpr std::uint32_t command_stride_floats = 14;
+    static constexpr std::uint32_t max_commands_per_eye  = 256;
+
+    /** Coordinate extent used to normalize the per-eye source-pixel commands. */
+    std::uint32_t      source_width{0};
+    std::uint32_t      source_height{0};
+    std::vector<float> left_commands;
+    std::vector<float> right_commands;
+};
+
+/** Per-frame placement metadata for Boba's optional bitmap UI card. */
+struct boba_modal_overlay {
+    /** Visibility plus validity of the independently projected eye quads. */
+    bool visible{false};
+    bool left_valid{false};
+    bool right_valid{false};
+
+    /** Content ID/dimensions of the texture carried on the reliable topic. */
+    std::uint64_t texture_id{0};
+    std::uint32_t width{0};
+    std::uint32_t height{0};
+    /** Four x/y corners per eye in decoded source-image coordinates. */
+    std::array<float, 8> left_quad_pixels{};
+    std::array<float, 8> right_quad_pixels{};
+    /** Physical dimensions used when a compositor presents the card in 3D. */
+    float width_m{0.0F};
+    float height_m{0.0F};
+};
+
+/**
+ * Reliable, content-addressed update for a Boba modal texture. The texture is
+ * sent only when it changes (or periodically for recovery) and cached by the
+ * Quest; boba_modal_overlay carries its per-frame projected placement.
+ */
+struct boba_modal_texture : public switchboard::event {
+    static constexpr std::uint64_t wire_magic = 0x424F42414D4F444CULL; // "BOBAMODL"
+
+    std::uint64_t             texture_id{0};
+    std::uint32_t             width{0};
+    std::uint32_t             height{0};
+    std::vector<std::uint8_t> rgba;
+    std::uint64_t             magic{wire_magic};
+};
+
 // Using arrays as a swapchain
 // Array of left eyes, array of right eyes
 // This more closely matches the format used by Monado
@@ -90,6 +144,11 @@ struct compressed_frame : public switchboard::event {
 
     bool use_depth{false};
     bool use_motion_vectors{false};
+    // Boba presentation and overlay metadata serialized with the video packet.
+    stereo_presentation_mode presentation_mode{stereo_presentation_mode::stereo_fullscreen};
+    float                    content_aspect_ratio{0.0F};
+    boba_frame_overlay       boba_overlay{};
+    boba_modal_overlay       boba_modal{};
 
     /// Tag type: disambiguates the color+motion_vec constructor from color+depth.
     struct [[maybe_unused]] has_motion_vectors_tag { };
@@ -334,6 +393,13 @@ struct [[maybe_unused]] dual_frames : public switchboard::event {
     // for latency and accuracy logging.
     uint64_t pose_id{0};
     double   encode_time{0.};
+    // Presentation metadata matched to this exact decoded frame.
+    stereo_presentation_mode presentation_mode{stereo_presentation_mode::stereo_fullscreen};
+    float                    content_aspect_ratio{0.0F};
+    boba_frame_overlay       boba_overlay{};
+    boba_modal_overlay       boba_modal{};
+    // Optional cached modal pixels resolved from boba_modal.texture_id on Quest.
+    std::shared_ptr<const std::vector<std::uint8_t>> boba_modal_rgba{};
     // Projection clip planes forwarded from the server's compressed_frame.
     // Required by XrCompositionLayerDepthInfoKHR and
     // XrCompositionLayerSpaceWarpInfoFB (nearZ / farZ fields).

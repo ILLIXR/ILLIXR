@@ -8,8 +8,22 @@
 #include "illixr/plugin.hpp"
 #include "illixr/switchboard.hpp"
 
+#include <chrono>
+#include <cstdint>
+#include <mutex>
+#include <thread>
+#include <unordered_map>
+#include <vector>
+
 namespace ILLIXR {
 
+/**
+ * Switchboard UDP transport with MTU-safe message sharding.
+ *
+ * Logical topic messages are split into independent datagrams and reassembled
+ * per topic stream. Completion of a newer message discards older incomplete
+ * messages, favoring bounded latency over stale video recovery.
+ */
 class MY_EXPORT_API udp_network_backend
     : public plugin
     , public network::udp_backend {
@@ -36,6 +50,29 @@ public:
     bool client;
 
 private:
+    /** Reassembly state for one logical message, keyed by stream/message ID. */
+    struct in_progress_message {
+        std::vector<char>                     buffer;
+        std::vector<bool>                     received_shards;
+        std::uint32_t                         shard_count{0};
+        std::uint32_t                         received_count{0};
+        std::size_t                           last_shard_size{0};
+        std::chrono::steady_clock::time_point first_received{};
+    };
+
+    /** Split one serialized topic packet into independently sendable shards. */
+    void send_packet(std::uint16_t stream_id, std::string&& packet);
+
+    /** Accept a legacy packet or add one versioned shard to reassembly state. */
+    void receive_packet(std::string&& packet);
+
+    /** Validate and dispatch a completely reassembled application packet. */
+    void receive_complete_packet(std::string&& packet);
+
+    /** Drop older incomplete messages from a stream after a newer completion. */
+    void prune_reassembly(std::uint16_t stream_id, std::uint32_t completed_message_id);
+
+    /** Send a backend-control packet on the reserved stream zero. */
     void send_control(const std::string& message);
 
     std::shared_ptr<switchboard> switchboard_;
@@ -44,12 +81,23 @@ private:
     std::atomic<bool> ready_ = false;
 #endif
     network::UDPSocket* peer_socket_ = nullptr;
+    std::thread         io_thread_;
 
     std::string server_ip_;
-    int         server_port_;
+    int         server_port_{9003};
     std::string client_ip_;
-    int         client_port_;
-    int         is_client_;
+    int         client_port_{9002};
+    int         is_client_{0};
+
+    // Datagram sizing, stream sequencing, and serialized socket writes.
+    std::size_t                packet_size_{1400};
+    std::size_t                socket_buffer_size_{4 * 1024 * 1024};
+    std::atomic<std::uint32_t> next_message_id_{0};
+    std::mutex                 send_mutex_;
+    // Receive-thread-owned bounded reassembly table.
+    std::unordered_map<std::uint64_t, in_progress_message> in_progress_messages_;
+    static constexpr std::size_t                           MAX_CONCURRENT_MESSAGES = 10;
+    static constexpr std::size_t                           MAX_MESSAGE_BYTES       = 64 * 1024 * 1024;
 
     std::vector<std::string>                               networked_topics_;
     std::unordered_map<std::string, network::topic_config> networked_topics_configs_;

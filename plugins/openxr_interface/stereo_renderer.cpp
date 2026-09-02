@@ -3,8 +3,14 @@
 #include "color_frag_spv.h"
 #include "color_vert_spv.h"
 #include "depth_frag_spv.h"
+#include "modal_frag_spv.h"
+#include "modal_vert_spv.h"
 #include "motion_vec_frag_spv.h"
+#include "overlay_frag_spv.h"
+#include "overlay_vert_spv.h"
 
+#include <algorithm>
+#include <cmath>
 #include <cstring>
 #include <spdlog/spdlog.h>
 #include <stdexcept>
@@ -71,6 +77,8 @@ bool stereo_renderer::initialize(VkInstance instance, VkPhysicalDevice physical_
     if (!allocate_command_buffers())
         return false;
     if (!create_descriptor_pool())
+        return false;
+    if (!create_boba_overlay_resources())
         return false;
 
     // Fences for render completion
@@ -290,6 +298,628 @@ bool stereo_renderer::create_pipeline(const imported_image& prototype) {
     pipeline_created_ = true;
     spdlog::get("illixr")->info("[stereo_renderer] Pipeline created");
     return true;
+}
+
+// ---- Boba vector and modal overlay resources -------------------------------
+
+std::uint32_t stereo_renderer::find_memory_type(std::uint32_t type_filter, VkMemoryPropertyFlags properties) const {
+    VkPhysicalDeviceMemoryProperties memory_properties{};
+    vkGetPhysicalDeviceMemoryProperties(physical_device_, &memory_properties);
+    for (std::uint32_t index = 0; index < memory_properties.memoryTypeCount; ++index) {
+        if ((type_filter & (1U << index)) != 0 &&
+            (memory_properties.memoryTypes[index].propertyFlags & properties) == properties) {
+            return index;
+        }
+    }
+    return UINT32_MAX;
+}
+
+bool stereo_renderer::create_host_visible_buffer(VkDeviceSize size, VkBufferUsageFlags usage, VkBuffer* buffer,
+                                                 VkDeviceMemory* memory, void** mapped) {
+    VkBufferCreateInfo buffer_info{VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO};
+    buffer_info.size        = size;
+    buffer_info.usage       = usage;
+    buffer_info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+    if (vkCreateBuffer(device_, &buffer_info, nullptr, buffer) != VK_SUCCESS) {
+        return false;
+    }
+
+    VkMemoryRequirements requirements{};
+    vkGetBufferMemoryRequirements(device_, *buffer, &requirements);
+    const std::uint32_t memory_type = find_memory_type(
+        requirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+    if (memory_type == UINT32_MAX) {
+        vkDestroyBuffer(device_, *buffer, nullptr);
+        *buffer = VK_NULL_HANDLE;
+        return false;
+    }
+
+    VkMemoryAllocateInfo allocation{VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO};
+    allocation.allocationSize  = requirements.size;
+    allocation.memoryTypeIndex = memory_type;
+    if (vkAllocateMemory(device_, &allocation, nullptr, memory) != VK_SUCCESS) {
+        vkDestroyBuffer(device_, *buffer, nullptr);
+        *buffer = VK_NULL_HANDLE;
+        return false;
+    }
+    if (vkBindBufferMemory(device_, *buffer, *memory, 0) != VK_SUCCESS ||
+        vkMapMemory(device_, *memory, 0, size, 0, mapped) != VK_SUCCESS) {
+        vkDestroyBuffer(device_, *buffer, nullptr);
+        vkFreeMemory(device_, *memory, nullptr);
+        *memory = VK_NULL_HANDLE;
+        *buffer = VK_NULL_HANDLE;
+        return false;
+    }
+    return true;
+}
+
+bool stereo_renderer::create_overlay_pipeline() {
+    VkPushConstantRange push_range{};
+    push_range.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+    push_range.size       = 2 * sizeof(float);
+
+    VkPipelineLayoutCreateInfo layout_info{VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO};
+    layout_info.pushConstantRangeCount = 1;
+    layout_info.pPushConstantRanges    = &push_range;
+    VK_CHECK(vkCreatePipelineLayout(device_, &layout_info, nullptr, &overlay_pipeline_layout_));
+
+    VkShaderModule vert = create_shader_module(device_, overlay_vert_spv, sizeof(overlay_vert_spv) / sizeof(uint32_t));
+    VkShaderModule frag = create_shader_module(device_, overlay_frag_spv, sizeof(overlay_frag_spv) / sizeof(uint32_t));
+    if (vert == VK_NULL_HANDLE || frag == VK_NULL_HANDLE) {
+        return false;
+    }
+    VkPipelineShaderStageCreateInfo stages[2]{};
+    stages[0] = {
+        VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO, nullptr, 0, VK_SHADER_STAGE_VERTEX_BIT, vert, "main", nullptr};
+    stages[1] = {
+        VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO, nullptr, 0, VK_SHADER_STAGE_FRAGMENT_BIT, frag, "main", nullptr};
+
+    VkVertexInputBindingDescription binding{};
+    binding.binding   = 0;
+    binding.stride    = sizeof(overlay_vertex);
+    binding.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+    std::array<VkVertexInputAttributeDescription, 2> attributes{};
+    attributes[0] = {0, 0, VK_FORMAT_R32G32_SFLOAT, offsetof(overlay_vertex, x)};
+    attributes[1] = {1, 0, VK_FORMAT_R32G32B32A32_SFLOAT, offsetof(overlay_vertex, red)};
+
+    VkPipelineVertexInputStateCreateInfo vertex_input{VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO};
+    vertex_input.vertexBindingDescriptionCount   = 1;
+    vertex_input.pVertexBindingDescriptions      = &binding;
+    vertex_input.vertexAttributeDescriptionCount = static_cast<std::uint32_t>(attributes.size());
+    vertex_input.pVertexAttributeDescriptions    = attributes.data();
+
+    VkPipelineInputAssemblyStateCreateInfo assembly{VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO};
+    assembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+    VkPipelineViewportStateCreateInfo viewport{VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO};
+    viewport.viewportCount = 1;
+    viewport.scissorCount  = 1;
+    VkPipelineRasterizationStateCreateInfo raster{VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO};
+    raster.polygonMode = VK_POLYGON_MODE_FILL;
+    raster.cullMode    = VK_CULL_MODE_NONE;
+    raster.frontFace   = VK_FRONT_FACE_COUNTER_CLOCKWISE;
+    raster.lineWidth   = 1.0F;
+    VkPipelineMultisampleStateCreateInfo multisample{VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO};
+    multisample.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+
+    VkPipelineColorBlendAttachmentState blend_attachment{};
+    blend_attachment.blendEnable         = VK_TRUE;
+    blend_attachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+    blend_attachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+    blend_attachment.colorBlendOp        = VK_BLEND_OP_ADD;
+    blend_attachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+    blend_attachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+    blend_attachment.alphaBlendOp        = VK_BLEND_OP_ADD;
+    blend_attachment.colorWriteMask =
+        VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+    VkPipelineColorBlendStateCreateInfo blend{VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO};
+    blend.attachmentCount = 1;
+    blend.pAttachments    = &blend_attachment;
+
+    constexpr VkDynamicState         dynamic_states[] = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
+    VkPipelineDynamicStateCreateInfo dynamic{VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO};
+    dynamic.dynamicStateCount = 2;
+    dynamic.pDynamicStates    = dynamic_states;
+
+    VkGraphicsPipelineCreateInfo pipeline_info{VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO};
+    pipeline_info.stageCount          = 2;
+    pipeline_info.pStages             = stages;
+    pipeline_info.pVertexInputState   = &vertex_input;
+    pipeline_info.pInputAssemblyState = &assembly;
+    pipeline_info.pViewportState      = &viewport;
+    pipeline_info.pRasterizationState = &raster;
+    pipeline_info.pMultisampleState   = &multisample;
+    pipeline_info.pColorBlendState    = &blend;
+    pipeline_info.pDynamicState       = &dynamic;
+    pipeline_info.layout              = overlay_pipeline_layout_;
+    pipeline_info.renderPass          = render_pass_;
+    pipeline_info.subpass             = 0;
+    const VkResult result = vkCreateGraphicsPipelines(device_, VK_NULL_HANDLE, 1, &pipeline_info, nullptr, &overlay_pipeline_);
+    vkDestroyShaderModule(device_, vert, nullptr);
+    vkDestroyShaderModule(device_, frag, nullptr);
+    return result == VK_SUCCESS;
+}
+
+bool stereo_renderer::create_modal_pipeline() {
+    VkSamplerCreateInfo sampler_info{VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO};
+    sampler_info.magFilter               = VK_FILTER_LINEAR;
+    sampler_info.minFilter               = VK_FILTER_LINEAR;
+    sampler_info.addressModeU            = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+    sampler_info.addressModeV            = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+    sampler_info.addressModeW            = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+    sampler_info.unnormalizedCoordinates = VK_FALSE;
+    VK_CHECK(vkCreateSampler(device_, &sampler_info, nullptr, &modal_sampler_));
+
+    VkDescriptorSetLayoutBinding descriptor_binding{};
+    descriptor_binding.binding         = 0;
+    descriptor_binding.descriptorType  = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    descriptor_binding.descriptorCount = 1;
+    descriptor_binding.stageFlags      = VK_SHADER_STAGE_FRAGMENT_BIT;
+    VkDescriptorSetLayoutCreateInfo descriptor_layout{VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO};
+    descriptor_layout.bindingCount = 1;
+    descriptor_layout.pBindings    = &descriptor_binding;
+    VK_CHECK(vkCreateDescriptorSetLayout(device_, &descriptor_layout, nullptr, &modal_desc_set_layout_));
+
+    VkDescriptorPoolSize pool_size{};
+    pool_size.type            = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    pool_size.descriptorCount = 1;
+    VkDescriptorPoolCreateInfo pool_info{VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO};
+    pool_info.maxSets       = 1;
+    pool_info.poolSizeCount = 1;
+    pool_info.pPoolSizes    = &pool_size;
+    VK_CHECK(vkCreateDescriptorPool(device_, &pool_info, nullptr, &modal_descriptor_pool_));
+    VkDescriptorSetAllocateInfo descriptor_allocation{VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO};
+    descriptor_allocation.descriptorPool     = modal_descriptor_pool_;
+    descriptor_allocation.descriptorSetCount = 1;
+    descriptor_allocation.pSetLayouts        = &modal_desc_set_layout_;
+    VK_CHECK(vkAllocateDescriptorSets(device_, &descriptor_allocation, &modal_descriptor_set_));
+
+    VkPushConstantRange push_range{};
+    push_range.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+    push_range.size       = 2 * sizeof(float);
+    VkPipelineLayoutCreateInfo layout_info{VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO};
+    layout_info.setLayoutCount         = 1;
+    layout_info.pSetLayouts            = &modal_desc_set_layout_;
+    layout_info.pushConstantRangeCount = 1;
+    layout_info.pPushConstantRanges    = &push_range;
+    VK_CHECK(vkCreatePipelineLayout(device_, &layout_info, nullptr, &modal_pipeline_layout_));
+
+    VkShaderModule vert = create_shader_module(device_, modal_vert_spv, sizeof(modal_vert_spv) / sizeof(uint32_t));
+    VkShaderModule frag = create_shader_module(device_, modal_frag_spv, sizeof(modal_frag_spv) / sizeof(uint32_t));
+    if (vert == VK_NULL_HANDLE || frag == VK_NULL_HANDLE) {
+        return false;
+    }
+    VkPipelineShaderStageCreateInfo stages[2]{};
+    stages[0] = {
+        VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO, nullptr, 0, VK_SHADER_STAGE_VERTEX_BIT, vert, "main", nullptr};
+    stages[1] = {
+        VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO, nullptr, 0, VK_SHADER_STAGE_FRAGMENT_BIT, frag, "main", nullptr};
+
+    VkVertexInputBindingDescription binding{};
+    binding.binding   = 0;
+    binding.stride    = sizeof(modal_vertex);
+    binding.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+    std::array<VkVertexInputAttributeDescription, 2> attributes{};
+    attributes[0] = {0, 0, VK_FORMAT_R32G32_SFLOAT, offsetof(modal_vertex, x)};
+    attributes[1] = {1, 0, VK_FORMAT_R32G32_SFLOAT, offsetof(modal_vertex, u)};
+    VkPipelineVertexInputStateCreateInfo vertex_input{VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO};
+    vertex_input.vertexBindingDescriptionCount   = 1;
+    vertex_input.pVertexBindingDescriptions      = &binding;
+    vertex_input.vertexAttributeDescriptionCount = static_cast<std::uint32_t>(attributes.size());
+    vertex_input.pVertexAttributeDescriptions    = attributes.data();
+
+    VkPipelineInputAssemblyStateCreateInfo assembly{VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO};
+    assembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+    VkPipelineViewportStateCreateInfo viewport{VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO};
+    viewport.viewportCount = 1;
+    viewport.scissorCount  = 1;
+    VkPipelineRasterizationStateCreateInfo raster{VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO};
+    raster.polygonMode = VK_POLYGON_MODE_FILL;
+    raster.cullMode    = VK_CULL_MODE_NONE;
+    raster.frontFace   = VK_FRONT_FACE_COUNTER_CLOCKWISE;
+    raster.lineWidth   = 1.0F;
+    VkPipelineMultisampleStateCreateInfo multisample{VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO};
+    multisample.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+
+    VkPipelineColorBlendAttachmentState blend_attachment{};
+    blend_attachment.blendEnable         = VK_TRUE;
+    blend_attachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+    blend_attachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+    blend_attachment.colorBlendOp        = VK_BLEND_OP_ADD;
+    blend_attachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+    blend_attachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+    blend_attachment.alphaBlendOp        = VK_BLEND_OP_ADD;
+    blend_attachment.colorWriteMask =
+        VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+    VkPipelineColorBlendStateCreateInfo blend{VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO};
+    blend.attachmentCount                             = 1;
+    blend.pAttachments                                = &blend_attachment;
+    constexpr VkDynamicState         dynamic_states[] = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
+    VkPipelineDynamicStateCreateInfo dynamic{VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO};
+    dynamic.dynamicStateCount = 2;
+    dynamic.pDynamicStates    = dynamic_states;
+
+    VkGraphicsPipelineCreateInfo pipeline_info{VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO};
+    pipeline_info.stageCount          = 2;
+    pipeline_info.pStages             = stages;
+    pipeline_info.pVertexInputState   = &vertex_input;
+    pipeline_info.pInputAssemblyState = &assembly;
+    pipeline_info.pViewportState      = &viewport;
+    pipeline_info.pRasterizationState = &raster;
+    pipeline_info.pMultisampleState   = &multisample;
+    pipeline_info.pColorBlendState    = &blend;
+    pipeline_info.pDynamicState       = &dynamic;
+    pipeline_info.layout              = modal_pipeline_layout_;
+    pipeline_info.renderPass          = render_pass_;
+    pipeline_info.subpass             = 0;
+    const VkResult result = vkCreateGraphicsPipelines(device_, VK_NULL_HANDLE, 1, &pipeline_info, nullptr, &modal_pipeline_);
+    vkDestroyShaderModule(device_, vert, nullptr);
+    vkDestroyShaderModule(device_, frag, nullptr);
+    return result == VK_SUCCESS;
+}
+
+bool stereo_renderer::create_boba_overlay_resources() {
+    if (!create_overlay_pipeline() || !create_modal_pipeline()) {
+        spdlog::get("illixr")->error("[stereo_renderer] Could not create Boba overlay pipelines");
+        return false;
+    }
+
+    constexpr VkDeviceSize overlay_buffer_bytes =
+        sizeof(overlay_vertex) * data_format::boba_frame_overlay::max_commands_per_eye * 6ULL;
+    constexpr VkDeviceSize modal_buffer_bytes = sizeof(modal_vertex) * 6ULL;
+    for (int eye = 0; eye < 2; ++eye) {
+        if (!create_host_visible_buffer(overlay_buffer_bytes, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, &overlay_vertex_buffers_[eye],
+                                        &overlay_vertex_memories_[eye], &overlay_vertex_mapped_[eye]) ||
+            !create_host_visible_buffer(modal_buffer_bytes, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, &modal_vertex_buffers_[eye],
+                                        &modal_vertex_memories_[eye], &modal_vertex_mapped_[eye])) {
+            spdlog::get("illixr")->error("[stereo_renderer] Could not allocate Boba overlay vertex buffers");
+            return false;
+        }
+        overlay_vertices_[eye].reserve(data_format::boba_frame_overlay::max_commands_per_eye * 6ULL);
+    }
+    spdlog::get("illixr")->info("[stereo_renderer] Boba overlay pipelines initialized");
+    return true;
+}
+
+void stereo_renderer::destroy_modal_texture() {
+    if (modal_image_view_ != VK_NULL_HANDLE) {
+        vkDestroyImageView(device_, modal_image_view_, nullptr);
+        modal_image_view_ = VK_NULL_HANDLE;
+    }
+    if (modal_image_ != VK_NULL_HANDLE) {
+        vkDestroyImage(device_, modal_image_, nullptr);
+        modal_image_ = VK_NULL_HANDLE;
+    }
+    if (modal_image_memory_ != VK_NULL_HANDLE) {
+        vkFreeMemory(device_, modal_image_memory_, nullptr);
+        modal_image_memory_ = VK_NULL_HANDLE;
+    }
+    modal_texture_id_ = 0;
+}
+
+bool stereo_renderer::upload_modal_texture(std::uint64_t texture_id, std::uint32_t width, std::uint32_t height,
+                                           const std::vector<std::uint8_t>& rgba) {
+    const std::uint64_t expected_size = static_cast<std::uint64_t>(width) * height * 4ULL;
+    if (texture_id == 0 || width == 0 || height == 0 || expected_size != rgba.size()) {
+        return false;
+    }
+
+    // Stage host pixels and build a replacement image without disturbing the
+    // currently renderable modal. Ownership is swapped only after upload ends.
+    VkBuffer       staging_buffer = VK_NULL_HANDLE;
+    VkDeviceMemory staging_memory = VK_NULL_HANDLE;
+    void*          staging_mapped = nullptr;
+    if (!create_host_visible_buffer(expected_size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, &staging_buffer, &staging_memory,
+                                    &staging_mapped)) {
+        spdlog::get("illixr")->error("[stereo_renderer] Could not allocate Boba modal staging buffer");
+        return false;
+    }
+    std::memcpy(staging_mapped, rgba.data(), rgba.size());
+    vkUnmapMemory(device_, staging_memory);
+    staging_mapped = nullptr;
+
+    VkImage         new_image      = VK_NULL_HANDLE;
+    VkDeviceMemory  new_memory     = VK_NULL_HANDLE;
+    VkImageView     new_view       = VK_NULL_HANDLE;
+    VkCommandBuffer upload_command = VK_NULL_HANDLE;
+
+    const auto release_new_resources = [&] {
+        if (upload_command != VK_NULL_HANDLE) {
+            vkFreeCommandBuffers(device_, command_pool_, 1, &upload_command);
+            upload_command = VK_NULL_HANDLE;
+        }
+        if (new_view != VK_NULL_HANDLE) {
+            vkDestroyImageView(device_, new_view, nullptr);
+            new_view = VK_NULL_HANDLE;
+        }
+        if (new_image != VK_NULL_HANDLE) {
+            vkDestroyImage(device_, new_image, nullptr);
+            new_image = VK_NULL_HANDLE;
+        }
+        if (new_memory != VK_NULL_HANDLE) {
+            vkFreeMemory(device_, new_memory, nullptr);
+            new_memory = VK_NULL_HANDLE;
+        }
+        if (staging_buffer != VK_NULL_HANDLE) {
+            vkDestroyBuffer(device_, staging_buffer, nullptr);
+            staging_buffer = VK_NULL_HANDLE;
+        }
+        if (staging_memory != VK_NULL_HANDLE) {
+            vkFreeMemory(device_, staging_memory, nullptr);
+            staging_memory = VK_NULL_HANDLE;
+        }
+    };
+
+    VkImageCreateInfo image_info{VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO};
+    image_info.imageType     = VK_IMAGE_TYPE_2D;
+    image_info.format        = VK_FORMAT_R8G8B8A8_UNORM;
+    image_info.extent        = {width, height, 1};
+    image_info.mipLevels     = 1;
+    image_info.arrayLayers   = 1;
+    image_info.samples       = VK_SAMPLE_COUNT_1_BIT;
+    image_info.tiling        = VK_IMAGE_TILING_OPTIMAL;
+    image_info.usage         = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+    image_info.sharingMode   = VK_SHARING_MODE_EXCLUSIVE;
+    image_info.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+    if (vkCreateImage(device_, &image_info, nullptr, &new_image) != VK_SUCCESS) {
+        release_new_resources();
+        return false;
+    }
+
+    VkMemoryRequirements image_requirements{};
+    vkGetImageMemoryRequirements(device_, new_image, &image_requirements);
+    const std::uint32_t image_memory_type =
+        find_memory_type(image_requirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+    if (image_memory_type == UINT32_MAX) {
+        release_new_resources();
+        return false;
+    }
+
+    VkMemoryAllocateInfo image_allocation{VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO};
+    image_allocation.allocationSize  = image_requirements.size;
+    image_allocation.memoryTypeIndex = image_memory_type;
+    if (vkAllocateMemory(device_, &image_allocation, nullptr, &new_memory) != VK_SUCCESS ||
+        vkBindImageMemory(device_, new_image, new_memory, 0) != VK_SUCCESS) {
+        release_new_resources();
+        return false;
+    }
+
+    VkCommandBufferAllocateInfo command_allocation{VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO};
+    command_allocation.commandPool        = command_pool_;
+    command_allocation.level              = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    command_allocation.commandBufferCount = 1;
+    if (vkAllocateCommandBuffers(device_, &command_allocation, &upload_command) != VK_SUCCESS) {
+        release_new_resources();
+        return false;
+    }
+
+    VkCommandBufferBeginInfo command_begin{VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO};
+    command_begin.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+    if (vkBeginCommandBuffer(upload_command, &command_begin) != VK_SUCCESS) {
+        release_new_resources();
+        return false;
+    }
+
+    VkImageMemoryBarrier to_transfer{VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER};
+    to_transfer.oldLayout                   = VK_IMAGE_LAYOUT_UNDEFINED;
+    to_transfer.newLayout                   = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+    to_transfer.srcQueueFamilyIndex         = VK_QUEUE_FAMILY_IGNORED;
+    to_transfer.dstQueueFamilyIndex         = VK_QUEUE_FAMILY_IGNORED;
+    to_transfer.image                       = new_image;
+    to_transfer.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    to_transfer.subresourceRange.levelCount = 1;
+    to_transfer.subresourceRange.layerCount = 1;
+    to_transfer.dstAccessMask               = VK_ACCESS_TRANSFER_WRITE_BIT;
+    vkCmdPipelineBarrier(upload_command, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0,
+                         nullptr, 1, &to_transfer);
+
+    VkBufferImageCopy copy_region{};
+    copy_region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    copy_region.imageSubresource.layerCount = 1;
+    copy_region.imageExtent                 = {width, height, 1};
+    vkCmdCopyBufferToImage(upload_command, staging_buffer, new_image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &copy_region);
+
+    VkImageMemoryBarrier to_shader_read{VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER};
+    to_shader_read.oldLayout                   = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+    to_shader_read.newLayout                   = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    to_shader_read.srcQueueFamilyIndex         = VK_QUEUE_FAMILY_IGNORED;
+    to_shader_read.dstQueueFamilyIndex         = VK_QUEUE_FAMILY_IGNORED;
+    to_shader_read.image                       = new_image;
+    to_shader_read.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    to_shader_read.subresourceRange.levelCount = 1;
+    to_shader_read.subresourceRange.layerCount = 1;
+    to_shader_read.srcAccessMask               = VK_ACCESS_TRANSFER_WRITE_BIT;
+    to_shader_read.dstAccessMask               = VK_ACCESS_SHADER_READ_BIT;
+    vkCmdPipelineBarrier(upload_command, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0, 0, nullptr,
+                         0, nullptr, 1, &to_shader_read);
+
+    if (vkEndCommandBuffer(upload_command) != VK_SUCCESS) {
+        release_new_resources();
+        return false;
+    }
+    VkSubmitInfo submit{VK_STRUCTURE_TYPE_SUBMIT_INFO};
+    submit.commandBufferCount = 1;
+    submit.pCommandBuffers    = &upload_command;
+    if (vkQueueSubmit(queue_, 1, &submit, VK_NULL_HANDLE) != VK_SUCCESS || vkQueueWaitIdle(queue_) != VK_SUCCESS) {
+        release_new_resources();
+        return false;
+    }
+
+    VkImageViewCreateInfo view_info{VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO};
+    view_info.image                           = new_image;
+    view_info.viewType                        = VK_IMAGE_VIEW_TYPE_2D;
+    view_info.format                          = VK_FORMAT_R8G8B8A8_UNORM;
+    view_info.subresourceRange.aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT;
+    view_info.subresourceRange.baseMipLevel   = 0;
+    view_info.subresourceRange.levelCount     = 1;
+    view_info.subresourceRange.baseArrayLayer = 0;
+    view_info.subresourceRange.layerCount     = 1;
+    if (vkCreateImageView(device_, &view_info, nullptr, &new_view) != VK_SUCCESS) {
+        release_new_resources();
+        return false;
+    }
+
+    // Queue-idle above guarantees the previous modal is no longer referenced.
+    destroy_modal_texture();
+    modal_image_        = new_image;
+    modal_image_memory_ = new_memory;
+    modal_image_view_   = new_view;
+    modal_texture_id_   = texture_id;
+    new_image           = VK_NULL_HANDLE;
+    new_memory          = VK_NULL_HANDLE;
+    new_view            = VK_NULL_HANDLE;
+
+    VkDescriptorImageInfo descriptor_image{};
+    descriptor_image.sampler     = modal_sampler_;
+    descriptor_image.imageView   = modal_image_view_;
+    descriptor_image.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    VkWriteDescriptorSet descriptor_write{VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET};
+    descriptor_write.dstSet          = modal_descriptor_set_;
+    descriptor_write.dstBinding      = 0;
+    descriptor_write.descriptorCount = 1;
+    descriptor_write.descriptorType  = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    descriptor_write.pImageInfo      = &descriptor_image;
+    vkUpdateDescriptorSets(device_, 1, &descriptor_write, 0, nullptr);
+
+    release_new_resources();
+    spdlog::get("illixr")->info("[stereo_renderer] Uploaded Boba modal texture id={} size={}x{}", texture_id, width, height);
+    return true;
+}
+
+void stereo_renderer::update_boba_overlay_state(const data_format::dual_frames& frame) {
+    overlay_source_width_  = frame.boba_overlay.source_width;
+    overlay_source_height_ = frame.boba_overlay.source_height;
+    render_boba_overlays_  = frame.presentation_mode == data_format::stereo_presentation_mode::stereo_fullscreen &&
+        overlay_source_width_ > 0 && overlay_source_height_ > 0;
+    active_modal_ = frame.boba_modal;
+
+    // Boba sends compact 14-float commands. Expand lines and rectangles into
+    // triangles once per decoded frame so command buffers need only draw them.
+    const auto append_vertex = [](std::vector<overlay_vertex>& vertices, float x, float y, float red, float green, float blue,
+                                  float alpha) {
+        vertices.push_back({x, y, std::clamp(red / 255.0F, 0.0F, 1.0F), std::clamp(green / 255.0F, 0.0F, 1.0F),
+                            std::clamp(blue / 255.0F, 0.0F, 1.0F), std::clamp(alpha, 0.0F, 1.0F)});
+    };
+    const auto append_triangle = [&](std::vector<overlay_vertex>& vertices, float x0, float y0, float x1, float y1, float x2,
+                                     float y2, float red, float green, float blue, float alpha) {
+        append_vertex(vertices, x0, y0, red, green, blue, alpha);
+        append_vertex(vertices, x1, y1, red, green, blue, alpha);
+        append_vertex(vertices, x2, y2, red, green, blue, alpha);
+    };
+
+    const std::array<const std::vector<float>*, 2> command_lists = {&frame.boba_overlay.left_commands,
+                                                                    &frame.boba_overlay.right_commands};
+    for (int eye = 0; eye < 2; ++eye) {
+        auto& vertices = overlay_vertices_[eye];
+        vertices.clear();
+        modal_vertex_counts_[eye] = 0;
+        if (!render_boba_overlays_) {
+            continue;
+        }
+
+        const auto&       commands = *command_lists[eye];
+        const std::size_t command_count =
+            std::min<std::size_t>(commands.size() / data_format::boba_frame_overlay::command_stride_floats,
+                                  data_format::boba_frame_overlay::max_commands_per_eye);
+        for (std::size_t command_index = 0; command_index < command_count; ++command_index) {
+            const float* command = commands.data() + command_index * data_format::boba_frame_overlay::command_stride_floats;
+            if (!std::all_of(command, command + 10, [](float value) {
+                    return std::isfinite(value);
+                })) {
+                continue;
+            }
+
+            const int   command_type = static_cast<int>(std::round(command[0]));
+            const float alpha        = command[6];
+            const float red          = command[7];
+            const float green        = command[8];
+            const float blue         = command[9];
+            if (command_type == 0) {
+                const float start_x = command[1];
+                const float start_y = command[2];
+                const float end_x   = command[3];
+                const float end_y   = command[4];
+                const float radius  = std::max(0.5F, command[5]);
+                const float delta_x = end_x - start_x;
+                const float delta_y = end_y - start_y;
+                const float length  = std::sqrt(delta_x * delta_x + delta_y * delta_y);
+                if (length <= 1.0e-4F) {
+                    continue;
+                }
+                const float normal_x = -delta_y / length * radius;
+                const float normal_y = delta_x / length * radius;
+                append_triangle(vertices, start_x + normal_x, start_y + normal_y, end_x + normal_x, end_y + normal_y,
+                                end_x - normal_x, end_y - normal_y, red, green, blue, alpha);
+                append_triangle(vertices, start_x + normal_x, start_y + normal_y, end_x - normal_x, end_y - normal_y,
+                                start_x - normal_x, start_y - normal_y, red, green, blue, alpha);
+            } else if (command_type == 1) {
+                const float center_x = command[1];
+                const float center_y = command[2];
+                const float radius   = std::max(1.0F, command[5]);
+                const float x0       = center_x - radius;
+                const float y0       = center_y - radius;
+                const float x1       = center_x + radius;
+                const float y1       = center_y + radius;
+                append_triangle(vertices, x0, y0, x1, y0, x1, y1, red, green, blue, alpha);
+                append_triangle(vertices, x0, y0, x1, y1, x0, y1, red, green, blue, alpha);
+            }
+        }
+
+        const bool  eye_valid = eye == 0 ? active_modal_.left_valid : active_modal_.right_valid;
+        const auto& quad      = eye == 0 ? active_modal_.left_quad_pixels : active_modal_.right_quad_pixels;
+        if (active_modal_.visible && eye_valid && std::all_of(quad.begin(), quad.end(), [](float value) {
+                return std::isfinite(value);
+            })) {
+            modal_vertices_[eye]      = {{{quad[0], quad[1], 0.0F, 0.0F},
+                                          {quad[2], quad[3], 1.0F, 0.0F},
+                                          {quad[4], quad[5], 1.0F, 1.0F},
+                                          {quad[0], quad[1], 0.0F, 0.0F},
+                                          {quad[4], quad[5], 1.0F, 1.0F},
+                                          {quad[6], quad[7], 0.0F, 1.0F}}};
+            modal_vertex_counts_[eye] = 6;
+        }
+    }
+
+    if (render_boba_overlays_ && active_modal_.visible && active_modal_.texture_id != 0 &&
+        active_modal_.texture_id != modal_texture_id_ && frame.boba_modal_rgba != nullptr) {
+        const std::uint64_t expected_size = static_cast<std::uint64_t>(active_modal_.width) * active_modal_.height * 4ULL;
+        if (expected_size == frame.boba_modal_rgba->size() &&
+            !upload_modal_texture(active_modal_.texture_id, active_modal_.width, active_modal_.height,
+                                  *frame.boba_modal_rgba)) {
+            spdlog::get("illixr")->warn("[stereo_renderer] Could not upload Boba modal texture id={}",
+                                        active_modal_.texture_id);
+        }
+    }
+}
+
+void stereo_renderer::record_boba_overlays(VkCommandBuffer command_buffer, int eye) {
+    if (!render_boba_overlays_ || eye < 0 || eye > 1) {
+        return;
+    }
+
+    const float source_size[2] = {static_cast<float>(overlay_source_width_), static_cast<float>(overlay_source_height_)};
+    const auto& overlay        = overlay_vertices_[eye];
+    if (!overlay.empty()) {
+        std::memcpy(overlay_vertex_mapped_[eye], overlay.data(), overlay.size() * sizeof(overlay_vertex));
+        const VkDeviceSize offset = 0;
+        vkCmdBindPipeline(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, overlay_pipeline_);
+        vkCmdPushConstants(command_buffer, overlay_pipeline_layout_, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(source_size),
+                           source_size);
+        vkCmdBindVertexBuffers(command_buffer, 0, 1, &overlay_vertex_buffers_[eye], &offset);
+        vkCmdDraw(command_buffer, static_cast<std::uint32_t>(overlay.size()), 1, 0, 0);
+    }
+
+    if (active_modal_.visible && modal_vertex_counts_[eye] == 6 && modal_texture_id_ == active_modal_.texture_id &&
+        modal_image_view_ != VK_NULL_HANDLE) {
+        std::memcpy(modal_vertex_mapped_[eye], modal_vertices_[eye].data(), sizeof(modal_vertices_[eye]));
+        const VkDeviceSize offset = 0;
+        vkCmdBindPipeline(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, modal_pipeline_);
+        vkCmdBindDescriptorSets(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, modal_pipeline_layout_, 0, 1,
+                                &modal_descriptor_set_, 0, nullptr);
+        vkCmdPushConstants(command_buffer, modal_pipeline_layout_, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(source_size),
+                           source_size);
+        vkCmdBindVertexBuffers(command_buffer, 0, 1, &modal_vertex_buffers_[eye], &offset);
+        vkCmdDraw(command_buffer, 6, 1, 0, 0);
+    }
 }
 
 //
@@ -662,6 +1292,11 @@ void stereo_renderer::receive_frame(const dual_frames& frame) {
         return;
     }
 
+    // Overlay metadata is tied to this exact decoded frame. Build its
+    // per-eye geometry before either the combined or separate-eye path can
+    // branch, so the compositor never reuses commands from another image.
+    update_boba_overlay_state(frame);
+
     AHardwareBuffer* bufs[2] = {frame.left_eye.hw_buffer, frame.right_eye.hw_buffer};
 
 #ifdef COMBINED_ENCODING
@@ -969,6 +1604,10 @@ bool stereo_renderer::render_eye(int eye, VkImage swapchain_image, uint32_t swap
 
     // Three vertices generate a full-screen triangle (no vertex buffer).
     vkCmdDraw(cmd, 3, 1, 0, 0);
+
+    // Compose Boba's view-dependent vectors and optional bitmap card at the
+    // Quest swapchain resolution, after the decoded base image.
+    record_boba_overlays(cmd, eye);
 
     vkCmdEndRenderPass(cmd);
     vkEndCommandBuffer(cmd);
@@ -1425,6 +2064,68 @@ void stereo_renderer::cleanup() {
             depth_fences_[i] = VK_NULL_HANDLE;
         }
     }
+
+    for (int i = 0; i < 2; ++i) {
+        if (overlay_vertex_mapped_[i] != nullptr) {
+            vkUnmapMemory(device_, overlay_vertex_memories_[i]);
+            overlay_vertex_mapped_[i] = nullptr;
+        }
+        if (overlay_vertex_buffers_[i] != VK_NULL_HANDLE) {
+            vkDestroyBuffer(device_, overlay_vertex_buffers_[i], nullptr);
+            overlay_vertex_buffers_[i] = VK_NULL_HANDLE;
+        }
+        if (overlay_vertex_memories_[i] != VK_NULL_HANDLE) {
+            vkFreeMemory(device_, overlay_vertex_memories_[i], nullptr);
+            overlay_vertex_memories_[i] = VK_NULL_HANDLE;
+        }
+        if (modal_vertex_mapped_[i] != nullptr) {
+            vkUnmapMemory(device_, modal_vertex_memories_[i]);
+            modal_vertex_mapped_[i] = nullptr;
+        }
+        if (modal_vertex_buffers_[i] != VK_NULL_HANDLE) {
+            vkDestroyBuffer(device_, modal_vertex_buffers_[i], nullptr);
+            modal_vertex_buffers_[i] = VK_NULL_HANDLE;
+        }
+        if (modal_vertex_memories_[i] != VK_NULL_HANDLE) {
+            vkFreeMemory(device_, modal_vertex_memories_[i], nullptr);
+            modal_vertex_memories_[i] = VK_NULL_HANDLE;
+        }
+        overlay_vertices_[i].clear();
+        modal_vertex_counts_[i] = 0;
+    }
+
+    if (overlay_pipeline_ != VK_NULL_HANDLE) {
+        vkDestroyPipeline(device_, overlay_pipeline_, nullptr);
+        overlay_pipeline_ = VK_NULL_HANDLE;
+    }
+    if (overlay_pipeline_layout_ != VK_NULL_HANDLE) {
+        vkDestroyPipelineLayout(device_, overlay_pipeline_layout_, nullptr);
+        overlay_pipeline_layout_ = VK_NULL_HANDLE;
+    }
+    if (modal_pipeline_ != VK_NULL_HANDLE) {
+        vkDestroyPipeline(device_, modal_pipeline_, nullptr);
+        modal_pipeline_ = VK_NULL_HANDLE;
+    }
+    if (modal_pipeline_layout_ != VK_NULL_HANDLE) {
+        vkDestroyPipelineLayout(device_, modal_pipeline_layout_, nullptr);
+        modal_pipeline_layout_ = VK_NULL_HANDLE;
+    }
+    if (modal_descriptor_pool_ != VK_NULL_HANDLE) {
+        vkDestroyDescriptorPool(device_, modal_descriptor_pool_, nullptr);
+        modal_descriptor_pool_ = VK_NULL_HANDLE;
+        modal_descriptor_set_  = VK_NULL_HANDLE;
+    }
+    if (modal_desc_set_layout_ != VK_NULL_HANDLE) {
+        vkDestroyDescriptorSetLayout(device_, modal_desc_set_layout_, nullptr);
+        modal_desc_set_layout_ = VK_NULL_HANDLE;
+    }
+    destroy_modal_texture();
+    if (modal_sampler_ != VK_NULL_HANDLE) {
+        vkDestroySampler(device_, modal_sampler_, nullptr);
+        modal_sampler_ = VK_NULL_HANDLE;
+    }
+    active_modal_         = {};
+    render_boba_overlays_ = false;
 
     if (command_pool_ != VK_NULL_HANDLE) {
         vkDestroyCommandPool(device_, command_pool_, nullptr);

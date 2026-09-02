@@ -6,20 +6,25 @@ def root_path = rootProject.getLayout().getProjectDirectory().getAsFile().getPat
 def root_library_path = "${root_path}/android_libraries/third_party/"
 
 def home = System.getenv('HOME') ?: System.getenv('USERPROFILE')
+// Preserve the project signing setup when its keystore exists; otherwise let
+// Gradle use its standard debug key so a clean checkout can build/install.
+def illixrKeystore = file("${home}/illixr.keystore")
 
 android {
     signingConfigs {
-        debug {
-            storeFile file("${home}/illixr.keystore")
-            storePassword 'illixr'
-            keyAlias 'illixr'
-            keyPassword 'illixr'
-        }
-        release {
-            storeFile file("${home}/illixr.keystore")
-            storePassword 'illixr'
-            keyAlias 'illixr'
-            keyPassword 'illixr'
+        if (illixrKeystore.exists()) {
+            debug {
+                storeFile illixrKeystore
+                storePassword 'illixr'
+                keyAlias 'illixr'
+                keyPassword 'illixr'
+            }
+            release {
+                storeFile illixrKeystore
+                storePassword 'illixr'
+                keyAlias 'illixr'
+                keyPassword 'illixr'
+            }
         }
     }
     compileSdkVersion 33
@@ -50,13 +55,17 @@ android {
             debuggable false
             proguardFiles getDefaultProguardFile('proguard-android.txt'),
                     'proguard-rules.pro'
-            signingConfig signingConfigs.release
+            if (illixrKeystore.exists()) {
+                signingConfig signingConfigs.release
+            }
         }
         debug {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'),
                     'proguard-rules.pro'
-            signingConfig signingConfigs.debug
+            if (illixrKeystore.exists()) {
+                signingConfig signingConfigs.debug
+            }
         }
     }
     externalNativeBuild {

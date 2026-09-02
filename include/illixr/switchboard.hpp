@@ -349,6 +349,15 @@ private:
             return obj;
         }
 
+        /** Remove one queued event without waiting; return false when empty. */
+        bool try_dequeue(ptr<const event>& obj) {
+            if (!queue_.try_dequeue(token_, obj)) {
+                return false;
+            }
+            queue_size_--;
+            return true;
+        }
+
     private:
         moodycamel::BlockingConcurrentQueue<ptr<const event>> queue_{8 /*max size estimate*/};
         moodycamel::ConsumerToken                             token_{queue_};
@@ -591,6 +600,16 @@ public:
             return this_specific_event;
         }
 
+        /** Return the next typed event immediately, or nullptr when none is queued. */
+        ptr<const Specific_event> try_dequeue() {
+            ptr<const event> this_event;
+            if (!topic_buffer_.try_dequeue(this_event)) {
+                return nullptr;
+            }
+            serial_no_++;
+            return std::dynamic_pointer_cast<const Specific_event>(this_event);
+        }
+
     private:
         topic&        topic_;
         size_t        serial_no_ = 0;
@@ -641,7 +660,7 @@ public:
     };
 
     template<typename Serializable_event>
-    class network_writer : public writer<Serializable_event> {
+    class network_writer final : public writer<Serializable_event> {
     public:
         explicit network_writer(topic& topic, ptr<network::network_backend> backend = nullptr,
                                 const network::topic_config& config = {})

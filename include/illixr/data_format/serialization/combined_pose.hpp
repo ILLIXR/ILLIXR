@@ -11,7 +11,8 @@ namespace boost::serialization {
 #ifdef USING_OPENXR
 
 template<class Archive>
-void serialize(Archive& ar, ILLIXR::data_format::pose::combined_pose& data, const unsigned int) {
+void serialize(Archive& ar, ILLIXR::data_format::pose::combined_pose& data, const unsigned int version) {
+    (void) version;
     ar& boost::serialization::base_object<ILLIXR::switchboard::event>(data);
     ar & data.head_pose;
     ar & data.hand_poses;
