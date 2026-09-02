@@ -22,15 +22,14 @@ sl::ERROR_CODE zed_camera::open(const sl::InitParameters& params) {
     auto                 cam_conf  = getCameraInformation().camera_configuration;
     sl::CameraParameters left_cam  = cam_conf.calibration_parameters.left_cam;
     sl::CameraParameters right_cam = cam_conf.calibration_parameters.right_cam;
-    config_                        = {
-        static_cast<size_t>(cam_conf.resolution.width),
-        static_cast<size_t>(cam_conf.resolution.height),
-        cam_conf.fps,
-        cam_conf.calibration_parameters.getCameraBaseline(),
-        {{data_format::pose::side::LEFT, 
-                                 {left_cam.cx, left_cam.cy, left_cam.v_fov * (M_PI / 180.f), left_cam.h_fov * (M_PI / 180.f)}},
-         {data_format::pose::side::RIGHT,
-                                 {right_cam.cx, right_cam.cy, right_cam.v_fov * (M_PI / 180.f), right_cam.h_fov * (M_PI / 180.f)}}}};
+    config_                        = {static_cast<size_t>(cam_conf.resolution.width),
+                                      static_cast<size_t>(cam_conf.resolution.height),
+                                      cam_conf.fps,
+                                      cam_conf.calibration_parameters.getCameraBaseline(),
+                                      {{data_format::pose::side::LEFT,
+                                        {left_cam.cx, left_cam.cy, left_cam.v_fov * (M_PI / 180.f), left_cam.h_fov * (M_PI / 180.f)}},
+                                       {data_format::pose::side::RIGHT,
+                                        {right_cam.cx, right_cam.cy, right_cam.v_fov * (M_PI / 180.f), right_cam.h_fov * (M_PI / 180.f)}}}};
 
     sl::PositionalTrackingParameters tracking_params(initial_position_);
     err = enablePositionalTracking(tracking_params);
