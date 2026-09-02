@@ -462,12 +462,8 @@ bool xr_sensor_capture::get_pose_at_timestamp(XrTime timestamp, float out_matrix
     }
 
     spdlog::get("illixr")->debug("[xrLocateSpace] pose: {}, {}, {}, {}; {}, {}, {}", location.pose.orientation.x,
-    location.pose.orientation.y,
-    location.pose.orientation.z,
-    location.pose.orientation.w,
-    location.pose.position.x,
-    location.pose.position.y,
-    location.pose.position.z);
+                                 location.pose.orientation.y, location.pose.orientation.z, location.pose.orientation.w,
+                                 location.pose.position.x, location.pose.position.y, location.pose.position.z);
     const float x  = location.pose.orientation.x;
     const float y  = location.pose.orientation.y;
     const float z  = location.pose.orientation.z;
