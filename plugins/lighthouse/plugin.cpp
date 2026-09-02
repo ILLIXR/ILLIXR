@@ -73,10 +73,10 @@ void lighthouse::_p_one_iteration() {
     auto dt  = now - last_time_;
     if (dt > std::chrono::seconds(1)) {
         log_->info("slow pose rate: {} Hz", slow_pose_count_);
-        //log_->info("fast pose rate: {} Hz", fast_pose_count_);
+        // log_->info("fast pose rate: {} Hz", fast_pose_count_);
         slow_pose_count_ = 0;
-        //fast_pose_count_ = 0;
-        last_time_       = now;
+        // fast_pose_count_ = 0;
+        last_time_ = now;
     }
 }
 
