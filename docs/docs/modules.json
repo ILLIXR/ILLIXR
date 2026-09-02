@@ -99,6 +99,14 @@
       ]
     },
     {
+      "name": "android_data",
+      "cmake_flag": "",
+      "dependencies": [],
+      "OS": [
+        "android"
+      ]
+    },
+    {
       "name": "audio_pipeline",
       "cmake_flag": "USE_AUDIO_PIPELINE=ON",
       "dependencies": [
@@ -107,6 +115,14 @@
       ],
       "OS": [
         "linux"
+      ]
+    },
+    {
+      "name": "common_lock",
+      "cmake_flag": "",
+      "dependencies": [],
+      "OS": [
+        "android"
       ]
     },
     {
@@ -128,12 +144,21 @@
       ]
     },
     {
+      "name": "extended_window",
+      "cmake_flag": "USE_DEBUGVIEW=ON",
+      "dependencies": [],
+      "OS": [
+        "android"
+      ]
+    },
+    {
       "name": "fauxpose",
       "cmake_flag": "USE_FAUXPOSE=ON",
       "dependencies": [],
       "OS": [
         "linux",
-        "windows"
+        "windows",
+        "android"
       ]
     },
     {
@@ -141,7 +166,8 @@
       "cmake_flag": "USE_GLDEMO=ON",
       "dependencies": [],
       "OS": [
-        "linux"
+        "linux",
+        "android"
       ]
     },
     {
@@ -224,7 +250,8 @@
       "dependencies": [],
       "OS": [
         "linux",
-        "windows"
+        "windows",
+        "android"
       ]
     },
     {
@@ -233,7 +260,8 @@
       "dependencies": [],
       "OS": [
         "linux",
-        "windows"
+        "windows",
+        "android"
       ]
     },
     {
@@ -293,7 +321,8 @@
         "cuda-cudart"
       ],
       "OS": [
-        "linux"
+        "linux",
+        "android"
       ]
     },
     {
@@ -429,6 +458,14 @@
       ]
     },
     {
+      "name": "openxr_interface",
+      "cmake_flag": "",
+      "dependencies": [],
+      "OS": [
+        "android"
+      ]
+    },
+    {
       "name": "orb_slam3",
       "cmake_flag": "USE_ORB_SLAM3=ON",
       "dependencies": [
@@ -453,7 +490,8 @@
       "dependencies": [],
       "OS": [
         "linux",
-        "windows"
+        "windows",
+        "android"
       ]
     },
     {
@@ -462,7 +500,8 @@
       "dependencies": [],
       "OS": [
         "linux",
-        "windows"
+        "windows",
+        "android"
       ]
     },
     {
@@ -497,7 +536,8 @@
       "dependencies": [],
       "OS": [
         "linux",
-        "windows"
+        "windows",
+        "android"
       ]
     },
     {
@@ -506,7 +546,8 @@
       "dependencies": [],
       "OS": [
         "linux",
-        "windows"
+        "windows",
+        "android"
       ]
     },
     {
@@ -530,7 +571,8 @@
         "SDL2"
       ],
       "OS": [
-        "linux"
+        "linux",
+        "android"
       ]
     },
     {
@@ -565,7 +607,8 @@
       "dependencies": [],
       "OS": [
         "linux",
-        "windows"
+        "windows",
+        "android"
       ]
     },
     {
