@@ -22,7 +22,7 @@ using namespace ILLIXR::data_format;
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
     , imu_int_input_{switchboard_->get_reader<imu_integrator_input>("imu_integrator_input")}
     , vio_pose_writer_{switchboard_->get_network_writer<switchboard::event_wrapper<std::string>>(
-          "vio_pose", network::topic_config{.serialization_method = network::topic_config::SerializationMethod::PROTOBUF})} {
+          "vio_pose", network::topic_config{network::topic_config::SerializationMethod::PROTOBUF})} {
     spdlogger(switchboard_->get_env_char("OFFLOAD_VIO_LOG_LEVEL"));
 }
 

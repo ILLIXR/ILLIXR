@@ -2,6 +2,12 @@
 #define MONADO_IS_SOURCE
 #define DOUBLE_INCLUDE
 
+#ifdef _WIN32
+#    ifndef XRT_OS_WINDOWS
+#        define XRT_OS_WINDOWS
+#    endif
+#endif
+
 #include "drivers/illixr/illixr_framebuffer.h"
 #ifdef USING_OPENXR
 #    include "illixr/data_format/poses/combined_pose.hpp"
@@ -10,6 +16,7 @@
 #include "illixr/data_format/hmd_config.hpp"
 #include "illixr/data_format/pose_id.hpp"
 #include "illixr/data_format/pose_prediction.hpp"
+#include "illixr/data_format/serialization/frame.hpp"
 #include "illixr/data_format/serialization/head_pose.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
@@ -54,8 +61,7 @@ namespace ILLIXR {
 class MY_EXPORT_API offload_rendering_server
     : public threadloop
     , public vulkan::timewarp
-    , public data_format::pose_prediction
-    , std::enable_shared_from_this<plugin> {
+    , public data_format::pose_prediction {
 public:
     /**
      * @brief Constructor initializes the server with configuration from environment variables
@@ -100,6 +106,15 @@ public:
     POSE_TYPE get_fast_pose() const override {
         return pose_relay_->get_pose();
     }
+
+    /**
+     * @brief Get the true pose (same as fast pose in this implementation)
+     */
+#ifndef USING_OPENXR
+    ILLIXR::data_format::pose::head_pose_type get_true_pose() const override {
+        return get_fast_pose().pose;
+    }
+#endif
 
     /**
      * @brief Get predicted pose for a future time point (returns current pose)
@@ -154,13 +169,6 @@ public:
         (void) left;
     }
 
-    /**
-     * @brief Update uniforms (no-op in this implementation)
-     */
-    void update_uniforms(const BUFFER_TYPE& r_pose) override {
-        (void) r_pose;
-    }
-
 protected:
     /**
      * @brief Determines if the current iteration should be skipped
@@ -185,7 +193,12 @@ private:
      * @brief Sends encoded frame data to the client
      * @param pose The pose data associated with the frame
      */
-    void enqueue_for_network_send(BUFFER_TYPE& pose, uint64_t pose_id);
+    void enqueue_for_network_send(BUFFER_TYPE& pose
+#ifdef USING_OPENXR
+                                  ,
+                                  uint64_t pose_id
+#endif
+    );
 
 #ifdef NVENC_ENCODER
     // ========================================================================
@@ -263,6 +276,11 @@ private:
      * frames if depth transmission is enabled.
      */
     void ffmpeg_init_encoder();
+
+    /**
+     * @brief Copies Monado framebuffer metadata into the ILLIXR buffer pool before FFmpeg setup.
+     */
+    void ffmpeg_populate_buffer_pool_from_framebuffers();
 #endif
     void sender_loop();
 
@@ -270,7 +288,6 @@ private:
     std::shared_ptr<vulkan::display_provider>                  display_provider_;
     std::shared_ptr<switchboard>                               switchboard_;
     switchboard::network_writer<data_format::compressed_frame> frames_topic_;
-    switchboard::reader<data_format::hmd_config_data>          hmd_config_;
 
     /**
      * @brief Cached head pose extracted from pose_with_hands
@@ -293,11 +310,17 @@ private:
 #endif
     long bitrate_ = OFFLOAD_RENDERING_BITRATE;
 
-    bool use_pass_depth_          = false;
+    bool use_pass_depth_ = false;
+#ifdef _WIN32
+    // These are currently only supported with Unity, which only supports OpenXR on Windows
     bool use_pass_motion_vectors_ = false;
-    bool nalu_only_               = false;
+#endif
+    bool nalu_only_ = false;
 
     std::atomic<bool> framebuffers_imported_{false};
+
+    // Set after each color encode call and copied into compressed_frame::is_keyframe.
+    bool color_frame_is_keyframe_ = false;
 
 #ifdef NVENC_ENCODER
     // ========================================================================
@@ -322,7 +345,7 @@ private:
     // Using last_frame_was_keyframe() from the encoder is authoritative for both
     // HEVC (IDR) and AV1 (KEY_FRAME / auto-GOP I-frame), avoiding any need for
     // bitstream parsing on the client side.
-    bool color_frame_is_keyframe_ = false;
+    // bool color_frame_is_keyframe_ = false;
 
 #    ifdef COMBINED_ENCODING
     // Under COMBINED_ENCODING a single encoder handles both eyes at double width.
@@ -376,7 +399,9 @@ private:
     VkExtent2D                 extent_            = {0, 0};
 
     std::shared_ptr<pose_relay> pose_relay_;
-    hmd_config                  hmd_setup_;
+#ifdef OPENXR_CLIENT
+    hmd_config hmd_setup_;
+#endif
 
     std::atomic<bool> ready_{false};
     uint64_t          frame_number_{0};
@@ -384,13 +409,17 @@ private:
 
     std::deque<std::shared_ptr<data_format::compressed_frame>> send_queue_;
 
-    std::mutex                                                send_queue_mutex_;
-    std::condition_variable                                   send_queue_cv_;
-    std::thread                                               sender_thread_;
-    static constexpr size_t                                   MAX_QUEUE_DEPTH = 6;
-    std::atomic<bool>                                         sender_running_{false};
-    std::map<uint64_t, uint8_t>                               pose_usage_{};
+    std::mutex                  send_queue_mutex_;
+    std::condition_variable     send_queue_cv_;
+    std::thread                 sender_thread_;
+    static constexpr size_t     MAX_QUEUE_DEPTH = 6;
+    std::atomic<bool>           sender_running_{false};
+    std::map<uint64_t, uint8_t> pose_usage_{};
+#ifdef _WIN32
     std::map<uint64_t, std::chrono::steady_clock::time_point> frame_timing_{};
+#else
+    std::map<uint64_t, std::chrono::time_point<std::chrono::high_resolution_clock>> frame_timing_{};
+#endif
 #ifdef OPENXR_CLIENT
     float overscan_ = 1.f;
 #endif
