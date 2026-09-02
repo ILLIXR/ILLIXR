@@ -18,7 +18,7 @@ namespace ILLIXR {
 
 typedef data_format::pose::head_pose_type sensor_types;
 
-class MY_EXPORT_API ground_truth_slam : public plugin {
+class ground_truth_slam : public plugin {
 public:
     [[maybe_unused]] ground_truth_slam(const std::string& name, phonebook* pb);
     void start() override;
