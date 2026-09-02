@@ -1,5 +1,9 @@
 # module to build and install the offload_data ILLIXR plugin
-
+if(ANDROID)
+    message(WARNING "Offload_data is not yet available for Android.")
+    set(USE_OFFLOAD_DATA OFF)
+    return()
+endif()
 set(PLUGIN_NAME plugin.offload_data${ILLIXR_BUILD_SUFFIX})
 
 # source files, listed individually so that any changes will trigger a rebuild
