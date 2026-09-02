@@ -176,7 +176,8 @@
       "dependencies": [],
       "OS": [
         "linux",
-        "windows"
+        "windows",
+        "android"
       ]
     },
     {
@@ -185,7 +186,8 @@
       "dependencies": [],
       "OS": [
         "linux",
-        "windows"
+        "windows",
+        "android"
       ]
     },
     {
@@ -214,6 +216,15 @@
     {
       "name": "webcam",
       "cmake_flag": "USE_WEBCAM=ON",
+      "dependencies": [],
+      "OS": [
+        "linux",
+        "windows"
+      ]
+    },
+    {
+      "name": "lighthouse",
+      "cmake_flag": "USE_LIGHTHOUSE=ON",
       "dependencies": [],
       "OS": [
         "linux",
