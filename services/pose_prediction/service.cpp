@@ -175,7 +175,7 @@ pose::head_pose_type pose_prediction_impl::correct_pose(const pose::head_pose_ty
     if (using_lighthouse_) // The lighthouse plugin should already apply the correct pose.
         return pose;
 
-    pose::head_pose_type swapped_pose;
+    pose::head_pose_type swapped_pose = pose;
 
     // Make any changes to the axes direction below
     // This is a mapping between the coordinate system of the current
@@ -183,6 +183,10 @@ pose::head_pose_type pose_prediction_impl::correct_pose(const pose::head_pose_ty
     swapped_pose.position.x() = -pose.position.y();
     swapped_pose.position.y() = pose.position.z();
     swapped_pose.position.z() = -pose.position.x();
+    // swapped_pose.linear_velocity.x() = -pose.linear_velocity.y();
+    // swapped_pose.linear_velocity.y() = pose.linear_velocity.z();
+    // swapped_pose.linear_velocity.z() = -pose.linear_velocity.x();
+    // swapped_pose.angular_velocity = pose.angular_velocity;
 
     // Make any changes to orientation of the output below
     // For the dataset were currently using (EuRoC), the output orientation acts as though

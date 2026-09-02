@@ -2,7 +2,7 @@
 
 if(WIN32 OR MSVC OR ANDROID)
     message(WARNING "offload_rendering_client is not yet available for Windows or Android")
-    set(USE_OFFLOAD_VIO_SERVER_RX OFF)
+    set(USE_OFFLOAD_VIO.SERVER_RX OFF)
     return()
 endif()
 find_package(Protobuf REQUIRED)

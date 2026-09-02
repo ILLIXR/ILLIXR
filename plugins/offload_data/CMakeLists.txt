@@ -1,6 +1,6 @@
 # module to build and install the offload_data ILLIXR plugin
-if(WIN32 OR MSVC)
-    message(WARNING "offload_data is not yet available for windows")
+if(WIN32 OR MSVC OR ANDROID)
+    message(WARNING "offload_data is not yet available for windows or android")
     set(USE_OFFLOAD_DATA OFF)
 else()
 

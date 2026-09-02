@@ -17,7 +17,6 @@ if(NOT PLUGIN_NAME)
     set(PLUGIN_NAME "plugin.timewarp_vk${ILLIXR_BUILD_SUFFIX}")
     set(PLUGIN_SOURCE "plugin.cpp")
     set(TW_PREFIX "")
-    set(TW_POSTFIX "")
 endif()
 
 file(GLOB_RECURSE GLSL_SOURCE_FILES
@@ -28,8 +27,6 @@ set(TIMEWARP_VK_DEP_STR "")
 if(Vulkan_EXTERNAL)
     set(TIMEWARP_VK_DEP_STR ${Vulkan_DEP_STR})
 endif()
-
-set(PROJECT_BINARY_DIR "${PROJECT_BINARY_DIR}${TW_POSTFIX}")
 
 foreach(GLSL ${GLSL_SOURCE_FILES})
     get_filename_component(FILE_NAME ${GLSL} NAME)
