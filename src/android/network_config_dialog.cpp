@@ -106,7 +106,6 @@ namespace {
         jvm->DetachCurrentThread();
         return result;
     }
-
 } // anonymous namespace
 
 // ---------------------------------------------------------------------------
