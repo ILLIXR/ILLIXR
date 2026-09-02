@@ -29,8 +29,8 @@ udp_network_backend::udp_network_backend(const std::string& name_, phonebook* pb
         client_ip_ = switchboard_->get_env_char("ILLIXR_UDP_CLIENT_IP");
         spdlog::get("illixr")->info("[udp_network_backend] Using UDP client IP {}", client_ip_);
     } else if (switchboard_->get_env_char("ILLIXR_TCP_CLIENT_IP")) {
-        server_ip_ = switchboard_->get_env_char("ILLIXR_TCP_CLIENT_IP");
-        spdlog::get("illixr")->info("[udp_network_backend] Using TCP/UDP client IP {}", server_ip_);
+        client_ip_ = switchboard_->get_env_char("ILLIXR_TCP_CLIENT_IP");
+        spdlog::get("illixr")->info("[udp_network_backend] Using TCP/UDP client IP {}", client_ip_);
     }
 
     if (switchboard_->get_env_char("ILLIXR_UDP_CLIENT_PORT")) {
@@ -125,7 +125,7 @@ void udp_network_backend::start_client() {
     peer_socket_ = socket;
 
     spdlog::get("illixr")->info("[udp_network_backend] Connecting to {}:{}", server_ip_, server_port_);
-    // UDP is connectionless — set_peer() is sufficient; no connect() needed
+    // UDP is connectionless - set_peer() is sufficient; no connect() needed
     spdlog::get("illixr")->info("[udp_network_backend] Client ready");
 
     ready_ = true;
@@ -136,6 +136,15 @@ void udp_network_backend::start_server() {
     auto* socket = new network::UDPSocket();
     socket->socket_set_reuseaddr();
     socket->socket_bind(server_ip_, server_port_);
+
+    // If the client's address is already known from the environment (rather than
+    // needing to be learned dynamically), set it now so we can send to the client
+    // even if it never sends us anything first. Otherwise, read_loop() falls back
+    // to learning the peer from the first datagram it receives.
+    if (!client_ip_.empty() && client_port_ != 0) {
+        socket->set_peer(client_ip_, client_port_);
+        spdlog::get("illixr")->info("[udp_network_backend] Pre-configured peer {}:{}", client_ip_, client_port_);
+    }
 
     spdlog::get("illixr")->info("[udp_network_backend] Listening on UDP port {}", server_port_);
 
@@ -153,6 +162,14 @@ void udp_network_backend::read_loop(network::UDPSocket* socket) {
         std::string packet = socket->read_data(&src_addr);
         if (packet.empty())
             continue;
+
+        // The client already has its peer set from construction, so has_peer() is
+        // true and this is a no-op there. The server, however, does not know the
+        // client's address until it receives a datagram from it, since UDP is
+        // connectionless; learn the peer here so topic_send/send_control have
+        // somewhere to reply to.
+        if (!socket->has_peer())
+            socket->set_peer(src_addr);
 
         // Packet format: total_length(4) | topic_name_length(4) | topic_name | message
         if (packet.size() < 8) {
@@ -190,6 +207,9 @@ void udp_network_backend::topic_create(std::string topic_name, network::topic_co
 
         for (int i = 0; i < 3; ++i)
             send_control(ctrl_message);
+    } else {
+        spdlog::get("illixr")->error("[udp_network_backend]: ERROR socket: {}  has_peer: {}",
+                                     (peer_socket_ == nullptr) ? "null" : "valid", peer_socket_->has_peer());
     }
 }
 
@@ -203,7 +223,7 @@ void udp_network_backend::topic_send(std::string topic_name, std::string&& messa
         return;
     }
     // Packet format: total_length(4) | topic_name_length(4) | topic_name | message
-    uint32_t topic_name_length = static_cast<uint32_t>(topic_name.size());
+    auto     topic_name_length = static_cast<uint32_t>(topic_name.size());
     uint32_t total_length      = 8u + topic_name_length + static_cast<uint32_t>(message.size());
 
     std::string packet;
@@ -255,7 +275,7 @@ udp_network_backend::~udp_network_backend() {
 void udp_network_backend::send_control(const std::string& message) {
     // Send a control datagram directly, bypassing the is_topic_networked guard
     // since illixr_control is not registered as a networked topic.
-    uint32_t topic_name_length = static_cast<uint32_t>(std::strlen("illixr_control"));
+    auto     topic_name_length = static_cast<uint32_t>(std::strlen("illixr_control"));
     uint32_t total_length      = 8u + topic_name_length + static_cast<uint32_t>(message.size());
 
     std::string packet;

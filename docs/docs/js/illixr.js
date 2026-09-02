@@ -3,8 +3,9 @@ const plugs = {};
 const operatingSystems = {};
 const profiles = [];
 let selectedOS = "";
-const plugins = new Set();
+const plugins_linux = new Set();
 const plugins_windows = new Set();
+const plugins_android = new Set();
 let windows_build = false;
 
 function makeCopyable(code, name) {
@@ -27,15 +28,21 @@ function loadModules() {
         };
     }
     for (let item of module_json["plugins"]) {
-        plugins.add(item.name);
         plugs[item.name] = item.cmake_flag;
-        document.getElementById("linux_plugins").innerHTML += "<li>" + item.name + "</li>";
+        if (item.OS.includes("linux")) {
+            plugins_linux.add(item.name);
+            document.getElementById("linux_plugins").innerHTML += "<li>" + item.name + "</li>";
+        }
         for (let dep of item.dependencies) {
             dependencies[dep].plugins.push(item.name);
         }
         if (item.OS.includes("windows")) {
             plugins_windows.add(item.name);
             document.getElementById("windows_plugins").innerHTML += "<li>" + item.name + "</li>";
+        }
+        if (item.OS.includes("android")) {
+            plugins_android.add(item.name);
+            document.getElementById("android_plugins").innerHTML += "<li>" + item.name + "</li>";
         }
     }
     for (let grp of module_json["profiles"]) {
@@ -259,7 +266,7 @@ async function setUpPage() {
 
     tabRef = document.getElementById("listing_table");
     currentRow = tabRef.insertRow(-1);
-    for (const dep of plugins) {
+    for (const dep of plugins_linux) {
         if (count >= 3) {
             currentRow = tabRef.insertRow(-1);
             count = 0;
@@ -295,6 +302,13 @@ async function setUpPage() {
         cell.appendChild(x);
         cell.appendChild(y);
         count += 1;
+    }
+
+    let andrRef = document.getElementById("listing_table_android");
+    for (const dep of plugins_android) {
+        const li = document.createElement("li");
+        li.textContent = dep;
+        andRef.appendChild(li);
     }
     updateSudo();
 }

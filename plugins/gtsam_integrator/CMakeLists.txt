@@ -12,7 +12,9 @@ add_library(${PLUGIN_NAME} SHARED
             ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
 )
 
-#?find_package(GTSAMCMakeTools REQUIRED)    Android
+if(ANDROID)
+    find_package(GTSAMCMakeTools REQUIRED)   #still need to find package
+endif()
 
 #add_definitions(-Wall -Wextra -Werror)
 target_include_directories(${PLUGIN_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${GTSAM_INCLUDE_DIR} ${ILLIXR_SOURCE_DIR}/include)

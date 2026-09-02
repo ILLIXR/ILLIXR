@@ -128,7 +128,7 @@ void openwarp_vk::partial_destroy() {
     descriptor_pool_ = VK_NULL_HANDLE;
 }
 
-void openwarp_vk::update_uniforms(const pose::fast_head_pose_type& render_pose) {
+void openwarp_vk::update_uniforms(const data_format::pose::fast_head_pose_type& render_pose) {
     num_update_uniforms_calls_++;
 
     pose::head_pose_type latest_pose = disable_warp_ ? render_pose.pose : pose_prediction_->get_fast_pose().pose;
