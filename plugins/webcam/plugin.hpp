@@ -4,9 +4,9 @@
 #include "illixr/threadloop.hpp"
 
 #if defined(_WIN32) || defined(_WIN64)
-#  include <opencv2/videoio.hpp>
+#    include <opencv2/videoio.hpp>
 #else
-#  include <opencv4/opencv2/videoio.hpp>
+#    include <opencv4/opencv2/videoio.hpp>
 #endif
 
 namespace ILLIXR {
