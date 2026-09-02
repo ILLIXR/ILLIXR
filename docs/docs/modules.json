@@ -176,7 +176,8 @@
       "dependencies": [],
       "OS": [
         "linux",
-        "windows"
+        "windows",
+        "android"
       ]
     },
     {
@@ -185,7 +186,8 @@
       "dependencies": [],
       "OS": [
         "linux",
-        "windows"
+        "windows",
+        "android"
       ]
     },
     {
@@ -217,6 +219,15 @@
       "dependencies": [],
       "OS": [
         "linux"
+      ]
+    },
+    {
+      "name": "lighthouse",
+      "cmake_flag": "USE_LIGHTHOUSE=ON",
+      "dependencies": [],
+      "OS": [
+        "linux",
+        "windows"
       ]
     },
     {
