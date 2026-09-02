@@ -186,7 +186,8 @@
       "dependencies": [],
       "OS": [
         "linux",
-        "windows"
+        "windows",
+        "android"
       ]
     },
     {
