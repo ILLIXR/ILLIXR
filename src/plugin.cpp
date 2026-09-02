@@ -4,6 +4,7 @@
 
 #ifdef __ANDROID__
 #    include "android/network_config_dialog.hpp"
+
 #    include <csignal>
 #    include <EGL/egl.h>
 #    include <unistd.h> /// Not portable
@@ -168,7 +169,7 @@ int ILLIXR::run(
     const cxxopts::ParseResult& options
 #endif
 ) {
-    std::chrono::seconds run_duration;
+    std::chrono::seconds     run_duration;
     std::vector<std::string> plugins;
     try {
         runtime_ = ILLIXR::runtime_factory();
@@ -207,7 +208,7 @@ int ILLIXR::run(
                 throw std::runtime_error("No plugins specified in profile: " + yaml_path);
             }
             std::stringstream ss(plugin_names);
-            std::string token;
+            std::string       token;
             while (std::getline(ss, token, ',')) {
                 token.erase(0, token.find_first_not_of(" \t"));
                 token.erase(token.find_last_not_of(" \t") + 1);
@@ -221,10 +222,8 @@ int ILLIXR::run(
         // cancels; on confirmation all ILLIXR_TCP_* / ILLIXR_UDP_* environment
         // variables are set via setenv() before returning.
         {
-            const ILLIXR::network_dialog_flags net_flags =
-                ILLIXR::make_network_dialog_flags(plugins);
-            const ILLIXR::network_config net_cfg =
-                ILLIXR::show_network_config_dialog(app, net_flags);
+            const ILLIXR::network_dialog_flags net_flags = ILLIXR::make_network_dialog_flags(plugins);
+            const ILLIXR::network_config       net_cfg   = ILLIXR::show_network_config_dialog(app, net_flags);
             if (net_cfg.cancelled) {
                 spdlog::get("illixr")->error("[run] User cancelled network configuration.");
                 return EXIT_FAILURE;

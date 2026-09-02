@@ -3,6 +3,7 @@
 #    include "illixr.hpp"
 #    ifdef __ANDROID__
 #        include "android/profile_picker_dialog.hpp"
+
 #        include <EGL/egl.h>
 #        include <thread>
 #    else

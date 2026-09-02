@@ -3,7 +3,6 @@
 #ifdef __ANDROID__
 
 #    include <android_native_app_glue.h>
-
 #    include <string>
 #    include <vector>
 
@@ -35,13 +34,13 @@ struct network_config {
     // TCP fields — populated only when use_tcp was set
     std::string tcp_server_ip;
     std::string tcp_server_port;
-    std::string tcp_client_ip;  ///< derived from the device's Wi-Fi interface
+    std::string tcp_client_ip; ///< derived from the device's Wi-Fi interface
     std::string tcp_client_port;
 
     // UDP fields — populated only when use_udp was set
     std::string udp_server_ip; ///< may equal tcp_server_ip if the user chose "same IP"
     std::string udp_server_port;
-    std::string udp_client_ip;  ///< derived from the device's Wi-Fi interface
+    std::string udp_client_ip; ///< derived from the device's Wi-Fi interface
     std::string udp_client_port;
 };
 
@@ -81,8 +80,7 @@ network_dialog_flags make_network_dialog_flags(const std::vector<std::string>& p
  * @return       Populated network_config with cancelled=false on success;
  *               cancelled=true if the user dismissed the dialog.
  */
-network_config show_network_config_dialog(struct android_app* app,
-                                          const network_dialog_flags& flags);
+network_config show_network_config_dialog(struct android_app* app, const network_dialog_flags& flags);
 
 } // namespace ILLIXR
 
