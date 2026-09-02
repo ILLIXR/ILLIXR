@@ -176,7 +176,8 @@
       "dependencies": [],
       "OS": [
         "linux",
-        "windows"
+        "windows",
+        "android"
       ]
     },
     {
@@ -185,7 +186,8 @@
       "dependencies": [],
       "OS": [
         "linux",
-        "windows"
+        "windows",
+        "android"
       ]
     },
     {

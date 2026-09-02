@@ -149,7 +149,7 @@ Topic details:
 
 &nbsp;&nbsp;[**Details**][P12]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C4]
 
-## ground_truth_slam ![Linux Logo](images/tux.png) ![Windows logo](images/windows.png)
+## ground_truth_slam ![Linux Logo](images/tux.png) ![Windows Logo](images/windows.png) ![Android_Logo](images/android.png)
 
 Reads the [_ground truth_][G10] from the same dataset as the `offline_imu` plugin.
 Ground truth data can be compared against the head tracking results (e.g. from VIO, IMU integrator, or pose predictor) for accuracy.
@@ -163,7 +163,7 @@ Topic details:
 
 &nbsp;&nbsp;**Details**&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C5]
 
-## gtsam_integrator ![Linux Logo](images/tux.png) ![Windows logo](images/windows.png)
+## gtsam_integrator ![Linux Logo](images/tux.png) ![Windows logo](images/windows.png) ![Android_Logo](images/android.png)
 
 Integrates over all [_IMU_][G13] samples since the last published visual-inertial [_pose_][G14] to provide a
 [_fast pose_][G14] every time a new IMU sample arrives using the GTSAM library ([upstream][E10]).
