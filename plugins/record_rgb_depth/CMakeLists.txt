@@ -1,6 +1,6 @@
 if(WIN32 OR MSVC OR ANDROID)
     message(WARNING "record_depth_rgb is not yet available for Windows or Android")
-    set(USE_RECORD_DEPTH_RGB OFF)
+    set(USE_RECORD_RGB_DEPTH OFF)
     return()
 endif()
 
