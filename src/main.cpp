@@ -52,6 +52,9 @@ using namespace ILLIXR;
 
 #    ifdef __ANDROID__
 namespace {
+/// Synchronizes the Android lifecycle thread with Java's LAN bootstrap thread.
+/// The native runtime must not construct its network plugins until a desktop
+/// address has been supplied, but the Android looper must remain responsive.
 std::mutex              quest_config_mutex;
 std::condition_variable quest_config_cv;
 bool                    quest_config_ready        = false;
@@ -62,6 +65,7 @@ extern "C" {
 // called from Java after permission is granted
 JNIEXPORT void JNICALL Java_com_example_ILLIXR_ILLIXRNativeActivity_nativeOnPermissionGranted(JNIEnv* env, jobject activity) { }
 
+/// Store the Java-discovered desktop address and release the waiting runtime thread.
 JNIEXPORT void JNICALL Java_com_example_ILLIXR_ILLIXRNativeActivity_nativeConfigure(JNIEnv* env, jobject activity,
                                                                                     jstring server_ip) {
     (void) activity;
@@ -186,6 +190,8 @@ int main(int argc, const char* argv[]) {
 
 #    ifdef __ANDROID__
 void android_main(struct android_app* state) {
+    /// NativeActivity owns this looper. Plugin execution stays on runtime_thread_
+    /// so lifecycle and window events can still be dispatched during streaming.
     state->onAppCmd = handle_cmd;
     while (!state->destroyRequested) {
         int                         ident;

@@ -16,6 +16,8 @@
 
 namespace {
 
+// Input thresholds are used only to derive convenient pressed/moved states;
+// the original analog values are still published on the switchboard.
 constexpr float         kTriggerPressedThreshold    = 0.75F;
 constexpr float         kSqueezePressedThreshold    = 0.85F;
 constexpr float         kThumbstickMoveThreshold    = 0.15F;
@@ -50,6 +52,8 @@ struct mat4 {
     float values[16]{};
 };
 
+// Minimal column-major transform helpers used by the optional mono/head-locked
+// panel modes. The normal stereo path submits Boba's original render poses.
 mat4 identity_matrix() {
     mat4 result{};
     result.values[0]  = 1.0F;
@@ -177,6 +181,8 @@ GLuint compile_shader(GLenum type, const char* source) {
     return 0;
 }
 
+// The compatibility plugin uses small local shaders rather than depending on
+// ILLIXR's normal display backend, because this plugin owns the OpenXR session.
 GLuint link_program(const char* vertex_source, const char* fragment_source) {
     const GLuint vertex_shader   = compile_shader(GL_VERTEX_SHADER, vertex_source);
     const GLuint fragment_shader = compile_shader(GL_FRAGMENT_SHADER, fragment_source);
@@ -305,6 +311,8 @@ void append_overlay_triangle(std::vector<float>* vertices, float x0, float y0, f
     append_overlay_vertex(vertices, x2, y2, red, green, blue, alpha);
 }
 
+// Convert Boba's compact line/rectangle commands into transient GL triangles.
+// Coordinates remain in source-image pixels so overlays track the rendered scene.
 void append_overlay_command(std::vector<float>* vertices, const float* command) {
     const int   command_type = static_cast<int>(std::round(command[0]));
     const float radius       = std::max(command_type == 0 ? 0.5F : 1.0F, command[5]);
@@ -413,6 +421,8 @@ bool read_generation(const std::uint8_t* data, std::size_t size, std::uint64_t o
 
 namespace ILLIXR {
 
+// ---- Shared-memory and plugin lifecycle -----------------------------------
+
 openxr_quest_controller::mapped_file::~mapped_file() {
     reset();
 }
@@ -490,6 +500,8 @@ void openxr_quest_controller::initialize_graphics() {
     }
     glfw_initialized_ = true;
 
+    // A tiny hidden window supplies valid GLX handles; all visible output goes
+    // to OpenXR swapchains rather than this desktop surface.
     glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
     glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -572,6 +584,8 @@ bool openxr_quest_controller::resolve_glx_binding() {
     XFree(configs);
     return true;
 }
+
+// ---- OpenXR session lifecycle ---------------------------------------------
 
 void openxr_quest_controller::run() {
     stoplight_->wait_for_ready();
@@ -706,6 +720,8 @@ bool openxr_quest_controller::initialize_openxr() {
         }
     }
 
+    // Actions must be attached before the session begins, while swapchains and
+    // GL renderer resources are created once for the lifetime of this session.
     if (!create_actions()) {
         return false;
     }
@@ -726,6 +742,8 @@ bool openxr_quest_controller::initialize_openxr() {
         "OpenXR Quest input/display session initialized; waiting for SteamVR session focus and stereo_frame data");
     return true;
 }
+
+// ---- Controller actions and interaction profiles --------------------------
 
 bool openxr_quest_controller::create_actions() {
     XrActionSetCreateInfo action_set_info = make_xr_struct<XrActionSetCreateInfo>(XR_TYPE_ACTION_SET_CREATE_INFO);
@@ -786,6 +804,8 @@ bool openxr_quest_controller::create_action(XrActionType type, const char* name,
 }
 
 bool openxr_quest_controller::suggest_bindings() {
+    // Suggest a portable core for all known profiles, then add profile-specific
+    // analog controls and the Oculus Touch face-button/thumbstick layout.
     const char* profiles[] = {kSimpleControllerProfile, kOculusTouchProfile, kHtcViveProfile, kValveIndexProfile,
                               kMicrosoftMotionProfile};
 
@@ -928,6 +948,8 @@ bool openxr_quest_controller::pump_events() {
     }
 }
 
+// ---- Per-frame input sampling and compositor submission -------------------
+
 bool openxr_quest_controller::process_frame() {
     XrFrameWaitInfo wait_info   = make_xr_struct<XrFrameWaitInfo>(XR_TYPE_FRAME_WAIT_INFO);
     XrFrameState    frame_state = make_xr_struct<XrFrameState>(XR_TYPE_FRAME_STATE);
@@ -953,6 +975,8 @@ bool openxr_quest_controller::process_frame() {
         refresh_interaction_profiles();
     }
 
+    // Controller and eye events intentionally share one sequence number and
+    // predicted display time so Boba never has to correlate independent topics.
     controller_input input;
     input.sequence       = sequence_;
     input.sample_time    = clock_->now();
@@ -973,6 +997,8 @@ bool openxr_quest_controller::process_frame() {
         sample_ok = false;
     }
 
+    // Input continues to publish even before Boba produces its first image. In
+    // that case xrEndFrame submits zero layers, which is valid OpenXR behavior.
     update_stereo_frame();
     XrCompositionLayerProjection                    projection_layer{};
     std::array<XrCompositionLayerProjectionView, 2> projection_views{};
@@ -1104,6 +1130,8 @@ bool openxr_quest_controller::create_swapchains() {
                          swapchain_views_[0].height, swapchain_views_[1].width, swapchain_views_[1].height, swapchain_format_);
     return true;
 }
+
+// ---- Boba shared-ring upload and OpenGL drawing ----------------------------
 
 void openxr_quest_controller::destroy_swapchains() {
     for (swapchain_view& view : swapchain_views_) {
@@ -1335,6 +1363,8 @@ bool openxr_quest_controller::update_stereo_frame() {
         return false;
     }
 
+    // Upload into the inactive texture set. It becomes visible only after all
+    // pixel and optional overlay/modal generations have been revalidated.
     const int candidate_texture_set = active_texture_set_ == 0 ? 1 : 0;
     while (glGetError() != GL_NO_ERROR) { }
     const data_format::stereo_shared_image* images[] = {&frame->left, &frame->right};
@@ -1430,6 +1460,9 @@ bool openxr_quest_controller::update_stereo_frame() {
         }
     }
 
+    // This second generation read is the consumer half of the ring protocol:
+    // if Boba reused any slot while data was copied/uploaded, retain the prior
+    // complete texture set and try again on the next OpenXR frame.
     std::uint64_t confirmed_generation = 0;
     if (!read_generation(pixel_mapping_.data, pixel_mapping_.size, frame->pixel_generation_offset, &confirmed_generation) ||
         confirmed_generation != frame->source_frame_id) {
@@ -1495,6 +1528,8 @@ bool openxr_quest_controller::render_eye(std::size_t eye_index, GLuint swapchain
     mat4        mvp               = scale_matrix(2.0F, 2.0F, 1.0F);
     std::size_t texture_eye_index = eye_index;
     if (render_as_panel) {
+        // mono_panel captures the panel's initial world transform; head_locked
+        // recomputes it from the current eye pose on every frame.
         texture_eye_index        = 0;
         const float panel_height = kPanelWidthMeters * static_cast<float>(source_height_) /
             static_cast<float>(std::max<std::uint32_t>(source_width_, 1));
@@ -1566,6 +1601,8 @@ bool openxr_quest_controller::render_projection_layer(XrCompositionLayerProjecti
         projection_view      = make_xr_struct<XrCompositionLayerProjectionView>(XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW);
         projection_view.pose = located_views_[eye_index].pose;
         projection_view.fov  = located_views_[eye_index].fov;
+        // Fullscreen stereo is reprojected from the poses/FOV Boba rendered
+        // against. Panel modes use the current eye views for normal 3D geometry.
         if (active_presentation_mode_ == data_format::stereo_presentation_mode::stereo_fullscreen &&
             active_render_views_[eye_index].valid) {
             const auto& source               = active_render_views_[eye_index];
@@ -1607,6 +1644,8 @@ bool openxr_quest_controller::render_projection_layer(XrCompositionLayerProjecti
     }
     return true;
 }
+
+// ---- OpenXR view and controller-state extraction --------------------------
 
 bool openxr_quest_controller::query_views(XrTime sample_time, view_frame* frame) {
     for (XrView& view : located_views_) {
@@ -1679,6 +1718,8 @@ bool openxr_quest_controller::query_hand(std::size_t hand_index, XrTime sample_t
         !query_axis2d(thumbstick_axis_action_, hand_paths_[hand_index], &hand->thumbstick)) {
         return false;
     }
+    // Runtimes differ on whether trigger is exposed as boolean, float, or both.
+    // Merging preserves click transitions while retaining the analog value.
     hand->trigger = trigger_click;
     merge_button(&hand->trigger, trigger_value);
 
@@ -1802,6 +1843,8 @@ bool openxr_quest_controller::refresh_interaction_profiles() {
     interaction_profiles_dirty_ = false;
     return success;
 }
+
+// ---- Transition logging, teardown, and OpenXR utility helpers --------------
 
 void openxr_quest_controller::log_input_changes(const controller_input& input) {
     if (log_input_) {

@@ -750,6 +750,12 @@ cudaError_t launch_bgra_stereo_to_nv12(cudaTextureObject_t left_tex, cudaTexture
     return cudaGetLastError();
 }
 
+// ---------------------------------------------------------------------------
+// Host-originated Boba RGBA stereo conversion
+// ---------------------------------------------------------------------------
+// Unlike the existing Vulkan-texture path, Boba supplies two linear row-pitched
+// RGBA8 buffers. Sampling and conversion are fused so resizing adds no extra GPU
+// surface or kernel launch.
 struct rgb_sample {
     float r;
     float g;
@@ -816,6 +822,8 @@ __global__ void rgba_stereo_linear_to_nv12_kernel(const uint8_t* left_rgba, size
     y_dst[static_cast<size_t>(y) * dst_pitch + x] =
         static_cast<uint8_t>(device_clamp((Y_R * r + Y_G * g + Y_B * b + 128) >> 8, 0, 255));
 
+    // NV12 shares one interleaved UV pair across a 2x2 luma block. Average four
+    // bilinear samples instead of reusing the upper-left pixel's chroma.
     if ((x & 1U) == 0 && (y & 1U) == 0) {
         float r_sum = 0.0f;
         float g_sum = 0.0f;

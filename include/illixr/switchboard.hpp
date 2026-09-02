@@ -349,6 +349,7 @@ private:
             return obj;
         }
 
+        /** Remove one queued event without waiting; return false when empty. */
         bool try_dequeue(ptr<const event>& obj) {
             if (!queue_.try_dequeue(token_, obj)) {
                 return false;
@@ -600,6 +601,7 @@ public:
             return this_specific_event;
         }
 
+        /** Return the next typed event immediately, or nullptr when none is queued. */
         ptr<const Specific_event> try_dequeue() {
             ptr<const event> this_event;
             if (!topic_buffer_.try_dequeue(this_event)) {

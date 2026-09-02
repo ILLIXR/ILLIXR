@@ -293,13 +293,15 @@ public:
     void set_current_eye(int eye);
 
 private:
-    void                   init_cuda();
-    void                   init_nvenc();
-    void                   query_capabilities();
-    void                   init_encoder();
-    void                   create_buffers();
-    void                   get_sequence_headers();
-    void                   send_startup_idrs(int count);
+    void init_cuda();
+    void init_nvenc();
+    void query_capabilities();
+    void init_encoder();
+    void create_buffers();
+    void get_sequence_headers();
+    void send_startup_idrs(int count);
+    /// Rewrite a header-provided structure version for the API level supported
+    /// by the installed driver while preserving structure revision bits.
     [[nodiscard]] uint32_t nvenc_struct_version(uint32_t compiled_version) const;
 
 #ifdef DUMP_FRAMES
@@ -320,7 +322,11 @@ private:
     /// GPU stereo blit: converts left and right eye textures into the combined NV12 buffer in
     /// one CUDA kernel launch.  width_ must equal the per-eye target width (half of the total).
     void convert_stereo_to_nv12_gpu(const cuda_imported_vulkan_image& left, const cuda_imported_vulkan_image& right);
+
+    /// Allocate or resize the persistent pitched CUDA copies of host RGBA input.
     void ensure_rgba_input_buffers(uint32_t source_width, uint32_t source_height);
+
+    /// Copy host RGBA eyes and resize/color-convert them into the registered NV12 surface.
     void convert_rgba_stereo_to_nv12_gpu(const uint8_t* left_rgba, size_t left_pitch, const uint8_t* right_rgba,
                                          size_t right_pitch, uint32_t source_width, uint32_t source_height, bool flip_y);
 #endif // COMBINED_ENCODING
@@ -343,6 +349,7 @@ private:
     CUdeviceptr cuda_nv12_buffer_ = 0;
     size_t      cuda_nv12_pitch_  = 0;
 #ifdef COMBINED_ENCODING
+    // Persistent upload buffers avoid CUDA allocation on every Boba frame.
     CUdeviceptr cuda_left_rgba_buffer_  = 0;
     CUdeviceptr cuda_right_rgba_buffer_ = 0;
     size_t      cuda_left_rgba_pitch_   = 0;
@@ -356,7 +363,8 @@ private:
     NV_ENCODE_API_FUNCTION_LIST nvenc_{};
     NV_ENC_REGISTERED_PTR       registered_nv12_ = nullptr;
     NV_ENC_OUTPUT_PTR           output_buffer_   = nullptr;
-    uint32_t                    nvenc_api_version_{NVENCAPI_VERSION};
+    // Runtime-compatible API version negotiated before creating NVENC structs.
+    uint32_t nvenc_api_version_{NVENCAPI_VERSION};
 
     // Encoder parameters
     uint32_t width_;

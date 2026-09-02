@@ -26,12 +26,15 @@ static XrPosef identity_pose() {
     return pose;
 }
 
+// Rotate a local-space panel offset into the current view orientation without
+// pulling another math library into the Android OpenXR entry point.
 static XrVector3f rotate_vector(const XrQuaternionf& q, const XrVector3f& v) {
     const XrVector3f t{2.0F * (q.y * v.z - q.z * v.y), 2.0F * (q.z * v.x - q.x * v.z), 2.0F * (q.x * v.y - q.y * v.x)};
     return {v.x + q.w * t.x + (q.y * t.z - q.z * t.y), v.y + q.w * t.y + (q.z * t.x - q.x * t.z),
             v.z + q.w * t.z + (q.x * t.y - q.y * t.x)};
 }
 
+// Capture the world-space anchor used by mono_panel when that mode is entered.
 static XrPosef panel_pose_from_view(const XrPosef& view_pose) {
     XrPosef          pose   = view_pose;
     const XrVector3f offset = rotate_vector(view_pose.orientation, {0.0F, 0.0F, -BOBA_PANEL_DISTANCE_METERS});

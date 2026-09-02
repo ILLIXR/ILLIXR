@@ -7,6 +7,7 @@
 
 namespace boost::serialization {
 
+/** Serialize an Eigen-backed pose as scalar fields followed by tracking flags. */
 template<class Archive>
 void serialize(Archive& ar, ILLIXR::data_format::quest_controller_pose& pose, const unsigned int) {
     ar & pose.position.x();
@@ -23,6 +24,7 @@ void serialize(Archive& ar, ILLIXR::data_format::quest_controller_pose& pose, co
     ar & pose.orientation_tracked;
 }
 
+/** Serialize one boolean or thresholded-analog controller action. */
 template<class Archive>
 void serialize(Archive& ar, ILLIXR::data_format::quest_controller_button& button, const unsigned int) {
     ar & button.active;
@@ -32,6 +34,7 @@ void serialize(Archive& ar, ILLIXR::data_format::quest_controller_button& button
     ar & button.last_change_time;
 }
 
+/** Serialize one two-dimensional controller action. */
 template<class Archive>
 void serialize(Archive& ar, ILLIXR::data_format::quest_controller_axis2d& axis, const unsigned int) {
     ar & axis.active;
@@ -41,6 +44,7 @@ void serialize(Archive& ar, ILLIXR::data_format::quest_controller_axis2d& axis, 
     ar & axis.last_change_time;
 }
 
+/** Serialize every action source associated with one hand. */
 template<class Archive>
 void serialize(Archive& ar, ILLIXR::data_format::quest_hand_controller& hand, const unsigned int) {
     ar & hand.available;
@@ -55,6 +59,7 @@ void serialize(Archive& ar, ILLIXR::data_format::quest_hand_controller& hand, co
     ar & hand.thumbstick;
 }
 
+/** Serialize the complete two-hand switchboard event. */
 template<class Archive>
 void serialize(Archive& ar, ILLIXR::data_format::quest_controller_input& input, const unsigned int) {
     ar& boost::serialization::base_object<ILLIXR::switchboard::event>(input);

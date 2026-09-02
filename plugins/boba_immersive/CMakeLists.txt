@@ -2,6 +2,8 @@ if(WIN32 OR MSVC)
     message(WARNING "boba_immersive is currently available only on Linux")
     set(USE_BOBA_IMMERSIVE OFF)
 else()
+    # This bridge is native C++ only; Boba remains a separately launched Python
+    # process and therefore is not linked into the plugin target.
     set(PLUGIN_NAME plugin.boba_immersive${ILLIXR_BUILD_SUFFIX})
 
     add_library(${PLUGIN_NAME} SHARED

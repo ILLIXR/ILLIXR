@@ -18,6 +18,14 @@ import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * Android entry point for the native ILLIXR Quest client.
+ *
+ * Besides NativeActivity lifecycle forwarding, this class keeps Wi-Fi in
+ * low-latency mode and performs the small LAN bootstrap used by desktop
+ * `--quest-ip`. The desktop address comes from the UDP packet source, so the
+ * user never has to type the computer's address inside the headset.
+ */
 public class ILLIXRNativeActivity extends NativeActivity {
     private static final int CAMERA_REQUEST_CODE = 100;
     private static final String SERVER_IP_EXTRA = "illixr_server_ip";
@@ -26,6 +34,7 @@ public class ILLIXRNativeActivity extends NativeActivity {
     private static final String CONNECT_RESPONSE = "ILLIXR_READY_V1";
     private static final String TAG = "ILLIXRNativeActivity";
 
+    /** First accepted desktop wins for the lifetime of one Activity session. */
     private WifiManager.WifiLock wifiLock_;
     private final AtomicReference<String> configuredServerIp_ = new AtomicReference<>(null);
     private volatile boolean configReceiverRunning_ = false;
@@ -36,6 +45,7 @@ public class ILLIXRNativeActivity extends NativeActivity {
         System.loadLibrary("native-activity");
     }
 
+    /** Initialize optional intent configuration, networking, and permissions. */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         String serverIp = getIntent().getStringExtra(SERVER_IP_EXTRA);
@@ -60,6 +70,7 @@ public class ILLIXRNativeActivity extends NativeActivity {
         }
     }
 
+    /** Stop the UDP listener before releasing Android-owned runtime resources. */
     @Override
     protected void onDestroy() {
         stopConfigurationReceiver();
@@ -70,6 +81,7 @@ public class ILLIXRNativeActivity extends NativeActivity {
         super.onDestroy();
     }
 
+    /** Forward a newly granted camera permission to the native runtime. */
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantedResults) {
         if (requestCode == CAMERA_REQUEST_CODE && grantedResults.length > 0 && grantedResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -80,6 +92,11 @@ public class ILLIXRNativeActivity extends NativeActivity {
         }
     }
 
+    /**
+     * Commit a desktop address exactly once and wake the native ILLIXR thread.
+     * Duplicate packets from the selected desktop are accepted so a lost UDP
+     * acknowledgement can be retried safely.
+     */
     private boolean configureNative(String serverIp, String source) {
         if (serverIp == null || serverIp.isEmpty()) {
             return false;
@@ -92,6 +109,11 @@ public class ILLIXRNativeActivity extends NativeActivity {
         return serverIp.equals(configuredServerIp_.get());
     }
 
+    /**
+     * Listen for the desktop bootstrap packet on a background Java thread.
+     * The socket is intentionally separate from ILLIXR's media/control ports;
+     * those backends start only after nativeConfigure releases the runtime.
+     */
     private void startConfigurationReceiver() {
         configReceiverRunning_ = true;
         configThread_ = new Thread(() -> {
@@ -114,6 +136,8 @@ public class ILLIXRNativeActivity extends NativeActivity {
                         continue;
                     }
 
+                    // The source selected by the host routing table is the
+                    // correct address for the Quest to use on multi-homed PCs.
                     String serverIp = request.getAddress().getHostAddress();
                     if (!configureNative(serverIp, "wireless discovery")) {
                         Log.w(TAG, "Ignoring configuration from " + serverIp
@@ -142,6 +166,7 @@ public class ILLIXRNativeActivity extends NativeActivity {
         configThread_.start();
     }
 
+    /** Close the socket to unblock receive() and join the listener promptly. */
     private void stopConfigurationReceiver() {
         configReceiverRunning_ = false;
         if (configSocket_ != null) {
@@ -157,6 +182,9 @@ public class ILLIXRNativeActivity extends NativeActivity {
         }
     }
 
+    /** Notify native code that camera access became available after startup. */
     public native void nativeOnPermissionGranted();
+
+    /** Supply the discovered desktop address to the waiting native runtime. */
     private native void nativeConfigure(String serverIp);
 }

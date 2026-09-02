@@ -26,6 +26,8 @@ void append_wire_value(std::string& destination, T value) {
     destination.append(reinterpret_cast<const char*>(&value), sizeof(value));
 }
 
+// Compare 32-bit sequence numbers across wraparound while their distance stays
+// below half the number space (the standard serial-number arithmetic rule).
 bool wrapping_less(std::uint32_t left, std::uint32_t right) {
     return static_cast<std::int32_t>(left - right) < 0;
 }
@@ -323,6 +325,8 @@ void udp_network_backend::send_packet(std::uint16_t stream_id, std::string&& pac
     }
 }
 
+// Reassembly is deliberately single-threaded in read_loop(). Only socket sends
+// require a mutex because multiple switchboard network writers may publish.
 void udp_network_backend::receive_packet(std::string&& packet) {
     // Accept legacy single-datagram packets so this backend remains compatible
     // with peers built before MTU-safe packetization was added.
@@ -464,6 +468,8 @@ void udp_network_backend::topic_receive(const std::string& topic_name, std::vect
 }
 
 void udp_network_backend::stop() {
+    // Wake the timeout-bounded receive loop, then keep the socket alive until
+    // its only reader has returned.
     if (!running_.exchange(false)) {
         return;
     }

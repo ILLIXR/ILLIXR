@@ -300,6 +300,8 @@ bool stereo_renderer::create_pipeline(const imported_image& prototype) {
     return true;
 }
 
+// ---- Boba vector and modal overlay resources -------------------------------
+
 std::uint32_t stereo_renderer::find_memory_type(std::uint32_t type_filter, VkMemoryPropertyFlags properties) const {
     VkPhysicalDeviceMemoryProperties memory_properties{};
     vkGetPhysicalDeviceMemoryProperties(physical_device_, &memory_properties);
@@ -601,6 +603,8 @@ bool stereo_renderer::upload_modal_texture(std::uint64_t texture_id, std::uint32
         return false;
     }
 
+    // Stage host pixels and build a replacement image without disturbing the
+    // currently renderable modal. Ownership is swapped only after upload ends.
     VkBuffer       staging_buffer = VK_NULL_HANDLE;
     VkDeviceMemory staging_memory = VK_NULL_HANDLE;
     void*          staging_mapped = nullptr;
@@ -788,6 +792,8 @@ void stereo_renderer::update_boba_overlay_state(const data_format::dual_frames& 
         overlay_source_width_ > 0 && overlay_source_height_ > 0;
     active_modal_ = frame.boba_modal;
 
+    // Boba sends compact 14-float commands. Expand lines and rectangles into
+    // triangles once per decoded frame so command buffers need only draw them.
     const auto append_vertex = [](std::vector<overlay_vertex>& vertices, float x, float y, float red, float green, float blue,
                                   float alpha) {
         vertices.push_back({x, y, std::clamp(red / 255.0F, 0.0F, 1.0F), std::clamp(green / 255.0F, 0.0F, 1.0F),

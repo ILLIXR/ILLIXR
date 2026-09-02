@@ -6,6 +6,8 @@ def root_path = rootProject.getLayout().getProjectDirectory().getAsFile().getPat
 def root_library_path = "${root_path}/android_libraries/third_party/"
 
 def home = System.getenv('HOME') ?: System.getenv('USERPROFILE')
+// Preserve the project signing setup when its keystore exists; otherwise let
+// Gradle use its standard debug key so a clean checkout can build/install.
 def illixrKeystore = file("${home}/illixr.keystore")
 
 android {

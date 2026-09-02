@@ -154,17 +154,36 @@ private:
      */
     void update_hand_interaction(XrTime predicted_time);
 
-    bool        create_controller_actions();
-    bool        suggest_controller_bindings();
-    bool        sync_actions();
-    void        refresh_controller_profiles();
-    bool        query_controller_hand(std::size_t hand_index, XrTime sample_time, data_format::quest_hand_controller* hand);
-    bool        query_controller_pose(XrAction action, XrSpace space, XrPath hand_path, XrTime sample_time,
-                                      data_format::quest_controller_pose* pose);
-    bool        query_controller_boolean(XrAction action, XrPath hand_path, data_format::quest_controller_button* button);
-    bool        query_controller_float(XrAction action, XrPath hand_path, float threshold,
-                                       data_format::quest_controller_button* button);
-    bool        query_controller_axis(XrAction action, XrPath hand_path, data_format::quest_controller_axis2d* axis);
+    /** Add Touch-compatible button/axis actions to the existing hand action set. */
+    bool create_controller_actions();
+
+    /** Suggest Oculus Touch bindings without disturbing existing hand bindings. */
+    bool suggest_controller_bindings();
+
+    /** Synchronize the one attached action set under actions_mutex_. */
+    bool sync_actions();
+
+    /** Refresh the runtime-selected interaction profile for each hand. */
+    void refresh_controller_profiles();
+
+    /** Query every pose/button/axis source for one controller. */
+    bool query_controller_hand(std::size_t hand_index, XrTime sample_time, data_format::quest_hand_controller* hand);
+
+    /** Locate one active pose action in LOCAL space at sample_time. */
+    bool query_controller_pose(XrAction action, XrSpace space, XrPath hand_path, XrTime sample_time,
+                               data_format::quest_controller_pose* pose);
+
+    /** Query a boolean action while preserving OpenXR transition metadata. */
+    bool query_controller_boolean(XrAction action, XrPath hand_path, data_format::quest_controller_button* button);
+
+    /** Query and threshold an analog action without discarding its float value. */
+    bool query_controller_float(XrAction action, XrPath hand_path, float threshold,
+                                data_format::quest_controller_button* button);
+
+    /** Query a two-dimensional action and return neutral state when inactive. */
+    bool query_controller_axis(XrAction action, XrPath hand_path, data_format::quest_controller_axis2d* axis);
+
+    /** Merge boolean and analog representations of the same physical control. */
     static void merge_controller_button(data_format::quest_controller_button*       destination,
                                         const data_format::quest_controller_button& source);
 

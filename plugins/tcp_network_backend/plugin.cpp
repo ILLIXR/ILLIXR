@@ -42,6 +42,8 @@ tcp_network_backend::tcp_network_backend(const std::string& name_, phonebook* pb
     if (is_client_) {
         client = true;
 #ifdef __ANDROID__
+        // The Quest may launch before desktop ILLIXR. Keep the app resident and
+        // retry until the host starts listening or shutdown is requested.
         while (running_) {
             auto* socket = new network::TCPSocket();
             try {
@@ -224,6 +226,8 @@ void tcp_network_backend::topic_receive(const std::string& topic_name, std::vect
 }
 
 void tcp_network_backend::stop() {
+    // shutdown() wakes read_loop without invalidating the descriptor; deletion
+    // is deferred until the owning thread has returned.
     if (!running_.exchange(false)) {
         return;
     }

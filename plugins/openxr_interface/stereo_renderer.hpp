@@ -200,6 +200,7 @@ private:
     bool create_descriptor_pool();
 
     // ── Boba vector/modal overlay helpers ────────────────────────────────────
+    /** Vertex generated from one of Boba's source-pixel vector commands. */
     struct overlay_vertex {
         float x;
         float y;
@@ -209,6 +210,7 @@ private:
         float alpha;
     };
 
+    /** Vertex for the projected bitmap card, including normalized texture UV. */
     struct modal_vertex {
         float x;
         float y;
@@ -216,16 +218,33 @@ private:
         float v;
     };
 
+    /** Allocate both overlay pipelines and their persistently mapped eye buffers. */
     bool create_boba_overlay_resources();
+
+    /** Create the alpha-blended pipeline used for rays and placement markers. */
     bool create_overlay_pipeline();
+
+    /** Create the sampled-image pipeline used for Boba's optional modal card. */
     bool create_modal_pipeline();
+
+    /** Allocate and map a coherent Vulkan buffer owned by this renderer. */
     bool create_host_visible_buffer(VkDeviceSize size, VkBufferUsageFlags usage, VkBuffer* buffer, VkDeviceMemory* memory,
                                     void** mapped);
+
+    /** Replace the cached modal image with a validated content-addressed texture. */
     bool upload_modal_texture(std::uint64_t texture_id, std::uint32_t width, std::uint32_t height,
                               const std::vector<std::uint8_t>& rgba);
+
+    /** Destroy the cached modal image while leaving its pipeline intact. */
     void destroy_modal_texture();
+
+    /** Convert one decoded frame's compact commands into per-eye Vulkan vertices. */
     void update_boba_overlay_state(const data_format::dual_frames& frame);
+
+    /** Append the current eye's vector/modal draws to an active render pass. */
     void record_boba_overlays(VkCommandBuffer command_buffer, int eye);
+
+    /** Select a physical-device memory type satisfying all requested flags. */
     std::uint32_t find_memory_type(std::uint32_t type_filter, VkMemoryPropertyFlags properties) const;
 
     // ── Depth pipeline helpers ─────────────────────────────────────────────────

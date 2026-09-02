@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
+# Pin every remote input so repeated installs produce the same Boba runtime.
+# Checksums below also make the small compatibility patches fail closed if the
+# corresponding upstream file changes unexpectedly.
 readonly BOBA_PUBLIC_REPOSITORY="https://github.com/jianxiapyh/Boba-Public.git"
 readonly BOBA_PUBLIC_REF="9aa739542a2f85a8a6c207d1b6991bcc757b78b0"
 readonly BOBA_DEMO_REPOSITORY="https://github.com/jianxiapyh/Boba-Demo.git"
@@ -19,6 +22,8 @@ readonly PATCHED_GSPLAT_VENDOR_SHA256="c4e1b07377bb0993c321cdb6cb5ce0bf2b1b0ecda
 readonly PATCHED_DEMO_ASSETS_SHA256="0f42bf6eef01f341f9f9dc6a67f69eef24eefb6879da355b74560b8d8ed6fdde"
 readonly PATCHED_GARDEN_ASSETS_SHA256="3431640e18d85f8ccd38b8501fc9e7ed3ed185b75bea76ffad2f4ac7d7b6803d"
 
+# These are the five archives linked from Boba-Public's Required Assets
+# section. Their array indices intentionally form name/URL pairs.
 readonly -a PUBLIC_ASSET_NAMES=(
     "data"
     "experiments"
@@ -34,6 +39,10 @@ readonly -a PUBLIC_ASSET_URLS=(
     "https://drive.google.com/file/d/1nDpWimKg8hsFaXwzo7MdceGN1HQS3c02/view?usp=drive_link"
 )
 
+# ---- Common command-line helpers -------------------------------------------
+
+# Prefix user-facing progress so setup output is distinguishable from output
+# emitted by Conda, pip, Git, and the Boba validation tools.
 log() {
     printf '[setup_boba_immersive] %s\n' "$*"
 }
@@ -62,8 +71,9 @@ Options:
   --dry-run                Print the pinned inputs and planned locations only.
   -h, --help               Show this help.
 
-The script deliberately does not install Steam, SteamVR, or ALVR. The MVP
-assumes those host/headset components are already installed and paired.
+The script deliberately does not install a headset transport. For native Quest
+streaming, install ILLIXRApp with scripts/install_quest_app.sh. SteamVR and ALVR
+are needed only by the legacy boba_quest profile.
 EOF
 }
 
@@ -92,6 +102,8 @@ default_install_root() {
         return 1
     fi
 }
+
+# ---- Option parsing and installation layout --------------------------------
 
 INSTALL_ROOT="${BOBA_IMMERSIVE_ROOT:-}"
 FETCH_GARDEN=0
@@ -152,6 +164,8 @@ readonly STATE_ROOT="${INSTALL_ROOT}/.state"
 readonly TEMP_ROOT="${INSTALL_ROOT}/.tmp"
 readonly GDOWN_ROOT="${INSTALL_ROOT}/.setup-tools/gdown-${GDOWN_VERSION}"
 
+# Print both the immutable source revisions and optional download choices. This
+# is also the complete output of --dry-run, which performs no filesystem writes.
 print_plan() {
     log "Install root: ${INSTALL_ROOT}"
     log "Boba-Public: ${BOBA_PUBLIC_REPOSITORY} at ${BOBA_PUBLIC_REF}"
@@ -177,6 +191,8 @@ if [[ ${DRY_RUN} -eq 1 ]]; then
     exit 0
 fi
 
+# ---- Host prerequisite validation ------------------------------------------
+
 [[ "$(uname -s)" == "Linux" ]] || die "Boba immersive currently requires Linux."
 for required in git curl awk find realpath sha256sum unzip; do
     require_command "${required}"
@@ -199,6 +215,8 @@ fi
 
 mkdir -p "${INSTALL_ROOT}" "${DOWNLOAD_ROOT}" "${STATE_ROOT}" "${TEMP_ROOT}"
 
+# Temporary extraction directories are registered as they are created. Limit
+# cleanup to TEMP_ROOT so even malformed archive contents cannot broaden it.
 TEMP_PATHS=()
 cleanup_temp_paths() {
     local path
@@ -212,6 +230,10 @@ cleanup_temp_paths() {
 }
 trap cleanup_temp_paths EXIT
 
+# ---- Reproducible upstream checkouts ---------------------------------------
+
+# Accept the HTTPS and SSH spellings of a pinned GitHub repository, but reject
+# an existing checkout that points at a different upstream project.
 expected_remote_matches() {
     local remote="$1"
     local repository="$2"
@@ -227,6 +249,8 @@ expected_remote_matches() {
     esac
 }
 
+# Return tracked changes that setup is not expected to manage. The ignored list
+# contains the LFS payload and the checksum-guarded compatibility patch targets.
 tracked_checkout_changes() {
     local directory="$1"
     local ignored_paths="${2:-}"
@@ -250,6 +274,9 @@ tracked_checkout_changes() {
         '
 }
 
+# Boba-Demo historically named its original development environment directly.
+# These narrowly scoped patches make the runtime name configurable and align the
+# setup instructions with the dedicated boba-cu132 environment created here.
 patch_boba_app_environment() {
     git -C "${BOBA_DEMO_ROOT}" apply --unidiff-zero <<'PATCH'
 diff --git a/boba_app.sh b/boba_app.sh
@@ -335,6 +362,9 @@ diff --git a/qqtt/garden_assets.py b/qqtt/garden_assets.py
 PATCH
 }
 
+# Apply a compatibility patch only to an unmodified pinned upstream file, then
+# verify the exact result. This avoids silently overwriting user or upstream
+# edits when setup is rerun.
 ensure_demo_patched_file() {
     local relative_path="$1"
     local expected_sha="$2"
@@ -359,6 +389,8 @@ ensure_demo_patched_file() {
         die "Environment compatibility patch produced an unexpected file: ${target}"
 }
 
+# Configure every Boba-Demo entry point that either launches or documents the
+# Python/CUDA environment used by the ILLIXR integration.
 apply_demo_environment_patch() {
     ensure_demo_patched_file "boba_app.sh" "${PATCHED_BOBA_APP_SHA256}" patch_boba_app_environment
     ensure_demo_patched_file "boba_quest_immersive.py" "${PATCHED_BOBA_MAIN_SHA256}" patch_boba_main_environment
@@ -368,6 +400,9 @@ apply_demo_environment_patch() {
     log "Boba-Demo is configured to use Conda environment ${BOBA_ENVIRONMENT}"
 }
 
+# Create or update a checkout to exactly `ref`. Local tracked changes cause a
+# hard failure rather than an implicit reset; large Git LFS blobs are handled by
+# the separately verified download path below.
 ensure_checkout() {
     local label="$1"
     local repository="$2"
@@ -420,6 +455,8 @@ ensure_checkout() {
         die "${label} resolved to ${current_ref}, expected ${ref}."
 }
 
+# Fetch the one required LFS object without requiring git-lfs on the host. A
+# resumable partial download is retained on checksum failure for the next run.
 ensure_demo_lfs_asset() {
     local target="${BOBA_DEMO_ROOT}/${DEMO_LFS_PATH}"
     local partial="${DOWNLOAD_ROOT}/boba-demo/sloth.ply.part"
@@ -453,6 +490,10 @@ ensure_demo_lfs_asset() {
     mv -f -- "${partial}" "${target}"
 }
 
+# ---- Isolated Python and CUDA runtime ---------------------------------------
+
+# Test by environment name instead of installation prefix so this also works
+# with non-default Conda roots.
 have_conda_environment() {
     "${CONDA_BIN}" env list |
         awk -v wanted="${BOBA_ENVIRONMENT}" '
@@ -461,11 +502,15 @@ have_conda_environment() {
         '
 }
 
+# Prevent packages from the user's site directory from leaking into validation
+# or setup commands run in the dedicated Boba environment.
 run_in_boba_environment() {
     "${CONDA_BIN}" run --no-capture-output -n "${BOBA_ENVIRONMENT}" \
         env PYTHONNOUSERSITE=1 "$@"
 }
 
+# Reuse boba-cu132 only when it has the exact Python, PyTorch, and CUDA versions
+# required by Boba; a mismatched environment is left untouched.
 ensure_conda_environment() {
     if have_conda_environment; then
         log "Reusing Conda environment ${BOBA_ENVIRONMENT}"
@@ -485,6 +530,8 @@ assert torch.version.cuda == "13.2", torch.version.cuda'; then
     fi
 }
 
+# A small state record avoids rebuilding CUDA extensions on every run. Imports
+# still verify that the recorded build is loadable in the current environment.
 extensions_are_ready() {
     local state_file="${STATE_ROOT}/cuda_extensions"
     [[ -f "${state_file}" ]] || return 1
@@ -496,6 +543,8 @@ extensions_are_ready() {
         >/dev/null 2>&1
 }
 
+# Build extensions through Boba-Public's pinned installer, then atomically
+# publish the revision/path/environment tuple used for the successful build.
 ensure_cuda_extensions() {
     local state_file="${STATE_ROOT}/cuda_extensions"
     local state_temp="${STATE_ROOT}/cuda_extensions.tmp"
@@ -520,6 +569,10 @@ ensure_cuda_extensions() {
     mv -f -- "${state_temp}" "${state_file}"
 }
 
+# ---- Required asset installation -------------------------------------------
+
+# Install gdown into a setup-private target directory so downloading assets does
+# not mutate Boba's otherwise pinned runtime dependencies.
 ensure_gdown() {
     if run_in_boba_environment env "PYTHONPATH=${GDOWN_ROOT}" python -c \
         'import gdown
@@ -545,6 +598,8 @@ run_gdown() {
         python -m gdown "$@"
 }
 
+# Delete only archives owned by this installer and only when the user has not
+# requested --keep-downloads.
 remove_cached_archive() {
     local archive="$1"
     [[ ${KEEP_DOWNLOADS} -eq 0 ]] || return
@@ -558,6 +613,8 @@ remove_cached_archive() {
     esac
 }
 
+# Download and validate one Required Asset archive, extract it in TEMP_ROOT, and
+# move the resolved payload into place only after extraction succeeds.
 install_public_asset() {
     local asset_name="$1"
     local asset_url="$2"
@@ -619,6 +676,8 @@ install_public_assets() {
     done
 }
 
+# Install Boba-Demo's add-on packages and exercise each runtime asset/backend so
+# setup failures are reported now rather than during an ILLIXR session.
 install_demo_dependencies() {
     log "Installing Boba-Demo's pinned add-on requirements"
     (
@@ -652,6 +711,10 @@ install_demo_dependencies() {
     fi
 }
 
+# ---- End-to-end setup orchestration ----------------------------------------
+
+# Source checkout precedes environment and asset setup because both consume
+# files from the pinned repositories. Each step is safe to rerun.
 print_plan
 ensure_checkout \
     "Boba-Public" \

@@ -27,6 +27,7 @@ constexpr std::uint64_t kMaxBobaOverlayFloats =
     data_format::boba_frame_overlay::command_stride_floats;
 constexpr std::uint64_t kMaxBobaModalTextureBytes = 16ULL * 1024ULL * 1024ULL;
 
+/** Encode a vector with an explicit fixed-width length for cross-device transport. */
 template<class Archive, typename T>
 static void save_sized_vector(Archive& ar, const std::vector<T>& values) {
     const std::uint64_t size = values.size();
@@ -36,6 +37,7 @@ static void save_sized_vector(Archive& ar, const std::vector<T>& values) {
     }
 }
 
+/** Decode a length-prefixed vector only after enforcing a caller-supplied limit. */
 template<class Archive, typename T>
 static void load_sized_vector(Archive& ar, std::vector<T>& values, std::uint64_t maximum_size, const char* field_name) {
     std::uint64_t size = 0;
@@ -49,6 +51,7 @@ static void load_sized_vector(Archive& ar, std::vector<T>& values, std::uint64_t
     }
 }
 
+/** Append Boba's small per-frame overlay placement metadata to a frame packet. */
 template<class Archive>
 static void save_boba_metadata(Archive& ar, const data_format::boba_frame_overlay& overlay,
                                const data_format::boba_modal_overlay& modal) {
@@ -73,6 +76,7 @@ static void save_boba_metadata(Archive& ar, const data_format::boba_frame_overla
     ar << modal.height_m;
 }
 
+/** Decode and structurally validate Boba's untrusted network metadata. */
 template<class Archive>
 static void load_boba_metadata(Archive& ar, data_format::boba_frame_overlay& overlay, data_format::boba_modal_overlay& modal) {
     ar >> overlay.source_width;
@@ -365,6 +369,7 @@ void serialize(Archive& ar, ILLIXR::data_format::compressed_frame& f, const unsi
     boost::serialization::split_free(ar, f, version);
 }
 
+/** Encode a content-addressed modal texture for the reliable TCP topic. */
 template<class Archive>
 void save(Archive& ar, const ILLIXR::data_format::boba_modal_texture& texture, const unsigned int version) {
     (void) version;
@@ -376,6 +381,7 @@ void save(Archive& ar, const ILLIXR::data_format::boba_modal_texture& texture, c
     ar << texture.magic;
 }
 
+/** Decode a reliable modal texture and reject oversized or inconsistent payloads. */
 template<class Archive>
 void load(Archive& ar, ILLIXR::data_format::boba_modal_texture& texture, const unsigned int version) {
     (void) version;

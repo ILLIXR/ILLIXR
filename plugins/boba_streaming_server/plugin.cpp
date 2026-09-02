@@ -15,6 +15,8 @@ namespace ILLIXR {
 
 namespace {
 
+    // NVENC requires aligned surfaces. Only the visible source rectangle is sent
+    // to the Quest renderer; padding remains an encoder implementation detail.
     constexpr std::uint32_t kPerEyeVisibleWidth         = NATIVE_STREAM_EYE_WIDTH;
     constexpr std::uint32_t kPerEyeVisibleHeight        = NATIVE_STREAM_EYE_HEIGHT;
     constexpr std::uint32_t kPerEyeEncodeWidth          = (kPerEyeVisibleWidth + 31U) & ~31U;
@@ -38,6 +40,8 @@ namespace {
     }
 
 } // namespace
+
+// ---- Shared-ring mapping and validation -----------------------------------
 
 boba_streaming_server::mapped_file::~mapped_file() {
     reset();
@@ -77,6 +81,8 @@ boba_streaming_server::boba_streaming_server(const std::string& name, phonebook*
 
 boba_streaming_server::~boba_streaming_server() = default;
 
+// The threadloop polls switchboard state but yields when no new producer
+// generation is available, avoiding a busy spin at the desktop frame rate.
 threadloop::skip_option boba_streaming_server::_p_should_skip() {
     const auto frame = stereo_reader_.get_ro_nullable();
     if (frame == nullptr || frame->source_frame_id == 0 || frame->source_frame_id <= last_frame_id_) {
@@ -181,6 +187,8 @@ std::vector<std::uint8_t> boba_streaming_server::copy_modal_pixels(const data_fo
     return rgba;
 }
 
+// ---- Modal-texture reliability path ---------------------------------------
+
 std::uint64_t boba_streaming_server::modal_texture_id(const std::vector<std::uint8_t>& rgba, std::uint32_t width,
                                                       std::uint32_t height) const {
     // FNV-1a gives the modal a stable content identity across reconnects. A
@@ -237,6 +245,8 @@ void boba_streaming_server::initialize_encoder() {
     }
 }
 
+// ---- Encoded-frame publication --------------------------------------------
+
 void boba_streaming_server::publish_encoded(const data_format::stereo_frame& frame, std::vector<std::uint8_t>&& encoded,
                                             data_format::boba_frame_overlay&&      overlay,
                                             const data_format::boba_modal_overlay& modal, double encode_time_us) {
@@ -284,6 +294,8 @@ void boba_streaming_server::_p_one_iteration() {
         return;
     }
 
+    // Copy small overlay commands before encoding so the network packet never
+    // references memory that Boba can recycle after this iteration.
     bool overlay_generation_required = false;
     if (!frame->overlay_buffer_path.empty()) {
         if (!map_file(frame->overlay_buffer_path, &overlay_mapping_) ||
@@ -305,6 +317,8 @@ void boba_streaming_server::_p_one_iteration() {
         overlay.right_commands = copy_overlay_commands(frame->right_overlay_commands);
     }
 
+    // Modal placement belongs to every frame, while its potentially large RGBA
+    // texture is content-addressed and transmitted separately over TCP.
     bool                            modal_generation_required = false;
     data_format::boba_modal_overlay modal{};
     std::vector<std::uint8_t>       modal_pixels;
@@ -341,6 +355,9 @@ void boba_streaming_server::_p_one_iteration() {
         }
     }
 
+    // Encode directly from the mmap rows. Generation markers are checked again
+    // afterward, giving the ring a seqlock-like stale-read guard without copying
+    // both high-resolution eye images on the CPU.
     initialize_encoder();
     const auto*               left        = frame_mapping_.data + frame->left.byte_offset;
     const auto*               right       = frame_mapping_.data + frame->right.byte_offset;
@@ -367,6 +384,7 @@ void boba_streaming_server::_p_one_iteration() {
     publish_modal_texture_if_needed(modal, modal_pixels);
     publish_encoded(*frame, std::move(encoded), std::move(overlay), modal, encode_us);
 
+    // Report transport-facing throughput rather than logging every frame.
     ++metrics_frames_;
     metrics_encode_us_ += encode_us;
     const auto   now      = std::chrono::steady_clock::now();

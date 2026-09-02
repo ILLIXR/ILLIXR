@@ -7,6 +7,8 @@ endif()
 enable_language(CUDA)
 find_package(CUDAToolkit REQUIRED)
 
+# Reuse ILLIXR's existing NVENC/CUDA implementation to encode Boba's host RGBA
+# rings as the same side-by-side AV1 format decoded by the native Quest client.
 set(PLUGIN_NAME plugin.boba_streaming_server${ILLIXR_BUILD_SUFFIX})
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

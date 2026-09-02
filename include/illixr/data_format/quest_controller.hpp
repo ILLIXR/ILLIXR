@@ -21,6 +21,7 @@ enum class quest_controller_profile : std::uint8_t {
 
 /** A controller pose expressed in the OpenXR LOCAL reference space. */
 struct quest_controller_pose {
+    /** Pose in OpenXR LOCAL space; quaternion storage follows Eigen's API. */
     Eigen::Vector3f    position{Eigen::Vector3f::Zero()};
     Eigen::Quaternionf orientation{Eigen::Quaternionf::Identity()};
 
@@ -30,10 +31,12 @@ struct quest_controller_pose {
     bool position_tracked{false};
     bool orientation_tracked{false};
 
+    /** True when both position and orientation may be consumed. */
     [[nodiscard]] bool valid() const {
         return active && position_valid && orientation_valid;
     }
 
+    /** True when both components are currently tracked rather than inferred. */
     [[nodiscard]] bool tracked() const {
         return active && position_tracked && orientation_tracked;
     }
@@ -41,6 +44,7 @@ struct quest_controller_pose {
 
 /** Boolean or thresholded analog controller input. */
 struct quest_controller_button {
+    /** Whether the active interaction profile exposes this action source. */
     bool         active{false};
     bool         pressed{false};
     bool         changed_since_last_sync{false};
@@ -50,6 +54,7 @@ struct quest_controller_button {
 
 /** Two-dimensional controller input such as a thumbstick. */
 struct quest_controller_axis2d {
+    /** Inactive axes always retain the neutral zero value. */
     bool            active{false};
     bool            changed_since_last_sync{false};
     Eigen::Vector2f value{Eigen::Vector2f::Zero()};
@@ -86,9 +91,11 @@ struct quest_hand_controller {
  * time used to locate the poses; `sample_time` is the corresponding ILLIXR clock timestamp.
  */
 struct quest_controller_input : public switchboard::event {
+    /** Monotonic ID shared with the corresponding `openxr_view` event. */
     std::uint64_t sequence{0};
-    time_point    sample_time{};
-    std::int64_t  xr_sample_time{0};
+    /** Host and OpenXR timestamps for the same controller-pose sample. */
+    time_point   sample_time{};
+    std::int64_t xr_sample_time{0};
 
     quest_hand_controller left;
     quest_hand_controller right;

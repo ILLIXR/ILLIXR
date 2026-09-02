@@ -13,11 +13,18 @@
 
 namespace ILLIXR {
 
+/**
+ * Reliable framed-message transport for networked switchboard topics.
+ *
+ * The backend owns a joinable I/O thread and serializes concurrent writers so
+ * topic frames cannot interleave on the shared byte stream.
+ */
 class MY_EXPORT_API tcp_network_backend
     : public plugin
     , public network::tcp_backend {
 public:
     explicit tcp_network_backend(const std::string& name_, phonebook* pb_);
+    /** Stop and join the I/O thread before releasing its peer socket. */
     ~tcp_network_backend() override;
 #ifdef __ANDROID__
     void start() override;
@@ -30,6 +37,7 @@ public:
     bool is_topic_networked(std::string topic_name) override;
     void topic_send(std::string topic_name, std::string&& message) override;
     void topic_receive(const std::string& topic_name, std::vector<char>& message);
+    /** Interrupt blocking socket I/O, join the worker, and release the peer. */
     void stop() override;
 
     network::topic_config::TransportMethod transport_method() const override {
@@ -47,8 +55,9 @@ private:
     std::atomic<bool> ready_ = false;
 #endif
     network::TCPSocket* peer_socket_ = nullptr;
-    std::thread         io_thread_;
-    std::mutex          send_mutex_;
+    // Owned network loop and stream-wide packet serialization.
+    std::thread io_thread_;
+    std::mutex  send_mutex_;
 
     std::string server_ip_;
     int         server_port_{9001};

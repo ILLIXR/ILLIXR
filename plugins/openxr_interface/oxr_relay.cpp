@@ -16,6 +16,8 @@ namespace {
 constexpr float kControllerTriggerThreshold = 0.75F;
 constexpr float kControllerSqueezeThreshold = 0.85F;
 
+// Convert the runtime path to the transport-stable enum used by Boba. Unknown
+// profiles remain explicit so controller presence is not mistaken for absence.
 ILLIXR::data_format::quest_controller_profile controller_profile_from_path(const std::string& path) {
     using profile = ILLIXR::data_format::quest_controller_profile;
     if (path.empty())
@@ -702,6 +704,8 @@ bool oxr_relay::init_hand_interaction() {
     return true;
 }
 
+// ---- Quest controller action creation and sampling -------------------------
+
 bool oxr_relay::create_controller_actions() {
     const XrPath subaction_paths[2] = {hand_subaction_paths_[0], hand_subaction_paths_[1]};
     const auto   create_action      = [&](XrActionType type, const char* name, const char* localized_name, XrAction* action) {
@@ -1193,6 +1197,8 @@ bool oxr_relay::query_controller_hand(std::size_t hand_index, XrTime sample_time
 void oxr_relay::publish_boba_input(XrTime predicted_time, XrDuration predicted_period, XrBool32 should_render,
                                    XrViewStateFlags view_flags, const XrView views[2],
                                    const XrViewConfigurationView view_configs[2]) {
+    // One sequence and host timestamp bind the separately transported events
+    // into a coherent predicted-display-time snapshot on the desktop.
     const std::uint64_t sequence = boba_input_sequence_.fetch_add(1, std::memory_order_relaxed);
     const time_point    now      = clock_->now();
 
@@ -1240,6 +1246,8 @@ void oxr_relay::publish_boba_input(XrTime predicted_time, XrDuration predicted_p
     copy_view(views[0], view_configs[0], &frame.left);
     copy_view(views[1], view_configs[1], &frame.right);
 
+    // Publish only after both objects are complete; consumers reject a sample
+    // until the matching sequence has arrived on both UDP topics.
     quest_controller_writer_.put(std::make_shared<quest_controller_input>(std::move(controller)));
     openxr_view_writer_.put(std::make_shared<openxr_view_frame>(std::move(frame)));
 }

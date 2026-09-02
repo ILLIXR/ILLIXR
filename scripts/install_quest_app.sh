@@ -2,6 +2,9 @@
 
 set -euo pipefail
 
+# Build, install, and optionally launch the existing ILLIXR Android client used
+# by the native Boba streaming profile. USB/adb is needed for installation only;
+# normal frame, pose, and controller traffic travels over Wi-Fi.
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd -- "${SCRIPT_DIR}/.." && pwd)"
 
@@ -12,6 +15,8 @@ JAVA_HOME_OVERRIDE=""
 ADB_OVERRIDE=""
 BUILD_APP=1
 LAUNCH_APP=1
+
+# ---- Command-line interface -------------------------------------------------
 
 usage() {
     cat <<'EOF'
@@ -84,6 +89,9 @@ while (($# > 0)); do
     esac
 done
 
+# ---- Toolchain discovery ----------------------------------------------------
+
+# Normalize Java's legacy and modern version formats to a numeric major version.
 java_major_version() {
     local java_bin="$1"
     local version
@@ -94,6 +102,8 @@ java_major_version() {
     printf '%s\n' "${version%%[._-]*}"
 }
 
+# Prefer explicit overrides, then active shell tools, then common local Android
+# development locations. Gradle 8 requires a JDK with major version 17 or newer.
 select_java_home() {
     local -a candidates=()
     local candidate java_path major studio_jbr
@@ -125,6 +135,8 @@ select_java_home() {
     return 1
 }
 
+# Locate an SDK by its adb executable because adb is required by every install
+# path and gives us the SDK root without depending on Android Studio settings.
 select_android_sdk() {
     local -a candidates=()
     local adb_path candidate
@@ -158,6 +170,8 @@ JAVA_HOME_SELECTED="$(select_java_home)" || fail "JDK 17 or newer was not found;
 ANDROID_SDK_SELECTED="$(select_android_sdk)" || fail "Android SDK was not found; pass --android-sdk PATH"
 ADB_BIN="${ADB_OVERRIDE:-${ANDROID_SDK_SELECTED}/platform-tools/adb}"
 
+# `protoc` is provided by the ILLIXR Conda environment and is consumed by the
+# native Android build, so report the missing environment before invoking Gradle.
 [[ -x "${ADB_BIN}" ]] || fail "adb is not executable: ${ADB_BIN}"
 command -v protoc >/dev/null 2>&1 || fail \
     "protoc was not found; activate the ILLIXR Conda environment before running this script"
@@ -173,11 +187,16 @@ if ((${#missing_packages[@]} > 0)); then
     exit 1
 fi
 
+# Export the discovered tools only for this process and its Gradle children.
 export JAVA_HOME="${JAVA_HOME_SELECTED}"
 export ANDROID_SDK_ROOT="${ANDROID_SDK_SELECTED}"
 export ANDROID_HOME="${ANDROID_SDK_SELECTED}"
 export PATH="${JAVA_HOME}/bin:${ANDROID_SDK_ROOT}/platform-tools:${PATH}"
 
+# ---- Android dependency preparation ----------------------------------------
+
+# The Android dependency bundle is a submodule. Expand its packaged headers and
+# arm64 libraries only when the build-ready files are absent.
 if [[ ! -f "${REPO_ROOT}/android_libraries/third_party/includes.tar.gz" ]]; then
     command -v git >/dev/null 2>&1 || fail "git is required to initialize android_libraries"
     printf 'Initializing the Android dependency submodule...\n'
@@ -193,6 +212,10 @@ if [[ ! -f "${REPO_ROOT}/android_libraries/third_party/include/boost/version.hpp
     (cd "${REPO_ROOT}/android_libraries/third_party" && ./prepare.sh)
 fi
 
+# ---- APK build and device installation -------------------------------------
+
+# Keep variant-to-task and variant-to-output selection together so --no-build
+# installs the same artifact that a normal invocation would have produced.
 GRADLE_TASK="assembleDebug"
 APK_PATH="${REPO_ROOT}/app/build/outputs/apk/debug/app-debug.apk"
 if [[ "${BUILD_VARIANT}" == "release" ]]; then
@@ -207,6 +230,8 @@ if ((BUILD_APP)); then
 fi
 [[ -f "${APK_PATH}" ]] || fail "APK not found: ${APK_PATH}"
 
+# adb can address only one target implicitly. Require --serial when multiple
+# devices are present and reject unauthorized/offline devices up front.
 mapfile -t CONNECTED_DEVICES < <("${ADB_BIN}" devices | awk 'NR > 1 && $2 == "device" {print $1}')
 if [[ -n "${DEVICE_SERIAL}" ]]; then
     DEVICE_FOUND=0
@@ -229,6 +254,8 @@ else
     fail "select the Quest with --serial SERIAL"
 fi
 
+# Reinstall in place to preserve app data. A signing-key mismatch needs an
+# explicit uninstall because removing an installed package is destructive.
 ADB_DEVICE=("${ADB_BIN}" -s "${DEVICE_SERIAL}")
 DEVICE_MODEL="$("${ADB_DEVICE[@]}" shell getprop ro.product.model 2>/dev/null | tr -d '\r')"
 printf 'Installing on %s (%s)...\n' "${DEVICE_MODEL:-Android device}" "${DEVICE_SERIAL}"
@@ -249,6 +276,8 @@ if ((LAUNCH_APP)); then
         -n com.example.native_activity/com.example.ILLIXR.ILLIXRNativeActivity >/dev/null
 fi
 
+# Report the Wi-Fi address needed by desktop `--quest-ip`. The device may be
+# unplugged after this point; adb is not part of the runtime transport.
 QUEST_IP="$("${ADB_DEVICE[@]}" shell ip route 2>/dev/null | tr -d '\r' | awk '/wlan[0-9]/ && / src / {for (i = 1; i <= NF; ++i) if ($i == "src") {print $(i + 1); exit}}')"
 APP_STATUS=""
 if ((LAUNCH_APP)); then

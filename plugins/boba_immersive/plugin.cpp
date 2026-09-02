@@ -27,6 +27,9 @@ extern char** environ;
 
 namespace {
 
+// Versioned, fixed-layout IPC contracts shared with Boba-Demo. These structs
+// intentionally avoid C++ containers and Eigen types so the Python side can
+// unpack the bytes without depending on the ILLIXR ABI.
 constexpr std::uint32_t kInputVersion    = 1;
 constexpr char          kInputMagic[8]   = {'I', 'L', 'L', 'I', 'X', 'R', 'I', '1'};
 constexpr char          kFrameMagic[8]   = {'B', 'O', 'B', 'A', 'Q', 'I', 'M', '1'};
@@ -182,6 +185,8 @@ struct SharedModalSlotMetadata {
 
 #pragma pack(pop)
 
+// Guard every externally consumed layout at compile time. A field change must
+// be accompanied by a protocol-version update and the corresponding Boba parser.
 static_assert(sizeof(InputHeader) == 32);
 static_assert(sizeof(InputEye) == 56);
 static_assert(sizeof(InputPose) == 32);
@@ -205,6 +210,7 @@ bool read_struct(const std::uint8_t* data, std::size_t size, std::size_t offset,
     return true;
 }
 
+// Translate typed switchboard values into the compact local input protocol.
 std::uint32_t pose_flags(const ILLIXR::data_format::quest_controller_pose& pose) {
     std::uint32_t flags = 0;
     flags |= pose.active ? kFlagActive : 0U;
@@ -291,6 +297,8 @@ std::filesystem::path default_boba_install_root() {
     return {};
 }
 
+// A direct launcher override is useful during Boba development; normal users
+// resolve the setup-managed installation through BOBA_IMMERSIVE_ROOT/XDG data.
 std::string resolve_boba_launcher(const std::shared_ptr<ILLIXR::switchboard>& switchboard) {
     const std::string launcher_override = switchboard->get_env("BOBA_DEMO_LAUNCHER");
     if (!launcher_override.empty()) {
@@ -310,6 +318,8 @@ std::string resolve_boba_launcher(const std::shared_ptr<ILLIXR::switchboard>& sw
 } // namespace
 
 namespace ILLIXR {
+
+// ---- Shared-memory resource ownership -------------------------------------
 
 boba_immersive::mapped_file::~mapped_file() {
     reset();
@@ -337,6 +347,8 @@ boba_immersive::boba_immersive(const std::string& name, phonebook* pb)
     , stereo_writer_{switchboard_->get_writer<stereo_frame>("stereo_frame")}
     , boba_launcher_{resolve_boba_launcher(switchboard_)} {
     spdlogger(switchboard_->get_env_char("BOBA_IMMERSIVE_LOG_LEVEL", "info"));
+    // Only the native/offload profile has a remote Quest process to stop. The
+    // desktop OpenXR compatibility profile shuts down in this same process.
     if (switchboard_->get_env_bool("BOBA_NATIVE_QUEST_STREAM", "false")) {
         network::topic_config control_config{};
         control_config.serialization_method = network::topic_config::SerializationMethod::PROTOBUF;
@@ -352,6 +364,8 @@ boba_immersive::~boba_immersive() {
         worker_.join();
     }
 }
+
+// ---- Plugin and child-process lifecycle -----------------------------------
 
 void boba_immersive::start() {
     plugin::start();
@@ -382,6 +396,8 @@ void boba_immersive::run() {
 
     plugin_logger_->info("Boba immersive producer started; input={} output={}", input_socket_path_, frame_path_);
     while (!stop_requested_.load() && !stoplight_->check_should_stop()) {
+        // Detect a voluntary game exit (including Boba's hold-to-exit action)
+        // before doing more IPC work, then propagate it to the whole pipeline.
         int         status      = 0;
         const pid_t wait_result = waitpid(boba_pid_, &status, WNOHANG);
         if (wait_result == boba_pid_) {
@@ -402,6 +418,8 @@ void boba_immersive::run() {
             break;
         }
 
+        // Input and output are deliberately non-blocking. Boba and ILLIXR may
+        // run at different rates, so each side consumes only the newest sample.
         send_latest_input();
         map_output_files();
         publish_latest_frame();
@@ -464,6 +482,8 @@ bool boba_immersive::launch_boba() {
         return false;
     }
 
+    // Copy the parent environment while replacing any stale bridge variables
+    // inherited from an earlier run.
     std::vector<std::string> environment_storage;
     for (char** entry = environ; entry != nullptr && *entry != nullptr; ++entry) {
         const std::string_view value{*entry};
@@ -493,6 +513,8 @@ bool boba_immersive::launch_boba() {
         const_cast<char*>("--illixr"),
         nullptr,
     };
+    // Give Boba its own process group because its shell launcher creates Python
+    // and helper children that must all terminate with the ILLIXR plugin.
     posix_spawnattr_t attributes;
     if (posix_spawnattr_init(&attributes) != 0) {
         plugin_logger_->error("posix_spawnattr_init failed");
@@ -549,9 +571,13 @@ void boba_immersive::cleanup_runtime_directory() {
     }
 }
 
+// ---- ILLIXR-to-Boba input bridge ------------------------------------------
+
 bool boba_immersive::send_latest_input() {
     const auto controller = controller_reader_.get_ro_nullable();
     const auto views      = view_reader_.get_ro_nullable();
+    // Never combine a controller snapshot with views from a different OpenXR
+    // predicted display time; Boba treats the packet as one coherent sample.
     if (controller == nullptr || views == nullptr || controller->sequence != views->sequence) {
         return false;
     }
@@ -585,6 +611,8 @@ bool boba_immersive::send_latest_input() {
     }
     return false;
 }
+
+// ---- Boba-to-ILLIXR shared-ring bridge ------------------------------------
 
 bool boba_immersive::map_if_ready(const std::string& path, mapped_file* mapping) {
     if (mapping->data != nullptr) {
@@ -622,6 +650,8 @@ bool boba_immersive::publish_latest_frame() {
         return false;
     }
 
+    // Snapshot the producer's current slot metadata before constructing any
+    // switchboard references into the recyclable ring.
     SharedFrameHeader header{};
     if (!read_struct(frame_mapping_.data, frame_mapping_.size, 0, &header) || !same_magic(header.magic, kFrameMagic) ||
         header.version != kFrameVersion || header.channels != kChannelCount || header.slot_count == 0 ||
@@ -666,6 +696,8 @@ bool boba_immersive::publish_latest_frame() {
     copy_render_view(pose_metadata.right_position, pose_metadata.right_orientation, pose_metadata.right_fov,
                      (pose_metadata.valid_flags & 2U) != 0, &output->right_render_view);
 
+    // Overlay and modal rings are optional. They are attached only when their
+    // slot generation matches the pixel frame exactly.
     SharedOverlayHeader       overlay_header{};
     const std::size_t         overlay_metadata_offset = sizeof(SharedOverlayHeader) + slot * sizeof(SharedOverlaySlotMetadata);
     SharedOverlaySlotMetadata overlay_metadata{};
@@ -732,6 +764,9 @@ bool boba_immersive::publish_latest_frame() {
         }
     }
 
+    // Re-read the generation after collecting all ranges. If Boba recycled the
+    // slot while we were reading it, drop the descriptor instead of publishing
+    // a mixture of two frames.
     SharedFrameHeader           confirm_header{};
     SharedFramePoseMetadataSlot confirm_metadata{};
     if (!read_struct(frame_mapping_.data, frame_mapping_.size, 0, &confirm_header) ||

@@ -7,6 +7,7 @@
 
 namespace boost::serialization {
 
+/** Serialize an eye pose/FOV component in a platform-independent field order. */
 template<class Archive>
 void serialize(Archive& ar, ILLIXR::data_format::openxr_eye_view& view, const unsigned int) {
     ar & view.position.x();
@@ -26,6 +27,7 @@ void serialize(Archive& ar, ILLIXR::data_format::openxr_eye_view& view, const un
     ar & view.pose_tracked;
 }
 
+/** Serialize the event envelope and its sequence-matched stereo view sample. */
 template<class Archive>
 void serialize(Archive& ar, ILLIXR::data_format::openxr_view_frame& frame, const unsigned int) {
     ar& boost::serialization::base_object<ILLIXR::switchboard::event>(frame);

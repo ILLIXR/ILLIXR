@@ -55,6 +55,13 @@ constexpr int         QUEST_CONFIGURATION_PORT = 9010;
 constexpr const char* QUEST_CONNECT_REQUEST    = "ILLIXR_CONNECT_V1";
 constexpr const char* QUEST_CONNECT_RESPONSE   = "ILLIXR_READY_V1";
 
+/**
+ * Bootstrap the native Quest client before desktop plugins are constructed.
+ *
+ * Requests are retransmitted because UDP delivery is not guaranteed. The
+ * response must come from the exact address supplied by `--quest-ip`; the Quest
+ * simultaneously learns the correct desktop address from each packet's source.
+ */
 void configure_native_quest(const cxxopts::ParseResult& options) {
     if (!options.count("quest-ip")) {
         return;
