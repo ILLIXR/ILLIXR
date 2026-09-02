@@ -1,12 +1,19 @@
 #pragma once
+#ifndef _WIN32
+#    include "gtsam/navigation/CombinedImuFactor.h" // Used if IMU combined is off.
+#    include "gtsam/navigation/ImuFactor.h"
+#endif
 #include "illixr/data_format/imu.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/plugin.hpp"
 #include "illixr/switchboard.hpp"
 #include "third_party/filter.h"
 
-#include <gtsam/navigation/CombinedImuFactor.h> // Used if IMU combined is off.
-#include <gtsam/navigation/ImuFactor.h>
+#ifdef _WIN32
+#    include <gtsam/navigation/CombinedImuFactor.h> // Used if IMU combined is off.
+#    include <gtsam/navigation/ImuFactor.h>
+
+#endif
 
 using ImuBias = gtsam::imuBias::ConstantBias;
 
