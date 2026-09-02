@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.17)
 if(WIN32 OR MSVC OR ANDROID)
     message(WARNING "ada.server_rx is not yet available for Windows or Android")
-    set(USE_ADA_SERVER_RX OFF)
+    set(USE_ADA.SERVER_RX OFF)
     return()
 endif()
 

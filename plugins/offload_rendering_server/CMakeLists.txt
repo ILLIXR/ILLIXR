@@ -166,6 +166,8 @@ if(USE_NVENC_ENCODER)
                   /usr/local/cuda/include
                   /opt/nvidia/video-codec-sdk/Interface
                   ${CMAKE_CURRENT_SOURCE_DIR}/../external/Video_Codec_SDK/Interface
+                  $ENV{VIDEO_CODEC_SDK_PATH}/Interface
+                  ${VIDEO_CODEC_SDK_PATH}/Interface
         )
         if(NVENC_INCLUDE_DIR)
             target_include_directories(${PLUGIN_NAME} PUBLIC ${NVENC_INCLUDE_DIR})

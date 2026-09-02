@@ -162,6 +162,11 @@ dual_frames stereo_surface_decoder::get_current_frame(time_point render_time) {
 #    endif // COMBINED_ENCODING
 }
 
+// release_frame() only reads fields out of the dual_frames it is given, so it
+// is decoder-agnostic - any one of color_decoder_ / depth_decoder_ /
+// motion_vec_decoder_ can call it and it will release whichever of the six
+// hw_buffer fields (color, depth, motion vector) are populated.  Callers
+// only need to invoke it once per dual_frames, not once per decoder.
 void stereo_surface_decoder::release_frame(const dual_frames& frame) {
     if (frame.format != data_format::frame_format::hardware_buffer) {
         return;
@@ -171,6 +176,18 @@ void stereo_surface_decoder::release_frame(const dual_frames& frame) {
     }
     if (frame.right_eye.hw_buffer != nullptr) {
         AHardwareBuffer_release(frame.right_eye.hw_buffer);
+    }
+    if (frame.left_depth.hw_buffer != nullptr) {
+        AHardwareBuffer_release(frame.left_depth.hw_buffer);
+    }
+    if (frame.right_depth.hw_buffer != nullptr) {
+        AHardwareBuffer_release(frame.right_depth.hw_buffer);
+    }
+    if (frame.left_motion_vec.hw_buffer != nullptr) {
+        AHardwareBuffer_release(frame.left_motion_vec.hw_buffer);
+    }
+    if (frame.right_motion_vec.hw_buffer != nullptr) {
+        AHardwareBuffer_release(frame.right_motion_vec.hw_buffer);
     }
 }
 

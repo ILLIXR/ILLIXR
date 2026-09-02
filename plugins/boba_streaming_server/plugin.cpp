@@ -65,13 +65,9 @@ boba_streaming_server::boba_streaming_server(const std::string& name, phonebook*
     , switchboard_{pb->lookup_impl<switchboard>()}
     , stereo_reader_{switchboard_->get_reader<data_format::stereo_frame>("stereo_frame")}
     , frames_writer_{switchboard_->get_network_writer<data_format::compressed_frame>(
-          "compressed_frames",
-          {.serialization_method = network::topic_config::SerializationMethod::BOOST,
-           .transport_method     = network::topic_config::TransportMethod::UDP})}
+          "compressed_frames", network::topic_config{network::topic_config::BOOST, network::topic_config::UDP})}
     , modal_writer_{switchboard_->get_network_writer<data_format::boba_modal_texture>(
-          "boba_modal_texture",
-          {.serialization_method = network::topic_config::SerializationMethod::BOOST,
-           .transport_method     = network::topic_config::TransportMethod::TCP})} {
+          "boba_modal_texture", network::topic_config{network::topic_config::BOOST, network::topic_config::TCP})} {
     spdlogger(switchboard_->get_env_char("BOBA_STREAMING_SERVER_LOG_LEVEL", "info"));
     bitrate_   = std::max<std::int64_t>(1, switchboard_->get_env_int("BOBA_STREAM_BITRATE", 30'000'000));
     framerate_ = std::max(1, switchboard_->get_env_int("BOBA_STREAM_FRAMERATE", 72));

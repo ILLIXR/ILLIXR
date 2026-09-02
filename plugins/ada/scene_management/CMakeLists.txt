@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 if(WIN32 OR MSVC OR ANDROID)
     message(WARNING "ada.scene_management is not yet available for Windows or Android")
-    set(USE_ADA_SCENE_MANAGEMENT OFF)
+    set(USE_ADA.SCENE_MANAGEMENT OFF)
     return()
 endif()
 

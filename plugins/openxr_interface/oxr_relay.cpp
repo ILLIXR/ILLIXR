@@ -42,14 +42,11 @@ oxr_relay::oxr_relay(const std::string& name, phonebook* pb)
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
     , clock_{phonebook_->lookup_impl<relative_clock>()}
     , combined_pose_writer_{switchboard_->get_network_writer<data_format::pose::combined_pose>(
-          "combined_pose",
-          {.serialization_method = network::topic_config::BOOST, .transport_method = network::topic_config::UDP})}
+          "combined_pose", network::topic_config{network::topic_config::BOOST, network::topic_config::UDP})}
     , quest_controller_writer_{switchboard_->get_network_writer<data_format::quest_controller_input>(
-          "quest_controller",
-          {.serialization_method = network::topic_config::BOOST, .transport_method = network::topic_config::UDP})}
+          "quest_controller", network::topic_config{network::topic_config::BOOST, network::topic_config::UDP})}
     , openxr_view_writer_{switchboard_->get_network_writer<data_format::openxr_view_frame>(
-          "openxr_view",
-          {.serialization_method = network::topic_config::BOOST, .transport_method = network::topic_config::UDP})}
+          "openxr_view", network::topic_config{network::topic_config::BOOST, network::topic_config::UDP})}
     , latency_reader_{switchboard_->get_reader<network_latency_result>("network_latency")} { }
 
 void oxr_relay::destroy() {

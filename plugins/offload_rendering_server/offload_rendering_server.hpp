@@ -2,11 +2,18 @@
 #define MONADO_IS_SOURCE
 #define DOUBLE_INCLUDE
 
+#ifdef _WIN32
+#    ifndef XRT_OS_WINDOWS
+#        define XRT_OS_WINDOWS
+#    endif
+#endif
+
 #include "drivers/illixr/illixr_framebuffer.h"
 #ifdef USING_OPENXR
 #    include "illixr/data_format/poses/combined_pose.hpp"
 #endif
 #include "illixr/data_format/frame.hpp"
+#include "illixr/data_format/hmd_config.hpp"
 #include "illixr/data_format/pose_id.hpp"
 #include "illixr/data_format/pose_prediction.hpp"
 #include "illixr/data_format/serialization/frame.hpp"
@@ -54,8 +61,7 @@ namespace ILLIXR {
 class MY_EXPORT_API offload_rendering_server
     : public threadloop
     , public vulkan::timewarp
-    , public data_format::pose_prediction
-    , std::enable_shared_from_this<plugin> {
+    , public data_format::pose_prediction {
 public:
     /**
      * @brief Constructor initializes the server with configuration from environment variables
@@ -104,9 +110,11 @@ public:
     /**
      * @brief Get the true pose (same as fast pose in this implementation)
      */
+#ifndef USING_OPENXR
     ILLIXR::data_format::pose::head_pose_type get_true_pose() const override {
         return get_fast_pose().pose;
     }
+#endif
 
     /**
      * @brief Get predicted pose for a future time point (returns current pose)
@@ -268,6 +276,11 @@ private:
      * frames if depth transmission is enabled.
      */
     void ffmpeg_init_encoder();
+
+    /**
+     * @brief Copies Monado framebuffer metadata into the ILLIXR buffer pool before FFmpeg setup.
+     */
+    void ffmpeg_populate_buffer_pool_from_framebuffers();
 #endif
     void sender_loop();
 
@@ -332,7 +345,7 @@ private:
     // Using last_frame_was_keyframe() from the encoder is authoritative for both
     // HEVC (IDR) and AV1 (KEY_FRAME / auto-GOP I-frame), avoiding any need for
     // bitstream parsing on the client side.
-    bool color_frame_is_keyframe_ = false;
+    // bool color_frame_is_keyframe_ = false;
 
 #    ifdef COMBINED_ENCODING
     // Under COMBINED_ENCODING a single encoder handles both eyes at double width.
