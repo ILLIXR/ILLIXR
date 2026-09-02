@@ -59,11 +59,9 @@ gtsam_integrator::pim_object::pim_object(const imu_int_t& imu_int_input)
     params.setIntegrationCovariance(std::pow(imu_int_input.params.imu_integration_sigma, 2.0) * Eigen::Matrix3d::Identity());
     params.setBiasAccCovariance(std::pow(imu_int_input.params.acc_walk, 2.0) * Eigen::Matrix3d::Identity());
     params.setBiasOmegaCovariance(std::pow(imu_int_input.params.gyro_walk, 2.0) * Eigen::Matrix3d::Identity());
-#if defined(__ANDROID__) || defined(_WIN32)
+
     pim_ = new pim_t{std::make_shared<pim_t::Params>(std::move(params)), imu_bias_};
-#else
-    pim_ = new pim_t{boost::make_shared<pim_t::Params>(std::move(params)), imu_bias_};
-#endif
+
     reset_integration_and_set_bias(imu_int_input);
 }
 

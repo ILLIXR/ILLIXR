@@ -144,8 +144,8 @@ if(BUILD_DOCS)
 
     file(WRITE ${DOC_BUILD_DIR}/index.md "${INDEX_TEMP}")
 
-    configure_file(../CHANGELOG.md CHANGELOG.md COPYONLY)
-    configure_file(../LICENSE docs/LICENSE.md COPYONLY)
+    configure_file(../CHANGELOG.md ../_docs/docs/CHANGELOG.md COPYONLY)
+    configure_file(../LICENSE ../_docs/docs/LICENSE.md COPYONLY)
     # configure the Doxyfile
     set(DOXYGEN_BUILD_DIR "${DOC_BUILD_DIR}/api" CACHE INTERNAL "")
     set(DOXYGEN_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATAROOTDIR}/doc/ILLIXR" CACHE INTERNAL "")

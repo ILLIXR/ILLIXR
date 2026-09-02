@@ -26,7 +26,7 @@ android {
     ndkVersion '27.2.12479018'
 
     defaultConfig {
-        applicationId = 'com.example.native_activity'
+        applicationId = 'com.example.ILLIXR'
         minSdk 32
         targetSdkVersion 32
         ndk {
@@ -38,7 +38,8 @@ android {
                 version '3.22.1'
                 cppFlags '-std=c++17', '-frtti', '-fexceptions'
                 arguments "-DTHIRD_PARTY_DIR=${root_library_path}",
-                          "-DBUILD_ANDROID=ON"
+                          "-DBUILD_ANDROID=ON",
+                          "-DYAML_FILE=profiles/tester.yaml"
             }
         }
     }
