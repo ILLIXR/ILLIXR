@@ -3,10 +3,12 @@
 #include "illixr/switchboard.hpp"
 
 #ifdef __ANDROID__
-#    include "android/network_config_dialog.hpp"
 #    include <csignal>
 #    include <EGL/egl.h>
 #    include <unistd.h> /// Not portable
+#    define _STR(y)      #y
+#    define STRINGIZE(x) _STR(x)
+
 #else
 #    ifndef ILLIXR_INSTALL_PATH
 #        error "ILLIXR_INSTALL_PATH must be defined"
@@ -22,11 +24,10 @@
 #        include <pwd.h>
 #        include <unistd.h>
 #    endif
+#    include <sstream>
 #    include <stdexcept>
+#    include <yaml-cpp/yaml.h>
 #endif
-
-#include <sstream>
-#include <yaml-cpp/yaml.h>
 
 #ifndef __ANDROID__
 namespace ILLIXR {
@@ -163,13 +164,15 @@ void check_plugins(std::vector<std::string>& plugins, const std::vector<ILLIXR::
 
 int ILLIXR::run(
 #ifdef __ANDROID__
-    struct android_app* app, const std::string& yaml_path
+    const std::vector<std::string>& plugins, struct android_app* app
 #else
     const cxxopts::ParseResult& options
 #endif
 ) {
     std::chrono::seconds run_duration;
+#ifndef __ANDROID__
     std::vector<std::string> plugins;
+#endif
     try {
         runtime_ = ILLIXR::runtime_factory();
 
@@ -177,59 +180,6 @@ int ILLIXR::run(
         std::shared_ptr<switchboard> switchboard_ = runtime_->get_switchboard();
 #ifdef __ANDROID__
         switchboard_->set_android_app(app);
-
-        // Read the profile YAML file whose path was chosen by the user in the
-        // profile picker dialog and passed in via yaml_path.
-        YAML::Node config;
-        try {
-            config = YAML::LoadFile(yaml_path);
-        } catch (const YAML::BadFile&) {
-            spdlog::get("illixr")->error("[run] Could not load profile: {}", yaml_path);
-            throw std::runtime_error("Could not load profile: " + yaml_path);
-        }
-
-        // Publish env_vars from the profile through the switchboard so that
-        // all subsequently loaded plugins pick them up via get_env().
-        for (const auto& item : config["env_vars"]) {
-            const auto key = item.first.as<std::string>();
-            if (std::find(ignore_vars.begin(), ignore_vars.end(), key) == ignore_vars.end())
-                switchboard_->set_env(key, item.second.as<std::string>());
-        }
-
-        // Build the plugin list from the profile's "plugins:" key, which holds
-        // a comma-separated string identical to the non-Android format.
-        {
-            std::string plugin_names;
-            if (config["plugins"])
-                plugin_names = config["plugins"].as<std::string>();
-            if (plugin_names.empty()) {
-                spdlog::get("illixr")->error("[run] No plugins specified in profile: {}", yaml_path);
-                throw std::runtime_error("No plugins specified in profile: " + yaml_path);
-            }
-            std::stringstream ss(plugin_names);
-            std::string token;
-            while (std::getline(ss, token, ',')) {
-                token.erase(0, token.find_first_not_of(" \t"));
-                token.erase(token.find_last_not_of(" \t") + 1);
-                if (!token.empty())
-                    plugins.push_back(token);
-            }
-        }
-
-        // Show the network configuration dialog for any network backends present
-        // in the plugin list.  The dialog blocks until the user confirms or
-        // cancels; on confirmation all ILLIXR_TCP_* / ILLIXR_UDP_* environment
-        // variables are set via setenv() before returning.
-        {
-            const ILLIXR::network_dialog_flags net_flags =
-                ILLIXR::make_network_dialog_flags(plugins);
-            const ILLIXR::network_config net_cfg =
-                ILLIXR::show_network_config_dialog(app, net_flags);
-            if (net_cfg.cancelled) {
-                spdlog::get("illixr")->error("[run] User cancelled network configuration.");
-                return EXIT_FAILURE;
-            }
-        }
 #else
 
         // read in yaml config file

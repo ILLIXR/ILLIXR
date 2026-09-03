@@ -6,8 +6,8 @@
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #ifdef __linux__
-#  pragma GCC diagnostic ignored "-Wsign-compare"
-#  pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+#    pragma GCC diagnostic ignored "-Wsign-compare"
+#    pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 #endif
 #include "illixr/gl_util/lib/stb_image_write.h"
 

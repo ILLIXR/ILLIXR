@@ -1,19 +1,11 @@
 #pragma once
-#ifndef _WIN32
-#    include "gtsam/navigation/CombinedImuFactor.h" // Used if IMU combined is off.
-#    include "gtsam/navigation/ImuFactor.h"
-#endif
+#include "gtsam/navigation/CombinedImuFactor.h" // Used if IMU combined is off.
+#include "gtsam/navigation/ImuFactor.h"
 #include "illixr/data_format/imu.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/plugin.hpp"
 #include "illixr/switchboard.hpp"
 #include "third_party/filter.h"
-
-#ifdef _WIN32
-#    include <gtsam/navigation/CombinedImuFactor.h> // Used if IMU combined is off.
-#    include <gtsam/navigation/ImuFactor.h>
-
-#endif
 
 using ImuBias = gtsam::imuBias::ConstantBias;
 
@@ -25,7 +17,7 @@ using pim_t     = gtsam::PreintegratedCombinedMeasurements;
 using pim_ptr_t = gtsam::PreintegrationType*;
 
 namespace ILLIXR {
-class MY_EXPORT_API gtsam_integrator : public plugin {
+class gtsam_integrator : public plugin {
 public:
     [[maybe_unused]] gtsam_integrator(const std::string& name, phonebook* pb);
     void callback(const switchboard::ptr<const data_format::imu_type>& datum);
