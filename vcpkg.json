@@ -601,6 +601,10 @@
       "description": "",
       "dependencies": []
     },
+    "plugin-udp-network-backend": {
+      "description": "",
+      "dependencies": []
+    },
     "plugin-timewarp-gl": {
       "description": "",
       "dependencies": []
