@@ -175,7 +175,8 @@
       "cmake_flag": "USE_GROUND_TRUTH_SLAM=ON",
       "dependencies": [],
       "OS": [
-        "linux"
+        "linux",
+        "windows"
       ]
     },
     {
