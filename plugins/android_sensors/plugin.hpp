@@ -36,11 +36,17 @@ namespace ILLIXR {
  * Acquisition and encoding pipeline
  * ----------------------------------
  * RGB:   Camera2 writes directly into MediaCodec's ANativeWindow input surface.
- *        The Snapdragon hardware handles NV12 → HEVC without any CPU copy.
+ *        The Snapdragon hardware handles NV12 -> HEVC without any CPU copy.
  *        The encoder is initialised first so its ANativeWindow can be used as
  *        the Camera2 capture target. Completed H.265 output buffers are drained
  *        on each threadloop tick.
- *        RGB pose: xrLocateSpace() at the encoder output presentationTimeUs.
+ *
+ *        RGB pose: acquire_depth_unity_thread() samples xrLocateSpace(VIEW,LOCAL)
+ *        at 90Hz on Unity's main thread (the only valid context for VIEW space)
+ *        and stores the result in latest_head_pose_ under a mutex.
+ *        on_capture_completed() snapshots that pose into capture_result_cache_
+ *        at the moment of each Camera2 exposure. _p_one_iteration() reads the
+ *        most recent capture result pose and attaches it to the outgoing frame.
  *
  * Depth: XR_META_environment_depth OpenXR extension (standard Khronos openxr.h).
  *        Unity uses the Vulkan renderer, so depth swapchain images are VkImages.
@@ -62,12 +68,15 @@ namespace ILLIXR {
  *
  * Configuration (env vars, set via Unity JNI bridge before plugin start)
  * -----------------------------------------------------------------------
- *   ILLIXR_CAPTURE_FPS         Encoder target FPS hint     (default: 30)
+ *   ILLIXR_CAPTURE_FPS         Encoder target FPS hint     (default: 2)
  *   ILLIXR_ENCODER_BITRATE_BPS HEVC bitrate in bits/s      (default: 5000000)
+ *   ILLIXR_ENCODER_IFRAME_SEC  IDR period in seconds       (default: 1)
  *   ILLIXR_DEPTH_DISABLED      Set to 1 to skip depth      (default: 0)
  *   ILLIXR_MAX_DEPTH_M         Far-depth cap in metres     (default: 0)
+ *   ILLIXR_CAMERA_WIDTH        Camera capture width        (default: 960)
+ *   ILLIXR_CAMERA_HEIGHT       Camera capture height       (default: 960)
  *
- * Publishes: "semantic_data" (ILLIXR::data_format::semantic_data)
+ * Publishes: "semantic_frame" (ILLIXR::data_format::semantic_frame)
  */
 class xr_sensor_capture : public threadloop {
 public:
@@ -76,7 +85,9 @@ public:
 
     // Called from Unity's LateUpdate() via illixr_acquire_depth() in ILLIXRBridge.
     // Must be called between xrBeginFrame and xrEndFrame (i.e. during Unity's frame).
-    void acquire_depth_unity_thread();
+    // Also samples the current head pose via xrLocateSpace(VIEW, LOCAL) and stores
+    // it in latest_head_pose_ for on_capture_completed() to snapshot.
+    void acquire_depth_unity_thread(int64_t predicted_display_time_ns);
 
     // Public so on_render_event callback can call them from outside the class.
     bool init_vulkan();
@@ -100,6 +111,45 @@ public:
     // Must be called on the main thread - same constraint as xrBeginFrame.
     void release_depth_after_submit();
 
+    // ---- Latest head pose (written by acquire_depth_unity_thread, read by
+    //      on_capture_completed) ----
+    //
+    // acquire_depth_unity_thread() runs on Unity's main thread at 90Hz during
+    // an active XR frame - the only valid context for xrLocateSpace with VIEW
+    // space on Quest 3. It stores the current pose here. on_capture_completed()
+    // snapshots this pose into capture_result_cache_ at sensor exposure time.
+    struct latest_head_pose {
+        float pose[16] = {};
+        bool  valid    = false;
+    };
+
+    mutable std::mutex latest_head_pose_mutex_;
+    latest_head_pose   latest_head_pose_;
+
+    // ---- Per-frame capture result (written by on_capture_completed,
+    //      read by _p_one_iteration) ----
+    //
+    // on_capture_completed() fires on the Camera2 callback thread immediately
+    // after each sensor exposure. It snapshots latest_head_pose_ and the current
+    // XrTime into this ring buffer. _p_one_iteration() picks the most recent
+    // valid entry and attaches its pose to the outgoing semantic_frame.
+    struct capture_result {
+        float  pose[16]     = {};
+        XrTime capture_time = 0;
+        bool   valid        = false;
+    };
+
+    static constexpr size_t CAPTURE_RESULT_CACHE_SIZE = 16;
+
+    // Public so the static on_capture_completed callback can write to them.
+    mutable std::mutex                                    capture_result_mutex_;
+    std::array<capture_result, CAPTURE_RESULT_CACHE_SIZE> capture_result_cache_;
+    size_t                                                capture_result_next_ = 0;
+
+    // Clock offset: CLOCK_BOOTTIME - CLOCK_MONOTONIC, computed at construction.
+    // Added to MediaCodec presentationTimeUs (MONOTONIC-based) to get XrTime.
+    int64_t clock_offset_ns_;
+
 protected:
     void        _p_one_iteration() override;
     skip_option _p_should_skip() override;
@@ -110,7 +160,7 @@ private:
     bool init_failed_ = false;
 
     // ---- Timing ----
-    int64_t tick_interval_ns_ = 33'333'333LL;
+    int64_t tick_interval_ns_ = 500'000'000LL; // default 2fps; overridden in constructor
     int64_t last_tick_ns_     = 0;
 
     // ---- OpenXR ----
@@ -146,9 +196,6 @@ private:
     // Vulkan swapchain images - VkImage per slot, populated at swapchain creation.
     std::vector<VkImage> depth_vk_images_;
 
-    // ---- Pose lookup ----
-    bool get_pose_at_timestamp(XrTime timestamp, float out_matrix[16]) const;
-
     VkDevice         vk_device_       = VK_NULL_HANDLE;
     VkPhysicalDevice vk_physical_     = VK_NULL_HANDLE;
     VkQueue          vk_queue_        = VK_NULL_HANDLE;
@@ -167,11 +214,11 @@ private:
 
     // ---- Depth cache (written by Unity thread, read by threadloop) ----
     //
-    // acquire_depth_unity_thread() is called every DEPTH_ACQUIRE_EVERY
-    // LateUpdate() ticks (~10fps at 72Hz Unity) and stores frames in a
-    // ring buffer of DEPTH_CACHE_SIZE entries. _p_one_iteration() picks
-    // the entry whose timestamp is closest to each encoded RGB frame.
-    static constexpr int    DEPTH_ACQUIRE_EVERY = 7;  // ~10fps at 72Hz
+    // acquire_depth_unity_thread() is called every LateUpdate tick (~90Hz on
+    // Quest 3) but depth frames are only stored every DEPTH_ACQUIRE_EVERY calls
+    // (~10fps). _p_one_iteration() picks the entry whose timestamp is closest
+    // to each encoded RGB frame.
+    static constexpr int    DEPTH_ACQUIRE_EVERY = 9;  // ~10fps at 90Hz
     static constexpr size_t DEPTH_CACHE_SIZE    = 16; // ~1.6s of history
 
     struct depth_frame_data {
@@ -229,10 +276,9 @@ private:
     const std::shared_ptr<switchboard>                       switchboard_;
     switchboard::network_writer<data_format::semantic_frame> writer_;
     int32_t                                                  frame_number_ = 0;
-    float                                                    max_depth_m_;
+    float                                                    max_depth_m_  = 0.f;
 
     std::unique_ptr<ndk_encoder> encoder_;
-    int64_t                      clock_offset_ns_;
 };
 
 } // namespace ILLIXR

@@ -47,23 +47,24 @@ void xr_sensor_capture::set_unity_interfaces(IUnityInterfaces* interfaces) {
 // Render thread callback - fired via GL.IssuePluginEvent from C#.
 //
 // This runs on Unity's render thread where the Vulkan device is current and
-// safe to use. We use it to initialize Vulkan readback resources after the
-// xr_sensor_capture plugin has been loaded by ILLIXR. Two event IDs:
+// safe to use. Event IDs:
 //   EVENT_INIT   (0): acquire IUnityGraphicsVulkan and init_vulkan()
 //   EVENT_UNINIT (1): destroy_vulkan() and release interface
+//   EVENT_ACQUIRE(2): submit depth readback and release depth image
 // ---------------------------------------------------------------------------
 static constexpr int EVENT_INIT    = 0;
 static constexpr int EVENT_UNINIT  = 1;
-static constexpr int EVENT_ACQUIRE = 2; // run acquire_depth on render thread
+static constexpr int EVENT_ACQUIRE = 2;
 
 static void UNITY_INTERFACE_API on_render_event(int event_id) {
     if (event_id == EVENT_INIT) {
         if (ILLIXR::xr_sensor_capture::s_unity_interfaces_ == nullptr) {
-            __android_log_print(ANDROID_LOG_ERROR, "xr_sensor_capture", "on_render_event(INIT): s_unity_interfaces_ is null");
+            __android_log_print(ANDROID_LOG_ERROR, "xr_sensor_capture",
+                                "on_render_event(INIT): s_unity_interfaces_ is null");
             return;
         }
         ILLIXR::xr_sensor_capture::s_vk_interface_ =
-            ILLIXR::xr_sensor_capture::s_unity_interfaces_->Get<IUnityGraphicsVulkan>();
+                ILLIXR::xr_sensor_capture::s_unity_interfaces_->Get<IUnityGraphicsVulkan>();
         if (ILLIXR::xr_sensor_capture::s_vk_interface_ == nullptr) {
             __android_log_print(ANDROID_LOG_ERROR, "xr_sensor_capture",
                                 "on_render_event(INIT): IUnityGraphicsVulkan not available");
@@ -115,7 +116,7 @@ UNITY_INTERFACE_EXPORT UnityRenderingEvent UNITY_INTERFACE_API illixr_get_render
     return on_render_event;
 }
 
-extern "C" void UNITY_INTERFACE_API illixr_release_depth() {
+void UNITY_INTERFACE_API illixr_release_depth() {
     if (g_sensor_capture_instance != nullptr)
         g_sensor_capture_instance->release_depth_after_submit();
 }
@@ -131,26 +132,56 @@ static XrTime clock_boottime_xr() {
     return static_cast<XrTime>(static_cast<int64_t>(ts.tv_sec) * 1'000'000'000LL + ts.tv_nsec);
 }
 
+// Convert an XrPosef to a row-major 4x4 float matrix.
+static void pose_to_matrix(const XrPosef& pose, float out[16]) {
+    const float qx = pose.orientation.x;
+    const float qy = pose.orientation.y;
+    const float qz = pose.orientation.z;
+    const float qw = pose.orientation.w;
+    const float tx = pose.position.x;
+    const float ty = pose.position.y;
+    const float tz = pose.position.z;
+
+    out[0]  = 1.f - 2.f * (qy * qy + qz * qz);
+    out[1]  = 2.f * (qx * qy - qw * qz);
+    out[2]  = 2.f * (qx * qz + qw * qy);
+    out[3]  = tx;
+    out[4]  = 2.f * (qx * qy + qw * qz);
+    out[5]  = 1.f - 2.f * (qx * qx + qz * qz);
+    out[6]  = 2.f * (qy * qz - qw * qx);
+    out[7]  = ty;
+    out[8]  = 2.f * (qx * qz - qw * qy);
+    out[9]  = 2.f * (qy * qz + qw * qx);
+    out[10] = 1.f - 2.f * (qx * qx + qy * qy);
+    out[11] = tz;
+    out[12] = 0.f;
+    out[13] = 0.f;
+    out[14] = 0.f;
+    out[15] = 1.f;
+}
+
 // ---------------------------------------------------------------------------
 // Constructor / destructor
 // ---------------------------------------------------------------------------
 
 [[maybe_unused]] xr_sensor_capture::xr_sensor_capture(const std::string& name, phonebook* pb)
-    : threadloop{name, pb}
-    , switchboard_{phonebook_->lookup_impl<switchboard>()}
-    , writer_{switchboard_->get_network_writer<semantic_frame>("semantic_frame", {})} {
+        : threadloop{name, pb}
+        , switchboard_{phonebook_->lookup_impl<switchboard>()}
+        , writer_{switchboard_->get_network_writer<semantic_frame>("semantic_frame", {})} {
     uint8_t capture_fps = switchboard_->get_env_int("ILLIXR_CAPTURE_FPS", 2);
     int32_t bitrate_bps = switchboard_->get_env_int("ILLIXR_ENCODER_BITRATE_BPS", 5'000'000);
     max_depth_m_        = switchboard_->get_env_float("ILLIXR_CAPTURE_MAX_DEPTH", 0.f);
-    tick_interval_ns_   = static_cast<int64_t>(1'000'000'000 / capture_fps);
+    tick_interval_ns_   = static_cast<int64_t>(1'000'000'000LL / capture_fps);
 
     struct timespec mono{}, boot{};
     clock_gettime(CLOCK_MONOTONIC, &mono);
     clock_gettime(CLOCK_BOOTTIME, &boot);
     clock_offset_ns_ = (static_cast<int64_t>(boot.tv_sec) * 1'000'000'000LL + boot.tv_nsec) -
-        (static_cast<int64_t>(mono.tv_sec) * 1'000'000'000LL + mono.tv_nsec);
-    spdlog::get("illixr")->info("xr_sensor_capture init: fps={} bitrate={} iframe_sec={} max_depth={} ", capture_fps,
-                                bitrate_bps, max_depth_m_);
+                       (static_cast<int64_t>(mono.tv_sec) * 1'000'000'000LL + mono.tv_nsec);
+
+    spdlog::get("illixr")->info("xr_sensor_capture init: fps={} bitrate={} max_depth={}",
+                                capture_fps, bitrate_bps, max_depth_m_);
+
     // Use init_failed_ instead of throwing - throwing from a threadloop-derived
     // constructor triggers the threadloop destructor assertion because the
     // stoplight was never started. Degrade gracefully and no-op in _p_should_skip.
@@ -168,7 +199,8 @@ static XrTime clock_boottime_xr() {
         prov_ci.createFlags = 0;
         XrResult r          = xr_create_depth_provider_(xr_session_, &prov_ci, &depth_provider_);
         if (XR_FAILED(r)) {
-            spdlog::get("illixr")->error("xrCreateEnvironmentDepthProviderMETA failed: {}", static_cast<int>(r));
+            spdlog::get("illixr")->error("xrCreateEnvironmentDepthProviderMETA failed: {}",
+                                         static_cast<int>(r));
             depth_ext_available_ = false;
         } else {
             xr_start_depth_provider_(depth_provider_);
@@ -198,6 +230,7 @@ static XrTime clock_boottime_xr() {
     spdlog::get("illixr")->info("xr_sensor_capture: encoder target {}x{} "
                                 "(set ILLIXR_CAMERA_WIDTH/HEIGHT to override)",
                                 camera_w, camera_h);
+
     encoder_ = std::make_unique<ndk_encoder>(camera_w, camera_h, bitrate_bps, capture_fps);
     if (!encoder_->initialize(switchboard_->get_env_int("ILLIXR_ENCODER_IFRAME_SEC", 1))) {
         spdlog::get("illixr")->error("xr_sensor_capture: encoder init failed - plugin will no-op");
@@ -235,7 +268,8 @@ void xr_sensor_capture::release_depth_after_submit() {
     if (xr_release_depth_image_ != nullptr) {
         XrResult result = xr_release_depth_image_(depth_provider_);
         if (XR_FAILED(result)) {
-            spdlog::get("illixr")->warn("xrReleaseEnvironmentDepthImageMETA failed: {}", static_cast<int>(result));
+            spdlog::get("illixr")->warn("xrReleaseEnvironmentDepthImageMETA failed: {}",
+                                        static_cast<int>(result));
         }
     }
     needs_depth_release_ = false;
@@ -258,21 +292,25 @@ bool xr_sensor_capture::init_openxr() {
         xr_instance_ = reinterpret_cast<XrInstance>(std::stoull(inst_str));
         xr_session_  = reinterpret_cast<XrSession>(std::stoull(sess_str));
         owns_xr_     = false;
-        spdlog::get("illixr")->info("Reusing Unity XrInstance={} XrSession={}", reinterpret_cast<void*>(xr_instance_),
+        spdlog::get("illixr")->info("Reusing Unity XrInstance={} XrSession={}",
+                                    reinterpret_cast<void*>(xr_instance_),
                                     reinterpret_cast<void*>(xr_session_));
     } else {
-        spdlog::get("illixr")->error("ILLIXR_XR_INSTANCE / ILLIXR_XR_SESSION not set - "
-                                     "cannot create a second XrInstance on Quest 3. "
-                                     "Enable ILLIXRXrHandleProvider in OpenXR features.");
+        spdlog::get("illixr")->error("ILLIXR_XR_INSTANCE / ILLIXR_XR_SESSION not set.");
         return false;
     }
 
     XrReferenceSpaceCreateInfo space_ci{XR_TYPE_REFERENCE_SPACE_CREATE_INFO};
     space_ci.poseInReferenceSpace = {{0.f, 0.f, 0.f, 1.f}, {0.f, 0.f, 0.f}};
 
+    // VIEW space tracks the eye/head position. xrLocateSpace with VIEW space
+    // is only valid on Unity's main thread during an active XR frame - it is
+    // called exclusively from acquire_depth_unity_thread() which satisfies
+    // that constraint.
     space_ci.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_VIEW;
     xrCreateReferenceSpace(xr_session_, &space_ci, &head_space_);
 
+    // LOCAL space is the session origin reference frame.
     space_ci.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_LOCAL;
     xrCreateReferenceSpace(xr_session_, &space_ci, &local_space_);
 
@@ -283,19 +321,27 @@ bool xr_sensor_capture::init_openxr() {
     };
 
     bool ok = true;
-    ok &= load("xrCreateEnvironmentDepthProviderMETA", reinterpret_cast<PFN_xrVoidFunction*>(&xr_create_depth_provider_));
-    ok &= load("xrDestroyEnvironmentDepthProviderMETA", reinterpret_cast<PFN_xrVoidFunction*>(&xr_destroy_depth_provider_));
-    ok &= load("xrStartEnvironmentDepthProviderMETA", reinterpret_cast<PFN_xrVoidFunction*>(&xr_start_depth_provider_));
-    ok &= load("xrCreateEnvironmentDepthSwapchainMETA", reinterpret_cast<PFN_xrVoidFunction*>(&xr_create_depth_swapchain_));
-    ok &= load("xrDestroyEnvironmentDepthSwapchainMETA", reinterpret_cast<PFN_xrVoidFunction*>(&xr_destroy_depth_swapchain_));
-    ok &= load("xrEnumerateEnvironmentDepthSwapchainImagesMETA", reinterpret_cast<PFN_xrVoidFunction*>(&xr_enum_depth_images_));
-    ok &= load("xrGetEnvironmentDepthSwapchainStateMETA", reinterpret_cast<PFN_xrVoidFunction*>(&xr_get_depth_state_));
-    ok &= load("xrAcquireEnvironmentDepthImageMETA", reinterpret_cast<PFN_xrVoidFunction*>(&xr_acquire_depth_image_));
+    ok &= load("xrCreateEnvironmentDepthProviderMETA",
+               reinterpret_cast<PFN_xrVoidFunction*>(&xr_create_depth_provider_));
+    ok &= load("xrDestroyEnvironmentDepthProviderMETA",
+               reinterpret_cast<PFN_xrVoidFunction*>(&xr_destroy_depth_provider_));
+    ok &= load("xrStartEnvironmentDepthProviderMETA",
+               reinterpret_cast<PFN_xrVoidFunction*>(&xr_start_depth_provider_));
+    ok &= load("xrCreateEnvironmentDepthSwapchainMETA",
+               reinterpret_cast<PFN_xrVoidFunction*>(&xr_create_depth_swapchain_));
+    ok &= load("xrDestroyEnvironmentDepthSwapchainMETA",
+               reinterpret_cast<PFN_xrVoidFunction*>(&xr_destroy_depth_swapchain_));
+    ok &= load("xrEnumerateEnvironmentDepthSwapchainImagesMETA",
+               reinterpret_cast<PFN_xrVoidFunction*>(&xr_enum_depth_images_));
+    ok &= load("xrGetEnvironmentDepthSwapchainStateMETA",
+               reinterpret_cast<PFN_xrVoidFunction*>(&xr_get_depth_state_));
+    ok &= load("xrAcquireEnvironmentDepthImageMETA",
+               reinterpret_cast<PFN_xrVoidFunction*>(&xr_acquire_depth_image_));
 
     // xrReleaseEnvironmentDepthImageMETA is absent from the entry point map on
-    // some Quest 3 firmware versions. Treat as non-fatal - if unavailable, the
-    // runtime auto-releases on the next acquire call.
-    load("xrReleaseEnvironmentDepthImageMETA", reinterpret_cast<PFN_xrVoidFunction*>(&xr_release_depth_image_));
+    // some Quest 3 firmware versions. Treat as non-fatal.
+    load("xrReleaseEnvironmentDepthImageMETA",
+         reinterpret_cast<PFN_xrVoidFunction*>(&xr_release_depth_image_));
     if (xr_release_depth_image_ == nullptr) {
         spdlog::get("illixr")->warn("xrReleaseEnvironmentDepthImageMETA unavailable - "
                                     "relying on runtime auto-release");
@@ -392,7 +438,7 @@ bool xr_sensor_capture::init_vulkan() {
         return false;
     }
 
-    // Fence (signalled = true so first wait doesn't block)
+    // Fence starts signalled so the first vkWaitForFences returns immediately.
     VkFenceCreateInfo fence_ci{VK_STRUCTURE_TYPE_FENCE_CREATE_INFO};
     fence_ci.flags = VK_FENCE_CREATE_SIGNALED_BIT;
     if (vkCreateFence(vk_device_, &fence_ci, nullptr, &vk_fence_) != VK_SUCCESS) {
@@ -441,73 +487,102 @@ uint32_t xr_sensor_capture::find_memory_type(uint32_t type_filter, VkMemoryPrope
 }
 
 // ---------------------------------------------------------------------------
-// Pose lookup (RGB only - depth pose comes from XrEnvironmentDepthImageMETA)
+// Camera2 capture completed callback
+//
+// Fires on the Camera2 callback thread immediately after each sensor exposure.
+// Snapshots latest_head_pose_ (written by acquire_depth_unity_thread on Unity's
+// main thread) into capture_result_cache_ under its own mutex. This gives each
+// encoded frame the head pose that was current at sensor exposure time.
 // ---------------------------------------------------------------------------
 
-bool xr_sensor_capture::get_pose_at_timestamp(XrTime timestamp, float out_matrix[16]) const {
-    if (timestamp <= 0)
-        return false;
+static void on_capture_completed(void*                  ctx,
+                                 ACameraCaptureSession* /*session*/,
+                                 ACaptureRequest*       /*request*/,
+                                 const ACameraMetadata* /*result*/) {
+    auto* self = static_cast<xr_sensor_capture*>(ctx);
 
-    XrSpaceLocation location{XR_TYPE_SPACE_LOCATION};
-    XrResult        result = xrLocateSpace(head_space_, local_space_, timestamp, &location);
-    if (XR_FAILED(result)) {
-        spdlog::get("illixr")->warn("xrLocateSpace failed: {}", static_cast<int>(result));
-        return false;
+    // Snapshot the latest head pose sampled by acquire_depth_unity_thread().
+    // The mutex is held only for a 16-float memcpy so contention is negligible.
+    float pose[16]{};
+    bool  pose_valid = false;
+    {
+        std::lock_guard<std::mutex> lock(self->latest_head_pose_mutex_);
+        if (self->latest_head_pose_.valid) {
+            std::memcpy(pose, self->latest_head_pose_.pose, sizeof(pose));
+            pose_valid = true;
+        }
     }
 
-    const XrSpaceLocationFlags required = XR_SPACE_LOCATION_POSITION_VALID_BIT | XR_SPACE_LOCATION_ORIENTATION_VALID_BIT;
-    if ((location.locationFlags & required) != required) {
-        spdlog::get("illixr")->warn("xrLocateSpace pose not valid (flags=0x{})", static_cast<unsigned>(location.locationFlags));
-        return false;
+    if (!pose_valid) {
+        spdlog::get("illixr")->warn("[capture_cb] no head pose available yet - skipping");
+        return;
     }
 
-    spdlog::get("illixr")->debug("[xrLocateSpace] pose: {}, {}, {}, {}; {}, {}, {}", location.pose.orientation.x,
-                                 location.pose.orientation.y, location.pose.orientation.z, location.pose.orientation.w,
-                                 location.pose.position.x, location.pose.position.y, location.pose.position.z);
-    const float x  = location.pose.orientation.x;
-    const float y  = location.pose.orientation.y;
-    const float z  = location.pose.orientation.z;
-    const float w  = location.pose.orientation.w;
-    const float tx = location.pose.position.x;
-    const float ty = location.pose.position.y;
-    const float tz = location.pose.position.z;
+    {
+        std::lock_guard<std::mutex> lock(self->capture_result_mutex_);
+        auto& slot        = self->capture_result_cache_[self->capture_result_next_];
+        slot.capture_time = clock_boottime_xr();
+        slot.valid        = true;
+        std::memcpy(slot.pose, pose, sizeof(pose));
+        self->capture_result_next_ =
+                (self->capture_result_next_ + 1) % xr_sensor_capture::CAPTURE_RESULT_CACHE_SIZE;
+    }
+}
 
-    out_matrix[0] = 1.f - 2.f * (y * y + z * z);
-    out_matrix[1] = 2.f * (x * y - w * z);
-    out_matrix[2] = 2.f * (x * z + w * y);
-    out_matrix[3] = tx;
-
-    out_matrix[4] = 2.f * (x * y + w * z);
-    out_matrix[5] = 1.f - 2.f * (x * x + z * z);
-    out_matrix[6] = 2.f * (y * z - w * x);
-    out_matrix[7] = ty;
-
-    out_matrix[8]  = 2.f * (x * z - w * y);
-    out_matrix[9]  = 2.f * (y * z + w * x);
-    out_matrix[10] = 1.f - 2.f * (x * x + y * y);
-    out_matrix[11] = tz;
-
-    out_matrix[12] = 0.f;
-    out_matrix[13] = 0.f;
-    out_matrix[14] = 0.f;
-    out_matrix[15] = 1.f;
-
-    return true;
+static void on_capture_failed(void* /*ctx*/,
+                              ACameraCaptureSession* /*session*/,
+                              ACaptureRequest*       /*request*/,
+                              ACameraCaptureFailure*  failure) {
+    __android_log_print(ANDROID_LOG_WARN, "xr_sensor_capture",
+                        "Capture failed: reason=%d frameNumber=%" PRId64,
+                        failure->reason, failure->frameNumber);
 }
 
 // ---------------------------------------------------------------------------
 // Depth acquisition via XR_META_environment_depth
 //
-// acquire_depth_unity_thread() is called from Unity's Update() via
-// illixr_acquire_depth() in ILLIXRBridge. It runs on Unity's main thread
-// while Unity's XR frame is open (between Unity's xrBeginFrame/xrEndFrame),
-// which is the only valid window for xrAcquireEnvironmentDepthImageMETA.
-// Unity's GL context is current on this thread so no separate EGL context
-// is needed. The result is stored in depth_buffer_ under depth_mutex_ and
-// consumed by the threadloop via timestamp matching.
+// Called from Unity's LateUpdate() at ~90Hz on Unity's main thread during an
+// active XR frame. This is the only valid context for xrLocateSpace with VIEW
+// space on Quest 3.
+//
+// Two things happen on every call:
+//   1. Sample the current head pose via xrLocateSpace(VIEW, LOCAL) and store
+//      it in latest_head_pose_ for on_capture_completed() to snapshot.
+//   2. Every DEPTH_ACQUIRE_EVERY calls (~10fps), acquire a depth frame and
+//      queue it for Vulkan readback on the render thread.
 // ---------------------------------------------------------------------------
 
-void xr_sensor_capture::acquire_depth_unity_thread() {
+void xr_sensor_capture::acquire_depth_unity_thread(int64_t predicted_display_time_ns) {
+    // ---- 1. Sample head pose (every call, 90Hz) ----
+    // VIEW space is valid here because we are on Unity's main thread during
+    // an active XR frame (between xrBeginFrame and xrEndFrame).
+    const XrTime frame_time = static_cast<XrTime>(predicted_display_time_ns);
+    {
+        // use xr_time instead of clock_boottime_xr() for xrLocateSpace
+        XrSpaceLocation loc{XR_TYPE_SPACE_LOCATION};
+        const XrSpaceLocationFlags required =
+                XR_SPACE_LOCATION_POSITION_VALID_BIT | XR_SPACE_LOCATION_ORIENTATION_VALID_BIT;
+        XrResult result = xrLocateSpace(head_space_, local_space_, frame_time, &loc);
+        if (!XR_FAILED(result) && (loc.locationFlags & required) == required) {
+            spdlog::get("illixr")->info(
+                    "[head_pose] pos=({:.4f},{:.4f},{:.4f}) orient=({:.4f},{:.4f},{:.4f},{:.4f}) flags=0x{:X}",
+                    loc.pose.position.x, loc.pose.position.y, loc.pose.position.z,
+                    loc.pose.orientation.x, loc.pose.orientation.y,
+                    loc.pose.orientation.z, loc.pose.orientation.w,
+                    static_cast<unsigned>(loc.locationFlags));
+            float mat[16]{};
+            pose_to_matrix(loc.pose, mat);
+            std::lock_guard<std::mutex> lock(latest_head_pose_mutex_);
+            std::memcpy(latest_head_pose_.pose, mat, sizeof(mat));
+            latest_head_pose_.valid = true;
+        } else {
+            spdlog::get("illixr")->debug(
+                    "[head_pose] xrLocateSpace failed or invalid (flags=0x{:X})",
+                    static_cast<unsigned>(loc.locationFlags));
+        }
+    }
+
+    // ---- 2. Depth acquisition (throttled to ~10fps) ----
     if (!depth_ext_available_ || depth_provider_ == XR_NULL_HANDLE)
         return;
 
@@ -517,7 +592,8 @@ void xr_sensor_capture::acquire_depth_unity_thread() {
         sc_ci.createFlags = 0;
         XrResult result   = xr_create_depth_swapchain_(depth_provider_, &sc_ci, &depth_swapchain_);
         if (XR_FAILED(result)) {
-            spdlog::get("illixr")->error("xrCreateEnvironmentDepthSwapchainMETA failed: {}", static_cast<int>(result));
+            spdlog::get("illixr")->error("xrCreateEnvironmentDepthSwapchainMETA failed: {}",
+                                         static_cast<int>(result));
             return;
         }
 
@@ -546,20 +622,19 @@ void xr_sensor_capture::acquire_depth_unity_thread() {
         // Query the actual Vulkan format of the depth image so we know
         // how to interpret the raw bytes after readback.
         if (img_count > 0 && vk_device_ != VK_NULL_HANDLE) {
-            VkImageCreateInfo dummy{VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO};
             // vkGetImageMemoryRequirements2 doesn't give us format, but we
             // can infer it from VkPhysicalDeviceImageFormatProperties2.
             // Simpler: check all plausible R16 formats against the image.
             // The most direct path is to log the raw bytes of the first few
             // pixels and let the format be determined from the data shape.
             // For now, log the image handle so we know enumeration succeeded.
-            spdlog::get("illixr")->info("Depth VkImage[0] = {:p} - check vk_format in acquire log",
+            spdlog::get("illixr")->info("Depth VkImage[0] = {:p}",
                                         static_cast<void*>(depth_vk_images_[0]));
         }
 
-        // Allocate staging buffer now that we know dimensions.
-        // R16F = 2 bytes/pixel.
-        vk_staging_size_ = static_cast<VkDeviceSize>(depth_swapchain_width_ * depth_swapchain_height_ * 2);
+        // Allocate staging buffer. R16F = 2 bytes/pixel.
+        vk_staging_size_ =
+                static_cast<VkDeviceSize>(depth_swapchain_width_ * depth_swapchain_height_ * 2);
 
         VkBufferCreateInfo buf_ci{VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO};
         buf_ci.size        = vk_staging_size_;
@@ -573,7 +648,8 @@ void xr_sensor_capture::acquire_depth_unity_thread() {
         VkMemoryAllocateInfo alloc_info{VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO};
         alloc_info.allocationSize  = mem_req.size;
         alloc_info.memoryTypeIndex = find_memory_type(
-            mem_req.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+                mem_req.memoryTypeBits,
+                VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
         vkAllocateMemory(vk_device_, &alloc_info, nullptr, &vk_staging_mem_);
         vkBindBufferMemory(vk_device_, vk_staging_buf_, vk_staging_mem_, 0);
@@ -598,7 +674,8 @@ void xr_sensor_capture::acquire_depth_unity_thread() {
         // xrBeginFrame/xrEndFrame - happens on some Unity frames (GC, loading,
         // etc.) where the XR frame is not open during LateUpdate. Silent skip.
         if (static_cast<int>(result) != -37) {
-            spdlog::get("illixr")->warn("xrAcquireEnvironmentDepthImageMETA failed: {}", static_cast<int>(result));
+            spdlog::get("illixr")->warn("xrAcquireEnvironmentDepthImageMETA failed: {}",
+                                        static_cast<int>(result));
         }
         return;
     }
@@ -626,32 +703,8 @@ void xr_sensor_capture::acquire_depth_unity_thread() {
     intr.width  = depth_swapchain_width_;
     intr.height = depth_swapchain_height_;
 
-    // Depth pose from acquire result - no xrLocateSpace needed.
-    float       pose_mat[16]{};
-    const float qx = view.pose.orientation.x;
-    const float qy = view.pose.orientation.y;
-    const float qz = view.pose.orientation.z;
-    const float qw = view.pose.orientation.w;
-    const float tx = view.pose.position.x;
-    const float ty = view.pose.position.y;
-    const float tz = view.pose.position.z;
-
-    pose_mat[0]  = 1.f - 2.f * (qy * qy + qz * qz);
-    pose_mat[1]  = 2.f * (qx * qy - qw * qz);
-    pose_mat[2]  = 2.f * (qx * qz + qw * qy);
-    pose_mat[3]  = tx;
-    pose_mat[4]  = 2.f * (qx * qy + qw * qz);
-    pose_mat[5]  = 1.f - 2.f * (qx * qx + qz * qz);
-    pose_mat[6]  = 2.f * (qy * qz - qw * qx);
-    pose_mat[7]  = ty;
-    pose_mat[8]  = 2.f * (qx * qz - qw * qy);
-    pose_mat[9]  = 2.f * (qy * qz + qw * qx);
-    pose_mat[10] = 1.f - 2.f * (qx * qx + qy * qy);
-    pose_mat[11] = tz;
-    pose_mat[12] = 0.f;
-    pose_mat[13] = 0.f;
-    pose_mat[14] = 0.f;
-    pose_mat[15] = 1.f;
+    float pose_mat[16]{};
+    pose_to_matrix(view.pose, pose_mat);
 
     // Store readback parameters for submit_depth_readback() which runs on
     // the render thread via GL.IssuePluginEvent(EVENT_ACQUIRE). The Vulkan
@@ -702,16 +755,10 @@ void xr_sensor_capture::submit_depth_readback() {
     begin_info.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
     vkBeginCommandBuffer(vk_cmd_buf_, &begin_info);
 
-    // Transition: current layout -> TRANSFER_SRC_OPTIMAL.
-    // OpenXR external images from XR_META_environment_depth are delivered in
-    // VK_IMAGE_LAYOUT_GENERAL (the OpenXR spec requires external images to
-    // support GENERAL layout). Using SHADER_READ_ONLY_OPTIMAL as oldLayout
-    // produces incorrect results when the actual layout is GENERAL.
-    // srcAccessMask covers both shader reads and color attachment writes since
-    // we don't know exactly which pipeline stage last touched the image.
+    // Transition: GENERAL -> TRANSFER_SRC_OPTIMAL
     VkImageMemoryBarrier barrier_to_src{VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER};
-    barrier_to_src.srcAccessMask = VK_ACCESS_SHADER_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT |
-        VK_ACCESS_MEMORY_READ_BIT | VK_ACCESS_MEMORY_WRITE_BIT;
+    barrier_to_src.srcAccessMask       = VK_ACCESS_SHADER_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT |
+                                         VK_ACCESS_MEMORY_READ_BIT | VK_ACCESS_MEMORY_WRITE_BIT;
     barrier_to_src.dstAccessMask       = VK_ACCESS_TRANSFER_READ_BIT;
     barrier_to_src.oldLayout           = VK_IMAGE_LAYOUT_GENERAL;
     barrier_to_src.newLayout           = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
@@ -719,21 +766,22 @@ void xr_sensor_capture::submit_depth_readback() {
     barrier_to_src.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
     barrier_to_src.image               = src_image;
     barrier_to_src.subresourceRange    = {VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1};
-    vkCmdPipelineBarrier(vk_cmd_buf_, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0,
-                         nullptr, 1, &barrier_to_src);
+    vkCmdPipelineBarrier(vk_cmd_buf_,
+                         VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT,
+                         0, 0, nullptr, 0, nullptr, 1, &barrier_to_src);
 
     // Copy image to buffer - R16F row-major, top-down.
     VkBufferImageCopy copy_region{};
     copy_region.bufferOffset      = 0;
-    copy_region.bufferRowLength   = 0; // tightly packed
+    copy_region.bufferRowLength   = 0;
     copy_region.bufferImageHeight = 0;
     copy_region.imageSubresource  = {VK_IMAGE_ASPECT_COLOR_BIT, 0, 0, 1};
     copy_region.imageOffset       = {0, 0, 0};
     copy_region.imageExtent       = {static_cast<uint32_t>(w), static_cast<uint32_t>(h), 1};
-    vkCmdCopyImageToBuffer(vk_cmd_buf_, src_image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, vk_staging_buf_, 1, &copy_region);
+    vkCmdCopyImageToBuffer(vk_cmd_buf_, src_image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                           vk_staging_buf_, 1, &copy_region);
 
     // Transition back: TRANSFER_SRC_OPTIMAL -> GENERAL
-    // Return to GENERAL so the OpenXR runtime can use it again.
     VkImageMemoryBarrier barrier_to_read{VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER};
     barrier_to_read.srcAccessMask       = VK_ACCESS_TRANSFER_READ_BIT;
     barrier_to_read.dstAccessMask       = VK_ACCESS_MEMORY_READ_BIT | VK_ACCESS_MEMORY_WRITE_BIT;
@@ -743,8 +791,9 @@ void xr_sensor_capture::submit_depth_readback() {
     barrier_to_read.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
     barrier_to_read.image               = src_image;
     barrier_to_read.subresourceRange    = {VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1};
-    vkCmdPipelineBarrier(vk_cmd_buf_, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, 0, 0, nullptr, 0,
-                         nullptr, 1, &barrier_to_read);
+    vkCmdPipelineBarrier(vk_cmd_buf_,
+                         VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT,
+                         0, 0, nullptr, 0, nullptr, 1, &barrier_to_read);
 
     vkEndCommandBuffer(vk_cmd_buf_);
 
@@ -764,48 +813,44 @@ void xr_sensor_capture::submit_depth_readback() {
     }
     vkWaitForFences(vk_device_, 1, &vk_fence_, VK_TRUE, UINT64_MAX);
 
-    // Map staging buffer and copy to CPU vector - already top-down from Vulkan.
+    // Map staging buffer, flip vertically while copying.
+    // The Vulkan image is bottom-up (OpenGL convention); server expects top-down.
     void* mapped = nullptr;
     vkMapMemory(vk_device_, vk_staging_mem_, 0, vk_staging_size_, 0, &mapped);
-    vkUnmapMemory(vk_device_, vk_staging_mem_);
 
     // Flip vertically — the Vulkan image is bottom-up from the OpenXR
     // depth provider, matching OpenGL convention. The server expects
     // top-down to match the RGB image orientation.
     std::vector<uint8_t> r16(static_cast<size_t>(w * h * 2));
     const auto*          src       = static_cast<const uint8_t*>(mapped);
-    const size_t         row_bytes = static_cast<size_t>(w * 2); // 2 bytes per R16F pixel
+    const size_t         row_bytes = static_cast<size_t>(w * 2);
     for (int r = 0; r < h; ++r) {
         const uint8_t* src_row = src + (h - 1 - r) * row_bytes;
         uint8_t*       dst_row = r16.data() + r * row_bytes;
         std::memcpy(dst_row, src_row, row_bytes);
     }
+
     vkUnmapMemory(vk_device_, vk_staging_mem_);
 
-    // Log the first 4 pixels as raw uint16 and float16 so we can identify
-    // the actual format from the data. Logged once then suppressed.
+    // Log the first 4 pixels once to identify the actual pixel format.
     static bool format_logged = false;
     if (!format_logged && r16.size() >= 8) {
         format_logged       = true;
         const uint16_t* u16 = reinterpret_cast<const uint16_t*>(r16.data());
-        // Interpret as both uint16 and float16 so the format is identifiable.
-        // R16_SFLOAT:  values ~0.0-1.0 when cast to float16
-        // R16_UNORM:   values 0-65535 as uint16, divide by 65535 for [0,1]
-        // R16_SNORM:   values -32768-32767, divide by 32767 for [-1,1]
-        spdlog::get("illixr")->info("Depth pixel format probe - raw uint16: [{}, {}, {}, {}] "
-                                    "nearZ={} farZ={}",
-                                    u16[0], u16[1], u16[2], u16[3], rb.near_z, rb.far_z);
+        spdlog::get("illixr")->info(
+                "Depth pixel format probe - raw uint16: [{}, {}, {}, {}] nearZ={} farZ={}",
+                u16[0], u16[1], u16[2], u16[3], rb.near_z, rb.far_z);
     }
-
+    const uint16_t* u16 = reinterpret_cast<const uint16_t*>(r16.data());
     // Throttle: only store every DEPTH_ACQUIRE_EVERY LateUpdate ticks.
     // This gives ~10fps depth at 72Hz Unity, providing a spread of
     // timestamps to match against 2fps RGB frames.
     {
         std::lock_guard<std::mutex> lock(depth_mutex_);
 
-        if (rb.near_z <= 0.f) {
-            spdlog::get("illixr")->warn("submit_depth_readback: nearZ={} is zero or negative", rb.near_z);
-        }
+        if (rb.near_z <= 0.f)
+            spdlog::get("illixr")->warn("submit_depth_readback: nearZ={} is zero or negative",
+                                        rb.near_z);
 
         depth_acquire_counter_++;
         if (depth_acquire_counter_ >= DEPTH_ACQUIRE_EVERY) {
@@ -819,9 +864,10 @@ void xr_sensor_capture::submit_depth_readback() {
             std::memcpy(slot.pose, rb.pose, sizeof(rb.pose));
             slot.valid        = true;
             depth_cache_next_ = (depth_cache_next_ + 1) % DEPTH_CACHE_SIZE;
-            spdlog::get("illixr")->debug("[depth] cached slot={} ts={} near_z={:.3f}",
-                                         (depth_cache_next_ + DEPTH_CACHE_SIZE - 1) % DEPTH_CACHE_SIZE, rb.timestamp,
-                                         rb.near_z);
+            spdlog::get("illixr")->debug(
+                    "[depth] cached slot={} ts={} near_z={:.3f}",
+                    (depth_cache_next_ + DEPTH_CACHE_SIZE - 1) % DEPTH_CACHE_SIZE,
+                    rb.timestamp, rb.near_z);
         }
     }
 }
@@ -833,7 +879,8 @@ const xr_sensor_capture::depth_frame_data* xr_sensor_capture::find_closest_depth
     for (const auto& entry : depth_cache_) {
         if (!entry.valid)
             continue;
-        int64_t dt = std::abs(static_cast<int64_t>(rgb_ts) - static_cast<int64_t>(entry.timestamp));
+        int64_t dt = std::abs(static_cast<int64_t>(rgb_ts) -
+                              static_cast<int64_t>(entry.timestamp));
         if (dt < best_dt) {
             best_dt = dt;
             best    = &entry;
@@ -842,10 +889,9 @@ const xr_sensor_capture::depth_frame_data* xr_sensor_capture::find_closest_depth
     return best;
 }
 
-// C linkage so ILLIXRBridge can call this from Unity's Update() thread.
-extern "C" void illixr_acquire_depth() {
+extern "C" void illixr_acquire_depth(int64_t predicted_display_time_ns) {
     if (g_sensor_capture_instance != nullptr)
-        g_sensor_capture_instance->acquire_depth_unity_thread();
+        g_sensor_capture_instance->acquire_depth_unity_thread(predicted_display_time_ns);
 }
 
 // ---------------------------------------------------------------------------
@@ -853,11 +899,13 @@ extern "C" void illixr_acquire_depth() {
 // ---------------------------------------------------------------------------
 
 static void on_camera_disconnected(void*, ACameraDevice* dev) {
-    __android_log_print(ANDROID_LOG_ERROR, "xr_sensor_capture", "Camera disconnected: %p", static_cast<void*>(dev));
+    __android_log_print(ANDROID_LOG_ERROR, "xr_sensor_capture",
+                        "Camera disconnected: %p", static_cast<void*>(dev));
 }
 
 static void on_camera_error(void*, ACameraDevice* dev, int error) {
-    __android_log_print(ANDROID_LOG_ERROR, "xr_sensor_capture", "Camera error %d on %p", error, static_cast<void*>(dev));
+    __android_log_print(ANDROID_LOG_ERROR, "xr_sensor_capture",
+                        "Camera error %d on %p", error, static_cast<void*>(dev));
 }
 
 static void on_session_active(void*, ACameraCaptureSession*) {
@@ -880,7 +928,8 @@ bool xr_sensor_capture::init_camera() {
     }
 
     ACameraIdList* id_list = nullptr;
-    if (ACameraManager_getCameraIdList(camera_mgr_, &id_list) != ACAMERA_OK || id_list == nullptr || id_list->numCameras == 0) {
+    if (ACameraManager_getCameraIdList(camera_mgr_, &id_list) != ACAMERA_OK ||
+        id_list == nullptr || id_list->numCameras == 0) {
         spdlog::get("illixr")->error("No cameras found");
         return false;
     }
@@ -897,26 +946,24 @@ bool xr_sensor_capture::init_camera() {
     }
     spdlog::get("illixr")->info("Selected camera id='{}'", selected_id);
 
-    if (selected_id == nullptr) {
-        spdlog::get("illixr")->warn("No back-facing camera; falling back to camera 0");
-        selected_id = id_list->cameraIds[2];
-    }
-    // Log all cameras and their facing values for diagnosis
+    // Log all cameras and their facing values for diagnosis.
     for (int i = 0; i < id_list->numCameras; ++i) {
-        ACameraMetadata* meta = nullptr;
-        ACameraManager_getCameraCharacteristics(camera_mgr_, id_list->cameraIds[i], &meta);
+        ACameraMetadata*            meta = nullptr;
         ACameraMetadata_const_entry entry{};
+        ACameraManager_getCameraCharacteristics(camera_mgr_, id_list->cameraIds[i], &meta);
         ACameraMetadata_getConstEntry(meta, ACAMERA_LENS_FACING, &entry);
-        spdlog::get("illixr")->info("Camera[{}] id='{}' facing={}", i, id_list->cameraIds[i], (int) entry.data.u8[0]);
+        spdlog::get("illixr")->info("Camera[{}] id='{}' facing={}",
+                                    i, id_list->cameraIds[i], (int) entry.data.u8[0]);
         ACameraMetadata_free(meta);
     }
 
-    // Cache intrinsics.
+    // Cache RGB intrinsics from camera characteristics.
     ACameraMetadata* meta = nullptr;
     ACameraManager_getCameraCharacteristics(camera_mgr_, selected_id, &meta);
     if (meta != nullptr) {
         ACameraMetadata_const_entry intr{};
-        if (ACameraMetadata_getConstEntry(meta, ACAMERA_LENS_INTRINSIC_CALIBRATION, &intr) == ACAMERA_OK && intr.count >= 5) {
+        if (ACameraMetadata_getConstEntry(meta, ACAMERA_LENS_INTRINSIC_CALIBRATION, &intr) == ACAMERA_OK
+            && intr.count >= 5) {
             rgb_intrinsics_.fx    = intr.data.f[0];
             rgb_intrinsics_.fy    = intr.data.f[1];
             rgb_intrinsics_.cx    = intr.data.f[2];
@@ -929,6 +976,7 @@ bool xr_sensor_capture::init_camera() {
     rgb_intrinsics_.height = encoder_->height_;
 
     ACameraDevice_StateCallbacks device_cbs{};
+    device_cbs.context        = nullptr;
     device_cbs.onDisconnected = on_camera_disconnected;
     device_cbs.onError        = on_camera_error;
     if (ACameraManager_openCamera(camera_mgr_, selected_id, &device_cbs, &camera_device_) != ACAMERA_OK) {
@@ -943,20 +991,20 @@ bool xr_sensor_capture::init_camera() {
     ACaptureSessionOutputContainer_add(session_output_container_, session_output_);
     ACameraOutputTarget_create(encoder_->get_window(), &camera_output_target_);
 
-    // Log supported output sizes for the encoder surface format (PRIVATE/implementation-defined).
-    // This helps diagnose encoder dimension mismatches - if enc_width_ x enc_height_ is not
-    // in this list, Camera2 will silently crop/scale and the encoder may produce black frames.
+    // Log supported output sizes to help diagnose encoder dimension mismatches.
     {
         ACameraMetadata* char_meta = nullptr;
         ACameraManager_getCameraCharacteristics(camera_mgr_, selected_id, &char_meta);
         if (char_meta != nullptr) {
             ACameraMetadata_const_entry sizes{};
-            if (ACameraMetadata_getConstEntry(char_meta, ACAMERA_SCALER_AVAILABLE_STREAM_CONFIGURATIONS, &sizes) ==
-                ACAMERA_OK) {
+            if (ACameraMetadata_getConstEntry(
+                    char_meta, ACAMERA_SCALER_AVAILABLE_STREAM_CONFIGURATIONS, &sizes) == ACAMERA_OK) {
                 spdlog::get("illixr")->info("Camera2 supported output sizes (format/w/h/input):");
                 for (uint32_t i = 0; i + 3 < sizes.count; i += 4) {
-                    if (sizes.data.i32[i + 3] == 0) { // output streams only
-                        spdlog::get("illixr")->info("  format=0x{:X} {}x{}", sizes.data.i32[i], sizes.data.i32[i + 1],
+                    if (sizes.data.i32[i + 3] == 0) {
+                        spdlog::get("illixr")->info("  format=0x{:X} {}x{}",
+                                                    sizes.data.i32[i],
+                                                    sizes.data.i32[i + 1],
                                                     sizes.data.i32[i + 2]);
                     }
                 }
@@ -968,26 +1016,35 @@ bool xr_sensor_capture::init_camera() {
     ACameraDevice_createCaptureRequest(camera_device_, TEMPLATE_PREVIEW, &capture_request_);
     ACaptureRequest_addTarget(capture_request_, camera_output_target_);
 
-    // Throttle Camera2 to the configured capture rate. Without this the sensor
-    // runs at its maximum rate (~30fps) regardless of tick_interval_ns_.
-    // Setting both min and max to capture_fps_ locks the frame rate.
-    const int32_t fps_range[2] = {static_cast<int32_t>(encoder_->capture_fps_), static_cast<int32_t>(encoder_->capture_fps_)};
+    // Lock Camera2 to the configured capture rate.
+    const int32_t fps_range[2] = {static_cast<int32_t>(encoder_->capture_fps_),
+                                  static_cast<int32_t>(encoder_->capture_fps_)};
     ACaptureRequest_setEntry_i32(capture_request_, ACAMERA_CONTROL_AE_TARGET_FPS_RANGE, 2, fps_range);
     spdlog::get("illixr")->info("Camera2 FPS range set to [{}, {}]", fps_range[0], fps_range[1]);
 
     ACameraCaptureSession_stateCallbacks session_cbs{};
+    session_cbs.context  = nullptr;
     session_cbs.onActive = on_session_active;
     session_cbs.onReady  = on_session_ready;
     session_cbs.onClosed = on_session_closed;
 
-    if (ACameraDevice_createCaptureSession(camera_device_, session_output_container_, &session_cbs, &capture_session_) !=
-        ACAMERA_OK) {
+    if (ACameraDevice_createCaptureSession(camera_device_, session_output_container_,
+                                           &session_cbs, &capture_session_) != ACAMERA_OK) {
         spdlog::get("illixr")->error("ACameraDevice_createCaptureSession failed");
         return false;
     }
 
-    ACameraCaptureSession_setRepeatingRequest(capture_session_, nullptr, 1, &capture_request_, nullptr);
-    spdlog::get("illixr")->info("Camera2 -> encoder surface: {}x{}", encoder_->width_, encoder_->height_);
+    // Register per-frame callback. on_capture_completed snapshots latest_head_pose_
+    // at sensor exposure time - no xrLocateSpace call happens here.
+    ACameraCaptureSession_captureCallbacks capture_cbs{};
+    capture_cbs.context            = this;
+    capture_cbs.onCaptureCompleted  = on_capture_completed;
+    capture_cbs.onCaptureFailed     = on_capture_failed;
+
+    ACameraCaptureSession_setRepeatingRequest(capture_session_, &capture_cbs,
+                                              1, &capture_request_, nullptr);
+    spdlog::get("illixr")->info("Camera2 -> encoder surface: {}x{}",
+                                encoder_->width_, encoder_->height_);
     return true;
 }
 
@@ -1041,11 +1098,29 @@ void xr_sensor_capture::_p_one_iteration() {
     // ---- Drain encoder output (RGB) ----
     encoder_->drain_encoder_output(clock_offset_ns_);
 
-    // ---- Publish one semantic_data per pending encoded RGB frame ----
+    // ---- Publish one semantic_frame per pending encoded RGB frame ----
     for (auto& rgb : encoder_->pending_frames_) {
+        // Use the most recent capture result pose. on_capture_completed()
+        // snapshots latest_head_pose_ (sampled at 90Hz from Unity's main
+        // thread) at the moment of each sensor exposure, so this pose is
+        // accurate to within one Unity frame (~11ms at 90Hz).
         float rgb_matrix[16]{};
-        if (!get_pose_at_timestamp(rgb.timestamp, rgb_matrix)) {
-            spdlog::get("illixr")->warn("[frame={}] RGB pose lookup failed, dropping", frame_number_);
+        bool  have_pose = false;
+        {
+            std::lock_guard<std::mutex> lock(capture_result_mutex_);
+            XrTime best_time = 0;
+            for (const auto& e : capture_result_cache_) {
+                if (e.valid && e.capture_time > best_time) {
+                    best_time = e.capture_time;
+                    std::memcpy(rgb_matrix, e.pose, sizeof(rgb_matrix));
+                    have_pose = true;
+                }
+            }
+        }
+
+        if (!have_pose) {
+            spdlog::get("illixr")->warn(
+                    "[frame={}] no capture result pose yet, dropping", frame_number_);
             frame_number_++;
             continue;
         }
@@ -1058,14 +1133,17 @@ void xr_sensor_capture::_p_one_iteration() {
         }
 
         if (depth_snap == nullptr) {
-            spdlog::get("illixr")->warn("[frame={}] No depth in cache yet, dropping", frame_number_);
+            spdlog::get("illixr")->warn("[frame={}] No depth in cache yet, dropping",
+                                        frame_number_);
             frame_number_++;
             continue;
         }
 
-        const int64_t delta_ns = std::abs(static_cast<int64_t>(rgb.timestamp) - static_cast<int64_t>(depth_snap->timestamp));
-
-        spdlog::get("illixr")->debug("[frame={}] closest depth delta={}ms", frame_number_, delta_ns / 1'000'000LL);
+        const int64_t delta_ns =
+                std::abs(static_cast<int64_t>(rgb.timestamp) -
+                         static_cast<int64_t>(depth_snap->timestamp));
+        spdlog::get("illixr")->debug("[frame={}] closest depth delta={}ms",
+                                     frame_number_, delta_ns / 1'000'000LL);
 
         semantic_frame frame{};
         frame.frame_number     = frame_number_++;
