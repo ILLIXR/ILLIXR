@@ -1,15 +1,15 @@
 #pragma once
 #ifdef USING_OPENXR
-    #include "illixr/data_format/poses/pose_base.hpp"
-    #include "illixr/switchboard.hpp"
+#    include "illixr/data_format/poses/pose_base.hpp"
+#    include "illixr/switchboard.hpp"
 
-    #include <map>
+#    include <map>
 
-    #ifdef ENABLE_MONADO
-        #define INTERACTION_POSE_TYPE xrt_pose
-    #else
-        #define INTERACTION_POSE_TYPE XrPosef
-    #endif
+#    ifdef ENABLE_MONADO
+#        define INTERACTION_POSE_TYPE xrt_pose
+#    else
+#        define INTERACTION_POSE_TYPE XrPosef
+#    endif
 namespace ILLIXR::data_format::pose {
 
 /**
@@ -89,7 +89,7 @@ struct hand_interaction_pose : xrt_space_relation {
         pose = in_pose;
     }
 
-    #ifndef ENABLE_MONADO
+#    ifndef ENABLE_MONADO
 
     /**
      * @brief Construct from Monado based components
@@ -122,8 +122,8 @@ struct hand_interaction_pose : xrt_space_relation {
         set_flags(location.locationFlags);
         predicted_time = p_time;
     }
-    #endif
-    [[maybe_unused]] bool valid() const {
+#    endif
+    [[maybe_unused]] [[nodiscard]] bool valid() const {
         return (relation_flags & XRT_SPACE_RELATION_POSITION_VALID_BIT) != 0u &&
             (relation_flags & XRT_SPACE_RELATION_ORIENTATION_VALID_BIT) != 0u;
     }
@@ -172,11 +172,11 @@ struct hand_interaction_poses {
      * @param type The interaction pose type to access
      * @return Const reference to the corresponding @c hand_interaction_pose_data
      */
-    const hand_interaction_pose& at(interaction_pose_type type) const {
+    [[nodiscard]] const hand_interaction_pose& at(interaction_pose_type type) const {
         return poses.at(type);
     }
 
-    bool is_valid() const {
+    [[nodiscard]] bool is_valid() const {
         return poses.at(AIM).valid() || poses.at(GRIP).valid() || poses.at(PINCH).valid() || poses.at(POKE).valid();
     }
 };
@@ -204,7 +204,7 @@ struct hand_interaction_poses_pair : public switchboard::event {
         : hands{std::move(hands_)}
         , sensor_time{sensor_time_} { }
 
-    bool is_valid() const {
+    [[nodiscard]] bool is_valid() const {
         return hands.at(LEFT).is_valid() || hands.at(RIGHT).is_valid();
     }
 

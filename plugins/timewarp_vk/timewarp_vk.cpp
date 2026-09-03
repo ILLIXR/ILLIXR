@@ -7,6 +7,8 @@
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #define GLM_ENABLE_EXPERIMENTAL
+#include <algorithm>
+#include <cmath>
 #include <future>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -167,6 +169,38 @@ void timewarp_vk::update_uniforms(const BUFFER_TYPE& render_pose) {
     pose::head_pose_type latest_pose = disable_warp_
         ? render_pose.pose
         : (next_vsync == nullptr ? pose_prediction_->get_fast_pose().pose : pose_prediction_->get_fast_pose(**next_vsync).pose);
+
+    static unsigned long long tw_pose_count = 0;
+    ++tw_pose_count;
+
+    const Eigen::Vector3f pos_delta = latest_pose.position - render_pose.pose.position;
+    Eigen::Quaternionf    render_q  = render_pose.pose.orientation.normalized();
+    Eigen::Quaternionf    latest_q  = latest_pose.orientation.normalized();
+    const float           quat_dot  = std::clamp(std::abs(render_q.dot(latest_q)), 0.0f, 1.0f);
+    const float           angle_deg = 2.0f * std::acos(quat_dot) * 180.0f / static_cast<float>(M_PI);
+    const long long       render_sensor_ns =
+        std::chrono::duration_cast<std::chrono::nanoseconds>(render_pose.pose.sensor_time.time_since_epoch()).count();
+    const long long latest_sensor_ns =
+        std::chrono::duration_cast<std::chrono::nanoseconds>(latest_pose.sensor_time.time_since_epoch()).count();
+    const long long predict_computed_ns =
+        std::chrono::duration_cast<std::chrono::nanoseconds>(render_pose.predict_computed_time.time_since_epoch()).count();
+    const long long predict_target_ns =
+        std::chrono::duration_cast<std::chrono::nanoseconds>(render_pose.predict_target_time.time_since_epoch()).count();
+    const long long vsync_ns = next_vsync == nullptr
+        ? -1
+        : std::chrono::duration_cast<std::chrono::nanoseconds>((**next_vsync).time_since_epoch()).count();
+
+    printf("[TW_POSE] count=%llu disable_warp=%d render_sensor_ns=%lld latest_sensor_ns=%lld "
+           "predict_computed_ns=%lld predict_target_ns=%lld vsync_ns=%lld "
+           "render_pos=(%.6f,%.6f,%.6f) latest_pos=(%.6f,%.6f,%.6f) "
+           "dpos=(%.6f,%.6f,%.6f) dpos_norm=%.6f "
+           "render_q_xyzw=(%.6f,%.6f,%.6f,%.6f) latest_q_xyzw=(%.6f,%.6f,%.6f,%.6f) "
+           "angle_deg=%.6f\n",
+           tw_pose_count, disable_warp_ ? 1 : 0, render_sensor_ns, latest_sensor_ns, predict_computed_ns, predict_target_ns,
+           vsync_ns, render_pose.pose.position.x(), render_pose.pose.position.y(), render_pose.pose.position.z(),
+           latest_pose.position.x(), latest_pose.position.y(), latest_pose.position.z(), pos_delta.x(), pos_delta.y(),
+           pos_delta.z(), pos_delta.norm(), render_q.x(), render_q.y(), render_q.z(), render_q.w(), latest_q.x(), latest_q.y(),
+           latest_q.z(), latest_q.w(), angle_deg);
 
     view_matrix_begin.block(0, 0, 3, 3) = latest_pose.orientation.toRotationMatrix();
 

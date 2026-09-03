@@ -41,6 +41,20 @@ tcp_network_backend::tcp_network_backend(const std::string& name_, phonebook* pb
 
     if (is_client_) {
         client = true;
+#ifdef __ANDROID__
+        auto* socket = new network::TCPSocket();
+        if (switchboard_->get_env_char("ILLIXR_TCP_CLIENT_IP") && switchboard_->get_env_char("ILLIXR_TCP_CLIENT_PORT")) {
+            socket->socket_bind(client_ip_, client_port_);
+        }
+        socket->socket_set_reuseaddr();
+        peer_socket_ = socket;
+
+        spdlog::get("illixr")->debug("Connecting to " + server_ip_ + " at port " + std::to_string(server_port_));
+        socket->socket_connect(server_ip_, server_port_);
+        socket->enable_no_delay();
+        spdlog::get("illixr")->info("[tcp_network_backend] TCP_NODELAY verified = {}", socket->is_no_delay());
+        spdlog::get("illixr")->debug("Connected to server");
+#else
         std::thread([this]() {
             start_client();
         }).detach();
@@ -49,8 +63,19 @@ tcp_network_backend::tcp_network_backend(const std::string& name_, phonebook* pb
         while (!ready_) {
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
+#endif
     } else {
         client = false;
+#ifdef __ANDROID__
+        server_socket_.socket_set_reuseaddr();
+        server_socket_.socket_bind(server_ip_, server_port_);
+        server_socket_.enable_no_delay();
+        server_socket_.socket_listen();
+
+        auto* client_socket = new network::TCPSocket(server_socket_.socket_accept());
+        spdlog::get("illixr")->debug("Accepted connection from client: " + client_socket->peer_address());
+        peer_socket_ = client_socket;
+#else
         std::thread([this]() {
             start_server();
         }).detach();
@@ -58,8 +83,22 @@ tcp_network_backend::tcp_network_backend(const std::string& name_, phonebook* pb
         while (!ready_) {
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
+#endif
     }
 }
+
+#ifdef __ANDROID__
+void tcp_network_backend::start() {
+    plugin::start();
+    std::thread([this]() {
+        read_loop(peer_socket_);
+    }).detach();
+}
+
+tcp_network_backend::~tcp_network_backend() {
+    spdlog::get("illixr")->debug("Destroying tcp_network");
+}
+#else
 
 void tcp_network_backend::start_client() {
     auto* socket = new network::TCPSocket();
@@ -93,6 +132,7 @@ void tcp_network_backend::start_server() {
     ready_       = true;
     read_loop(client_socket);
 }
+#endif
 
 void tcp_network_backend::read_loop(network::TCPSocket* socket) {
     std::string buffer;
@@ -100,7 +140,11 @@ void tcp_network_backend::read_loop(network::TCPSocket* socket) {
         // read from socket
         // packet are in the format
         // total_length:4bytes|topic_name_length:4bytes|topic_name|message
+#ifdef __ANDROID__
+        std::string packet = socket->read_data(10000);
+#else
         std::string packet = socket->read_data();
+#endif
         buffer += packet;
 
         // check if we have a complete packet
@@ -122,13 +166,13 @@ void tcp_network_backend::read_loop(network::TCPSocket* socket) {
 void tcp_network_backend::topic_create(std::string topic_name, network::topic_config& config) {
     networked_topics_.push_back(topic_name);
     networked_topics_configs_[topic_name] = config;
-    std::string serializaiton;
+    std::string serialization;
     if (config.serialization_method == network::topic_config::SerializationMethod::BOOST) {
-        serializaiton = "BOOST";
+        serialization = "BOOST";
     } else {
-        serializaiton = "PROTOBUF";
+        serialization = "PROTOBUF";
     }
-    std::string message = "create_topic" + topic_name + delimiter_ + serializaiton;
+    std::string message = "create_topic" + topic_name + delimiter_ + serialization;
     send_to_peer("illixr_control", std::move(message));
 }
 
@@ -137,11 +181,10 @@ bool tcp_network_backend::is_topic_networked(std::string topic_name) {
 }
 
 void tcp_network_backend::topic_send(std::string topic_name, std::string&& message) {
-    if (is_topic_networked(topic_name) == false) {
+    if (!is_topic_networked(topic_name)) {
         std::cout << "Topic not networked" << std::endl;
         return;
     }
-
     send_to_peer(topic_name, std::move(message));
 }
 

@@ -407,7 +407,6 @@
     "plugin-offload-rendering-server": {
       "description": "",
       "dependencies": [
-       
         {
           "name": "cuda"
         },
@@ -431,7 +430,7 @@
         }
       ]
     },
-    "plugin-offliad-rendering-client": {
+    "plugin-offload-rendering-client": {
       "description": "",
       "dependencies": [
         {
@@ -599,6 +598,10 @@
       "dependencies": []
     },
     "plugin-tcp-network-backend": {
+      "description": "",
+      "dependencies": []
+    },
+    "plugin-udp-network-backend": {
       "description": "",
       "dependencies": []
     },

@@ -1,7 +1,7 @@
 #pragma once
 
 #if defined(_WIN32) || defined(_WIN64)
-    #include <cstdlib>
+#    include <cstdlib>
 #endif
 #include "concurrentqueue/blockingconcurrentqueue.hpp"
 #include "export.hpp"
@@ -12,23 +12,32 @@
 #include "record_logger.hpp"
 
 #ifdef Success
-    #undef Success // For 'Success' conflict
+#    undef Success // For 'Success' conflict
 #endif
 
-#include <eigen3/Eigen/Core>
-#include <eigen3/Eigen/Geometry>
+#ifdef __ANDROID__
+#    include <Eigen/Core>
+#    include <Eigen/Geometry>
+#else
+#    include <eigen3/Eigen/Core>
+#    include <eigen3/Eigen/Geometry>
+#endif
 #include <iostream>
 #include <list>
 #include <mutex>
 #include <shared_mutex>
 #include <utility>
 
+#ifdef __ANDROID__
+#    include <android_native_app_glue.h>
+#endif
+
 #ifndef NDEBUG
-    #include <spdlog/spdlog.h>
+#    include <spdlog/spdlog.h>
 #endif
 
 #if __has_include("cpu_timer.hpp")
-    #include "cpu_timer.hpp"
+#    include "cpu_timer.hpp"
 #else
 static std::chrono::nanoseconds thread_cpu_time() {
     return {};
@@ -781,31 +790,39 @@ public:
     }
 
     [[maybe_unused]] int get_env_int(const std::string& var, const int _default = 0) {
-        std::string val = get_env(var, "");
-        if (val.empty())
-            return _default;
-        return std::stoi(val);
+        std::string val = get_env(var, std::to_string(_default));
+        try {
+            int res = std::stoi(val);
+            return res;
+        } catch (...) { }
+        return _default;
     }
 
     [[maybe_unused]] long get_env_long(const std::string& var, const long _default = 0) {
-        std::string val = get_env(var, "");
-        if (val.empty())
-            return _default;
-        return std::stol(val);
+        std::string val = get_env(var, std::to_string(_default));
+        try {
+            long res = std::stol(val);
+            return res;
+        } catch (...) { }
+        return _default;
     }
 
     [[maybe_unused]] unsigned long get_env_ulong(const std::string& var, const unsigned long _default = 0) {
-        std::string val = get_env(var, "");
-        if (val.empty())
-            return _default;
-        return std::stoul(val);
+        std::string val = get_env(var, std::to_string(_default));
+        try {
+            unsigned long res = std::stoul(val);
+            return res;
+        } catch (...) { }
+        return _default;
     }
 
     [[maybe_unused]] double get_env_double(const std::string& var, const double _default = 0.) {
-        std::string val = get_env(var, "");
-        if (val.empty())
-            return _default;
-        return std::stod(val);
+        std::string val = get_env(var, std::to_string(_default));
+        try {
+            double res = std::stod(val);
+            return res;
+        } catch (...) { }
+        return _default;
     }
 
     /**
@@ -917,13 +934,28 @@ public:
         }
     }
 
+#ifdef __ANDROID__
+    void set_android_app(android_app* app) {
+        if (app_) {
+            spdlog::get("illixr")->error("Android app already set");
+            return;
+        }
+        app_ = app;
+    }
+
+    android_app* get_android_app() {
+        return app_;
+    }
+#endif
 private:
     const phonebook*                             phonebook_;
     std::unordered_map<std::string, topic>       registry_;
     std::shared_mutex                            registry_lock_;
     std::shared_ptr<record_logger>               record_logger_;
     std::unordered_map<std::string, std::string> env_vars_;
-
+#ifdef __ANDROID__
+    android_app* app_ = nullptr;
+#endif
     template<typename Specific_event>
     topic& try_register_topic(const std::string& topic_name) {
         {

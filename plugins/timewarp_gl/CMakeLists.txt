@@ -1,17 +1,21 @@
 if(WIN32 OR MSVC)
     message(WARNING "timewarp_gl is not yet available for windows")
     set(USE_TIMEWARP_GL OFF)
+    return()
+elseif(ANDROID)
+    find_package(glfw3 QUIET)
+    if (NOT glfw3_FOUND)
+        pkg_search_module(glfw3 REQUIRED glfw3)
+    endif ()
 endif()
 # module to build and install the timewarp_gl ILLIXR plugin
 if(NOT DEFINED BUILDING_ILLIXR)
     message(ERROR "The timewarp_gl plugin cannot be built outside of the main ILLIXR build")
 endif()
 
-if(NOT PLUGIN_NAME)
-    set(PLUGIN_NAME "plugin.timewarp_gl${ILLIXR_BUILD_SUFFIX}")
-    set(PLUGIN_SOURCE "plugin.cpp")
-    set(TW_PREFIX "")
-endif()
+set(PLUGIN_NAME "plugin.timewarp_gl${ILLIXR_BUILD_SUFFIX}")
+set(PLUGIN_SOURCE "plugin.cpp")
+set(TW_PREFIX "")
 
 # source files, listed individually so that any changes will trigger a rebuild
 add_library(${PLUGIN_NAME} SHARED
@@ -37,31 +41,62 @@ if(TW_PLUGIN_DEFINITIONS)
     target_include_directories(${PLUGIN_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/..)
 endif()
 
-target_include_directories(${PLUGIN_NAME} PRIVATE ${ILLIXR_SOURCE_DIR}/include ${X11_INCLUDE_DIR})
-target_link_libraries(${PLUGIN_NAME} spdlog::spdlog Eigen3::Eigen Boost::serialization)
+target_include_directories(${PLUGIN_NAME} PRIVATE
+                           ${ILLIXR_SOURCE_DIR}/include
+)
+target_link_libraries(${PLUGIN_NAME} PUBLIC
+                      Eigen3::Eigen
+                      Boost::serialization
+)
+if(ANDROID)
+target_include_directories(${PLUGIN_NAME} PRIVATE
+                           ${glfw3_INCLUDE_DIRS}
+                           ${OpenCV_LIBS}
+                           ${jnigraphics-lib}
+                           ${ANDROID_NDK}/sources/android/native_app_glue
+)
 
-if(WIN32 OR MSVC)
-    target_link_libraries(${PLUGIN_NAME}
-                          GLEW::GLEW
-                          OpenGL::GL
-                          Vulkan::Vulkan
-    )
-    target_compile_definitions(${PLUGIN_NAME} PRIVATE BUILDING_LIBRARY)
+target_link_libraries(${PLUGIN_NAME} PUBLIC
+                      plugin.extended_window${ILLIXR_BUILD_SUFFIX}
+                      vulkan
+                      EGL
+                      GLESv3
+                      android
+                      spdlog::spdlog_android
+)
+
 else()
     target_include_directories(${PLUGIN_NAME} PRIVATE
-                               ${GLEW_INCLUDE_DIR}
-                               ${GLU_INCLUDE_DIR}
-                               ${gl_INCLUDE_DIRS}
-                               ${Vulkan_INCLUDE_DIRS}
+                                ${X11_INCLUDE_DIR}
     )
-    target_link_libraries(${PLUGIN_NAME}
-                          ${X11_LIBRARIES}
-                          ${GLEW_LIBRARIES}
-                          ${glu_LDFLAGS}
-                          ${gl_LIBRARIES}
-                          ${Vulkan_LIBRARY}
+    target_link_libraries(${PLUGIN_NAME} PUBLIC
+                          spdlog::spdlog
     )
-    if(Vulkan_EXTERNAL)
-        add_dependencies(${PLUGIN_NAME} ${Vulkan_DEP_STR})
+    if(WIN32 OR MSVC)
+        target_link_libraries(${PLUGIN_NAME}
+                              GLEW::GLEW
+                              OpenGL::GL
+                              Vulkan::Vulkan
+        )
+        target_compile_definitions(${PLUGIN_NAME} PRIVATE BUILDING_LIBRARY)
+    else()
+        target_include_directories(${PLUGIN_NAME} PRIVATE
+                                   ${GLEW_INCLUDE_DIR}
+                                   ${GLU_INCLUDE_DIR}
+                                   ${gl_INCLUDE_DIRS}
+                                   ${Vulkan_INCLUDE_DIRS}
+        )
+        target_link_libraries(${PLUGIN_NAME}
+                              ${X11_LIBRARIES}
+                              ${GLEW_LIBRARIES}
+                              ${glu_LDFLAGS}
+                              ${gl_LIBRARIES}
+                              ${Vulkan_LIBRARY}
+        )
+        if(Vulkan_EXTERNAL)
+            add_dependencies(${PLUGIN_NAME} ${Vulkan_DEP_STR})
+        endif()
     endif()
 endif()
+
+target_compile_features(${PLUGIN_NAME} PRIVATE cxx_std_17)
