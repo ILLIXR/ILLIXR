@@ -35,7 +35,7 @@ void openwarp_vk::initialize() {
         this->vma_allocator_ = vulkan::create_vma_allocator(
             display_provider_->vk_instance_, display_provider_->vk_physical_device_, display_provider_->vk_device_);
         deletion_queue_.emplace([=]() {
-          vmaDestroyAllocator(vma_allocator_);
+            vmaDestroyAllocator(vma_allocator_);
         });
     }
 
@@ -43,7 +43,7 @@ void openwarp_vk::initialize() {
                                                   display_provider_->queues_[vulkan::queue::queue_type::GRAPHICS].family);
     command_buffer_ = vulkan::create_command_buffer(display_provider_->vk_device_, command_pool_);
     deletion_queue_.emplace([=]() {
-      vkDestroyCommandPool(display_provider_->vk_device_, command_pool_, nullptr);
+        vkDestroyCommandPool(display_provider_->vk_device_, command_pool_, nullptr);
     });
 
     create_descriptor_set_layouts();
@@ -648,10 +648,10 @@ void openwarp_vk::generate_distortion_data() {
                     (-1.0f + 2 * (static_cast<float>(x) / static_cast<float>(hmd_info_.eye_tiles_wide)));
 
                 distortion_vertices_[eye * num_distortion_vertices_ + index].pos.y = (input_texture_external_ ? 1.0f : -1.0f) *
-                                                                                     (-1.0f +
-                                                                                      2.0f * (static_cast<float>(hmd_info_.eye_tiles_high - y) / static_cast<float>(hmd_info_.eye_tiles_high)) *
-                                                                                      (static_cast<float>(hmd_info_.eye_tiles_high * hmd_info_.tile_pixels_high) /
-                                                                                       static_cast<float>(hmd_info_.display_pixels_high)));
+                    (-1.0f +
+                     2.0f * (static_cast<float>(hmd_info_.eye_tiles_high - y) / static_cast<float>(hmd_info_.eye_tiles_high)) *
+                         (static_cast<float>(hmd_info_.eye_tiles_high * hmd_info_.tile_pixels_high) /
+                          static_cast<float>(hmd_info_.display_pixels_high)));
 
                 distortion_vertices_[eye * num_distortion_vertices_ + index].pos.z = 0.0f;
 
@@ -754,7 +754,7 @@ void openwarp_vk::create_texture_sampler() {
 
     VK_ASSERT_SUCCESS(vkCreateSampler(display_provider_->vk_device_, &sampler_info, nullptr, &fb_sampler_))
     deletion_queue_.emplace([=]() {
-      vkDestroySampler(display_provider_->vk_device_, fb_sampler_, nullptr);
+        vkDestroySampler(display_provider_->vk_device_, fb_sampler_, nullptr);
     });
 }
 
@@ -794,7 +794,7 @@ void openwarp_vk::create_descriptor_set_layouts() {
     VK_ASSERT_SUCCESS(
         vkCreateDescriptorSetLayout(display_provider_->vk_device_, &ow_layout_info, nullptr, &ow_descriptor_set_layout_))
     deletion_queue_.emplace([=]() {
-      vkDestroyDescriptorSetLayout(display_provider_->vk_device_, ow_descriptor_set_layout_, nullptr);
+        vkDestroyDescriptorSetLayout(display_provider_->vk_device_, ow_descriptor_set_layout_, nullptr);
     });
 
     // Distortion correction descriptor set
@@ -816,7 +816,7 @@ void openwarp_vk::create_descriptor_set_layouts() {
     VK_ASSERT_SUCCESS(
         vkCreateDescriptorSetLayout(display_provider_->vk_device_, &dc_layout_info, nullptr, &dp_descriptor_set_layout_))
     deletion_queue_.emplace([=]() {
-      vkDestroyDescriptorSetLayout(display_provider_->vk_device_, dp_descriptor_set_layout_, nullptr);
+        vkDestroyDescriptorSetLayout(display_provider_->vk_device_, dp_descriptor_set_layout_, nullptr);
     });
 }
 
@@ -840,7 +840,7 @@ void openwarp_vk::create_uniform_buffers() {
     VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator_, &matrix_buffer_info, &create_info, &ow_matrices_uniform_buffer_,
                                       &ow_matrices_uniform_alloc_, &ow_matrices_uniform_alloc_info_))
     deletion_queue_.emplace([=]() {
-      vmaDestroyBuffer(vma_allocator_, ow_matrices_uniform_buffer_, ow_matrices_uniform_alloc_);
+        vmaDestroyBuffer(vma_allocator_, ow_matrices_uniform_buffer_, ow_matrices_uniform_alloc_);
     });
 }
 
