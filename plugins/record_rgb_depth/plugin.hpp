@@ -8,7 +8,7 @@
 #include <fstream>
 
 namespace ILLIXR {
-class MY_EXPORT_API record_rgb_depth : public plugin {
+class record_rgb_depth : public plugin {
 public:
     [[maybe_unused]] record_rgb_depth(const std::string& name, phonebook* pb);
     void dump_data(const switchboard::ptr<const data_format::rgb_depth_type>& datum);

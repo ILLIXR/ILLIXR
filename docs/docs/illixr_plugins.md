@@ -149,7 +149,7 @@ Topic details:
 
 &nbsp;&nbsp;[**Details**][P12]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C4]
 
-## ground_truth_slam ![Linux Logo](images/tux.png) ![Windows Logo](images/windows.png) ![Android_Logo](images/android.png)
+## ground_truth_slam ![Linux Logo](images/tux.png)
 
 Reads the [_ground truth_][G10] from the same dataset as the `offline_imu` plugin.
 Ground truth data can be compared against the head tracking results (e.g. from VIO, IMU integrator, or pose predictor) for accuracy.
@@ -163,7 +163,7 @@ Topic details:
 
 &nbsp;&nbsp;**Details**&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C5]
 
-## gtsam_integrator ![Linux Logo](images/tux.png) ![Windows logo](images/windows.png) ![Android_Logo](images/android.png)
+## gtsam_integrator ![Linux Logo](images/tux.png)
 
 Integrates over all [_IMU_][G13] samples since the last published visual-inertial [_pose_][G14] to provide a
 [_fast pose_][G14] every time a new IMU sample arrives using the GTSAM library ([upstream][E10]).
@@ -224,7 +224,7 @@ Topic details:
 
 &nbsp;&nbsp;[**Details**][P14]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C8]
 
-## lighthouse ![Linux Logo](images/tux.png) ![Windows logo](images/windows.png)
+## lighthouse ![Linux Logo](images/tux.png)
 
 Enables lighthouse tracking using the [libsurvive library](https://github.com/collabora/libsurvive)
 
@@ -282,7 +282,7 @@ Topic details:
 
 &nbsp;&nbsp;**Details**&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C12]
 
-## offload_data ![Linux Logo](images/tux.png) ![Windows logo](images/windows.png)
+## offload_data ![Linux Logo](images/tux.png)
 
 Writes [_frames_][G11] and [_poses_][G14] output from the [_asynchronous reprojection_][G12] plugin to disk for analysis.
 
@@ -365,7 +365,7 @@ Topic details:
 
 &nbsp;&nbsp;[**Details**][P19]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C19]
 
-## openwarp_vk ![Linux Logo](images/tux.png) ![Windows logo](images/windows.png)
+## openwarp_vk ![Linux Logo](images/tux.png)
 
 Provides a Vulkan-based reprojection service.
 
@@ -413,7 +413,7 @@ Topic details:
 
 &nbsp;&nbsp;**Details**&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C23]
 
-## record_imu_cam ![Linux Logo](images/tux.png) ![Windows logo](images/windows.png)
+## record_imu_cam ![Linux Logo](images/tux.png)
 
 Writes [`imu_type`][A15] and [`binocular_cam_type`][A14] data to disk.
 
@@ -424,7 +424,7 @@ Topic details:
 
 &nbsp;&nbsp;[**Details**][P24]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C24]
 
-## record_rgb_depth ![Linux Logo](images/tux.png) ![Windows logo](images/windows.png)
+## record_rgb_depth ![Linux Logo](images/tux.png)
 
 Writes [`rgb_depth_type`][A13] data to disk.
 

@@ -10,7 +10,7 @@
 #include <fstream>
 
 namespace ILLIXR {
-class MY_EXPORT_API record_imu_cam : public plugin {
+class record_imu_cam : public plugin {
 public:
     [[maybe_unused]] record_imu_cam(const std::string& name, phonebook* pb);
     void dump_data(const switchboard::ptr<const data_format::imu_type>& datum);

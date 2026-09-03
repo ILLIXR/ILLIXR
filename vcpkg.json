@@ -124,9 +124,6 @@
     {
       "name": "libusb",
       "version>=": "1.0.29"
-    },
-    {
-      "name": "metis"
     }
   ],
   "features": {
@@ -410,7 +407,6 @@
     "plugin-offload-rendering-server": {
       "description": "",
       "dependencies": [
-       
         {
           "name": "cuda"
         },
@@ -593,17 +589,9 @@
         }
       ]
     },
-    "plugin-record-imu-cam": {
+    "plugin-record-cam-imu": {
       "description": "",
-      "dependencies": [
-        "opencv4"
-      ]
-    },
-    "plugin-record-rgb-depth": {
-      "description": "",
-      "dependencies": [
-        "opencv4"
-      ]
+      "dependencies": []
     },
     "plugin-rk4-integrator": {
       "description": "",
@@ -791,10 +779,6 @@
     {
       "name": "wil",
       "version": "1.0.250325.1"
-    },
-    {
-      "name": "gtsam",
-      "version": "4.3a0"
     }
   ]
 }

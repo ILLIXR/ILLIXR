@@ -534,9 +534,9 @@ void timewarp_vk::create_uniform_buffer() {
 void timewarp_vk::create_descriptor_pool() {
     std::array<VkDescriptorPoolSize, 2> pool_sizes = {};
     pool_sizes[0].type                             = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    pool_sizes[0].descriptorCount                  = static_cast<uint32_t>(buffer_pool_->image_pool.size() * 2);
+    pool_sizes[0].descriptorCount                  = buffer_pool_->image_pool.size() * 2;
     pool_sizes[1].type                             = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-    pool_sizes[1].descriptorCount                  = static_cast<uint32_t>(buffer_pool_->image_pool.size() * 2);
+    pool_sizes[1].descriptorCount                  = buffer_pool_->image_pool.size() * 2;
 
     VkDescriptorPoolCreateInfo pool_info = {
         VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO, // sType
@@ -548,7 +548,7 @@ void timewarp_vk::create_descriptor_pool() {
     };
     pool_info.poolSizeCount = static_cast<uint32_t>(pool_sizes.size());
     pool_info.pPoolSizes    = pool_sizes.data();
-    pool_info.maxSets       = static_cast<uint32_t>(buffer_pool_->image_pool.size() * 2);
+    pool_info.maxSets       = buffer_pool_->image_pool.size() * 2;
 
     VK_ASSERT_SUCCESS(vkCreateDescriptorPool(display_provider_->vk_device_, &pool_info, nullptr, &descriptor_pool_))
 }
@@ -565,7 +565,7 @@ void timewarp_vk::create_descriptor_sets() {
             nullptr                                         // pSetLayouts
         };
         allocInfo.descriptorPool     = descriptor_pool_;
-        allocInfo.descriptorSetCount = static_cast<uint32_t>(buffer_pool_->image_pool.size());
+        allocInfo.descriptorSetCount = buffer_pool_->image_pool.size();
         allocInfo.pSetLayouts        = layouts.data();
 
         descriptor_sets_[eye].resize(buffer_pool_->image_pool.size());

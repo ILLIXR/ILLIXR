@@ -1,9 +1,0 @@
---- a/redist/CMakeLists.txt
-+++ b/redist/CMakeLists.txt
-@@ -16,5 +16,5 @@
- if(CNGFX_SRCS)
--  add_library(CNGFX ${CNGFX_SRCS})
-+  add_library(CNGFX STATIC ${CNGFX_SRCS})
-   set_target_properties(CNGFX PROPERTIES FOLDER "libraries")
-   target_link_libraries(CNGFX ${CNGFX_LIBS})
- endif()
