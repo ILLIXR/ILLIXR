@@ -224,7 +224,7 @@ Topic details:
 
 &nbsp;&nbsp;[**Details**][P14]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C8]
 
-## lighthouse ![Linux Logo](images/tux.png) ![Windows logo](images/windows.png)
+## lighthouse ![Linux Logo](images/tux.png)
 
 Enables lighthouse tracking using the [libsurvive library](https://github.com/collabora/libsurvive)
 

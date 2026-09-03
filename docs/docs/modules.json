@@ -218,15 +218,6 @@
       ]
     },
     {
-      "name": "lighthouse",
-      "cmake_flag": "USE_LIGHTHOUSE=ON",
-      "dependencies": [],
-      "OS": [
-        "linux",
-        "windows"
-      ]
-    },
-    {
       "name": "native_renderer",
       "cmake_flag": "USE_NATIVE_RENDERER=ON",
       "dependencies": [

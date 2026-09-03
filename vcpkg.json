@@ -407,7 +407,6 @@
     "plugin-offload-rendering-server": {
       "description": "",
       "dependencies": [
-
         {
           "name": "cuda"
         },

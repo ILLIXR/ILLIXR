@@ -1,9 +1,11 @@
 #include "plugin.hpp"
 
 #include "illixr/error_util.hpp"
+#include "illixr/phonebook.hpp"
 
 #include <chrono>
 #include <cmath>
+#include <optional>
 #include <string>
 
 using namespace ILLIXR;
@@ -16,8 +18,8 @@ lighthouse* lighthouse_instance;
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
     , log_(spdlogger("info"))
     , clock_{phonebook_->lookup_impl<relative_clock>()}
-    , slow_pose_{switchboard_->get_writer<pose::head_pose_type>("slow_pose")} {
-    //, fast_pose_{switchboard_->get_writer<pose::fast_head_pose_type>("fast_pose")} {
+    , slow_pose_{switchboard_->get_writer<pose::head_pose_type>("slow_pose")}
+    , fast_pose_{switchboard_->get_writer<pose::fast_head_pose_type>("fast_pose")} {
     lighthouse_instance = this;
 }
 
@@ -73,10 +75,10 @@ void lighthouse::_p_one_iteration() {
     auto dt  = now - last_time_;
     if (dt > std::chrono::seconds(1)) {
         log_->info("slow pose rate: {} Hz", slow_pose_count_);
-        // log_->info("fast pose rate: {} Hz", fast_pose_count_);
+        log_->info("fast pose rate: {} Hz", fast_pose_count_);
         slow_pose_count_ = 0;
-        // fast_pose_count_ = 0;
-        last_time_ = now;
+        fast_pose_count_ = 0;
+        last_time_       = now;
     }
 }
 
