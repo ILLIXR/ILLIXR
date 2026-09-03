@@ -282,7 +282,7 @@ Topic details:
 
 &nbsp;&nbsp;**Details**&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C12]
 
-## offload_data ![Linux Logo](images/tux.png) ![Windows logo](images/windows.png)
+## offload_data ![Linux Logo](images/tux.png)
 
 Writes [_frames_][G11] and [_poses_][G14] output from the [_asynchronous reprojection_][G12] plugin to disk for analysis.
 
