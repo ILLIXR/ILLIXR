@@ -41,10 +41,10 @@ else ()
         XRT_BUILD_DRIVER_ROKID XRT_FEATURE_SLAM XRT_FEATURE_COLOR_LOG XRT_MODULE_MONADO_GUI)
 
     foreach(ITEM IN LISTS ON_VARS)
-        set(${ITEM} ON)
+        set(${ITEM} ON CACHE BOOL "" FORCE)
     endforeach()
     foreach(ITEM IN LISTS OFF_VARS)
-        set(${ITEM} OFF)
+        set(${ITEM} OFF CACHE BOOL "" FORCE)
     endforeach()
 
     if(MSVC OR WIN32)
