@@ -1,0 +1,13 @@
+--- a/include/libsurvive/survive_types.h
++++ b/include/libsurvive/survive_types.h
+@@ -8,5 +8,10 @@
+ #ifndef SURVIVE_EXPORT
+ #ifdef _WIN32
++#ifdef BUILDING_SURVIVE_PLUGIN
++#define SURVIVE_EXPORT __declspec(dllimport)
++#define SURVIVE_IMPORT __declspec(dllimport)
++#else()
+ #define SURVIVE_EXPORT __declspec(dllexport)
+ #define SURVIVE_IMPORT __declspec(dllimport)
++#endif()
+ #else

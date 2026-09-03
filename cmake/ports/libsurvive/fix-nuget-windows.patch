@@ -1,0 +1,15 @@
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -108,5 +108,5 @@
+ 	target_link_libraries(survive m )
+ else()
+-	set_target_properties( survive PROPERTIES VS_USER_PROPS "$(SolutionDir)\\packages\\OpenBLAS.0.2.14.1\\build\\native\\openblas.targets" )
++	#set_target_properties( survive PROPERTIES VS_USER_PROPS "$(SolutionDir)\\packages\\OpenBLAS.0.2.14.1\\build\\native\\openblas.targets" )
+ 	target_link_libraries(survive DbgHelp SetupAPI)
+ endif()
+@@ -247,4 +247,4 @@
+ IF(WIN32)
+-  add_custom_command(TARGET survive PRE_BUILD COMMAND ${NUGET} restore ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.sln COMMENT "Restoring nuget dependencies")
++  #add_custom_command(TARGET survive PRE_BUILD COMMAND ${NUGET} restore ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.sln COMMENT "Restoring nuget dependencies")
+ ENDIF(WIN32)
+ 

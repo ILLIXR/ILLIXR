@@ -2,15 +2,21 @@
 
 // ILLIXR includes
 #include "illixr/data_format/poses/head_pose.hpp"
+#include "illixr/phonebook.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
+
+#if defined(_WIN32) || defined(_WIN64)
+#    define SURVIVE_EXPORT __declspec(dllimport)
+#    define SURVIVE_IMPORT __declspec(dllimport)
+#endif
 #include "survive.h"
 
 namespace ILLIXR {
 
-class lighthouse : public threadloop {
+class MY_EXPORT_API lighthouse : public threadloop {
 public:
-    [[maybe_unused]] lighthouse(const std::string& name_, phonebook* pb_);
+    [[maybe_unused]] explicit lighthouse(const std::string& name_, phonebook* pb_);
     void stop() override;
     // destructor
     ~lighthouse() override = default;
@@ -25,16 +31,16 @@ protected:
     }
 
 private:
-    const std::shared_ptr<switchboard>                          switchboard_;
-    const std::shared_ptr<spdlog::logger>                       log_;
-    const std::shared_ptr<const relative_clock>                 clock_;
-    switchboard::writer<data_format::pose::head_pose_type>      slow_pose_;
-    switchboard::writer<data_format::pose::fast_head_pose_type> fast_pose_;
-    SurviveContext*                                             s_context_;
+    const std::shared_ptr<switchboard>                     switchboard_;
+    const std::shared_ptr<spdlog::logger>                  log_;
+    const std::shared_ptr<const relative_clock>            clock_;
+    switchboard::writer<data_format::pose::head_pose_type> slow_pose_;
+    // switchboard::writer<data_format::pose::fast_head_pose_type> fast_pose_;
+    SurviveContext* s_context_;
 
     std::chrono::time_point<std::chrono::high_resolution_clock> last_time_;
     int                                                         slow_pose_count_ = 0;
-    int                                                         fast_pose_count_ = 0;
+    // int                                                         fast_pose_count_ = 0;
 };
 
 } // namespace ILLIXR
