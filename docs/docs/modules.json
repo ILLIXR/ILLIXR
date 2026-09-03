@@ -183,9 +183,7 @@
       "cmake_flag": "USE_GTSAM_INTEGRATOR=ON",
       "dependencies": [],
       "OS": [
-        "linux",
-        "windows",
-        "android"
+        "linux"
       ]
     },
     {
