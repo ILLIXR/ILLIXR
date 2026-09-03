@@ -6,7 +6,7 @@
 
 namespace ILLIXR {
 
-class MY_EXPORT_API openwarp_vk_plugin : public threadloop {
+class openwarp_vk_plugin : public threadloop {
 public:
     [[maybe_unused]] openwarp_vk_plugin(const std::string& name, phonebook* pb);
     void        _p_one_iteration() override;

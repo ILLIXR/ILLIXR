@@ -5,10 +5,8 @@
 #include <numeric>
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
-#ifdef __linux__
-#  pragma GCC diagnostic ignored "-Wsign-compare"
-#  pragma GCC diagnostic ignored "-Wmissing-field-initializers"
-#endif
+#pragma GCC diagnostic ignored "-Wsign-compare"
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 #include "illixr/gl_util/lib/stb_image_write.h"
 
 using namespace ILLIXR;

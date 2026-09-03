@@ -175,9 +175,7 @@
       "cmake_flag": "USE_GROUND_TRUTH_SLAM=ON",
       "dependencies": [],
       "OS": [
-        "linux",
-        "windows",
-        "android"
+        "linux"
       ]
     },
     {
@@ -185,9 +183,7 @@
       "cmake_flag": "USE_GTSAM_INTEGRATOR=ON",
       "dependencies": [],
       "OS": [
-        "linux",
-        "windows",
-        "android"
+        "linux"
       ]
     },
     {
@@ -216,15 +212,6 @@
     {
       "name": "webcam",
       "cmake_flag": "USE_WEBCAM=ON",
-      "dependencies": [],
-      "OS": [
-        "linux",
-        "windows"
-      ]
-    },
-    {
-      "name": "lighthouse",
-      "cmake_flag": "USE_LIGHTHOUSE=ON",
       "dependencies": [],
       "OS": [
         "linux",
@@ -282,8 +269,7 @@
       "cmake_flag": "USE_OFFLOAD_DATA=ON",
       "dependencies": [],
       "OS": [
-        "linux",
-        "windows"
+        "linux"
       ]
     },
     {
@@ -468,8 +454,7 @@
         "glm"
       ],
       "OS": [
-        "linux",
-        "windows"
+        "linux"
       ]
     },
     {

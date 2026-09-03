@@ -5,7 +5,7 @@
 
 namespace ILLIXR {
 
-class MY_EXPORT_API timewarp_vk_plugin : public threadloop {
+class timewarp_vk_plugin : public threadloop {
 public:
     [[maybe_unused]] timewarp_vk_plugin(const std::string& name, phonebook* pb);
     void        _p_one_iteration() override;

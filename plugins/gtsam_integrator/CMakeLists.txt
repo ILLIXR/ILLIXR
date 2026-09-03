@@ -1,4 +1,10 @@
 # module to build and install the gtsam_integrator ILLIXR plugin
+if(WIN32 OR MSVC OR ANDROID)
+    message(WARNING "gtsam_integrator is not yet available for Windows or Android")
+    set(USE_GTSAM_INTEGRATOR OFF)
+    return()
+endif()
+
 get_external_for_plugin(GTSAM)
 set(PLUGIN_NAME plugin.gtsam_integrator${ILLIXR_BUILD_SUFFIX})
 
@@ -12,33 +18,20 @@ add_library(${PLUGIN_NAME} SHARED
             ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
 )
 
-if(ANDROID)
-    find_package(GTSAMCMakeTools REQUIRED)   #still need to find package
-endif()
+    #add_definitions(-Wall -Wextra -Werror)
+    target_include_directories(${PLUGIN_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${ILLIXR_SOURCE_DIR}/include)
+    target_link_libraries(${PLUGIN_NAME} gtsam Eigen3::Eigen spdlog::spdlog)
 
 #add_definitions(-Wall -Wextra -Werror)
 target_include_directories(${PLUGIN_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${GTSAM_INCLUDE_DIR} ${ILLIXR_SOURCE_DIR}/include)
-target_link_libraries(${PLUGIN_NAME} PUBLIC
-                      gtsam
-                      Eigen3::Eigen
-                      Boost::serialization
-)
+target_link_libraries(${PLUGIN_NAME} ${GTSAM_LIBRARIES} Eigen3::Eigen spdlog::spdlog)
 
-if(ANDROID)
-    target_include_directories(${PLUGIN_NAME} PRIVATE
-                               ${ANDROID_NDK}/sources/android/native_app_glue
-    )
-    target_link_libraries(${PLUGIN_NAME} PUBLIC
-                          spdlog::spdlog_android
-    )
-else()
-    target_link_libraries(${PLUGIN_NAME} PUBLIC
-                          spdlog::spdlog
-    )
-
-    if(WIN32 OR MSVC)
-        target_compile_definitions(${PLUGIN_NAME} PRIVATE BUILDING_LIBRARY)
-    endif()
-endif()
-
+#if(ANDROID)
+#target_link_libraries(${PLUGIN_NAME}
+#        PRIVATE gtsam
+#        PUBLIC
+#        Eigen3
+#        spdlog::spdlog_android
+#)
+#endif()
 install(TARGETS ${PLUGIN_NAME} DESTINATION lib)

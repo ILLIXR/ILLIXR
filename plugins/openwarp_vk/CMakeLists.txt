@@ -1,5 +1,5 @@
-if(ANDROID)
-    message(WARNING "openwarp_vk is not yet available for Android")
+if(WIN32 OR MSVC OR ANDROID)
+    message(WARNING "openwarp_vk is not yet available for Windows or Android")
     set(USE_OPENWARP_VK OFF)
     return()
 endif()
@@ -76,17 +76,10 @@ add_dependencies(${PLUGIN_NAME} OpenWarp_VK_Shaders)
 
 set_target_properties(${PLUGIN_NAME} PROPERTIES OUTPUT_NAME ${PLUGIN_NAME})
 
-target_link_libraries(${PLUGIN_NAME} PUBLIC
-                      spdlog::spdlog
-                      Eigen3::Eigen
-                      Boost::serialization
-)
+target_link_libraries(${PLUGIN_NAME} PUBLIC spdlog::spdlog)
 
 if(WIN32 OR MSVC)
-    target_link_libraries(${PLUGIN_NAME} PUBLIC
-                          Vulkan::Vulkan
-                          glm::glm-header-only)
-    target_compile_definitions(${PLUGIN_NAME} PRIVATE BUILDING_LIBRARY)
+    target_link_libraries(${PLUGIN_NAME} PUBLIC Vulkan::Vulkan glm::glm-header-only)
 else()
     target_link_libraries(${PLUGIN_NAME} PUBLIC ${Vulkan_LIBRARIES})
     target_include_directories(${PLUGIN_NAME} PUBLIC ${Vulkan_INCLUDE_DIRS})
