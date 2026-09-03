@@ -108,8 +108,6 @@ if(NOT ANDROID)
     install(TARGETS ${EXE_NAME} DESTINATION bin)
     install(TARGETS plugin.main${ILLIXR_BUILD_SUFFIX} DESTINATION lib)
 else()
-    find_package(yaml-cpp_android REQUIRED CONFIG)
-
     add_library(native-activity SHARED
                 src/illixr.hpp
                 src/main.cpp
@@ -126,40 +124,20 @@ else()
                 ${CMAKE_SOURCE_DIR}/include/illixr/runtime.hpp
                 ${CMAKE_SOURCE_DIR}/include/illixr/stoplight.hpp
                 ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
-                src/android/network_config_dialog.cpp
-                src/android/network_config_dialog.hpp
-                src/android/profile_picker_dialog.cpp
-                src/android/profile_picker_dialog.hpp
     )
     target_include_directories(native-activity PRIVATE
-                               ${CMAKE_CURRENT_SOURCE_DIR}/android
                                ${ILLIXR_SOURCE_DIR}/include
                                ${OpenCV_LIBS}
                                ${jnigraphics-lib}
                                ${ANDROID_NDK}/sources/android/native_app_glue
     )
 
-    # ANDROID_PLUGIN_LIST is built by the plugin loop in the top-level
-    # CMakeLists.txt: every plugin whose USE_<name> flag is ON after read_yaml()
-    # is appended to this list.  src/CMakeLists.txt is included after that loop,
-    # so the list is guaranteed to be populated by the time we get here.
-    if(NOT ANDROID_PLUGIN_LIST)
-        message(FATAL_ERROR
-            "ANDROID_PLUGIN_LIST is empty.  Ensure a YAML_FILE is specified and "
-            "contains an enabled plugins: list before the top-level CMakeLists.txt "
-            "processes the plugin loop.")
-    endif()
-
-    # Link each plugin library derived from the profile into the runtime.
-    # The target names follow the same convention used on Linux/Windows:
-    #   plugin.<name>${ILLIXR_BUILD_SUFFIX}
-    foreach(ANDROID_PLUGIN IN LISTS ANDROID_PLUGIN_LIST)
-        target_link_libraries(native-activity
-                              plugin.${ANDROID_PLUGIN}${ILLIXR_BUILD_SUFFIX}
-        )
-    endforeach()
-
     target_link_libraries(native-activity
+                          plugin.tcp_network_backend${ILLIXR_BUILD_SUFFIX}
+                          plugin.udp_network_backend${ILLIXR_BUILD_SUFFIX}
+                          plugin.network_latency.tx${ILLIXR_BUILD_SUFFIX}
+                          plugin.offload_rendering_client${ILLIXR_BUILD_SUFFIX}
+                          plugin.openxr_interface${ILLIXR_BUILD_SUFFIX}
                           android
                           native_app_glue
                           EGL
@@ -167,60 +145,5 @@ else()
                           Eigen3::Eigen
                           Boost::serialization
                           spdlog::spdlog_android
-                          yaml-cpp::yaml-cpp_android
     )
-
-    # Copy profile YAML files into the Gradle project's assets directory so
-    # they are bundled into the APK.  Two sources are combined:
-    #
-    #   1. Profiles generated from plugins.yaml by generate_yaml(), identified
-    #      by ILLIXR_PROFILE_NAMES.  These are always in sync with the current
-    #      build configuration because both generation and this copy step run
-    #      at CMake configure time.
-    #
-    #   2. Any additional *.yaml files present in profiles/ that were created
-    #      manually by the user outside of plugins.yaml.  These are discovered
-    #      via file(GLOB ...) and copied alongside the generated profiles,
-    #      allowing users to maintain personal configurations without modifying
-    #      the repository.
-    #
-    # Files from both sources are de-duplicated: a hand-created file with the
-    # same name as a generated one will not be double-copied (the generated
-    # version takes precedence since it is processed first).
-    set(ANDROID_ASSETS_PROFILES_DIR
-        "${CMAKE_SOURCE_DIR}/app/src/main/assets/profiles")
-    file(MAKE_DIRECTORY "${ANDROID_ASSETS_PROFILES_DIR}")
-
-    # Track which filenames have already been copied to detect duplicates.
-    set(_copied_profiles "")
-
-    # 1. Generated profiles (authoritative list from generate_yaml())
-    foreach(PROFILE_NAME IN LISTS ILLIXR_PROFILE_NAMES)
-        configure_file(
-            "${CMAKE_SOURCE_DIR}/profiles/${PROFILE_NAME}.yaml"
-            "${ANDROID_ASSETS_PROFILES_DIR}/${PROFILE_NAME}.yaml"
-            COPYONLY)
-        list(APPEND _copied_profiles "${PROFILE_NAME}.yaml")
-    endforeach()
-
-    # 2. User-created profiles not already covered above
-    file(GLOB _all_profile_files "${CMAKE_SOURCE_DIR}/profiles/*.yaml")
-    foreach(_profile_file IN LISTS _all_profile_files)
-        get_filename_component(_profile_filename "${_profile_file}" NAME)
-        list(FIND _copied_profiles "${_profile_filename}" _already_copied)
-        if(_already_copied EQUAL -1)
-            configure_file("${_profile_file}"
-                           "${ANDROID_ASSETS_PROFILES_DIR}/${_profile_filename}"
-                           COPYONLY)
-            list(APPEND _copied_profiles "${_profile_filename}")
-        endif()
-    endforeach()
-
-    if(NOT _copied_profiles)
-        message(FATAL_ERROR
-            "No profile YAML files found in ${CMAKE_SOURCE_DIR}/profiles/. "
-            "At least one profile is required for the Android build.")
-    endif()
-    message(STATUS "Android APK profiles: ${_copied_profiles}")
-
 endif()
