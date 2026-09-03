@@ -124,9 +124,6 @@
     {
       "name": "libusb",
       "version>=": "1.0.29"
-    },
-    {
-      "name": "metis"
     }
   ],
   "features": {
@@ -410,7 +407,7 @@
     "plugin-offload-rendering-server": {
       "description": "",
       "dependencies": [
-       
+
         {
           "name": "cuda"
         },
@@ -783,10 +780,6 @@
     {
       "name": "wil",
       "version": "1.0.250325.1"
-    },
-    {
-      "name": "gtsam",
-      "version": "4.3a0"
     }
   ]
 }
