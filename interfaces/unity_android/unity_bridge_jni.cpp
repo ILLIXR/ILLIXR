@@ -31,12 +31,12 @@
 // colon-separated list of plugin names to load. runtime_impl::load_so
 // reorders these so any plugin whose name contains "network_backend"
 // starts first. Extend this list as additional plugins are implemented.
-#ifdef BUILD_QUEST_UNITY_INTERFACE
+#    ifdef BUILD_QUEST_UNITY_INTERFACE
 static constexpr const char* ILLIXR_ANDROID_COMP = "tcp_network_backend:quest3.unity";
-#else
-#error "This path is not yet complete."
+#    else
+#        error "This path is not yet complete."
 static constexpr const char* ILLIXR_ANDROID_COMP = "tcp_network_backend";
-#endif
+#    endif
 // additional plugins added here as needed, e.g.:
 // static constexpr const char* ILLIXR_ANDROID_COMP = "tcp_network_backend:my_plugin";
 

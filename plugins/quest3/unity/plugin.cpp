@@ -538,23 +538,18 @@ static void on_capture_failed(void* /*ctx*/, ACameraCaptureSession* /*session*/,
 //      queue it for Vulkan readback on the render thread.
 // ---------------------------------------------------------------------------
 
-void xr_sensor_capture::acquire_depth_unity_thread(int64_t predicted_display_time_ns,
-                                                   float lens_pos_x, float lens_pos_y,
-                                                   float lens_pos_z, float lens_rot_x,
-                                                   float lens_rot_y, float lens_rot_z,
+void xr_sensor_capture::acquire_depth_unity_thread(int64_t predicted_display_time_ns, float lens_pos_x, float lens_pos_y,
+                                                   float lens_pos_z, float lens_rot_x, float lens_rot_y, float lens_rot_z,
                                                    float lens_rot_w) {
     // ---- 1. Sample head pose (every call, 90Hz) ----
     // VIEW space is valid here because we are on Unity's main thread during
     // an active XR frame (between xrBeginFrame and xrEndFrame).
     const XrTime frame_time = static_cast<XrTime>(predicted_display_time_ns);
     {
-
-        XrSpaceLocation loc{XR_TYPE_SPACE_LOCATION};
-        const XrSpaceLocationFlags required =
-                XR_SPACE_LOCATION_POSITION_VALID_BIT | XR_SPACE_LOCATION_ORIENTATION_VALID_BIT;
+        XrSpaceLocation            loc{XR_TYPE_SPACE_LOCATION};
+        const XrSpaceLocationFlags required = XR_SPACE_LOCATION_POSITION_VALID_BIT | XR_SPACE_LOCATION_ORIENTATION_VALID_BIT;
         if (!XR_FAILED(xrLocateSpace(head_space_, local_space_, frame_time, &loc)) &&
             (loc.locationFlags & required) == required) {
-
             // Apply lens offset to get physical RGB camera pose.
             // The lens offset is in Unity LH space so negate Z components
             // to convert to OpenXR RH space before applying.
@@ -563,15 +558,15 @@ void xr_sensor_capture::acquire_depth_unity_thread(int64_t predicted_display_tim
 
             // Convert lens offset rotation (Unity LH) to OpenXR RH:
             // negate z and w components for RH quaternion convention.
-            const float lrx =  lens_rot_x;
-            const float lry =  lens_rot_y;
+            const float lrx = lens_rot_x;
+            const float lry = lens_rot_y;
             const float lrz = -lens_rot_z;
             const float lrw = -lens_rot_w;
 
             // Rotate lens position offset by head orientation, then add.
             // offset_world = head_rotation * lens_pos_local
-            const float lpx =  lens_pos_x;
-            const float lpy =  lens_pos_y;
+            const float lpx = lens_pos_x;
+            const float lpy = lens_pos_y;
             const float lpz = -lens_pos_z; // negate Z for RH
 
             // Rotate lpx,lpy,lpz by hq:
@@ -587,15 +582,15 @@ void xr_sensor_capture::acquire_depth_unity_thread(int64_t predicted_display_tim
 
             // Compose head orientation with lens rotation offset:
             // cam_rot = hq * lens_rot
-            cam_pose.orientation.x = hq.w*lrx + hq.x*lrw + hq.y*lrz - hq.z*lry;
-            cam_pose.orientation.y = hq.w*lry - hq.x*lrz + hq.y*lrw + hq.z*lrx;
-            cam_pose.orientation.z = hq.w*lrz + hq.x*lry - hq.y*lrx + hq.z*lrw;
-            cam_pose.orientation.w = hq.w*lrw - hq.x*lrx - hq.y*lry - hq.z*lrz;
+            cam_pose.orientation.x = hq.w * lrx + hq.x * lrw + hq.y * lrz - hq.z * lry;
+            cam_pose.orientation.y = hq.w * lry - hq.x * lrz + hq.y * lrw + hq.z * lrx;
+            cam_pose.orientation.z = hq.w * lrz + hq.x * lry - hq.y * lrx + hq.z * lrw;
+            cam_pose.orientation.w = hq.w * lrw - hq.x * lrx - hq.y * lry - hq.z * lrz;
 
             spdlog::get("illixr")->info(
-                    "[head_pose] pos=({:.4f},{:.4f},{:.4f}) orient=({:.4f},{:.4f},{:.4f},{:.4f}) flags=0x{:X}", cam_pose.position.x,
-                    cam_pose.position.y, cam_pose.position.z, cam_pose.orientation.x, cam_pose.orientation.y,
-                    cam_pose.orientation.z, cam_pose.orientation.w, static_cast<unsigned>(loc.locationFlags));
+                "[head_pose] pos=({:.4f},{:.4f},{:.4f}) orient=({:.4f},{:.4f},{:.4f},{:.4f}) flags=0x{:X}", cam_pose.position.x,
+                cam_pose.position.y, cam_pose.position.z, cam_pose.orientation.x, cam_pose.orientation.y,
+                cam_pose.orientation.z, cam_pose.orientation.w, static_cast<unsigned>(loc.locationFlags));
 
             float mat[16]{};
             pose_to_matrix(cam_pose, mat);
@@ -901,13 +896,11 @@ const xr_sensor_capture::depth_frame_data* xr_sensor_capture::find_closest_depth
     return best;
 }
 
-extern "C" void illixr_acquire_depth(int64_t predicted_display_time_ns, float lens_pos_x,
-                                     float lens_pos_y, float lens_pos_z, float lens_rot_x,
-                                     float lens_rot_y, float lens_rot_z, float lens_rot_w) {
+extern "C" void illixr_acquire_depth(int64_t predicted_display_time_ns, float lens_pos_x, float lens_pos_y, float lens_pos_z,
+                                     float lens_rot_x, float lens_rot_y, float lens_rot_z, float lens_rot_w) {
     if (g_sensor_capture_instance != nullptr)
-        g_sensor_capture_instance->acquire_depth_unity_thread(predicted_display_time_ns, lens_pos_x,
-                                                              lens_pos_y, lens_pos_z, lens_rot_x,
-                                                              lens_rot_y, lens_rot_z, lens_rot_w);
+        g_sensor_capture_instance->acquire_depth_unity_thread(predicted_display_time_ns, lens_pos_x, lens_pos_y, lens_pos_z,
+                                                              lens_rot_x, lens_rot_y, lens_rot_z, lens_rot_w);
 }
 
 // ---------------------------------------------------------------------------
