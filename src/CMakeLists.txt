@@ -1,111 +1,198 @@
+if(NOT ANDROID)
+    add_compile_definitions(VK_USE_PLATFORM_XLIB_KHR)
 
-add_compile_definitions(VK_USE_PLATFORM_XLIB_KHR)
-
-if(WIN32 OR MSVC)
-    set(EXE_NAME main${ILLIXR_BUILD_SUFFIX})
-else()
-    set(EXE_NAME main${ILLIXR_BUILD_SUFFIX}.exe)
-endif()
-set(VULKAN_FILES
-    src/display/x11_direct.hpp
-    src/display/x11_direct.cpp
-    src/display/glfw_extended.hpp
-    src/display/glfw_extended.cpp
-    src/display/headless.hpp
-    src/display/headless.cpp
-    ${CMAKE_SOURCE_DIR}/include/illixr/vk/vk_extension_request.hpp
-    ${CMAKE_SOURCE_DIR}/include/illixr/vk/vulkan_objects.hpp
-)
-
-add_executable(${EXE_NAME}
-               src/main.cpp
-               src/illixr.hpp
-               src/cxxopts.hpp
-               ${CMAKE_SOURCE_DIR}/include/illixr/runtime.hpp
-               ${CMAKE_SOURCE_DIR}/include/illixr/phonebook.hpp
-)
-
-add_library(plugin.main${ILLIXR_BUILD_SUFFIX} SHARED
-            src/plugin.cpp
-            src/runtime_impl.cpp
-            src/illixr.hpp
-            src/cxxopts.hpp
-            src/vulkan_display.hpp
-            ${CMAKE_SOURCE_DIR}/include/illixr/runtime.hpp
-            ${CMAKE_SOURCE_DIR}/include/illixr/phonebook.hpp
-            ${VULKAN_FILES}
-            $<TARGET_OBJECTS:illixr_vulkan_utils>
-)
-
-if(WIN32 OR MSVC)
-    target_compile_definitions(plugin.main${ILLIXR_BUILD_SUFFIX} PRIVATE BUILDING_LIBRARY)
-    target_compile_options(plugin.main${ILLIXR_BUILD_SUFFIX} PRIVATE /EHsc)
-    target_compile_options(${EXE_NAME} PRIVATE /EHsc)
-endif()
-##############
-# yaml parser
-##############
-if(BUILD_OXR_INTERFACE)
-    target_compile_definitions(plugin.main${ILLIXR_BUILD_SUFFIX} PUBLIC -DOXR_INTERFACE)
-endif()
-
-get_external(Yamlcpp)
-
-target_compile_definitions(plugin.main${ILLIXR_BUILD_SUFFIX} PRIVATE ILLIXR_INSTALL_PATH="${CMAKE_INSTALL_PREFIX}")
-
-target_include_directories(plugin.main${ILLIXR_BUILD_SUFFIX} PUBLIC
-                           ${SQLite3_INCLUDE_DIR}
-                           ${yaml-cpp_INCLUDE_DIRS}
-                           #${X11_INCLUDE_DIR}
-                           ${CMAKE_BINARY_DIR}/vcpkg_installed/x64-windows/include
-                           ${CMAKE_SOURCE_DIR}/include
-)
-target_link_directories(plugin.main${ILLIXR_BUILD_SUFFIX} PUBLIC
-                      ${CMAKE_BINARY_DIR}/vcpkg_installed/x64-windows/lib
-)
-target_link_libraries(plugin.main${ILLIXR_BUILD_SUFFIX} PUBLIC
-                      Threads::Threads
-                      yaml-cpp::yaml-cpp
-                      spdlog::spdlog
-                      ${SQLite3_LIBRARIES}
-                      Boost::serialization
-                      X11
-                      glfw
-)
-
-if(WIN32 OR MSVC)
-    target_link_libraries(plugin.main${ILLIXR_BUILD_SUFFIX} PUBLIC
-                          GLEW::GLEW
-                          OpenGL::GL
-                          Vulkan::Vulkan
-                          GPUOpen::VulkanMemoryAllocator
-    )
-else()
-
-    if(Vulkan_DEP_STR)
-        add_dependencies(plugin.main${ILLIXR_BUILD_SUFFIX} ${Vulkan_DEP_STR})
+    if(WIN32 OR MSVC)
+        set(EXE_NAME main${ILLIXR_BUILD_SUFFIX})
+    else()
+        set(EXE_NAME main${ILLIXR_BUILD_SUFFIX}.exe)
     endif()
 
+    set(VULKAN_FILES
+        src/display/x11_direct.hpp
+        src/display/x11_direct.cpp
+        src/display/glfw_extended.hpp
+        src/display/glfw_extended.cpp
+        src/display/headless.hpp
+        src/display/headless.cpp
+        ${CMAKE_SOURCE_DIR}/include/illixr/vk/vk_extension_request.hpp
+        ${CMAKE_SOURCE_DIR}/include/illixr/vk/vulkan_objects.hpp
+    )
+
+    add_executable(${EXE_NAME}
+                   src/main.cpp
+                   src/illixr.hpp
+                   src/cxxopts.hpp
+                   ${CMAKE_SOURCE_DIR}/include/illixr/runtime.hpp
+                   ${CMAKE_SOURCE_DIR}/include/illixr/phonebook.hpp
+    )
+
+    add_library(plugin.main${ILLIXR_BUILD_SUFFIX} SHARED
+                src/plugin.cpp
+                src/runtime_impl.cpp
+                src/illixr.hpp
+                src/cxxopts.hpp
+                src/vulkan_display.hpp
+                ${CMAKE_SOURCE_DIR}/include/illixr/runtime.hpp
+                ${CMAKE_SOURCE_DIR}/include/illixr/phonebook.hpp
+                ${VULKAN_FILES}
+                $<TARGET_OBJECTS:illixr_vulkan_utils>
+    )
+
+    if(WIN32 OR MSVC)
+        target_compile_definitions(plugin.main${ILLIXR_BUILD_SUFFIX} PRIVATE BUILDING_LIBRARY)
+        target_compile_options(plugin.main${ILLIXR_BUILD_SUFFIX} PRIVATE /EHsc)
+        target_compile_options(${EXE_NAME} PRIVATE /EHsc)
+    endif()
+    ##############
+    # yaml parser
+    ##############
+    if(BUILD_OXR_INTERFACE)
+        target_compile_definitions(plugin.main${ILLIXR_BUILD_SUFFIX} PUBLIC -DOXR_INTERFACE)
+    endif()
+
+    get_external(Yamlcpp)
+
+    target_compile_definitions(plugin.main${ILLIXR_BUILD_SUFFIX} PRIVATE ILLIXR_INSTALL_PATH="${CMAKE_INSTALL_PREFIX}")
+
     target_include_directories(plugin.main${ILLIXR_BUILD_SUFFIX} PUBLIC
-                               ${Boost_INCLUDE_DIR}
-                               ${GLEW_INCLUDE_DIR}
-                               ${GLU_INCLUDE_DIR}
-                               ${gl_INCLUDE_DIRS}
+                               ${SQLite3_INCLUDE_DIR}
+                               ${yaml-cpp_INCLUDE_DIRS}
+                               #${X11_INCLUDE_DIR}
+                               ${CMAKE_BINARY_DIR}/vcpkg_installed/x64-windows/include
+                               ${CMAKE_SOURCE_DIR}/include
     )
-
+    target_link_directories(plugin.main${ILLIXR_BUILD_SUFFIX} PUBLIC
+                            ${CMAKE_BINARY_DIR}/vcpkg_installed/x64-windows/lib
+    )
     target_link_libraries(plugin.main${ILLIXR_BUILD_SUFFIX} PUBLIC
-                      stdc++fs
-                      dl
-                      ${GLEW_LIBRARIES}
-                      ${glu_LDFLAGS}
-                      ${gl_LIBRARIES}
-                      ${Vulkan_LIBRARIES}
+                          Threads::Threads
+                          yaml-cpp::yaml-cpp
+                          spdlog::spdlog
+                          ${SQLite3_LIBRARIES}
+                          Boost::serialization
+                          X11
+                          glfw
     )
+
+    if(WIN32 OR MSVC)
+        target_link_libraries(plugin.main${ILLIXR_BUILD_SUFFIX} PUBLIC
+                              GLEW::GLEW
+                              OpenGL::GL
+                              Vulkan::Vulkan
+                              GPUOpen::VulkanMemoryAllocator
+        )
+    else()
+
+        if(Vulkan_DEP_STR)
+            add_dependencies(plugin.main${ILLIXR_BUILD_SUFFIX} ${Vulkan_DEP_STR})
+        endif()
+
+        target_include_directories(plugin.main${ILLIXR_BUILD_SUFFIX} PUBLIC
+                                   ${Boost_INCLUDE_DIR}
+                                   ${GLEW_INCLUDE_DIR}
+                                   ${GLU_INCLUDE_DIR}
+                                   ${gl_INCLUDE_DIRS}
+        )
+
+        target_link_libraries(plugin.main${ILLIXR_BUILD_SUFFIX} PUBLIC
+                              stdc++fs
+                              dl
+                              ${GLEW_LIBRARIES}
+                              ${glu_LDFLAGS}
+                              ${gl_LIBRARIES}
+                              ${Vulkan_LIBRARIES}
+        )
+    endif()
+
+    target_include_directories(${EXE_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/include)
+    target_link_libraries(${EXE_NAME} plugin.main${ILLIXR_BUILD_SUFFIX})
+
+    install(TARGETS ${EXE_NAME} DESTINATION bin)
+    install(TARGETS plugin.main${ILLIXR_BUILD_SUFFIX} DESTINATION lib)
+else()
+    if(BUILD_QUEST_UNITY_INTERFACE)
+        # Unity interface build — no main.cpp, no native_app_glue.
+        # Mirrors plugin.main on Linux/Windows: exports runtime_factory and
+        # links against the plugins needed for the Unity scenario.
+        # Loaded by unity_bridge.so via runtime_factory() call.
+        add_library(plugin.main${ILLIXR_BUILD_SUFFIX} SHARED
+                    src/illixr.hpp
+                    src/plugin.cpp
+                    src/runtime_impl.cpp
+                    src/no_op_record_logger.hpp
+                    src/sqlite_record_logger.hpp
+                    src/stdout_record_logger.hpp
+                    ${CMAKE_SOURCE_DIR}/include/illixr/dynamic_lib.hpp
+                    ${CMAKE_SOURCE_DIR}/include/illixr/error_util.hpp
+                    ${CMAKE_SOURCE_DIR}/include/illixr/plugin.hpp
+                    ${CMAKE_SOURCE_DIR}/include/illixr/relative_clock.hpp
+                    ${CMAKE_SOURCE_DIR}/include/illixr/runtime.hpp
+                    ${CMAKE_SOURCE_DIR}/include/illixr/stoplight.hpp
+                    ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
+        )
+        target_include_directories(plugin.main${ILLIXR_BUILD_SUFFIX} PRIVATE
+                                   ${ILLIXR_SOURCE_DIR}/include
+                                   ${jnigraphics-lib}
+        )
+
+        target_link_libraries(plugin.main${ILLIXR_BUILD_SUFFIX} PRIVATE
+                              plugin.tcp_network_backend${ILLIXR_BUILD_SUFFIX}
+                              plugin.quest3.unity${ILLIXR_BUILD_SUFFIX}
+                              android
+                              Eigen3::Eigen
+                              Boost::serialization
+                              spdlog::spdlog_android
+        )
+
+    else()
+        add_library(native-activity SHARED
+                    src/illixr.hpp
+                    src/main.cpp
+                    src/plugin.cpp
+                    src/runtime_impl.cpp
+                    src/no_op_record_logger.hpp
+                    src/sqlite_record_logger.hpp
+                    src/stdout_record_logger.hpp
+                    ${CMAKE_SOURCE_DIR}/include/illixr/dynamic_lib.hpp
+                    ${CMAKE_SOURCE_DIR}/include/illixr/error_util.hpp
+                    ${CMAKE_SOURCE_DIR}/include/illixr/plugin.hpp
+                    ${CMAKE_SOURCE_DIR}/include/illixr/relative_clock.hpp
+                    ${CMAKE_SOURCE_DIR}/include/illixr/runtime.hpp
+                    ${CMAKE_SOURCE_DIR}/include/illixr/stoplight.hpp
+                    ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
+        )
+        target_include_directories(native-activity PRIVATE
+                                   ${ILLIXR_SOURCE_DIR}/include
+                                   ${OpenCV_LIBS}
+                                   ${jnigraphics-lib}
+        )
+
+        target_link_libraries(native-activity
+                              #plugin.extended_window${ILLIXR_BUILD_SUFFIX}
+                              #OpenVINS_plugin
+                              #plugin.pose_prediction${ILLIXR_BUILD_SUFFIX}
+                              #plugin.pose_lookup${ILLIXR_BUILD_SUFFIX}
+                              #plugin.fauxpose${ILLIXR_BUILD_SUFFIX}
+                              #plugin.common_lock${ILLIXR_BUILD_SUFFIX}
+                              #plugin.timewarp_gl${ILLIXR_BUILD_SUFFIX}
+                              #plugin.rk4_integrator${ILLIXR_BUILD_SUFFIX}
+                              #plugin.offline_imu${ILLIXR_BUILD_SUFFIX}
+                              #plugin.offline_cam${ILLIXR_BUILD_SUFFIX}
+                              #plugin.gtsam_integrator${ILLIXR_BUILD_SUFFIX}
+                              #plugin.gldemo${ILLIXR_BUILD_SUFFIX}
+                              #plugin.android_data${ILLIXR_BUILD_SUFFIX}
+                              plugin.tcp_network_backend${ILLIXR_BUILD_SUFFIX}
+                              plugin.udp_network_backend${ILLIXR_BUILD_SUFFIX}
+                              plugin.network_latency.tx${ILLIXR_BUILD_SUFFIX}
+                              plugin.offload_rendering_client${ILLIXR_BUILD_SUFFIX}
+                              plugin.openxr_interface${ILLIXR_BUILD_SUFFIX}
+                              android
+                              native_app_glue
+                              EGL
+                              GLESv3
+                              Eigen3::Eigen
+                              Boost::serialization
+                              spdlog::spdlog_android
+        )
+    endif()
 endif()
-
-target_include_directories(${EXE_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/include)
-target_link_libraries(${EXE_NAME} plugin.main${ILLIXR_BUILD_SUFFIX})
-
-
-install(TARGETS ${EXE_NAME} DESTINATION bin)
-install(TARGETS plugin.main${ILLIXR_BUILD_SUFFIX} DESTINATION lib)

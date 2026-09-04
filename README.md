@@ -94,6 +94,11 @@ component. ILLIXR currently contains the following [plugins][P66] and [services]
   scene provisioning system, allowing reconstruction to run on a server and meshes
   to be delivered to the XR device over the network.
 
+### Interfaces
+
+- [semantic_python][P71]
+
+
 [^1]: Source is hosted in an external repository under the [ILLIXR project][E7].
 
 Some components, such as eye tracking, are available as standalone components and are in the process
@@ -437,6 +442,8 @@ request!
 [P69]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#ada
 
 [P70]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#udp_network_backend
+
+[P71]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#semantic_python
 
 [//]: # (- Third Party Packages -)
 
