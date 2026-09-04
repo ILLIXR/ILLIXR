@@ -365,7 +365,7 @@ Topic details:
 
 &nbsp;&nbsp;[**Details**][P19]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C19]
 
-## openwarp_vk ![Linux Logo](images/tux.png)
+## openwarp_vk ![Linux Logo](images/tux.png) ![Windows logo](images/windows.png)
 
 Provides a Vulkan-based reprojection service.
 
