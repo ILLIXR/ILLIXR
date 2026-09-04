@@ -307,8 +307,13 @@ bool xr_sensor_capture::init_openxr() {
     xrCreateReferenceSpace(xr_session_, &space_ci, &head_space_);
 
     // LOCAL space is the session origin reference frame.
-    space_ci.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_LOCAL;
+    space_ci.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_STAGE;
     xrCreateReferenceSpace(xr_session_, &space_ci, &local_space_);
+    if (xrCreateReferenceSpace(xr_session_, &space_ci, &local_space_) != XR_SUCCESS) {
+        spdlog::get("illixr")->warn("STAGE not supported, falling back to LOCAL");
+        space_ci.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_LOCAL;
+        xrCreateReferenceSpace(xr_session_, &space_ci, &local_space_);
+    }
 
     // Load all XR_META_environment_depth entry points from openxr.h PFN types.
     // These are part of the standard Khronos SDK - no Meta SDK headers needed.
@@ -533,29 +538,71 @@ static void on_capture_failed(void* /*ctx*/, ACameraCaptureSession* /*session*/,
 //      queue it for Vulkan readback on the render thread.
 // ---------------------------------------------------------------------------
 
-void xr_sensor_capture::acquire_depth_unity_thread(int64_t predicted_display_time_ns) {
+void xr_sensor_capture::acquire_depth_unity_thread(int64_t predicted_display_time_ns,
+                                                   float lens_pos_x, float lens_pos_y,
+                                                   float lens_pos_z, float lens_rot_x,
+                                                   float lens_rot_y, float lens_rot_z,
+                                                   float lens_rot_w) {
     // ---- 1. Sample head pose (every call, 90Hz) ----
     // VIEW space is valid here because we are on Unity's main thread during
     // an active XR frame (between xrBeginFrame and xrEndFrame).
     const XrTime frame_time = static_cast<XrTime>(predicted_display_time_ns);
     {
-        // use xr_time instead of clock_boottime_xr() for xrLocateSpace
-        XrSpaceLocation            loc{XR_TYPE_SPACE_LOCATION};
-        const XrSpaceLocationFlags required = XR_SPACE_LOCATION_POSITION_VALID_BIT | XR_SPACE_LOCATION_ORIENTATION_VALID_BIT;
-        XrResult                   result   = xrLocateSpace(head_space_, local_space_, frame_time, &loc);
-        if (!XR_FAILED(result) && (loc.locationFlags & required) == required) {
+
+        XrSpaceLocation loc{XR_TYPE_SPACE_LOCATION};
+        const XrSpaceLocationFlags required =
+                XR_SPACE_LOCATION_POSITION_VALID_BIT | XR_SPACE_LOCATION_ORIENTATION_VALID_BIT;
+        if (!XR_FAILED(xrLocateSpace(head_space_, local_space_, frame_time, &loc)) &&
+            (loc.locationFlags & required) == required) {
+
+            // Apply lens offset to get physical RGB camera pose.
+            // The lens offset is in Unity LH space so negate Z components
+            // to convert to OpenXR RH space before applying.
+            const XrQuaternionf& hq = loc.pose.orientation;
+            const XrVector3f&    hp = loc.pose.position;
+
+            // Convert lens offset rotation (Unity LH) to OpenXR RH:
+            // negate z and w components for RH quaternion convention.
+            const float lrx =  lens_rot_x;
+            const float lry =  lens_rot_y;
+            const float lrz = -lens_rot_z;
+            const float lrw = -lens_rot_w;
+
+            // Rotate lens position offset by head orientation, then add.
+            // offset_world = head_rotation * lens_pos_local
+            const float lpx =  lens_pos_x;
+            const float lpy =  lens_pos_y;
+            const float lpz = -lens_pos_z; // negate Z for RH
+
+            // Rotate lpx,lpy,lpz by hq:
+            // v' = hq * v * hq^-1
+            const float tx = 2.f * (hq.y * lpz - hq.z * lpy);
+            const float ty = 2.f * (hq.z * lpx - hq.x * lpz);
+            const float tz = 2.f * (hq.x * lpy - hq.y * lpx);
+
+            XrPosef cam_pose;
+            cam_pose.position.x = hp.x + tx * hq.w + (hq.y * tz - hq.z * ty);
+            cam_pose.position.y = hp.y + ty * hq.w + (hq.z * tx - hq.x * tz);
+            cam_pose.position.z = hp.z + tz * hq.w + (hq.x * ty - hq.y * tx);
+
+            // Compose head orientation with lens rotation offset:
+            // cam_rot = hq * lens_rot
+            cam_pose.orientation.x = hq.w*lrx + hq.x*lrw + hq.y*lrz - hq.z*lry;
+            cam_pose.orientation.y = hq.w*lry - hq.x*lrz + hq.y*lrw + hq.z*lrx;
+            cam_pose.orientation.z = hq.w*lrz + hq.x*lry - hq.y*lrx + hq.z*lrw;
+            cam_pose.orientation.w = hq.w*lrw - hq.x*lrx - hq.y*lry - hq.z*lrz;
+
             spdlog::get("illixr")->info(
-                "[head_pose] pos=({:.4f},{:.4f},{:.4f}) orient=({:.4f},{:.4f},{:.4f},{:.4f}) flags=0x{:X}", loc.pose.position.x,
-                loc.pose.position.y, loc.pose.position.z, loc.pose.orientation.x, loc.pose.orientation.y,
-                loc.pose.orientation.z, loc.pose.orientation.w, static_cast<unsigned>(loc.locationFlags));
+                    "[head_pose] pos=({:.4f},{:.4f},{:.4f}) orient=({:.4f},{:.4f},{:.4f},{:.4f}) flags=0x{:X}", cam_pose.position.x,
+                    cam_pose.position.y, cam_pose.position.z, cam_pose.orientation.x, cam_pose.orientation.y,
+                    cam_pose.orientation.z, cam_pose.orientation.w, static_cast<unsigned>(loc.locationFlags));
+
             float mat[16]{};
-            pose_to_matrix(loc.pose, mat);
+            pose_to_matrix(cam_pose, mat);
+
             std::lock_guard<std::mutex> lock(latest_head_pose_mutex_);
             std::memcpy(latest_head_pose_.pose, mat, sizeof(mat));
             latest_head_pose_.valid = true;
-        } else {
-            spdlog::get("illixr")->debug("[head_pose] xrLocateSpace failed or invalid (flags=0x{:X})",
-                                         static_cast<unsigned>(loc.locationFlags));
         }
     }
 
@@ -854,9 +901,13 @@ const xr_sensor_capture::depth_frame_data* xr_sensor_capture::find_closest_depth
     return best;
 }
 
-extern "C" void illixr_acquire_depth(int64_t predicted_display_time_ns) {
+extern "C" void illixr_acquire_depth(int64_t predicted_display_time_ns, float lens_pos_x,
+                                     float lens_pos_y, float lens_pos_z, float lens_rot_x,
+                                     float lens_rot_y, float lens_rot_z, float lens_rot_w) {
     if (g_sensor_capture_instance != nullptr)
-        g_sensor_capture_instance->acquire_depth_unity_thread(predicted_display_time_ns);
+        g_sensor_capture_instance->acquire_depth_unity_thread(predicted_display_time_ns, lens_pos_x,
+                                                              lens_pos_y, lens_pos_z, lens_rot_x,
+                                                              lens_rot_y, lens_rot_z, lens_rot_w);
 }
 
 // ---------------------------------------------------------------------------

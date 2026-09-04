@@ -87,7 +87,9 @@ public:
     // Must be called between xrBeginFrame and xrEndFrame (i.e. during Unity's frame).
     // Also samples the current head pose via xrLocateSpace(VIEW, LOCAL) and stores
     // it in latest_head_pose_ for on_capture_completed() to snapshot.
-    void acquire_depth_unity_thread(int64_t predicted_display_time_ns);
+    void acquire_depth_unity_thread(int64_t predicted_display_time_ns, float lens_pos_x,
+                                    float lens_pos_y, float lens_pos_z, float lens_rot_x,
+                                    float lens_rot_y, float lens_rot_z, float lens_rot_w);
 
     // Public so on_render_event callback can call them from outside the class.
     bool init_vulkan();
