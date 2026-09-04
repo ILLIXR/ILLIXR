@@ -1,5 +1,4 @@
 // Copyright 2020-2026, The Board of Trustees of the University of Illinois.
-// SPDX-License-Identifier: BSL-1.0
 /*!
  * @file
  * @brief  ILLIXR Unity component implementation.
@@ -130,40 +129,6 @@ extern "C" ILLIXR::plugin* illixr_unity_create_plugin(ILLIXR::phonebook* pb) {
  * @param depth_pose       Depth camera pose as row-major 4x4 matrix.
  * @param max_depth        Maximum depth value.
  */
-/*extern "C" void illixr_unity_send_semantic_frame(int32_t        frame_number,
-                                                 int32_t        width,
-                                                 int32_t        height,
-                                                 const uint8_t* image,
-                                                 int32_t        image_len,
-                                                 int32_t        depth_width,
-                                                 int32_t        depth_height,
-                                                 const uint8_t* depth,
-                                                 int32_t        depth_len,
-                                                 float          depth_near_z,
-                                                 const float*   intrinsics,
-                                                 const float*   depth_intrinsics,
-                                                 const float*   rgb_camera_pose,
-                                                 const float*   depth_pose,
-                                                 float          max_depth) {
-    if (unity_component_obj == nullptr)
-        return;
-
-    unity_component_obj->send_semantic_frame(frame_number,
-                                             width,
-                                             height,
-                                             image,
-                                             image_len,
-                                             depth_width,
-                                             depth_height,
-                                             depth,
-                                             depth_len,
-                                             depth_near_z,
-                                             intrinsics,
-                                             depth_intrinsics,
-                                             rgb_camera_pose,
-                                             depth_pose,
-                                             max_depth);
-}*/
 
 // Called by Unity when user asks a question — writes voice_query to switchboard
 extern "C" void illixr_unity_send_voice_query(uint64_t query_id_, const uint8_t* pcm_data, int32_t pcm_len,

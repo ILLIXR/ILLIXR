@@ -3,14 +3,14 @@ cmake_minimum_required(VERSION 3.22)
 # sensor_encoder is Android-only (MediaCodec). See note in xr_sensor_capture
 # about ANDROID variable availability after project().
 if(NOT ANDROID)
-    message(FATAL_ERROR "android_sensors requires an Android build target (MediaCodec)")
+    message(FATAL_ERROR "quest3.unity requires an Android build target (MediaCodec)")
 endif()
 
 find_package(OpenXR REQUIRED)
 message(WARNING "OpenXR version: ${OpenXR_VERSION}")
 find_library(CAMERA2_LIB camera2ndk)
 
-set(PLUGIN_NAME plugin.android_sensors${ILLIXR_BUILD_SUFFIX})
+set(PLUGIN_NAME plugin.quest3.unity${ILLIXR_BUILD_SUFFIX})
 
 # Unity PluginAPI headers (IUnityInterface.h, IUnityGraphicsVulkan.h, etc.)
 # Located in <Unity Editor>/Editor/Data/PluginAPI on the build machine.

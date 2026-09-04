@@ -108,6 +108,8 @@ nav:
           - 'OpenNI': plugin_README/README_openni.md
           - 'Openwarp': plugin_README/README_openwarp_vk.md
           - 'ORM_SLAM3': plugin_README/README_orb_slam3.md
+          - 'Quest 3':
+              - 'Unity': plugins_README/README_quest3_unity.md
           - 'Record_imu_cam': plugin_README/README_record_imu_cam.md
           - 'Semantic_python': plugin_README/README_semantic_python.md
           - 'Timewarp_gl': plugin_README/README_timewarp_gl.md
@@ -117,6 +119,8 @@ nav:
           - 'Zed': plugin_README/README_zed.md
           - 'Zed Data Injection': plugin_README/README_zed_data_injection.md
           - 'Zed Data Capture': plugin_README/zed_capture.md
+      - 'Interfaces': interfaces/index.md
+          - 'Unity Android': interfaces/unity_android.md
       - 'Poses': structs/poses/intro.md
       - 'Working with ILLIXR':
           - 'Modifying a Plugin': working_with/modifying_a_plugin.md

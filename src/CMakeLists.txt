@@ -110,7 +110,7 @@ if(NOT ANDROID)
     install(TARGETS ${EXE_NAME} DESTINATION bin)
     install(TARGETS plugin.main${ILLIXR_BUILD_SUFFIX} DESTINATION lib)
 else()
-    if(BUILD_UNITY_INTERFACE)
+    if(BUILD_QUEST_UNITY_INTERFACE)
         # Unity interface build — no main.cpp, no native_app_glue.
         # Mirrors plugin.main on Linux/Windows: exports runtime_factory and
         # links against the plugins needed for the Unity scenario.
@@ -137,7 +137,7 @@ else()
 
         target_link_libraries(plugin.main${ILLIXR_BUILD_SUFFIX} PRIVATE
                               plugin.tcp_network_backend${ILLIXR_BUILD_SUFFIX}
-                              plugin.android_sensors${ILLIXR_BUILD_SUFFIX}
+                              plugin.quest3.unity${ILLIXR_BUILD_SUFFIX}
                               android
                               Eigen3::Eigen
                               Boost::serialization
@@ -155,7 +155,6 @@ else()
                     src/stdout_record_logger.hpp
                     ${CMAKE_SOURCE_DIR}/include/illixr/dynamic_lib.hpp
                     ${CMAKE_SOURCE_DIR}/include/illixr/error_util.hpp
-                    #${CMAKE_SOURCE_DIR}/include/illixr/extended_window.hpp
                     ${CMAKE_SOURCE_DIR}/include/illixr/plugin.hpp
                     ${CMAKE_SOURCE_DIR}/include/illixr/relative_clock.hpp
                     ${CMAKE_SOURCE_DIR}/include/illixr/runtime.hpp

@@ -1,5 +1,4 @@
 // Copyright 2020-2026, The Board of Trustees of the University of Illinois.
-// SPDX-License-Identifier: BSL-1.0
 /*!
  * @file
  * @brief  Unity interface entry point for ILLIXR.
@@ -32,7 +31,12 @@
 // colon-separated list of plugin names to load. runtime_impl::load_so
 // reorders these so any plugin whose name contains "network_backend"
 // starts first. Extend this list as additional plugins are implemented.
-static constexpr const char* ILLIXR_ANDROID_COMP = "tcp_network_backend:android_sensors";
+#ifdef BUILD_QUEST_UNITY_INTERFACE
+static constexpr const char* ILLIXR_ANDROID_COMP = "tcp_network_backend:quest3.unity";
+#else
+#error "This path is not yet complete."
+static constexpr const char* ILLIXR_ANDROID_COMP = "tcp_network_backend";
+#endif
 // additional plugins added here as needed, e.g.:
 // static constexpr const char* ILLIXR_ANDROID_COMP = "tcp_network_backend:my_plugin";
 
@@ -140,7 +144,7 @@ void illixr_unity_shutdown() {
 // Depth acquisition pass-throughs
 //
 // illixr_acquire_depth() and illixr_get_render_event_callback() are defined
-// in libplugin.android_sensors.so and loaded into the same process by
+// in libplugin.quest3.unity.*.so (or similar) and loaded into the same process by
 // illixr_unity_init(). We resolve them lazily via dlsym so that this bridge
 // library has no link-time dependency on the sensor plugin.
 // ---------------------------------------------------------------------------

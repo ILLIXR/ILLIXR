@@ -27,6 +27,7 @@ target_include_directories(${ILLIXR_INTERFACE_NAME} PRIVATE
 
 target_compile_definitions(${ILLIXR_INTERFACE_NAME} PRIVATE
                            ILLIXR_BUILD_SUFFIX_STR="${ILLIXR_BUILD_SUFFIX}"
+                           BUILD_QUEST_UNITY_INTERFACE
 )
 
 target_link_libraries(${ILLIXR_INTERFACE_NAME} PRIVATE
