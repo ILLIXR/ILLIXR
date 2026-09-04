@@ -268,7 +268,8 @@
       "cmake_flag": "USE_OFFLOAD_DATA=ON",
       "dependencies": [],
       "OS": [
-        "linux"
+        "linux",
+        "windows"
       ]
     },
     {
