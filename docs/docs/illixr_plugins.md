@@ -500,7 +500,7 @@ Topic details:
 
 &nbsp;&nbsp;[**Details**][P30]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C30]
 
-## zed ![Linux Logo](images/tux.png)
+## zed ![Linux Logo](images/tux.png) ![Windows logo](images/windows.png)
 
 Reads images and [_IMU_][G13] measurements from the [ZED Mini][E13].
 Unlike `offline_imu`, `zed` additionally has RGB and [_depth_][G11] data.
@@ -519,7 +519,7 @@ Topic details:
 
 &nbsp;&nbsp;[**Details**][P31]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C31]
 
-## zed.data_injection ![Linux Logo](images/tux.png)
+## zed.data_injection ![Linux Logo](images/tux.png) ![Windows logo](images/windows.png)
 
 Reads images and pose information from disk and publishes them to ILLIXR.
 

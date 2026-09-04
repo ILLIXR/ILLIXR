@@ -8,9 +8,9 @@
 
 namespace ILLIXR {
 
-class zed_imu_thread : public threadloop {
+class MY_EXPORT_API zed_imu_thread : public threadloop {
 public:
-    [[maybe_unused]] zed_imu_thread(const std::string& name, phonebook* pb);
+    [[maybe_unused]] [[maybe_unused]] zed_imu_thread(const std::string& name, phonebook* pb);
     void stop() override;
     void start() override;
     ~zed_imu_thread() override;
