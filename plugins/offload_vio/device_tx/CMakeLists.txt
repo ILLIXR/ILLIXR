@@ -55,5 +55,4 @@ if(WIN32 OR MSVC)
     target_compile_definitions(${PLUGIN_NAME} PRIVATE BUILDING_LIBRARY)
 endif()
 
-    install(TARGETS ${PLUGIN_NAME} DESTINATION lib)
-endif()
+install(TARGETS ${PLUGIN_NAME} DESTINATION lib)
