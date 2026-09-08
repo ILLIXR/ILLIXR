@@ -505,11 +505,8 @@ void native_renderer::create_offscreen_pool() {
     alloc_info.flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT;
     alloc_info.usage = VMA_MEMORY_USAGE_GPU_ONLY;
 
-    VK_ASSERT_SUCCESS(vmaFindMemoryTypeIndexForImageInfo(
-    display_sink_->vma_allocator_,
-    &sample_create_info,
-    &alloc_info,
-    &mem_type_index));
+    VK_ASSERT_SUCCESS(
+        vmaFindMemoryTypeIndexForImageInfo(display_sink_->vma_allocator_, &sample_create_info, &alloc_info, &mem_type_index));
 
     offscreen_export_mem_alloc_info_.sType = VK_STRUCTURE_TYPE_EXPORT_MEMORY_ALLOCATE_INFO;
     offscreen_export_mem_alloc_info_.handleTypes =
