@@ -378,6 +378,17 @@ Topic details:
 
 &nbsp;&nbsp;**Details**&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C22]
 
+## quest3.unity ![Windows logo](images/android.png)
+
+Captures camera and depth images from a Quest 3 headset, encodes them, and sends them over the network to a server. The
+camera images are captured via standard Android APIs. The depth images have to come over OpenXR, so the plugin hooks into the Unity app and uses it to acquire the depth images.
+
+Topic details:
+
+-   *Publishes* [`semantic_frame][A30] to `semantic_frame` topic
+
+&nbsp;&nbsp;[**Details**][P35]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C41]
+
 ## realsense ![Linux Logo](images/tux.png)
 
 Reads images and [_IMU_][G13] measurements from the [Intel Realsense][E14].
@@ -595,6 +606,8 @@ See [Getting Started][I11] for more information on adding plugins to a [_profile
 
 [P34]:  plugin_README/README_network_backends.md
 
+[P35]:  plugin_README/README_quest3_unity.md
+
 [S10]:   illixr_services.md#pose_prediction
 
 [P34]:   plugin_README/README_semantic_python.md
@@ -698,6 +711,8 @@ See [Getting Started][I11] for more information on adding plugins to a [_profile
 
 [C40]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/semantic_python
 
+[C41]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/quest3/unity
+
 [//]: # (- Internal -)
 
 [I10]:   working_with/writing_your_plugin.md
@@ -766,4 +781,6 @@ See [Getting Started][I11] for more information on adding plugins to a [_profile
 
 [A28]:   api/
 
-[A29]:   api/
+[A29]:   api/??
+
+[A30]:   api/??
