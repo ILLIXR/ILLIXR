@@ -119,6 +119,35 @@ void UNITY_INTERFACE_API illixr_release_depth() {
     if (g_sensor_capture_instance != nullptr)
         g_sensor_capture_instance->release_depth_after_submit();
 }
+
+int64_t UNITY_INTERFACE_API illixr_get_last_capture_time_ns() {
+    if (g_sensor_capture_instance == nullptr)
+        return 0;
+    std::lock_guard<std::mutex> lock(
+            g_sensor_capture_instance->capture_result_mutex_);
+    // Find most recent valid capture time
+    XrTime best = 0;
+    for (const auto& e : g_sensor_capture_instance->capture_result_cache_) {
+        if (e.valid && e.capture_time > best)
+            best = e.capture_time;
+    }
+    return static_cast<int64_t>(best);
+}
+
+double UNITY_INTERFACE_API illixr_get_last_capture_ovr_time_sec() {
+    if (g_sensor_capture_instance == nullptr)
+        return 0.0;
+    std::lock_guard<std::mutex> lock(
+            g_sensor_capture_instance->capture_result_mutex_);
+    XrTime best = 0;
+    for (const auto& e : g_sensor_capture_instance->capture_result_cache_) {
+        if (e.valid && e.capture_time > best)
+            best = e.capture_time;
+    }
+    if (best == 0) return 0.0;
+    const double boottime_sec = static_cast<double>(best) * 1e-9;
+    return boottime_sec + g_sensor_capture_instance->ovr_time_offset_sec_;
+}
 } // extern "C"
 
 // ---------------------------------------------------------------------------
@@ -299,22 +328,15 @@ bool xr_sensor_capture::init_openxr() {
     XrReferenceSpaceCreateInfo space_ci{XR_TYPE_REFERENCE_SPACE_CREATE_INFO};
     space_ci.poseInReferenceSpace = {{0.f, 0.f, 0.f, 1.f}, {0.f, 0.f, 0.f}};
 
-    // VIEW space tracks the eye/head position. xrLocateSpace with VIEW space
-    // is only valid on Unity's main thread during an active XR frame - it is
-    // called exclusively from acquire_depth_unity_thread() which satisfies
-    // that constraint.
-    space_ci.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_VIEW;
-    xrCreateReferenceSpace(xr_session_, &space_ci, &head_space_);
-
-    // LOCAL space is the session origin reference frame.
+    // STAGE space is anchored at the floor — matches Unity world space origin
+    // convention. Falls back to LOCAL (session-start head position) if the
+    // device has not been floor-calibrated.
     space_ci.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_STAGE;
-    xrCreateReferenceSpace(xr_session_, &space_ci, &local_space_);
     if (xrCreateReferenceSpace(xr_session_, &space_ci, &local_space_) != XR_SUCCESS) {
         spdlog::get("illixr")->warn("STAGE not supported, falling back to LOCAL");
         space_ci.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_LOCAL;
         xrCreateReferenceSpace(xr_session_, &space_ci, &local_space_);
     }
-
     // Load all XR_META_environment_depth entry points from openxr.h PFN types.
     // These are part of the standard Khronos SDK - no Meta SDK headers needed.
     auto load = [&](const char* fname, PFN_xrVoidFunction* out) {
@@ -360,10 +382,6 @@ void xr_sensor_capture::destroy_openxr() {
         depth_provider_ = XR_NULL_HANDLE;
     }
     // Reference spaces are always ours to destroy.
-    if (head_space_ != XR_NULL_HANDLE) {
-        xrDestroySpace(head_space_);
-        head_space_ = XR_NULL_HANDLE;
-    }
     if (local_space_ != XR_NULL_HANDLE) {
         xrDestroySpace(local_space_);
         local_space_ = XR_NULL_HANDLE;
@@ -524,81 +542,53 @@ static void on_capture_failed(void* /*ctx*/, ACameraCaptureSession* /*session*/,
                         failure->reason, failure->frameNumber);
 }
 
-// ---------------------------------------------------------------------------
-// Depth acquisition via XR_META_environment_depth
-//
-// Called from Unity's LateUpdate() at ~90Hz on Unity's main thread during an
-// active XR frame. This is the only valid context for xrLocateSpace with VIEW
-// space on Quest 3.
-//
-// Two things happen on every call:
-//   1. Sample the current head pose via xrLocateSpace(VIEW, LOCAL) and store
-//      it in latest_head_pose_ for on_capture_completed() to snapshot.
-//   2. Every DEPTH_ACQUIRE_EVERY calls (~10fps), acquire a depth frame and
-//      queue it for Vulkan readback on the render thread.
-// ---------------------------------------------------------------------------
+void xr_sensor_capture::acquire_depth_unity_thread(
+        int64_t      predicted_display_time_ns,
+        double       ovr_plugin_time_sec,
+        const float* rgb_camera_pose_lh,
+        const float* head_pose_lh) {
 
-void xr_sensor_capture::acquire_depth_unity_thread(int64_t predicted_display_time_ns, float lens_pos_x, float lens_pos_y,
-                                                   float lens_pos_z, float lens_rot_x, float lens_rot_y, float lens_rot_z,
-                                                   float lens_rot_w) {
-    // ---- 1. Sample head pose (every call, 90Hz) ----
-    // VIEW space is valid here because we are on Unity's main thread during
-    // an active XR frame (between xrBeginFrame and xrEndFrame).
+    // Compute offset between OVRPlugin time and CLOCK_BOOTTIME every call.
+    // OVRPlugin time is what ovrp_GetNodePoseStateAtTime expects.
+    // This offset lets C++ store capture times in OVRPlugin seconds.
+    const double boottime_sec =
+            static_cast<double>(clock_boottime_xr()) * 1e-9;
+    ovr_time_offset_sec_ = ovr_plugin_time_sec - boottime_sec;
+
     const XrTime frame_time = static_cast<XrTime>(predicted_display_time_ns);
+
+    const float* p = rgb_camera_pose_lh;
+    spdlog::get("illixr")->debug(
+            "[acquire_depth] rgb_pose_lh col0=({:.3f},{:.3f},{:.3f},{:.3f})"
+            " col1=({:.3f},{:.3f},{:.3f},{:.3f})"
+            " col2=({:.3f},{:.3f},{:.3f},{:.3f})"
+            " col3=({:.3f},{:.3f},{:.3f},{:.3f})",
+            p[0], p[1], p[2],  p[3],
+            p[4], p[5], p[6],  p[7],
+            p[8], p[9], p[10], p[11],
+            p[12],p[13],p[14], p[15]);
+    // ---- 1. Store RGB camera pose (every call, 90Hz) ----
+    // The poses arrive from Unity in left-handed world space (same convention
+    // as StreamingOrchestrator.cs). Convert to right-handed to match the
+    // OpenXR convention used everywhere else in this plugin.
+    // LhToRh mirrors GrpcFramesClient.BuildMessage:
+    //   m.m02 -> -m.m02, m.m12 -> -m.m12,
+    //   m.m20 -> -m.m20, m.m21 -> -m.m21, m.m23 -> -m.m23,
+    //   m.m32 -> -m.m32
+    // Unity Matrix4x4 is stored column-major in memory:
+    //   index = col*4 + row, so m.mRC = ptr[C*4+R]
+    // Output is row-major float[16] as used throughout this plugin.
     {
-        XrSpaceLocation            loc{XR_TYPE_SPACE_LOCATION};
-        const XrSpaceLocationFlags required = XR_SPACE_LOCATION_POSITION_VALID_BIT | XR_SPACE_LOCATION_ORIENTATION_VALID_BIT;
-        if (!XR_FAILED(xrLocateSpace(head_space_, local_space_, frame_time, &loc)) &&
-            (loc.locationFlags & required) == required) {
-            // Apply lens offset to get physical RGB camera pose.
-            // The lens offset is in Unity LH space so negate Z components
-            // to convert to OpenXR RH space before applying.
-            const XrQuaternionf& hq = loc.pose.orientation;
-            const XrVector3f&    hp = loc.pose.position;
+        const float* p = rgb_camera_pose_lh;
+        float rh[16];
+        rh[0]  =  p[0];  rh[1]  =  p[4];  rh[2]  = -p[8];  rh[3]  =  p[12];
+        rh[4]  =  p[1];  rh[5]  =  p[5];  rh[6]  = -p[9];  rh[7]  =  p[13];
+        rh[8]  = -p[2];  rh[9]  = -p[6];  rh[10] =  p[10]; rh[11] = -p[14];
+        rh[12] =  p[3];  rh[13] =  p[7];  rh[14] = -p[11]; rh[15] =  p[15];
 
-            // Convert lens offset rotation (Unity LH) to OpenXR RH:
-            // negate z and w components for RH quaternion convention.
-            const float lrx = lens_rot_x;
-            const float lry = lens_rot_y;
-            const float lrz = -lens_rot_z;
-            const float lrw = -lens_rot_w;
-
-            // Rotate lens position offset by head orientation, then add.
-            // offset_world = head_rotation * lens_pos_local
-            const float lpx = lens_pos_x;
-            const float lpy = lens_pos_y;
-            const float lpz = -lens_pos_z; // negate Z for RH
-
-            // Rotate lpx,lpy,lpz by hq:
-            // v' = hq * v * hq^-1
-            const float tx = 2.f * (hq.y * lpz - hq.z * lpy);
-            const float ty = 2.f * (hq.z * lpx - hq.x * lpz);
-            const float tz = 2.f * (hq.x * lpy - hq.y * lpx);
-
-            XrPosef cam_pose;
-            cam_pose.position.x = hp.x + tx * hq.w + (hq.y * tz - hq.z * ty);
-            cam_pose.position.y = hp.y + ty * hq.w + (hq.z * tx - hq.x * tz);
-            cam_pose.position.z = hp.z + tz * hq.w + (hq.x * ty - hq.y * tx);
-
-            // Compose head orientation with lens rotation offset:
-            // cam_rot = hq * lens_rot
-            cam_pose.orientation.x = hq.w * lrx + hq.x * lrw + hq.y * lrz - hq.z * lry;
-            cam_pose.orientation.y = hq.w * lry - hq.x * lrz + hq.y * lrw + hq.z * lrx;
-            cam_pose.orientation.z = hq.w * lrz + hq.x * lry - hq.y * lrx + hq.z * lrw;
-            cam_pose.orientation.w = hq.w * lrw - hq.x * lrx - hq.y * lry - hq.z * lrz;
-
-            spdlog::get("illixr")->info(
-                "[head_pose] pos=({:.4f},{:.4f},{:.4f}) orient=({:.4f},{:.4f},{:.4f},{:.4f}) flags=0x{:X}", cam_pose.position.x,
-                cam_pose.position.y, cam_pose.position.z, cam_pose.orientation.x, cam_pose.orientation.y,
-                cam_pose.orientation.z, cam_pose.orientation.w, static_cast<unsigned>(loc.locationFlags));
-
-            float mat[16]{};
-            pose_to_matrix(cam_pose, mat);
-
-            std::lock_guard<std::mutex> lock(latest_head_pose_mutex_);
-            std::memcpy(latest_head_pose_.pose, mat, sizeof(mat));
-            latest_head_pose_.valid = true;
-        }
+        std::lock_guard<std::mutex> lock(latest_head_pose_mutex_);
+        std::memcpy(latest_head_pose_.pose, rh, sizeof(rh));
+        latest_head_pose_.valid = true;
     }
 
     // ---- 2. Depth acquisition (throttled to ~10fps) ----
@@ -611,7 +601,8 @@ void xr_sensor_capture::acquire_depth_unity_thread(int64_t predicted_display_tim
         sc_ci.createFlags = 0;
         XrResult result   = xr_create_depth_swapchain_(depth_provider_, &sc_ci, &depth_swapchain_);
         if (XR_FAILED(result)) {
-            spdlog::get("illixr")->error("xrCreateEnvironmentDepthSwapchainMETA failed: {}", static_cast<int>(result));
+            spdlog::get("illixr")->error("xrCreateEnvironmentDepthSwapchainMETA failed: {}",
+                                         static_cast<int>(result));
             return;
         }
 
@@ -619,14 +610,11 @@ void xr_sensor_capture::acquire_depth_unity_thread(int64_t predicted_display_tim
         xr_get_depth_state_(depth_swapchain_, &state);
         depth_swapchain_width_  = static_cast<int32_t>(state.width);
         depth_swapchain_height_ = static_cast<int32_t>(state.height);
-        // Log the actual Vulkan format so we know what pixel format the
-        // runtime delivers - this determines how to interpret the raw bytes.
         spdlog::get("illixr")->info("Depth swapchain: {}x{}", state.width, state.height);
 
         uint32_t img_count = 0;
         xr_enum_depth_images_(depth_swapchain_, 0, &img_count, nullptr);
 
-        // Unity uses Vulkan - enumerate as VkImage handles.
         std::vector<XrSwapchainImageVulkanKHR> images(img_count, {XR_TYPE_SWAPCHAIN_IMAGE_VULKAN_KHR});
         xr_enum_depth_images_(depth_swapchain_, img_count, &img_count,
                               reinterpret_cast<XrSwapchainImageBaseHeader*>(images.data()));
@@ -637,20 +625,14 @@ void xr_sensor_capture::acquire_depth_unity_thread(int64_t predicted_display_tim
 
         spdlog::get("illixr")->info("Depth swapchain: {} VkImage slots", img_count);
 
-        // Query the actual Vulkan format of the depth image so we know
-        // how to interpret the raw bytes after readback.
         if (img_count > 0 && vk_device_ != VK_NULL_HANDLE) {
-            // vkGetImageMemoryRequirements2 doesn't give us format, but we
-            // can infer it from VkPhysicalDeviceImageFormatProperties2.
-            // Simpler: check all plausible R16 formats against the image.
-            // The most direct path is to log the raw bytes of the first few
-            // pixels and let the format be determined from the data shape.
-            // For now, log the image handle so we know enumeration succeeded.
-            spdlog::get("illixr")->info("Depth VkImage[0] = {:p}", static_cast<void*>(depth_vk_images_[0]));
+            spdlog::get("illixr")->info("Depth VkImage[0] = {:p}",
+                                        static_cast<void*>(depth_vk_images_[0]));
         }
 
-        // Allocate staging buffer. R16F = 2 bytes/pixel.
-        vk_staging_size_ = static_cast<VkDeviceSize>(depth_swapchain_width_ * depth_swapchain_height_ * 2);
+        // Allocate staging buffer. R16_UNORM = 2 bytes/pixel.
+        vk_staging_size_ =
+                static_cast<VkDeviceSize>(depth_swapchain_width_ * depth_swapchain_height_ * 2);
 
         VkBufferCreateInfo buf_ci{VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO};
         buf_ci.size        = vk_staging_size_;
@@ -664,18 +646,17 @@ void xr_sensor_capture::acquire_depth_unity_thread(int64_t predicted_display_tim
         VkMemoryAllocateInfo alloc_info{VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO};
         alloc_info.allocationSize  = mem_req.size;
         alloc_info.memoryTypeIndex = find_memory_type(
-            mem_req.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+                mem_req.memoryTypeBits,
+                VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
         vkAllocateMemory(vk_device_, &alloc_info, nullptr, &vk_staging_mem_);
         vkBindBufferMemory(vk_device_, vk_staging_buf_, vk_staging_mem_, 0);
         spdlog::get("illixr")->info("Depth staging buffer allocated: {} bytes", vk_staging_size_);
     }
 
-    // Acquire. Must be between xrBeginFrame / xrEndFrame - Unity ensures this
-    // since we are called from MonoBehaviour.LateUpdate() during Unity's frame.
     XrEnvironmentDepthImageAcquireInfoMETA acq_info{XR_TYPE_ENVIRONMENT_DEPTH_IMAGE_ACQUIRE_INFO_META};
     acq_info.space       = local_space_;
-    acq_info.displayTime = clock_boottime_xr();
+    acq_info.displayTime = frame_time;
 
     XrEnvironmentDepthImageMETA depth_image{XR_TYPE_ENVIRONMENT_DEPTH_IMAGE_META};
     depth_image.views[0] = {XR_TYPE_ENVIRONMENT_DEPTH_IMAGE_VIEW_META};
@@ -683,27 +664,22 @@ void xr_sensor_capture::acquire_depth_unity_thread(int64_t predicted_display_tim
 
     XrResult result = xr_acquire_depth_image_(depth_provider_, &acq_info, &depth_image);
     if (result == XR_ENVIRONMENT_DEPTH_NOT_AVAILABLE_META)
-        return; // not an error - provider hasn't produced a frame yet
+        return;
     if (XR_FAILED(result)) {
-        // -37 (XR_ERROR_CALL_ORDER_INVALID) means we were called outside
-        // xrBeginFrame/xrEndFrame - happens on some Unity frames (GC, loading,
-        // etc.) where the XR frame is not open during LateUpdate. Silent skip.
         if (static_cast<int>(result) != -37) {
-            spdlog::get("illixr")->warn("xrAcquireEnvironmentDepthImageMETA failed: {}", static_cast<int>(result));
+            spdlog::get("illixr")->warn("xrAcquireEnvironmentDepthImageMETA failed: {}",
+                                        static_cast<int>(result));
         }
         return;
     }
 
-    // Use left-eye view (index 0).
     const XrEnvironmentDepthImageViewMETA& view = depth_image.views[0];
 
-    // FOV tangents - angleLeft and angleDown are negative.
     const float tan_left  = std::tan(view.fov.angleLeft);
     const float tan_right = std::tan(view.fov.angleRight);
     const float tan_top   = std::tan(view.fov.angleUp);
     const float tan_down  = std::tan(view.fov.angleDown);
 
-    // Use cached swapchain dimensions - static after creation.
     const float w_f      = static_cast<float>(depth_swapchain_width_);
     const float h_f      = static_cast<float>(depth_swapchain_height_);
     const float abs_left = std::abs(tan_left);
@@ -717,13 +693,11 @@ void xr_sensor_capture::acquire_depth_unity_thread(int64_t predicted_display_tim
     intr.width  = depth_swapchain_width_;
     intr.height = depth_swapchain_height_;
 
+    // Depth pose from the acquire result is in OpenXR LOCAL/STAGE space (RH).
+    // Convert to the same RH convention as rgb_camera_pose for consistency.
     float pose_mat[16]{};
     pose_to_matrix(view.pose, pose_mat);
 
-    // Store readback parameters for submit_depth_readback() which runs on
-    // the render thread via GL.IssuePluginEvent(EVENT_ACQUIRE). The Vulkan
-    // queue submit must happen on the render thread where Unity exclusively
-    // owns vk_queue_ -- submitting from the main thread causes failures.
     needs_depth_release_ = true;
 
     {
@@ -896,11 +870,14 @@ const xr_sensor_capture::depth_frame_data* xr_sensor_capture::find_closest_depth
     return best;
 }
 
-extern "C" void illixr_acquire_depth(int64_t predicted_display_time_ns, float lens_pos_x, float lens_pos_y, float lens_pos_z,
-                                     float lens_rot_x, float lens_rot_y, float lens_rot_z, float lens_rot_w) {
+extern "C" void illixr_acquire_depth(int64_t predicted_display_time_ns,
+                                     double ovr_plugin_time_sec,
+                                     float* rgb_camera_pose_lh,
+                                     float* head_pose_lh) {
     if (g_sensor_capture_instance != nullptr)
-        g_sensor_capture_instance->acquire_depth_unity_thread(predicted_display_time_ns, lens_pos_x, lens_pos_y, lens_pos_z,
-                                                              lens_rot_x, lens_rot_y, lens_rot_z, lens_rot_w);
+        g_sensor_capture_instance->acquire_depth_unity_thread(predicted_display_time_ns,
+                                                              ovr_plugin_time_sec,
+                                                              rgb_camera_pose_lh, head_pose_lh);
 }
 
 // ---------------------------------------------------------------------------
@@ -1114,6 +1091,10 @@ void xr_sensor_capture::_p_one_iteration() {
                     std::memcpy(rgb_matrix, e.pose, sizeof(rgb_matrix));
                     have_pose = true;
                 }
+                spdlog::get("illixr")->info(
+                        "[publish] fr frameame={} rgb_pose pos=({:.3f},{:.3f},{:.3f})",
+                        frame_number_,
+                        rgb_matrix[3], rgb_matrix[7], rgb_matrix[11]);
             }
         }
 
