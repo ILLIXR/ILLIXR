@@ -1679,7 +1679,7 @@ bool openxr_quest_controller::query_views(XrTime sample_time, view_frame* frame)
 
     const auto copy_view = [pose_valid, pose_tracked](const XrView& source, const XrViewConfigurationView& configuration,
                                                       eye_view* destination) {
-        destination->pose_valid         = pose_valid;
+        destination->valid              = pose_valid;
         destination->pose_tracked       = pose_tracked;
         destination->recommended_width  = configuration.recommendedImageRectWidth;
         destination->recommended_height = configuration.recommendedImageRectHeight;

@@ -253,7 +253,7 @@ void copy_controller(const ILLIXR::data_format::quest_hand_controller& source, I
 }
 
 void copy_eye(const ILLIXR::data_format::openxr_eye_view& source, InputEye* destination) {
-    destination->flags = source.pose_valid ? (kFlagActive | kFlagPositionValid | kFlagOrientationValid) : 0U;
+    destination->flags = source.valid ? (kFlagActive | kFlagPositionValid | kFlagOrientationValid) : 0U;
     if (source.pose_tracked) {
         destination->flags |= kFlagPositionTracked | kFlagOrientationTracked;
     }

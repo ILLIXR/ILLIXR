@@ -1226,7 +1226,7 @@ void oxr_relay::publish_boba_input(XrTime predicted_time, XrDuration predicted_p
         (view_flags & XR_VIEW_STATE_POSITION_TRACKED_BIT) != 0 && (view_flags & XR_VIEW_STATE_ORIENTATION_TRACKED_BIT) != 0;
     const auto copy_view = [pose_valid, pose_tracked](const XrView& source, const XrViewConfigurationView& config,
                                                       openxr_eye_view* destination) {
-        destination->pose_valid         = pose_valid;
+        destination->valid              = pose_valid;
         destination->pose_tracked       = pose_tracked;
         destination->recommended_width  = config.recommendedImageRectWidth;
         destination->recommended_height = config.recommendedImageRectHeight;
@@ -1235,9 +1235,7 @@ void oxr_relay::publish_boba_input(XrTime predicted_time, XrDuration predicted_p
         destination->angle_up           = source.fov.angleUp;
         destination->angle_down         = source.fov.angleDown;
         if (pose_valid) {
-            destination->position    = {source.pose.position.x, source.pose.position.y, source.pose.position.z};
-            destination->orientation = {source.pose.orientation.w, source.pose.orientation.x, source.pose.orientation.y,
-                                        source.pose.orientation.z};
+            destination->update(source.pose);
         }
     };
     copy_view(views[0], view_configs[0], &frame.left);

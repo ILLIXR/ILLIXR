@@ -1,18 +1,23 @@
 #pragma once
 
+#include "illixr/data_format/poses/pose_base.hpp"
 #include "illixr/switchboard.hpp"
 
 #include <cstdint>
-#include <Eigen/Core>
-#include <Eigen/Geometry>
 
 namespace ILLIXR::data_format {
 
-/** Per-eye view sampled from an OpenXR PRIMARY_STEREO view configuration. */
-struct openxr_eye_view {
-    /** Eye pose in the OpenXR LOCAL reference space. */
-    Eigen::Vector3f    position{Eigen::Vector3f::Zero()};
-    Eigen::Quaternionf orientation{Eigen::Quaternionf::Identity()};
+/**
+ * Per-eye view sampled from an OpenXR PRIMARY_STEREO view configuration.
+ * The inherited eye pose is in the OpenXR LOCAL reference space.
+ */
+struct openxr_eye_view : public pose::pose_base {
+#ifdef USING_OPENXR
+    /** Match the Eigen pose_base default with an identity rotation. */
+    openxr_eye_view() {
+        orientation.w = 1.0F;
+    }
+#endif
 
     /** Asymmetric projection angles in radians, following XrFovf semantics. */
     float angle_left{0.0F};
@@ -24,8 +29,11 @@ struct openxr_eye_view {
     std::uint32_t recommended_width{0};
     std::uint32_t recommended_height{0};
 
-    /** Validity permits use; tracked distinguishes live tracking from inference. */
-    bool pose_valid{false};
+#ifdef USING_OPENXR
+    /** OpenXR's pose_base has no validity field; mirror the Eigen base's flag. */
+    bool valid{false};
+#endif
+    /** Distinguishes live tracking from inference; validity alone permits use. */
     bool pose_tracked{false};
 };
 

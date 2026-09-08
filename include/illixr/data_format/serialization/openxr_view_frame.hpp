@@ -10,6 +10,17 @@ namespace boost::serialization {
 /** Serialize an eye pose/FOV component in a platform-independent field order. */
 template<class Archive>
 void serialize(Archive& ar, ILLIXR::data_format::openxr_eye_view& view, const unsigned int) {
+    // Keep the wire order identical for OpenXR poses on Quest and Eigen poses
+    // on the desktop, including the existing w, x, y, z quaternion order.
+#ifdef USING_OPENXR
+    ar & view.position.x;
+    ar & view.position.y;
+    ar & view.position.z;
+    ar & view.orientation.w;
+    ar & view.orientation.x;
+    ar & view.orientation.y;
+    ar & view.orientation.z;
+#else
     ar & view.position.x();
     ar & view.position.y();
     ar & view.position.z();
@@ -17,13 +28,14 @@ void serialize(Archive& ar, ILLIXR::data_format::openxr_eye_view& view, const un
     ar & view.orientation.x();
     ar & view.orientation.y();
     ar & view.orientation.z();
+#endif
     ar & view.angle_left;
     ar & view.angle_right;
     ar & view.angle_up;
     ar & view.angle_down;
     ar & view.recommended_width;
     ar & view.recommended_height;
-    ar & view.pose_valid;
+    ar & view.valid;
     ar & view.pose_tracked;
 }
 
