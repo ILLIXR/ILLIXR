@@ -32,6 +32,8 @@ else()
                 ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
     )
 
+    # Match the Boba producer's pose layout for shared view and stereo_frame events.
+    target_compile_definitions(${PLUGIN_NAME} PRIVATE USING_OPENXR)
     target_include_directories(${PLUGIN_NAME} PRIVATE
                                ${OPENXR_HEADER_DIR}
                                ${gl_INCLUDE_DIRS}

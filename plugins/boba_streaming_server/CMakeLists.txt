@@ -6,6 +6,7 @@ endif()
 
 enable_language(CUDA)
 find_package(CUDAToolkit REQUIRED)
+find_package(OpenXR CONFIG REQUIRED)
 
 # Reuse ILLIXR's existing NVENC/CUDA implementation to encode Boba's host RGBA
 # rings as the same side-by-side AV1 format decoded by the native Quest client.
@@ -52,6 +53,7 @@ target_include_directories(${PLUGIN_NAME} PUBLIC
                            ${NVENC_INCLUDE_DIR}
                            ${CUDAToolkit_INCLUDE_DIRS})
 target_link_libraries(${PLUGIN_NAME} PRIVATE
+                      OpenXR::headers
                       Boost::serialization
                       CUDA::cuda_driver
                       CUDA::cudart

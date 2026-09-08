@@ -2,6 +2,8 @@ if(WIN32 OR MSVC)
     message(WARNING "boba_immersive is currently available only on Linux")
     set(USE_BOBA_IMMERSIVE OFF)
 else()
+    find_package(OpenXR CONFIG REQUIRED)
+
     # This bridge is native C++ only; Boba remains a separately launched Python
     # process and therefore is not linked into the plugin target.
     set(PLUGIN_NAME plugin.boba_immersive${ILLIXR_BUILD_SUFFIX})
@@ -22,7 +24,10 @@ else()
                 ${CMAKE_SOURCE_DIR}/utils/serialization/quest_controller.cpp
     )
 
+    # Match the pose layout used by both consumers of the local stereo_frame event.
+    target_compile_definitions(${PLUGIN_NAME} PRIVATE USING_OPENXR)
     target_link_libraries(${PLUGIN_NAME} PRIVATE
+                          OpenXR::headers
                           Eigen3::Eigen
                           Boost::serialization
                           Threads::Threads

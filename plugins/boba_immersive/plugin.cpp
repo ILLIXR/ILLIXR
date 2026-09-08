@@ -259,13 +259,14 @@ void copy_eye(const ILLIXR::data_format::openxr_eye_view& source, InputEye* dest
     }
     destination->recommended_width  = source.recommended_width;
     destination->recommended_height = source.recommended_height;
-    for (int index = 0; index < 3; ++index) {
-        destination->position[index] = source.position[index];
-    }
-    destination->orientation[0] = source.orientation.x();
-    destination->orientation[1] = source.orientation.y();
-    destination->orientation[2] = source.orientation.z();
-    destination->orientation[3] = source.orientation.w();
+
+    destination->position[0]    = source.position.x;
+    destination->position[1]    = source.position.y;
+    destination->position[2]    = source.position.z;
+    destination->orientation[0] = source.orientation.x;
+    destination->orientation[1] = source.orientation.y;
+    destination->orientation[2] = source.orientation.z;
+    destination->orientation[3] = source.orientation.w;
     destination->fov[0]         = source.angle_left;
     destination->fov[1]         = source.angle_right;
     destination->fov[2]         = source.angle_up;
@@ -276,7 +277,7 @@ void copy_render_view(const float position[3], const float orientation[4], const
                       ILLIXR::data_format::stereo_render_view* destination) {
     destination->valid       = valid;
     destination->position    = {position[0], position[1], position[2]};
-    destination->orientation = {orientation[3], orientation[0], orientation[1], orientation[2]};
+    destination->orientation = {orientation[0], orientation[1], orientation[2], orientation[3]};
     destination->angle_left  = fov[0];
     destination->angle_right = fov[1];
     destination->angle_up    = fov[2];

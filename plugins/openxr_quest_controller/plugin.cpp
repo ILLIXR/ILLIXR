@@ -1605,11 +1605,9 @@ bool openxr_quest_controller::render_projection_layer(XrCompositionLayerProjecti
         // against. Panel modes use the current eye views for normal 3D geometry.
         if (active_presentation_mode_ == data_format::stereo_presentation_mode::stereo_fullscreen &&
             active_render_views_[eye_index].valid) {
-            const auto& source               = active_render_views_[eye_index];
-            projection_view.pose.position    = {source.position.x(), source.position.y(), source.position.z()};
-            projection_view.pose.orientation = {source.orientation.x(), source.orientation.y(), source.orientation.z(),
-                                                source.orientation.w()};
-            projection_view.fov              = {source.angle_left, source.angle_right, source.angle_up, source.angle_down};
+            const auto& source   = active_render_views_[eye_index];
+            projection_view.pose = source;
+            projection_view.fov  = {source.angle_left, source.angle_right, source.angle_up, source.angle_down};
         }
 
         swapchain_view&             swapchain = swapchain_views_[eye_index];
@@ -1688,9 +1686,7 @@ bool openxr_quest_controller::query_views(XrTime sample_time, view_frame* frame)
         destination->angle_up           = source.fov.angleUp;
         destination->angle_down         = source.fov.angleDown;
         if (pose_valid) {
-            destination->position    = {source.pose.position.x, source.pose.position.y, source.pose.position.z};
-            destination->orientation = {source.pose.orientation.w, source.pose.orientation.x, source.pose.orientation.y,
-                                        source.pose.orientation.z};
+            destination->update(source.pose);
         }
     };
     copy_view(located_views_[0], view_configuration_views_[0], &frame->left);

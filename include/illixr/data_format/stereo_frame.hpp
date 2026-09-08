@@ -1,5 +1,6 @@
 #pragma once
 
+#include "illixr/data_format/poses/pose_base.hpp"
 #include "illixr/data_format/stereo_presentation.hpp"
 #include "illixr/switchboard.hpp"
 
@@ -34,15 +35,24 @@ struct stereo_shared_image {
 };
 
 /** Eye pose/FOV used when the producer rendered the corresponding image. */
-struct stereo_render_view {
-    /** Pose and asymmetric FOV used by Boba when this eye image was rendered. */
-    Eigen::Vector3f    position{Eigen::Vector3f::Zero()};
-    Eigen::Quaternionf orientation{Eigen::Quaternionf::Identity()};
-    float              angle_left{0.0F};
-    float              angle_right{0.0F};
-    float              angle_up{0.0F};
-    float              angle_down{0.0F};
-    bool               valid{false};
+struct stereo_render_view : public pose::pose_base {
+#ifdef USING_OPENXR
+    /** Match the Eigen pose_base default with an identity rotation. */
+    stereo_render_view() {
+        orientation.w = 1.0F;
+    }
+#endif
+
+    /** Asymmetric FOV used by Boba when this eye image was rendered. */
+    float angle_left{0.0F};
+    float angle_right{0.0F};
+    float angle_up{0.0F};
+    float angle_down{0.0F};
+
+#ifdef USING_OPENXR
+    /** OpenXR's pose_base has no validity field; mirror the Eigen base's flag. */
+    bool valid{false};
+#endif
 };
 
 /** Raw Boba viewer-overlay command. Its 14-float layout is preserved losslessly. */
@@ -75,6 +85,9 @@ struct stereo_modal_overlay {
 
 /**
  * Stereo render result published on the `stereo_frame` switchboard topic.
+ *
+ * Plugins exchanging this event must use the same pose representation
+ * (`USING_OPENXR` in the Boba pipeline), since switchboard passes it in memory.
  *
  * To avoid retaining hundreds of multi-megabyte image copies in switchboard's
  * history, the images are zero-copy references into a producer-owned mmap ring.

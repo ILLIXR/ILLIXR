@@ -28,8 +28,7 @@ namespace {
         XrPosef pose{};
         pose.orientation.w = 1.0F;
         if (view.valid) {
-            pose.position    = {view.position.x(), view.position.y(), view.position.z()};
-            pose.orientation = {view.orientation.x(), view.orientation.y(), view.orientation.z(), view.orientation.w()};
+            pose = view;
         }
         return pose;
     }
