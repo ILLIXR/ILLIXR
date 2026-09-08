@@ -704,15 +704,23 @@ void xr_sensor_capture::acquire_depth_unity_thread(int64_t predicted_display_tim
     // then multiply: depth_world_rh = lh_to_rh(trackingToWorld) * depth_pose_rh
     float tracking_rh[16]{};
     if (tracking_to_world_lh != nullptr) {
-        const float* t = tracking_to_world_lh;
-        tracking_rh[0]  =  t[0];  tracking_rh[1]  =  t[4];
-        tracking_rh[2]  = -t[8];  tracking_rh[3]  =  t[12];
-        tracking_rh[4]  =  t[1];  tracking_rh[5]  =  t[5];
-        tracking_rh[6]  = -t[9];  tracking_rh[7]  =  t[13];
-        tracking_rh[8]  = -t[2];  tracking_rh[9]  = -t[6];
-        tracking_rh[10] =  t[10]; tracking_rh[11] = -t[14];
-        tracking_rh[12] =  t[3];  tracking_rh[13] =  t[7];
-        tracking_rh[14] = -t[11]; tracking_rh[15] =  t[15];
+        const float* t  = tracking_to_world_lh;
+        tracking_rh[0]  = t[0];
+        tracking_rh[1]  = t[4];
+        tracking_rh[2]  = -t[8];
+        tracking_rh[3]  = t[12];
+        tracking_rh[4]  = t[1];
+        tracking_rh[5]  = t[5];
+        tracking_rh[6]  = -t[9];
+        tracking_rh[7]  = t[13];
+        tracking_rh[8]  = -t[2];
+        tracking_rh[9]  = -t[6];
+        tracking_rh[10] = t[10];
+        tracking_rh[11] = -t[14];
+        tracking_rh[12] = t[3];
+        tracking_rh[13] = t[7];
+        tracking_rh[14] = -t[11];
+        tracking_rh[15] = t[15];
     } else {
         // identity
         tracking_rh[0] = tracking_rh[5] = tracking_rh[10] = tracking_rh[15] = 1.f;
@@ -724,8 +732,7 @@ void xr_sensor_capture::acquire_depth_unity_thread(int64_t predicted_display_tim
         for (int c = 0; c < 4; ++c) {
             depth_world[r * 4 + c] = 0.f;
             for (int k = 0; k < 4; ++k)
-                depth_world[r * 4 + c] +=
-                        tracking_rh[r * 4 + k] * pose_mat[k * 4 + c];
+                depth_world[r * 4 + c] += tracking_rh[r * 4 + k] * pose_mat[k * 4 + c];
         }
     }
 
@@ -905,8 +912,7 @@ extern "C" void illixr_acquire_depth(int64_t predicted_display_time_ns, double o
                                      float* head_pose_lh, float* tracking_to_world_lh) {
     if (g_sensor_capture_instance != nullptr)
         g_sensor_capture_instance->acquire_depth_unity_thread(predicted_display_time_ns, ovr_plugin_time_sec,
-                                                              rgb_camera_pose_lh, head_pose_lh,
-                                                              tracking_to_world_lh);
+                                                              rgb_camera_pose_lh, head_pose_lh, tracking_to_world_lh);
 }
 
 // ---------------------------------------------------------------------------
