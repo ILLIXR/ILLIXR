@@ -93,6 +93,7 @@ nav:
       - 'Services Overview': illixr_services.md
       - 'Plugin/Service Details':
           - 'Ada': plugin_README/README_ada.md
+          - 'Boba Immersive': Boba_README.md
           - 'Debugview': plugin_README/README_debugview.md
           - 'Fauxpose': plugin_README/README_fauxpose.md
           - 'Gldemo': plugin_README/README_gldemo.md
