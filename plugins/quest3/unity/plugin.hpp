@@ -87,10 +87,9 @@ public:
     // Must be called between xrBeginFrame and xrEndFrame (i.e. during Unity's frame).
     // Also samples the current head pose via xrLocateSpace(VIEW, LOCAL) and stores
     // it in latest_head_pose_ for on_capture_completed() to snapshot.
-    void acquire_depth_unity_thread(int64_t predicted_display_time_ns,
-                                    double ovr_plugin_time_sec,
-                                    const float* rgb_camera_pose_lh,  // Unity world space LH, 16 floats row-major
-                                    const float* head_pose_lh);       // Unity world space LH, 16 floats row-major
+    void acquire_depth_unity_thread(int64_t predicted_display_time_ns, double ovr_plugin_time_sec,
+                                    const float* rgb_camera_pose_lh, // Unity world space LH, 16 floats row-major
+                                    const float* head_pose_lh);      // Unity world space LH, 16 floats row-major
     // Public so on_render_event callback can call them from outside the class.
     bool init_vulkan();
     void destroy_vulkan();
@@ -151,7 +150,7 @@ public:
     // Clock offset: CLOCK_BOOTTIME - CLOCK_MONOTONIC, computed at construction.
     // Added to MediaCodec presentationTimeUs (MONOTONIC-based) to get XrTime.
     int64_t clock_offset_ns_;
-    double ovr_time_offset_sec_ = 0.0; // OVRPlugin_time - boottime_sec
+    double  ovr_time_offset_sec_ = 0.0; // OVRPlugin_time - boottime_sec
 
 protected:
     void        _p_one_iteration() override;

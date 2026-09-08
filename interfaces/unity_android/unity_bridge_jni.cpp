@@ -167,32 +167,26 @@ static void* resolve_sensor_sym(const char* name) {
     return sym;
 }
 
-void illixr_acquire_depth(int64_t predicted_display_time_ns,
-                          double  ovr_plugin_time_sec,
-                          const float* rgb_camera_pose_lh,
+void illixr_acquire_depth(int64_t predicted_display_time_ns, double ovr_plugin_time_sec, const float* rgb_camera_pose_lh,
                           const float* head_pose_lh) {
     static illixr_acquire_depth_fn fn = nullptr;
     if (fn == nullptr)
-        fn = reinterpret_cast<illixr_acquire_depth_fn>(
-                resolve_sensor_sym("illixr_acquire_depth"));
+        fn = reinterpret_cast<illixr_acquire_depth_fn>(resolve_sensor_sym("illixr_acquire_depth"));
     if (fn != nullptr)
-        fn(predicted_display_time_ns, ovr_plugin_time_sec,
-           rgb_camera_pose_lh, head_pose_lh);
+        fn(predicted_display_time_ns, ovr_plugin_time_sec, rgb_camera_pose_lh, head_pose_lh);
 }
 
 void* illixr_get_render_event_callback() {
     static illixr_get_render_event_callback_fn fn = nullptr;
     if (fn == nullptr)
-        fn = reinterpret_cast<illixr_get_render_event_callback_fn>(
-                resolve_sensor_sym("illixr_get_render_event_callback"));
+        fn = reinterpret_cast<illixr_get_render_event_callback_fn>(resolve_sensor_sym("illixr_get_render_event_callback"));
     return fn != nullptr ? fn() : nullptr;
 }
 
 void illixr_release_depth() {
     static illixr_release_depth_fn fn = nullptr;
     if (fn == nullptr)
-        fn = reinterpret_cast<illixr_release_depth_fn>(
-                resolve_sensor_sym("illixr_release_depth"));
+        fn = reinterpret_cast<illixr_release_depth_fn>(resolve_sensor_sym("illixr_release_depth"));
     if (fn != nullptr)
         fn();
 }
@@ -200,8 +194,7 @@ void illixr_release_depth() {
 int64_t illixr_get_last_capture_time_ns() {
     static illixr_get_last_capture_time_ns_fn fn = nullptr;
     if (fn == nullptr)
-        fn = reinterpret_cast<illixr_get_last_capture_time_ns_fn>(
-                resolve_sensor_sym("illixr_get_last_capture_time_ns"));
+        fn = reinterpret_cast<illixr_get_last_capture_time_ns_fn>(resolve_sensor_sym("illixr_get_last_capture_time_ns"));
     return fn != nullptr ? fn() : 0;
 }
 
@@ -209,7 +202,7 @@ double illixr_get_last_capture_ovr_time_sec() {
     static illixr_get_last_capture_ovr_time_sec_fn fn = nullptr;
     if (fn == nullptr)
         fn = reinterpret_cast<illixr_get_last_capture_ovr_time_sec_fn>(
-                resolve_sensor_sym("illixr_get_last_capture_ovr_time_sec"));
+            resolve_sensor_sym("illixr_get_last_capture_ovr_time_sec"));
     return fn != nullptr ? fn() : 0.0;
 }
 } // extern "C"

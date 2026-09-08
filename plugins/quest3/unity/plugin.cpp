@@ -123,8 +123,7 @@ void UNITY_INTERFACE_API illixr_release_depth() {
 int64_t UNITY_INTERFACE_API illixr_get_last_capture_time_ns() {
     if (g_sensor_capture_instance == nullptr)
         return 0;
-    std::lock_guard<std::mutex> lock(
-            g_sensor_capture_instance->capture_result_mutex_);
+    std::lock_guard<std::mutex> lock(g_sensor_capture_instance->capture_result_mutex_);
     // Find most recent valid capture time
     XrTime best = 0;
     for (const auto& e : g_sensor_capture_instance->capture_result_cache_) {
@@ -137,14 +136,14 @@ int64_t UNITY_INTERFACE_API illixr_get_last_capture_time_ns() {
 double UNITY_INTERFACE_API illixr_get_last_capture_ovr_time_sec() {
     if (g_sensor_capture_instance == nullptr)
         return 0.0;
-    std::lock_guard<std::mutex> lock(
-            g_sensor_capture_instance->capture_result_mutex_);
-    XrTime best = 0;
+    std::lock_guard<std::mutex> lock(g_sensor_capture_instance->capture_result_mutex_);
+    XrTime                      best = 0;
     for (const auto& e : g_sensor_capture_instance->capture_result_cache_) {
         if (e.valid && e.capture_time > best)
             best = e.capture_time;
     }
-    if (best == 0) return 0.0;
+    if (best == 0)
+        return 0.0;
     const double boottime_sec = static_cast<double>(best) * 1e-9;
     return boottime_sec + g_sensor_capture_instance->ovr_time_offset_sec_;
 }
@@ -542,31 +541,23 @@ static void on_capture_failed(void* /*ctx*/, ACameraCaptureSession* /*session*/,
                         failure->reason, failure->frameNumber);
 }
 
-void xr_sensor_capture::acquire_depth_unity_thread(
-        int64_t      predicted_display_time_ns,
-        double       ovr_plugin_time_sec,
-        const float* rgb_camera_pose_lh,
-        const float* head_pose_lh) {
-
+void xr_sensor_capture::acquire_depth_unity_thread(int64_t predicted_display_time_ns, double ovr_plugin_time_sec,
+                                                   const float* rgb_camera_pose_lh, const float* head_pose_lh) {
     // Compute offset between OVRPlugin time and CLOCK_BOOTTIME every call.
     // OVRPlugin time is what ovrp_GetNodePoseStateAtTime expects.
     // This offset lets C++ store capture times in OVRPlugin seconds.
-    const double boottime_sec =
-            static_cast<double>(clock_boottime_xr()) * 1e-9;
-    ovr_time_offset_sec_ = ovr_plugin_time_sec - boottime_sec;
+    const double boottime_sec = static_cast<double>(clock_boottime_xr()) * 1e-9;
+    ovr_time_offset_sec_      = ovr_plugin_time_sec - boottime_sec;
 
     const XrTime frame_time = static_cast<XrTime>(predicted_display_time_ns);
 
     const float* p = rgb_camera_pose_lh;
-    spdlog::get("illixr")->debug(
-            "[acquire_depth] rgb_pose_lh col0=({:.3f},{:.3f},{:.3f},{:.3f})"
-            " col1=({:.3f},{:.3f},{:.3f},{:.3f})"
-            " col2=({:.3f},{:.3f},{:.3f},{:.3f})"
-            " col3=({:.3f},{:.3f},{:.3f},{:.3f})",
-            p[0], p[1], p[2],  p[3],
-            p[4], p[5], p[6],  p[7],
-            p[8], p[9], p[10], p[11],
-            p[12],p[13],p[14], p[15]);
+    spdlog::get("illixr")->debug("[acquire_depth] rgb_pose_lh col0=({:.3f},{:.3f},{:.3f},{:.3f})"
+                                 " col1=({:.3f},{:.3f},{:.3f},{:.3f})"
+                                 " col2=({:.3f},{:.3f},{:.3f},{:.3f})"
+                                 " col3=({:.3f},{:.3f},{:.3f},{:.3f})",
+                                 p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8], p[9], p[10], p[11], p[12], p[13], p[14],
+                                 p[15]);
     // ---- 1. Store RGB camera pose (every call, 90Hz) ----
     // The poses arrive from Unity in left-handed world space (same convention
     // as StreamingOrchestrator.cs). Convert to right-handed to match the
@@ -580,11 +571,23 @@ void xr_sensor_capture::acquire_depth_unity_thread(
     // Output is row-major float[16] as used throughout this plugin.
     {
         const float* p = rgb_camera_pose_lh;
-        float rh[16];
-        rh[0]  =  p[0];  rh[1]  =  p[4];  rh[2]  = -p[8];  rh[3]  =  p[12];
-        rh[4]  =  p[1];  rh[5]  =  p[5];  rh[6]  = -p[9];  rh[7]  =  p[13];
-        rh[8]  = -p[2];  rh[9]  = -p[6];  rh[10] =  p[10]; rh[11] = -p[14];
-        rh[12] =  p[3];  rh[13] =  p[7];  rh[14] = -p[11]; rh[15] =  p[15];
+        float        rh[16];
+        rh[0]  = p[0];
+        rh[1]  = p[4];
+        rh[2]  = -p[8];
+        rh[3]  = p[12];
+        rh[4]  = p[1];
+        rh[5]  = p[5];
+        rh[6]  = -p[9];
+        rh[7]  = p[13];
+        rh[8]  = -p[2];
+        rh[9]  = -p[6];
+        rh[10] = p[10];
+        rh[11] = -p[14];
+        rh[12] = p[3];
+        rh[13] = p[7];
+        rh[14] = -p[11];
+        rh[15] = p[15];
 
         std::lock_guard<std::mutex> lock(latest_head_pose_mutex_);
         std::memcpy(latest_head_pose_.pose, rh, sizeof(rh));
@@ -601,8 +604,7 @@ void xr_sensor_capture::acquire_depth_unity_thread(
         sc_ci.createFlags = 0;
         XrResult result   = xr_create_depth_swapchain_(depth_provider_, &sc_ci, &depth_swapchain_);
         if (XR_FAILED(result)) {
-            spdlog::get("illixr")->error("xrCreateEnvironmentDepthSwapchainMETA failed: {}",
-                                         static_cast<int>(result));
+            spdlog::get("illixr")->error("xrCreateEnvironmentDepthSwapchainMETA failed: {}", static_cast<int>(result));
             return;
         }
 
@@ -626,13 +628,11 @@ void xr_sensor_capture::acquire_depth_unity_thread(
         spdlog::get("illixr")->info("Depth swapchain: {} VkImage slots", img_count);
 
         if (img_count > 0 && vk_device_ != VK_NULL_HANDLE) {
-            spdlog::get("illixr")->info("Depth VkImage[0] = {:p}",
-                                        static_cast<void*>(depth_vk_images_[0]));
+            spdlog::get("illixr")->info("Depth VkImage[0] = {:p}", static_cast<void*>(depth_vk_images_[0]));
         }
 
         // Allocate staging buffer. R16_UNORM = 2 bytes/pixel.
-        vk_staging_size_ =
-                static_cast<VkDeviceSize>(depth_swapchain_width_ * depth_swapchain_height_ * 2);
+        vk_staging_size_ = static_cast<VkDeviceSize>(depth_swapchain_width_ * depth_swapchain_height_ * 2);
 
         VkBufferCreateInfo buf_ci{VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO};
         buf_ci.size        = vk_staging_size_;
@@ -646,8 +646,7 @@ void xr_sensor_capture::acquire_depth_unity_thread(
         VkMemoryAllocateInfo alloc_info{VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO};
         alloc_info.allocationSize  = mem_req.size;
         alloc_info.memoryTypeIndex = find_memory_type(
-                mem_req.memoryTypeBits,
-                VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+            mem_req.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
         vkAllocateMemory(vk_device_, &alloc_info, nullptr, &vk_staging_mem_);
         vkBindBufferMemory(vk_device_, vk_staging_buf_, vk_staging_mem_, 0);
@@ -667,8 +666,7 @@ void xr_sensor_capture::acquire_depth_unity_thread(
         return;
     if (XR_FAILED(result)) {
         if (static_cast<int>(result) != -37) {
-            spdlog::get("illixr")->warn("xrAcquireEnvironmentDepthImageMETA failed: {}",
-                                        static_cast<int>(result));
+            spdlog::get("illixr")->warn("xrAcquireEnvironmentDepthImageMETA failed: {}", static_cast<int>(result));
         }
         return;
     }
@@ -870,13 +868,10 @@ const xr_sensor_capture::depth_frame_data* xr_sensor_capture::find_closest_depth
     return best;
 }
 
-extern "C" void illixr_acquire_depth(int64_t predicted_display_time_ns,
-                                     double ovr_plugin_time_sec,
-                                     float* rgb_camera_pose_lh,
+extern "C" void illixr_acquire_depth(int64_t predicted_display_time_ns, double ovr_plugin_time_sec, float* rgb_camera_pose_lh,
                                      float* head_pose_lh) {
     if (g_sensor_capture_instance != nullptr)
-        g_sensor_capture_instance->acquire_depth_unity_thread(predicted_display_time_ns,
-                                                              ovr_plugin_time_sec,
+        g_sensor_capture_instance->acquire_depth_unity_thread(predicted_display_time_ns, ovr_plugin_time_sec,
                                                               rgb_camera_pose_lh, head_pose_lh);
 }
 
@@ -1091,10 +1086,8 @@ void xr_sensor_capture::_p_one_iteration() {
                     std::memcpy(rgb_matrix, e.pose, sizeof(rgb_matrix));
                     have_pose = true;
                 }
-                spdlog::get("illixr")->info(
-                        "[publish] fr frameame={} rgb_pose pos=({:.3f},{:.3f},{:.3f})",
-                        frame_number_,
-                        rgb_matrix[3], rgb_matrix[7], rgb_matrix[11]);
+                spdlog::get("illixr")->info("[publish] fr frameame={} rgb_pose pos=({:.3f},{:.3f},{:.3f})", frame_number_,
+                                            rgb_matrix[3], rgb_matrix[7], rgb_matrix[11]);
             }
         }
 
