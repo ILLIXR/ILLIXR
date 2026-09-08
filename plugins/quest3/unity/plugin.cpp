@@ -542,7 +542,8 @@ static void on_capture_failed(void* /*ctx*/, ACameraCaptureSession* /*session*/,
 }
 
 void xr_sensor_capture::acquire_depth_unity_thread(int64_t predicted_display_time_ns, double ovr_plugin_time_sec,
-                                                   const float* rgb_camera_pose_lh, const float* head_pose_lh) {
+                                                   const float* rgb_camera_pose_lh, const float* head_pose_lh,
+                                                   const float* tracking_to_world_lh) {
     // Compute offset between OVRPlugin time and CLOCK_BOOTTIME every call.
     // OVRPlugin time is what ovrp_GetNodePoseStateAtTime expects.
     // This offset lets C++ store capture times in OVRPlugin seconds.
@@ -696,6 +697,38 @@ void xr_sensor_capture::acquire_depth_unity_thread(int64_t predicted_display_tim
     float pose_mat[16]{};
     pose_to_matrix(view.pose, pose_mat);
 
+    // Apply trackingToWorld and LhToRh to depth pose,
+    // matching StreamingOrchestrator.cs lines 409-414 + LhToRh.
+    // depth_pose from OpenXR is already RH, but needs tracking->world.
+    // tracking_to_world_lh is Unity LH — convert to RH first,
+    // then multiply: depth_world_rh = lh_to_rh(trackingToWorld) * depth_pose_rh
+    float tracking_rh[16]{};
+    if (tracking_to_world_lh != nullptr) {
+        const float* t = tracking_to_world_lh;
+        tracking_rh[0]  =  t[0];  tracking_rh[1]  =  t[4];
+        tracking_rh[2]  = -t[8];  tracking_rh[3]  =  t[12];
+        tracking_rh[4]  =  t[1];  tracking_rh[5]  =  t[5];
+        tracking_rh[6]  = -t[9];  tracking_rh[7]  =  t[13];
+        tracking_rh[8]  = -t[2];  tracking_rh[9]  = -t[6];
+        tracking_rh[10] =  t[10]; tracking_rh[11] = -t[14];
+        tracking_rh[12] =  t[3];  tracking_rh[13] =  t[7];
+        tracking_rh[14] = -t[11]; tracking_rh[15] =  t[15];
+    } else {
+        // identity
+        tracking_rh[0] = tracking_rh[5] = tracking_rh[10] = tracking_rh[15] = 1.f;
+    }
+
+    // depth pose from OpenXR is already RH — multiply tracking_rh * pose_mat
+    float depth_world[16]{};
+    for (int r = 0; r < 4; ++r) {
+        for (int c = 0; c < 4; ++c) {
+            depth_world[r * 4 + c] = 0.f;
+            for (int k = 0; k < 4; ++k)
+                depth_world[r * 4 + c] +=
+                        tracking_rh[r * 4 + k] * pose_mat[k * 4 + c];
+        }
+    }
+
     needs_depth_release_ = true;
 
     {
@@ -707,7 +740,7 @@ void xr_sensor_capture::acquire_depth_unity_thread(int64_t predicted_display_tim
         pending_readback_.near_z     = depth_image.nearZ;
         pending_readback_.far_z      = depth_image.farZ;
         pending_readback_.timestamp  = acq_info.displayTime;
-        std::memcpy(pending_readback_.pose, pose_mat, sizeof(pose_mat));
+        std::memcpy(pending_readback_.pose, depth_world, sizeof(depth_world));
         pending_readback_.valid = true;
     }
 }
@@ -869,10 +902,11 @@ const xr_sensor_capture::depth_frame_data* xr_sensor_capture::find_closest_depth
 }
 
 extern "C" void illixr_acquire_depth(int64_t predicted_display_time_ns, double ovr_plugin_time_sec, float* rgb_camera_pose_lh,
-                                     float* head_pose_lh) {
+                                     float* head_pose_lh, float* tracking_to_world_lh) {
     if (g_sensor_capture_instance != nullptr)
         g_sensor_capture_instance->acquire_depth_unity_thread(predicted_display_time_ns, ovr_plugin_time_sec,
-                                                              rgb_camera_pose_lh, head_pose_lh);
+                                                              rgb_camera_pose_lh, head_pose_lh,
+                                                              tracking_to_world_lh);
 }
 
 // ---------------------------------------------------------------------------

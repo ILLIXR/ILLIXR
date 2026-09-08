@@ -89,7 +89,8 @@ public:
     // it in latest_head_pose_ for on_capture_completed() to snapshot.
     void acquire_depth_unity_thread(int64_t predicted_display_time_ns, double ovr_plugin_time_sec,
                                     const float* rgb_camera_pose_lh, // Unity world space LH, 16 floats row-major
-                                    const float* head_pose_lh);      // Unity world space LH, 16 floats row-major
+                                    const float* head_pose_lh,      // Unity world space LH, 16 floats row-major
+                                    const float* tracking_to_world_lh);
     // Public so on_render_event callback can call them from outside the class.
     bool init_vulkan();
     void destroy_vulkan();

@@ -150,7 +150,7 @@ void illixr_unity_shutdown() {
 // ---------------------------------------------------------------------------
 
 // Function pointer types matching the exports in plugin.cpp
-typedef void (*illixr_acquire_depth_fn)(int64_t, double, const float*, const float*);
+typedef void (*illixr_acquire_depth_fn)(int64_t, double, const float*, const float*, const float*);
 typedef void* (*illixr_get_render_event_callback_fn)();
 typedef void (*illixr_release_depth_fn)();
 typedef int64_t (*illixr_get_last_capture_time_ns_fn)();
@@ -168,12 +168,12 @@ static void* resolve_sensor_sym(const char* name) {
 }
 
 void illixr_acquire_depth(int64_t predicted_display_time_ns, double ovr_plugin_time_sec, const float* rgb_camera_pose_lh,
-                          const float* head_pose_lh) {
+                          const float* head_pose_lh, const float* tracking_to_world) {
     static illixr_acquire_depth_fn fn = nullptr;
     if (fn == nullptr)
         fn = reinterpret_cast<illixr_acquire_depth_fn>(resolve_sensor_sym("illixr_acquire_depth"));
     if (fn != nullptr)
-        fn(predicted_display_time_ns, ovr_plugin_time_sec, rgb_camera_pose_lh, head_pose_lh);
+        fn(predicted_display_time_ns, ovr_plugin_time_sec, rgb_camera_pose_lh, head_pose_lh, tracking_to_world);
 }
 
 void* illixr_get_render_event_callback() {
