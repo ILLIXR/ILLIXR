@@ -1751,11 +1751,10 @@ bool openxr_quest_controller::query_pose(XrAction action, XrSpace action_space, 
     pose->orientation_tracked = (location.locationFlags & XR_SPACE_LOCATION_ORIENTATION_TRACKED_BIT) != 0;
 
     if (pose->position_valid) {
-        pose->position = {location.pose.position.x, location.pose.position.y, location.pose.position.z};
+        pose->position = location.pose.position;
     }
     if (pose->orientation_valid) {
-        pose->orientation = {location.pose.orientation.w, location.pose.orientation.x, location.pose.orientation.y,
-                             location.pose.orientation.z};
+        pose->orientation = location.pose.orientation;
     }
     return true;
 }

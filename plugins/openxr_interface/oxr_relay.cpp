@@ -1088,11 +1088,10 @@ bool oxr_relay::query_controller_pose(XrAction action, XrSpace space, XrPath han
     pose_out->position_tracked    = (location.locationFlags & XR_SPACE_LOCATION_POSITION_TRACKED_BIT) != 0;
     pose_out->orientation_tracked = (location.locationFlags & XR_SPACE_LOCATION_ORIENTATION_TRACKED_BIT) != 0;
     if (pose_out->position_valid) {
-        pose_out->position = {location.pose.position.x, location.pose.position.y, location.pose.position.z};
+        pose_out->position = location.pose.position;
     }
     if (pose_out->orientation_valid) {
-        pose_out->orientation = {location.pose.orientation.w, location.pose.orientation.x, location.pose.orientation.y,
-                                 location.pose.orientation.z};
+        pose_out->orientation = location.pose.orientation;
     }
     return true;
 }

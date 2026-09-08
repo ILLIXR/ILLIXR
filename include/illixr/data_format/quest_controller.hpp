@@ -1,10 +1,10 @@
 #pragma once
 
+#include "illixr/data_format/poses/pose_base.hpp"
 #include "illixr/switchboard.hpp"
 
 #include <cstdint>
 #include <Eigen/Core>
-#include <Eigen/Geometry>
 
 namespace ILLIXR::data_format {
 
@@ -20,11 +20,15 @@ enum class quest_controller_profile : std::uint8_t {
 };
 
 /** A controller pose expressed in the OpenXR LOCAL reference space. */
-struct quest_controller_pose {
-    /** Pose in OpenXR LOCAL space; quaternion storage follows Eigen's API. */
-    Eigen::Vector3f    position{Eigen::Vector3f::Zero()};
-    Eigen::Quaternionf orientation{Eigen::Quaternionf::Identity()};
+struct quest_controller_pose : public pose::pose_base {
+#ifdef USING_OPENXR
+    /** Match the Eigen pose_base default with an identity rotation. */
+    quest_controller_pose() {
+        orientation.w = 1.0F;
+    }
+#endif
 
+    /** OpenXR can report validity and tracking for each pose component independently. */
     bool active{false};
     bool position_valid{false};
     bool orientation_valid{false};

@@ -7,9 +7,19 @@
 
 namespace boost::serialization {
 
-/** Serialize an Eigen-backed pose as scalar fields followed by tracking flags. */
+/** Serialize pose scalars and tracking flags in a platform-independent field order. */
 template<class Archive>
 void serialize(Archive& ar, ILLIXR::data_format::quest_controller_pose& pose, const unsigned int) {
+    // Preserve the existing wire format for both OpenXR and Eigen pose storage.
+#ifdef USING_OPENXR
+    ar & pose.position.x;
+    ar & pose.position.y;
+    ar & pose.position.z;
+    ar & pose.orientation.w;
+    ar & pose.orientation.x;
+    ar & pose.orientation.y;
+    ar & pose.orientation.z;
+#else
     ar & pose.position.x();
     ar & pose.position.y();
     ar & pose.position.z();
@@ -17,6 +27,7 @@ void serialize(Archive& ar, ILLIXR::data_format::quest_controller_pose& pose, co
     ar & pose.orientation.x();
     ar & pose.orientation.y();
     ar & pose.orientation.z();
+#endif
     ar & pose.active;
     ar & pose.position_valid;
     ar & pose.orientation_valid;

@@ -222,14 +222,14 @@ std::uint32_t pose_flags(const ILLIXR::data_format::quest_controller_pose& pose)
 }
 
 void copy_pose(const ILLIXR::data_format::quest_controller_pose& source, InputPose* destination) {
-    destination->flags = pose_flags(source);
-    for (int index = 0; index < 3; ++index) {
-        destination->position[index] = source.position[index];
-    }
-    destination->orientation[0] = source.orientation.x();
-    destination->orientation[1] = source.orientation.y();
-    destination->orientation[2] = source.orientation.z();
-    destination->orientation[3] = source.orientation.w();
+    destination->flags          = pose_flags(source);
+    destination->position[0]    = source.position.x;
+    destination->position[1]    = source.position.y;
+    destination->position[2]    = source.position.z;
+    destination->orientation[0] = source.orientation.x;
+    destination->orientation[1] = source.orientation.y;
+    destination->orientation[2] = source.orientation.z;
+    destination->orientation[3] = source.orientation.w;
 }
 
 void copy_button(const ILLIXR::data_format::quest_controller_button& source, InputButton* destination) {
