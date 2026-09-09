@@ -1,7 +1,4 @@
-if(WIN32 OR MSVC)
-    message(WARNING "zed is not yet available for windows")
-    set(USE_ZED OFF)
-elseif(ANDROID)
+if(ANDROID)
     message(WARNING "zed is not supported on Android")
     set(USE_ZED OFF)
     return()
@@ -43,9 +40,26 @@ set(HDR_FILES include/zed_opencv.hpp
 SET(ZED_LIBS ${ZED_LIBRARIES} ${CUDA_CUDA_LIBRARY} ${CUDA_CUDART_LIBRARY})
 add_library(${PLUGIN_NAME} SHARED ${HDR_FILES} ${SRC_FILES})
 
-target_include_directories(${PLUGIN_NAME} PUBLIC ${CUDA_INCLUDE_DIRS} ${ZED_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(${PLUGIN_NAME} PUBLIC
+                           ${CUDA_INCLUDE_DIRS}
+                           ${ZED_INCLUDE_DIRS}
+                           ${OpenCV_INCLUDE_DIRS}
+                           ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
 
-target_link_libraries(${PLUGIN_NAME} ${ZED_LIBS} ${OpenCV_LIBRARIES} Eigen3::Eigen Threads::Threads spdlog::spdlog)
+target_link_libraries(${PLUGIN_NAME} ${ZED_LIBS}
+                      opencv_core
+                      opencv_imgproc
+                      opencv_imgcodecs
+                      Eigen3::Eigen
+                      Threads::Threads
+                      spdlog::spdlog
+                      Boost::serialization
+)
 target_compile_features(${PLUGIN_NAME} PRIVATE cxx_std_17)
+
+if(WIN32 OR MSVC)
+    target_compile_definitions(${PLUGIN_NAME} PRIVATE BUILDING_LIBRARY)
+endif()
 
 install(TARGETS ${PLUGIN_NAME} DESTINATION lib)

@@ -643,7 +643,8 @@
         "zed_SDK"
       ],
       "OS": [
-        "linux"
+        "linux",
+        "windows"
       ]
     },
     {
@@ -653,7 +654,8 @@
         "zed_SDK"
       ],
       "OS": [
-        "linux"
+        "linux",
+        "windows"
       ]
     }
   ],
