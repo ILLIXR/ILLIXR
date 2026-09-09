@@ -298,10 +298,17 @@ Receives encoded frames from the network, sent by [offload_rendering_server](#of
 
 Topic details:
 
+Linux:
 -   *Calls* [`vulkan::display_provider`][E15]
 -   *Calls* [`pose_prediction`][E16]
 -   Asynchronously *reads* `compressed_frame` from `compressed_frames` topic.
 -   *Publishes* [`fast_pose_type`][A11] to `render_pose` topic.
+-   Asynchronously *reads* [`network_latency_result`][A28] from `network_latency`
+
+Android:
+-   Asynchronously *reads* `compressed_frame` from `compressed_frames` topic.
+-   *Publishes* [`dual_frames`][A29] to `unity_rendered_frame` topic.
+-   Asynchronously *reads* [`network_latency_result`][A28] from `network_latency`
 
 &nbsp;&nbsp;[**Details**][P22]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C14]
 
@@ -364,6 +371,20 @@ Topic details:
 -   Synchronously *reads*/*subscribes* to [`imu_type`][A15] on `imu` topic.
 
 &nbsp;&nbsp;[**Details**][P19]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C19]
+
+## openxr_interface ![Android Logo](images/android.png)
+
+Connects to the OpenXR runtime on an Android device, gathers head and hand poses, sending them over the network. Receives decoded frames and puts them in the OpenXR swapchain for display.
+
+Topic details:
+
+-   *Publishes* [`combined_pose`][A??] to `combined_pose` topic
+-   Asynchronously *reads* [`network_latency_result`][A28] from `network_latency topic
+-   Asynchronously *reads* [`dual_frames`][A29] from `unity_rendered_frames` topic
+
+&nbsp;&nbsp;[**Details**][P36]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C42]
+
+
 
 ## openwarp_vk ![Linux Logo](images/tux.png)
 
@@ -608,6 +629,8 @@ See [Getting Started][I11] for more information on adding plugins to a [_profile
 
 [P35]:  plugin_README/README_network_latency.md
 
+[P36]:  plugin_README/README_openxr_interface.md
+
 [S10]:   illixr_services.md#pose_prediction
 
 
@@ -712,6 +735,8 @@ See [Getting Started][I11] for more information on adding plugins to a [_profile
 
 [C41]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/network_latency
 
+[C42]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/openxr_interface
+
 [//]: # (- Internal -)
 
 [I10]:   working_with/writing_your_plugin.md
@@ -777,3 +802,7 @@ See [Getting Started][I11] for more information on adding plugins to a [_profile
 [A26]:   api/structILLIXR_1_1data__format_1_1draco__type.md
 
 [A27]:   api/structILLIXR_1_1data__format_1_1latency__data.md
+
+[A28]:   api/structILLIXR_1_1data__format_1_1network__latency__result.md
+
+[A29]:   api/structILLIXR_1_1data__format_1_1dual__frames.md
