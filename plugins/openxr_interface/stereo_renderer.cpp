@@ -3,11 +3,14 @@
 #include "color_frag_spv.h"
 #include "color_vert_spv.h"
 #include "depth_frag_spv.h"
-#include "modal_frag_spv.h"
-#include "modal_vert_spv.h"
 #include "motion_vec_frag_spv.h"
-#include "overlay_frag_spv.h"
-#include "overlay_vert_spv.h"
+
+#ifdef ILLIXR_ENABLE_BOBA
+#    include "modal_frag_spv.h"
+#    include "modal_vert_spv.h"
+#    include "overlay_frag_spv.h"
+#    include "overlay_vert_spv.h"
+#endif
 
 #include <algorithm>
 #include <cmath>
@@ -78,8 +81,10 @@ bool stereo_renderer::initialize(VkInstance instance, VkPhysicalDevice physical_
         return false;
     if (!create_descriptor_pool())
         return false;
+#ifdef ILLIXR_ENABLE_BOBA
     if (!create_boba_overlay_resources())
         return false;
+#endif
 
     // Fences for render completion
     VkFenceCreateInfo fence_info{VK_STRUCTURE_TYPE_FENCE_CREATE_INFO};
@@ -300,6 +305,7 @@ bool stereo_renderer::create_pipeline(const imported_image& prototype) {
     return true;
 }
 
+#ifdef ILLIXR_ENABLE_BOBA
 // ---- Boba vector and modal overlay resources -------------------------------
 
 std::uint32_t stereo_renderer::find_memory_type(std::uint32_t type_filter, VkMemoryPropertyFlags properties) const {
@@ -921,6 +927,7 @@ void stereo_renderer::record_boba_overlays(VkCommandBuffer command_buffer, int e
         vkCmdDraw(command_buffer, 6, 1, 0, 0);
     }
 }
+#endif
 
 //
 // Shader module
@@ -1292,10 +1299,12 @@ void stereo_renderer::receive_frame(const dual_frames& frame) {
         return;
     }
 
+#ifdef ILLIXR_ENABLE_BOBA
     // Overlay metadata is tied to this exact decoded frame. Build its
     // per-eye geometry before either the combined or separate-eye path can
     // branch, so the compositor never reuses commands from another image.
     update_boba_overlay_state(frame);
+#endif
 
     AHardwareBuffer* bufs[2] = {frame.left_eye.hw_buffer, frame.right_eye.hw_buffer};
 
@@ -1605,9 +1614,11 @@ bool stereo_renderer::render_eye(int eye, VkImage swapchain_image, uint32_t swap
     // Three vertices generate a full-screen triangle (no vertex buffer).
     vkCmdDraw(cmd, 3, 1, 0, 0);
 
+#ifdef ILLIXR_ENABLE_BOBA
     // Compose Boba's view-dependent vectors and optional bitmap card at the
     // Quest swapchain resolution, after the decoded base image.
     record_boba_overlays(cmd, eye);
+#endif
 
     vkCmdEndRenderPass(cmd);
     vkEndCommandBuffer(cmd);
@@ -2065,6 +2076,7 @@ void stereo_renderer::cleanup() {
         }
     }
 
+#ifdef ILLIXR_ENABLE_BOBA
     for (int i = 0; i < 2; ++i) {
         if (overlay_vertex_mapped_[i] != nullptr) {
             vkUnmapMemory(device_, overlay_vertex_memories_[i]);
@@ -2126,6 +2138,7 @@ void stereo_renderer::cleanup() {
     }
     active_modal_         = {};
     render_boba_overlays_ = false;
+#endif
 
     if (command_pool_ != VK_NULL_HANDLE) {
         vkDestroyCommandPool(device_, command_pool_, nullptr);

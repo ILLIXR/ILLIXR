@@ -199,6 +199,7 @@ private:
     bool allocate_command_buffers();
     bool create_descriptor_pool();
 
+#ifdef ILLIXR_ENABLE_BOBA
     // ── Boba vector/modal overlay helpers ────────────────────────────────────
     /** Vertex generated from one of Boba's source-pixel vector commands. */
     struct overlay_vertex {
@@ -246,6 +247,7 @@ private:
 
     /** Select a physical-device memory type satisfying all requested flags. */
     std::uint32_t find_memory_type(std::uint32_t type_filter, VkMemoryPropertyFlags properties) const;
+#endif
 
     // ── Depth pipeline helpers ─────────────────────────────────────────────────
     bool create_depth_render_pass(VkFormat depth_format);
@@ -293,6 +295,7 @@ private:
     std::array<VkFramebuffer, 2> prev_framebuffers_{VK_NULL_HANDLE, VK_NULL_HANDLE};
     std::array<VkImageView, 2>   prev_swapchain_views_{VK_NULL_HANDLE, VK_NULL_HANDLE};
 
+#ifdef ILLIXR_ENABLE_BOBA
     // Boba vector overlays (controller rays, placement rectangle, markers).
     VkPipelineLayout                           overlay_pipeline_layout_ = VK_NULL_HANDLE;
     VkPipeline                                 overlay_pipeline_        = VK_NULL_HANDLE;
@@ -321,6 +324,7 @@ private:
     std::uint32_t                              overlay_source_width_{0};
     std::uint32_t                              overlay_source_height_{0};
     bool                                       render_boba_overlays_{false};
+#endif
 
     // Depth pipeline resources (owned)
     VkRenderPass          depth_render_pass_     = VK_NULL_HANDLE;

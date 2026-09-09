@@ -105,10 +105,12 @@ private:
     XrBool32                session_running_ = XR_FALSE;
     XrViewConfigurationView view_configs_[2]{};
     XrView                  views_[2]{};
+#ifdef ILLIXR_ENABLE_BOBA
     // World-panel anchor persists across head motion until presentation mode changes.
     bool                                  world_panel_anchor_initialized_{false};
     XrPosef                               world_panel_pose_{};
     data_format::stereo_presentation_mode previous_presentation_mode_{data_format::stereo_presentation_mode::stereo_fullscreen};
+#endif
 
     // Vulkan device objects
     VkInstance       vk_instance_        = VK_NULL_HANDLE;

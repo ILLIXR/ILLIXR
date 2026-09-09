@@ -69,7 +69,8 @@ as shown below so it reads the same format.
 For a manual Android build, use
 `./gradlew -PILLIXR_ENABLE_BOBA=ON :app:assembleDebug`. Other offload clients can
 enable the same support with CMake's `-DILLIXR_ENABLE_BOBA=ON` option. Ordinary
-builds default to the original frame format without this metadata.
+builds default to the original frame format without this metadata. The Boba-only
+fields are also omitted from compressed and decoded frames when support is disabled.
 
 Both endpoints must use matching settings. Rebuild the desktop and Quest client
 when switching between the two formats; selecting a runtime profile alone does

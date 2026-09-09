@@ -100,7 +100,9 @@ offload_rendering_client::offload_rendering_client(const std::string& name, phon
     , display_provider_{pb->lookup_impl<vulkan::display_provider>()}
 #endif
     , frames_reader_{switchboard_->get_buffered_reader<compressed_frame>("compressed_frames")}
+#ifdef ILLIXR_ENABLE_BOBA
     , modal_texture_reader_{switchboard_->get_buffered_reader<boba_modal_texture>("boba_modal_texture")}
+#endif
     , network_latency_reader_{switchboard_->get_reader<network_latency_result>("network_latency")}
 #ifndef USING_OPENXR
     , pose_writer_{switchboard_->get_network_writer<pose::fast_head_pose_type>("render_pose", {})}
@@ -260,6 +262,7 @@ void offload_rendering_client::log_android_decode_timing() {
     // android_timing_frame_count_ = 0;
 }
 
+#ifdef ILLIXR_ENABLE_BOBA
 void offload_rendering_client::drain_modal_texture_updates() {
     while (auto update = modal_texture_reader_.try_dequeue()) {
         const std::uint64_t expected_bytes = static_cast<std::uint64_t>(update->width) * update->height * 4ULL;
@@ -285,6 +288,7 @@ void offload_rendering_client::drain_modal_texture_updates() {
                    update->height);
     }
 }
+#endif
 
 // receiver_loop
 // Runs on receiver_thread_. Dequeues compressed frames from the network,
@@ -300,13 +304,17 @@ void offload_rendering_client::receiver_loop() {
     // spdlog::get("illixr")->info("[receiver_loop] Starting");
 
     while (receiver_running_) {
+#ifdef ILLIXR_ENABLE_BOBA
         drain_modal_texture_updates();
+#endif
         auto current_frame = frames_reader_.dequeue();
         if (current_frame == nullptr) {
             spdlog::get("illixr")->debug("[receiver_loop] No frame available");
             continue;
         }
+#ifdef ILLIXR_ENABLE_BOBA
         drain_modal_texture_updates();
+#endif
 
         // spdlog::get("illixr")->info("Rx Frame {}", current_frame->frame_number);
         //  Determine keyframe status for each stream.
@@ -366,10 +374,12 @@ void offload_rendering_client::receiver_loop() {
             meta.near_z                      = current_frame->near_z;
             meta.far_z                       = current_frame->far_z;
             meta.encode_time                 = current_frame->encode_time;
+#ifdef ILLIXR_ENABLE_BOBA
             meta.presentation_mode           = current_frame->presentation_mode;
             meta.content_aspect_ratio        = current_frame->content_aspect_ratio;
             meta.boba_overlay                = current_frame->boba_overlay;
             meta.boba_modal                  = current_frame->boba_modal;
+#endif
             meta.fov_left                    = current_frame->fov_left;
             meta.fov_right                   = current_frame->fov_right;
             meta.fov_up                      = current_frame->fov_up;
@@ -1112,6 +1122,7 @@ data_format::dual_frames offload_rendering_client::construct_dual_frames(time_po
             it->second.consumed  = true;
             exact_metadata_found = true;
 
+#ifdef ILLIXR_ENABLE_BOBA
             if (meta.boba_modal.visible) {
                 const auto texture = modal_texture_cache_.find(meta.boba_modal.texture_id);
                 if (texture != modal_texture_cache_.end() && texture->second.width == meta.boba_modal.width &&
@@ -1119,6 +1130,7 @@ data_format::dual_frames offload_rendering_client::construct_dual_frames(time_po
                     frame.boba_modal_rgba = texture->second.rgba;
                 }
             }
+#endif
 
             // Everything older than the decoded image can no longer be used.
             auto stale = frame_meta_map_.begin();
@@ -1144,10 +1156,12 @@ data_format::dual_frames offload_rendering_client::construct_dual_frames(time_po
     frame.far_z                = meta.far_z;
     frame.pose_id              = meta.pose_id;
     frame.encode_time          = meta.encode_time;
+#ifdef ILLIXR_ENABLE_BOBA
     frame.presentation_mode    = meta.presentation_mode;
     frame.content_aspect_ratio = meta.content_aspect_ratio;
     frame.boba_overlay         = std::move(meta.boba_overlay);
     frame.boba_modal           = meta.boba_modal;
+#endif
     frame.fov_left             = meta.fov_left;
     frame.fov_right            = meta.fov_right;
     frame.fov_up               = meta.fov_up;

@@ -177,10 +177,12 @@ private:
         float                                 near_z{0.f};
         float                                 far_z{0.f};
         double                                encode_time{0.};
+#ifdef ILLIXR_ENABLE_BOBA
         data_format::stereo_presentation_mode presentation_mode{data_format::stereo_presentation_mode::stereo_fullscreen};
         float                                 content_aspect_ratio{0.0F};
         data_format::boba_frame_overlay       boba_overlay{};
         data_format::boba_modal_overlay       boba_modal{};
+#endif
         std::array<float, 2>                  fov_left{0.0F, 0.0F};
         std::array<float, 2>                  fov_right{0.0F, 0.0F};
         std::array<float, 2>                  fov_up{0.0F, 0.0F};
@@ -188,11 +190,13 @@ private:
         bool                                  consumed{false};
     };
 
+#ifdef ILLIXR_ENABLE_BOBA
     struct modal_texture_cache_entry {
         std::uint32_t                                    width{0};
         std::uint32_t                                    height{0};
         std::shared_ptr<const std::vector<std::uint8_t>> rgba;
     };
+#endif
 
     /**
      * @brief Receiver thread: dequeues compressed frames from the network,
@@ -201,8 +205,10 @@ private:
      */
     void receiver_loop();
 
+#ifdef ILLIXR_ENABLE_BOBA
     /** Drain reliable modal-texture updates and cache them by content ID. */
     void drain_modal_texture_updates();
+#endif
 
     /**
      * @brief Log Android decode timing statistics.
@@ -309,7 +315,9 @@ private:
     std::shared_ptr<vulkan::display_provider> display_provider_;
 #endif
     switchboard::buffered_reader<data_format::compressed_frame>   frames_reader_;
+#ifdef ILLIXR_ENABLE_BOBA
     switchboard::buffered_reader<data_format::boba_modal_texture> modal_texture_reader_;
+#endif
     switchboard::reader<data_format::network_latency_result>      network_latency_reader_;
 
 #ifndef USING_OPENXR
@@ -349,7 +357,9 @@ private:
     // the same time, so the map stays bounded even if the decoder skips frames.
     std::map<uint64_t, frame_meta>                               frame_meta_map_;
     std::mutex                                                   frame_meta_map_mutex_;
+#ifdef ILLIXR_ENABLE_BOBA
     std::unordered_map<std::uint64_t, modal_texture_cache_entry> modal_texture_cache_;
+#endif
 
     // Bounds how many submitted dual_frames are kept alive awaiting release.
     // Rather than requiring an explicit GPU-completion signal from the

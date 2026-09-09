@@ -16,8 +16,10 @@ using namespace ILLIXR::data_format;
 
 constexpr int   I_HEADSET_WIDTH            = NATIVE_STREAM_EYE_WIDTH;
 constexpr int   I_HEADSET_HEIGHT           = NATIVE_STREAM_EYE_HEIGHT;
+#    ifdef ILLIXR_ENABLE_BOBA
 constexpr float BOBA_PANEL_DISTANCE_METERS = 1.1F;
 constexpr float BOBA_PANEL_WIDTH_METERS    = 1.2F;
+#    endif
 
 // Identity pose helper
 static XrPosef identity_pose() {
@@ -26,6 +28,7 @@ static XrPosef identity_pose() {
     return pose;
 }
 
+#    ifdef ILLIXR_ENABLE_BOBA
 // Rotate a local-space panel offset into the current view orientation without
 // pulling another math library into the Android OpenXR entry point.
 static XrVector3f rotate_vector(const XrQuaternionf& q, const XrVector3f& v) {
@@ -43,6 +46,7 @@ static XrPosef panel_pose_from_view(const XrPosef& view_pose) {
     pose.position.z += offset.z;
     return pose;
 }
+#    endif
 
 [[maybe_unused]] oxr_interface::oxr_interface(const std::string& name_, phonebook* pb_)
     : threadloop{name_, pb_}
@@ -428,7 +432,9 @@ void oxr_interface::run_frame() {
     xrBeginFrame(session_, &begin_info);
 
     XrCompositionLayerProjection     projectionLayer    = {XR_TYPE_COMPOSITION_LAYER_PROJECTION};
+#    ifdef ILLIXR_ENABLE_BOBA
     XrCompositionLayerQuad           panelLayer         = {XR_TYPE_COMPOSITION_LAYER_QUAD};
+#    endif
     XrCompositionLayerProjectionView projectionViews[2] = {{XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW},
                                                            {XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW}};
     XrCompositionLayerDepthInfoKHR   depth_infos[2]{{XR_TYPE_COMPOSITION_LAYER_DEPTH_INFO_KHR},
@@ -531,6 +537,7 @@ void oxr_interface::run_frame() {
                     spdlog::get("illixr")->debug("[pose_tracker]  No current pose");
                 }
             }
+#    ifdef ILLIXR_ENABLE_BOBA
             const bool render_as_panel =
                 current_frames_->presentation_mode != data_format::stereo_presentation_mode::stereo_fullscreen;
             if (current_frames_->presentation_mode == data_format::stereo_presentation_mode::mono_panel &&
@@ -543,6 +550,9 @@ void oxr_interface::run_frame() {
 
             // Panel modes are monoscopic and use one compositor quad. Fullscreen mode renders both projection eyes.
             const int render_eye_count = render_as_panel ? 1 : 2;
+#    else
+            constexpr int render_eye_count = 2;
+#    endif
             for (int eye = 0; eye < render_eye_count; eye++) {
                 swapchain_info& sc = swapchains_[eye];
 
@@ -562,6 +572,7 @@ void oxr_interface::run_frame() {
                 XrSwapchainImageReleaseInfo rel{XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO};
                 OXR(xrReleaseSwapchainImage(sc.swapchain, &rel))
 
+#    ifdef ILLIXR_ENABLE_BOBA
                 if (render_as_panel) {
                     panelLayer.layerFlags =
                         XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT | XR_COMPOSITION_LAYER_UNPREMULTIPLIED_ALPHA_BIT;
@@ -586,6 +597,7 @@ void oxr_interface::run_frame() {
                     panelLayer.subImage.imageArrayIndex  = 0;
                     continue;
                 }
+#    endif
 
                 // Set up projection layer
                 projectionViews[eye].pose = current_frames_->pose[eye];
@@ -685,9 +697,12 @@ void oxr_interface::run_frame() {
                 }
             }
 
+#    ifdef ILLIXR_ENABLE_BOBA
             if (render_as_panel) {
                 layers[0] = reinterpret_cast<XrCompositionLayerBaseHeader*>(&panelLayer);
-            } else {
+            } else
+#    endif
+            {
                 projectionLayer.space      = local_space_;
                 projectionLayer.viewCount  = 2;
                 projectionLayer.views      = projectionViews;

@@ -289,11 +289,6 @@ void load(Archive& ar, ILLIXR::data_format::compressed_frame& f, const unsigned 
     f.presentation_mode = static_cast<ILLIXR::data_format::stereo_presentation_mode>(presentation_mode);
     ar >> f.content_aspect_ratio;
     ILLIXR::detail::load_boba_metadata(ar, f.boba_overlay, f.boba_modal);
-#else
-    f.presentation_mode    = ILLIXR::data_format::stereo_presentation_mode::stereo_fullscreen;
-    f.content_aspect_ratio = 0.0F;
-    f.boba_overlay         = {};
-    f.boba_modal           = {};
 #endif
 
     if (f.nalu_only) {

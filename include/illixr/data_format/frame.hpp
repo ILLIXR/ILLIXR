@@ -144,11 +144,12 @@ struct compressed_frame : public switchboard::event {
 
     bool use_depth{false};
     bool use_motion_vectors{false};
-    // Serialized with the video packet only in ILLIXR_ENABLE_BOBA builds.
+#ifdef ILLIXR_ENABLE_BOBA
     stereo_presentation_mode presentation_mode{stereo_presentation_mode::stereo_fullscreen};
     float                    content_aspect_ratio{0.0F};
     boba_frame_overlay       boba_overlay{};
     boba_modal_overlay       boba_modal{};
+#endif
 
     /// Tag type: disambiguates the color+motion_vec constructor from color+depth.
     struct [[maybe_unused]] has_motion_vectors_tag { };
@@ -393,6 +394,7 @@ struct [[maybe_unused]] dual_frames : public switchboard::event {
     // for latency and accuracy logging.
     uint64_t pose_id{0};
     double   encode_time{0.};
+#ifdef ILLIXR_ENABLE_BOBA
     // Presentation metadata matched to this exact decoded frame.
     stereo_presentation_mode presentation_mode{stereo_presentation_mode::stereo_fullscreen};
     float                    content_aspect_ratio{0.0F};
@@ -400,6 +402,7 @@ struct [[maybe_unused]] dual_frames : public switchboard::event {
     boba_modal_overlay       boba_modal{};
     // Optional cached modal pixels resolved from boba_modal.texture_id on Quest.
     std::shared_ptr<const std::vector<std::uint8_t>> boba_modal_rgba{};
+#endif
     // Projection clip planes forwarded from the server's compressed_frame.
     // Required by XrCompositionLayerDepthInfoKHR and
     // XrCompositionLayerSpaceWarpInfoFB (nearZ / farZ fields).
