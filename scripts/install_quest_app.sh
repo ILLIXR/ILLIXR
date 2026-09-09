@@ -9,6 +9,7 @@ SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd -- "${SCRIPT_DIR}/.." && pwd)"
 
 BUILD_VARIANT="debug"
+BOBA_ENABLED="OFF"
 DEVICE_SERIAL=""
 SDK_ROOT_OVERRIDE=""
 JAVA_HOME_OVERRIDE=""
@@ -28,6 +29,7 @@ Usage:
 Options:
   --serial SERIAL       Select a device when more than one is connected.
   --release             Build and install the release APK instead of debug.
+  --boba                Enable frame metadata for a Boba streaming server.
   --no-build            Install the APK already present under app/build/outputs.
   --no-launch           Do not launch ILLIXRApp after installation.
   --android-sdk PATH    Android SDK root (otherwise auto-detected).
@@ -54,6 +56,10 @@ while (($# > 0)); do
             ;;
         --release)
             BUILD_VARIANT="release"
+            shift
+            ;;
+        --boba)
+            BOBA_ENABLED="ON"
             shift
             ;;
         --no-build)
@@ -226,7 +232,7 @@ fi
 
 if ((BUILD_APP)); then
     printf 'Building ILLIXRApp (%s)...\n' "${BUILD_VARIANT}"
-    (cd "${REPO_ROOT}" && ./gradlew --no-daemon ":app:${GRADLE_TASK}")
+    (cd "${REPO_ROOT}" && ./gradlew --no-daemon "-PILLIXR_ENABLE_BOBA=${BOBA_ENABLED}" ":app:${GRADLE_TASK}")
 fi
 [[ -f "${APK_PATH}" ]] || fail "APK not found: ${APK_PATH}"
 

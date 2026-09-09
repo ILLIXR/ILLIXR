@@ -59,6 +59,23 @@ export BOBA_IMMERSIVE_ROOT=/path/to/boba_immersive
 `BOBA_DEMO_LAUNCHER` remains available as a direct launcher override. No
 machine-specific path is compiled into the plugin.
 
+## Select Boba frame transport
+
+Selecting `boba_quest_native_server` as the CMake build profile, or enabling
+`USE_BOBA_STREAMING_SERVER`, enables Boba's presentation and overlay metadata in
+the frame protocol for that desktop build. Build the Quest client with `--boba`
+as shown below so it reads the same format.
+
+For a manual Android build, use
+`./gradlew -PILLIXR_ENABLE_BOBA=ON :app:assembleDebug`. Other offload clients can
+enable the same support with CMake's `-DILLIXR_ENABLE_BOBA=ON` option. Ordinary
+builds default to the original frame format without this metadata.
+
+Both endpoints must use matching settings. Rebuild the desktop and Quest client
+when switching between the two formats; selecting a runtime profile alone does
+not change the compiled frame protocol. With `--no-build`, reuse an APK built
+with the matching setting.
+
 ## Install the native Quest app
 
 The first installation requires a Quest with developer mode enabled, connected
@@ -67,7 +84,7 @@ host-side `protoc` compiler is available, then run from the source checkout:
 
 ```bash
 conda activate illixr
-./scripts/install_quest_app.sh
+./scripts/install_quest_app.sh --boba
 ```
 
 The script builds the APK, installs it, launches `ILLIXRApp`, and prints the

@@ -197,10 +197,12 @@ void save(Archive& ar, const ILLIXR::data_format::compressed_frame& f, const uns
     ar << f.nalu_only;
     ar << f.use_depth;
     ar << f.use_motion_vectors;
+#ifdef ILLIXR_ENABLE_BOBA
     const auto presentation_mode = static_cast<std::uint8_t>(f.presentation_mode);
     ar << presentation_mode;
     ar << f.content_aspect_ratio;
     ILLIXR::detail::save_boba_metadata(ar, f.boba_overlay, f.boba_modal);
+#endif
 #ifdef ILLIXR_LIBAV
     if (f.nalu_only) {
         int32_t left_size  = f.left_color->size;  // Use fixed-width type
@@ -278,6 +280,7 @@ void load(Archive& ar, ILLIXR::data_format::compressed_frame& f, const unsigned 
     ar >> f.nalu_only;
     ar >> f.use_depth;
     ar >> f.use_motion_vectors;
+#ifdef ILLIXR_ENABLE_BOBA
     std::uint8_t presentation_mode = 0;
     ar >> presentation_mode;
     if (presentation_mode > static_cast<std::uint8_t>(ILLIXR::data_format::stereo_presentation_mode::head_locked_panel)) {
@@ -286,6 +289,12 @@ void load(Archive& ar, ILLIXR::data_format::compressed_frame& f, const unsigned 
     f.presentation_mode = static_cast<ILLIXR::data_format::stereo_presentation_mode>(presentation_mode);
     ar >> f.content_aspect_ratio;
     ILLIXR::detail::load_boba_metadata(ar, f.boba_overlay, f.boba_modal);
+#else
+    f.presentation_mode    = ILLIXR::data_format::stereo_presentation_mode::stereo_fullscreen;
+    f.content_aspect_ratio = 0.0F;
+    f.boba_overlay         = {};
+    f.boba_modal           = {};
+#endif
 
     if (f.nalu_only) {
         ar >> f.left_color_nalu_size;

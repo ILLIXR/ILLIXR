@@ -144,7 +144,7 @@ struct compressed_frame : public switchboard::event {
 
     bool use_depth{false};
     bool use_motion_vectors{false};
-    // Boba presentation and overlay metadata serialized with the video packet.
+    // Serialized with the video packet only in ILLIXR_ENABLE_BOBA builds.
     stereo_presentation_mode presentation_mode{stereo_presentation_mode::stereo_fullscreen};
     float                    content_aspect_ratio{0.0F};
     boba_frame_overlay       boba_overlay{};

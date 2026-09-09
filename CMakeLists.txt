@@ -119,6 +119,7 @@ option(PIP_LOCATION "The path of the pip script" "")
 mark_as_advanced(FORCE MKDOCS_LOCATION PIP_LOCATION BUILD_DOCS_FOR_RELEASE)
 
 option(USE_MONADO "Build for monado use" OFF)
+option(ILLIXR_ENABLE_BOBA "Enable Boba frame metadata on offload clients (automatic with boba_streaming_server)" OFF)
 option(NO_GPL "Do not build any code licensed under GPL. This will affect any generated profile files as well." OFF)
 option(NO_LGPL "Do not build any code licensed under LGPL or GPL. This will affect any generated profile files as well." OFF)
 option(NO_ZED "Do not build and ZED related code" OFF)
@@ -485,6 +486,13 @@ if($ENV{ILLIXR_BUILD_FLAGS})
         list(GET FLAG_LIST 1 VALUE)
         set(${ITEM} ${VALUE} CACHE BOOL "" FORCE)
     endforeach()
+endif()
+
+# The frame serializer is shared by several plugins. Use one definition for the
+# whole build so every sender/receiver agrees on the optional Boba fields.
+if(USE_BOBA_STREAMING_SERVER OR ILLIXR_ENABLE_BOBA)
+    add_compile_definitions(ILLIXR_ENABLE_BOBA)
+    message(STATUS "Boba frame metadata enabled; the peer must also enable Boba support")
 endif()
 
 # set any plugins that are being built
