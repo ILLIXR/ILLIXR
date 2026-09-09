@@ -64,7 +64,7 @@ boba_streaming_server::boba_streaming_server(const std::string& name, phonebook*
     , switchboard_{pb->lookup_impl<switchboard>()}
     , stereo_reader_{switchboard_->get_reader<data_format::stereo_frame>("stereo_frame")}
     , frames_writer_{switchboard_->get_network_writer<data_format::compressed_frame>(
-          "compressed_frames", network::topic_config{network::topic_config::BOOST, network::topic_config::UDP})}
+          "compressed_frames", network::topic_config{network::topic_config::BOOST, network::topic_config::TCP})}
     , modal_writer_{switchboard_->get_network_writer<data_format::boba_modal_texture>(
           "boba_modal_texture", network::topic_config{network::topic_config::BOOST, network::topic_config::TCP})} {
     spdlogger(switchboard_->get_env_char("BOBA_STREAMING_SERVER_LOG_LEVEL", "info"));

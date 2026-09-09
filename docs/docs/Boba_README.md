@@ -61,6 +61,11 @@ machine-specific path is compiled into the plugin.
 
 ## Select Boba frame transport
 
+Video frames, their presentation/overlay metadata, modal textures, and runtime
+shutdown messages use ILLIXR's TCP backend. Headset/controller tracking updates
+and the startup address handshake use UDP. Controller/view samples carry sequence
+numbers so the Boba bridge can reject updates older than the last forwarded sample.
+
 Selecting `boba_quest_native_server` as the CMake build profile, or enabling
 `USE_BOBA_STREAMING_SERVER`, enables Boba's presentation and overlay metadata in
 the frame protocol for that desktop build. Build the Quest client with `--boba`
@@ -76,6 +81,10 @@ Both endpoints must use matching settings. Rebuild the desktop and Quest client
 when switching between the two formats; selecting a runtime profile alone does
 not change the compiled frame protocol. With `--no-build`, reuse an APK built
 with the matching setting.
+
+When updating from the earlier UDP-video version of this integration, rebuild
+both the desktop and Quest app: tracking now uses the original ILLIXR UDP packet
+format, and video uses TCP.
 
 ## Install the native Quest app
 

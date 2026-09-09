@@ -81,7 +81,7 @@ profiles:
       enable_pre_sleep: false
 
 # Native Quest client: Meta OpenXR owns input/display on-headset; the Linux
-# host runs Boba and streams a low-latency AV1 stereo frame over UDP.
+# host runs Boba and streams AV1 stereo frames over TCP.
 
   - boba_quest_native_server:
     plugins: tcp_network_backend,udp_network_backend,network_latency.rx,boba_immersive,boba_streaming_server
@@ -90,9 +90,6 @@ profiles:
       illixr_tcp_server_port: 9001
       illixr_udp_server_port: 9003
       illixr_udp_client_port: 9002
-      illixr_udp_packet_size: 1400
-      illixr_udp_socket_buffer_bytes: 4194304
-      illixr_udp_dscp: true
       illixr_is_client: 0
       illixr_display_mode: none
       boba_stream_bitrate: 30000000

@@ -20,14 +20,13 @@ namespace ILLIXR {
 /**
  * Encode Boba's mmap-backed RGBA output and stream it to the native Quest client.
  *
- * Pixel frames and small vector overlays travel together over the low-latency
- * `compressed_frames` UDP topic. Larger modal textures are content-addressed,
- * cached on the Quest, and sent separately over TCP so packet loss cannot leave
- * a partially updated UI texture.
+ * Encoded frames and small vector overlays travel together over the existing
+ * `compressed_frames` TCP transport used by the offload renderer. Modal textures
+ * are content-addressed, cached on the Quest, and sent on a separate TCP topic.
  */
 class boba_streaming_server final : public threadloop {
 public:
-    /** Bind the local stereo input and the UDP/TCP network outputs. */
+    /** Bind the local stereo input and the TCP network outputs. */
     boba_streaming_server(const std::string& name, phonebook* pb);
     /** Release the encoder and any mapped producer rings. */
     ~boba_streaming_server() override;
@@ -86,7 +85,7 @@ private:
     /** Lazily create the side-by-side AV1 NVENC encoder. */
     void initialize_encoder();
 
-    /** Attach timing, pose, and overlay metadata and send the encoded frame over UDP. */
+    /** Attach timing, pose, and overlay metadata and send the encoded frame over TCP. */
     void publish_encoded(const data_format::stereo_frame& frame, std::vector<std::uint8_t>&& encoded,
                          data_format::boba_frame_overlay&& overlay, const data_format::boba_modal_overlay& modal,
                          double encode_time_us);

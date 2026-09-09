@@ -119,9 +119,6 @@ int main(int argc, const char* argv[]) {
         setenv("ILLIXR_UDP_CLIENT_PORT", "9002", true);
         setenv("ILLIXR_TCP_SERVER_PORT", "9001", true);
         setenv("ILLIXR_UDP_SERVER_PORT", "9003", true);
-        setenv("ILLIXR_UDP_PACKET_SIZE", "1400", true);
-        setenv("ILLIXR_UDP_SOCKET_BUFFER_BYTES", "4194304", true);
-        setenv("ILLIXR_UDP_DSCP", "true", true);
         setenv("ILLIXR_IS_CLIENT", "1", true);
         setenv("ILLIXR_USE_DEPTH_IMAGES", "0", true);
         setenv("ILLIXR_USE_MOTION_VECTOR_IMAGES", "0", true);

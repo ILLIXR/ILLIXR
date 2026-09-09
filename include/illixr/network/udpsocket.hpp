@@ -94,21 +94,6 @@ public:
 #endif
     }
 
-    /// Increase kernel socket buffers for high-rate video streams. The kernel may
-    /// clamp the requested value to its configured maximum; that is acceptable.
-    void socket_set_buffer_sizes(int bytes) const {
-        if (bytes <= 0) {
-            return;
-        }
-#if defined(_WIN32) || defined(_WIN64)
-        setsockopt(fd_, SOL_SOCKET, SO_SNDBUF, reinterpret_cast<const char*>(&bytes), sizeof(bytes));
-        setsockopt(fd_, SOL_SOCKET, SO_RCVBUF, reinterpret_cast<const char*>(&bytes), sizeof(bytes));
-#else
-        setsockopt(fd_, SOL_SOCKET, SO_SNDBUF, &bytes, sizeof(bytes));
-        setsockopt(fd_, SOL_SOCKET, SO_RCVBUF, &bytes, sizeof(bytes));
-#endif
-    }
-
     /// Bound the time a receive thread can remain asleep so plugin shutdown can
     /// join it even when the peer is no longer sending datagrams.
     void socket_set_receive_timeout(int milliseconds) const {
@@ -128,17 +113,6 @@ public:
         shutdown(fd_, SD_BOTH);
 #else
         shutdown(fd_, SHUT_RDWR);
-#endif
-    }
-
-    /// Mark latency-sensitive datagrams for expedited forwarding when the
-    /// network honors DSCP. Failures are intentionally non-fatal.
-    void socket_set_dscp_expedited_forwarding() const {
-        constexpr int tos = 0b101110 << 2;
-#if defined(_WIN32) || defined(_WIN64)
-        setsockopt(fd_, IPPROTO_IP, IP_TOS, reinterpret_cast<const char*>(&tos), sizeof(tos));
-#else
-        setsockopt(fd_, IPPROTO_IP, IP_TOS, &tos, sizeof(tos));
 #endif
     }
 
