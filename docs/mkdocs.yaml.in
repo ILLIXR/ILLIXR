@@ -119,7 +119,8 @@ nav:
           - 'Zed': plugin_README/README_zed.md
           - 'Zed Data Injection': plugin_README/README_zed_data_injection.md
           - 'Zed Data Capture': plugin_README/zed_capture.md
-      - 'Interfaces': interfaces/index.md
+      - 'Interfaces':
+          - interfaces/index.md
           - 'Unity Android': interfaces/unity_android.md
       - 'Poses': structs/poses/intro.md
       - 'Working with ILLIXR':

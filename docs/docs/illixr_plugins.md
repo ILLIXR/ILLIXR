@@ -441,9 +441,9 @@ Provides reader and writer handles to a Python script, allowing the script to ac
 
 Topic details:
 
--   Asynchronously *reads* [`semantic_data`][A27] from `semantic_data` topic
--   Asynchronously *reads* [`semantic_query`][A28] from `semantic_query` topic
--   *Publishes* [`query_response`][A29] to `semantic_response` networked topic
+-   Asynchronously *reads* [`semantic_frame`][A30] from `semantic_frame` topic
+-   Asynchronously *reads* [`voice_query`][A31] from `semantic_query` topic
+-   *Publishes* [`query_response`][A32] to `semantic_response` networked topic
 
 &nbsp;&nbsp;[**Details**][P34]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C40]
 
@@ -777,10 +777,8 @@ See [Getting Started][I11] for more information on adding plugins to a [_profile
 
 [A26]:   api/structILLIXR_1_1data__format_1_1draco__type.md
 
-[A27]:   api/
+[A30]:   api/structILLIXR_1_1data__format_1_1semantic__frame.md
 
-[A28]:   api/
+[A31]:   api/structILLIXR_1_1data__format_1_1semantic__xr_1_1voice__query.md
 
-[A29]:   api/??
-
-[A30]:   api/??
+[A32]:   api/structILLIXR_1_1data__format_1_1semantic__xr_1_1query__response.md
