@@ -43,9 +43,7 @@ if(NOT ANDROID)
         target_compile_options(plugin.main${ILLIXR_BUILD_SUFFIX} PRIVATE /EHsc)
         target_compile_options(${EXE_NAME} PRIVATE /EHsc)
     endif()
-    ##############
-    # yaml parser
-    ##############
+
     if(BUILD_OXR_INTERFACE)
         target_compile_definitions(plugin.main${ILLIXR_BUILD_SUFFIX} PUBLIC -DOXR_INTERFACE)
     endif()
@@ -135,19 +133,6 @@ else()
     )
 
     target_link_libraries(native-activity
-                          #plugin.extended_window${ILLIXR_BUILD_SUFFIX}
-                          #OpenVINS_plugin
-                          #plugin.pose_prediction${ILLIXR_BUILD_SUFFIX}
-                          #plugin.pose_lookup${ILLIXR_BUILD_SUFFIX}
-                          #plugin.fauxpose${ILLIXR_BUILD_SUFFIX}
-                          #plugin.common_lock${ILLIXR_BUILD_SUFFIX}
-                          #plugin.timewarp_gl${ILLIXR_BUILD_SUFFIX}
-                          #plugin.rk4_integrator${ILLIXR_BUILD_SUFFIX}
-                          #plugin.offline_imu${ILLIXR_BUILD_SUFFIX}
-                          #plugin.offline_cam${ILLIXR_BUILD_SUFFIX}
-                          #plugin.gtsam_integrator${ILLIXR_BUILD_SUFFIX}
-                          #plugin.gldemo${ILLIXR_BUILD_SUFFIX}
-                          #plugin.android_data${ILLIXR_BUILD_SUFFIX}
                           plugin.tcp_network_backend${ILLIXR_BUILD_SUFFIX}
                           plugin.udp_network_backend${ILLIXR_BUILD_SUFFIX}
                           plugin.network_latency.tx${ILLIXR_BUILD_SUFFIX}
@@ -161,5 +146,4 @@ else()
                           Boost::serialization
                           spdlog::spdlog_android
     )
-
 endif()
