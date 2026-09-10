@@ -139,8 +139,8 @@ if (NOT ANDROID)
 
         if(USE_OFFLOAD_VIO.DEVICE_TX)
             add_library(video_encoder_vio OBJECT
-                        video_encoder.hpp
-                        ${CMAKE_SOURCE_DIR}/include/illixr/video_encoder.cpp
+                        ${CMAKE_SOURCE_DIR}/include/illixr/video_encoder.hpp
+                        video_encoder.cpp
             )
 
             target_include_directories(video_encoder_vio PUBLIC
