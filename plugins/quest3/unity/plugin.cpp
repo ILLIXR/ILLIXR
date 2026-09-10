@@ -334,10 +334,9 @@ bool xr_sensor_capture::init_openxr() {
     // a horizontal offset (measured 30.7 deg / 1.38 m in quest/dataset_0).
     space_ci.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_LOCAL_FLOOR_EXT;
     if (xrCreateReferenceSpace(xr_session_, &space_ci, &local_space_) != XR_SUCCESS) {
-        spdlog::get("illixr")->error(
-            "LOCAL_FLOOR unavailable — XR_EXT_local_floor is not enabled on Unity's "
-            "XrInstance. Depth poses would land in a different space than the RGB pose; "
-            "refusing to publish misaligned depth.");
+        spdlog::get("illixr")->error("LOCAL_FLOOR unavailable — XR_EXT_local_floor is not enabled on Unity's "
+                                     "XrInstance. Depth poses would land in a different space than the RGB pose; "
+                                     "refusing to publish misaligned depth.");
         local_space_ = XR_NULL_HANDLE;
         return false;
     }
@@ -701,7 +700,6 @@ void xr_sensor_capture::acquire_depth_unity_thread(int64_t predicted_display_tim
     // Convert to the same RH convention as rgb_camera_pose for consistency.
     float pose_mat[16]{};
     pose_to_matrix(view.pose, pose_mat);
-
 
     needs_depth_release_ = true;
 
