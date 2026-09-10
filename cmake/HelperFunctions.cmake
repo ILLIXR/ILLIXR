@@ -436,7 +436,7 @@ function(fetch_git)
     endif()
 
     if(fetch_SRC_DIR)
-        list(APPEND FCD_ARGS "SOURCE_DIR ${fetch_SRC_DIR}")
+        list(APPEND FCD_ARGS SOURCE_DIR ${fetch_SRC_DIR})
     endif()
 
     report_build(${fetch_NAME})
