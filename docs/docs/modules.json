@@ -504,6 +504,14 @@
       ]
     },
     {
+      "name": "quest3.controller",
+      "cmake_flag": "USE_QUEST3.CONTROLLER=ON",
+      "dependencies": [],
+      "OS": [
+        "android"
+      ]
+    },
+    {
       "name": "realsense",
       "cmake_flag": "USE_REALSENSE=ON",
       "dependencies": [

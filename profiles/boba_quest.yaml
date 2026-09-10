@@ -1,5 +1,5 @@
 # This file was auto generated, take caution if manually editing.
-plugins: openxr_quest_controller,boba_immersive
+plugins: quest3.controller,boba_immersive
 env_vars:
   ENABLE_OFFLOAD: false
   ENABLE_ALIGNMENT: false
