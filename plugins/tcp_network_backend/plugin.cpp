@@ -1,5 +1,7 @@
 #include "plugin.hpp"
 
+static constexpr uint32_t MAX_PACKET_BYTES = 256u * 1024u * 1024u;
+
 using namespace ILLIXR;
 
 tcp_network_backend::tcp_network_backend(const std::string& name_, phonebook* pb_)
@@ -160,8 +162,17 @@ void tcp_network_backend::read_loop(network::TCPSocket* socket) {
         // check if we have a complete packet
         while (buffer.size() >= 8) {
             uint32_t total_length = *reinterpret_cast<uint32_t*>(buffer.data());
+            uint32_t topic_name_length = *reinterpret_cast<uint32_t*>(buffer.data() + 4);
+
+            if (total_length < 8 || total_length > MAX_PACKET_BYTES || topic_name_length > total_length - 8) {
+                spdlog::get("illixr")->error("[tcp_network_backend] malformed packet header (total_length={}, "
+                                             "topic_name_length={}, buffered={} B) -- stream is desynced, "
+                                             "closing the read loop",
+                                             total_length, topic_name_length, buffer.size());
+                return;
+            }
+
             if (buffer.size() >= total_length) {
-                uint32_t          topic_name_length = *reinterpret_cast<uint32_t*>(buffer.data() + 4);
                 std::string       topic_name(buffer.data() + 8, topic_name_length);
                 std::vector<char> message(buffer.begin() + 8 + topic_name_length, buffer.begin() + total_length);
                 topic_receive(topic_name, message);

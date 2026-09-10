@@ -448,12 +448,20 @@ private:
         [[maybe_unused]] void deserialize_and_put(std::vector<char>& buffer, network::topic_config& config) {
             if (config.serialization_method == network::topic_config::SerializationMethod::BOOST) {
                 // TODO: Need to differentiate and support protobuf deserialization
-                boost::iostreams::stream<boost::iostreams::array_source> stream{buffer.data(), buffer.size()};
-                // Use no_header for cross-platform compatibility (sizeof(long) differs between Windows and Linux)
-                boost::archive::binary_iarchive ia{stream, boost::archive::no_header};
-                ptr<event>                      this_event;
-                ia >> this_event;
-                put(std::move(this_event));
+                try {
+                    boost::iostreams::stream<boost::iostreams::array_source> stream{buffer.data(), buffer.size()};
+                    // Use no_header for cross-platform compatibility (sizeof(long) differs between Windows and Linux)
+                    boost::archive::binary_iarchive ia{stream, boost::archive::no_header};
+                    ptr<event>                      this_event;
+                    ia >> this_event;
+                    put(std::move(this_event));
+                } catch (const std::exception& e) {
+                    std::cerr << "[switchboard] dropping undeserializable message on topic '" << name() << "' ("
+                              << buffer.size() << " bytes): " << e.what() << std::endl;
+                } catch (...) {
+                    std::cerr << "[switchboard] dropping undeserializable message on topic '" << name() << "' ("
+                              << buffer.size() << " bytes): unknown exception" << std::endl;
+                }
             } else {
                 ptr<event> message = std::make_shared<event_wrapper<std::string>>((std::string(buffer.begin(), buffer.end())));
                 put(std::move(message));
