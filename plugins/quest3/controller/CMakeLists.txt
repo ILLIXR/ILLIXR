@@ -1,6 +1,8 @@
-if(NOT ANDROID)
-    message(WARNING "quest3.controller is currently available only on Android")
-    set(USE_OPENXR_QUEST_CONTROLLER OFF)
+# This desktop OpenXR session serves the ALVR/SteamVR path. Native Quest input
+# is handled by the Android openxr_interface plugin.
+if(NOT CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    message(WARNING "quest3.controller is currently available only on Linux/X11")
+    set(USE_QUEST3.CONTROLLER OFF PARENT_SCOPE)
     return()
 endif()
 # Conda-based ILLIXR builds may set CMAKE_PREFIX_PATH to the environment and
@@ -46,6 +48,8 @@ target_link_libraries(${PLUGIN_NAME} PRIVATE
                       glfw
                       ${gl_LIBRARIES}
                       ${X11_LIBRARIES}
-                      spdlog::spdlog_android
+                      spdlog::spdlog
 )
 target_compile_features(${PLUGIN_NAME} PRIVATE cxx_std_17)
+
+install(TARGETS ${PLUGIN_NAME} DESTINATION lib)

@@ -12,8 +12,9 @@ Two Quest 3 paths are available:
   existing network backends. Meta OpenXR runs directly on the Quest. It does
   not require ALVR or SteamVR.
 - `boba_quest` preserves the original ALVR/SteamVR path as a working baseline.
-  The desktop OpenXR plugin receives input and submits images through SteamVR,
-  while ALVR transports them between SteamVR and its Quest client.
+  Its `quest3.controller` plugin runs on Linux/X11, receives input and submits
+  images through SteamVR, while ALVR transports them between SteamVR and its
+  Quest client. The native Quest app obtains input through `openxr_interface`.
 
 ## One-time Boba setup
 
