@@ -327,14 +327,19 @@ bool xr_sensor_capture::init_openxr() {
     XrReferenceSpaceCreateInfo space_ci{XR_TYPE_REFERENCE_SPACE_CREATE_INFO};
     space_ci.poseInReferenceSpace = {{0.f, 0.f, 0.f, 1.f}, {0.f, 0.f, 0.f}};
 
-    // STAGE space is anchored at the floor — matches Unity world space origin
-    // convention. Falls back to LOCAL (session-start head position) if the
-    // device has not been floor-calibrated.
-    space_ci.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_STAGE;
+    // The RGB pose arrives from Unity's ovrp_GetNodePoseStateAtTime, which reports in
+    // OVR floor-level tracking space: origin on the floor under the headset at app
+    // start / last recenter. XR_EXT_local_floor is that same space. STAGE is NOT — it
+    // is anchored to the centre of the Guardian play area, so it differs by a yaw and
+    // a horizontal offset (measured 30.7 deg / 1.38 m in quest/dataset_0).
+    space_ci.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_LOCAL_FLOOR_EXT;
     if (xrCreateReferenceSpace(xr_session_, &space_ci, &local_space_) != XR_SUCCESS) {
-        spdlog::get("illixr")->warn("STAGE not supported, falling back to LOCAL");
-        space_ci.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_LOCAL;
-        xrCreateReferenceSpace(xr_session_, &space_ci, &local_space_);
+        spdlog::get("illixr")->error(
+            "LOCAL_FLOOR unavailable — XR_EXT_local_floor is not enabled on Unity's "
+            "XrInstance. Depth poses would land in a different space than the RGB pose; "
+            "refusing to publish misaligned depth.");
+        local_space_ = XR_NULL_HANDLE;
+        return false;
     }
     // Load all XR_META_environment_depth entry points from openxr.h PFN types.
     // These are part of the standard Khronos SDK - no Meta SDK headers needed.
@@ -697,44 +702,6 @@ void xr_sensor_capture::acquire_depth_unity_thread(int64_t predicted_display_tim
     float pose_mat[16]{};
     pose_to_matrix(view.pose, pose_mat);
 
-    // Apply trackingToWorld and LhToRh to depth pose,
-    // matching StreamingOrchestrator.cs lines 409-414 + LhToRh.
-    // depth_pose from OpenXR is already RH, but needs tracking->world.
-    // tracking_to_world_lh is Unity LH — convert to RH first,
-    // then multiply: depth_world_rh = lh_to_rh(trackingToWorld) * depth_pose_rh
-    float tracking_rh[16]{};
-    if (tracking_to_world_lh != nullptr) {
-        const float* t  = tracking_to_world_lh;
-        tracking_rh[0]  = t[0];
-        tracking_rh[1]  = t[4];
-        tracking_rh[2]  = -t[8];
-        tracking_rh[3]  = t[12];
-        tracking_rh[4]  = t[1];
-        tracking_rh[5]  = t[5];
-        tracking_rh[6]  = -t[9];
-        tracking_rh[7]  = t[13];
-        tracking_rh[8]  = -t[2];
-        tracking_rh[9]  = -t[6];
-        tracking_rh[10] = t[10];
-        tracking_rh[11] = -t[14];
-        tracking_rh[12] = t[3];
-        tracking_rh[13] = t[7];
-        tracking_rh[14] = -t[11];
-        tracking_rh[15] = t[15];
-    } else {
-        // identity
-        tracking_rh[0] = tracking_rh[5] = tracking_rh[10] = tracking_rh[15] = 1.f;
-    }
-
-    // depth pose from OpenXR is already RH — multiply tracking_rh * pose_mat
-    float depth_world[16]{};
-    for (int r = 0; r < 4; ++r) {
-        for (int c = 0; c < 4; ++c) {
-            depth_world[r * 4 + c] = 0.f;
-            for (int k = 0; k < 4; ++k)
-                depth_world[r * 4 + c] += tracking_rh[r * 4 + k] * pose_mat[k * 4 + c];
-        }
-    }
 
     needs_depth_release_ = true;
 
@@ -747,7 +714,7 @@ void xr_sensor_capture::acquire_depth_unity_thread(int64_t predicted_display_tim
         pending_readback_.near_z     = depth_image.nearZ;
         pending_readback_.far_z      = depth_image.farZ;
         pending_readback_.timestamp  = acq_info.displayTime;
-        std::memcpy(pending_readback_.pose, depth_world, sizeof(depth_world));
+        std::memcpy(pending_readback_.pose, pose_mat, sizeof(pose_mat));
         pending_readback_.valid = true;
     }
 }
