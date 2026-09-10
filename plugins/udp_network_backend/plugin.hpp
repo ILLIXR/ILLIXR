@@ -54,6 +54,8 @@ private:
 
     // To delimit the topic_name and the serialization method when creating a topic
     std::string delimiter_ = "|";
+
+    std::mutex send_mutex_;
 };
 
 } // namespace ILLIXR
