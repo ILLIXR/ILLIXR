@@ -25,6 +25,9 @@
  *               "depth_intrinsics"numpy float32 (4,)    [fx,fy,cx,cy]
  *               "rgb_camera_pose" numpy float32 (4,4)   row-major
  *               "depth_pose"      numpy float32 (4,4)   row-major
+ *               "rgb_timestamp_ns"   int  CLOCK_BOOTTIME ns (encoder PTS)
+ *               "depth_timestamp_ns" int  OVRPlugin predicted-display time ns
+ *                                         (different base -- see semantics.hpp)
  *
  *           VoiceQueryReader    - wraps switchboard::reader<voice_query>
  *             .get() -> dict or None
@@ -149,6 +152,8 @@ struct py_semantic_data_reader {
         data["rgb_camera_pose"]  = to_numpy_4x4_safe(val, val->rgb_camera_pose);
         data["depth_pose"]       = to_numpy_4x4_safe(val, val->depth_pose);
         data["max_depth_m"]      = val->max_depth;
+        data["rgb_timestamp_ns"]   = val->rgb_timestamp_ns;
+        data["depth_timestamp_ns"] = val->depth_timestamp_ns;
 
         return data;
     }
