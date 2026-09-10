@@ -139,19 +139,19 @@ struct py_semantic_data_reader {
         auto val = meta_opt->data;
 
         pybind11::dict data;
-        data["image"]            = entry_to_numpy(&*entry_opt);
-        data["frame_number"]     = entry_opt->frame_number;
-        data["image_width"]      = val->intrinsics.width;
-        data["image_height"]     = val->intrinsics.height;
-        data["depth"]            = to_numpy_flat_safe(val, val->depth.data(), val->depth.size());
-        data["depth_width"]      = val->depth_intrinsics.width;
-        data["depth_height"]     = val->depth_intrinsics.height;
-        data["depth_near_z"]     = val->depth_near_z;
-        data["intrinsics"]       = intrinsics_to_numpy(val->intrinsics);
-        data["depth_intrinsics"] = intrinsics_to_numpy(val->depth_intrinsics);
-        data["rgb_camera_pose"]  = to_numpy_4x4_safe(val, val->rgb_camera_pose);
-        data["depth_pose"]       = to_numpy_4x4_safe(val, val->depth_pose);
-        data["max_depth_m"]      = val->max_depth;
+        data["image"]              = entry_to_numpy(&*entry_opt);
+        data["frame_number"]       = entry_opt->frame_number;
+        data["image_width"]        = val->intrinsics.width;
+        data["image_height"]       = val->intrinsics.height;
+        data["depth"]              = to_numpy_flat_safe(val, val->depth.data(), val->depth.size());
+        data["depth_width"]        = val->depth_intrinsics.width;
+        data["depth_height"]       = val->depth_intrinsics.height;
+        data["depth_near_z"]       = val->depth_near_z;
+        data["intrinsics"]         = intrinsics_to_numpy(val->intrinsics);
+        data["depth_intrinsics"]   = intrinsics_to_numpy(val->depth_intrinsics);
+        data["rgb_camera_pose"]    = to_numpy_4x4_safe(val, val->rgb_camera_pose);
+        data["depth_pose"]         = to_numpy_4x4_safe(val, val->depth_pose);
+        data["max_depth_m"]        = val->max_depth;
         data["rgb_timestamp_ns"]   = val->rgb_timestamp_ns;
         data["depth_timestamp_ns"] = val->depth_timestamp_ns;
 
