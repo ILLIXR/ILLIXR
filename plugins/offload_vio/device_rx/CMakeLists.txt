@@ -3,7 +3,7 @@
 cmake_minimum_required(VERSION 3.22)
 if(WIN32 OR MSVC OR ANDROID)
     message(WARNING "offload_rendering_client is not yet available for Windows or Android")
-    set(USE_OFFLOAD_VIO_DEVICE_RX OFF)
+    set(USE_OFFLOAD_VIO.DEVICE_RX OFF)
     return()
 endif()
 find_package(Protobuf REQUIRED)

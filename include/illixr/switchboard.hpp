@@ -811,7 +811,7 @@ public:
     [[maybe_unused]] long get_env_long(const std::string& var, const long _default = 0) {
         std::string val = get_env(var, std::to_string(_default));
         try {
-            int res = std::stol(val);
+            long res = std::stol(val);
             return res;
         } catch (...) { }
         return _default;
@@ -820,7 +820,7 @@ public:
     [[maybe_unused]] unsigned long get_env_ulong(const std::string& var, const unsigned long _default = 0) {
         std::string val = get_env(var, std::to_string(_default));
         try {
-            int res = std::stoul(val);
+            unsigned long res = std::stoul(val);
             return res;
         } catch (...) { }
         return _default;
@@ -829,7 +829,7 @@ public:
     [[maybe_unused]] double get_env_double(const std::string& var, const double _default = 0.) {
         std::string val = get_env(var, std::to_string(_default));
         try {
-            int res = std::stod(val);
+            double res = std::stod(val);
             return res;
         } catch (...) { }
         return _default;

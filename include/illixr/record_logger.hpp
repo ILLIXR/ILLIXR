@@ -153,7 +153,7 @@ public:
                                          record_header_->get().get_name(), record_header_->get().get_columns());
             abort();
         }
-        for (std::size_t column = 0; column < values_.size(); ++column) {
+        for (auto column = 0; column < values_.size(); ++column) {
             if (values_[column].type() != record_header_->get().get_column_type(column)) {
                 spdlog::get("illixr")->error("[record_logger] Caller got wrong type for column {} of {}.", column,
                                              record_header_->get().get_name());

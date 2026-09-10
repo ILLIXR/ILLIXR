@@ -29,8 +29,8 @@ udp_network_backend::udp_network_backend(const std::string& name_, phonebook* pb
         client_ip_ = switchboard_->get_env_char("ILLIXR_UDP_CLIENT_IP");
         spdlog::get("illixr")->info("[udp_network_backend] Using UDP client IP {}", client_ip_);
     } else if (switchboard_->get_env_char("ILLIXR_TCP_CLIENT_IP")) {
-        server_ip_ = switchboard_->get_env_char("ILLIXR_TCP_CLIENT_IP");
-        spdlog::get("illixr")->info("[udp_network_backend] Using TCP/UDP client IP {}", server_ip_);
+        client_ip_ = switchboard_->get_env_char("ILLIXR_TCP_CLIENT_IP");
+        spdlog::get("illixr")->info("[udp_network_backend] Using TCP/UDP client IP {}", client_ip_);
     }
 
     if (switchboard_->get_env_char("ILLIXR_UDP_CLIENT_PORT")) {

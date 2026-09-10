@@ -1,7 +1,7 @@
 # module to build and install the depthai ILLIXR plugin
 if(WIN32 OR MSVC OR ANDROID)
     message(WARNING "depthai is not yet available for Windows or Android")
-    set(USE_ADA.DEPTHAI OFF)
+    set(USE_DEPTHAI OFF)
     return()
 endif()
 

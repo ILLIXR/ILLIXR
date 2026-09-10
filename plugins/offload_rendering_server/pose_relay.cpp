@@ -11,40 +11,8 @@ using namespace ILLIXR::data_format;
 
 // Helper functions
 
-#ifndef USING_OPENXR
-// Convert ILLIXR head pose to xrt_space_relation
-static xrt_space_relation build_relation_from_pose(const data_format::pose::fast_head_pose_type& p) {
-    xrt_space_relation relation = {};
+#ifdef USING_OPENXR
 
-    relation.pose.orientation.x = p.pose.orientation.x();
-    relation.pose.orientation.y = p.pose.orientation.y();
-    relation.pose.orientation.z = p.pose.orientation.z();
-    relation.pose.orientation.w = p.pose.orientation.w();
-    relation.pose.position.x    = p.pose.position.x();
-    relation.pose.position.y    = p.pose.position.y();
-    relation.pose.position.z    = p.pose.position.z();
-
-    auto flags = static_cast<xrt_space_relation_flags>(
-        XRT_SPACE_RELATION_ORIENTATION_VALID_BIT | XRT_SPACE_RELATION_ORIENTATION_TRACKED_BIT |
-        XRT_SPACE_RELATION_POSITION_VALID_BIT | XRT_SPACE_RELATION_POSITION_TRACKED_BIT);
-
-    if (p.pose.linear_velocity_valid) {
-        relation.linear_velocity.x = p.pose.linear_velocity.x();
-        relation.linear_velocity.y = p.pose.linear_velocity.y();
-        relation.linear_velocity.z = p.pose.linear_velocity.z();
-        flags = static_cast<xrt_space_relation_flags>(flags | XRT_SPACE_RELATION_LINEAR_VELOCITY_VALID_BIT);
-    }
-    if (p.pose.angular_velocity_valid) {
-        relation.angular_velocity.x = p.pose.angular_velocity.x();
-        relation.angular_velocity.y = p.pose.angular_velocity.y();
-        relation.angular_velocity.z = p.pose.angular_velocity.z();
-        flags = static_cast<xrt_space_relation_flags>(flags | XRT_SPACE_RELATION_ANGULAR_VELOCITY_VALID_BIT);
-    }
-
-    relation.relation_flags = flags;
-    return relation;
-}
-#endif // !USING_OPENXR
 // Smooth velocities using a sliding window average over the last N poses.
 // Writes the averaged velocity back into rel in-place.
 static void filter_velocity(xrt_space_relation& rel, velocity_filter& state, int window_size, float deadband_lin,
@@ -130,7 +98,7 @@ static xrt_space_relation extrapolate_pose(const xrt_space_relation& relation, d
 
     return result;
 }
-
+#endif
 pose_relay::pose_relay(const std::string& name, phonebook* pb)
     : threadloop{name, pb}
     , log_{spdlogger("debug")}
@@ -228,11 +196,7 @@ void pose_relay::_p_one_iteration() {
         pose_point                  pp;
         pp.time = static_cast<XrTime>(monado_time_ns);
         pp.id   = pose_data->id;
-#    ifdef USING_OPENXR
         pp.pose = pose_data->head_pose.pose;
-#    else
-        pp.pose = build_relation_from_pose(pose_data->head_pose);
-#    endif
         // Compute dt from the previous pose for the filter time constant
         double filter_dt = 0.0;
         if (!current_poses_.empty()) {
@@ -296,7 +260,7 @@ void pose_relay::_p_one_iteration() {
 
         if (should_log) {
             const char*      hand_names[] = {"LEFT", "RIGHT"};
-            const pose::hand hand_enums[] = {pose::LEFT, pose::RIGHT};
+            const pose::side hand_enums[] = {pose::LEFT, pose::RIGHT};
             for (int h = 0; h < 2; h++) {
                 const auto& hd = hand_data.hands.at(hand_enums[h]);
                 if (!hd.is_active) {
@@ -326,7 +290,7 @@ void pose_relay::_p_one_iteration() {
 
         if (should_log) {
             const char*      hand_names[] = {"LEFT", "RIGHT"};
-            const pose::hand hand_enums[] = {pose::LEFT, pose::RIGHT};
+            const pose::side hand_enums[] = {pose::LEFT, pose::RIGHT};
             for (int h = 0; h < 2; h++) {
                 const auto& pd = palm_data.hands.at(hand_enums[h]);
                 if (pd.relation_flags == 0) {
@@ -351,7 +315,7 @@ void pose_relay::_p_one_iteration() {
 
         if (should_log) {
             const char*                       hand_names[] = {"LEFT", "RIGHT"};
-            const pose::hand                  hand_enums[] = {pose::LEFT, pose::RIGHT};
+            const pose::side                  hand_enums[] = {pose::LEFT, pose::RIGHT};
             const char*                       type_names[] = {"AIM", "GRIP", "PINCH", "POKE"};
             const pose::interaction_pose_type type_enums[] = {pose::AIM, pose::GRIP, pose::PINCH, pose::POKE};
             for (int h = 0; h < 2; h++) {
@@ -462,21 +426,17 @@ xrt_space_relation pose_relay::get_pose(XrTime future_time) const {
 
 #else
 
-data_format::pose::fast_head_pose_type pose_relay::get_pose(time_point future_time) const {
-    if (current_poses_.empty()) {
-        return {};
-    }
-    return current_poses_.back().pose;
+data_format::pose::fast_head_pose_type pose_relay::get_pose(time_point) const {
+    return current_pose_;
 }
 
 data_format::pose::fast_head_pose_type pose_relay::get_pose() const {
-    if (current_poses_.empty()) {
-        return {};
-    }
-    return current_poses_.back().pose;
+    return current_pose_;
 }
 
 #endif
+
+#ifdef USING_OPENXR
 
 void pose_relay::calibrate_monado_time_offset() {
     // Take several samples and keep the one with the smallest round-trip
@@ -584,3 +544,4 @@ uint64_t pose_relay::find_pose_id_by_orientation(const Eigen::Quaternionf& q) co
 std::chrono::steady_clock::time_point pose_relay::get_pose_time(uint64_t id) const {
     return pose_time_.at(id);
 }
+#endif

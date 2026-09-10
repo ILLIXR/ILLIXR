@@ -12,6 +12,7 @@ ILLIXR currently builds on Linux and Windows systems, and has been tested on the
     - 38+
 - Windows[^2]
     - 11
+- Android
 
 [^1]: Primary development is aimed at Ubuntu systems, full support for Fedora may require extra work on the users part.
 
@@ -29,7 +30,6 @@ are not available in the distribution repos. The instructions below are a genera
 ``` { .bash .copy }
 git clone https://github.com/ILLIXR/ILLIXR --single-branch
 ```
-
 This will clone only the default branch, if you want all branches then remove the `--single-branch` flag.
 
 ### Install dependencies
@@ -56,6 +56,32 @@ required only for specific plugins.
 
     You will need to change one of the settings in Visual Studio, otherwise the CMake generation will fail. Under Tools, open the Options item. Then select CMake in the left hand panel. There should be an option titled 'CMake configuration file', select 'Never use CMake Presets'.
 
+    It is also possible to use CLion as the IDE, but it needs to be configured to use `vcpkg` and still requires the installation of Visual Studio.
+
+=== "Android"
+
+    To build ILLIXR for Android platforms you will need a recent version of [Android Studio][E25]. ILLIXR is known to build
+    for the Quest 3 headset with:
+
+    - Android NDK, version 27.2.12479018
+    - Android SDK, version 13.0 (API 33)
+
+    Other combinations may work as well, depending on your Android device. The [Eigen libraries][E26] (v 3.4.1) will need
+    to be available on the host Linux of Windows system.
+
+    For Android we provide some of the dependencies as precompiled libraries for the 4 most common architectures. To download
+    them run the following:
+
+    ``` { .bash .copy }
+    cd your repo location
+    git submodule init
+    git submodule update
+    cd android_libraries/third_party
+    ```
+
+    Then run `prepare.sh` or `prepare.bat` (Linux and Windows host OS)
+
+    This imports the android_libraries submodule and expands its contents.
 
 #### Pick the ILLIXR plugins you want to use
 
@@ -89,6 +115,23 @@ required only for specific plugins.
 === "Windows"
 
     <table id="listing_table_windows" style="border-spacing: 8px; border: 1px solid black;"></table>
+
+=== "Android"
+
+    The following plugins are available for Android:
+
+    <ul id="listing_table_android"></ul>
+
+    For the Android platform any plugins being used have to be manually selected in a few files.
+
+    - `CMakeLists.txt`: Near line 186, for any plugin you wish to use set the corresponding `USE_` variable to ON. This
+      ensures they will be configured and built.
+    - `src/CMakeLists.txt`: In the `target_link_libraries(native-activity` call comment/uncomment the plugin list to
+      match what you selected above. This ensures that all libraries are properly linked, this is an Android specific
+      requirement.
+    - `src/main.cpp`: Change the contents of `const std::vector<std::string> plugins` to reflect your choice above. Since
+      Android programs cannot be run with command line arguments, this code replaces the command line capabilities of
+      Linux and Windows.
 
 <br>
 
@@ -162,6 +205,12 @@ If you are using a Conda environment to build, be sure to add your Conda prefix 
 
         The first time you configure the project (or open it in Visual Studio) it will take a long time to compile and install the dependency libraries, likely this will take several hours. Subsequent configurations will be quick, unless a new dependency needs to be installed.
 
+=== "Android"
+
+    To configure and build for Android, run Gradle in Android Studio and build within the IDE. Since you cannot use
+    command line-based environment variables when running on Android, all environment variables have to be hard coded.
+    All variables are set in main.cpp and are compiled in.
+
 !!! note "Documentation Prerequisites"
 
     Building the documentation requires [Doxygen][E14] and [mkdocs][E15](>= v1.5) to be installed, both of which are typically available from OS packages. Additionally, we utilize the [material][E16], [mkdocs-material-extensions][E19], [mkdocs-get-deps][E20], [mkdocs-include-markdown-plugin][E21], [PyMdown][E17], [Pygments][E18], [mkdoxy][E22], and [mkdocs-glightbox][E23] python packages, which can be installed via [pip][E24] using `docs/requirements.txt`.
@@ -183,9 +232,30 @@ The current list of plugins is:
 
     <ul name="windows_plugins" id="windows_plugins"></ul>
 
-The CMake process will also create a [_YAML_][G12] file call `illixr.yaml` which can be used as input to the binary.
+=== "Android"
+
+    <ul name="android_plugins" id="android_plugins"></ul>
+
+The CMake process will also create a [_YAML_][G12] file call `illixr.yaml` which can be used as input to the binary on
+Linux and Windows.
 
 ## Running ILLIXR
+
+!!! note
+
+    ILLIXR no longer provides a data set that is automatically downloaded and installed. You can download EuRoC data sets to use from [here](https://www.research-collection.ethz.ch/entities/researchdata/bcaf173e-5dac-484b-bc37-faf97a594f1f).
+
+### Android
+
+To run on an Android device, it must have permissions to allow USB connections. These are usually part of the debugging
+tools and will require you to enable debugging. How this is done can vary by device. Once you have the permissions set,
+connect the device to your computer while Android Studio is running. You may see a pop-up asking for permissions to
+allow the UDB connection or USB debugging, allow this permission. You should now see your device listed in both the pulldown menu
+at the top of Android Studio and in the `Device Manager` tab. If not, please see the Android Studio documentation and trouble shooting
+pages. You can now use the `Run` or `Debug` items under the `Run` menu to run ILLIXR on the device. This will install the
+APK and allow
+
+### Linux and Windows
 
 To run the ILLIXR binary just call `main.<>.exe` with any of the following command line arguments. (the `<>` indicate
 an infix specifying the build type, for `Debug` use `dbg`, for `Release` use `opt`, for `RelWithDebInfo` use `optdbg`)
@@ -249,6 +319,9 @@ In general, you should not edit a [profile][G23] file directly. The exception to
 
 ## Environment Variables
 
+Since you cannot use command line-based environment variables when running on Android, all environment variables have to be hard coded.
+ All variables are set in main.cpp and are compiled in.
+
 ILLIXR and several of its dependencies use environment variables to steer processing and define quasi-constant values. Traditionally, one would use std::getenv and std::setenv to get and set these items. However, in ILLIXR the switchboard acts as an interface to these functions with `get_env` (returns std::string), `get_env_bool` (returns bool), `get_env_char` (returns char*), and `set_env`. Using the switchboard interfaces allows for environment variables to be set from the command line and/or yaml file. It is strongly encouraged to the switchboard interface wherever possible. Any items given on the command line which do not match expected command line arguments are considered to be environment variables. For example:
 
 ```bash
@@ -279,9 +352,6 @@ Here, the keywords `plugins` and `enable_offload` are ignored, as they are expec
 
 - illixr_run_duration
 : The duration to run ILLIXR for in seconds.
-
-- data
-: Path to the data file to download (build step) or use at runtime. If a URL is given (must start with http or https), the file will be downloaded and extracted; the path to the extracted data will be put in the illixr.yaml file.
 
 - demo_data
 : The path to the demonstration data to use at runtime (ignored by build steps)
@@ -404,6 +474,10 @@ const module_json = @MODULE_JSON@;
 [E23]:   https://pypi.org/project/mkdocs-glightbox/
 
 [E24]:   https://pypi.org/project/pip/
+
+[E25]:   https://developer.android.com/studio
+
+[E26]:   https://libeigen.gitlab.io/
 
 [//]: # (- Internal -)
 

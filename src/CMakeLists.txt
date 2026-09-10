@@ -155,6 +155,7 @@ else()
                     src/stdout_record_logger.hpp
                     ${CMAKE_SOURCE_DIR}/include/illixr/dynamic_lib.hpp
                     ${CMAKE_SOURCE_DIR}/include/illixr/error_util.hpp
+                    #${CMAKE_SOURCE_DIR}/include/illixr/extended_window.hpp
                     ${CMAKE_SOURCE_DIR}/include/illixr/plugin.hpp
                     ${CMAKE_SOURCE_DIR}/include/illixr/relative_clock.hpp
                     ${CMAKE_SOURCE_DIR}/include/illixr/runtime.hpp
@@ -165,6 +166,7 @@ else()
                                    ${ILLIXR_SOURCE_DIR}/include
                                    ${OpenCV_LIBS}
                                    ${jnigraphics-lib}
+                                   ${ANDROID_NDK}/sources/android/native_app_glue
         )
 
         target_link_libraries(native-activity

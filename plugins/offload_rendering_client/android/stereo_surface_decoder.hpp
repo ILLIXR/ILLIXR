@@ -112,6 +112,11 @@ public:
     /**
      * @brief Release AHardwareBuffers acquired by get_current_frame().
      *
+     * Releases whichever of the color, depth, and motion-vector hw_buffer
+     * fields are populated on the given dual_frames.  Decoder-agnostic - safe
+     * to call on any one of color_decoder_ / depth_decoder_ /
+     * motion_vec_decoder_; only needs to be called once per dual_frames.
+     *
      * Must be called after the Vulkan submission that reads these buffers has
      * finished (e.g. after a VkFence or VkSemaphore signals completion).
      */

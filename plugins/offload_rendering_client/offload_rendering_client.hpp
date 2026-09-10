@@ -34,6 +34,7 @@
 #include "illixr/threadloop.hpp"
 #undef DOUBLE_INCLUDE
 #ifdef USING_OPENXR
+#    include <deque>
 #    include <mutex>
 #    include <openxr/openxr.h>
 #    include <thread>
@@ -108,7 +109,7 @@ public:
     /**
      * @brief Update uniforms (no-op in this implementation)
      */
-    void update_uniforms(const data_format::pose::head_pose_type& render_pose) override {
+    void update_uniforms(const BUFFER_TYPE& render_pose) override {
         (void) render_pose;
     }
 
@@ -200,6 +201,17 @@ private:
      * @return Complete dual_frames struct with color and depth populated
      */
     data_format::dual_frames construct_dual_frames(time_point render_time);
+
+    /**
+     * @brief Release AHardwareBuffers for frames old enough that the GPU is
+     *        assumed to be done reading them.
+     *
+     * Pops and releases entries from the front of in_flight_frames_ until at
+     * most MAX_IN_FLIGHT_FRAMES remain.  See in_flight_frames_ for why a
+     * time/count-based bound is used here instead of an explicit
+     * GPU-completion signal from the render-side consumer.
+     */
+    void release_stale_frames();
 
 #else
     /**
@@ -318,6 +330,28 @@ private:
     // the same time, so the map stays bounded even if the decoder skips frames.
     std::map<uint64_t, frame_meta> frame_meta_map_;
     std::mutex                     frame_meta_map_mutex_;
+
+    // Bounds how many submitted dual_frames are kept alive awaiting release.
+    // Rather than requiring an explicit GPU-completion signal from the
+    // render-side consumer (oxr_interface), a submitted frame's
+    // AHardwareBuffers are released once this many *newer* frames have been
+    // submitted after it - i.e. once enough real time has passed that the
+    // render pass reading it is essentially certain to be done.  At the
+    // slowest supported refresh rate (72Hz, ~13.9ms/frame) this guarantees
+    // at least ~139ms between a frame's submission and its release; at 90Hz
+    // it's ~111ms.  The render-pass read itself takes on the order of a few
+    // ms, so this leaves a wide margin under normal operation.  A sustained
+    // render stall longer than this window could still release a buffer
+    // while the GPU is reading it; if corruption is ever suspected, that's
+    // the first thing to check (e.g. via frame-pacing logs around the same
+    // time) before raising this value further.
+    static constexpr size_t MAX_IN_FLIGHT_FRAMES = 10;
+
+    // Frames already submitted on "unity_rendered_frame", retained here
+    // purely so their AHardwareBuffers can be released later - not read for
+    // any other purpose.  Pushed to in _p_one_iteration() right after each
+    // submission; drained from the front by release_stale_frames().
+    std::deque<data_format::dual_frames> in_flight_frames_;
 
     android_app* app_;
 

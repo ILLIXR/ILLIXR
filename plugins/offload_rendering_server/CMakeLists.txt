@@ -5,7 +5,9 @@ if(ANDROID)
 endif()
 #set(DUMP_FRAMES ON)
 # Enable CUDA language only if using NVENC encoder
-option(USE_NVENC_ENCODER "Use direct NVENC encoder instead of FFmpeg" ON)
+option(USE_NVENC_ENCODER "Use direct NVENC encoder instead of FFmpeg" OFF)
+option(USE_OPENXR_DEFINITIONS "Use the OpenXR pose definitions" OFF)
+
 # NVENC is required for windows, ffmpeg is not supported on that platform.
 if(WIN32 OR MSVC)
     set(USE_NVENC_ENCODER ON)
@@ -16,6 +18,16 @@ if(USE_NVENC_ENCODER)
     set(CMAKE_CUDA_STANDARD 17)
     set(CMAKE_CUDA_STANDARD_REQUIRED ON)
     find_package(CUDAToolkit REQUIRED)
+
+    option(USE_AV1_ENCODING "Use AV1 encoding for offload rendering" OFF)
+    option(USE_HEVC_ENCODING "Use HEVC encoding for offload rendering" OFF)
+    if(USE_AV1_ENCODING AND USE_HEVC_ENCODING)
+        message(FATAL_ERROR "Only one of USE_AV1_ENCODING or USE_HEVC_ENCODING can be specified, not both")
+    endif()
+    if(NOT USE_AV1_ENCODING AND NOT USE_HEVC_ENCODING)
+        set(USE_AV1_ENCODING ON)
+    endif()
+
 endif()
 
 if(MSVC)
@@ -164,6 +176,8 @@ if(USE_NVENC_ENCODER)
                   /usr/local/cuda/include
                   /opt/nvidia/video-codec-sdk/Interface
                   ${CMAKE_CURRENT_SOURCE_DIR}/../external/Video_Codec_SDK/Interface
+                  $ENV{VIDEO_CODEC_SDK_PATH}/Interface
+                  ${VIDEO_CODEC_SDK_PATH}/Interface
         )
         if(NVENC_INCLUDE_DIR)
             target_include_directories(${PLUGIN_NAME} PUBLIC ${NVENC_INCLUDE_DIR})
@@ -200,7 +214,6 @@ else()
                 ${CMAKE_SOURCE_DIR}/include/illixr/vk/render_pass.hpp
                 ${CMAKE_SOURCE_DIR}/include/illixr/vk/vulkan_utils.hpp
                 ${CMAKE_SOURCE_DIR}/include/illixr/vk/vk_extension_request.hpp
-                ${CMAKE_SOURCE_DIR}/include/illixr/vk/shared_framebuffer.h
     )
 
     if(TARGET ILLIXR_FFmpeg_ext)
@@ -226,7 +239,11 @@ target_link_libraries(${PLUGIN_NAME} PUBLIC
                       ${Vulkan_LIBRARIES}
 )
 
-target_compile_definitions(${PLUGIN_NAME} PRIVATE MONADO_REQUIRED USE_AV1)
+target_compile_definitions(${PLUGIN_NAME} PRIVATE MONADO_REQUIRED)
+
+if(USE_NVENC_ENCODER AND USE_AV1_ENCODING)
+    target_compile_definitions(${PLUGIN_NAME} PRIVATE USE_AV1)
+endif()
 
 target_include_directories(${PLUGIN_NAME} BEFORE PUBLIC
                            ${Vulkan_INCLUDE_DIRS}
@@ -246,6 +263,7 @@ if(WIN32 OR MSVC)
                                WIN32_LEAN_AND_MEAN
                                NOMINMAX
                                COMBINED_ENCODING
+                               NVENC_ENCODER
     )
 else()
     target_compile_definitions(${PLUGIN_NAME} PRIVATE
@@ -260,7 +278,10 @@ else()
     set_property(TARGET ${PLUGIN_NAME} PROPERTY POSITION_INDEPENDENT_CODE ON)
 endif()
 
-target_compile_definitions(${PLUGIN_NAME} PUBLIC USING_OPENXR OPENXR_CLIENT ENABLE_MONADO)
+target_compile_definitions(${PLUGIN_NAME} PUBLIC ENABLE_MONADO)
+if(USE_OPENXR_DEFINITIONS)
+    target_compile_definitions(${PLUGIN_NAME} PUBLIC USING_OPENXR OPENXR_CLIENT)
+endif()
 get_target_property(INC_DIRS ${PLUGIN_NAME} INCLUDE_DIRECTORIES)
 install(TARGETS ${PLUGIN_NAME} DESTINATION lib)
 

@@ -1,7 +1,7 @@
 # module to build and install the debugview ILLIXR plugin
 if(WIN32 OR MSVC OR ANDROID)
     message(WARNING "debugview is not yet available for Windows or Android")
-    set(USE_ADA.DEBUGVIEW OFF)
+    set(USE_DEBUGVIEW OFF)
     return()
 endif()
 
