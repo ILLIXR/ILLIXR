@@ -9,6 +9,15 @@ endif()
 
 if(ANDROID)
     find_library(VULKAN_LIB vulkan)
+    option(USE_AV1_ENCODING "Use AV1 encoding for offload rendering" OFF)
+    option(USE_HEVC_ENCODING "Use HEVC encoding for offload rendering" OFF)
+    if(USE_AV1_ENCODING AND USE_HEVC_ENCODING)
+        message(FATAL_ERROR "Only one of USE_AV1_ENCODING or USE_HEVC_ENCODING can be specified, not both")
+    endif()
+    if(NOT USE_AV1_ENCODING AND NOT USE_HEVC_ENCODING)
+        set(USE_AV1_ENCODING ON)
+    endif()
+
 else()
     # ffmpeg
     get_external_for_plugin(ILLIXR_FFmpeg)
@@ -100,8 +109,10 @@ if(ANDROID)
                                ILLIXR_VULKAN               # enables AHardwareBuffer path in frame.hpp and offload_rendering_client
                                XR_USE_PLATFORM_ANDROID
                                COMBINED_ENCODING
-                               USE_AV1
     )
+    if(USE_AV1_ENCODING)
+        target_compile_definitions(${PLUGIN_NAME} PUBLIC USE_AV1)
+    endif()
     target_link_libraries(${PLUGIN_NAME} PUBLIC
                           spdlog::spdlog_android
                           mediandk

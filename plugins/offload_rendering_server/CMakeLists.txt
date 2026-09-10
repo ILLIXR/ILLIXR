@@ -18,6 +18,16 @@ if(USE_NVENC_ENCODER)
     set(CMAKE_CUDA_STANDARD 17)
     set(CMAKE_CUDA_STANDARD_REQUIRED ON)
     find_package(CUDAToolkit REQUIRED)
+
+    option(USE_AV1_ENCODING "Use AV1 encoding for offload rendering" OFF)
+    option(USE_HEVC_ENCODING "Use HEVC encoding for offload rendering" OFF)
+    if(USE_AV1_ENCODING AND USE_HEVC_ENCODING)
+        message(FATAL_ERROR "Only one of USE_AV1_ENCODING or USE_HEVC_ENCODING can be specified, not both")
+    endif()
+    if(NOT USE_AV1_ENCODING AND NOT USE_HEVC_ENCODING)
+        set(USE_AV1_ENCODING ON)
+    endif()
+
 endif()
 
 if(MSVC)
@@ -229,7 +239,11 @@ target_link_libraries(${PLUGIN_NAME} PUBLIC
                       ${Vulkan_LIBRARIES}
 )
 
-target_compile_definitions(${PLUGIN_NAME} PRIVATE MONADO_REQUIRED USE_AV1)
+target_compile_definitions(${PLUGIN_NAME} PRIVATE MONADO_REQUIRED)
+
+if(USE_NVENC_ENCODER AND USE_AV1_ENCODING)
+    target_compile_definitions(${PLUGIN_NAME} PRIVATE USE_AV1)
+endif()
 
 target_include_directories(${PLUGIN_NAME} BEFORE PUBLIC
                            ${Vulkan_INCLUDE_DIRS}
