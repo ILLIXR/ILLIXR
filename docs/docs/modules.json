@@ -504,6 +504,14 @@
       ]
     },
     {
+      "name": "quest3.unity",
+      "cmake_flag": "USE_QUEST3.UNITY=ON",
+      "dependencies": [],
+      "OS": [
+        "android"
+      ]
+    },
+    {
       "name": "realsense",
       "cmake_flag": "USE_REALSENSE=ON",
       "dependencies": [
