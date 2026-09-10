@@ -161,7 +161,7 @@ void tcp_network_backend::read_loop(network::TCPSocket* socket) {
 
         // check if we have a complete packet
         while (buffer.size() >= 8) {
-            uint32_t total_length = *reinterpret_cast<uint32_t*>(buffer.data());
+            uint32_t total_length      = *reinterpret_cast<uint32_t*>(buffer.data());
             uint32_t topic_name_length = *reinterpret_cast<uint32_t*>(buffer.data() + 4);
 
             if (total_length < 8 || total_length > MAX_PACKET_BYTES || topic_name_length > total_length - 8) {
