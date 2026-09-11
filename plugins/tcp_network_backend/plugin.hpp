@@ -56,6 +56,8 @@ private:
 #endif
     network::TCPSocket* peer_socket_ = nullptr;
     // Owned network loop and stream-wide packet serialization.
+    // stop() interrupts socket I/O and joins this worker before peer/plugin destruction.
+    // Detaching would let read_loop keep using freed plugin state.
     std::thread io_thread_;
     std::mutex  send_mutex_;
 

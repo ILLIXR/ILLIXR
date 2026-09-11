@@ -27,6 +27,7 @@
 
 #include "illixr/export.hpp"
 
+#include <cstdint>
 #include <cstring>
 #include <mutex>
 #include <stdexcept>
@@ -38,13 +39,13 @@ class MY_EXPORT_API UDPSocket {
 public:
     UDPSocket() {
 #if defined(_WIN32) || defined(_WIN64)
-        static bool initialized = false;
-        if (!initialized) {
+        static const bool initialized = [] {
             WSAData wsa_data;
             if (WSAStartup(MAKEWORD(2, 2), &wsa_data) != 0)
                 throw std::runtime_error("WSAStartup failed.");
-            initialized = true;
-        }
+            return true;
+        }();
+        (void) initialized;
         fd_ = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
         if (fd_ == INVALID_SOCKET)
             throw std::runtime_error("UDP socket creation failed");
@@ -79,8 +80,7 @@ public:
     }
 
     // Allow reuse of local addresses.
-    // On Linux/Android, also sets SO_REUSEPORT so that a new socket can bind
-    // to a port still in TIME_WAIT after a crash, without waiting ~60 seconds.
+    // On Linux/Android, SO_REUSEPORT also permits rebinding during a restart.
     void socket_set_reuseaddr() const {
 #if defined(_WIN32) || defined(_WIN64)
         int enable = 1;
@@ -99,10 +99,12 @@ public:
     void socket_set_receive_timeout(int milliseconds) const {
 #if defined(_WIN32) || defined(_WIN64)
         const DWORD timeout = static_cast<DWORD>(milliseconds);
-        setsockopt(fd_, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<const char*>(&timeout), sizeof(timeout));
+        if (setsockopt(fd_, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<const char*>(&timeout), sizeof(timeout)) < 0)
+            throw std::runtime_error("SO_RCVTIMEO failed");
 #else
         const timeval timeout{milliseconds / 1000, (milliseconds % 1000) * 1000};
-        setsockopt(fd_, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
+        if (setsockopt(fd_, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout)) < 0)
+            throw std::runtime_error("SO_RCVTIMEO failed");
 #endif
     }
 
@@ -193,7 +195,11 @@ public:
     /* accessors */
     [[nodiscard]] std::string local_address() const {
         sockaddr_in local{};
+#if defined(_WIN32) || defined(_WIN64)
+        int size = sizeof(local);
+#else
         socklen_t   size = sizeof(local);
+#endif
         getsockname(fd_, reinterpret_cast<sockaddr*>(&local), &size);
 #if defined(_WIN32) || defined(_WIN64)
         char ip[INET_ADDRSTRLEN];

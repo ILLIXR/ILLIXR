@@ -1,20 +1,11 @@
 #include "plugin.hpp"
 
+#include "illixr/network/udp_packet.hpp"
+
 #include <algorithm>
 #include <cstring>
 
 using namespace ILLIXR;
-
-namespace {
-
-template<typename T>
-T load_wire_value(const char* source) {
-    T value{};
-    std::memcpy(&value, source, sizeof(value));
-    return value;
-}
-
-} // namespace
 
 udp_network_backend::udp_network_backend(const std::string& name_, phonebook* pb_)
     : plugin(name_, pb_)
@@ -213,7 +204,8 @@ void udp_network_backend::topic_create(std::string topic_name, network::topic_co
             send_control(ctrl_message);
     } else {
         spdlog::get("illixr")->error("[udp_network_backend]: ERROR socket: {}  has_peer: {}",
-                                     (peer_socket_ == nullptr) ? "null" : "valid", peer_socket_->has_peer());
+                                     (peer_socket_ == nullptr) ? "null" : "valid",
+                                     peer_socket_ != nullptr && peer_socket_->has_peer());
     }
 }
 
@@ -247,8 +239,7 @@ void udp_network_backend::send_packet(std::string&& packet) {
     }
     // Preserve the original single-datagram wire format for tracking/control.
     // Large payloads such as video frames belong on the TCP backend.
-    constexpr std::size_t max_datagram_bytes = 65507; // IPv4 UDP payload limit.
-    if (packet.size() > max_datagram_bytes) {
+    if (packet.size() > network::max_udp_payload_bytes) {
         spdlog::get("illixr")->warn("[udp_network_backend] UDP message exceeds the datagram limit ({} bytes); use TCP",
                                   packet.size());
         return;
@@ -258,23 +249,16 @@ void udp_network_backend::send_packet(std::string&& packet) {
     }
 }
 
+// Keep wire-length validation separate from socket/lifecycle handling. This helper
+// decodes one complete datagram with the original topic envelope.
 void udp_network_backend::receive_packet(std::string&& packet) {
-    // Application packet: total_length(4) | topic_name_length(4) | topic_name | message
-    if (packet.size() < 8) {
-        spdlog::get("illixr")->warn("[udp_network_backend] Undersized message ({} bytes), dropping", packet.size());
+    network::udp_packet_view decoded;
+    if (!network::decode_udp_packet(packet, decoded)) {
+        spdlog::get("illixr")->warn("[udp_network_backend] Invalid UDP envelope ({} bytes), dropping", packet.size());
         return;
     }
-
-    const std::uint32_t total_length      = load_wire_value<std::uint32_t>(packet.data());
-    const std::uint32_t topic_name_length = load_wire_value<std::uint32_t>(packet.data() + 4);
-    if (total_length > packet.size() || total_length < 8 + topic_name_length) {
-        spdlog::get("illixr")->warn("[udp_network_backend] Truncated message (got={} expected={}), dropping", packet.size(),
-                                    total_length);
-        return;
-    }
-
-    std::string       topic_name(packet.data() + 8, topic_name_length);
-    std::vector<char> message(packet.begin() + 8 + topic_name_length, packet.begin() + total_length);
+    const std::string topic_name{decoded.topic};
+    std::vector<char> message(decoded.payload.begin(), decoded.payload.end());
     topic_receive(topic_name, message);
 }
 
