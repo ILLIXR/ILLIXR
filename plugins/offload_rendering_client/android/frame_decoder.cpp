@@ -403,14 +403,14 @@ void frame_decoder::feeder_loop() {
 
             // Register metadata before the codec can make output available to
             // the drainer thread, otherwise a fast decode loses its frame ID.
-            const media_status_t status = AMediaCodec_queueInputBuffer(
-                codec_, static_cast<size_t>(buf_idx), /*offset=*/0, pkt.data.size(),
-                static_cast<uint64_t>(pkt.timestamp_us), flags);
+            const media_status_t status =
+                AMediaCodec_queueInputBuffer(codec_, static_cast<size_t>(buf_idx), /*offset=*/0, pkt.data.size(),
+                                             static_cast<uint64_t>(pkt.timestamp_us), flags);
             if (status != AMEDIA_OK) {
                 std::lock_guard<std::mutex> ts_lock(pending_timestamps_mutex_);
                 pending_timestamps_.erase(pkt.timestamp_us);
                 spdlog::get("illixr")->error("[frame_decoder][{}] queueInputBuffer failed: {}", eye_index_,
-                                           static_cast<int>(status));
+                                             static_cast<int>(status));
                 continue;
             }
             packets_fed++;
@@ -461,8 +461,8 @@ void frame_decoder::drainer_loop() {
                     decoded_frame_number = it->second.frame_number;
                     pending_timestamps_.erase(it);
                 } else if (output_drained < 5 || output_drained % 300 == 0) {
-                    spdlog::get("illixr")->warn("[frame_decoder][{}] No metadata for output PTS={}us (pending={})",
-                                                eye_index_, info.presentationTimeUs, pending_timestamps_.size());
+                    spdlog::get("illixr")->warn("[frame_decoder][{}] No metadata for output PTS={}us (pending={})", eye_index_,
+                                                info.presentationTimeUs, pending_timestamps_.size());
                 }
             }
 
