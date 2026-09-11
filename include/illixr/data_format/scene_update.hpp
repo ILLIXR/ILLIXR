@@ -8,12 +8,15 @@
 
 namespace ILLIXR::data_format {
 
+// Draco supplies float positions; retain that precision through scene integration.
+using scene_vertex = Eigen::Vector3f;
+
 // A block's vertices occupy a range within one decoded chunk. The owner of the
 // chunk keeps its storage alive until all readers have finished with the range.
 struct scene_vertex_range {
-    const std::vector<Eigen::Vector3d>* storage = nullptr;
-    size_t                              offset  = 0;
-    size_t                              count   = 0;
+    const std::vector<scene_vertex>* storage = nullptr;
+    size_t                           offset  = 0;
+    size_t                           count   = 0;
 
     size_t size() const {
         return count;
@@ -23,15 +26,15 @@ struct scene_vertex_range {
         return count == 0;
     }
 
-    const Eigen::Vector3d* data() const {
+    const scene_vertex* data() const {
         return count ? storage->data() + offset : nullptr;
     }
 
-    const Eigen::Vector3d* begin() const {
+    const scene_vertex* begin() const {
         return data();
     }
 
-    const Eigen::Vector3d* end() const {
+    const scene_vertex* end() const {
         return count ? data() + count : nullptr;
     }
 };
@@ -40,8 +43,8 @@ struct scene_update_data {
     using Block    = std::tuple<std::tuple<int, int, int>, scene_vertex_range, scene_vertex_range>;
     using RangeMap = std::unordered_map<unsigned, std::vector<Block>>;
 
-    std::vector<Eigen::Vector3d> vertices;
-    RangeMap                     block_ranges;
+    std::vector<scene_vertex> vertices;
+    RangeMap                  block_ranges;
 
     scene_update_data() = default;
     // Ranges refer to the vector object, whose address must remain stable.

@@ -129,7 +129,7 @@ public:
             for (int v = 0; v < 3; ++v) {
                 float p[3];
                 positions->GetMappedValue(face[v], p);
-                chunk->vertices[target++] = Eigen::Vector3d(p[0], p[1], p[2]);
+                chunk->vertices[target++] = data_format::scene_vertex(p[0], p[1], p[2]);
             }
             chunk->cursors[id] += 3;
         }

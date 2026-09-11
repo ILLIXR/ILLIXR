@@ -143,7 +143,7 @@ void scene_management::process_inactive_frame(switchboard::ptr<const draco_type>
         duration =
             static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(end - const_start).count()) / 1000.0;
 
-        size_t vertices_size_in_bytes = grid_.vertices_.size() * sizeof(Eigen::Vector3d);
+        size_t vertices_size_in_bytes = grid_.vertices_.size() * sizeof(data_format::scene_vertex);
         size_t faces_size_in_bytes    = grid_.faces_.size() * sizeof(int);
         size_t total_size_in_bytes    = vertices_size_in_bytes + faces_size_in_bytes;
 

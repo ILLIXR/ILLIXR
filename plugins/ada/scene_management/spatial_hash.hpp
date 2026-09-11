@@ -32,20 +32,21 @@ public:
     // Keep their buffers in arrival order without concatenating vertex arrays.
     struct VertexFragments {
         struct Fragment {
-            const Eigen::Vector3d* data;
-            size_t                 count;
+            const data_format::scene_vertex* data;
+            const Eigen::Vector3d*           legacy_data;
+            size_t                           count;
         };
 
         std::vector<Fragment> buffers;
         size_t                vertex_count = 0;
 
         void append(const std::vector<Eigen::Vector3d>& vertices) {
-            buffers.push_back({vertices.data(), vertices.size()});
+            buffers.push_back({nullptr, vertices.data(), vertices.size()});
             vertex_count += vertices.size();
         }
 
         void append(const data_format::scene_vertex_range& vertices) {
-            buffers.push_back({vertices.data(), vertices.size()});
+            buffers.push_back({vertices.data(), nullptr, vertices.size()});
             vertex_count += vertices.size();
         }
 
@@ -55,15 +56,26 @@ public:
 
         template<typename OutputIt>
         void copy_to(OutputIt destination) const {
-            for (const auto& buffer : buffers)
-                if (buffer.count)
+            for (const auto& buffer : buffers) {
+                if (buffer.data) {
                     destination = std::copy(buffer.data, buffer.data + buffer.count, destination);
+                } else {
+                    // Older Draco events may still carry double vectors.
+                    for (size_t i = 0; i < buffer.count; ++i)
+                        *destination++ = buffer.legacy_data[i].cast<float>();
+                }
+            }
         }
 
-        void append_to(std::vector<Eigen::Vector3d>& destination) const {
-            for (const auto& buffer : buffers)
-                if (buffer.count)
+        void append_to(std::vector<data_format::scene_vertex>& destination) const {
+            for (const auto& buffer : buffers) {
+                if (buffer.data) {
                     destination.insert(destination.end(), buffer.data, buffer.data + buffer.count);
+                } else {
+                    for (size_t i = 0; i < buffer.count; ++i)
+                        destination.emplace_back(buffer.legacy_data[i].cast<float>());
+                }
+            }
         }
     };
 
@@ -96,7 +108,7 @@ public:
     std::vector<std::pair<int, int>> deleted_ranges_;
 
     // this is the internal data structure
-    std::vector<Eigen::Vector3d> vertices_;
+    std::vector<data_format::scene_vertex> vertices_;
     // std::vector<Eigen::Vector3d> colors;
     // std::vector<Eigen::Vector3i> faces;
     std::vector<int> faces_;
