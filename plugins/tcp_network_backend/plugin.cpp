@@ -1,5 +1,7 @@
 #include "plugin.hpp"
 
+#include <cstring>
+
 using namespace ILLIXR;
 
 tcp_network_backend::tcp_network_backend(const std::string& name_, phonebook* pb_)
@@ -145,16 +147,40 @@ void tcp_network_backend::read_loop(network::TCPSocket* socket) {
 #else
         std::string packet = socket->read_data();
 #endif
+        if (packet.empty()) {
+            if (running_.exchange(false)) {
+                spdlog::get("illixr")->error("[tcp_network_backend] TCP connection closed or read failed; restart the session");
+            }
+            return;
+        }
+
         buffer += packet;
 
         // check if we have a complete packet
         while (buffer.size() >= 8) {
-            uint32_t total_length = *reinterpret_cast<uint32_t*>(buffer.data());
+            uint32_t total_length;
+            uint32_t topic_name_length;
+            std::memcpy(&total_length, buffer.data(), sizeof(total_length));
+            std::memcpy(&topic_name_length, buffer.data() + 4, sizeof(topic_name_length));
+            if (total_length < 8 || topic_name_length > total_length - 8) {
+                spdlog::get("illixr")->error("[tcp_network_backend] Invalid TCP packet lengths: total={} topic={}; restart the session",
+                                             total_length, topic_name_length);
+                running_ = false;
+                return;
+            }
+
             if (buffer.size() >= total_length) {
-                uint32_t          topic_name_length = *reinterpret_cast<uint32_t*>(buffer.data() + 4);
                 std::string       topic_name(buffer.data() + 8, topic_name_length);
                 std::vector<char> message(buffer.begin() + 8 + topic_name_length, buffer.begin() + total_length);
-                topic_receive(topic_name, message);
+                try {
+                    topic_receive(topic_name, message);
+                } catch (const std::exception& error) {
+                                    spdlog::get("illixr")->error("[tcp_network_backend] Failed to deserialize topic={} bytes={}: {}; restart the session",
+                                                                 topic_name, message.size(), error.what());
+                    running_ = false;
+                    return;
+                }
+
                 buffer.erase(buffer.begin(), buffer.begin() + total_length);
             } else {
                 break;
@@ -232,7 +258,16 @@ void tcp_network_backend::send_to_peer(const std::string& topic_name, std::strin
     packet.append(reinterpret_cast<char*>(&topic_name_length), 4);
     packet.append(topic_name);
     packet.append(message.begin(), message.end());
-    peer_socket_->write_data(packet);
+    if (!running_)
+        return;
+    try {
+        std::lock_guard<std::mutex> lock{send_mutex_};
+        peer_socket_->write_data(packet);
+    } catch (const std::exception& error) {
+        running_ = false;
+        spdlog::get("illixr")->error("[tcp_network_backend] TCP send failed for topic={}: {}; restart the session",
+                                     topic_name, error.what());
+    }
 }
 
 extern "C" MY_EXPORT_API plugin* this_plugin_factory(phonebook* pb) {

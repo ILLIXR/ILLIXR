@@ -270,8 +270,6 @@ void offload_rendering_client::log_android_decode_timing() {
 // queues encoded data to the hardware decoders (all three stream types together
 // so they stay in sync), and stores frame metadata for _p_one_iteration.
 void offload_rendering_client::receiver_loop() {
-    // spdlog::get("illixr")->info("[receiver_loop] Starting");
-
     while (receiver_running_) {
         auto current_frame = frames_reader_.dequeue();
         if (current_frame == nullptr) {
@@ -279,7 +277,6 @@ void offload_rendering_client::receiver_loop() {
             continue;
         }
 
-        // spdlog::get("illixr")->info("Rx Frame {}", current_frame->frame_number);
         //  Determine keyframe status for each stream.
         //
         //  Color: use the authoritative flag set by the server from
@@ -317,6 +314,9 @@ void offload_rendering_client::receiver_loop() {
             }
         }
 
+        // Wire timestamps are nanoseconds; MediaCodec PTS is in microseconds.
+        const int64_t presentation_time_us = static_cast<int64_t>(current_frame->sent_time / 1000);
+
         // Queue encoded data to the hardware decoders.
         // All stream types are submitted together so they stay in sync -
         // if we drop above, we drop all three atomically.
@@ -325,7 +325,7 @@ void offload_rendering_client::receiver_loop() {
         // right_color is empty on the wire.  Feed only eye=0.
         if (color_decoder_ && !current_frame->left_color.empty()) {
             color_decoder_->queue_encoded_data(0, current_frame->left_color.data(), current_frame->left_color.size(),
-                                               current_frame->sent_time, is_key_color, current_frame->frame_number);
+                                               presentation_time_us, is_key_color, current_frame->frame_number);
         }
 
         // Depth and motion-vector streams remain per-eye even under
@@ -334,7 +334,7 @@ void offload_rendering_client::receiver_loop() {
             if (use_depth_ && depth_decoder_) {
                 const auto& depth_pkt = (eye == 0) ? current_frame->left_depth : current_frame->right_depth;
                 if (!depth_pkt.empty()) {
-                    depth_decoder_->queue_encoded_data(eye, depth_pkt.data(), depth_pkt.size(), current_frame->sent_time,
+                    depth_decoder_->queue_encoded_data(eye, depth_pkt.data(), depth_pkt.size(), presentation_time_us,
                                                        is_key_depth, current_frame->frame_number);
                 }
             }
@@ -342,7 +342,7 @@ void offload_rendering_client::receiver_loop() {
             if (use_motion_vectors_ && motion_vec_decoder_ && current_frame->use_motion_vectors) {
                 const auto& mv_pkt = (eye == 0) ? current_frame->left_motion_vec : current_frame->right_motion_vec;
                 if (!mv_pkt.empty()) {
-                    motion_vec_decoder_->queue_encoded_data(eye, mv_pkt.data(), mv_pkt.size(), current_frame->sent_time,
+                    motion_vec_decoder_->queue_encoded_data(eye, mv_pkt.data(), mv_pkt.size(), presentation_time_us,
                                                             is_key_mv, current_frame->frame_number);
                 }
             }
@@ -351,14 +351,14 @@ void offload_rendering_client::receiver_loop() {
         for (int eye = 0; eye < 2; eye++) {
             const auto& color_pkt = (eye == 0) ? current_frame->left_color : current_frame->right_color;
             if (color_decoder_ && !color_pkt.empty()) {
-                color_decoder_->queue_encoded_data(eye, color_pkt.data(), color_pkt.size(), current_frame->sent_time,
+                color_decoder_->queue_encoded_data(eye, color_pkt.data(), color_pkt.size(), presentation_time_us,
                                                    is_key_color, current_frame->frame_number);
             }
 
             if (use_depth_ && depth_decoder_) {
                 const auto& depth_pkt = (eye == 0) ? current_frame->left_depth : current_frame->right_depth;
                 if (!depth_pkt.empty()) {
-                    depth_decoder_->queue_encoded_data(eye, depth_pkt.data(), depth_pkt.size(), current_frame->sent_time,
+                    depth_decoder_->queue_encoded_data(eye, depth_pkt.data(), depth_pkt.size(), presentation_time_us,
                                                        is_key_depth, current_frame->frame_number);
                 }
             }
@@ -366,7 +366,7 @@ void offload_rendering_client::receiver_loop() {
             if (use_motion_vectors_ && motion_vec_decoder_ && current_frame->use_motion_vectors) {
                 const auto& mv_pkt = (eye == 0) ? current_frame->left_motion_vec : current_frame->right_motion_vec;
                 if (!mv_pkt.empty()) {
-                    motion_vec_decoder_->queue_encoded_data(eye, mv_pkt.data(), mv_pkt.size(), current_frame->sent_time,
+                    motion_vec_decoder_->queue_encoded_data(eye, mv_pkt.data(), mv_pkt.size(), presentation_time_us,
                                                             is_key_mv, current_frame->frame_number);
                 }
             }
@@ -1060,8 +1060,10 @@ data_format::dual_frames offload_rendering_client::construct_dual_frames(time_po
     if (frame.is_valid()) {
         // frame.frame_number was set atomically with the buffer acquisition
         // inside acquire_latest_buffer() - no separate call needed.
-        if (frame.frame_number <= last_submitted_frame_)
+        if (frame.frame_number <= last_submitted_frame_) {
+            color_decoder_->release_frame(frame);
             return {};
+        }
         decoded_frame_number = frame.frame_number;
         {
             std::lock_guard<std::mutex> lock(frame_meta_map_mutex_);
@@ -1085,6 +1087,7 @@ data_format::dual_frames offload_rendering_client::construct_dual_frames(time_po
                 meta = frame_meta_map_.rbegin()->second;
             } else if (it == frame_meta_map_.end()) {
                 spdlog::get("illixr")->error("[openxr_interface] No meta for frame {}, dropping", decoded_frame_number);
+                color_decoder_->release_frame(frame);
                 return {};
             } else {
                 spdlog::get("illixr")->debug("meta map empty");
@@ -1093,6 +1096,7 @@ data_format::dual_frames offload_rendering_client::construct_dual_frames(time_po
             // fail is_valid() and be discarded by the caller.
         }
         if (meta.consumed) {
+            color_decoder_->release_frame(frame);
             return {}; // another thread already claimed this frame
         }
     }
@@ -1217,7 +1221,6 @@ bool offload_rendering_client::network_receive() {
 
     // Store depth packet data
     if (use_depth_) {
-        spdlog::get("illixr")->info("Use depth");
         decode_src_depth_packets_[0] = current_frame->left_depth;
         decode_src_depth_packets_[1] = current_frame->right_depth;
     }

@@ -39,6 +39,10 @@ android {
                 cppFlags '-std=c++17', '-frtti', '-fexceptions'
                 arguments "-DTHIRD_PARTY_DIR=${root_library_path}",
                           "-DBUILD_ANDROID=ON"
+                          // If running offload rendering use the following to select the encoding scheme
+                          // it must match what was used on the server, and only one may be "ON"
+                          //"-DUSE_AV1_ENCODING=ON",
+                          //"-DUSE_HEVC_ENCODING=ON"
             }
         }
     }
