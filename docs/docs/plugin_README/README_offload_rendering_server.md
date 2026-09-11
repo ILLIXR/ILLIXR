@@ -33,7 +33,7 @@ To enable NVENC encoding can be enabled with the `-DUSE_NVENC_ENCODER=ON` CMake 
 can be selected with the `-DUSE_AV1_ENCODING` and `-DUSE_HEVC_ENCODING` CMake arguments, setting one to `ON` and the other `OFF`.
 
 Since this is intended to be used with Android based clients with an OpenXR runtime it is recommended to also use the
-`-DUSE_OPENXR_DEFINITIONS=ON` CMake argument.
+`-DUSE_OPENXR_DEFINITIONS=ON` and `-DUSE_COMBINED_ENCODING=ON` CMake arguments.
 
 !!! note
 
