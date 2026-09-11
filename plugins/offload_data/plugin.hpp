@@ -8,7 +8,7 @@
 #include "illixr/switchboard.hpp"
 
 namespace ILLIXR {
-class offload_data : public plugin {
+class MY_EXPORT_API offload_data : public plugin {
 public:
     [[maybe_unused]] offload_data(const std::string& name, phonebook* pb);
     void callback(const switchboard::ptr<const data_format::pose::texture_pose>& datum);
