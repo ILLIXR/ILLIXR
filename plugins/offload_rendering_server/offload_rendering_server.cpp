@@ -485,8 +485,8 @@ void offload_rendering_server::enqueue_for_network_send(BUFFER_TYPE& pose
     // Default: two independent per-eye color bitstreams.
     std::shared_ptr<compressed_frame> frame;
 #    ifdef COMBINED_ENCODING
-     // compressed_frame takes packet references; use an lvalue for the empty eye.
-     PACKET_TYPE empty_right_color{};
+    // compressed_frame takes packet references; use an lvalue for the empty eye.
+    PACKET_TYPE empty_right_color{};
 #    endif
 
 #    ifdef _WIN32

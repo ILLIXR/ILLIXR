@@ -163,8 +163,9 @@ void tcp_network_backend::read_loop(network::TCPSocket* socket) {
             std::memcpy(&total_length, buffer.data(), sizeof(total_length));
             std::memcpy(&topic_name_length, buffer.data() + 4, sizeof(topic_name_length));
             if (total_length < 8 || topic_name_length > total_length - 8) {
-                spdlog::get("illixr")->error("[tcp_network_backend] Invalid TCP packet lengths: total={} topic={}; restart the session",
-                                             total_length, topic_name_length);
+                spdlog::get("illixr")->error(
+                    "[tcp_network_backend] Invalid TCP packet lengths: total={} topic={}; restart the session", total_length,
+                    topic_name_length);
                 running_ = false;
                 return;
             }
@@ -175,8 +176,9 @@ void tcp_network_backend::read_loop(network::TCPSocket* socket) {
                 try {
                     topic_receive(topic_name, message);
                 } catch (const std::exception& error) {
-                                    spdlog::get("illixr")->error("[tcp_network_backend] Failed to deserialize topic={} bytes={}: {}; restart the session",
-                                                                 topic_name, message.size(), error.what());
+                    spdlog::get("illixr")->error(
+                        "[tcp_network_backend] Failed to deserialize topic={} bytes={}: {}; restart the session", topic_name,
+                        message.size(), error.what());
                     running_ = false;
                     return;
                 }
@@ -265,8 +267,8 @@ void tcp_network_backend::send_to_peer(const std::string& topic_name, std::strin
         peer_socket_->write_data(packet);
     } catch (const std::exception& error) {
         running_ = false;
-        spdlog::get("illixr")->error("[tcp_network_backend] TCP send failed for topic={}: {}; restart the session",
-                                     topic_name, error.what());
+        spdlog::get("illixr")->error("[tcp_network_backend] TCP send failed for topic={}: {}; restart the session", topic_name,
+                                     error.what());
     }
 }
 

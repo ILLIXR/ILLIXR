@@ -277,15 +277,15 @@ void offload_rendering_client::receiver_loop() {
             continue;
         }
 
-        //  Determine keyframe status for each stream.
+        // Determine keyframe status for each stream.
         //
-        //  Color: use the authoritative flag set by the server from
-        //  nvenc_encoder::last_frame_was_keyframe().  This works correctly for
-        //  both HEVC (IDR NAL) and AV1 (KEY_FRAME OBU) without any bitstream
-        //  parsing on the client side.
+        // Color: use the authoritative flag set by the server from
+        // nvenc_encoder::last_frame_was_keyframe().  This works correctly for
+        // both HEVC (IDR NAL) and AV1 (KEY_FRAME OBU) without any bitstream
+        // parsing on the client side.
         //
-        //  Depth / motion-vector streams are always HEVC regardless of USE_AV1,
-        //  so they continue to use the NAL-unit scan.
+        // Depth / motion-vector streams are always HEVC regardless of USE_AV1,
+        // so they continue to use the NAL-unit scan.
         const bool is_key_color = current_frame->is_keyframe;
 
         const bool is_key_depth = (use_depth_ && !current_frame->left_depth.empty())
@@ -342,8 +342,8 @@ void offload_rendering_client::receiver_loop() {
             if (use_motion_vectors_ && motion_vec_decoder_ && current_frame->use_motion_vectors) {
                 const auto& mv_pkt = (eye == 0) ? current_frame->left_motion_vec : current_frame->right_motion_vec;
                 if (!mv_pkt.empty()) {
-                    motion_vec_decoder_->queue_encoded_data(eye, mv_pkt.data(), mv_pkt.size(), presentation_time_us,
-                                                            is_key_mv, current_frame->frame_number);
+                    motion_vec_decoder_->queue_encoded_data(eye, mv_pkt.data(), mv_pkt.size(), presentation_time_us, is_key_mv,
+                                                            current_frame->frame_number);
                 }
             }
         }
@@ -351,8 +351,8 @@ void offload_rendering_client::receiver_loop() {
         for (int eye = 0; eye < 2; eye++) {
             const auto& color_pkt = (eye == 0) ? current_frame->left_color : current_frame->right_color;
             if (color_decoder_ && !color_pkt.empty()) {
-                color_decoder_->queue_encoded_data(eye, color_pkt.data(), color_pkt.size(), presentation_time_us,
-                                                   is_key_color, current_frame->frame_number);
+                color_decoder_->queue_encoded_data(eye, color_pkt.data(), color_pkt.size(), presentation_time_us, is_key_color,
+                                                   current_frame->frame_number);
             }
 
             if (use_depth_ && depth_decoder_) {
@@ -366,8 +366,8 @@ void offload_rendering_client::receiver_loop() {
             if (use_motion_vectors_ && motion_vec_decoder_ && current_frame->use_motion_vectors) {
                 const auto& mv_pkt = (eye == 0) ? current_frame->left_motion_vec : current_frame->right_motion_vec;
                 if (!mv_pkt.empty()) {
-                    motion_vec_decoder_->queue_encoded_data(eye, mv_pkt.data(), mv_pkt.size(), presentation_time_us,
-                                                            is_key_mv, current_frame->frame_number);
+                    motion_vec_decoder_->queue_encoded_data(eye, mv_pkt.data(), mv_pkt.size(), presentation_time_us, is_key_mv,
+                                                            current_frame->frame_number);
                 }
             }
         }
