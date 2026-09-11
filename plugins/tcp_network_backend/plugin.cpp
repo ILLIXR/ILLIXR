@@ -1,5 +1,7 @@
 #include "plugin.hpp"
 
+#include <cstring>
+
 static constexpr uint32_t MAX_PACKET_BYTES = 256u * 1024u * 1024u;
 
 using namespace ILLIXR;
@@ -53,6 +55,7 @@ tcp_network_backend::tcp_network_backend(const std::string& name_, phonebook* pb
             // so the connection doesn't hold TIME_WAIT after a force-quit.
             socket->socket_set_linger_zero();
         }
+        socket->socket_set_reuseaddr();
         peer_socket_ = socket;
 
         spdlog::get("illixr")->debug("Connecting to " + server_ip_ + " at port " + std::to_string(server_port_));
@@ -117,6 +120,7 @@ void tcp_network_backend::start_client() {
     } else {
         socket->socket_set_linger_zero();
     }
+    socket->socket_set_reuseaddr();
     socket->enable_no_delay();
     peer_socket_ = socket;
 
@@ -157,25 +161,43 @@ void tcp_network_backend::read_loop(network::TCPSocket* socket) {
 #else
         std::string packet = socket->read_data();
 #endif
+        if (packet.empty()) {
+            if (running_.exchange(false)) {
+                spdlog::get("illixr")->error("[tcp_network_backend] TCP connection closed or read failed; restart the session");
+            }
+            return;
+        }
+
         buffer += packet;
 
         // check if we have a complete packet
         while (buffer.size() >= 8) {
-            uint32_t total_length      = *reinterpret_cast<uint32_t*>(buffer.data());
-            uint32_t topic_name_length = *reinterpret_cast<uint32_t*>(buffer.data() + 4);
-
-            if (total_length < 8 || total_length > MAX_PACKET_BYTES || topic_name_length > total_length - 8) {
+            uint32_t total_length;
+            uint32_t topic_name_length;
+            std::memcpy(&total_length, buffer.data(), sizeof(total_length));
+            std::memcpy(&topic_name_length, buffer.data() + 4, sizeof(topic_name_length));
+            if (total_length < 8 || topic_name_length > total_length - 8) {
                 spdlog::get("illixr")->error("[tcp_network_backend] malformed packet header (total_length={}, "
                                              "topic_name_length={}, buffered={} B) -- stream is desynced, "
                                              "closing the read loop",
                                              total_length, topic_name_length, buffer.size());
+                running_ = false;
                 return;
             }
 
             if (buffer.size() >= total_length) {
                 std::string       topic_name(buffer.data() + 8, topic_name_length);
                 std::vector<char> message(buffer.begin() + 8 + topic_name_length, buffer.begin() + total_length);
-                topic_receive(topic_name, message);
+                try {
+                    topic_receive(topic_name, message);
+                } catch (const std::exception& error) {
+                    spdlog::get("illixr")->error(
+                        "[tcp_network_backend] Failed to deserialize topic={} bytes={}: {}; restart the session", topic_name,
+                        message.size(), error.what());
+                    running_ = false;
+                    return;
+                }
+
                 buffer.erase(buffer.begin(), buffer.begin() + total_length);
             } else {
                 break;
@@ -253,9 +275,16 @@ void tcp_network_backend::send_to_peer(const std::string& topic_name, std::strin
     packet.append(reinterpret_cast<char*>(&topic_name_length), 4);
     packet.append(topic_name);
     packet.append(message.begin(), message.end());
-
-    std::lock_guard<std::mutex> lock{send_mutex_};
-    peer_socket_->write_data(packet);
+    if (!running_)
+        return;
+    try {
+        std::lock_guard<std::mutex> lock{send_mutex_};
+        peer_socket_->write_data(packet);
+    } catch (const std::exception& error) {
+        running_ = false;
+        spdlog::get("illixr")->error("[tcp_network_backend] TCP send failed for topic={}: {}; restart the session", topic_name,
+                                     error.what());
+    }
 }
 
 extern "C" MY_EXPORT_API plugin* this_plugin_factory(phonebook* pb) {

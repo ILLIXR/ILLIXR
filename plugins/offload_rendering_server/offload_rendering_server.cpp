@@ -484,10 +484,15 @@ void offload_rendering_server::enqueue_for_network_send(BUFFER_TYPE& pose
     //
     // Default: two independent per-eye color bitstreams.
     std::shared_ptr<compressed_frame> frame;
+#    ifdef COMBINED_ENCODING
+    // compressed_frame takes packet references; use an lvalue for the empty eye.
+    PACKET_TYPE empty_right_color{};
+#    endif
+
 #    ifdef _WIN32
     if (use_pass_motion_vectors_) {
 #        ifdef COMBINED_ENCODING
-        frame = std::make_shared<compressed_frame>(encode_out_combined_color_packet_, PACKET_TYPE{},
+        frame = std::make_shared<compressed_frame>(encode_out_combined_color_packet_, empty_right_color,
                                                    encode_out_depth_packets_[0], encode_out_depth_packets_[1],
                                                    encode_out_motion_vec_packets_[0], encode_out_motion_vec_packets_[1], pose,
                                                    timestamp, frame_number_, near_z_, far_z_, nalu_only_);
@@ -502,7 +507,7 @@ void offload_rendering_server::enqueue_for_network_send(BUFFER_TYPE& pose
     if (use_pass_depth_) {
 #    endif
 #    ifdef COMBINED_ENCODING
-        frame = std::make_shared<compressed_frame>(encode_out_combined_color_packet_, PACKET_TYPE{},
+        frame = std::make_shared<compressed_frame>(encode_out_combined_color_packet_, empty_right_color,
                                                    encode_out_depth_packets_[0], encode_out_depth_packets_[1], pose, timestamp,
                                                    frame_number_, near_z_, far_z_, nalu_only_);
 #    else
@@ -512,7 +517,7 @@ void offload_rendering_server::enqueue_for_network_send(BUFFER_TYPE& pose
 #    endif // COMBINED_ENCODING
     } else {
 #    ifdef COMBINED_ENCODING
-        frame = std::make_shared<compressed_frame>(encode_out_combined_color_packet_, PACKET_TYPE{}, pose, timestamp,
+        frame = std::make_shared<compressed_frame>(encode_out_combined_color_packet_, empty_right_color, pose, timestamp,
                                                    frame_number_, nalu_only_);
 #    else
         frame = std::make_shared<compressed_frame>(encode_out_color_packets_[0], encode_out_color_packets_[1], pose, timestamp,
@@ -559,11 +564,6 @@ void offload_rendering_server::enqueue_for_network_send(BUFFER_TYPE& pose
         frame = std::make_shared<compressed_frame>(encode_out_color_packets_[0], encode_out_color_packets_[1],
                                                    encode_out_depth_packets_[0], encode_out_depth_packets_[1], pose, timestamp,
                                                    frame_number_, near_z_, far_z_, nalu_only_);
-        log_->info("[POSE_DIAG][current_pose] valid={} pos=({:.3f},{:.3f},{:.3f}) "
-                   "ori=({:.3f},{:.3f},{:.3f},{:.3f})",
-                   pose.pose.valid, pose.pose.position.x(), pose.pose.position.y(), pose.pose.position.z(),
-                   pose.pose.orientation.x(), pose.pose.orientation.y(), pose.pose.orientation.z(), pose.pose.orientation.w());
-
     } else {
         frame = std::make_shared<compressed_frame>(encode_out_color_packets_[0], encode_out_color_packets_[1], pose, timestamp,
                                                    frame_number_, nalu_only_);
