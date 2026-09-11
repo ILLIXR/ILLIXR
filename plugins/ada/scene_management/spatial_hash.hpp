@@ -1,5 +1,7 @@
 #pragma once
 
+#include "illixr/data_format/scene_update.hpp"
+
 #include <algorithm>
 #include <eigen3/Eigen/Dense>
 #include <functional>
@@ -23,16 +25,27 @@ using Nullified_Ranges = std::tuple<int, int, std::vector<int>>;
 
 class spatial_hash {
 public:
-    using SceneUpdateMap = std::unordered_map<unsigned, std::vector<NewVB>>;
+    using SceneUpdateMap    = std::unordered_map<unsigned, std::vector<NewVB>>;
+    using SceneUpdateRanges = data_format::scene_update_data::RangeMap;
 
     // Immutable chunks can contribute multiple fragments to the same block.
     // Keep their buffers in arrival order without concatenating vertex arrays.
     struct VertexFragments {
-        std::vector<const std::vector<Eigen::Vector3d>*> buffers;
-        size_t                                           vertex_count = 0;
+        struct Fragment {
+            const Eigen::Vector3d* data;
+            size_t                 count;
+        };
+
+        std::vector<Fragment> buffers;
+        size_t                vertex_count = 0;
 
         void append(const std::vector<Eigen::Vector3d>& vertices) {
-            buffers.push_back(&vertices);
+            buffers.push_back({vertices.data(), vertices.size()});
+            vertex_count += vertices.size();
+        }
+
+        void append(const data_format::scene_vertex_range& vertices) {
+            buffers.push_back({vertices.data(), vertices.size()});
             vertex_count += vertices.size();
         }
 
@@ -42,13 +55,15 @@ public:
 
         template<typename OutputIt>
         void copy_to(OutputIt destination) const {
-            for (const auto* buffer : buffers)
-                destination = std::copy(buffer->begin(), buffer->end(), destination);
+            for (const auto& buffer : buffers)
+                if (buffer.count)
+                    destination = std::copy(buffer.data, buffer.data + buffer.count, destination);
         }
 
         void append_to(std::vector<Eigen::Vector3d>& destination) const {
-            for (const auto* buffer : buffers)
-                destination.insert(destination.end(), buffer->begin(), buffer->end());
+            for (const auto& buffer : buffers)
+                if (buffer.count)
+                    destination.insert(destination.end(), buffer.data, buffer.data + buffer.count);
         }
     };
 
@@ -63,6 +78,7 @@ public:
     // Retain shared ownership until append_mesh_match_and_insert has consumed
     // all fragments. The caller may release its own chunk references sooner.
     void append_mesh_allocate(std::shared_ptr<const SceneUpdateMap> inputSceneUpdateMap);
+    void append_mesh_allocate(std::shared_ptr<const SceneUpdateRanges> inputSceneUpdateMap);
 
     unsigned        append_mesh_match_and_insert(bool merge);
     static unsigned hash_vb(const VoxelBlockIndex& Index);
@@ -98,7 +114,10 @@ public:
     std::vector<int> faces_base_;
 
 private:
-    std::vector<std::shared_ptr<const SceneUpdateMap>> input_owners_;
+    template<typename Map>
+    void append_mesh_allocate_impl(std::shared_ptr<const Map> inputSceneUpdateMap);
+
+    std::vector<std::shared_ptr<const void>> input_owners_;
 };
 
 [[maybe_unused]] void track_time(const std::string& message, const std::function<void()>& func);

@@ -174,9 +174,11 @@ void spatial_hash::deleted_ranges_processing() {
 #endif
 }
 
-void spatial_hash::append_mesh_allocate(std::shared_ptr<const SceneUpdateMap> inputSceneUpdateMap) {
+template<typename Map>
+void spatial_hash::append_mesh_allocate_impl(std::shared_ptr<const Map> inputSceneUpdateMap) {
+    const auto& mapping = *inputSceneUpdateMap;
     input_owners_.push_back(std::move(inputSceneUpdateMap));
-    for (const auto& pair : *input_owners_.back()) {
+    for (const auto& pair : mapping) {
         unsigned    hash_idx = pair.first;
         const auto& new_vbs  = pair.second;
 
@@ -217,6 +219,14 @@ void spatial_hash::append_mesh_allocate(std::shared_ptr<const SceneUpdateMap> in
             allocate_new_VB_[hash_idx] = std::move(blocks);
         }
     }
+}
+
+void spatial_hash::append_mesh_allocate(std::shared_ptr<const SceneUpdateMap> inputSceneUpdateMap) {
+    append_mesh_allocate_impl(std::move(inputSceneUpdateMap));
+}
+
+void spatial_hash::append_mesh_allocate(std::shared_ptr<const SceneUpdateRanges> inputSceneUpdateMap) {
+    append_mesh_allocate_impl(std::move(inputSceneUpdateMap));
 }
 
 // pyh merge is for a feature we never used in publication, so ignore

@@ -2,6 +2,8 @@
 // #include <open3d/Open3D.h>
 #include "plugin.hpp"
 
+#include "illixr/data_format/formatted_mesh.hpp"
+
 #include <ctime>
 #include <spdlog/spdlog.h>
 
@@ -114,8 +116,13 @@ void scene_management::process_inactive_frame(switchboard::ptr<const draco_type>
             // pyh this is Partial VB-Aligned Vertex Merging (S4.4)
             // Alias the immutable map while retaining ownership of its event.
             const auto& chunk = pending_chunks_[i];
-            grid_.append_mesh_allocate(
-                std::shared_ptr<const spatial_hash::SceneUpdateMap>(chunk, &chunk->scene_update_mapping));
+            if (auto formatted = std::dynamic_pointer_cast<const formatted_mesh_type>(chunk)) {
+                grid_.append_mesh_allocate(
+                    std::shared_ptr<const spatial_hash::SceneUpdateRanges>(formatted->data, &formatted->data->block_ranges));
+            } else {
+                grid_.append_mesh_allocate(
+                    std::shared_ptr<const spatial_hash::SceneUpdateMap>(chunk, &chunk->scene_update_mapping));
+            }
         }
         auto end = std::chrono::high_resolution_clock::now();
         auto duration =
