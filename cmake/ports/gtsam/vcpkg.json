@@ -1,15 +1,12 @@
 {
   "name": "gtsam",
-  "version": "4.3.0",
+  "version-string": "4.3a0",
+  "description": "GTSAM factor graph optimization library",
+  "homepage": "https://github.com/borglab/gtsam",
   "dependencies": [
-    {
-      "name": "eigen3"
-    },
-    {
-      "name": "boost"
-    },
-    {
-      "name": "metis"
-    }
+    "eigen3",
+    "metis",
+    { "name": "vcpkg-cmake", "host": true },
+    { "name": "vcpkg-cmake-config", "host": true }
   ]
 }
