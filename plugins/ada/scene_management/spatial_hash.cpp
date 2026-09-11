@@ -294,8 +294,8 @@ unsigned spatial_hash::append_mesh_match_and_insert(bool merge) {
 
                             vb_vertices.copy_to(vertices_.begin() + range.first * 3);
 
-                            std::copy(faces_base_.begin() + range.first * 3, faces_base_.begin() + (range.second + 1) * 3,
-                                      faces_.begin() + range.first * 3);
+                            // restore_deleted_faces() has already restored these fixed indices.
+                            // Only vertices change when reusing a range; leftover faces are nullified below.
 
                             auto map_it = map_VB_to_range_.find(hash_idx);
                             if (map_it == map_VB_to_range_.end()) {
