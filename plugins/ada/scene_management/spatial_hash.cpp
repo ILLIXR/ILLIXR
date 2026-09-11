@@ -174,9 +174,9 @@ void spatial_hash::deleted_ranges_processing() {
 #endif
 }
 
-void spatial_hash::append_mesh_allocate(const std::unordered_map<unsigned, std::vector<NewVB>>& inputSceneUpdateMap) {
-    // Just append to the existing allocate_new_VB_
-    for (const auto& pair : inputSceneUpdateMap) {
+void spatial_hash::append_mesh_allocate(std::shared_ptr<const SceneUpdateMap> inputSceneUpdateMap) {
+    input_owners_.push_back(std::move(inputSceneUpdateMap));
+    for (const auto& pair : *input_owners_.back()) {
         unsigned    hash_idx = pair.first;
         const auto& new_vbs  = pair.second;
 
@@ -196,20 +196,25 @@ void spatial_hash::append_mesh_allocate(const std::unordered_map<unsigned, std::
                         found_vb              = true;
                         auto& merged_vertices = std::get<1>(vb_entry);
 
-                        // Efficiently move-append the new vertices and colors to the existing ones
-                        merged_vertices.insert(merged_vertices.end(), std::make_move_iterator(cur_vertices.begin()),
-                                               std::make_move_iterator(cur_vertices.end()));
+                        merged_vertices.append(cur_vertices);
                         break;
                     }
                 }
                 if (!found_vb) {
-                    // If not found, move the new VB into the existing map
-                    it->second.push_back(new_vb);
+                    VertexFragments fragments;
+                    fragments.append(cur_vertices);
+                    it->second.emplace_back(cur_vb, std::move(fragments));
                 }
             }
         } else {
-            // If key does not exist, move the entire vector to avoid copying
-            allocate_new_VB_[hash_idx] = new_vbs;
+            std::vector<PendingVB> blocks;
+            blocks.reserve(new_vbs.size());
+            for (const auto& new_vb : new_vbs) {
+                VertexFragments fragments;
+                fragments.append(std::get<1>(new_vb));
+                blocks.emplace_back(std::get<0>(new_vb), std::move(fragments));
+            }
+            allocate_new_VB_[hash_idx] = std::move(blocks);
         }
     }
 }
@@ -224,8 +229,8 @@ unsigned spatial_hash::append_mesh_match_and_insert(bool merge) {
     // for all new incoming VB get the face size
     for (const auto& entry : allocate_new_VB_) {
         for (const auto& vb_entry : entry.second) {
-            const VoxelBlockIndex&              vb_index     = std::get<0>(vb_entry);
-            const std::vector<Eigen::Vector3d>& first_vector = std::get<1>(vb_entry);
+            const VoxelBlockIndex& vb_index     = std::get<0>(vb_entry);
+            const auto&            first_vector = std::get<1>(vb_entry);
             // it is inserting vertices & colors, so # of faces = size()/3
             sizes.emplace_back(vb_index, first_vector.size() / 3);
         }
@@ -239,8 +244,8 @@ unsigned spatial_hash::append_mesh_match_and_insert(bool merge) {
 #ifndef NDEBUG
     for (const auto& entry : allocate_new_VB_) {
         for (const auto& vb_entry : entry.second) {
-            const VoxelBlockIndex&              vb_index     = std::get<0>(vb_entry);
-            const std::vector<Eigen::Vector3d>& first_vector = std::get<1>(vb_entry);
+            const VoxelBlockIndex& vb_index     = std::get<0>(vb_entry);
+            const auto&            first_vector = std::get<1>(vb_entry);
             spdlog::get("illixr")->debug("VB: %d, %d, %d, with %lu faces", std::get<0>(vb_index), std::get<1>(vb_index),
                                          std::get<2>(vb_index), first_vector.size());
         }
@@ -284,10 +289,10 @@ unsigned spatial_hash::append_mesh_match_and_insert(bool merge) {
                     for (auto& vb_entry : alloc_it->second) {
                         VoxelBlockIndex vb_index = std::get<0>(vb_entry);
                         if (vb_index == packing_vb) {
-                            vb_found         = true;
-                            auto vb_vertices = std::get<1>(vb_entry);
+                            vb_found                = true;
+                            const auto& vb_vertices = std::get<1>(vb_entry);
 
-                            std::move(vb_vertices.begin(), vb_vertices.end(), vertices_.begin() + range.first * 3);
+                            vb_vertices.copy_to(vertices_.begin() + range.first * 3);
 
                             std::copy(faces_base_.begin() + range.first * 3, faces_base_.begin() + (range.second + 1) * 3,
                                       faces_.begin() + range.first * 3);
@@ -408,7 +413,7 @@ unsigned spatial_hash::append_mesh_match_and_insert(bool merge) {
                 for (auto& vb_entry : alloc_it->second) {
                     VoxelBlockIndex cur_vb = std::get<0>(vb_entry);
                     if (cur_vb == packing_vb) {
-                        auto vb_vertices = std::get<1>(vb_entry);
+                        const auto& vb_vertices = std::get<1>(vb_entry);
 
                         // create new entry in MashVBToRange
                         auto new_tuple = std::make_tuple(cur_vb, static_cast<int>(vertices_.size() / 3),
@@ -468,8 +473,7 @@ unsigned spatial_hash::append_mesh_match_and_insert(bool merge) {
                         }
 #endif
 
-                        vertices_.insert(vertices_.end(), std::make_move_iterator(vb_vertices.begin()),
-                                         std::make_move_iterator(vb_vertices.end())); // Changed back to move
+                        vb_vertices.append_to(vertices_);
                         vb_found = true;
                         break;
                     }
@@ -536,6 +540,7 @@ unsigned spatial_hash::append_mesh_match_and_insert(bool merge) {
     // update with the deleted range
     std::swap(remaining_deleted_ranges, deleted_ranges_);
     allocate_new_VB_.clear();
+    input_owners_.clear();
 #ifndef NDEBUG
     spdlog::get("illixr")->debug("added %u new faces to the end of existing mesh", new_faces);
     unsigned vb_count = 0;

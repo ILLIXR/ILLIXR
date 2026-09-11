@@ -112,7 +112,10 @@ void scene_management::process_inactive_frame(switchboard::ptr<const draco_type>
         auto start = std::chrono::high_resolution_clock::now();
         for (uint i = 0; i < thread_count_; ++i) {
             // pyh this is Partial VB-Aligned Vertex Merging (S4.4)
-            grid_.append_mesh_allocate(pending_chunks_[i]->scene_update_mapping);
+            // Alias the immutable map while retaining ownership of its event.
+            const auto& chunk = pending_chunks_[i];
+            grid_.append_mesh_allocate(
+                std::shared_ptr<const spatial_hash::SceneUpdateMap>(chunk, &chunk->scene_update_mapping));
         }
         auto end = std::chrono::high_resolution_clock::now();
         auto duration =

@@ -1,8 +1,13 @@
 #pragma once
 
+#include <algorithm>
 #include <eigen3/Eigen/Dense>
+#include <functional>
+#include <memory>
 #include <set>
+#include <string>
 #include <tuple>
+#include <unordered_map>
 #include <vector>
 
 namespace ILLIXR {
@@ -18,14 +23,46 @@ using Nullified_Ranges = std::tuple<int, int, std::vector<int>>;
 
 class spatial_hash {
 public:
+    using SceneUpdateMap = std::unordered_map<unsigned, std::vector<NewVB>>;
+
+    // Immutable chunks can contribute multiple fragments to the same block.
+    // Keep their buffers in arrival order without concatenating vertex arrays.
+    struct VertexFragments {
+        std::vector<const std::vector<Eigen::Vector3d>*> buffers;
+        size_t                                           vertex_count = 0;
+
+        void append(const std::vector<Eigen::Vector3d>& vertices) {
+            buffers.push_back(&vertices);
+            vertex_count += vertices.size();
+        }
+
+        size_t size() const {
+            return vertex_count;
+        }
+
+        template<typename OutputIt>
+        void copy_to(OutputIt destination) const {
+            for (const auto* buffer : buffers)
+                destination = std::copy(buffer->begin(), buffer->end(), destination);
+        }
+
+        void append_to(std::vector<Eigen::Vector3d>& destination) const {
+            for (const auto* buffer : buffers)
+                destination.insert(destination.end(), buffer->begin(), buffer->end());
+        }
+    };
+
+    using PendingVB = std::tuple<VoxelBlockIndex, VertexFragments>;
+
     spatial_hash();
 
     [[maybe_unused]] void clean_mesh_vb_redesign_with_list(const std::set<std::tuple<int, int, int>>& vb_lists);
 
     void deleted_ranges_processing();
 
-    // 91 changed to accept scene update mappings instead
-    void append_mesh_allocate(const std::unordered_map<unsigned, std::vector<NewVB>>& inputSceneUpdateMap);
+    // Retain shared ownership until append_mesh_match_and_insert has consumed
+    // all fragments. The caller may release its own chunk references sooner.
+    void append_mesh_allocate(std::shared_ptr<const SceneUpdateMap> inputSceneUpdateMap);
 
     unsigned        append_mesh_match_and_insert(bool merge);
     static unsigned hash_vb(const VoxelBlockIndex& Index);
@@ -37,8 +74,7 @@ public:
 
     // 7/22
     std::unordered_map<unsigned, std::vector<Vector_range>> map_VB_to_range_;
-    // this is tracking locally created vB sub-vectors?
-    std::unordered_map<unsigned, std::vector<NewVB>> allocate_new_VB_;
+    std::unordered_map<unsigned, std::vector<PendingVB>>    allocate_new_VB_;
     // changed to int since map_VB_to_range_ is int, int (needs to deal with deleted range)
     // however deleted range should not be negative
     std::vector<std::pair<int, int>> deleted_ranges_;
@@ -60,6 +96,9 @@ public:
 
     // 528 this is essentially creating a really large face so we can quickly generate the face vector
     std::vector<int> faces_base_;
+
+private:
+    std::vector<std::shared_ptr<const SceneUpdateMap>> input_owners_;
 };
 
 [[maybe_unused]] void track_time(const std::string& message, const std::function<void()>& func);
