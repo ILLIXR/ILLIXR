@@ -1,6 +1,5 @@
 #include "plugin.hpp"
 
-#include <eigen3/Eigen/Dense>
 #include <iomanip>
 #include <memory>
 #include <opencv2/imgcodecs.hpp>
