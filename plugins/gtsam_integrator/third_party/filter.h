@@ -28,6 +28,7 @@ For details, see http://www.lifl.fr/~casiez/1euro
 */
 
 #include <cmath>
+#include <functional>
 
 template<typename T = double>
 struct low_pass_filter {

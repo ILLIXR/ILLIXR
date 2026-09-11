@@ -1,6 +1,6 @@
 dep_map:
 - dependencies:
-  - needs: pose_type
+  - needs: head_pose_type
     provided_by:
     - ground_truth_slam
     - lighthouse
@@ -27,7 +27,7 @@ dep_map:
     - fauxpose
     - pose_lookup
     - pose_prediction
-  - needs: pose_type
+  - needs: head_pose_type
     provided_by:
     - ground_truth_slam
     - lighthouse
@@ -89,7 +89,7 @@ dep_map:
   - needs: monocular_cam_type
     provided_by:
     - webcam
-  - needs: pose_type
+  - needs: head_pose_type
     provided_by:
     - ground_truth_slam
     - lighthouse
@@ -138,7 +138,7 @@ dep_map:
     - pose_prediction
   plugin: offload_rendering_client
 - dependencies:
-  - needs: fast_pose_type
+  - needs: fast_head_pose_type
     provided_by:
     - lighthouse
     - offload_rendering_client
@@ -165,7 +165,7 @@ dep_map:
     provided_by:
     - offload_vio.device_rx
     - openvins
-  - needs: pose_type
+  - needs: head_pose_type
     provided_by:
     - ground_truth_slam
     - lighthouse
@@ -216,7 +216,7 @@ dep_map:
     - gtsam_integrator
     - passthrough_integrator
     - rk4_integrator
-  - needs: pose_type
+  - needs: head_pose_type
     provided_by:
     - ground_truth_slam
     - lighthouse

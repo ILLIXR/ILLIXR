@@ -1,7 +1,7 @@
 #pragma once
 
 #ifdef Success
-    #undef Success // For 'Success' conflict
+#    undef Success // For 'Success' conflict
 #endif
 
 #include "illixr/data_format/poses/head_pose.hpp"
@@ -11,47 +11,47 @@
 #include <boost/serialization/export.hpp>
 #include <cstdint>
 #ifdef __ANDROID__
-    #include <GLES/gl.h>
-    #ifndef NVDEC_DECODER
-        #define NVDEC_DECODER
-    #endif
-    #ifdef ILLIXR_VULKAN
-        #include <android/hardware_buffer.h>
-    #endif // ILLIXR_VULKAN
+#    include <GLES/gl.h>
+#    ifndef NVDEC_DECODER
+#        define NVDEC_DECODER
+#    endif
+#    ifdef ILLIXR_VULKAN
+#        include <android/hardware_buffer.h>
+#    endif // ILLIXR_VULKAN
 #else
-    #include <GL/gl.h>
+#    include <GL/gl.h>
 #endif // __ANDROID__
 
 // Define PACKET_TYPE based on available codec backends
 #ifdef ILLIXR_LIBAV
 extern "C" {
-    #include "libavcodec_illixr/avcodec.h"
-    #include "libavformat_illixr/avformat.h"
-    #include "libavutil_illixr/hwcontext.h"
-    #include "libavutil_illixr/opt.h"
-    #include "libavutil_illixr/pixdesc.h"
+#    include "libavcodec_illixr/avcodec.h"
+#    include "libavformat_illixr/avformat.h"
+#    include "libavutil_illixr/hwcontext.h"
+#    include "libavutil_illixr/opt.h"
+#    include "libavutil_illixr/pixdesc.h"
 }
-    #define PACKET_TYPE AVPacket*
-    #define PACKET_REF  AVPacket*
+#    define PACKET_TYPE AVPacket*
+#    define PACKET_REF  AVPacket*
 #elif defined(NVENC_ENCODER) || defined(NVDEC_DECODER)
 
-    #define PACKET_TYPE std::vector<uint8_t>
-    #define PACKET_REF  std::vector<uint8_t>&
+#    define PACKET_TYPE std::vector<uint8_t>
+#    define PACKET_REF  std::vector<uint8_t>&
 
 #endif
 
 #ifndef BUFFER_TYPE
-    #ifdef USING_OPENXR
-        #ifdef ENABLE_MONADO
-            #define BUFFER_TYPE std::array<xrt_pose, 2>
-        #else
-            #define BUFFER_TYPE std::array<XrPosef, 2>
-        #endif
-    #else
-        #ifndef BUFFER_TYPE
-            #define BUFFER_TYPE data_format::pose::fast_head_pose_type
-        #endif
-    #endif
+#    ifdef USING_OPENXR
+#        ifdef ENABLE_MONADO
+#            define BUFFER_TYPE std::array<xrt_pose, 2>
+#        else
+#            define BUFFER_TYPE std::array<XrPosef, 2>
+#        endif
+#    else
+#        ifndef BUFFER_TYPE
+#            define BUFFER_TYPE data_format::pose::fast_head_pose_type
+#        endif
+#    endif
 #endif
 
 namespace ILLIXR::data_format {
@@ -60,11 +60,11 @@ namespace ILLIXR::data_format {
 // Array of left eyes, array of right eyes
 // This more closely matches the format used by Monado
 struct [[maybe_unused]] rendered_frame : public switchboard::event {
-    std::array<GLuint, 2>     swapchain_indices{}; // Index of image rendered for left and right swapchain
-    std::array<GLuint, 2>     swap_indices{};      // Which element of the swapchain
-    pose::fast_head_pose_type render_pose;         // The pose used when rendering this frame.
-    time_point                sample_time{};
-    time_point                render_time{};
+    std::array<GLuint, 2>                  swapchain_indices{}; // Index of image rendered for left and right swapchain
+    [[maybe_unused]] std::array<GLuint, 2> swap_indices{};      // Which element of the swapchain
+    pose::fast_head_pose_type              render_pose;         // The pose used when rendering this frame.
+    time_point                             sample_time{};
+    time_point                             render_time{};
 
     rendered_frame() = default;
 
@@ -78,21 +78,21 @@ struct [[maybe_unused]] rendered_frame : public switchboard::event {
 };
 
 struct compressed_frame : public switchboard::event {
-    bool    nalu_only;
-    char*   left_color_nalu       = nullptr;
-    char*   right_color_nalu      = nullptr;
-    char*   left_depth_nalu       = nullptr;
-    char*   right_depth_nalu      = nullptr;
-    int32_t left_color_nalu_size  = 0;
-    int32_t right_color_nalu_size = 0;
-    int32_t left_depth_nalu_size  = 0;
-    int32_t right_depth_nalu_size = 0;
+    bool    nalu_only{false};
+    char*   left_color_nalu{nullptr};
+    char*   right_color_nalu{nullptr};
+    char*   left_depth_nalu{nullptr};
+    char*   right_depth_nalu{nullptr};
+    int32_t left_color_nalu_size{0};
+    int32_t right_color_nalu_size{0};
+    int32_t left_depth_nalu_size{0};
+    int32_t right_depth_nalu_size{0};
 
-    bool use_depth;
-    bool use_motion_vectors;
+    bool use_depth{false};
+    bool use_motion_vectors{false};
 
     /// Tag type: disambiguates the color+motion_vec constructor from color+depth.
-    struct has_motion_vectors_tag { };
+    struct [[maybe_unused]] has_motion_vectors_tag { };
 #if defined(ILLIXR_LIBAV) || defined(NVENC_ENCODER) || defined(NVDEC_DECODER)
     PACKET_TYPE left_color;
     PACKET_TYPE right_color;
@@ -105,7 +105,7 @@ struct compressed_frame : public switchboard::event {
 
 #endif
 
-    BUFFER_TYPE pose;
+    BUFFER_TYPE pose{};
 
     // Projection clip planes forwarded from XrCompositionLayerDepthInfoKHR.
     // The decoder uses these to linearise the encoded RG depth values back into
@@ -125,8 +125,8 @@ struct compressed_frame : public switchboard::event {
     std::array<float, 2> fov_down  = {0.0f, 0.0f};
 #endif
 
-    uint64_t sent_time;
-    uint64_t frame_number;
+    uint64_t sent_time{0};
+    uint64_t frame_number{0};
     uint64_t pose_id{0}; ///< ID of the combined_pose used to generate this frame,
                          ///< used to correlate rendered frames with headset pose measurements
     double encode_time = 0.;
@@ -202,7 +202,7 @@ struct compressed_frame : public switchboard::event {
         , magic(0xdeadbeef) { }
 
 #endif
-    ~compressed_frame() {
+    ~compressed_frame() override {
         if (nalu_only && left_color_nalu != nullptr && right_color_nalu != nullptr) {
             free(left_color_nalu);
             free(right_color_nalu);
@@ -216,9 +216,9 @@ struct compressed_frame : public switchboard::event {
 
 /// Decoded video frame data format
 enum class frame_format : uint8_t {
-    nv12,         ///< NV12 (Y plane + interleaved UV plane)
-    rgba8,        ///< RGBA 8-bit per channel
-    external_oes, ///< GL_TEXTURE_EXTERNAL_OES handle (for zero-copy path)
+    nv12,                   ///< NV12 (Y plane + interleaved UV plane)
+    rgba8 [[maybe_unused]], ///< RGBA 8-bit per channel
+    external_oes,           ///< GL_TEXTURE_EXTERNAL_OES handle (for zero-copy path)
 #ifdef __ANDROID__
     hardware_buffer ///< AHardwareBuffer handle (Vulkan zero-copy path, Android only)
 #endif
@@ -269,7 +269,7 @@ struct eye_frame {
 #endif
 
     /// Check if this frame has valid data
-    [[nodiscard]] bool has_data() const {
+    [[nodiscard]] [[maybe_unused]] bool has_data() const {
 #if defined(__ANDROID__) && defined(ILLIXR_VULKAN)
         return !data.empty() || texture_id != 0 || hw_buffer != nullptr;
 #else
@@ -278,12 +278,12 @@ struct eye_frame {
     }
 
     /// Get Y plane pointer for NV12 format
-    [[nodiscard]] const uint8_t* get_y_plane() const {
+    [[nodiscard]] [[maybe_unused]] const uint8_t* get_y_plane() const {
         return data.data();
     }
 
     /// Get UV plane pointer for NV12 format
-    [[nodiscard]] const uint8_t* get_uv_plane(int width, int height) const {
+    [[nodiscard]] [[maybe_unused]] const uint8_t* get_uv_plane(int width, int height) const {
         return data.data() + (width * height);
     }
 };
@@ -324,7 +324,7 @@ struct [[maybe_unused]] dual_frames : public switchboard::event {
     // Presentation timestamp
     time_point render_time{};
 
-    BUFFER_TYPE pose;
+    BUFFER_TYPE pose{};
 
     // Frame sequence number (for debugging/sync)
     uint64_t frame_number{0};
@@ -333,7 +333,7 @@ struct [[maybe_unused]] dual_frames : public switchboard::event {
     // Used by oxr_interface to look up the original headset pose measurement
     // for latency and accuracy logging.
     uint64_t pose_id{0};
-
+    double   encode_time{0.};
     // Projection clip planes forwarded from the server's compressed_frame.
     // Required by XrCompositionLayerDepthInfoKHR and
     // XrCompositionLayerSpaceWarpInfoFB (nearZ / farZ fields).

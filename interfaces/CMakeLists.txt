@@ -1,0 +1,5 @@
+if(BUILD_UNITY_INTERFACE)
+    if(ANDROID)
+        add_subdirectory(unity_android)
+    endif()
+endif()

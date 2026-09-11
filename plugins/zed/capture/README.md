@@ -1,1 +1,0 @@
-../../../docs/docs/plugin_README/zed_capture.md

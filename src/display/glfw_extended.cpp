@@ -1,11 +1,13 @@
-#if defined(_WIN32) || defined(_WIN64)
-    #include <Windows.h>
-#endif
-#define GLFW_INCLUDE_VULKAN
-#include "glfw_extended.hpp"
-#include "illixr/error_util.hpp"
+#ifndef __ANDROID__
 
-#include <GLFW/glfw3.h>
+#    if defined(_WIN32) || defined(_WIN64)
+#        include <Windows.h>
+#    endif
+#    define GLFW_INCLUDE_VULKAN
+#    include "glfw_extended.hpp"
+#    include "illixr/error_util.hpp"
+
+#    include <GLFW/glfw3.h>
 
 using namespace ILLIXR::display;
 
@@ -76,3 +78,5 @@ std::set<const char*> glfw_extended::get_required_device_extensions() {
 display_backend::display_backend_type glfw_extended::get_type() {
     return GLFW;
 }
+
+#endif

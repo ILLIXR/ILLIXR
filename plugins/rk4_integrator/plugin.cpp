@@ -6,7 +6,11 @@
 #include "illixr/runge-kutta.hpp"
 
 #include <chrono>
-#include <eigen3/Eigen/Dense>
+#ifdef __ANDROID__
+#    include <Eigen/Dense>
+#else
+#    include <eigen3/Eigen/Dense>
+#endif
 #include <iomanip>
 #include <memory>
 #include <vector>

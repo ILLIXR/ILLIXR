@@ -2,7 +2,11 @@
 
 #include "illixr/runge-kutta.hpp"
 
-#include <eigen3/Eigen/Dense>
+#ifdef __ANDROID__
+#    include <Eigen/Dense>
+#else
+#    include <eigen3/Eigen/Dense>
+#endif
 #include <filesystem>
 #include <shared_mutex>
 
@@ -17,12 +21,17 @@ pose_prediction_impl::pose_prediction_impl(const phonebook* const pb)
     , true_pose_{switchboard_->get_reader<pose::head_pose_type>("true_pose")}
     , ground_truth_offset_{switchboard_->get_reader<switchboard::event_wrapper<Eigen::Vector3f>>("ground_truth_offset")}
     , vsync_estimate_{switchboard_->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")}
-    , using_lighthouse_{switchboard_->get_env_bool("ILLIXR_LIGHTHOUSE")} { }
+#ifdef __ANDROID__
+    , using_lighthouse_{false} {}
+#else
+    , using_lighthouse_{switchboard_->get_env_bool("ILLIXR_LIGHTHOUSE")} {
+}
+#endif
 
-// No parameter get_fast_pose() should just predict to the next vsync
-// However, we don't have vsync estimation yet.
-// So we will predict to `now()`, as a temporary approximation
-pose::fast_head_pose_type pose_prediction_impl::get_fast_pose() const {
+    // No parameter get_fast_pose() should just predict to the next vsync
+    // However, we don't have vsync estimation yet.
+    // So we will predict to `now()`, as a temporary approximation
+    pose::fast_head_pose_type pose_prediction_impl::get_fast_pose() const {
     switchboard::ptr<const switchboard::event_wrapper<time_point>> vsync_estimate = vsync_estimate_.get_ro_nullable();
 
     if (vsync_estimate == nullptr) {
@@ -166,7 +175,7 @@ pose::head_pose_type pose_prediction_impl::correct_pose(const pose::head_pose_ty
     if (using_lighthouse_) // The lighthouse plugin should already apply the correct pose.
         return pose;
 
-    pose::head_pose_type swapped_pose;
+    pose::head_pose_type swapped_pose = pose;
 
     // Make any changes to the axes direction below
     // This is a mapping between the coordinate system of the current
@@ -174,6 +183,10 @@ pose::head_pose_type pose_prediction_impl::correct_pose(const pose::head_pose_ty
     swapped_pose.position.x() = -pose.position.y();
     swapped_pose.position.y() = pose.position.z();
     swapped_pose.position.z() = -pose.position.x();
+    // swapped_pose.linear_velocity.x() = -pose.linear_velocity.y();
+    // swapped_pose.linear_velocity.y() = pose.linear_velocity.z();
+    // swapped_pose.linear_velocity.z() = -pose.linear_velocity.x();
+    // swapped_pose.angular_velocity = pose.angular_velocity;
 
     // Make any changes to orientation of the output below
     // For the dataset were currently using (EuRoC), the output orientation acts as though

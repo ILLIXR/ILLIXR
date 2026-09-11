@@ -87,7 +87,7 @@ public:
     }
 
     ~threadloop() override {
-        assert(stoplight_->check_should_stop());
+        assert(!thread_.joinable() || stoplight_->check_should_stop());
         assert(!thread_.joinable());
     }
 

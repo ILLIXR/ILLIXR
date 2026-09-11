@@ -1,33 +1,34 @@
 #pragma once
 
 #if defined(_WIN32) || defined(_WIN64)
-    #define _WINSOCKAPI_
-    #define WIN32_LEAN_AND_MEAN
+#    ifndef WIN32_LEAN_AND_MEAN
+#        define WIN32_LEAN_AND_MEAN
+#    endif
+#    ifndef _WINSOCKAPI_
+#        define _WINSOCKAPI_
+#    endif
+// clang-format off
+#  include <WinSock2.h>
+#  include <ws2def.h>
+#  include <ws2tcpip.h>
+#  pragma comment(lib, "Ws2_32.lib")
+#  define BYTE_TYPE   int
+#  define SOCKET_TYPE SOCKET
+// clang-format on
+#else
+#    include <arpa/inet.h>
+#    include <netinet/in.h>
+#    include <sys/socket.h>
+#    include <unistd.h>
+#    define BYTE_TYPE   ssize_t
+#    define SOCKET_TYPE int
 #endif
+
+#include "illixr/export.hpp"
 
 #include <cstring>
 #include <stdexcept>
 #include <string>
-
-#if defined(_WIN32) || defined(_WIN64)
-// clang-format off
-    #include <WinSock2.h>
-    #include <ws2def.h>
-    #include <ws2tcpip.h>
-    #pragma comment(lib, "Ws2_32.lib")
-    #define BYTE_TYPE   int
-    #define SOCKET_TYPE SOCKET
-// clang-format on
-#else
-    #include <arpa/inet.h>
-    #include <netinet/in.h>
-    #include <sys/socket.h>
-    #include <unistd.h>
-    #define BYTE_TYPE   ssize_t
-    #define SOCKET_TYPE int
-#endif
-
-#include "illixr/export.hpp"
 
 namespace ILLIXR::network {
 

@@ -1,9 +1,16 @@
-#include "illixr.hpp"
+#ifndef ENABLE_MONADO
 
-#include <csignal>
-#include <iostream>
+#    include "illixr.hpp"
+#    ifdef __ANDROID__
+#        include <EGL/egl.h>
+#        include <thread>
+#        include <vector>
+#    else
+#        include <iostream>
+#    endif
+#    include <csignal>
 
-#ifndef NDEBUG
+#    ifndef NDEBUG
 /**
  * @brief A signal handler for SIGILL.
  *
@@ -25,7 +32,7 @@ static void sigabrt_handler(int sig) {
     assert(sig == SIGABRT && "sigabrt_handler is for SIGABRT");
     std::raise(SIGSEGV);
 }
-#endif /// NDEBUG
+#    endif /// NDEBUG
 
 /**
  * @brief A signal handler for SIGINT.
@@ -39,7 +46,50 @@ static void sigint_handler([[maybe_unused]] int sig) {
     }
 }
 
+using namespace ILLIXR;
+
+#    ifdef __ANDROID__
+extern "C" {
+// called from Java after permission is granted
+JNIEXPORT void JNICALL Java_com_example_ILLIXR_ILLIXRNativeActivity_nativeOnPermissionGranted(JNIEnv* env, jobject activity) { }
+}
+
+/// Holds the ILLIXR runtime thread so it can be joined from android_main() once shutdown is
+/// requested, instead of being joined synchronously inside handle_cmd(). Joining here would
+/// block the android_app looper from processing any further lifecycle commands.
+static std::thread runtime_thread_;
+
+static void handle_cmd(struct android_app* app, int32_t cmd) {
+#    else
 int main(int argc, const char* argv[]) {
+#    endif
+
+#    ifdef __ANDROID__
+    if (cmd == APP_CMD_INIT_WINDOW && !runtime_thread_.joinable()) {
+        const std::vector<std::string> plugins = {"tcp_network_backend", "udp_network_backend", "network_latency.tx",
+                                                  "offload_rendering_client", "openxr_interface"};
+
+        // EuRoC
+        setenv("ILLIXR_DATA", "/sdcard/Android/data/com.example.native_activity/mav0", true);
+        setenv("ILLIXR_LOG", "/sdcard/Android/data/com.example.native_activity/log.txt", true);
+
+        setenv("ILLIXR_DEMO_DATA", "/sdcard/Android/data/com.example.native_activity/demo_data", true);
+        setenv("ILLIXR_OFFLOAD_ENABLE", "False", true);
+        setenv("ILLIXR_ALIGNMENT_ENABLE", "False", true);
+        setenv("ILLIXR_ENABLE_VERBOSE_ERRORS", "False", true);
+        setenv("ILLIXR_RUN_DURATION", "1000000", true);
+        setenv("ILLIXR_ENABLE_PRE_SLEEP", "False", true);
+        setenv("ILLIXR_ENABLE_PRE_SLEEP", "False", true);
+        setenv("ILLIXR_TCP_CLIENT_IP", "192.168.8.140", true);
+        setenv("ILLIXR_TCP_SERVER_IP", "192.168.8.158", true);
+        setenv("ILLIXR_TCP_CLIENT_PORT", "9000", true);
+        setenv("ILLIXR_UDP_CLIENT_PORT", "9002", true);
+        setenv("ILLIXR_TCP_SERVER_PORT", "9001", true);
+        setenv("ILLIXR_UDP_SERVER_PORT", "9003", true);
+        setenv("ILLIXR_IS_CLIENT", "1", true);
+        setenv("ILLIXR_USE_DEPTH_IMAGES", "0", true);
+        setenv("ILLIXR_USE_MOTION_VECTOR_IMAGES", "0", true);
+#    else
     cxxopts::Options options("ILLIXR", "Main program");
     options.show_positional_help();
     options.allow_unrecognised_options();
@@ -59,15 +109,59 @@ int main(int argc, const char* argv[]) {
         std::cout << options.help() << std::endl;
         return EXIT_SUCCESS;
     }
+#    endif
+#    ifndef NDEBUG
+        /// When debugging, register the SIGILL and SIGABRT handlers for capturing more info
+        std::signal(SIGILL, sigill_handler);
+        std::signal(SIGABRT, sigabrt_handler);
+#    endif /// NDEBUG
 
-#ifndef NDEBUG
-    /// When debugging, register the SIGILL and SIGABRT handlers for capturing more info
-    std::signal(SIGILL, sigill_handler);
-    std::signal(SIGABRT, sigabrt_handler);
-#endif /// NDEBUG
-
-    /// Shutting down method 1: Ctrl+C
-    std::signal(SIGINT, sigint_handler);
-
+        /// Shutting down method 1: Ctrl+C
+        std::signal(SIGINT, sigint_handler);
+#    ifdef __ANDROID__
+        /// Run the ILLIXR runtime on its own thread and return control to the caller immediately;
+        /// it is joined later, from android_main(), once APP_CMD_DESTROY has been processed.
+        runtime_thread_ = std::thread(ILLIXR::run, plugins, app);
+    } else if (cmd == APP_CMD_DESTROY) {
+        /// Shutting down method 2: the activity is being destroyed
+        if (runtime_) {
+            runtime_->stop();
+        }
+    }
+#    else
     return ILLIXR::run(result);
+#    endif
 }
+
+#    ifdef __ANDROID__
+void android_main(struct android_app* state) {
+    state->onAppCmd = handle_cmd;
+    while (!state->destroyRequested) {
+        int                         ident;
+        int                         events;
+        struct android_poll_source* source;
+
+        // This loop performs no per-frame work of its own -- rendering happens on
+        // runtime_thread_ via OpenXR/Vulkan -- so it blocks indefinitely and only wakes to
+        // dispatch the next lifecycle command or input event.
+        do {
+            ident = ALooper_pollOnce(-1, nullptr, &events, (void**) &source);
+            if (ident >= 0) {
+                // Process this event.
+                if (source != nullptr) {
+                    source->process(state, source);
+                }
+            }
+        } while (ident >= 0 && !state->destroyRequested);
+    }
+
+    /// APP_CMD_DESTROY has been processed and handle_cmd() has called runtime_->stop(); wait for
+    /// the runtime thread to actually finish before returning, so android_app_destroy() can safely
+    /// tear down the native state behind it.
+    if (runtime_thread_.joinable()) {
+        runtime_thread_.join();
+    }
+}
+#    endif
+
+#endif

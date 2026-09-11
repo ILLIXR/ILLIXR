@@ -1,4 +1,6 @@
-#include "headless.hpp"
+#ifndef __ANDROID__
+
+#    include "headless.hpp"
 
 using namespace ILLIXR::display;
 
@@ -26,3 +28,5 @@ std::set<const char*> headless::get_required_device_extensions() {
 display_backend::display_backend_type headless::get_type() {
     return HEADLESS;
 }
+
+#endif

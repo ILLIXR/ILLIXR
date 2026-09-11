@@ -1,6 +1,7 @@
-if(WIN32 OR MSVC)
-    message(WARNING "openwarp_vk is not yet available for windows")
+if(WIN32 OR MSVC OR ANDROID)
+    message(WARNING "openwarp_vk is not yet available for Windows or Android")
     set(USE_OPENWARP_VK OFF)
+    return()
 endif()
 
 cmake_minimum_required(VERSION 3.16)
@@ -18,15 +19,12 @@ if(NOT PLUGIN_NAME)
     set(PLUGIN_NAME "plugin.openwarp_vk${ILLIXR_BUILD_SUFFIX}")
     set(PLUGIN_SOURCE "plugin.cpp")
     set(OW_PREFIX "")
-    set(OW_POSTFIX "")
 endif()
 
 file(GLOB_RECURSE GLSL_SOURCE_FILES
      "${OW_PREFIX}shaders/*.frag"
      "${OW_PREFIX}shaders/*.vert"
 )
-
-set(PROJECT_BINARY_DIR "${PROJECT_BINARY_DIR}${OW_POSTFIX}")
 
 foreach(GLSL ${GLSL_SOURCE_FILES})
     get_filename_component(FILE_NAME ${GLSL} NAME)

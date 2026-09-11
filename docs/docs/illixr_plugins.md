@@ -6,23 +6,24 @@ This page details the structure of ILLIXR's [_plugins_][G18] and how they intera
 |-------------------------------------------|---------|
 | ![Linux Logo](images/tux-large.png)       | Linux   |
 | ![Windows Logo](images/windows-large.png) | Windows |
+| ![Android_Logo](images/android.png)       | Android |
 
 ## Ada ![Linux Logo](images/tux.png)
 
 Ada’s distributed design relies on **four communication plugins** that coordinate data transfer between the **device** and **server** for remote scene provisioning.
 
-- `ada.device_rx`: Receives processed data from the server to the device. 
-    - Asynchronously *reads* a string from the topic `ada_processed`, which contains protobuf packets sent by the server.  
-    - *Publishes* [`mesh_type`][A23] to `compressed_scene` topic.  forwards compressed mesh chunks to `ada.mesh_decompression_grey`  
+- `ada.device_rx`: Receives processed data from the server to the device.
+    - Asynchronously *reads* a string from the topic `ada_processed`, which contains protobuf packets sent by the server.
+    - *Publishes* [`mesh_type`][A23] to `compressed_scene` topic.  forwards compressed mesh chunks to `ada.mesh_decompression_grey`
     - *Publishes* [`vb_type`][A24] to `VB_update_lists` topic. forwards the unique voxel block list (UVBL) to `ada.scene_management`
-- `ada.device_tx`: Sends encoded depth images (MSB and LSB) along with non-encoded pose information from the device to the server. The LSB encoding bitrate is configurable for bandwidth–reconstruction accuracy trade-offs. 
-    - Synchronously *reads* [`scene_recon_type`][A25] from `ScanNet_Data` topic, which provides dataset input (via `ada.offline_scannet`).  
+- `ada.device_tx`: Sends encoded depth images (MSB and LSB) along with non-encoded pose information from the device to the server. The LSB encoding bitrate is configurable for bandwidth–reconstruction accuracy trade-offs.
+    - Synchronously *reads* [`scene_recon_type`][A25] from `ScanNet_Data` topic, which provides dataset input (via `ada.offline_scannet`).
     - *Publishes* encoded depth data as a string to the `ada_data` topic.
-- `ada.server_rx`: Receives encoded depth images and poses (not encoded) from the device, decodes them, and feeds them to the reconstruction module (`ada.infiniTAM`).  
+- `ada.server_rx`: Receives encoded depth images and poses (not encoded) from the device, decodes them, and feeds them to the reconstruction module (`ada.infiniTAM`).
     - Asynchronously *reads* a string from topic `ada_data`
     - *Publishes* [`scene_recon_type`][A25] to `ScanNet_Data` topic. provides decoded depth frames and corresponding pose inforamtion to downstream reconstruction.
-- `ada.server_tx`: Sends processed scene data (meshes and Unique Voxel Block Lists(UVBL)) from the server back to the device. 
-    - Synchronously *reads* [`vb_type`][A24] from `unique_VB_list` topic (output of `ada.infiniTAM`). 
+- `ada.server_tx`: Sends processed scene data (meshes and Unique Voxel Block Lists(UVBL)) from the server back to the device.
+    - Synchronously *reads* [`vb_type`][A24] from `unique_VB_list` topic (output of `ada.infiniTAM`).
     - Synchronously *reads* [`mesh_type`][A23] from `compressed_scene` topic (output of `ada.infiniTAM`).
     - *Publishes* a string to `ada_processed` topic, each string is either a protobuf for [`vb_type`][A24] topic or a protobuf for [`mesh_type`][A23] topic.
 
@@ -30,7 +31,7 @@ Ada’s distributed design relies on **four communication plugins** that coordin
 
 ## ada.infinitam ![Linux Logo](images/tux.png)
 
-Performs **scene reconstruction** using incoming depth and pose data from the device, followed by **on-demand or proactive scene extraction**.  
+Performs **scene reconstruction** using incoming depth and pose data from the device, followed by **on-demand or proactive scene extraction**.
 During extraction, it generates both the **updated partial mesh** and the **Unique Voxel Block List (UVBL)**, which are sent downstream for compression and scene management. Extraction frequency is configurable to balance latency and compute cost.
 
 Topic details:
@@ -48,7 +49,7 @@ Compresses mesh chunks from [`ada.infinitam`][I12] using a **customized version 
 Topic details:
 
 -   Synchronously *reads* [`mesh_type`][A23] from `requested_scene` topic.
--   *Publishes* [`mesh_type`][A23] to `compressed_scene` topic. compressed mesh chunks ready for transmission to the device. Voxel block information has been attached to each encoded face. 
+-   *Publishes* [`mesh_type`][A23] to `compressed_scene` topic. compressed mesh chunks ready for transmission to the device. Voxel block information has been attached to each encoded face.
 
 &nbsp;&nbsp;[**Details**][P33]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C35]
 
@@ -59,14 +60,14 @@ Decompresses the mesh chunks received from the server and performs a portion of 
 Topic details:
 
 -   Synchronously *reads* [`mesh_type`][A23] from `compressed_scene` topic.
--   *Publishes* [`draco_type`][A26] to `decoded_inactive_scene` topic. decoded mesh data sent to [`ada.scene_management`][I13].  
+-   *Publishes* [`draco_type`][A26] to `decoded_inactive_scene` topic. decoded mesh data sent to [`ada.scene_management`][I13].
 
 &nbsp;&nbsp;[**Details**][P33]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C36]
 
 ## ada.offline_scannet ![Linux Logo](images/tux.png)
 
 Loads the **ScanNet dataset** for offline or reproducible experiments.
- 
+
 Topic details:
 
 -   *Publishes* [`scene_recon_type`][A25] to `ScanNet_Data` topic.
@@ -83,6 +84,17 @@ Topic details:
 -   Synchronously *reads* [`vb_type`][A24] from `VB_update_lists` topic.
 
 &nbsp;&nbsp;[**Details**][P33]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C38]
+
+## android_data ![Android_Logo](images/android.png)
+
+Reads [`imu_type`][A15] and [`binocular_cam_type`][A14] from files on the Android device and publishes them to the switchboard.
+
+Topic details:
+
+-   *Publishes* [`imu_type`][A15] to `imu` topic.
+-   *Publishes* [`binocular_cam_type`][A14] to `cam` topic.
+
+&nbsp;&nbsp;**Details**&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C40]
 
 ## audio_pipeline ![Linux Logo](images/tux.png)
 
@@ -123,7 +135,7 @@ Topic details:
 
 &nbsp;&nbsp;**Details**&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C3]
 
-## gldemo [^1] ![Linux Logo](images/tux.png)
+## gldemo [^1] ![Linux Logo](images/tux.png) ![Android_Logo](images/android.png)
 
 Renders a static scene (into left and right [_eye buffers_][G11]) given the [_pose_][G14]
 from [`pose_prediction`][S10].
@@ -219,7 +231,7 @@ Enables lighthouse tracking using the [libsurvive library](https://github.com/co
 Topic details:
 
 -   *Publishes* [`pose_type`][A12] to `slow_pose` topic.
--   *Publishes* [`fast_pose_type`][A11] to `fast_pose` topic. 
+-   *Publishes* [`fast_pose_type`][A11] to `fast_pose` topic.
 
 &nbsp;&nbsp;[**Details**][P15]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C9]
 
@@ -237,7 +249,18 @@ Topic details:
 
 &nbsp;&nbsp;[**Details**][P21]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C10]
 
-## offline_cam ![Linux Logo](images/tux.png) ![Windows logo](images/windows.png)
+## network_latency ![Linux Logo](images/tux.png) ![Windows logo](images/windows.png) ![Android_Logo](images/android.png)
+
+This set of plugins periodically measures round-trip network latency between client and server. One way latency can be measured between devices running the same operating system and with well correlated clocks.
+
+Topic details:
+
+-   *Publishes* [`network_latency_result`][A27] to `network_latency` topic
+
+&nbsp;&nbsp;[**Details**][P35]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C41]
+
+
+## offline_cam ![Linux Logo](images/tux.png) ![Windows logo](images/windows.png) ![Android_Logo](images/android.png)
 
 Reads camera images from files on disk, emulating real cameras on the [_headset_][G15]
 (feeds the application input measurements with timing similar to an actual camera).
@@ -248,7 +271,7 @@ Topic details:
 
 &nbsp;&nbsp;**Details**&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C11]
 
-## offline_imu ![Linux Logo](images/tux.png) ![Windows logo](images/windows.png)
+## offline_imu ![Linux Logo](images/tux.png) ![Windows logo](images/windows.png) ![Android_Logo](images/android.png)
 
 Reads [_IMU_][G13] data files on disk, emulating a real sensor on the [_headset_][G15]
 (feeds the application input measurements with timing similar to an actual IMU).
@@ -269,22 +292,29 @@ Topic details:
 
 &nbsp;&nbsp;**Details**&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C13]
 
-## offload_rendering_client ![Linux Logo](images/tux.png)
+## offload_rendering_client ![Linux Logo](images/tux.png) ![Android_Logo](images/android.png)
 
 Receives encoded frames from the network, sent by [offload_rendering_server](#offload_rendering_server)
 
 Topic details:
 
+Linux:
 -   *Calls* [`vulkan::display_provider`][E15]
 -   *Calls* [`pose_prediction`][E16]
 -   Asynchronously *reads* `compressed_frame` from `compressed_frames` topic.
 -   *Publishes* [`fast_pose_type`][A11] to `render_pose` topic.
+-   Asynchronously *reads* [`network_latency_result`][A28] from `network_latency`
+
+Android:
+-   Asynchronously *reads* `compressed_frame` from `compressed_frames` topic.
+-   *Publishes* [`dual_frames`][A29] to `unity_rendered_frame` topic.
+-   Asynchronously *reads* [`network_latency_result`][A28] from `network_latency`
 
 &nbsp;&nbsp;[**Details**][P22]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C14]
 
-## offload_rendering_server ![Linux Logo](images/tux.png)
+## offload_rendering_server ![Linux Logo](images/tux.png) ![Windows logo](images/windows.png)
 
-Encodes and transmits frames to one of the offload_rendering_clients. 
+Encodes and transmits frames to one of the offload_rendering_clients.
 
 Topic details:
 
@@ -296,7 +326,7 @@ Topic details:
 
 ## offload_vio ![Linux Logo](images/tux.png)
 
-Four plugins which work in unison to allow head tracking (VIO) to be rendered remotely. 
+Four plugins which work in unison to allow head tracking (VIO) to be rendered remotely.
 
 Topic details:
 
@@ -325,7 +355,7 @@ Enables an interface to the Openni algorithms.
 
 Topic details:
 
--   *Publishes* [`rgb_depth_type`][A13] to `rgb_depth` topic. 
+-   *Publishes* [`rgb_depth_type`][A13] to `rgb_depth` topic.
 
 &nbsp;&nbsp;[**Details**][P18]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C18]
 
@@ -341,6 +371,20 @@ Topic details:
 -   Synchronously *reads*/*subscribes* to [`imu_type`][A15] on `imu` topic.
 
 &nbsp;&nbsp;[**Details**][P19]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C19]
+
+## openxr_interface ![Android Logo](images/android.png)
+
+Connects to the OpenXR runtime on an Android device, gathers head and hand poses, sending them over the network. Receives decoded frames and puts them in the OpenXR swapchain for display.
+
+Topic details:
+
+-   *Publishes* [`combined_pose`][A??] to `combined_pose` topic
+-   Asynchronously *reads* [`network_latency_result`][A28] from `network_latency topic
+-   Asynchronously *reads* [`dual_frames`][A29] from `unity_rendered_frames` topic
+
+&nbsp;&nbsp;[**Details**][P36]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C42]
+
+
 
 ## openwarp_vk ![Linux Logo](images/tux.png)
 
@@ -378,6 +422,17 @@ Topic details:
 
 &nbsp;&nbsp;**Details**&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C22]
 
+## quest3.unity ![Windows logo](images/android.png)
+
+Captures camera and depth images from a Quest 3 headset, encodes them, and sends them over the network to a server. The
+camera images are captured via standard Android APIs. The depth images have to come over OpenXR, so the plugin hooks into the Unity app and uses it to acquire the depth images.
+
+Topic details:
+
+-   *Publishes* [`semantic_frame][A30] to `semantic_frame` topic
+
+&nbsp;&nbsp;[**Details**][P37]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C44]
+
 ## realsense ![Linux Logo](images/tux.png)
 
 Reads images and [_IMU_][G13] measurements from the [Intel Realsense][E14].
@@ -411,7 +466,7 @@ Topic details:
 
 **Details** [**Code**][C25]
 
-## rk4_integrator ![Linux Logo](images/tux.png) ![Windows logo](images/windows.png)
+## rk4_integrator ![Linux Logo](images/tux.png) ![Windows logo](images/windows.png) ![Android_Logo](images/android.png)
 
 Integrates over all [_IMU_][G13] samples since the last published visual-inertial [_pose_][G14] to
 provide a [_fast pose_][G14] every time a new IMU sample arrives using RK4 integration.
@@ -424,7 +479,19 @@ Topic details:
 
 &nbsp;&nbsp;**Details**&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C26]
 
-## tcp_network_backend ![Linux Logo](images/tux.png) ![Windows logo](images/windows.png)
+## semantic_python ![Linux Logo](images/tux.png)
+
+Provides reader and writer handles to a Python script, allowing the script to access the switchboard directly.
+
+Topic details:
+
+-   Asynchronously *reads* [`semantic_frame`][A30] from `semantic_frame` topic
+-   Asynchronously *reads* [`voice_query`][A31] from `semantic_query` topic
+-   *Publishes* [`query_response`][A32] to `semantic_response` networked topic
+
+&nbsp;&nbsp;[**Details**][P38]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C43]
+
+## tcp_network_backend ![Linux Logo](images/tux.png) ![Windows logo](images/windows.png) ![Android_Logo](images/android.png)
 
 Provides network communications over TCP.
 
@@ -461,7 +528,7 @@ Topic details:
 
 &nbsp;&nbsp;[**Details**][P29]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C29]
 
-## udp_network_backend ![Linux Logo](images/tux.png) ![Windows logo](images/windows.png)
+## udp_network_backend ![Linux Logo](images/tux.png) ![Windows logo](images/windows.png) ![Android_Logo](images/android.png)
 
 Provides network communications over UDP.
 
@@ -483,7 +550,7 @@ Reads images and [_IMU_][G13] measurements from the [ZED Mini][E13].
 Unlike `offline_imu`, `zed` additionally has RGB and [_depth_][G11] data.
 
 !!! note
-    
+
     This plugin implements two threads: one for the camera, and one for the IMU.
 
 Topic details:
@@ -582,6 +649,14 @@ See [Getting Started][I11] for more information on adding plugins to a [_profile
 [P33]:  plugin_README/README_ada.md
 
 [P34]:  plugin_README/README_network_backends.md
+
+[P35]:  plugin_README/README_network_latency.md
+
+[P36]:  plugin_README/README_openxr_interface.md
+
+[P37]:  plugin_README/README_quest3_unity.md
+
+[P38]:   plugin_README/README_semantic_python.md
 
 [S10]:   illixr_services.md#pose_prediction
 
@@ -683,6 +758,16 @@ See [Getting Started][I11] for more information on adding plugins to a [_profile
 
 [C39]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/udp_network_backend
 
+[C40]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/android_data
+
+[C41]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/network_latency
+
+[C42]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/openxr_interface
+
+[C43]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/semantic_python
+
+[C44]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/quest3/unity
+
 [//]: # (- Internal -)
 
 [I10]:   working_with/writing_your_plugin.md
@@ -746,3 +831,15 @@ See [Getting Started][I11] for more information on adding plugins to a [_profile
 [A25]:   api/structILLIXR_1_1data__format_1_1scene__recon__type.md
 
 [A26]:   api/structILLIXR_1_1data__format_1_1draco__type.md
+
+[A27]:   api/structILLIXR_1_1data__format_1_1latency__data.md
+
+[A28]:   api/structILLIXR_1_1data__format_1_1network__latency__result.md
+
+[A29]:   api/structILLIXR_1_1data__format_1_1dual__frames.md
+
+[A30]:   api/structILLIXR_1_1data__format_1_1semantic__frame.md
+
+[A31]:   api/structILLIXR_1_1data__format_1_1semantic__xr_1_1voice__query.md
+
+[A32]:   api/structILLIXR_1_1data__format_1_1semantic__xr_1_1query__response.md
