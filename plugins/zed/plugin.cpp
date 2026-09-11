@@ -38,14 +38,14 @@ std::shared_ptr<zed_camera> zed_imu_thread::start_camera() {
 
     // Cam setup
     sl::InitParameters init_params;
-    init_params.camera_resolution      = (with_hand_tracking) ? sl::RESOLUTION::HD720 : sl::RESOLUTION::VGA;
-    init_params.coordinate_units       = (with_hand_tracking) ? sl::UNIT::UNITS : sl::UNIT::MILLIMETER; // For scene reconstruction
-    init_params.coordinate_system      = (with_hand_tracking)
-             ? sl::COORDINATE_SYSTEM::RIGHT_HANDED_Y_UP
-             : sl::COORDINATE_SYSTEM::RIGHT_HANDED_Z_UP_X_FWD; // Coordinate system used in ROS
-    init_params.camera_fps             = 30;                   // gives the best user experience
-    init_params.depth_mode             = (with_hand_tracking) ? sl::DEPTH_MODE::QUALITY : sl::DEPTH_MODE::PERFORMANCE;
-    init_params.depth_stabilization    = true;
+    init_params.camera_resolution   = (with_hand_tracking) ? sl::RESOLUTION::HD720 : sl::RESOLUTION::VGA;
+    init_params.coordinate_units    = (with_hand_tracking) ? sl::UNIT::UNITS : sl::UNIT::MILLIMETER; // For scene reconstruction
+    init_params.coordinate_system   = (with_hand_tracking)
+          ? sl::COORDINATE_SYSTEM::RIGHT_HANDED_Y_UP
+          : sl::COORDINATE_SYSTEM::RIGHT_HANDED_Z_UP_X_FWD; // Coordinate system used in ROS
+    init_params.camera_fps          = 30;                   // gives the best user experience
+    init_params.depth_mode          = (with_hand_tracking) ? sl::DEPTH_MODE::QUALITY : sl::DEPTH_MODE::PERFORMANCE;
+    init_params.depth_stabilization = true;
     init_params.depth_minimum_distance = 0.3;
 
     // Open the camera
