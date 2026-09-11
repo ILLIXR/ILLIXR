@@ -14,9 +14,9 @@ namespace ILLIXR::zed_capture {
 class capture {
 public:
     capture() = delete;
-    capture(int fp, const ILLIXR::data_format::pose_data& wcf);
+    capture(int fp, const ILLIXR::data_format::pose::head_pose_data& wcf);
     ~capture();
-    void get_camera(const ILLIXR::data_format::pose_data& wcf);
+    void get_camera(const ILLIXR::data_format::pose::head_pose_data& wcf);
     void get_config();
     int  get_data();
     void make_gui();

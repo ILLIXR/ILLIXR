@@ -1,15 +1,43 @@
 #pragma once
-
+#define MONADO_IS_SOURCE
 #define DOUBLE_INCLUDE
+
+#ifdef _WIN32
+#    ifndef XRT_OS_WINDOWS
+#        define XRT_OS_WINDOWS
+#    endif
+#endif
+
+#include "drivers/illixr/illixr_framebuffer.h"
+#ifdef USING_OPENXR
+#    include "illixr/data_format/poses/combined_pose.hpp"
+#endif
+#include "illixr/data_format/frame.hpp"
+#include "illixr/data_format/hmd_config.hpp"
+#include "illixr/data_format/pose_id.hpp"
 #include "illixr/data_format/pose_prediction.hpp"
 #include "illixr/data_format/serialization/frame.hpp"
+#include "illixr/data_format/serialization/head_pose.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
 #include "illixr/vk/display_provider.hpp"
-#include "illixr/vk/ffmpeg_utils.hpp"
 #include "illixr/vk/render_pass.hpp"
 #include "illixr/vk/vulkan_utils.hpp"
+#include "pose_relay.hpp"
+
+#ifdef NVENC_ENCODER
+#    include "nvenc/nvenc_encoder.hpp"
+#    define OFFLOAD_RENDERING_BITRATE 100000000
+#else
+#    include "illixr/vk/ffmpeg_utils.hpp"
+#endif
+
 #undef DOUBLE_INCLUDE
+
+#include <condition_variable>
+#include <deque>
+#include <mutex>
+#include <thread>
 
 namespace ILLIXR {
 
@@ -19,15 +47,21 @@ namespace ILLIXR {
  *
  * This class handles:
  * 1. Frame capture from the rendering pipeline
- * 2. Hardware-accelerated encoding using FFmpeg/CUDA
+ * 2. Hardware-accelerated encoding using FFmpeg/CUDA or NVENC directly
  * 3. Network transmission of encoded frames
  * 4. Pose synchronization with the client
+ * 5. Hand tracking data forwarding to Monado
+ *
+ * The server receives combined pose_with_hands data from the client,
+ * extracts the head pose for rendering, and publishes hand tracking
+ * data to the switchboard for Monado's ILLIXR driver to read.
+ *
+ * Compile with -DNVENC_ENCODER to use direct NVENC encoding without FFmpeg.
  */
-class offload_rendering_server
+class MY_EXPORT_API offload_rendering_server
     : public threadloop
     , public vulkan::timewarp
-    , public data_format::pose_prediction
-    , std::enable_shared_from_this<plugin> {
+    , public data_format::pose_prediction {
 public:
     /**
      * @brief Constructor initializes the server with configuration from environment variables
@@ -36,6 +70,7 @@ public:
      */
     offload_rendering_server(const std::string& name, phonebook* pb);
     void start() override;
+    void stop() override;
     void _p_thread_setup() override;
 
     /**
@@ -45,8 +80,8 @@ public:
      * @param _buffer_pool Buffer pool for frame management
      * @param input_texture_vulkan_coordinates Whether input textures use Vulkan coordinates
      */
-    void setup(VkRenderPass render_pass, uint32_t subpass, std::shared_ptr<vulkan::buffer_pool<BUFFER_TYPE>> _buffer_pool,
-               bool input_texture_vulkan_coordinates) override;
+    void setup(VkRenderPass render_pass, uint32_t subpass, std::shared_ptr<vulkan::buffer_pool<BUFFER_TYPE>> buffer_pool,
+               bool input_texture_vulkan_coordinates, struct illixr_framebuffer* framebuffer_array, VkExtent2D extent) override;
 
     /**
      * @brief Indicates this sink does not make use of the rendering pipeline in order for the access masks of the layout
@@ -63,29 +98,36 @@ public:
 
     /**
      * @brief Get the latest pose for rendering
+     *
+     * Extracts the head pose from the most recent pose_with_hands data
+     * received from the client. Also forwards hand tracking data to the
+     * switchboard for Monado (only once per new data arrival).
      */
-    POSE_TYPE get_fast_pose() const override;
+    POSE_TYPE get_fast_pose() const override {
+        return pose_relay_->get_pose();
+    }
 
     /**
      * @brief Get the true pose (same as fast pose in this implementation)
      */
-    data_format::pose::head_pose_type get_true_pose() const override {
+#ifndef USING_OPENXR
+    ILLIXR::data_format::pose::head_pose_type get_true_pose() const override {
         return get_fast_pose().pose;
     }
+#endif
 
     /**
      * @brief Get predicted pose for a future time point (returns current pose)
      */
-    POSE_TYPE get_fast_pose(time_point future_time) const override {
-        (void) future_time;
-        return get_fast_pose();
+    POSE_TYPE get_fast_pose(POSE_TIME_TYPE future_time) const override {
+        return pose_relay_->get_pose(future_time);
     }
 
     /**
      * @brief Check if fast pose data is reliable
      */
     bool fast_pose_reliable() const override {
-        return render_pose_.get_ro_nullable() != nullptr;
+        return pose_relay_->fast_pose_reliable();
     }
 
     /**
@@ -127,18 +169,11 @@ public:
         (void) left;
     }
 
-    /**
-     * @brief Update uniforms (no-op in this implementation)
-     */
-    void update_uniforms(const BUFFER_TYPE& r_pose) override {
-        (void) r_pose;
-    }
-
 protected:
     /**
      * @brief Determines if the current iteration should be skipped
      */
-    skip_option _p_should_skip() override {
+    threadloop::skip_option _p_should_skip() override {
         return threadloop::_p_should_skip();
     }
 
@@ -158,7 +193,43 @@ private:
      * @brief Sends encoded frame data to the client
      * @param pose The pose data associated with the frame
      */
-    void enqueue_for_network_send(BUFFER_TYPE& pose);
+    void enqueue_for_network_send(BUFFER_TYPE& pose
+#ifdef USING_OPENXR
+                                  ,
+                                  uint64_t pose_id
+#endif
+    );
+
+#ifdef NVENC_ENCODER
+    // ========================================================================
+    // NVENC-specific methods (no FFmpeg dependency)
+    // ========================================================================
+
+    /**
+     * @brief Initialize Vulkan context for CUDA-Vulkan interop
+     */
+    void nvenc_init_vulkan_context();
+
+    /**
+     * @brief Initialize NVENC encoders for color (and optionally depth)
+     */
+    void nvenc_init_encoders();
+
+    /**
+     * @brief Import buffer pool images into NVENC encoders
+     */
+    void nvenc_import_buffer_pool_images();
+
+    /**
+     * @brief Encode frames using NVENC
+     * @param ind Buffer index to encode
+     */
+    void nvenc_encode_frames(int ind);
+
+#else
+    // ========================================================================
+    // FFmpeg-specific methods
+    // ========================================================================
 
     /**
      * @brief Initializes the FFmpeg Vulkan device context
@@ -206,42 +277,151 @@ private:
      */
     void ffmpeg_init_encoder();
 
-    std::shared_ptr<spdlog::logger>                                              log_;
-    std::shared_ptr<vulkan::display_provider>                                    display_provider_;
-    std::shared_ptr<switchboard>                                                 switchboard_;
-    switchboard::network_writer<data_format::compressed_frame>                   frames_topic_;
-    switchboard::reader<BUFFER_TYPE>                                             render_pose_;
-    std::shared_ptr<vulkan::buffer_pool<data_format::pose::fast_head_pose_type>> buffer_pool_;
-    std::vector<std::array<vulkan::ffmpeg_utils::ffmpeg_vk_frame, 2>>            avvk_color_frames_;
-    std::vector<std::array<vulkan::ffmpeg_utils::ffmpeg_vk_frame, 2>>            avvk_depth_frames_;
+    /**
+     * @brief Copies Monado framebuffer metadata into the ILLIXR buffer pool before FFmpeg setup.
+     */
+    void ffmpeg_populate_buffer_pool_from_framebuffers();
+#endif
+    void sender_loop();
 
-    int  framerate_ = 144;
-    long bitrate_   = OFFLOAD_RENDERING_BITRATE;
+    std::shared_ptr<spdlog::logger>                            log_;
+    std::shared_ptr<vulkan::display_provider>                  display_provider_;
+    std::shared_ptr<switchboard>                               switchboard_;
+    switchboard::network_writer<data_format::compressed_frame> frames_topic_;
+
+    /**
+     * @brief Cached head pose extracted from pose_with_hands
+     *
+     * Updated whenever new pose_with_hands data arrives.
+     */
+    mutable data_format::pose::fast_head_pose_type cached_head_pose_;
+
+    /**
+     * @brief Last processed pose timestamp to avoid duplicate hand tracking forwarding
+     */
+    mutable time_point last_processed_time_{};
+
+    std::shared_ptr<vulkan::buffer_pool<BUFFER_TYPE>> buffer_pool_;
+
+#ifdef OPENXR_CLIENT
+    int framerate_ = 90;
+#else
+    int framerate_ = 144;
+#endif
+    long bitrate_ = OFFLOAD_RENDERING_BITRATE;
 
     bool use_pass_depth_ = false;
-    bool nalu_only_      = false;
+#ifdef _WIN32
+    // These are currently only supported with Unity, which only supports OpenXR on Windows
+    bool use_pass_motion_vectors_ = false;
+#endif
+    bool nalu_only_ = false;
+
+    std::atomic<bool> framebuffers_imported_{false};
+
+    // Set after each color encode call and copied into compressed_frame::is_keyframe.
+    bool color_frame_is_keyframe_ = false;
+
+#ifdef NVENC_ENCODER
+    // ========================================================================
+    // NVENC-specific members
+    // ========================================================================
+
+    // Vulkan context for CUDA interop
+    vulkan_context vk_ctx_;
+
+    // NVENC encoders (one per eye for color, optionally for depth and motion vectors)
+    std::array<std::unique_ptr<nvenc_encoder>, 2> color_encoder_;
+    std::array<std::unique_ptr<nvenc_encoder>, 2> depth_encoder_;
+    std::array<std::unique_ptr<nvenc_encoder>, 2> motion_vec_encoder_;
+
+    // Imported image indices: [buffer_index][eye] for color, depth, and motion vectors
+    std::vector<std::array<int, 2>> color_imported_indices_;
+    std::vector<std::array<int, 2>> depth_imported_indices_;
+    std::vector<std::array<int, 2>> motion_vec_imported_indices_;
+
+    // Set by nvenc_encode_frames() immediately after each color encode call.
+    // Read by enqueue_for_network_send() to populate compressed_frame::is_keyframe.
+    // Using last_frame_was_keyframe() from the encoder is authoritative for both
+    // HEVC (IDR) and AV1 (KEY_FRAME / auto-GOP I-frame), avoiding any need for
+    // bitstream parsing on the client side.
+    // bool color_frame_is_keyframe_ = false;
+
+#    ifdef COMBINED_ENCODING
+    // Under COMBINED_ENCODING a single encoder handles both eyes at double width.
+    // color_encoder_[0] is used; color_encoder_[1] is unused.
+    // encode_out_combined_color_packet_ carries the single combined bitstream;
+    // encode_out_color_packets_ is not used for color in this mode.
+    PACKET_TYPE encode_out_combined_color_packet_{};
+#    endif // COMBINED_ENCODING
+
+#else
+    // ========================================================================
+    // FFmpeg-specific members
+    // ========================================================================
+
+    std::vector<std::array<vulkan::ffmpeg_utils::ffmpeg_vk_frame, 2>> avvk_color_frames_;
+    std::vector<std::array<vulkan::ffmpeg_utils::ffmpeg_vk_frame, 2>> avvk_depth_frames_;
 
     AVBufferRef* device_ctx_      = nullptr;
     AVBufferRef* cuda_device_ctx_ = nullptr;
     AVBufferRef* frame_ctx_       = nullptr;
     AVBufferRef* cuda_frame_ctx_  = nullptr;
 
-    AVCodecContext*            codec_color_ctx_ = nullptr;
-    std::array<AVFrame*, 2>    encode_src_color_frames_{};
+    AVCodecContext*         codec_color_ctx_ = nullptr;
+    std::array<AVFrame*, 2> encode_src_color_frames_{};
+#endif
     std::array<PACKET_TYPE, 2> encode_out_color_packets_{};
-
-    AVCodecContext*            codec_depth_ctx_ = nullptr;
-    std::array<AVFrame*, 2>    encode_src_depth_frames_{};
+#ifndef NVENC_ENCODER
+    AVCodecContext*         codec_depth_ctx_ = nullptr;
+    std::array<AVFrame*, 2> encode_src_depth_frames_{};
+#endif
     std::array<PACKET_TYPE, 2> encode_out_depth_packets_{};
+    std::array<PACKET_TYPE, 2> encode_out_motion_vec_packets_{};
 
     uint64_t frame_count_ = 0;
 
-    double                                         fps_counter_    = 0;
-    std::chrono::high_resolution_clock::time_point fps_start_time_ = std::chrono::high_resolution_clock::now();
-    std::map<std::string, uint32_t>                metrics_;
+    float near_z_{0.};
+    float far_z_{0.};
+    // Boxcar FPS: timestamps of frames encoded within the last 1 second.
+    // Updated every frame in _p_one_iteration(); get_fps() returns the count.
+    std::deque<std::chrono::high_resolution_clock::time_point> fps_window_;
+    std::map<std::string, long long>                           metrics_;
 
-    uint16_t last_frame_ind_ = -1;
+    int32_t last_frame_ind_ = -1;
+#ifdef OPENXR_CLIENT
+    xrt_pose last_sent_pose_{};
+#else
+    data_format::pose::fast_head_pose_type last_sent_pose_{};
+#endif
+
+    struct illixr_framebuffer* framebuffer_array_ = nullptr;
+    VkExtent2D                 extent_            = {0, 0};
+
+    std::shared_ptr<pose_relay> pose_relay_;
+#ifdef OPENXR_CLIENT
+    hmd_config hmd_setup_;
+#endif
 
     std::atomic<bool> ready_{false};
+    uint64_t          frame_number_{0};
+    double            current_encode_time_{0.};
+
+    std::deque<std::shared_ptr<data_format::compressed_frame>> send_queue_;
+
+    std::mutex                  send_queue_mutex_;
+    std::condition_variable     send_queue_cv_;
+    std::thread                 sender_thread_;
+    static constexpr size_t     MAX_QUEUE_DEPTH = 6;
+    std::atomic<bool>           sender_running_{false};
+    std::map<uint64_t, uint8_t> pose_usage_{};
+#ifdef _WIN32
+    std::map<uint64_t, std::chrono::steady_clock::time_point> frame_timing_{};
+#else
+    std::map<uint64_t, std::chrono::time_point<std::chrono::high_resolution_clock>> frame_timing_{};
+#endif
+#ifdef OPENXR_CLIENT
+    float overscan_ = 1.f;
+#endif
 };
 } // namespace ILLIXR

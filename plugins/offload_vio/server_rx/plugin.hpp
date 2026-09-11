@@ -10,9 +10,9 @@
 #include "video_decoder.hpp"
 // if the header exists, we are good; if not generate a stub class for IDEs to reduce on-screen errors
 #if __has_include("vio_input.pb.h")
-    #include "vio_input.pb.h"
+#    include "vio_input.pb.h"
 #else
-    #include "../proto/input_stub.hpp"
+#    include "../proto/input_stub.hpp"
 #endif
 
 #include <boost/lockfree/spsc_queue.hpp>

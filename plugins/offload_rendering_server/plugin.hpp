@@ -12,8 +12,10 @@ namespace ILLIXR {
  *
  * Handles plugin registration and Vulkan extension requirements for the
  * offload rendering server component.
+ *
+ * Compile with -DNVENC_ENCODER to use direct NVENC encoding without FFmpeg.
  */
-class offload_rendering_server_loader
+class MY_EXPORT_API offload_rendering_server_loader
     : public plugin
     , public vulkan::vk_extension_request {
 public:

@@ -652,7 +652,11 @@ typedef unsigned char validate_uint32[sizeof(stbi__uint32)==4 ? 1 : -1];
 #endif
 
 #ifndef STBI_REALLOC_SIZED
+#ifdef __ANDROID__
+#define STBI_REALLOC_SIZED(p,newsz) STBI_REALLOC(p,newsz)
+#else
 #define STBI_REALLOC_SIZED(p,oldsz,newsz) STBI_REALLOC(p,newsz)
+#endif
 #endif
 
 // x86/x64 detection
@@ -4159,7 +4163,11 @@ static int stbi__zexpand(stbi__zbuf *z, char *zout, int n)  // need to make room
       if(limit > UINT_MAX / 2) return stbi__err("outofmem", "Out of memory");
       limit *= 2;
    }
+#ifdef __ANDROID__
+   q = (char *) STBI_REALLOC_SIZED(z->zout_start, limit);
+#else
    q = (char *) STBI_REALLOC_SIZED(z->zout_start, old_limit, limit);
+#endif
    STBI_NOTUSED(old_limit);
    if (q == NULL) return stbi__err("outofmem", "Out of memory");
    z->zout_start = q;
@@ -5041,7 +5049,11 @@ static int stbi__parse_png_file(stbi__png *z, int scan, int req_comp)
                while (ioff + c.length > idata_limit)
                   idata_limit *= 2;
                STBI_NOTUSED(idata_limit_old);
+#ifdef __ANDROID__
+               p = (stbi_uc *) STBI_REALLOC_SIZED(z->idata, idata_limit); if (p == NULL) return stbi__err("outofmem", "Out of memory");
+#else
                p = (stbi_uc *) STBI_REALLOC_SIZED(z->idata, idata_limit_old, idata_limit); if (p == NULL) return stbi__err("outofmem", "Out of memory");
+#endif
                z->idata = p;
             }
             if (!stbi__getn(s, z->idata+ioff,c.length)) return stbi__err("outofdata","Corrupt PNG");
@@ -6775,8 +6787,10 @@ static void *stbi__load_gif_main(stbi__context *s, int **delays, int *x, int *y,
       stbi_uc *two_back = 0;
       stbi__gif g;
       int stride;
+#ifndef __ANDROID__
       int out_size = 0;
       int delays_size = 0;
+#endif
       memset(&g, 0, sizeof(g));
       if (delays) {
          *delays = 0;
@@ -6793,7 +6807,11 @@ static void *stbi__load_gif_main(stbi__context *s, int **delays, int *x, int *y,
             stride = g.w * g.h * 4;
 
             if (out) {
+#ifdef __ANDROID__
+               void *tmp = (stbi_uc*) STBI_REALLOC_SIZED( out, layers * stride );
+#else
                void *tmp = (stbi_uc*) STBI_REALLOC_SIZED( out, out_size, layers * stride );
+#endif
                if (NULL == tmp) {
                   STBI_FREE(g.out);
                   STBI_FREE(g.history);
@@ -6802,19 +6820,29 @@ static void *stbi__load_gif_main(stbi__context *s, int **delays, int *x, int *y,
                }
                else {
                    out = (stbi_uc*) tmp;
+#ifndef __ANDROID__
                    out_size = layers * stride;
+#endif
                }
 
                if (delays) {
+#ifdef __ANDROID__
+                  *delays = (int*) STBI_REALLOC_SIZED( *delays, sizeof(int) * layers );
+#else
                   *delays = (int*) STBI_REALLOC_SIZED( *delays, delays_size, sizeof(int) * layers );
                   delays_size = layers * sizeof(int);
+#endif
                }
             } else {
                out = (stbi_uc*)stbi__malloc( layers * stride );
+#ifndef __ANDROID__
                out_size = layers * stride;
+#endif
                if (delays) {
                   *delays = (int*) stbi__malloc( layers * sizeof(int) );
+#ifndef __ANDROID__
                   delays_size = layers * sizeof(int);
+#endif
                }
             }
             memcpy( out + ((layers - 1) * stride), u, stride );

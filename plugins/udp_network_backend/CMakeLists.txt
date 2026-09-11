@@ -18,15 +18,30 @@ add_library(${PLUGIN_NAME} SHARED plugin.cpp
 set_target_properties(${PLUGIN_NAME} PROPERTIES
                       OUTPUT_NAME ${PLUGIN_NAME})
 
-target_link_libraries(${PLUGIN_NAME}
-                      spdlog::spdlog
-                      Boost::serialization)
+target_link_libraries(${PLUGIN_NAME} PUBLIC
+                      Boost::serialization
+                      Eigen3::Eigen
+)
+
+if(ANDROID)
+    target_link_libraries(${PLUGIN_NAME} PUBLIC
+                          spdlog::spdlog_android
+    )
+else()
+    target_link_libraries(${PLUGIN_NAME} PUBLIC
+                          spdlog::spdlog
+    )
+endif()
+
 if (WIN32 OR MSVC)
-    target_link_libraries(${PLUGIN_NAME} ws2_32)
+    target_link_libraries(${PLUGIN_NAME} PUBLIC ws2_32)
     target_compile_definitions(${PLUGIN_NAME} PRIVATE BUILDING_LIBRARY)
     target_compile_options(${PLUGIN_NAME} PRIVATE /EHsc)
 endif()
 
 target_include_directories(${PLUGIN_NAME} PUBLIC ${ILLIXR_SOURCE_DIR}/include)
-
-install(TARGETS ${PLUGIN_NAME} DESTINATION lib)
+if(ANDROID)
+    target_include_directories(${PLUGIN_NAME} PUBLIC ${ANDROID_NDK}/sources/android/native_app_glue)
+else()
+    install(TARGETS ${PLUGIN_NAME} DESTINATION lib)
+endif()

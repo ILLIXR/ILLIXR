@@ -1,1 +1,0 @@
-../../docs/docs/plugin_README/README_openwarp_vk.md

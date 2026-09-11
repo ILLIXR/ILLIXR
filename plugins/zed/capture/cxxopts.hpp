@@ -43,44 +43,44 @@ THE SOFTWARE.
 #include <vector>
 
 #ifdef CXXOPTS_NO_EXCEPTIONS
-    #include <iostream>
+#    include <iostream>
 #endif
 
 #if defined(__GNUC__) && !defined(__clang__)
-    #if (__GNUC__ * 10 + __GNUC_MINOR__) < 49
-        #define CXXOPTS_NO_REGEX true
-    #endif
+#    if (__GNUC__ * 10 + __GNUC_MINOR__) < 49
+#        define CXXOPTS_NO_REGEX true
+#    endif
 #endif
 #if defined(_MSC_VER) && !defined(__clang__)
-    #define CXXOPTS_LINKONCE_CONST __declspec(selectany) extern
-    #define CXXOPTS_LINKONCE       __declspec(selectany) extern
+#    define CXXOPTS_LINKONCE_CONST __declspec(selectany) extern
+#    define CXXOPTS_LINKONCE       __declspec(selectany) extern
 #else
-    #define CXXOPTS_LINKONCE_CONST
-    #define CXXOPTS_LINKONCE
+#    define CXXOPTS_LINKONCE_CONST
+#    define CXXOPTS_LINKONCE
 #endif
 
 #ifndef CXXOPTS_NO_REGEX
-    #include <regex>
+#    include <regex>
 #endif // CXXOPTS_NO_REGEX
 
 // Nonstandard before C++17, which is coincidentally what we also need for <optional>
 #ifdef __has_include
-    #if __has_include(<optional>)
-        #include <optional>
-        #ifdef __cpp_lib_optional
-            #define CXXOPTS_HAS_OPTIONAL
-        #endif
-    #endif
+#    if __has_include(<optional>)
+#        include <optional>
+#        ifdef __cpp_lib_optional
+#            define CXXOPTS_HAS_OPTIONAL
+#        endif
+#    endif
 #endif
 
 #if __cplusplus >= 201603L
-    #define CXXOPTS_NODISCARD [[nodiscard]]
+#    define CXXOPTS_NODISCARD [[nodiscard]]
 #else
-    #define CXXOPTS_NODISCARD
+#    define CXXOPTS_NODISCARD
 #endif
 
 #ifndef CXXOPTS_VECTOR_DELIMITER
-    #define CXXOPTS_VECTOR_DELIMITER ','
+#    define CXXOPTS_VECTOR_DELIMITER ','
 #endif
 
 #define CXXOPTS__VERSION_MAJOR 3
@@ -88,25 +88,25 @@ THE SOFTWARE.
 #define CXXOPTS__VERSION_PATCH 1
 
 #if (__GNUC__ < 10 || (__GNUC__ == 10 && __GNUC_MINOR__ < 1)) && __GNUC__ >= 6
-    #define CXXOPTS_NULL_DEREF_IGNORE
+#    define CXXOPTS_NULL_DEREF_IGNORE
 #endif
 
 #if defined(__GNUC__)
-    #define DO_PRAGMA(x)              _Pragma(#x)
-    #define CXXOPTS_DIAGNOSTIC_PUSH   DO_PRAGMA(GCC diagnostic push)
-    #define CXXOPTS_DIAGNOSTIC_POP    DO_PRAGMA(GCC diagnostic pop)
-    #define CXXOPTS_IGNORE_WARNING(x) DO_PRAGMA(GCC diagnostic ignored x)
+#    define DO_PRAGMA(x)              _Pragma(#x)
+#    define CXXOPTS_DIAGNOSTIC_PUSH   DO_PRAGMA(GCC diagnostic push)
+#    define CXXOPTS_DIAGNOSTIC_POP    DO_PRAGMA(GCC diagnostic pop)
+#    define CXXOPTS_IGNORE_WARNING(x) DO_PRAGMA(GCC diagnostic ignored x)
 #else
-    // define other compilers here if needed
-    #define CXXOPTS_DIAGNOSTIC_PUSH
-    #define CXXOPTS_DIAGNOSTIC_POP
-    #define CXXOPTS_IGNORE_WARNING(x)
+// define other compilers here if needed
+#    define CXXOPTS_DIAGNOSTIC_PUSH
+#    define CXXOPTS_DIAGNOSTIC_POP
+#    define CXXOPTS_IGNORE_WARNING(x)
 #endif
 
 #ifdef CXXOPTS_NO_RTTI
-    #define CXXOPTS_RTTI_CAST static_cast
+#    define CXXOPTS_RTTI_CAST static_cast
 #else
-    #define CXXOPTS_RTTI_CAST dynamic_cast
+#    define CXXOPTS_RTTI_CAST dynamic_cast
 #endif
 
 namespace cxxopts {
@@ -122,7 +122,7 @@ static constexpr struct {
 // compiler, and that icu-uc is linked in to the binary.
 
 #ifdef CXXOPTS_USE_UNICODE
-    #include <unicode/unistr.h>
+#    include <unicode/unistr.h>
 
 namespace cxxopts {
 

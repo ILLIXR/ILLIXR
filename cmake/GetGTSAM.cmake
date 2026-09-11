@@ -30,7 +30,7 @@ if(BUILD_GTSAM)
     set(GTSAM_BUILD_TESTS OFF)
     set(GTSAM_BUILD_EXAMPLES_ALWAYS OFF)
     configure_target(NAME GTSAM
-                     VERSION 4.3.0
+                     VERSION 4.3a0
     )
     unset(GTSAM_WITH_TBB)
     unset(GTSAM_USE_SYSTEM_EIGEN)

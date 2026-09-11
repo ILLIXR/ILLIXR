@@ -135,7 +135,7 @@ if(BUILD_DOCS)
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/docs/getting_started.md.in ${DOC_BUILD_DIR}/getting_started.md)
 
     # convert the index.md.in to index.md
-    file(READ docs/index.md.in INDEX_TEMP)
+    file(READ ../README.md INDEX_TEMP)
     string(REPLACE "https://illixr.github.io/ILLIXR/illixr_plugins/index.html" "illixr_plugins.md" INDEX_TEMP "${INDEX_TEMP}")
     string(REPLACE "https://illixr.github.io/ILLIXR/illixr_services/index.html" "illixr_services.md" INDEX_TEMP "${INDEX_TEMP}")
     string(REPLACE "(LICENSE)" "(LICENSE.md)" INDEX_TEMP "${INDEX_TEMP}")
@@ -144,6 +144,8 @@ if(BUILD_DOCS)
 
     file(WRITE ${DOC_BUILD_DIR}/index.md "${INDEX_TEMP}")
 
+    configure_file(../CHANGELOG.md ../_docs/docs/CHANGELOG.md COPYONLY)
+    configure_file(../LICENSE ../_docs/docs/LICENSE.md COPYONLY)
     # configure the Doxyfile
     set(DOXYGEN_BUILD_DIR "${DOC_BUILD_DIR}/api" CACHE INTERNAL "")
     set(DOXYGEN_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATAROOTDIR}/doc/ILLIXR" CACHE INTERNAL "")

@@ -2,7 +2,9 @@
 
 #include "illixr/data_format/imu.hpp"
 #include "illixr/data_format/misc.hpp"
-#include "illixr/managed_thread.hpp"
+#ifndef __ANDROID__
+#    include "illixr/managed_thread.hpp"
+#endif
 #include "illixr/phonebook.hpp"
 #include "illixr/relative_clock.hpp"
 #include "illixr/switchboard.hpp"
@@ -12,14 +14,14 @@
 
 namespace ILLIXR {
 
-typedef struct {
+struct raw_imu_type {
     Eigen::Vector3d angular_v;
     Eigen::Vector3d linear_a;
-} raw_imu_type;
+};
 
-typedef struct {
+struct sensor_types {
     raw_imu_type imu0;
-} sensor_types;
+};
 
 class MY_EXPORT_API offline_imu : public threadloop {
 public:
@@ -39,8 +41,9 @@ private:
     ullong dataset_first_time_;
     // Current IMU timestamp
     ullong dataset_now_;
-
+#ifndef __ANDROID__
     record_coalescer imu_cam_log_;
+#endif
 
     std::shared_ptr<relative_clock> clock_;
 };

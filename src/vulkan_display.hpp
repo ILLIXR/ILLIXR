@@ -1,27 +1,30 @@
 #pragma once
+
+#ifndef __ANDROID__
+
 // #define VMA_IMPLEMENTATION
-#include "display/glfw_extended.hpp"
-#include "display/headless.hpp"
-#include "display/x11_direct.hpp"
-#include "illixr/phonebook.hpp"
-#include "illixr/switchboard.hpp"
-#include "illixr/threadloop.hpp"
-#include "illixr/vk/display_provider.hpp"
+#    include "display/glfw_extended.hpp"
+#    include "display/headless.hpp"
+#    include "display/x11_direct.hpp"
+#    include "illixr/phonebook.hpp"
+#    include "illixr/switchboard.hpp"
+#    include "illixr/threadloop.hpp"
+#    include "illixr/vk/display_provider.hpp"
 
-#include <set>
-#include <thread>
+#    include <set>
+#    include <thread>
 
-#ifdef __linux__
-    #include "illixr/vk/third_party/vk_mem_alloc.h"
-#else
-    #include <vma/vk_mem_alloc.h>
-#endif
-#include <vulkan/vulkan.h>
+#    ifdef __linux__
+#        include "illixr/vk/third_party/vk_mem_alloc.h"
+#    else
+#        include <vma/vk_mem_alloc.h>
+#    endif
+#    include <vulkan/vulkan.h>
 
 using namespace ILLIXR;
-#ifdef __linux__
+#    ifdef __linux__
 using namespace std;
-#endif
+#    endif
 
 class display_vk : public vulkan::display_provider {
 public:
@@ -590,3 +593,5 @@ private:
 
     std::shared_ptr<relative_clock> clock_;
 };
+
+#endif

@@ -30,9 +30,9 @@ public:
     }
 
     [[nodiscard]] cv::Mat load() const {
-#ifdef LAZY
+#if defined(LAZY) && !defined(__ANDROID__)
         cv::Mat mat_ = cv::imread(path_, cv::IMREAD_GRAYSCALE);
-    #error "Linux scheduler cannot interrupt IO work, so lazy-loading is unadvisable."
+#    error "Linux scheduler cannot interrupt IO work, so lazy-loading is unadvisable."
 #endif
         assert(!mat_.empty());
         return mat_;
@@ -43,10 +43,22 @@ private:
     cv::Mat     mat_;
 };
 
-typedef struct {
+struct sensor_types {
+#ifdef __ANDROID__
+#    define LAZY_TYPE lazy_load_image*
+    lazy_load_image* cam0 = nullptr;
+    lazy_load_image* cam1 = nullptr;
+
+    ~sensor_types() {
+        delete cam0;
+        delete cam1;
+    }
+#else
+#    define LAZY_TYPE lazy_load_image
     lazy_load_image cam0;
     lazy_load_image cam1;
-} sensor_types;
+#endif
+};
 
 class MY_EXPORT_API offline_cam : public threadloop {
 public:

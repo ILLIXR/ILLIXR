@@ -1,1 +1,0 @@
-../../../docs/docs/plugin_README/README_zed_data_injection.md

@@ -57,6 +57,11 @@ A port on each machine should be specified for each of the network backend types
   - `ILLIXR_TCP_CLIENT_PORT`: the port to use on the client for TCP connections
   - `ILLIXR_UDP_CLIENT_PORT`: the port to use on the client for UDP connections
 
+!!! note "Android Devices"
+
+    For some Android devices you may need to change the ports being used if the OS reports it cannot bind to the given port.
+    This can be due to another app having claimed the port previously and not released it, even if the app was shut down.
+
 #### Client Selection
 
 The `ILLIXR_IS_CLIENT` environment variable is used to determine if the backend instance is running as the client (value = "1") or server (value = "0").
