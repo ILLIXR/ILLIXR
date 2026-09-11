@@ -139,9 +139,9 @@ public:
     /**
      * @brief Acquire the latest decoded AHardwareBuffer and its frame number.
      *
-     * Returns the buffer and the server frame_number associated with the
-     * AImage's exact presentation timestamp. The drainer records the mapping
-     * before releasing each MediaCodec output to the AImageReader surface.
+     * Boba builds use the AImage's exact presentation timestamp to recover its
+     * frame number. General offload builds retain the latest number published
+     * by the drainer before it releases an output image.
      *
      * The returned buffer is retained (AHardwareBuffer_acquire called).
      * The caller MUST call AHardwareBuffer_release() when finished.
@@ -333,15 +333,17 @@ private:
     mutable std::mutex                           pending_timestamps_mutex_;
     std::unordered_map<int64_t, timestamp_entry> pending_timestamps_;
 
-    // Latest decoded frame, retained for diagnostics only. Exact image/frame
-    // association uses released_frame_numbers_by_timestamp_ns_ below.
+    // General offload frame association; diagnostics in the Boba path.
     std::atomic<uint64_t> last_decoded_frame_number_{0};
 
+#    ifdef ILLIXR_ENABLE_BOBA
     // MediaCodec PTS is supplied in microseconds; AImage exposes the matching
     // timestamp in nanoseconds. Mapping by timestamp avoids pairing an acquired
     // image with a newer frame number when the drainer advances concurrently.
     std::mutex                  released_frame_numbers_mutex_;
     std::map<int64_t, uint64_t> released_frame_numbers_by_timestamp_ns_;
+
+#    endif
 
     float last_decode_time_{0.f};
 

@@ -31,8 +31,13 @@ static bool is_hevc_keyframe(const uint8_t* data, size_t size) {
     return nal_type == 19 || nal_type == 20;
 }
 
+#    ifdef ILLIXR_ENABLE_BOBA
 constexpr int I_HEADSET_WIDTH  = NATIVE_STREAM_EYE_WIDTH;
 constexpr int I_HEADSET_HEIGHT = NATIVE_STREAM_EYE_HEIGHT;
+#    else
+constexpr int I_HEADSET_WIDTH  = static_cast<int>(HEADSET_WIDTH * 1.1);
+constexpr int I_HEADSET_HEIGHT = static_cast<int>(HEADSET_HEIGHT * 1.1);
+#    endif
 
 #else
 using namespace ILLIXR::vulkan::ffmpeg_utils;
@@ -328,11 +333,16 @@ void offload_rendering_client::receiver_loop() {
         //  so they continue to use the NAL-unit scan.
         const bool is_key_color = current_frame->is_keyframe;
 
+#    ifdef ILLIXR_ENABLE_BOBA
         // compressed_frame::sent_time is expressed in nanoseconds, whereas
         // MediaCodec presentation timestamps are expressed in microseconds.
         // Passing the nanosecond value through unchanged overflows the codec's
         // internal time conversion and breaks decoded-frame metadata matching.
         const int64_t presentation_time_us = static_cast<int64_t>(current_frame->sent_time / 1'000U);
+
+#    else
+        const int64_t presentation_time_us = static_cast<int64_t>(current_frame->sent_time);
+#    endif
 
         const bool is_key_depth = (use_depth_ && !current_frame->left_depth.empty())
             ? is_hevc_keyframe(current_frame->left_depth.data(), current_frame->left_depth.size())
@@ -360,6 +370,7 @@ void offload_rendering_client::receiver_loop() {
             }
         }
 
+#    ifdef ILLIXR_ENABLE_BOBA
         // Publish the complete metadata snapshot before queueing the bitstream.
         // A fast decoder may make the output image visible immediately; storing
         // first guarantees that an acquired image can only be paired with its
@@ -374,18 +385,18 @@ void offload_rendering_client::receiver_loop() {
             meta.near_z                      = current_frame->near_z;
             meta.far_z                       = current_frame->far_z;
             meta.encode_time                 = current_frame->encode_time;
-#ifdef ILLIXR_ENABLE_BOBA
             meta.presentation_mode           = current_frame->presentation_mode;
             meta.content_aspect_ratio        = current_frame->content_aspect_ratio;
             meta.boba_overlay                = current_frame->boba_overlay;
             meta.boba_modal                  = current_frame->boba_modal;
-#endif
             meta.fov_left                    = current_frame->fov_left;
             meta.fov_right                   = current_frame->fov_right;
             meta.fov_up                      = current_frame->fov_up;
             meta.fov_down                    = current_frame->fov_down;
             meta.consumed                    = false;
         }
+
+#    endif
 
         // Queue encoded data to the hardware decoders.
         // All stream types are submitted together so they stay in sync -
@@ -442,6 +453,30 @@ void offload_rendering_client::receiver_loop() {
             }
         }
 #    endif // COMBINED_ENCODING
+#    ifndef ILLIXR_ENABLE_BOBA
+        // Store metadata so _p_one_iteration can populate dual_frames.
+        // The mutex ensures _p_one_iteration always sees a consistent snapshot.
+        {
+            std::lock_guard<std::mutex> lock(frame_meta_map_mutex_);
+            frame_meta&                 meta = frame_meta_map_[current_frame->frame_number];
+            meta.pose                        = current_frame->pose;
+            meta.frame_number                = current_frame->frame_number;
+            meta.frame_time                  = current_frame->sent_time;
+            meta.pose_id                     = current_frame->pose_id;
+            meta.near_z                      = current_frame->near_z;
+            meta.far_z                       = current_frame->far_z;
+            meta.encode_time                 = current_frame->encode_time;
+
+            // Cache first non-zero FOV received from server
+            if (!fov_cached_ && current_frame->fov_left[0] != 0.0f) {
+                cached_fov_left_  = current_frame->fov_left;
+                cached_fov_right_ = current_frame->fov_right;
+                cached_fov_up_    = current_frame->fov_up;
+                cached_fov_down_  = current_frame->fov_down;
+                fov_cached_       = true;
+            }
+        }
+#    endif
     }
 }
 #else
@@ -1096,10 +1131,11 @@ void offload_rendering_client::push_pose() {
 #endif
 
 #ifdef __ANDROID__
-// Match each acquired decoder image to the metadata snapshot carried by that
-// same server frame. The shared maps are protected because receiver_thread_
-// populates them while this thread consumes them.
+// Boba requires exact image/metadata matching; general offload builds retain
+// their latest-metadata fallback. The receiver and renderer share the metadata
+// map under frame_meta_map_mutex_.
 data_format::dual_frames offload_rendering_client::construct_dual_frames(time_point render_time) {
+#    ifdef ILLIXR_ENABLE_BOBA
     // Vulkan path: acquire AHardwareBuffers from both decoders
     dual_frames frame = color_decoder_->get_current_frame(render_time);
     if (!frame.is_valid()) {
@@ -1122,7 +1158,6 @@ data_format::dual_frames offload_rendering_client::construct_dual_frames(time_po
             it->second.consumed  = true;
             exact_metadata_found = true;
 
-#ifdef ILLIXR_ENABLE_BOBA
             if (meta.boba_modal.visible) {
                 const auto texture = modal_texture_cache_.find(meta.boba_modal.texture_id);
                 if (texture != modal_texture_cache_.end() && texture->second.width == meta.boba_modal.width &&
@@ -1130,7 +1165,6 @@ data_format::dual_frames offload_rendering_client::construct_dual_frames(time_po
                     frame.boba_modal_rgba = texture->second.rgba;
                 }
             }
-#endif
 
             // Everything older than the decoded image can no longer be used.
             auto stale = frame_meta_map_.begin();
@@ -1156,16 +1190,53 @@ data_format::dual_frames offload_rendering_client::construct_dual_frames(time_po
     frame.far_z                = meta.far_z;
     frame.pose_id              = meta.pose_id;
     frame.encode_time          = meta.encode_time;
-#ifdef ILLIXR_ENABLE_BOBA
     frame.presentation_mode    = meta.presentation_mode;
     frame.content_aspect_ratio = meta.content_aspect_ratio;
     frame.boba_overlay         = std::move(meta.boba_overlay);
     frame.boba_modal           = meta.boba_modal;
-#endif
     frame.fov_left             = meta.fov_left;
     frame.fov_right            = meta.fov_right;
     frame.fov_up               = meta.fov_up;
     frame.fov_down             = meta.fov_down;
+
+#    else
+    // General offload builds keep the cached FOV and latest-metadata fallback.
+    dual_frames frame = color_decoder_->get_current_frame(render_time);
+    if (!frame.is_valid()) {
+        return {};
+    }
+    if (frame.frame_number <= last_submitted_frame_) {
+        color_decoder_->release_frame(frame);
+        return {};
+    }
+    const uint64_t decoded_frame_number = frame.frame_number;
+    frame_meta     meta{};
+    {
+        std::lock_guard<std::mutex> lock(frame_meta_map_mutex_);
+        const auto                  it = frame_meta_map_.find(decoded_frame_number);
+        if (it != frame_meta_map_.end()) {
+            meta = it->second;
+            frame_meta_map_.erase(frame_meta_map_.begin(), it);
+        } else if (!frame_meta_map_.empty()) {
+            // Keep the original approximation when the exact entry is absent.
+            meta = frame_meta_map_.rbegin()->second;
+        } else {
+            spdlog::get("illixr")->error("[offload_rendering_client] No meta for frame {}, dropping", decoded_frame_number);
+            color_decoder_->release_frame(frame);
+            return {};
+        }
+    }
+    frame.pose        = meta.pose;
+    frame.near_z      = meta.near_z;
+    frame.far_z       = meta.far_z;
+    frame.pose_id     = meta.pose_id;
+    frame.encode_time = meta.encode_time;
+    frame.fov_left    = cached_fov_left_;
+    frame.fov_right   = cached_fov_right_;
+    frame.fov_up      = cached_fov_up_;
+    frame.fov_down    = cached_fov_down_;
+
+#    endif
 
     // Depth and motion-vector buffers are only attached when they carry the
     // same server frame_number as the color frame above.  Each decoder is an

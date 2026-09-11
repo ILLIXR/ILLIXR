@@ -65,7 +65,7 @@ nvenc_encoder::~nvenc_encoder() {
         cuMemFree(cuda_nv12_buffer_);
         cuda_nv12_buffer_ = 0;
     }
-#ifdef COMBINED_ENCODING
+#if defined(COMBINED_ENCODING) && defined(ILLIXR_BOBA_ENCODER)
     if (cuda_left_rgba_buffer_) {
         cuMemFree(cuda_left_rgba_buffer_);
         cuda_left_rgba_buffer_ = 0;
@@ -179,6 +179,7 @@ void nvenc_encoder::init_nvenc() {
         throw std::runtime_error("Failed to get NvEncodeAPICreateInstance");
     }
 
+#ifdef ILLIXR_BOBA_ENCODER
     using get_max_supported_version_fn = NVENCSTATUS(NVENCAPI*)(uint32_t*);
     auto get_max_supported_version     = reinterpret_cast<get_max_supported_version_fn>(
 #ifdef _WIN32
@@ -198,8 +199,14 @@ void nvenc_encoder::init_nvenc() {
                                     selected_version >> 4U, selected_version & 0xFU);
     }
 
+#endif
+
     memset(&nvenc_, 0, sizeof(nvenc_));
+#ifdef ILLIXR_BOBA_ENCODER
     nvenc_.version = nvenc_struct_version(NV_ENCODE_API_FUNCTION_LIST_VER);
+#else
+    nvenc_.version = NV_ENCODE_API_FUNCTION_LIST_VER;
+#endif
     check_nvenc(create_instance(&nvenc_), "Create NVENC instance failed");
 
     if (!nvenc_.nvEncOpenEncodeSessionEx) {
@@ -210,16 +217,25 @@ void nvenc_encoder::init_nvenc() {
     // Open encode session with CUDA device
     NV_ENC_OPEN_ENCODE_SESSION_EX_PARAMS session_params = {};
     memset(&session_params, 0, sizeof(NV_ENC_OPEN_ENCODE_SESSION_EX_PARAMS));
+#ifdef ILLIXR_BOBA_ENCODER
     session_params.version    = nvenc_struct_version(NV_ENC_OPEN_ENCODE_SESSION_EX_PARAMS_VER);
+#else
+    session_params.version = NV_ENC_OPEN_ENCODE_SESSION_EX_PARAMS_VER;
+#endif
     session_params.device     = cu_context_;
     session_params.deviceType = NV_ENC_DEVICE_TYPE_CUDA;
+#ifdef ILLIXR_BOBA_ENCODER
     session_params.apiVersion = nvenc_api_version_;
+#else
+    session_params.apiVersion = NVENCAPI_VERSION;
+#endif
 
     check_nvenc(nvenc_.nvEncOpenEncodeSessionEx(&session_params, &encoder_), "Open encode session failed");
 
     spdlog::get("illixr")->info("nvenc_encoder: NVENC session opened");
 }
 
+#ifdef ILLIXR_BOBA_ENCODER
 uint32_t nvenc_encoder::nvenc_struct_version(uint32_t compiled_version) const {
     // Structure versions embed the API major in bits 0..7 and the API minor in
     // bits 24..27. Preserve the structure revision and flag bits while replacing
@@ -227,6 +243,8 @@ uint32_t nvenc_encoder::nvenc_struct_version(uint32_t compiled_version) const {
     constexpr uint32_t api_version_mask = 0x0F0000FFU;
     return (compiled_version & ~api_version_mask) | nvenc_api_version_;
 }
+
+#endif
 
 void nvenc_encoder::query_capabilities() {
     // Query supported codecs
@@ -266,8 +284,13 @@ void nvenc_encoder::init_encoder() {
     // Get preset config as base
     NV_ENC_PRESET_CONFIG preset_config = {};
     memset(&preset_config, 0, sizeof(NV_ENC_PRESET_CONFIG));
+#ifdef ILLIXR_BOBA_ENCODER
     preset_config.version           = nvenc_struct_version(NV_ENC_PRESET_CONFIG_VER);
     preset_config.presetCfg.version = nvenc_struct_version(NV_ENC_CONFIG_VER);
+#else
+    preset_config.version           = NV_ENC_PRESET_CONFIG_VER;
+    preset_config.presetCfg.version = NV_ENC_CONFIG_VER;
+#endif
 
 #ifdef USE_AV1
     const bool use_av1 = (codec_ == encoder_codec::av1);
@@ -277,11 +300,14 @@ void nvenc_encoder::init_encoder() {
 
     const GUID codec_guid = use_av1 ? NV_ENC_CODEC_AV1_GUID : NV_ENC_CODEC_HEVC_GUID;
 
-    // Preset and tuning selection. The native Boba path uses AV1 P5 with the
-    // same LowLatency tuning selected by the active ALVR Quality profile.
-    // HEVC keeps P7 low-latency since it is less computationally expensive.
+    // General AV1 offloading keeps P5 ultra-low-latency tuning. Boba uses
+    // P5 low-latency tuning to match its existing quality profile. HEVC uses P7.
     const GUID preset_guid = use_av1 ? NV_ENC_PRESET_P5_GUID : NV_ENC_PRESET_P7_GUID;
+#ifdef ILLIXR_BOBA_ENCODER
     const auto tuning_info = NV_ENC_TUNING_INFO_LOW_LATENCY;
+#else
+    const auto tuning_info = use_av1 ? NV_ENC_TUNING_INFO_ULTRA_LOW_LATENCY : NV_ENC_TUNING_INFO_LOW_LATENCY;
+#endif
 
     check_nvenc(nvenc_.nvEncGetEncodePresetConfigEx(encoder_, codec_guid, preset_guid, tuning_info, &preset_config),
                 "Failed to get preset: {}");
@@ -289,7 +315,11 @@ void nvenc_encoder::init_encoder() {
     // Copy preset as base
     NV_ENC_CONFIG encode_config = {};
     memcpy(&encode_config, &preset_config.presetCfg, sizeof(NV_ENC_CONFIG));
+#ifdef ILLIXR_BOBA_ENCODER
     encode_config.version = nvenc_struct_version(NV_ENC_CONFIG_VER);
+#else
+    encode_config.version = NV_ENC_CONFIG_VER;
+#endif
 
 #ifdef USE_AV1
     if (use_av1) {
@@ -309,6 +339,7 @@ void nvenc_encoder::init_encoder() {
 
         encode_config.encodeCodecConfig.av1Config.chromaFormatIDC = 1; // 4:2:0
         encode_config.encodeCodecConfig.av1Config.repeatSeqHdr    = 1; // Include OBU headers with each key frame
+#    ifdef ILLIXR_BOBA_ENCODER
         // Boba's RGBA source is converted with a full-range BT.709 matrix. The
         // sequence header must describe that exact conversion or MediaCodec may
         // assume limited range and produce a bright, clipped image.
@@ -316,6 +347,8 @@ void nvenc_encoder::init_encoder() {
         encode_config.encodeCodecConfig.av1Config.transferCharacteristics = NV_ENC_VUI_TRANSFER_CHARACTERISTIC_SRGB;
         encode_config.encodeCodecConfig.av1Config.matrixCoefficients      = NV_ENC_VUI_MATRIX_COEFFS_BT709;
         encode_config.encodeCodecConfig.av1Config.colorRange              = 1;
+#    endif
+
         // Single reference frame: sufficient for low-latency VR streaming and
         // reduces per-frame motion search work compared to 2 reference frames.
         encode_config.encodeCodecConfig.av1Config.maxNumRefFramesInDPB = 1;
@@ -328,8 +361,10 @@ void nvenc_encoder::init_encoder() {
         encode_config.rcParams.maxBitRate      = static_cast<uint32_t>(bitrate_);
         encode_config.rcParams.vbvBufferSize   = static_cast<uint32_t>(bitrate_ * 4 / framerate_);
         encode_config.rcParams.vbvInitialDelay = static_cast<uint32_t>(bitrate_ * 4 / framerate_);
+#    ifdef ILLIXR_BOBA_ENCODER
         encode_config.rcParams.multiPass       = NV_ENC_TWO_PASS_QUARTER_RESOLUTION;
         encode_config.rcParams.enableAQ        = 1;
+#    endif
 
         // GOP settings - no B-frames for low latency.
         // 1-second GOP (framerate_ frames) limits the corruption window after
@@ -379,7 +414,11 @@ void nvenc_encoder::init_encoder() {
     // Initialize encoder
     NV_ENC_INITIALIZE_PARAMS init_params = {};
     memset(&init_params, 0, sizeof(NV_ENC_INITIALIZE_PARAMS));
+#ifdef ILLIXR_BOBA_ENCODER
     init_params.version = nvenc_struct_version(NV_ENC_INITIALIZE_PARAMS_VER);
+#else
+    init_params.version = NV_ENC_INITIALIZE_PARAMS_VER;
+#endif
 
     init_params.encodeGUID   = codec_guid;
     init_params.presetGUID   = preset_guid;
@@ -478,7 +517,11 @@ void nvenc_encoder::create_buffers() {
 
     // Register buffer with NVENC
     NV_ENC_REGISTER_RESOURCE register_res = {};
+#ifdef ILLIXR_BOBA_ENCODER
     register_res.version                  = nvenc_struct_version(NV_ENC_REGISTER_RESOURCE_VER);
+#else
+    register_res.version = NV_ENC_REGISTER_RESOURCE_VER;
+#endif
     register_res.resourceType             = NV_ENC_INPUT_RESOURCE_TYPE_CUDADEVICEPTR;
     register_res.width                    = aligned_width_;
     register_res.height                   = aligned_height_;
@@ -492,7 +535,11 @@ void nvenc_encoder::create_buffers() {
 
     // Create output bitstream buffer
     NV_ENC_CREATE_BITSTREAM_BUFFER create_output = {};
+#ifdef ILLIXR_BOBA_ENCODER
     create_output.version                        = nvenc_struct_version(NV_ENC_CREATE_BITSTREAM_BUFFER_VER);
+#else
+    create_output.version = NV_ENC_CREATE_BITSTREAM_BUFFER_VER;
+#endif
 
     check_nvenc(nvenc_.nvEncCreateBitstreamBuffer(encoder_, &create_output), "Create output buffer failed");
     output_buffer_ = create_output.bitstreamBuffer;
@@ -506,7 +553,11 @@ void nvenc_encoder::get_sequence_headers() {
     // AV1:   OBU Sequence Header.
     NV_ENC_SEQUENCE_PARAM_PAYLOAD seq_params = {};
     memset(&seq_params, 0, sizeof(NV_ENC_SEQUENCE_PARAM_PAYLOAD));
+#ifdef ILLIXR_BOBA_ENCODER
     seq_params.version = nvenc_struct_version(NV_ENC_SEQUENCE_PARAM_PAYLOAD_VER);
+#else
+    seq_params.version = NV_ENC_SEQUENCE_PARAM_PAYLOAD_VER;
+#endif
 
     // Allocate a reasonable buffer upfront
     std::vector<uint8_t> buffer(1024);
@@ -1110,14 +1161,22 @@ std::vector<uint8_t> nvenc_encoder::encode(int imported_index) {
 
     // Map the registered resource
     NV_ENC_MAP_INPUT_RESOURCE map_resource = {};
+#ifdef ILLIXR_BOBA_ENCODER
     map_resource.version                   = nvenc_struct_version(NV_ENC_MAP_INPUT_RESOURCE_VER);
+#else
+    map_resource.version = NV_ENC_MAP_INPUT_RESOURCE_VER;
+#endif
     map_resource.registeredResource        = registered_nv12_;
 
     check_nvenc(nvenc_.nvEncMapInputResource(encoder_, &map_resource), "Map input resource failed");
 
     // Encode
     NV_ENC_PIC_PARAMS pic_params = {};
+#ifdef ILLIXR_BOBA_ENCODER
     pic_params.version           = nvenc_struct_version(NV_ENC_PIC_PARAMS_VER);
+#else
+    pic_params.version = NV_ENC_PIC_PARAMS_VER;
+#endif
     pic_params.inputBuffer       = map_resource.mappedResource;
     pic_params.bufferFmt         = map_resource.mappedBufferFmt;
     pic_params.inputWidth        = aligned_width_;
@@ -1151,7 +1210,11 @@ std::vector<uint8_t> nvenc_encoder::encode(int imported_index) {
 
     // Lock and copy bitstream
     NV_ENC_LOCK_BITSTREAM lock_bitstream = {};
+#ifdef ILLIXR_BOBA_ENCODER
     lock_bitstream.version               = nvenc_struct_version(NV_ENC_LOCK_BITSTREAM_VER);
+#else
+    lock_bitstream.version = NV_ENC_LOCK_BITSTREAM_VER;
+#endif
     lock_bitstream.outputBitstream       = output_buffer_;
 
     check_nvenc(nvenc_.nvEncLockBitstream(encoder_, &lock_bitstream), "Lock bitstream failed");
@@ -1248,6 +1311,7 @@ void nvenc_encoder::convert_stereo_to_nv12_gpu(const cuda_imported_vulkan_image&
     }
 }
 
+#    ifdef ILLIXR_BOBA_ENCODER
 void nvenc_encoder::ensure_rgba_input_buffers(uint32_t source_width, uint32_t source_height) {
     if (source_width == 0 || source_height == 0) {
         throw std::invalid_argument("RGBA source dimensions must be non-zero");
@@ -1319,6 +1383,8 @@ void nvenc_encoder::convert_rgba_stereo_to_nv12_gpu(const uint8_t* left_rgba, si
     check_cuda_runtime(cudaStreamSynchronize(cu_stream_), "RGBA stereo conversion synchronization failed");
 }
 
+#    endif
+
 std::vector<uint8_t> nvenc_encoder::encode_stereo(int left_index, int right_index) {
     std::lock_guard<std::mutex> lock(encode_mutex_);
 
@@ -1343,12 +1409,20 @@ std::vector<uint8_t> nvenc_encoder::encode_stereo(int left_index, int right_inde
 
     // Map, encode, unmap — identical to encode().
     NV_ENC_MAP_INPUT_RESOURCE map_resource = {};
+#    ifdef ILLIXR_BOBA_ENCODER
     map_resource.version                   = nvenc_struct_version(NV_ENC_MAP_INPUT_RESOURCE_VER);
+#    else
+    map_resource.version = NV_ENC_MAP_INPUT_RESOURCE_VER;
+#    endif
     map_resource.registeredResource        = registered_nv12_;
     check_nvenc(nvenc_.nvEncMapInputResource(encoder_, &map_resource), "Map input resource failed (encode_stereo)");
 
     NV_ENC_PIC_PARAMS pic_params = {};
+#    ifdef ILLIXR_BOBA_ENCODER
     pic_params.version           = nvenc_struct_version(NV_ENC_PIC_PARAMS_VER);
+#    else
+    pic_params.version = NV_ENC_PIC_PARAMS_VER;
+#    endif
     pic_params.inputBuffer       = map_resource.mappedResource;
     pic_params.bufferFmt         = map_resource.mappedBufferFmt;
     pic_params.inputWidth        = aligned_width_;
@@ -1373,7 +1447,11 @@ std::vector<uint8_t> nvenc_encoder::encode_stereo(int left_index, int right_inde
 
     // Lock bitstream and copy out.
     NV_ENC_LOCK_BITSTREAM lock_bitstream = {};
+#    ifdef ILLIXR_BOBA_ENCODER
     lock_bitstream.version               = nvenc_struct_version(NV_ENC_LOCK_BITSTREAM_VER);
+#    else
+    lock_bitstream.version = NV_ENC_LOCK_BITSTREAM_VER;
+#    endif
     lock_bitstream.outputBitstream       = output_buffer_;
     check_nvenc(nvenc_.nvEncLockBitstream(encoder_, &lock_bitstream), "Lock bitstream failed (encode_stereo)");
 
@@ -1402,6 +1480,7 @@ std::vector<uint8_t> nvenc_encoder::encode_stereo(int left_index, int right_inde
     return encoded_data;
 }
 
+#    ifdef ILLIXR_BOBA_ENCODER
 std::vector<uint8_t> nvenc_encoder::encode_rgba_stereo(const uint8_t* left_rgba, size_t left_pitch, const uint8_t* right_rgba,
                                                        size_t right_pitch, uint32_t source_width, uint32_t source_height,
                                                        bool flip_y) {
@@ -1463,12 +1542,17 @@ std::vector<uint8_t> nvenc_encoder::encode_rgba_stereo(const uint8_t* left_rgba,
     return encoded;
 }
 
+#    endif
+
 #endif // COMBINED_ENCODING
 
+#ifdef ILLIXR_BOBA_ENCODER
 void nvenc_encoder::request_idr() {
     std::lock_guard<std::mutex> lock(encode_mutex_);
     pending_idrs_ = std::max(pending_idrs_, 1);
 }
+
+#endif
 
 // ============================================================================
 // Error Checking

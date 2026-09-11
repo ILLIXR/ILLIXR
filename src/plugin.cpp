@@ -16,7 +16,9 @@
 #    ifndef BOOST_DATE_TIME_NO_LIB
 #        define BOOST_DATE_TIME_NO_LIB
 #    endif
-#    include "illixr/network/udpsocket.hpp"
+#    if defined(ILLIXR_ENABLE_BOBA) && defined(ILLIXR_ENABLE_QUEST_CONTROLLERS)
+#        include "illixr/network/udpsocket.hpp"
+#    endif
 
 #    include <algorithm>
 #    include <boost/algorithm/string/join.hpp>
@@ -50,6 +52,7 @@ struct Dependency {
 };
 } // namespace ILLIXR
 
+#    if !defined(__ANDROID__) && defined(ILLIXR_ENABLE_BOBA) && defined(ILLIXR_ENABLE_QUEST_CONTROLLERS)
 namespace {
 constexpr int         QUEST_CONFIGURATION_PORT = 9010;
 constexpr const char* QUEST_CONNECT_REQUEST    = "ILLIXR_CONNECT_V1";
@@ -106,6 +109,8 @@ void configure_native_quest(const cxxopts::ParseResult& options) {
                              ". Confirm that the app is open and both devices are on the same network.");
 }
 } // namespace
+
+#    endif
 
 namespace YAML {
 template<>
@@ -238,7 +243,7 @@ int ILLIXR::run(
     try {
         runtime_ = ILLIXR::runtime_factory();
 
-#ifndef __ANDROID__
+#if !defined(__ANDROID__) && defined(ILLIXR_ENABLE_BOBA) && defined(ILLIXR_ENABLE_QUEST_CONTROLLERS)
         configure_native_quest(options);
 #endif
 

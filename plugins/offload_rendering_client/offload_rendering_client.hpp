@@ -182,12 +182,12 @@ private:
         float                                 content_aspect_ratio{0.0F};
         data_format::boba_frame_overlay       boba_overlay{};
         data_format::boba_modal_overlay       boba_modal{};
-#endif
         std::array<float, 2>                  fov_left{0.0F, 0.0F};
         std::array<float, 2>                  fov_right{0.0F, 0.0F};
         std::array<float, 2>                  fov_up{0.0F, 0.0F};
         std::array<float, 2>                  fov_down{0.0F, 0.0F};
         bool                                  consumed{false};
+#    endif
     };
 
 #ifdef ILLIXR_ENABLE_BOBA
@@ -438,6 +438,13 @@ private:
     uint16_t                                       fps_counter_    = 0;
     std::chrono::high_resolution_clock::time_point fps_start_time_ = std::chrono::high_resolution_clock::now();
     std::map<std::string, uint32_t>                metrics_{};
+#if defined(USING_OPENXR) && !defined(ILLIXR_ENABLE_BOBA)
+    std::array<float, 2> cached_fov_left_  = {0.0f, 0.0f};
+    std::array<float, 2> cached_fov_right_ = {0.0f, 0.0f};
+    std::array<float, 2> cached_fov_up_    = {0.0f, 0.0f};
+    std::array<float, 2> cached_fov_down_  = {0.0f, 0.0f};
+    bool                 fov_cached_       = false;
+#endif
     uint64_t                                       last_submitted_frame_{0};
 };
 

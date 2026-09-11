@@ -158,7 +158,8 @@ public:
      * The vertex shader must accept a third push-constant float (u_offset) at
      * byte offset 8.  The shader generates UVs as:
      *   u = u_offset + frag_u * crop_scale_x
-     *   v = (1 - frag_v) * crop_scale_y
+     *   v = frag_v * crop_scale_y
+     * Boba selects a separate vertex shader with v = (1 - frag_v) * crop_scale_y.
      * where crop_scale_x = 0.5 * (original_width / padded_half_width).
      */
     void set_combined_encoding(bool enabled) {

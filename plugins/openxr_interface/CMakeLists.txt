@@ -47,14 +47,19 @@ function(compile_shader GLSL_FILE VARNAME OUT_HEADER)
     )
 endfunction()
 
-compile_shader(color.vert color_vert_spv "${SPIRV_DIR}/color_vert_spv.h")
-compile_shader(color.frag color_frag_spv "${SPIRV_DIR}/color_frag_spv.h")
+if(ILLIXR_ENABLE_BOBA)
+    compile_shader(boba_color.vert color_vert_spv "${SPIRV_DIR}/color_vert_spv.h")
+    compile_shader(boba_color.frag color_frag_spv "${SPIRV_DIR}/color_frag_spv.h")
+    compile_shader(overlay.vert overlay_vert_spv "${SPIRV_DIR}/overlay_vert_spv.h")
+    compile_shader(overlay.frag overlay_frag_spv "${SPIRV_DIR}/overlay_frag_spv.h")
+    compile_shader(modal.vert modal_vert_spv "${SPIRV_DIR}/modal_vert_spv.h")
+    compile_shader(modal.frag modal_frag_spv "${SPIRV_DIR}/modal_frag_spv.h")
+else()
+    compile_shader(color.vert color_vert_spv "${SPIRV_DIR}/color_vert_spv.h")
+    compile_shader(color.frag color_frag_spv "${SPIRV_DIR}/color_frag_spv.h")
+endif()
 compile_shader(depth.frag depth_frag_spv "${SPIRV_DIR}/depth_frag_spv.h")
 compile_shader(motion_vec.frag motion_vec_frag_spv "${SPIRV_DIR}/motion_vec_frag_spv.h")
-compile_shader(overlay.vert overlay_vert_spv "${SPIRV_DIR}/overlay_vert_spv.h")
-compile_shader(overlay.frag overlay_frag_spv "${SPIRV_DIR}/overlay_frag_spv.h")
-compile_shader(modal.vert modal_vert_spv "${SPIRV_DIR}/modal_vert_spv.h")
-compile_shader(modal.frag modal_frag_spv "${SPIRV_DIR}/modal_frag_spv.h")
 
 add_library(${PLUGIN_NAME} SHARED
         plugin.cpp
@@ -67,10 +72,6 @@ add_library(${PLUGIN_NAME} SHARED
         ${SPIRV_DIR}/color_frag_spv.h
         ${SPIRV_DIR}/depth_frag_spv.h
         ${SPIRV_DIR}/motion_vec_frag_spv.h
-        ${SPIRV_DIR}/overlay_vert_spv.h
-        ${SPIRV_DIR}/overlay_frag_spv.h
-        ${SPIRV_DIR}/modal_vert_spv.h
-        ${SPIRV_DIR}/modal_frag_spv.h
         ${CMAKE_SOURCE_DIR}/include/illixr/phonebook.hpp
         ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
         ${CMAKE_SOURCE_DIR}/include/illixr/plugin.hpp
@@ -81,10 +82,8 @@ add_library(${PLUGIN_NAME} SHARED
         ${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization/hand_pose.hpp
         ${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization/head_pose.hpp
         ${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization/openxr.hpp
-        ${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization/openxr_view_frame.hpp
         ${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization/palm_pose.hpp
         ${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization/pose_base.hpp
-        ${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization/quest_controller.hpp
         ${CMAKE_SOURCE_DIR}/include/illixr/data_format/vulkan_context.hpp
         ${CMAKE_SOURCE_DIR}/include/illixr/vk/vulkan_context_provider.hpp
         ${CMAKE_SOURCE_DIR}/utils/serialization/misc.cpp
@@ -92,10 +91,21 @@ add_library(${PLUGIN_NAME} SHARED
         ${CMAKE_SOURCE_DIR}/utils/serialization/hand_interaction_pose.cpp
         ${CMAKE_SOURCE_DIR}/utils/serialization/hand_pose.cpp
         ${CMAKE_SOURCE_DIR}/utils/serialization/head_pose.cpp
-        ${CMAKE_SOURCE_DIR}/utils/serialization/openxr_view_frame.cpp
         ${CMAKE_SOURCE_DIR}/utils/serialization/palm_pose.cpp
-        ${CMAKE_SOURCE_DIR}/utils/serialization/quest_controller.cpp
 )
+
+if(ILLIXR_ENABLE_BOBA)
+    target_sources(${PLUGIN_NAME} PRIVATE
+        ${SPIRV_DIR}/overlay_vert_spv.h
+        ${SPIRV_DIR}/overlay_frag_spv.h
+        ${SPIRV_DIR}/modal_vert_spv.h
+        ${SPIRV_DIR}/modal_frag_spv.h
+        ${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization/openxr_view_frame.hpp
+        ${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization/quest_controller.hpp
+        ${CMAKE_SOURCE_DIR}/utils/serialization/openxr_view_frame.cpp
+        ${CMAKE_SOURCE_DIR}/utils/serialization/quest_controller.cpp
+    )
+endif()
 
 target_compile_definitions(${PLUGIN_NAME} PUBLIC
         USING_OPENXR

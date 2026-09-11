@@ -1,6 +1,6 @@
-if(ANDROID OR WIN32 OR MSVC)
+if(NOT CMAKE_SYSTEM_NAME STREQUAL "Linux")
     message(WARNING "boba_streaming_server is currently available only on Linux hosts")
-    set(USE_BOBA_STREAMING_SERVER OFF)
+    set(USE_BOBA_STREAMING_SERVER OFF PARENT_SCOPE)
     return()
 endif()
 
@@ -31,6 +31,7 @@ endif()
 add_library(${PLUGIN_NAME} SHARED
             plugin.cpp
             plugin.hpp
+            rgba_convert.cu
             ${CMAKE_SOURCE_DIR}/plugins/offload_rendering_server/nvenc/nvenc_encoder.cpp
             ${CMAKE_SOURCE_DIR}/plugins/offload_rendering_server/nvenc/nvenc_encoder.hpp
             ${CMAKE_SOURCE_DIR}/plugins/offload_rendering_server/nvenc/color_convert.cu
@@ -45,6 +46,7 @@ add_library(${PLUGIN_NAME} SHARED
 target_compile_definitions(${PLUGIN_NAME} PRIVATE
                            USING_OPENXR
                            NVENC_ENCODER
+                           ILLIXR_BOBA_ENCODER
                            USE_AV1
                            COMBINED_ENCODING)
 target_include_directories(${PLUGIN_NAME} PUBLIC

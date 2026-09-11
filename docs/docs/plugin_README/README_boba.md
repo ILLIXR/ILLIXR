@@ -16,6 +16,12 @@ Two Quest 3 paths are available:
   images through SteamVR, while ALVR transports them between SteamVR and its
   Quest client. The native Quest app obtains input through `openxr_interface`.
 
+!!! note "Boba CUDA environment"
+    The pinned Boba simulation/renderer and its CUDA extensions require CUDA 13.2
+    in the `boba-cu132` environment. This requirement belongs to Boba; the general
+    ILLIXR offload encoder retains its CUDA 12.8+ and CUDA 13 support. Boba's host
+    RGBA conversion is built separately from the general offload conversion code.
+
 ## One-time Boba setup
 
 From an ILLIXR source checkout, run:
@@ -72,9 +78,17 @@ Selecting `boba_quest_native_server` as the CMake build profile, or enabling
 the frame protocol for that desktop build. Build the Quest client with `--boba`
 as shown below so it reads the same format.
 
+Quest Touch controller actions are guarded by `ILLIXR_ENABLE_QUEST_CONTROLLERS`.
+This option defaults to OFF for device-agnostic builds; enabling Boba also enables
+it. It can be enabled independently with `-DILLIXR_ENABLE_QUEST_CONTROLLERS=ON`.
+`boba_immersive` and `boba_streaming_server` run on Linux, while the native app
+runs `openxr_interface` on Android.
+
 For a manual Android build, use
 `./gradlew -PILLIXR_ENABLE_BOBA=ON :app:assembleDebug`. Other offload clients can
-enable the same support with CMake's `-DILLIXR_ENABLE_BOBA=ON` option. Ordinary
+enable the same support with CMake's `-DILLIXR_ENABLE_BOBA=ON` option. To turn it
+off, use `-PILLIXR_ENABLE_BOBA=OFF` with Gradle or `-DILLIXR_ENABLE_BOBA=OFF`
+with CMake and select a desktop profile without `boba_streaming_server`. Ordinary
 builds default to the original frame format without this metadata. The Boba-only
 fields are also omitted from compressed and decoded frames when support is disabled.
 
@@ -124,6 +138,14 @@ Quest learns the desktop address from that packet and connects back through the
 existing ILLIXR transport. No desktop address needs to be entered on the
 headset. The desktop waits up to 120 seconds for the app by default; change this
 with `--quest-connect-timeout SECONDS`.
+
+The Java listener is an optional UDP address bootstrap, chosen because Java owns
+NativeActivity startup and teardown. It learns the desktop's reachable IP from
+the packet source; native C++ backends carry ongoing tracking and video. Existing
+`ILLIXR_SERVER_IP`, `ILLIXR_TCP_SERVER_IP`, `ILLIXR_TCP_CLIENT_IP`, and TCP/UDP
+port environment settings are retained. A preconfigured Boba client starts without
+waiting for discovery; generic offload builds start directly with their configured
+addresses. The optional `illixr_server_ip` Android intent remains available in Boba.
 
 Allow UDP ports 9010 and 9003 and TCP port 9001 on the local firewall. The app
 must be open because a stopped Android application cannot be awakened over an

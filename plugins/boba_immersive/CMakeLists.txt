@@ -1,6 +1,6 @@
-if(WIN32 OR MSVC)
+if(NOT CMAKE_SYSTEM_NAME STREQUAL "Linux")
     message(WARNING "boba_immersive is currently available only on Linux")
-    set(USE_BOBA_IMMERSIVE OFF)
+    set(USE_BOBA_IMMERSIVE OFF PARENT_SCOPE)
 else()
     find_package(OpenXR CONFIG REQUIRED)
 

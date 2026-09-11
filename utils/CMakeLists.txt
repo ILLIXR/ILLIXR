@@ -10,6 +10,7 @@ if(ANDROID)
                 egl_context_manager.cpp
     )
 
+    # One include/link declaration is sufficient; the former second pair was identical.
     target_include_directories(egl_context_manager PUBLIC ${CMAKE_SOURCE_DIR}/include)
 
     target_link_libraries(egl_context_manager PUBLIC

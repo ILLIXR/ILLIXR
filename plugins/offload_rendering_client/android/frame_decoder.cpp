@@ -127,6 +127,7 @@ bool frame_decoder::configure_codec() {
             AMediaFormat_setInt32(format, AMEDIAFORMAT_KEY_PROFILE, 1);
             AMediaFormat_setInt32(format, AMEDIAFORMAT_KEY_MAX_INPUT_SIZE, width_ * height_);
 
+#        ifdef ILLIXR_ENABLE_BOBA
             // Match the server's full-range BT.709 conversion and its AV1
             // sequence-header metadata. Explicit MediaFormat hints avoid a
             // vendor default to limited range on the Quest decoder.
@@ -137,6 +138,8 @@ bool frame_decoder::configure_codec() {
             AMediaFormat_setInt32(format, AMEDIAFORMAT_KEY_COLOR_STANDARD, 1);
             AMediaFormat_setInt32(format, AMEDIAFORMAT_KEY_COLOR_TRANSFER, 3);
             AMediaFormat_setInt32(format, AMEDIAFORMAT_KEY_COLOR_RANGE, 1);
+
+#        endif
 
             spdlog::get("illixr")->info("[frame_decoder][{}] Configuring AV1 Main 8-bit {}x{}", eye_index_, width_, height_);
         }
@@ -252,12 +255,16 @@ std::pair<AHardwareBuffer*, uint64_t> frame_decoder::acquire_latest_buffer() {
         return {nullptr, 0};
     }
 
+#    ifdef ILLIXR_ENABLE_BOBA
     int64_t image_timestamp_ns = 0;
     status                     = AImage_getTimestamp(image, &image_timestamp_ns);
+
+#    endif
 
     // Retain the buffer so the caller can hold it independently of the AImage.
     AHardwareBuffer_acquire(hw_buffer);
 
+#    ifdef ILLIXR_ENABLE_BOBA
     uint64_t frame_num = 0;
     if (status == AMEDIA_OK) {
         std::lock_guard<std::mutex> lock(released_frame_numbers_mutex_);
@@ -268,8 +275,13 @@ std::pair<AHardwareBuffer*, uint64_t> frame_decoder::acquire_latest_buffer() {
         }
     }
 
+#    else
+    const uint64_t frame_num = last_decoded_frame_number_.load(std::memory_order_acquire);
+#    endif
+
     AImage_delete(image);
 
+#    ifdef ILLIXR_ENABLE_BOBA
     if (frame_num == 0) {
         static std::atomic<uint64_t> missing_timestamp_count{0};
         const uint64_t               count = missing_timestamp_count.fetch_add(1, std::memory_order_relaxed) + 1;
@@ -278,6 +290,8 @@ std::pair<AHardwareBuffer*, uint64_t> frame_decoder::acquire_latest_buffer() {
                                         eye_index_, image_timestamp_ns, count);
         }
     }
+
+#    endif
 
     uint64_t n = frames_decoded_.fetch_add(1, std::memory_order_relaxed) + 1;
     if (n <= 5 || n % 200 == 0) {
@@ -504,10 +518,14 @@ void frame_decoder::drainer_loop() {
             auto     drain_start = std::chrono::steady_clock::now();
             uint64_t decode_us   = 0; // submit → output
             uint64_t total_us    = 0; // queue_encoded_data → output
+#    ifdef ILLIXR_ENABLE_BOBA
             // A missing timestamp entry must remain unmatched. Falling back to
             // the previous output number can pair a valid image with another
             // frame's pose/FOV and causes visible world-locked jitter.
             uint64_t decoded_frame_number = 0;
+#    else
+            uint64_t decoded_frame_number = last_decoded_frame_number_.load();
+#    endif
             {
                 std::lock_guard<std::mutex> ts_lock(pending_timestamps_mutex_);
                 auto                        it = pending_timestamps_.find(info.presentationTimeUs);
@@ -545,6 +563,7 @@ void frame_decoder::drainer_loop() {
                                             static_cast<double>(total_us) / 1000.0, current_fps);
             }
 
+#    ifdef ILLIXR_ENABLE_BOBA
             // Record the exact timestamp → frame mapping before exposing this
             // output to AImageReader. AImage_getTimestamp returns the MediaCodec
             // presentation timestamp in nanoseconds, so the consumer can recover
@@ -558,6 +577,8 @@ void frame_decoder::drainer_loop() {
                     released_frame_numbers_by_timestamp_ns_.erase(released_frame_numbers_by_timestamp_ns_.begin());
                 }
             }
+#    endif
+
             last_decoded_frame_number_.store(decoded_frame_number, std::memory_order_release);
             AMediaCodec_releaseOutputBuffer(codec_, static_cast<size_t>(out_idx), /*render=*/true);
             auto drain_end = std::chrono::steady_clock::now();
@@ -709,10 +730,12 @@ void frame_decoder::flush() {
         std::lock_guard<std::mutex> ts_lock(pending_timestamps_mutex_);
         pending_timestamps_.clear();
     }
+#    ifdef ILLIXR_ENABLE_BOBA
     {
         std::lock_guard<std::mutex> released_lock(released_frame_numbers_mutex_);
         released_frame_numbers_by_timestamp_ns_.clear();
     }
+#    endif
     spdlog::get("illixr")->debug("[frame_decoder][{}] Flushed", eye_index_);
 }
 
@@ -737,10 +760,12 @@ void frame_decoder::stop() {
         drainer_thread_.join();
     }
 
+#    ifdef ILLIXR_ENABLE_BOBA
     {
         std::lock_guard<std::mutex> released_lock(released_frame_numbers_mutex_);
         released_frame_numbers_by_timestamp_ns_.clear();
     }
+#    endif
 
     if (codec_) {
         AMediaCodec_stop(codec_);

@@ -5,11 +5,17 @@
 
 #define DOUBLE_INCLUDE
 #include "illixr/data_format/latency_data.hpp"
-#include "illixr/data_format/openxr_view_frame.hpp"
+#ifdef ILLIXR_ENABLE_BOBA
+#    include "illixr/data_format/openxr_view_frame.hpp"
+#endif
 #include "illixr/data_format/poses/combined_pose.hpp"
-#include "illixr/data_format/quest_controller.hpp"
-#include "illixr/data_format/serialization/openxr_view_frame.hpp"
-#include "illixr/data_format/serialization/quest_controller.hpp"
+#ifdef ILLIXR_ENABLE_QUEST_CONTROLLERS
+#    include "illixr/data_format/quest_controller.hpp"
+#endif
+#ifdef ILLIXR_ENABLE_BOBA
+#    include "illixr/data_format/serialization/openxr_view_frame.hpp"
+#    include "illixr/data_format/serialization/quest_controller.hpp"
+#endif
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
 #undef DOUBLE_INCLUDE
@@ -54,9 +60,12 @@ public:
     /// Thread-safe.
     bool get_pose_history(uint64_t id, pose_history_entry& out_entry) const;
 
+#ifdef ILLIXR_ENABLE_BOBA
     /** Publish a coherent Quest controller + stereo-view sample for Boba. */
     void publish_boba_input(XrTime predicted_time, XrDuration predicted_period, XrBool32 should_render,
                             XrViewStateFlags view_flags, const XrView views[2], const XrViewConfigurationView view_configs[2]);
+
+#endif
 
 protected:
     skip_option _p_should_skip() override;
@@ -154,14 +163,12 @@ private:
      */
     void update_hand_interaction(XrTime predicted_time);
 
+#ifdef ILLIXR_ENABLE_QUEST_CONTROLLERS
     /** Add Touch-compatible button/axis actions to the existing hand action set. */
     bool create_controller_actions();
 
     /** Suggest Oculus Touch bindings without disturbing existing hand bindings. */
     bool suggest_controller_bindings();
-
-    /** Synchronize the one attached action set under actions_mutex_. */
-    bool sync_actions();
 
     /** Refresh the runtime-selected interaction profile for each hand. */
     void refresh_controller_profiles();
@@ -187,6 +194,11 @@ private:
     static void merge_controller_button(data_format::quest_controller_button*       destination,
                                         const data_format::quest_controller_button& source);
 
+#endif
+
+    /** Synchronize the one attached action set under actions_mutex_. */
+    bool sync_actions();
+
     /**
      * @brief Send the latest pose to the server.
      *
@@ -209,8 +221,11 @@ private:
      * the head pose, hand tracking data, and time conversion fields.
      */
     switchboard::network_writer<data_format::pose::combined_pose>    combined_pose_writer_;
+#ifdef ILLIXR_ENABLE_BOBA
     switchboard::network_writer<data_format::quest_controller_input> quest_controller_writer_;
     switchboard::network_writer<data_format::openxr_view_frame>      openxr_view_writer_;
+
+#endif
 
     /// Reader for network latency results published by network_latency_pong_rx.
     /// Used to populate smoothed_clock_offset_ns and smoothed_rtt_ns in
@@ -317,6 +332,7 @@ private:
      */
     XrSpace palm_pose_spaces_[2]{XR_NULL_HANDLE, XR_NULL_HANDLE};
 
+#ifdef ILLIXR_ENABLE_QUEST_CONTROLLERS
     // Quest Touch inputs share hand_interaction_action_set_ so the session has
     // exactly one xrAttachSessionActionSets call.
     XrAction                                             controller_trigger_click_action_{XR_NULL_HANDLE};
@@ -329,8 +345,13 @@ private:
     std::array<data_format::quest_controller_profile, 2> controller_profiles_{data_format::quest_controller_profile::none,
                                                                               data_format::quest_controller_profile::none};
     bool                                                 controller_actions_initialized_{false};
+
+#endif
+
     std::mutex                                           actions_mutex_;
+#ifdef ILLIXR_ENABLE_BOBA
     std::atomic<std::uint64_t>                           boba_input_sequence_{0};
+#endif
 
     bool                                  initialized_{false};
     bool                                  xr_time_verified_{false};

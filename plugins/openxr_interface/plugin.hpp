@@ -12,7 +12,9 @@
 #    include "illixr/data_format/latency_data.hpp"
 #    include "illixr/data_format/poses/combined_pose.hpp"
 #    include "illixr/data_format/vulkan_context.hpp"
-#    include "illixr/stoplight.hpp"
+#    ifdef ILLIXR_ENABLE_BOBA
+#        include "illixr/stoplight.hpp"
+#    endif
 #    include "illixr/switchboard.hpp"
 #    include "illixr/threadloop.hpp"
 #    include "illixr/vk/vulkan_context_provider.hpp"
@@ -85,15 +87,22 @@ private:
     const std::shared_ptr<switchboard>    switchboard_;
     struct android_app*                   app_;
     const std::shared_ptr<relative_clock> clock_;
+#    ifdef ILLIXR_ENABLE_BOBA
     const std::shared_ptr<stoplight>      stoplight_;
+#    endif
 
     // Frame reading
     switchboard::reader<data_format::dual_frames> frame_reader_;
+#    ifdef ILLIXR_ENABLE_BOBA
     // Host lifecycle message delivered over the reliable network backend.
     switchboard::reader<switchboard::event_wrapper<std::string>> boba_client_control_reader_;
 
+#    endif
+
     std::shared_ptr<const data_format::dual_frames> current_frames_ = nullptr;
+#    ifdef ILLIXR_ENABLE_BOBA
     bool                                            client_shutdown_requested_{false};
+#    endif
 
     // OpenXR handles
     XrSession               session_         = XR_NULL_HANDLE;

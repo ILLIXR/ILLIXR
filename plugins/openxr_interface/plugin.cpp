@@ -14,8 +14,13 @@
 using namespace ILLIXR;
 using namespace ILLIXR::data_format;
 
+#    ifdef ILLIXR_ENABLE_BOBA
 constexpr int   I_HEADSET_WIDTH            = NATIVE_STREAM_EYE_WIDTH;
 constexpr int   I_HEADSET_HEIGHT           = NATIVE_STREAM_EYE_HEIGHT;
+#    else
+constexpr int I_HEADSET_WIDTH  = static_cast<int>(HEADSET_WIDTH * 1.1);
+constexpr int I_HEADSET_HEIGHT = static_cast<int>(HEADSET_HEIGHT * 1.1);
+#    endif
 #    ifdef ILLIXR_ENABLE_BOBA
 constexpr float BOBA_PANEL_DISTANCE_METERS = 1.1F;
 constexpr float BOBA_PANEL_WIDTH_METERS    = 1.2F;
@@ -53,9 +58,13 @@ static XrPosef panel_pose_from_view(const XrPosef& view_pose) {
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
     , app_{switchboard_->get_android_app()}
     , clock_{phonebook_->lookup_impl<relative_clock>()}
+#    ifdef ILLIXR_ENABLE_BOBA
     , stoplight_{phonebook_->lookup_impl<stoplight>()}
+#    endif
     , frame_reader_{switchboard_->get_reader<dual_frames>("unity_rendered_frame")}
+#    ifdef ILLIXR_ENABLE_BOBA
     , boba_client_control_reader_{switchboard_->get_reader<switchboard::event_wrapper<std::string>>("boba_client_control")}
+#    endif
     , oxr_relay_{std::make_shared<oxr_relay>(name_, pb_)} {
     use_depth_ = switchboard_->get_env_bool("ILLIXR_USE_DEPTH_IMAGES");
     init_xr();
@@ -410,6 +419,7 @@ void oxr_interface::poll_events() {
 }
 
 void oxr_interface::run_frame() {
+#    ifdef ILLIXR_ENABLE_BOBA
     const auto client_control = boba_client_control_reader_.get_ro_nullable();
     if (!client_shutdown_requested_ && client_control != nullptr && **client_control == "shutdown") {
         client_shutdown_requested_ = true;
@@ -418,6 +428,8 @@ void oxr_interface::run_frame() {
         stoplight_->signal_should_stop();
         return;
     }
+
+#    endif
 
     if (!session_running_)
         return;
@@ -462,8 +474,11 @@ void oxr_interface::run_frame() {
         views_[1].type                     = XR_TYPE_VIEW;
         const XrResult locate_views_result = xrLocateViews(session_, &view_locate_info, &view_state, 2, &view_count, views_);
         if (XR_SUCCEEDED(locate_views_result) && view_count == 2) {
+#    ifdef ILLIXR_ENABLE_BOBA
             oxr_relay_->publish_boba_input(frame_state.predictedDisplayTime, frame_state.predictedDisplayPeriod,
                                            frame_state.shouldRender, view_state.viewStateFlags, views_, view_configs_);
+#    endif
+
         } else {
             spdlog::get("illixr")->warn("xrLocateViews failed or returned {} views: {}", view_count,
                                         static_cast<int>(locate_views_result));
@@ -734,8 +749,9 @@ void oxr_interface::create_swapchains() {
     std::vector<int64_t> formats(fmt_count);
     xrEnumerateSwapchainFormats(session_, fmt_count, &fmt_count, formats.data());
 
+#    ifdef ILLIXR_ENABLE_BOBA
     // Prefer an sRGB swapchain. The decoded video is converted back to linear
-    // RGB in color.frag before this attachment applies its output transfer.
+    // RGB in boba_color.frag before this attachment applies its output transfer.
     VkFormat chosen_fmt = formats.empty() ? VK_FORMAT_R8G8B8A8_UNORM : static_cast<VkFormat>(formats.front());
     const std::array<VkFormat, 4> preferred_formats{
         VK_FORMAT_R8G8B8A8_SRGB,
@@ -749,6 +765,25 @@ void oxr_interface::create_swapchains() {
             break;
         }
     }
+#    else
+    // Prefer R8G8B8A8_SRGB → R8G8B8A8_UNORM → B8G8R8A8_UNORM
+    VkFormat chosen_fmt = VK_FORMAT_R8G8B8A8_UNORM;
+    for (int64_t f : formats) {
+        if (f == VK_FORMAT_R8G8B8A8_SRGB) {
+            chosen_fmt = VK_FORMAT_R8G8B8A8_SRGB;
+            break;
+        }
+        if (f == VK_FORMAT_R8G8B8A8_UNORM) {
+            chosen_fmt = VK_FORMAT_R8G8B8A8_UNORM;
+            break;
+        }
+        if (f == VK_FORMAT_B8G8R8A8_SRGB) {
+            chosen_fmt = VK_FORMAT_B8G8R8A8_SRGB;
+            break;
+        }
+    }
+#    endif
+
     spdlog::get("illixr")->info("Swapchain format selected: 0x{:X}", static_cast<uint32_t>(chosen_fmt));
 
     // Create one swapchain per eye

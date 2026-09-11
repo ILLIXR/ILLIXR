@@ -11,6 +11,7 @@ using namespace ILLIXR::data_format;
 
 #define TIME_CUTOFF 3.0
 
+#ifdef ILLIXR_ENABLE_QUEST_CONTROLLERS
 namespace {
 
 constexpr float kControllerTriggerThreshold = 0.75F;
@@ -37,17 +38,23 @@ ILLIXR::data_format::quest_controller_profile controller_profile_from_path(const
 
 } // namespace
 
+#endif
+
 oxr_relay::oxr_relay(const std::string& name, phonebook* pb)
     : threadloop{name, pb}
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
     , clock_{phonebook_->lookup_impl<relative_clock>()}
     , combined_pose_writer_{switchboard_->get_network_writer<data_format::pose::combined_pose>(
           "combined_pose", network::topic_config{network::topic_config::BOOST, network::topic_config::UDP})}
+#ifdef ILLIXR_ENABLE_BOBA
     , quest_controller_writer_{switchboard_->get_network_writer<data_format::quest_controller_input>(
           "quest_controller", network::topic_config{network::topic_config::BOOST, network::topic_config::UDP})}
     , openxr_view_writer_{switchboard_->get_network_writer<data_format::openxr_view_frame>(
           "openxr_view", network::topic_config{network::topic_config::BOOST, network::topic_config::UDP})}
-    , latency_reader_{switchboard_->get_reader<network_latency_result>("network_latency")} { }
+#endif
+
+    , latency_reader_{switchboard_->get_reader<network_latency_result>("network_latency")} {
+}
 
 void oxr_relay::destroy() {
     // Destroy hand interaction action set and spaces first
@@ -554,10 +561,13 @@ bool oxr_relay::init_hand_interaction() {
         OXR(xrCreateAction(hand_interaction_action_set_, &ai, &palm_pose_action_))
     }
 
+#ifdef ILLIXR_ENABLE_QUEST_CONTROLLERS
     if (!create_controller_actions()) {
         spdlog::get("illixr")->error("Failed to create Quest controller actions");
         return false;
     }
+
+#endif
 
     // Suggest bindings
     // Each profile gets its own xrSuggestInteractionProfileBindings call because
@@ -641,10 +651,12 @@ bool oxr_relay::init_hand_interaction() {
                 bindings.push_back({palm_pose_action_, path});
             }
 
+#ifdef ILLIXR_ENABLE_QUEST_CONTROLLERS
             XrPath      select_path;
             std::string select = std::string(hand_path_string) + "/input/select/click";
             OXR(xrStringToPath(instance_, select.c_str(), &select_path))
             bindings.push_back({controller_trigger_click_action_, select_path});
+#endif
         }
 
         XrInteractionProfileSuggestedBinding suggested = {XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING};
@@ -659,10 +671,13 @@ bool oxr_relay::init_hand_interaction() {
         }
     }
 
+#ifdef ILLIXR_ENABLE_QUEST_CONTROLLERS
     if (!suggest_controller_bindings()) {
         spdlog::get("illixr")->error("Failed to suggest Quest Touch controller bindings");
         return false;
     }
+
+#endif
 
     // Attach action set to session
     XrSessionActionSetsAttachInfo attach_info = {XR_TYPE_SESSION_ACTION_SETS_ATTACH_INFO};
@@ -696,11 +711,16 @@ bool oxr_relay::init_hand_interaction() {
         OXR(xrCreateActionSpace(session_, &palm_space_info, &palm_pose_spaces_[h]))
     }
 
+#ifdef ILLIXR_ENABLE_QUEST_CONTROLLERS
     controller_actions_initialized_ = true;
     spdlog::get("illixr")->info("Hand interaction and Quest Touch controller actions initialized");
+#else
+    spdlog::get("illixr")->info("Hand interaction action set and action spaces created");
+#endif
     return true;
 }
 
+#ifdef ILLIXR_ENABLE_QUEST_CONTROLLERS
 // ---- Quest controller action creation and sampling -------------------------
 
 bool oxr_relay::create_controller_actions() {
@@ -794,8 +814,12 @@ bool oxr_relay::suggest_controller_bindings() {
     return true;
 }
 
+#endif
+
 void oxr_relay::destroy_hand_interaction() {
+#ifdef ILLIXR_ENABLE_QUEST_CONTROLLERS
     controller_actions_initialized_ = false;
+#endif
     for (int h = 0; h < 2; h++) {
         for (int p = 0; p < pose::NUM_INTERACTION_POSES; p++) {
             if (interaction_pose_spaces_[h][p] != XR_NULL_HANDLE) {
@@ -1004,6 +1028,8 @@ void oxr_relay::update_hand_interaction(XrTime predicted_time) {
     }
 }
 
+// Shared by hand interaction updates and Quest controller sampling. Both callers
+// hold actions_mutex_ so they cannot sync/read the same action set concurrently.
 bool oxr_relay::sync_actions() {
     if (hand_interaction_action_set_ == XR_NULL_HANDLE || session_ == XR_NULL_HANDLE) {
         return false;
@@ -1032,6 +1058,7 @@ bool oxr_relay::sync_actions() {
     return true;
 }
 
+#ifdef ILLIXR_ENABLE_QUEST_CONTROLLERS
 void oxr_relay::refresh_controller_profiles() {
     for (std::size_t hand = 0; hand < controller_profiles_.size(); ++hand) {
         XrInteractionProfileState state{XR_TYPE_INTERACTION_PROFILE_STATE};
@@ -1190,6 +1217,9 @@ bool oxr_relay::query_controller_hand(std::size_t hand_index, XrTime sample_time
     return true;
 }
 
+#endif
+
+#ifdef ILLIXR_ENABLE_BOBA
 void oxr_relay::publish_boba_input(XrTime predicted_time, XrDuration predicted_period, XrBool32 should_render,
                                    XrViewStateFlags view_flags, const XrView views[2],
                                    const XrViewConfigurationView view_configs[2]) {
@@ -1245,6 +1275,8 @@ void oxr_relay::publish_boba_input(XrTime predicted_time, XrDuration predicted_p
     quest_controller_writer_.put(std::make_shared<quest_controller_input>(std::move(controller)));
     openxr_view_writer_.put(std::make_shared<openxr_view_frame>(std::move(frame)));
 }
+
+#endif
 
 void oxr_relay::calibrate_time_offsets() {
     // On Quest/Android, XrTime is nanoseconds since device boot,

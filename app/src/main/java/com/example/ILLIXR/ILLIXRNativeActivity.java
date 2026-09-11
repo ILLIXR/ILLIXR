@@ -48,9 +48,11 @@ public class ILLIXRNativeActivity extends NativeActivity {
     /** Initialize optional intent configuration, networking, and permissions. */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        String serverIp = getIntent().getStringExtra(SERVER_IP_EXTRA);
-        if (serverIp != null && !serverIp.trim().isEmpty()) {
-            configureNative(serverIp.trim(), "Android intent");
+        if (nativeIsBobaEnabled()) {
+            String serverIp = getIntent().getStringExtra(SERVER_IP_EXTRA);
+            if (serverIp != null && !serverIp.trim().isEmpty()) {
+                configureNative(serverIp.trim(), "Android intent");
+            }
         }
         super.onCreate(savedInstanceState);
 
@@ -61,7 +63,9 @@ public class ILLIXRNativeActivity extends NativeActivity {
         wifiLock_.acquire();
         Log.i(TAG, "WiFi low-latency lock acquired");
 
-        startConfigurationReceiver();
+        if (nativeIsBobaEnabled()) {
+            startConfigurationReceiver();
+        }
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, CAMERA_REQUEST_CODE);
@@ -184,6 +188,9 @@ public class ILLIXRNativeActivity extends NativeActivity {
 
     /** Notify native code that camera access became available after startup. */
     public native void nativeOnPermissionGranted();
+
+    /** Query native build selection before using the optional Boba bootstrap. */
+    private native boolean nativeIsBobaEnabled();
 
     /** Supply the discovered desktop address to the waiting native runtime. */
     private native void nativeConfigure(String serverIp);

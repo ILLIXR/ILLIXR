@@ -37,6 +37,8 @@ android {
             cmake {
                 version '3.22.1'
                 cppFlags '-std=c++17', '-frtti', '-fexceptions'
+                // Opt in with -PILLIXR_ENABLE_BOBA=ON; OFF keeps the general frame protocol.
+                // Rebuild both the host and app with matching settings (see README_boba.md).
                 arguments "-DTHIRD_PARTY_DIR=${root_library_path}",
                           "-DBUILD_ANDROID=ON",
                           "-DILLIXR_ENABLE_BOBA=${providers.gradleProperty('ILLIXR_ENABLE_BOBA').getOrElse('OFF')}"
