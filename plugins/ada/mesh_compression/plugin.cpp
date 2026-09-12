@@ -58,17 +58,33 @@ void compress(const uint idx, std::shared_ptr<switchboard::writer<mesh_type>> wr
         if (queue_[idx].wait_dequeue_timed(datum, std::chrono::milliseconds(2))) {
             auto start = std::chrono::high_resolution_clock::now();
 
-            std::unique_ptr<draco_illixr::PlyDecoder> ply_decoder = std::make_unique<draco_illixr::PlyDecoder>();
-            std::unique_ptr<draco_illixr::Mesh>       draco_mesh  = std::make_unique<draco_illixr::Mesh>();
+            auto draco_mesh = datum->draco_mesh;
+            if (draco_mesh) {
+                // Preserve DecodeExternal's deduplication order without its
+                // intermediate PLY-to-mesh conversion.
+                if (draco_mesh->num_faces() != 0) {
+#ifdef DRACO_ATTRIBUTE_VALUES_DEDUPLICATION_SUPPORTED
+                    if (!draco_mesh->DeduplicateAttributeValues()) {
+                        spdlog::get("illixr")->error("Failed to deduplicate scene {} chunk {}", datum->id, datum->chunk_id);
+                        continue;
+                    }
+#endif
+#ifdef DRACO_ATTRIBUTE_INDICES_DEDUPLICATION_SUPPORTED
+                    draco_mesh->DeduplicatePointIds();
+#endif
+                }
+            } else {
+                // Retain support for producers that still publish PLY data.
+                draco_mesh = std::make_shared<draco_illixr::Mesh>();
+                draco_illixr::PlyDecoder ply_decoder;
+                ply_decoder.out_mesh_        = draco_mesh.get();
+                ply_decoder.out_point_cloud_ = draco_mesh.get();
+                if (!datum->reader || !ply_decoder.DecodeExternal(datum->reader, false).ok()) {
+                    spdlog::get("illixr")->error("Failed to prepare scene {} chunk {}", datum->id, datum->chunk_id);
+                    continue;
+                }
+            }
 
-            ply_decoder->out_mesh_        = draco_mesh.get();
-            ply_decoder->out_point_cloud_ = static_cast<draco_illixr::PointCloud*>(draco_mesh.get());
-
-            ply_decoder->DecodeExternal(datum->reader, false);
-            // ply_decoder->DecodeExternal(std::move(datum->reader), false);
-
-            // expert_encoder.reset(new draco_illixr::ExpertEncoder(*(std::move(draco_mesh))));
-            // draco_illixr::PointCloud *draco_pc = draco_mesh.get();
             std::unique_ptr<draco_illixr::ExpertEncoder> expert_encoder_ =
                 std::make_unique<draco_illixr::ExpertEncoder>(*draco_mesh);
             expert_encoder_->Reset(encoder_.CreateExpertEncoderOptions(*draco_mesh));
