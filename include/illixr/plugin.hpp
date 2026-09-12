@@ -65,6 +65,9 @@ public:
      */
     virtual void start() {
 #ifndef __ANDROID__
+        if (!record_logging_enabled()) {
+            return;
+        }
         record_logger_->log(record{_plugin_start_header,
                                    {
                                        {id_},
