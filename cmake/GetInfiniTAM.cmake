@@ -2,7 +2,7 @@ get_external_for_plugin(Draco)
 
 fetch_git(NAME InfiniTAM_ext
           REPO https://github.com/ILLIXR/InfiniTAM.git
-          TAG 757a61a3f0be7ca5c38486f432d29429161aa03c
+          TAG feb6e3cf8786bf442f0d8a94298ef90bbe578c80
 )
 set(ILLIXR_ROOT ${CMAKE_SOURCE_DIR}/include)
 configure_target(NAME InfiniTAM_ext)
