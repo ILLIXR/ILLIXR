@@ -206,6 +206,7 @@ profiles:
   - ada_device:
     plugins: ada.offline_scannet,tcp_network_backend,ada.device_tx,ada.device_rx,ada.mesh_decompression_grey,ada.scene_management
     env_vars:
+      ada_disable_wifi_power_save: true
       illixr_record_logging: "0"
       duration: 1200
       fps: 15

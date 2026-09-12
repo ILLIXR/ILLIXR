@@ -1,5 +1,7 @@
 #include "plugin.hpp"
 
+#include "wifi_power_save.hpp"
+
 #include <spdlog/spdlog.h>
 
 using namespace ILLIXR;
@@ -16,6 +18,9 @@ using namespace ILLIXR::data_format;
 
     // pyh handling Unique Voxel Block List (UVBL)
     , vb_{switchboard_->get_writer<vb_type>("VB_update_lists")} {
+    if (switchboard_->get_env_bool("ADA_DISABLE_WIFI_POWER_SAVE", "true")) {
+        ada::wifi::disable_power_saving(switchboard_->get_env("ADA_WIFI_INTERFACE"));
+    }
     chunck_number_ = switchboard_->get_env_ulong("MESH_DECOMPRESS_PARALLELISM", 8);
 
     std::filesystem::create_directories(data_path_);
