@@ -86,16 +86,22 @@ Below are the configurations we used for reproducibility in the Ada paper.
 Ada runs as a set of ILLIXR plugins. To launch it, you need to provide configuration files that specify
 which plugins to load, where to find the dataset, and Ada specific tuning parameters.
 
+The `ada_device` and `ada_server` profiles default to eight mesh chunks, eight
+compression workers on the server, eight decompression workers on the device, and
+`ILLIXR_RECORD_LOGGING: "0"`. Copy these settings into custom configurations.
+To change a default, edit the corresponding value in your configuration file.
+
 ### Example Device Configuration File
 ```yaml
 plugins: ada.offline_scannet,tcp_network_backend,ada.device_tx,ada.device_rx,ada.mesh_decompression_grey,ada.scene_management
 env_vars:
+  ILLIXR_RECORD_LOGGING: "0"
   ILLIXR_RUN_DURATION: 1200
   ILLIXR_DATA: /home/illixr/Downloads/scannet_0005
   FRAME_COUNT: 1158
   FPS: 15
   PARTIAL_MESH_COUNT: 8
-  MESH_COMPRESS_PARALLELISM: 8
+  MESH_DECOMPRESS_PARALLELISM: 8
   ILLIXR_TCP_SERVER_IP:  127.0.0.1
   ILLIXR_TCP_SERVER_PORT: 9000
   ILLIXR_TCP_CLIENT_IP: 127.0.0.1
@@ -111,6 +117,7 @@ env_vars:
 ```yaml
 plugins: tcp_network_backend,ada.server_rx,ada.server_tx,ada.infinitam,ada.mesh_compression
 env_vars:
+  ILLIXR_RECORD_LOGGING: "0"
   ILLIXR_RUN_DURATION: 1200
   ILLIXR_DATA: /home/illixr/Downloads/scannet_0005
   FRAME_COUNT: 1158
@@ -128,12 +135,15 @@ env_vars:
   ENABLE_PRE_SLEEP: false
 ```
 The above examples set the following environment variables:
+
+ - **ILLIXR_RECORD_LOGGING**: `"0"` disables ILLIXR structured performance records; set `"1"` to enable them. Ada timing CSVs and diagnostic messages are controlled separately.
  - **ILLIXR_RUN_DURATION**: how long you want to run ILLIXR (in seconds)
  - **ILLIXR_DATA**: the location of the data set
  - **FRAME_COUNT**: the number of frames in your dataset
  - **FPS**: how often you want to trigger proactive scene extraction (Sec 4.2 in the paper)
- - **PARTIAL_MESH_COUNT**: number of parallel compression and decompression of mesh happening (Sec 4.4 in the paper)
- - **MESH_COMPRESS_PARALLELISM**: should match PARTIAL_MESH_COUNT
+ - **PARTIAL_MESH_COUNT**: number of mesh chunks per extraction (Sec 4.4 in the paper); use the same value on both sides
+ - **MESH_COMPRESS_PARALLELISM**: number of server compression workers; should match PARTIAL_MESH_COUNT
+ - **MESH_DECOMPRESS_PARALLELISM**: number of device decompression workers
  - **ILLIXR_TCP_SERVER_IP**: the IP address of the server (can be localhost if testing on one machine)
  - **ILLIXR_TCP_SERVER_PORT**: the port the server should use (your choice)
  - **ILLIXR_TCP_CLIENT_IP**: the IP address of the device (can be localhost if testing on one machine)
@@ -156,11 +166,41 @@ The role flag: ILLIXR_IS_CLIENT = 1 (device) vs 0 (server).
     
     this name may be confusing since it overlaps with dataset playback rate; we plan to update it in a future release.
 
-**MESH_COMPRESS_PARALLELISM** and **PARTIAL_MESH_COUNT**
-  - `MESH_COMPRESS_PARALLELISM`: number of worker threads launched to compress/decompress mesh chunks in parallel.
+**MESH_COMPRESS_PARALLELISM**, **MESH_DECOMPRESS_PARALLELISM**, and **PARTIAL_MESH_COUNT**
+
+  - `MESH_COMPRESS_PARALLELISM`: number of server worker threads launched to compress mesh chunks in parallel.
+  - `MESH_DECOMPRESS_PARALLELISM`: number of device worker threads launched to decode and format mesh chunks in parallel.
   - `PARTIAL_MESH_COUNT`: number of chunks the mesh is divided into; the scene management plugin expects this value.
-  - In the current version, these **must match**.
-  - Future support will allow mismatch — e.g., splitting into 8 chunks but only using 4 compression threads.
+  - Server compression workers and the chunk count **must match** in the current version.
+  - Device decompression workers can differ from the chunk count. Chunks are assigned to workers by chunk ID; each completed chunk is published immediately.
+
+### Jetson Wi-Fi Power Saving
+
+For Ada over Wi-Fi, disable power saving in the Jetson's NetworkManager connection
+profile so the setting is applied whenever that profile connects. List profiles
+with `nmcli connection show --active`, then replace `YOUR_WIFI_PROFILE` below with
+the active Wi-Fi connection name:
+
+```bash
+sudo nmcli connection modify "YOUR_WIFI_PROFILE" 802-11-wireless.powersave 2
+sudo iw dev wlan0 set power_save off
+```
+
+The first command saves the setting for future connections; the second applies it
+to the current connection without reconnecting. Replace `wlan0` if your wireless
+interface has a different name. NetworkManager defines
+[`802-11-wireless.powersave=2` as disabled](https://networkmanager.dev/docs/api/latest/settings-802-11-wireless.html).
+This is a one-time device setup step for each Wi-Fi profile.
+
+Check the saved setting and the current connection:
+
+```bash
+nmcli -g 802-11-wireless.powersave connection show "YOUR_WIFI_PROFILE"
+iw dev wlan0 get power_save
+```
+
+The saved setting should report `disable` (value `2`), and the live setting should
+report `Power save: off`.
 
 
 ## 4) Running Ada
