@@ -1,5 +1,6 @@
 #pragma once
 
+#include "free_range_index.hpp"
 #include "illixr/data_format/scene_update.hpp"
 
 #include <algorithm>
@@ -121,6 +122,8 @@ private:
     void append_mesh_allocate_impl(std::shared_ptr<const Map> inputSceneUpdateMap);
 
     std::vector<std::shared_ptr<const void>> input_owners_;
+
+    free_range_index free_ranges_;
 
     // Sorted, disjoint inclusive face ranges that were unused after the last update.
     // Keep only their boundaries; live indices can be recovered from faces_base_.
