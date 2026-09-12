@@ -7,6 +7,7 @@
 #include <mutex>
 #include <queue>
 #include <spdlog/spdlog.h>
+#include <stdexcept>
 #include <thread>
 
 using namespace ILLIXR;
@@ -96,9 +97,17 @@ void decompress(const uint idx, std::shared_ptr<switchboard::writer<draco_type>>
     }
     spdlog::get("illixr")->debug("[md] {}", data_path_);
     mesh_count_ = switchboard_->get_env_ulong("MESH_DECOMPRESS_PARALLELISM", 8);
+    if (mesh_count_ == 0) {
+        throw std::invalid_argument("MESH_DECOMPRESS_PARALLELISM must be positive");
+    }
 
+    // Finish constructing the shared queue vector before any worker reads it.
+    queue_.reserve(mesh_count_);
     for (uint i = 0; i < mesh_count_; i++) {
-        queue_.push_back(b_queue(8));
+        queue_.emplace_back(8);
+    }
+    done_ = false;
+    for (uint i = 0; i < mesh_count_; i++) {
         decompress_thread_.push_back(std::thread(decompress, i, decoded_mesh_));
     }
     switchboard_->schedule<mesh_type>(id_, "compressed_scene", [&](switchboard::ptr<const mesh_type> datum, std::size_t) {
@@ -107,7 +116,12 @@ void decompress(const uint idx, std::shared_ptr<switchboard::writer<draco_type>>
 }
 
 void mesh_decompression::process_frame(switchboard::ptr<const mesh_type> datum) {
-    while (!queue_[datum->type].try_enqueue(datum)) { }
+    if (datum->max_chunk == 0 || datum->chunk_id >= datum->max_chunk) {
+        spdlog::get("illixr")->error("Invalid mesh chunk {} of {} for scene {}", datum->chunk_id, datum->max_chunk, datum->id);
+        return;
+    }
+    const auto worker = datum->chunk_id % mesh_count_;
+    while (!queue_[worker].try_enqueue(datum)) { }
 }
 
 mesh_decompression::~mesh_decompression() {
