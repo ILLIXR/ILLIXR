@@ -60,9 +60,9 @@ void compress(const uint idx, std::shared_ptr<switchboard::writer<mesh_type>> wr
 
             auto draco_mesh = datum->draco_mesh;
             if (draco_mesh) {
-                // Preserve DecodeExternal's deduplication order without its
-                // intermediate PLY-to-mesh conversion.
-                if (draco_mesh->num_faces() != 0) {
+                // Producers using the direct indexed builder have already
+                // completed the same attribute and point deduplication.
+                if (!datum->draco_mesh_prepared && draco_mesh->num_faces() != 0) {
 #ifdef DRACO_ATTRIBUTE_VALUES_DEDUPLICATION_SUPPORTED
                     if (!draco_mesh->DeduplicateAttributeValues()) {
                         spdlog::get("illixr")->error("Failed to deduplicate scene {} chunk {}", datum->id, datum->chunk_id);

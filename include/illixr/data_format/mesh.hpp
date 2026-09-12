@@ -27,13 +27,14 @@ struct mesh_type : public switchboard::event {
     //[[maybe_unused]] std::unique_ptr<draco_illixr::PlyReader> reader;
     [[maybe_unused]] std::shared_ptr<draco_illixr::PlyReader> reader;
 
-    // Owned by the event after publication; only its compression worker mutates
-    // this mesh to deduplicate it. Other mesh producers can still use reader.
+    // Owned by the event after publication. Producers can supply a mesh with
+    // deduplication complete; other producers retain worker-side preparation.
     [[maybe_unused]] std::shared_ptr<draco_illixr::Mesh> draco_mesh;
+    [[maybe_unused]] bool                                draco_mesh_prepared = false;
 
     [[maybe_unused]] mesh_type(const unsigned type_, std::unique_ptr<draco_illixr::Mesh> input_mesh, unsigned id_,
                                unsigned chunk_id_, unsigned max_chunk_, unsigned num_faces_, unsigned num_vertices_,
-                               bool is_active)
+                               bool is_active, bool is_prepared = false)
         : type{type_}
         , active{is_active}
         , id{id_}
@@ -41,7 +42,8 @@ struct mesh_type : public switchboard::event {
         , max_chunk{max_chunk_}
         , num_faces{num_faces_}
         , num_vertices{num_vertices_}
-        , draco_mesh{std::move(input_mesh)} { }
+        , draco_mesh{std::move(input_mesh)}
+        , draco_mesh_prepared{is_prepared} { }
 
     [[maybe_unused]] mesh_type(const unsigned type_, std::shared_ptr<draco_illixr::PlyReader> input_reader, unsigned id_)
         : type{type_}
