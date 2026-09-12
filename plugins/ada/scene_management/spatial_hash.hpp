@@ -118,10 +118,21 @@ public:
     std::vector<int> faces_base_;
 
 private:
+    struct PendingPlacement {
+        const PendingVB* block;
+        unsigned         hash;
+        unsigned         faces;
+    };
+
     template<typename Map>
     void append_mesh_allocate_impl(std::shared_ptr<const Map> inputSceneUpdateMap);
 
     std::vector<std::shared_ptr<const void>> input_owners_;
+
+    // Pending blocks are immutable during placement, so their addresses remain
+    // valid while this list is sorted. Retain only scratch capacity between updates.
+    std::vector<PendingPlacement>    pending_placements_;
+    std::vector<std::pair<int, int>> remaining_deleted_ranges_;
 
     free_range_index free_ranges_;
 

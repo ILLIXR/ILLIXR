@@ -247,264 +247,70 @@ void spatial_hash::append_mesh_allocate(std::shared_ptr<const SceneUpdateRanges>
 // pyh merge is for a feature we never used in publication, so ignore
 unsigned spatial_hash::append_mesh_match_and_insert(bool merge) {
     (void) merge;
-    // Get number of faces for each VB
-    std::vector<std::pair<VoxelBlockIndex, unsigned>> sizes;
-    // auto                                              original_deleted_ranges = deleted_ranges_;
-
-    // for all new incoming VB get the face size
+    pending_placements_.clear();
     for (const auto& entry : allocate_new_VB_) {
-        for (const auto& vb_entry : entry.second) {
-            const VoxelBlockIndex& vb_index     = std::get<0>(vb_entry);
-            const auto&            first_vector = std::get<1>(vb_entry);
-            // it is inserting vertices & colors, so # of faces = size()/3
-            sizes.emplace_back(vb_index, first_vector.size() / 3);
+        for (const auto& block : entry.second) {
+            pending_placements_.push_back({&block, entry.first, static_cast<unsigned>(std::get<1>(block).size() / 3)});
         }
     }
-    // sort vb in descinding order based on number of faces (see S4.3 stage 2 last sentence)
-    std::sort(sizes.begin(), sizes.end(),
-              [](const std::pair<VoxelBlockIndex, unsigned>& a, const std::pair<VoxelBlockIndex, unsigned>& b) {
-                  return a.second > b.second;
-              });
+    // Preserve the original traversal, size-only comparator and largest-first
+    // ordering, including the ordering of equally sized blocks.
+    std::sort(pending_placements_.begin(), pending_placements_.end(), [](const PendingPlacement& a, const PendingPlacement& b) {
+        return a.faces > b.faces;
+    });
 
-#ifndef NDEBUG
-    for (const auto& entry : allocate_new_VB_) {
-        for (const auto& vb_entry : entry.second) {
-            const VoxelBlockIndex& vb_index     = std::get<0>(vb_entry);
-            const auto&            first_vector = std::get<1>(vb_entry);
-            spdlog::get("illixr")->debug("VB: %d, %d, %d, with %lu faces", std::get<0>(vb_index), std::get<1>(vb_index),
-                                         std::get<2>(vb_index), first_vector.size());
-        }
-    }
-#endif
-
-    // need to track how many faces added to the end
     unsigned new_faces = 0;
-
-    // Rebuild after cleanup/merging, retaining the original free-range order.
-    if (!sizes.empty())
+    if (!pending_placements_.empty())
         free_ranges_.rebuild(deleted_ranges_);
 
-    // Place blocks largest first in the first suitable range in buffer order.
-    for (const auto& vb_size : sizes) {
-        // cond 1: check if it is packed
-        bool packed = false;
-#ifndef NDEBUG
-        spdlog::get("illixr")->debug("packing VB: %d, %d, %d with %d faces", std::get<0>(vb_size.first),
-                                     std::get<1>(vb_size.first), std::get<2>(vb_size.first), vb_size.second);
-#endif
-        const auto range_index = free_ranges_.first_fit(vb_size.second);
-        if (range_index < deleted_ranges_.size()) {
-            auto& range = deleted_ranges_[range_index];
-            // available deleted range is larger (can fit) incoming voxel block
-            // Pack the VB into this range
-            auto     packing_vb = vb_size.first;
-            unsigned hash_idx   = hash_vb(packing_vb);
-            auto     alloc_it   = allocate_new_VB_.find(hash_idx);
-            if (alloc_it == allocate_new_VB_.end()) {
-                spdlog::get("illixr")->error(
-                    "Should not happen: Cannot find packing vb in allocate_new_VB_, should allocated in the first pass");
-            } else {
-                // cond 2: check vb is found in allocate_new_VB_
-                bool vb_found = false;
-                // each entry, vb_index, vertices vector, colors vector
-                for (auto& vb_entry : alloc_it->second) {
-                    VoxelBlockIndex vb_index = std::get<0>(vb_entry);
-                    if (vb_index == packing_vb) {
-                        vb_found                = true;
-                        const auto& vb_vertices = std::get<1>(vb_entry);
+    for (const auto& placement : pending_placements_) {
+        const auto& block_index = std::get<0>(*placement.block);
+        const auto& vertices    = std::get<1>(*placement.block);
+        const auto  range_index = free_ranges_.first_fit(placement.faces);
+        const bool  packed      = range_index < deleted_ranges_.size();
+        const int   first       = packed ? deleted_ranges_[range_index].first : static_cast<int>(vertices_.size() / 3);
+        const int   last        = first + static_cast<int>(placement.faces) - 1;
 
-                        vb_vertices.copy_to(vertices_.begin() + range.first * 3);
-
-                        // Update face visibility after placement, restoring only previously null faces
-                        // that are actually reused. Live indices already have their final values.
-
-                        auto map_it = map_VB_to_range_.find(hash_idx);
-                        if (map_it == map_VB_to_range_.end()) {
-                            // cannot find the VB-> new VB
-#ifndef NDEBUG
-                            spdlog::get("illixr")->debug("allocating new VB: %d, %d, %d in map_VB_to_range_ with range %d, %d",
-                                                         std::get<0>(vb_size.first), std::get<1>(vb_size.first),
-                                                         std::get<2>(vb_size.first), range.first,
-                                                         range.first + vb_size.second - 1);
-#endif
-                            if (range.first < 0) {
-                                spdlog::get("illixr")->error("Should not happen #1 happened here, vb: %d, %d, %d",
-                                                             std::get<0>(vb_size.first), std::get<1>(vb_size.first),
-                                                             std::get<2>(vb_size.first));
-                            }
-                            auto new_range = std::make_tuple(packing_vb, range.first, range.first + vb_size.second - 1);
-                            std::vector<Vector_range> hash_entry(1, new_range);
-                            map_VB_to_range_[hash_idx] = std::move(hash_entry);
-
-                            // update the deleted range
-                            range.first += static_cast<int>(vb_size.second);
-                        } else {
-                            bool mapping_found = false;
-                            for (auto& map_vb_entry : map_it->second) {
-                                VoxelBlockIndex cur_map_vb = std::get<0>(map_vb_entry);
-                                if (cur_map_vb == packing_vb) {
-#ifndef NDEBUG
-                                    spdlog::get("illixr")->debug(
-                                        "update existing VB: %d, %d, %d with old range %d, %d in map_VB_to_range_ with "
-                                        "range %d, %d",
-                                        std::get<0>(vb_size.first), std::get<1>(vb_size.first), std::get<2>(vb_size.first),
-                                        std::get<1>(map_vb_entry), std::get<2>(map_vb_entry), range.first,
-                                        range.first + vb_size.second - 1);
-#endif
-                                    // check to see if they are both -1 (they should be since cleaning will set them to -1)
-                                    if (std::get<1>(map_vb_entry) != -1 || std::get<2>(map_vb_entry) != -1) {
-                                        spdlog::get("illixr")->error(
-                                            "Should not happen, the existing VB does not have range of -1 to -1, vb %d, "
-                                            "%d, %d, range %d, %d",
-                                            std::get<0>(vb_size.first), std::get<1>(vb_size.first), std::get<2>(vb_size.first),
-                                            std::get<1>(map_vb_entry), std::get<2>(map_vb_entry));
-                                    }
-
-                                    if (range.first < 0) {
-                                        spdlog::get("illixr")->error("Should not happen #2 happened here");
-                                    }
-
-                                    // update the new range
-                                    std::get<1>(map_vb_entry) = range.first;
-                                    std::get<2>(map_vb_entry) = static_cast<int>(range.first + vb_size.second - 1);
-
-                                    // update the deleted range
-                                    range.first += static_cast<int>(vb_size.second);
-
-                                    mapping_found = true;
-                                    break;
-                                }
-                            }
-                            if (!mapping_found) {
-                                if (range.first < 0) {
-                                    spdlog::get("illixr")->error("Should not happen #3 happened here");
-                                }
-                                // hash collision case
-                                auto new_range = std::make_tuple(packing_vb, range.first, range.first + vb_size.second - 1);
-                                map_VB_to_range_[hash_idx].emplace_back(std::move(new_range));
-#ifndef NDEBUG
-                                spdlog::get("illixr")->debug(
-                                    "Type 2: allocating new VB: %d, %d, %d in map_VB_to_range_ with range %d, %d",
-                                    std::get<0>(vb_size.first), std::get<1>(vb_size.first), std::get<2>(vb_size.first),
-                                    range.first, range.first + vb_size.second - 1);
-                                // Print all VBs sharing this hash index
-                                spdlog::get("illixr")->debug("Hash index %u shared by the following Voxel Blocks:", hash_idx);
-                                for (auto& map_vb_entry : map_VB_to_range_[hash_idx]) {
-                                    VoxelBlockIndex test_vb = std::get<0>(map_vb_entry);
-                                    spdlog::get("illixr")->debug("  VB: %d, %d, %d with range [%d, %d]", std::get<0>(test_vb),
-                                                                 std::get<1>(test_vb), std::get<2>(test_vb),
-                                                                 std::get<1>(map_vb_entry), std::get<2>(map_vb_entry));
-                                }
-#endif
-
-                                // update the deleted range
-                                range.first += static_cast<int>(vb_size.second);
-                            }
-                        }
-                        break;
-                    }
-                }
-                if (!vb_found) {
-                    spdlog::get("illixr")->error(
-                        "Should not happen: Can not find packed vb despite found the hash entry in allocate_new_VB_");
-                }
-                packed = true;
-            }
-            free_ranges_.update(range_index, static_cast<unsigned>(range.second - range.first + 1));
+        if (packed) {
+            vertices.copy_to(vertices_.begin() + first * 3);
+        } else {
+            vertices.append_to(vertices_);
+            new_faces += placement.faces;
         }
 
-        // if existing deleted range cannot fit, append it to the end like the original method
-        if (!packed) {
-            auto     packing_vb = vb_size.first;
-            unsigned hash_idx   = hash_vb(packing_vb);
-            auto     alloc_it   = allocate_new_VB_.find(hash_idx);
-#ifndef NDEBUG
-            spdlog::get("illixr")->debug("adding %d faces to the end", vb_size.second);
-#endif
-            new_faces += vb_size.second;
-
-            if (alloc_it == allocate_new_VB_.end()) {
-                // This shouldn't happen
-                spdlog::get("illixr")->error("Should not happen:Can not find packed vb");
-            } else {
-                bool vb_found = false;
-                for (auto& vb_entry : alloc_it->second) {
-                    VoxelBlockIndex cur_vb = std::get<0>(vb_entry);
-                    if (cur_vb == packing_vb) {
-                        const auto& vb_vertices = std::get<1>(vb_entry);
-
-                        // create new entry in MashVBToRange
-                        auto new_tuple = std::make_tuple(cur_vb, static_cast<int>(vertices_.size() / 3),
-                                                         static_cast<int>(vertices_.size() / 3 + vb_size.second - 1));
-#ifndef NDEBUG
-                        spdlog::get("illixr")->debug("allocating new VB: %d, %d, %d in map_VB_to_range_ with range %d, %d",
-                                                     std::get<0>(vb_size.first), std::get<1>(vb_size.first),
-                                                     std::get<2>(vb_size.first), std::get<1>(new_tuple),
-                                                     std::get<2>(new_tuple));
-#endif
-                        // 923 handle hash collision
-                        auto map_it = map_VB_to_range_.find(hash_idx);
-                        if (map_it == map_VB_to_range_.end()) {
-                            std::vector<Vector_range> hash_entry(1, new_tuple);
-                            map_VB_to_range_[hash_idx] = std::move(hash_entry);
-#ifndef NDEBUG
-                            spdlog::get("illixr")->debug("new VB not found in Mapping, creating a new entry");
-#endif
-                        } else {
-                            bool found = false;
-                            for (auto& map_vb_entry : map_it->second) {
-                                VoxelBlockIndex cur_map_vb = std::get<0>(map_vb_entry);
-                                if (cur_map_vb == packing_vb) {
-#ifndef NDEBUG
-                                    spdlog::get("illixr")->debug(
-                                        "appending to the end VB: %d, %d, %d, found existing entry with range %d, %d",
-                                        std::get<0>(packing_vb), std::get<1>(packing_vb), std::get<2>(packing_vb),
-                                        std::get<1>(map_vb_entry), std::get<2>(map_vb_entry));
-#endif
-                                    // update the new range
-                                    std::get<1>(map_vb_entry) = std::get<1>(new_tuple);
-                                    std::get<2>(map_vb_entry) = std::get<2>(new_tuple);
-
-#ifndef NDEBUG
-                                    spdlog::get("illixr")->debug(
-                                        "appending to the end VB: %d, %d, %d, updated entry with range %d, %d",
-                                        std::get<0>(packing_vb), std::get<1>(packing_vb), std::get<2>(packing_vb),
-                                        std::get<1>(map_vb_entry), std::get<2>(map_vb_entry));
-#endif
-
-                                    found = true;
-                                    break;
-                                }
-                            }
-                            if (!found) {
-                                map_VB_to_range_[hash_idx].push_back(std::move(new_tuple));
-                            }
-                        }
-#ifndef NDEBUG
-                        // Print all VBs sharing this hash index
-                        spdlog::get("illixr")->debug("Hash index %u shared by the following Voxel Blocks:", hash_idx);
-                        for (auto& test_vb_entry : map_VB_to_range_[hash_idx]) {
-                            VoxelBlockIndex test_vb = std::get<0>(test_vb_entry);
-                            spdlog::get("illixr")->debug("  VB: %d, %d, %d with range [%d, %d]", std::get<0>(test_vb),
-                                                         std::get<1>(test_vb), std::get<2>(test_vb), std::get<1>(test_vb_entry),
-                                                         std::get<2>(test_vb_entry));
-                        }
-#endif
-
-                        vb_vertices.append_to(vertices_);
-                        vb_found = true;
-                        break;
+        // The sorted item already identifies the pending block and its hash;
+        // only the persistent block-to-scene mapping needs a lookup here.
+        auto map_it = map_VB_to_range_.find(placement.hash);
+        if (map_it == map_VB_to_range_.end()) {
+            std::vector<Vector_range> hash_entry(1, std::make_tuple(block_index, first, last));
+            map_VB_to_range_[placement.hash] = std::move(hash_entry);
+        } else {
+            bool found = false;
+            for (auto& mapped : map_it->second) {
+                if (std::get<0>(mapped) == block_index) {
+                    if (packed && (std::get<1>(mapped) != -1 || std::get<2>(mapped) != -1)) {
+                        spdlog::get("illixr")->error("Updated voxel block still has an occupied scene range");
                     }
-                }
-                if (!vb_found) {
-                    spdlog::get("illixr")->error("Should not happen: Can not find packed vb despite founding the hash entry");
+                    std::get<1>(mapped) = first;
+                    std::get<2>(mapped) = last;
+                    found               = true;
+                    break;
                 }
             }
+            if (!found)
+                map_it->second.emplace_back(block_index, first, last);
+        }
+
+        if (packed) {
+            auto& range = deleted_ranges_[range_index];
+            range.first += static_cast<int>(placement.faces);
+            free_ranges_.update(range_index, static_cast<unsigned>(range.second - range.first + 1));
         }
     }
 
     // Clean up the used deleted ranges
-    std::vector<std::pair<int, int>> remaining_deleted_ranges;
+    auto& remaining_deleted_ranges = remaining_deleted_ranges_;
+    remaining_deleted_ranges.clear();
     for (const auto& range : deleted_ranges_) {
         if (range.first > range.second) {
 #ifndef NDEBUG
@@ -555,6 +361,7 @@ unsigned spatial_hash::append_mesh_match_and_insert(bool merge) {
 
     // update with the deleted range
     std::swap(remaining_deleted_ranges, deleted_ranges_);
+    pending_placements_.clear();
     allocate_new_VB_.clear();
     input_owners_.clear();
 #ifndef NDEBUG
