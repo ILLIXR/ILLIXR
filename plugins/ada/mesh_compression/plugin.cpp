@@ -113,6 +113,8 @@ void compress(const uint idx, std::shared_ptr<switchboard::writer<mesh_type>> wr
 
     for (uint i = 0; i < mesh_count_; i++) {
         queue_.push_back(b_queue(8));
+    }
+    for (uint i = 0; i < mesh_count_; i++) {
         compress_thread_.push_back(std::thread(compress, i, compressed_mesh_));
     }
     switchboard_->schedule<mesh_type>(id_, "requested_scene", [&](switchboard::ptr<const mesh_type> datum, std::size_t) {
