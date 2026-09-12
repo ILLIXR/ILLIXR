@@ -5,6 +5,33 @@
 
 using namespace ILLIXR;
 
+namespace {
+// Visit portions of sorted, disjoint inclusive ranges that are not covered by
+// the other range list. Both cursors move forward, so the work is linear in
+// the number of ranges, independent of the number of faces inside each hole.
+template<typename Function>
+void for_each_range_difference(const std::vector<std::pair<int, int>>& ranges, const std::vector<std::pair<int, int>>& covered,
+                               Function apply) {
+    size_t covered_index = 0;
+    for (const auto& range : ranges) {
+        int first = range.first;
+        while (covered_index < covered.size() && covered[covered_index].second < first)
+            ++covered_index;
+        while (covered_index < covered.size() && covered[covered_index].first <= range.second) {
+            const auto& overlap = covered[covered_index];
+            if (first < overlap.first)
+                apply(first, overlap.first - 1);
+            first = std::max(first, overlap.second + 1);
+            if (first > range.second)
+                break;
+            ++covered_index;
+        }
+        if (first <= range.second)
+            apply(first, range.second);
+    }
+}
+} // namespace
+
 spatial_hash::spatial_hash() {
     // map_VB_to_range_.reserve(1000000);
     map_VB_to_range_.reserve(25600);
@@ -14,8 +41,7 @@ spatial_hash::spatial_hash() {
     // colors.reserve(5000000);
     faces_.reserve(1000000);
 
-    // 92 fix mesh nullification by storing the face sub-vectors of deleted_faces
-    nullified_ranges.reserve(100000);
+    nullified_ranges_.reserve(100000);
     faces_base_.reserve(30000000);
 
     delete_counter_ = 0;
@@ -43,17 +69,6 @@ unsigned spatial_hash::hash_vb(const VoxelBlockIndex& Index) {
     auto                                      end     = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> elapsed = end - start;
     spdlog::get("illixr")->debug(message + ": {} ms", elapsed.count());
-}
-
-void spatial_hash::restore_deleted_faces() {
-    for (auto& nullified_range : nullified_ranges) {
-        int start_index = std::get<0>(nullified_range);
-        // int               end_index         = std::get<1>(nullified_range);
-        std::vector<int>& saved_face_vector = std::get<2>(nullified_range);
-
-        std::move(saved_face_vector.begin(), saved_face_vector.end(), faces_.begin() + start_index * 3);
-    }
-    nullified_ranges.clear();
 }
 
 [[maybe_unused]] void spatial_hash::clean_mesh_vb_redesign_with_list(const std::set<std::tuple<int, int, int>>& vb_lists) {
@@ -304,8 +319,8 @@ unsigned spatial_hash::append_mesh_match_and_insert(bool merge) {
 
                             vb_vertices.copy_to(vertices_.begin() + range.first * 3);
 
-                            // restore_deleted_faces() has already restored these fixed indices.
-                            // Only vertices change when reusing a range; leftover faces are nullified below.
+                            // Update face visibility after placement, restoring only previously null faces
+                            // that are actually reused. Live indices already have their final values.
 
                             auto map_it = map_VB_to_range_.find(hash_idx);
                             if (map_it == map_VB_to_range_.end()) {
@@ -525,17 +540,15 @@ unsigned spatial_hash::append_mesh_match_and_insert(bool merge) {
         counter++;
     }
 
-    // mesh nullification (S4.3 stage 4)
-    for (const auto& remaining_range : remaining_deleted_ranges) {
-        std::vector<int> saved_face_vector(std::make_move_iterator(faces_.begin() + remaining_range.first * 3),
-                                           std::make_move_iterator(faces_.begin() + (remaining_range.second + 1) * 3));
-        auto saved_range = std::make_tuple(remaining_range.first, remaining_range.second, std::move(saved_face_vector));
-        nullified_ranges.push_back(std::move(saved_range));
-#ifndef NDEBUG
-        spdlog::get("illixr")->debug("nullifying %u to %u", remaining_range.first, remaining_range.second + 1);
-#endif
-        std::fill(faces_.begin() + remaining_range.first * 3, faces_.begin() + (remaining_range.second + 1) * 3, 0);
-    }
+    // Restore only old holes that were filled, and nullify only newly unused
+    // faces. Persistent holes remain zero, including when ranges split or merge.
+    for_each_range_difference(nullified_ranges_, remaining_deleted_ranges, [this](int first, int last) {
+        std::copy(faces_base_.begin() + first * 3, faces_base_.begin() + (last + 1) * 3, faces_.begin() + first * 3);
+    });
+    for_each_range_difference(remaining_deleted_ranges, nullified_ranges_, [this](int first, int last) {
+        std::fill(faces_.begin() + first * 3, faces_.begin() + (last + 1) * 3, 0);
+    });
+    nullified_ranges_.assign(remaining_deleted_ranges.begin(), remaining_deleted_ranges.end());
 
     faces_.insert(faces_.end(), faces_base_.begin() + static_cast<long>(faces_.size()),
                   faces_base_.begin() + static_cast<long>(faces_.size()) + new_faces * 3);

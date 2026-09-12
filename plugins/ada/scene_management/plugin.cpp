@@ -72,9 +72,6 @@ void scene_management::process_ready_scenes() {
         printf("===Device Mesh Manager: Processing Scene %u with %zu pending chunks===\n", scene_id, update->chunks.size());
         auto const_start = std::chrono::high_resolution_clock::now();
 
-        // pyh step1 restore unused nullified faces
-        grid_.restore_deleted_faces();
-
         auto start = std::chrono::high_resolution_clock::now();
         for (uint i = 0; i < thread_count_; ++i) {
             // pyh this is Partial VB-Aligned Vertex Merging (S4.4)

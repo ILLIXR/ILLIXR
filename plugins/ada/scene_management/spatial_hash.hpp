@@ -19,10 +19,6 @@ using Vector_range = std::tuple<VoxelBlockIndex, int, int>;
 // vertices			colors
 using NewVB = std::tuple<VoxelBlockIndex, std::vector<Eigen::Vector3d>, std::vector<Eigen::Vector3d>>;
 
-// 9/2 used to store nullified ranges, first two are start and end indices of the nullified range, followed by the face vector
-// content using Nullified_Ranges = std::tuple<int, int, std::vector<Eigen::Vector3i>>;
-using Nullified_Ranges = std::tuple<int, int, std::vector<int>>;
-
 class spatial_hash {
 public:
     using SceneUpdateMap    = std::unordered_map<unsigned, std::vector<NewVB>>;
@@ -95,8 +91,6 @@ public:
     unsigned        append_mesh_match_and_insert(bool merge);
     static unsigned hash_vb(const VoxelBlockIndex& Index);
 
-    void restore_deleted_faces();
-
     // utility function
     [[maybe_unused]] void print_mesh_as_obj(unsigned frame_id, unsigned type, const std::string& tr);
 
@@ -113,9 +107,6 @@ public:
     // std::vector<Eigen::Vector3i> faces;
     std::vector<int> faces_;
 
-    // 92 fix mesh nullification by storing the face sub-vectors of deleted_faces
-    std::vector<Nullified_Ranges> nullified_ranges;
-
     // for multi scene merging only should be cleared during normal scenario
     std::set<std::tuple<int, int, int, int>> older_scene_vb_list;
 
@@ -130,6 +121,10 @@ private:
     void append_mesh_allocate_impl(std::shared_ptr<const Map> inputSceneUpdateMap);
 
     std::vector<std::shared_ptr<const void>> input_owners_;
+
+    // Sorted, disjoint inclusive face ranges that were unused after the last update.
+    // Keep only their boundaries; live indices can be recovered from faces_base_.
+    std::vector<std::pair<int, int>> nullified_ranges_;
 };
 
 [[maybe_unused]] void track_time(const std::string& message, const std::function<void()>& func);
