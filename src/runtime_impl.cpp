@@ -86,6 +86,9 @@ public:
             RAC_ERRNO_MSG("runtime_impl before creating the dynamic library");
             return dynamic_lib::create(so_path);
         });
+        for (const auto& library : libraries_) {
+            validate_plugin(library);
+        }
 #ifndef __ANDROID__
         for (auto& i : libraries_) {
             enable_monado_ = enable_monado_ || i.get<n_monado_t>("needs_monado")();
@@ -168,7 +171,8 @@ public:
     }
 
     void load_so(const std::string_view& so) override {
-        auto lib                 = dynamic_lib::create(so);
+        auto lib = dynamic_lib::create(so);
+        validate_plugin(lib);
         auto this_plugin_factory = lib.get<plugin* (*) (phonebook*)>("this_plugin_factory");
         load_plugin_factory(this_plugin_factory);
         libraries_.push_back(std::move(lib));
@@ -223,6 +227,12 @@ public:
     }
 
 private:
+    void validate_plugin(const dynamic_lib& library) {
+        if (const auto validate = library.get_optional<void (*)(phonebook*)>("this_plugin_validate")) {
+            validate(&phonebook_);
+        }
+    }
+
     // I have to keep the dynamic libraries in scope until the program is dead
     std::vector<dynamic_lib>             libraries_;
     phonebook                            phonebook_;

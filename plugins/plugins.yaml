@@ -206,10 +206,12 @@ profiles:
   - ada_device:
     plugins: ada.offline_scannet,tcp_network_backend,ada.device_tx,ada.device_rx,ada.mesh_decompression_grey,ada.scene_management
     env_vars:
+      ada_require_wifi_power_save_off: true
+      illixr_record_logging: "0"
       duration: 1200
       fps: 15
       partial_mesh_count: 8
-      mesh_compress_parallelism: 8
+      mesh_decompress_parallelism: 8
       illixr_is_client: 1
       enable_offload: false
       enable_alignment: false
@@ -219,6 +221,7 @@ profiles:
   - ada_server:
     plugins: tcp_network_backend,ada.server_rx,ada.server_tx,ada.infinitam,ada.mesh_compression
     env_vars:
+      illixr_record_logging: "0"
       duration: 1200
       fps: 15
       partial_mesh_count: 8

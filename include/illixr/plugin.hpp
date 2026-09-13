@@ -30,6 +30,11 @@ MY_EXPORT_API bool needs_monado() {
 
 namespace ILLIXR {
 
+// A plugin may export extern "C" void this_plugin_validate(phonebook*) to check
+// its configuration before any plugin factories run. Only the runtime's basic
+// services (including switchboard environment settings) are available here.
+// Throw std::runtime_error to reject startup with an actionable error message.
+
 using plugin_id_t = std::size_t;
 
 /*
@@ -65,6 +70,9 @@ public:
      */
     virtual void start() {
 #ifndef __ANDROID__
+        if (!record_logging_enabled()) {
+            return;
+        }
         record_logger_->log(record{_plugin_start_header,
                                    {
                                        {id_},

@@ -19,6 +19,7 @@ get_external(Draco)
 add_library(${PLUGIN_NAME} SHARED
             plugin.cpp
             plugin.hpp
+            ordered_scene_updates.hpp
             spatial_hash.cpp
             spatial_hash.hpp
             ${ILLIXR_SOURCE_DIR}/include/illixr/data_format/draco.hpp

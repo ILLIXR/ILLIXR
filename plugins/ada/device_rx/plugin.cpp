@@ -1,5 +1,7 @@
 #include "plugin.hpp"
 
+#include "wifi_power_save.hpp"
+
 #include <spdlog/spdlog.h>
 
 using namespace ILLIXR;
@@ -107,6 +109,13 @@ void device_rx::receive_sr_output(const sr_output_proto::CompressMeshData& sr_ou
         device_unpackage_time_ << "VB " << sr_output.request_id() << " " << duration_ms << " " << sr_output.ByteSizeLong()
                                << "\n";
         device_unpackage_time_.flush();
+    }
+}
+
+extern "C" MY_EXPORT_API void this_plugin_validate(ILLIXR::phonebook* pb) {
+    const auto board = pb->lookup_impl<ILLIXR::switchboard>();
+    if (board->get_env_bool("ADA_REQUIRE_WIFI_POWER_SAVE_OFF", "true")) {
+        ada::wifi::require_power_saving_off(board->get_env("ADA_WIFI_INTERFACE"));
     }
 }
 

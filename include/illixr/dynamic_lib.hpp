@@ -127,6 +127,22 @@ public:
         return (const T) obj;
     }
 
+    // Optional plugin entry points must not leave a missing-symbol error pending
+    // for the next required lookup or library load.
+    template<typename T>
+    T get_optional(const std::string& symbol_name) const {
+#if defined(_WIN32) || defined(_WIN64)
+        return reinterpret_cast<T>(GetProcAddress(static_cast<HMODULE>(handle_.get()), symbol_name.c_str()));
+#else
+        dlerror();
+        void* symbol = dlsym(handle_.get(), symbol_name.c_str());
+        if (dlerror()) {
+            return nullptr;
+        }
+        return reinterpret_cast<T>(symbol);
+#endif
+    }
+
 private:
     explicit dynamic_lib(void_ptr&& handle, std::string lib_path = "")
         : handle_{std::move(handle)}
