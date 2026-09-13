@@ -85,14 +85,34 @@ void compress(const uint idx, std::shared_ptr<switchboard::writer<mesh_type>> wr
                 }
             }
 
+            // Edgebreaker rejects zero-face meshes, and empty attribute streams
+            // do not round-trip through Draco. A native sequential mesh with
+            // no attributes represents an empty chunk in the same wire format.
+            bool empty = true;
+            for (draco_illixr::FaceIndex f(0); f < draco_mesh->num_faces(); ++f) {
+                const auto& face = draco_mesh->face(f);
+                if (face[0] != face[1] && face[1] != face[2] && face[0] != face[2]) {
+                    empty = false;
+                    break;
+                }
+            }
+            if (empty)
+                draco_mesh = std::make_shared<draco_illixr::Mesh>();
             std::unique_ptr<draco_illixr::ExpertEncoder> expert_encoder_ =
                 std::make_unique<draco_illixr::ExpertEncoder>(*draco_mesh);
             expert_encoder_->Reset(encoder_.CreateExpertEncoderOptions(*draco_mesh));
+            if (empty)
+                expert_encoder_->SetEncodingMethod(draco_illixr::MESH_SEQUENTIAL_ENCODING);
 
             // expert_encoder->Reset(encoder.CreateExpertEncoderOptions(*draco_pc));
             draco_illixr::EncoderBuffer draco_buffer;
 
             const draco_illixr::Status status   = expert_encoder_->EncodeToBuffer(&draco_buffer);
+            if (!status.ok()) {
+                spdlog::get("illixr")->error("Failed to encode scene {} chunk {}: {}", datum->id, datum->chunk_id,
+                                             status.error_msg_string());
+                continue;
+            }
             auto                       end      = std::chrono::high_resolution_clock::now();
             auto                       duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
 

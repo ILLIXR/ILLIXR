@@ -124,7 +124,13 @@ void scene_management::process_ready_scenes() {
 
 #if defined VERIFY
         if (frame_count_ >= fps_ && scene_id == (frame_count_ / fps_) - 1) {
-            grid_.print_mesh_as_obj(scene_id, 1, "");
+            const auto output = switchboard_->get_env("ADA_FINAL_MESH_PATH");
+            if (!output.empty()) {
+                const auto parent = std::filesystem::path(output).parent_path();
+                if (!parent.empty())
+                    std::filesystem::create_directories(parent);
+            }
+            grid_.print_mesh_as_obj(scene_id, 1, output);
         }
 #endif
         printf("===Device Mesh Manager: Finished Scene %u===\n", scene_id);

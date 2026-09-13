@@ -1,7 +1,10 @@
 #include "spatial_hash.hpp"
 
 #include <fstream>
+#include <iomanip>
+#include <limits>
 #include <spdlog/spdlog.h>
+#include <stdexcept>
 
 using namespace ILLIXR;
 
@@ -379,20 +382,44 @@ unsigned spatial_hash::append_mesh_match_and_insert(bool merge) {
 }
 
 // pyh verified previously missing \n
-[[maybe_unused]] void spatial_hash::print_mesh_as_obj(unsigned id, unsigned type, const std::string& sub_str) {
+[[maybe_unused]] void spatial_hash::print_mesh_as_obj(unsigned id, unsigned type, const std::string& output_path) {
     (void) type;
-    (void) sub_str;
-    std::string   filename = std::to_string(id) + ".obj";
+    const std::string filename = output_path.empty() ? std::to_string(id) + ".obj" : output_path;
     std::ofstream out_file(filename);
-
-    // Print vertices with colors
-    for (const auto& vertex : vertices_) {
-        out_file << "v " << vertex.x() << " " << vertex.y() << " " << vertex.z() << "\n";
-    }
-    spdlog::get("illixr")->info("Output Mesh has %lu faces", faces_.size());
+    if (!out_file)
+        throw std::runtime_error("Could not create final scene mesh: " + filename);
+    out_file.exceptions(std::ios::badbit | std::ios::failbit);
+    out_file << std::setprecision(std::numeric_limits<float>::max_digits10);
+    // Null faces represent unused storage, not scene geometry. Compact only
+    // the exported indices; never modify the live scene or its free ranges.
+    std::vector<int> remap(vertices_.size(), -1);
+    size_t           face_count = 0;
+    if (faces_.size() % 3 != 0)
+        throw std::runtime_error("Invalid scene face array size");
     for (size_t i = 0; i < faces_.size(); i += 3) {
-        out_file << "f " << faces_[i] + 1 << " " << faces_[i + 1] + 1 << " " << faces_[i + 2] + 1 << "\n";
+        if (faces_[i] == 0 && faces_[i + 1] == 0 && faces_[i + 2] == 0)
+            continue;
+        for (size_t c = 0; c < 3; ++c) {
+            const int index = faces_[i + c];
+            if (index < 0 || static_cast<size_t>(index) >= vertices_.size())
+                throw std::runtime_error("Invalid vertex index in final scene mesh");
+            remap[index] = -2;
+        }
+        ++face_count;
+    }
+    int vertex_count = 0;
+    for (size_t i = 0; i < vertices_.size(); ++i) {
+        if (remap[i] != -2)
+            continue;
+        remap[i]           = ++vertex_count;
+        const auto& vertex = vertices_[i];
+        out_file << "v " << vertex.x() << ' ' << vertex.y() << ' ' << vertex.z() << '\n';
+    }
+    for (size_t i = 0; i < faces_.size(); i += 3) {
+        if (faces_[i] == 0 && faces_[i + 1] == 0 && faces_[i + 2] == 0)
+            continue;
+        out_file << "f " << remap[faces_[i]] << ' ' << remap[faces_[i + 1]] << ' ' << remap[faces_[i + 2]] << '\n';
     }
     out_file.close();
-    spdlog::get("illixr")->info("Mesh successfully written to {}", filename);
+    spdlog::get("illixr")->info("Final scene mesh written to {}: {} vertices, {} faces", filename, vertex_count, face_count);
 }
