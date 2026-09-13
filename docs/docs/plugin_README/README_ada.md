@@ -95,7 +95,7 @@ To change a default, edit the corresponding value in your configuration file.
 ```yaml
 plugins: ada.offline_scannet,tcp_network_backend,ada.device_tx,ada.device_rx,ada.mesh_decompression_grey,ada.scene_management
 env_vars:
-  ADA_DISABLE_WIFI_POWER_SAVE: true
+  ADA_REQUIRE_WIFI_POWER_SAVE_OFF: true
   ILLIXR_RECORD_LOGGING: "0"
   ILLIXR_RUN_DURATION: 1200
   ILLIXR_DATA: /home/illixr/Downloads/scannet_0005
@@ -137,7 +137,7 @@ env_vars:
 ```
 The above examples set the following environment variables:
 
- - **ADA_DISABLE_WIFI_POWER_SAVE**: `true` makes the Ada client check and disable Wi-Fi power saving at startup. Set `false` to leave the setting alone.
+ - **ADA_REQUIRE_WIFI_POWER_SAVE_OFF**: `true` makes the Ada client check Wi-Fi power saving before starting the pipeline. If it is on, startup stops and prints the command to disable it. Set `false` to skip this check.
  - **ILLIXR_RECORD_LOGGING**: `"0"` disables ILLIXR structured performance records; set `"1"` to enable them. Ada timing CSVs and diagnostic messages are controlled separately.
  - **ILLIXR_RUN_DURATION**: how long you want to run ILLIXR (in seconds)
  - **ILLIXR_DATA**: the location of the data set
@@ -178,39 +178,36 @@ The role flag: ILLIXR_IS_CLIENT = 1 (device) vs 0 (server).
 
 ### Jetson Wi-Fi Power Saving
 
-The Ada client automatically checks Wi-Fi power saving during startup, including
-when launched directly with `main.opt.exe`. This behavior defaults to enabled
-even in custom configurations that omit `ADA_DISABLE_WIFI_POWER_SAVE`.
-It detects the active wireless interface instead of assuming its name is `wlan0`.
-If multiple wireless interfaces are active, set `ADA_WIFI_INTERFACE` in your
-device configuration to select the one Ada uses. With no active wireless
-interface, it skips the setup.
+The Ada client checks Wi-Fi power saving before constructing plugins or connecting
+to the server, including when launched directly with `main.opt.exe`. This check
+defaults to enabled even in custom configurations that omit
+`ADA_REQUIRE_WIFI_POWER_SAVE_OFF`.
 
-If power saving is already off, no change is needed. Otherwise, the client runs
-`iw dev INTERFACE set power_save off`, retries with `sudo -n` if necessary, and
-verifies the setting with `iw dev INTERFACE get power_save`. Commands run once at
-startup with a two-second timeout per command. They never request a password
-inside the client. If `iw` is unavailable, permission is denied, or verification
-fails, Ada logs a warning and continues. Set `ADA_DISABLE_WIFI_POWER_SAVE: false`
-to opt out.
+Ada detects the active wireless interface and runs the unprivileged query
+`iw dev INTERFACE get power_save`. If power saving is off, startup continues.
+If it is on, Ada exits with a nonzero status and prints a message on the device,
+using its actual interface name and the installed `iw` path. For example:
 
-Changing the setting requires administrator permission. On a new Jetson, an
-administrator can allow only the specific power-save-off command for the Ada
-user with `sudo visudo -f /etc/sudoers.d/ada-wifi`:
-
-```sudoers
-YOUR_USER ALL=(root) NOPASSWD: /usr/sbin/iw dev wlan0 set power_save off
+```text
+[Ada Wi-Fi] Startup stopped: Wi-Fi power saving is ON on wlan0.
+Run this command in a terminal on this device:
+  sudo /usr/sbin/iw dev wlan0 set power_save off
+Then restart the Ada client.
 ```
 
-The [sudoers command policy](https://www.sudo.ws/docs/man/1.9.14/sudoers.man.pdf)
-limits this permission to the listed executable and arguments.
-Replace `YOUR_USER`, the interface name, and the `iw` path (check with
-`command -v iw`) for that device. This lets client startup disable power saving
-without running Ada itself as root.
+Run the printed command yourself and restart Ada. Ada only reads the setting;
+it does not run sudo, request a password, or change network settings.
+The query has a two-second timeout. If `iw` is missing or the state cannot be
+verified, startup stops with instructions for resolving the problem.
 
-Alternatively, disable power saving persistently in the Jetson's NetworkManager
-connection profile. This also keeps it off when the Wi-Fi reconnects during a run;
-Ada's startup command alone does not change the saved profile. List profiles
+If multiple wireless interfaces are active, set `ADA_WIFI_INTERFACE` in your
+device configuration to the interface Ada uses. With no active wireless
+interface, the check is skipped. Set `ADA_REQUIRE_WIFI_POWER_SAVE_OFF: false`
+to skip the check explicitly. Rebuild and install both the ILLIXR runtime and
+`ada.device_rx` to use this validation before plugin construction.
+
+To keep power saving off when Wi-Fi reconnects, you can also save the setting in
+the Jetson's NetworkManager connection profile. List profiles
 with `nmcli connection show --active`, then replace `YOUR_WIFI_PROFILE` below with
 the active Wi-Fi connection name:
 

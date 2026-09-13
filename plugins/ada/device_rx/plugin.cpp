@@ -18,9 +18,6 @@ using namespace ILLIXR::data_format;
 
     // pyh handling Unique Voxel Block List (UVBL)
     , vb_{switchboard_->get_writer<vb_type>("VB_update_lists")} {
-    if (switchboard_->get_env_bool("ADA_DISABLE_WIFI_POWER_SAVE", "true")) {
-        ada::wifi::disable_power_saving(switchboard_->get_env("ADA_WIFI_INTERFACE"));
-    }
     chunck_number_ = switchboard_->get_env_ulong("MESH_DECOMPRESS_PARALLELISM", 8);
 
     std::filesystem::create_directories(data_path_);
@@ -112,6 +109,13 @@ void device_rx::receive_sr_output(const sr_output_proto::CompressMeshData& sr_ou
         device_unpackage_time_ << "VB " << sr_output.request_id() << " " << duration_ms << " " << sr_output.ByteSizeLong()
                                << "\n";
         device_unpackage_time_.flush();
+    }
+}
+
+extern "C" MY_EXPORT_API void this_plugin_validate(ILLIXR::phonebook* pb) {
+    const auto board = pb->lookup_impl<ILLIXR::switchboard>();
+    if (board->get_env_bool("ADA_REQUIRE_WIFI_POWER_SAVE_OFF", "true")) {
+        ada::wifi::require_power_saving_off(board->get_env("ADA_WIFI_INTERFACE"));
     }
 }
 

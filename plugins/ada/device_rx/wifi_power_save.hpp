@@ -12,6 +12,7 @@
 #include <memory>
 #include <spawn.h>
 #include <spdlog/spdlog.h>
+#include <stdexcept>
 #include <string>
 #include <sys/wait.h>
 #include <thread>
@@ -133,67 +134,57 @@ inline std::string system_executable(const std::string& name) {
     return {};
 }
 
-inline bool is_off(const command_result& result) {
-    return result.status == 0 && result.output.find("Power save: off") != std::string::npos;
-}
-
-inline bool disable_on_interface(const std::string& interface, const std::string& iw, const std::string& sudo) {
-    const auto                     logger = spdlog::get("illixr");
+inline void require_off_on_interface(const std::string& interface, const std::string& iw) {
     const std::vector<std::string> query{iw, "dev", interface, "get", "power_save"};
-    if (is_off(run_command(query))) {
-        logger->info("[Ada Wi-Fi] {} power saving is already off", interface);
-        return true;
+    const auto                     result = run_command(query);
+    const auto                     begin  = result.output.find_first_not_of(" \t\r\n");
+    const auto                     end    = result.output.find_last_not_of(" \t\r\n");
+    const auto state = begin == std::string::npos ? std::string{} : result.output.substr(begin, end - begin + 1);
+    if (result.status == 0 && state == "Power save: off") {
+        spdlog::get("illixr")->info("[Ada Wi-Fi] {} power saving is off", interface);
+        return;
     }
-    const std::vector<std::string> command{iw, "dev", interface, "set", "power_save", "off"};
-    auto                           result = run_command(command);
-    if (result.status != 0 && !sudo.empty()) {
-        std::vector<std::string> elevated{sudo, "-n", "--"};
-        elevated.insert(elevated.end(), command.begin(), command.end());
-        result = run_command(elevated);
+    if (result.status == 0 && state == "Power save: on") {
+        throw std::runtime_error{"[Ada Wi-Fi] Startup stopped: Wi-Fi power saving is ON on " + interface +
+                                 ".\nRun this command in a terminal on this device:\n  sudo " + iw + " dev " + interface +
+                                 " set power_save off\nThen restart the Ada client."};
     }
-    if (result.status == 0) {
-        result = run_command(query);
-        if (is_off(result)) {
-            logger->info("[Ada Wi-Fi] Disabled power saving on {}", interface);
-            return true;
-        }
-    }
-    logger->warn("[Ada Wi-Fi] Could not verify power saving is off on {}. Run 'sudo {} dev {} set power_save off' "
-                 "or disable it in the NetworkManager profile. Ada will continue. Command result: {}",
-                 interface, iw, interface, result.output);
-    return false;
+    throw std::runtime_error{"[Ada Wi-Fi] Startup stopped: could not verify Wi-Fi power saving on " + interface +
+                             ".\nCheck it on this device with:\n  " + iw + " dev " + interface +
+                             " get power_save\nIf it is on, run:\n  sudo " + iw + " dev " + interface +
+                             " set power_save off\nThen restart the Ada client.\nQuery result: " + result.output};
 }
 
-// Called once while constructing the Ada client, before the runtime releases
-// its startup barrier. No subprocesses or setting changes occur per mesh update.
-inline void disable_power_saving(std::string interface) {
+// Read-only validation before any plugin is constructed or connects to a peer.
+// The user changes the setting outside Ada; this code never invokes sudo.
+inline void require_power_saving_off(std::string interface) {
     const auto logger = spdlog::get("illixr");
     try {
         if (interface.empty()) {
             const auto interfaces = active_interfaces("/sys/class/net");
             if (interfaces.empty()) {
-                logger->info("[Ada Wi-Fi] No active wireless interface; skipping power-save setup");
+                logger->info("[Ada Wi-Fi] No active wireless interface; skipping power-save check");
                 return;
             }
             if (interfaces.size() != 1) {
-                logger->warn("[Ada Wi-Fi] Multiple active wireless interfaces; set ADA_WIFI_INTERFACE to select one. "
-                             "Ada will continue without changing power saving.");
-                return;
+                throw std::runtime_error{"[Ada Wi-Fi] Startup stopped: multiple active wireless interfaces. "
+                                         "Set ADA_WIFI_INTERFACE in the device configuration to the interface Ada uses."};
             }
             interface = interfaces.front();
         }
         if (!valid_interface_name(interface) || !is_wireless(std::filesystem::path{"/sys/class/net"} / interface)) {
-            logger->warn("[Ada Wi-Fi] Invalid or unavailable wireless interface '{}'; skipping power-save setup", interface);
-            return;
+            throw std::runtime_error{"[Ada Wi-Fi] Startup stopped: invalid or unavailable wireless interface '" + interface +
+                                     "'. Set ADA_WIFI_INTERFACE to an existing wireless interface."};
         }
         const auto iw = system_executable("iw");
         if (iw.empty()) {
-            logger->warn("[Ada Wi-Fi] Install the iw package to disable Wi-Fi power saving automatically. Ada will continue.");
-            return;
+            throw std::runtime_error{"[Ada Wi-Fi] Startup stopped: iw is not installed.\nRun this command on the device:\n"
+                                     "  sudo apt-get install iw\nThen restart the Ada client."};
         }
-        disable_on_interface(interface, iw, system_executable("sudo"));
+        require_off_on_interface(interface, iw);
     } catch (const std::filesystem::filesystem_error& error) {
-        logger->warn("[Ada Wi-Fi] Could not inspect wireless interfaces: {}. Ada will continue.", error.what());
+        throw std::runtime_error{std::string{"[Ada Wi-Fi] Startup stopped: could not inspect wireless interfaces: "} +
+                                 error.what()};
     }
 }
 
