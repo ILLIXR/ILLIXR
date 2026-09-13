@@ -126,6 +126,16 @@ public:
         output.clear();
         output.reserve(256);
 
+        // A native empty Draco mesh has no attributes. It still completes this
+        // chunk; the extraction's block list removes any disappearing geometry.
+        if (mesh.num_faces() == 0) {
+            chunk->vertices.clear();
+            chunk->face_blocks.clear();
+            chunk->ranges.clear();
+            chunk->cursors.clear();
+            return chunk;
+        }
+
         const auto* positions = mesh.GetNamedAttribute(draco_illixr::GeometryAttribute::POSITION);
         const int   ids_id    = mesh.GetAttributeIdByMetadataEntry("attribute_name", "_VOXELBLOCK_ID");
         const int   vb_id     = mesh.GetAttributeIdByMetadataEntry("attribute_name", "_VOXELBLOCK_INFO");
