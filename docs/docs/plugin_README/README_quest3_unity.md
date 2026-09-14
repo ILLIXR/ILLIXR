@@ -15,6 +15,6 @@ is also captured and attached to the image before transmission.
 ## Depth images
 
 The depth images cannot be directly accessed from the Quest 3. Instead, they are retrieved using OpenXR calls through
-the Unity app's OpenXR interface. This part of the plugin relies on C# code in the [SemanticXR][L10] repository.
+the Unity app's OpenXR interface. This part of the plugin relies on C# code in the [SemanticXR-Quest-Client][L10] repository.
 
-[L10]:  https://github.com/ILLIXR/SemanticXR/blob/illixr/integration
+[L10]:  https://github.com/rsingh76/SemanticXR-Quest-Client
