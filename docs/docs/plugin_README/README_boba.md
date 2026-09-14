@@ -54,6 +54,11 @@ Sloth, and Lab assets. The runtime includes the shared frame-generation and CPU
 loading-image fixes; setup no longer applies patches to external checkouts.
 There are no Boba-Public archives or separate Boba-Demo downloads.
 
+The first environment installation downloads several gigabytes of Python/CUDA
+packages. Conda can display `Installing pip dependencies: ...working...` for
+an extended period because it prints pip's output after that phase completes.
+Subsequent setup runs reuse the environment and verified CUDA builds.
+
 SSH is the default transport. For an HTTPS credential helper, add
 `--repository https://github.com/ILLIXR/Boba-ILLIXR.git`. GitHub access is required
 only for installation/update; the default demo can then run without Internet.
