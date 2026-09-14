@@ -89,6 +89,7 @@ int main(int argc, const char* argv[]) {
         setenv("ILLIXR_IS_CLIENT", "1", true);
         setenv("ILLIXR_USE_DEPTH_IMAGES", "0", true);
         setenv("ILLIXR_USE_MOTION_VECTOR_IMAGES", "0", true);
+        setenv("ILLIXR_OVERSCAN", "1.1", true); // overscanning
 #    else
     cxxopts::Options options("ILLIXR", "Main program");
     options.show_positional_help();

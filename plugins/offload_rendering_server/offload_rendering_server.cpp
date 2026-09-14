@@ -18,6 +18,7 @@ using namespace ILLIXR;
 using namespace ILLIXR::data_format;
 
 #ifndef NVENC_ENCODER
+#    include "ffmpeg_queued_frame.hpp"
 using namespace vulkan::ffmpeg_utils;
 #elif DUMP_FRAMES
 #    include "nvenc/frame_saver_integration.hpp"
@@ -90,9 +91,11 @@ void offload_rendering_server::stop() {
 }
 
 void offload_rendering_server::_p_thread_setup() {
+    log_->info("Server render FOV: headset={}", server_params::headset);
 #ifdef OPENXR_CLIENT
-    hmd_setup_.recommended_image_width  = (uint32_t) (1680 * overscan_);
-    hmd_setup_.recommended_image_height = (uint32_t) (1760 * overscan_);
+    display_params disp_p;
+    hmd_setup_.recommended_image_width  = (uint32_t) (disp_p.width_pixels * overscan_ / 2.);
+    hmd_setup_.recommended_image_height = (uint32_t) (disp_p.height_pixels * overscan_);
     for (int eye = 0; eye < 2; eye++) {
         hmd_setup_.fov_angle_left[eye]  = overscan_ * ILLIXR::server_params::fov_left[eye];
         hmd_setup_.fov_angle_right[eye] = overscan_ * ILLIXR::server_params::fov_right[eye];
@@ -252,6 +255,18 @@ void offload_rendering_server::_p_one_iteration() {
         return;
     }
 
+    // Skip rendering input before encoding when the sender falls behind.
+    // Dropping an already encoded picture breaks HEVC reference chains for
+    // subsequent pictures, even though TCP delivers the remaining bytes intact.
+    // This thread is the only producer; the sender can only shrink the queue
+    // between this check and enqueueing the encoded frame below.
+    {
+        std::lock_guard<std::mutex> lock(send_queue_mutex_);
+        if (send_queue_.size() >= MAX_QUEUE_DEPTH) {
+            return;
+        }
+    }
+
     // Import images on first frame ONLY (one-time operation)
     if (!framebuffers_imported_.load()) {
 #ifdef NVENC_ENCODER
@@ -408,6 +423,17 @@ void offload_rendering_server::_p_one_iteration() {
 
     // Calculate timing metrics
     auto encode_time = std::chrono::duration_cast<std::chrono::microseconds>(encode_end_time - encode_start_time).count();
+    // Catch transient stalls that disappear in one-second averages (both eyes;
+    // includes the input GPU transfer on the FFmpeg path).
+    if (encode_time >= 10000) {
+        size_t queued_frames;
+        {
+            std::lock_guard<std::mutex> lock(send_queue_mutex_);
+            queued_frames = send_queue_.size();
+        }
+        log_->warn("[OFFLOAD_SLOW_ENCODE] frame={} encode_ms={:.2f} send_queue={}", frame_number_, encode_time / 1000.0,
+                   queued_frames);
+    }
     auto acquire_image_time =
         std::chrono::duration_cast<std::chrono::microseconds>(acquire_image_end_time - acquire_image_start_time).count();
 
@@ -541,9 +567,6 @@ void offload_rendering_server::enqueue_for_network_send(BUFFER_TYPE& pose
 
     {
         std::lock_guard<std::mutex> lock(send_queue_mutex_);
-        while (send_queue_.size() >= MAX_QUEUE_DEPTH) {
-            send_queue_.pop_front(); // drops oldest
-        }
         send_queue_.push_back(std::move(frame));
     }
     send_queue_cv_.notify_one();
@@ -553,20 +576,20 @@ void offload_rendering_server::enqueue_for_network_send(BUFFER_TYPE& pose
     std::shared_ptr<compressed_frame> frame;
 #    ifdef _WIN32
     if (use_pass_motion_vectors_) {
-        frame = std::make_shared<compressed_frame>(encode_out_color_packets_[0], encode_out_color_packets_[1],
-                                                   encode_out_depth_packets_[0], encode_out_depth_packets_[1],
-                                                   encode_out_motion_vec_packets_[0], encode_out_motion_vec_packets_[1], pose,
-                                                   timestamp, frame_number_, near_z_, far_z_, nalu_only_);
+        frame = make_ffmpeg_queued_frame(encode_out_color_packets_[0], encode_out_color_packets_[1],
+                                         encode_out_depth_packets_[0], encode_out_depth_packets_[1],
+                                         encode_out_motion_vec_packets_[0], encode_out_motion_vec_packets_[1], pose, timestamp,
+                                         frame_number_, near_z_, far_z_, nalu_only_);
     } else if (use_pass_depth_) {
 #    else
     if (use_pass_depth_) {
 #    endif
-        frame = std::make_shared<compressed_frame>(encode_out_color_packets_[0], encode_out_color_packets_[1],
-                                                   encode_out_depth_packets_[0], encode_out_depth_packets_[1], pose, timestamp,
-                                                   frame_number_, near_z_, far_z_, nalu_only_);
+        frame =
+            make_ffmpeg_queued_frame(encode_out_color_packets_[0], encode_out_color_packets_[1], encode_out_depth_packets_[0],
+                                     encode_out_depth_packets_[1], pose, timestamp, frame_number_, near_z_, far_z_, nalu_only_);
     } else {
-        frame = std::make_shared<compressed_frame>(encode_out_color_packets_[0], encode_out_color_packets_[1], pose, timestamp,
-                                                   frame_number_, nalu_only_);
+        frame = make_ffmpeg_queued_frame(encode_out_color_packets_[0], encode_out_color_packets_[1], pose, timestamp,
+                                         frame_number_, nalu_only_);
     }
 
 #    ifdef OPENXR_CLIENT
@@ -586,9 +609,6 @@ void offload_rendering_server::enqueue_for_network_send(BUFFER_TYPE& pose
 
     {
         std::lock_guard<std::mutex> lock(send_queue_mutex_);
-        while (send_queue_.size() >= MAX_QUEUE_DEPTH) {
-            send_queue_.pop_front(); // drops oldest
-        }
         send_queue_.push_back(std::move(frame));
     }
     send_queue_cv_.notify_one();

@@ -49,9 +49,11 @@ template<class Archive>
 static void load_packet(Archive& ar, AVPacket* pkt) {
     int32_t pkt_size; // Use fixed-width type
     ar >> pkt_size;
-    pkt->size = pkt_size;
-    pkt->buf  = av_buffer_alloc(pkt->size);
-    pkt->data = pkt->buf->data;
+    // FFmpeg's bitstream readers require zeroed AV_INPUT_BUFFER_PADDING_SIZE
+    // bytes beyond the payload. A payload-sized av_buffer_alloc is insufficient.
+    if (pkt_size < 0 || av_new_packet(pkt, pkt_size) < 0) {
+        throw std::runtime_error{"Failed to allocate received video packet"};
+    }
     ar >> boost::serialization::make_array(pkt->data, pkt->size);
     ar >> pkt->pts;
     ar >> pkt->dts;
@@ -63,17 +65,20 @@ static void load_packet(Archive& ar, AVPacket* pkt) {
     ar >> pkt->time_base.den;
     int32_t side_data_elems; // Use fixed-width type
     ar >> side_data_elems;
-    pkt->side_data_elems = side_data_elems;
-    pkt->side_data       = (AVPacketSideData*) malloc(sizeof(AVPacketSideData) * pkt->side_data_elems);
-    for (int i = 0; i < pkt->side_data_elems; i++) {
+    if (side_data_elems < 0) {
+        throw std::runtime_error{"Invalid video packet side-data count"};
+    }
+    for (int i = 0; i < side_data_elems; i++) {
         int32_t  side_data_type;
         uint64_t side_data_size;
         ar >> side_data_type;
         ar >> side_data_size;
-        pkt->side_data[i].type = static_cast<AVPacketSideDataType>(side_data_type);
-        pkt->side_data[i].size = static_cast<size_t>(side_data_size);
-        pkt->side_data[i].data = (uint8_t*) malloc(pkt->side_data[i].size);
-        ar >> boost::serialization::make_array(pkt->side_data[i].data, pkt->side_data[i].size);
+        auto* data = av_packet_new_side_data(pkt, static_cast<AVPacketSideDataType>(side_data_type),
+                                             static_cast<size_t>(side_data_size));
+        if (data == nullptr) {
+            throw std::runtime_error{"Failed to allocate received video packet side data"};
+        }
+        ar >> boost::serialization::make_array(data, static_cast<size_t>(side_data_size));
     }
 }
 

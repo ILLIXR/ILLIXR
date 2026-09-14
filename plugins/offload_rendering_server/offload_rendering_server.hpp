@@ -103,7 +103,7 @@ public:
      * received from the client. Also forwards hand tracking data to the
      * switchboard for Monado (only once per new data arrival).
      */
-    POSE_TYPE get_fast_pose() const override {
+    [[nodiscard]] POSE_TYPE get_fast_pose() const override {
         return pose_relay_->get_pose();
     }
 
@@ -119,21 +119,21 @@ public:
     /**
      * @brief Get predicted pose for a future time point (returns current pose)
      */
-    POSE_TYPE get_fast_pose(POSE_TIME_TYPE future_time) const override {
+    [[nodiscard]] POSE_TYPE get_fast_pose(POSE_TIME_TYPE future_time) const override {
         return pose_relay_->get_pose(future_time);
     }
 
     /**
      * @brief Check if fast pose data is reliable
      */
-    bool fast_pose_reliable() const override {
+    [[nodiscard]] bool fast_pose_reliable() const override {
         return pose_relay_->fast_pose_reliable();
     }
 
     /**
      * @brief Check if true pose data is reliable (always false in this implementation)
      */
-    bool true_pose_reliable() const override {
+    [[nodiscard]] bool true_pose_reliable() const override {
         return false;
     }
 
@@ -154,7 +154,7 @@ public:
     /**
      * @brief Correct pose data (no-op in this implementation)
      */
-    data_format::pose::head_pose_type correct_pose(const data_format::pose::head_pose_type& pose) const override {
+    [[nodiscard]] data_format::pose::head_pose_type correct_pose(const data_format::pose::head_pose_type& pose) const override {
         (void) pose;
         return {};
     }

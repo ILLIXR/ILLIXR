@@ -1288,14 +1288,15 @@ bool stereo_renderer::create_depth_pipeline(const imported_image& prototype, VkF
     VkShaderModule vert_mod = create_shader_module(device_, color_vert_spv, sizeof(color_vert_spv) / sizeof(uint32_t));
     VkShaderModule frag_mod = create_shader_module(device_, depth_frag_spv, sizeof(depth_frag_spv) / sizeof(uint32_t));
     VkPipelineShaderStageCreateInfo stages[2] = {};
-    stages[0].sType                           = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-    stages[0].stage                           = VK_SHADER_STAGE_VERTEX_BIT;
-    stages[0].module                          = vert_mod;
-    stages[0].pName                           = "main";
-    stages[1].sType                           = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-    stages[1].stage                           = VK_SHADER_STAGE_FRAGMENT_BIT;
-    stages[1].module                          = frag_mod;
-    stages[1].pName                           = "main";
+
+    stages[0].sType  = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+    stages[0].stage  = VK_SHADER_STAGE_VERTEX_BIT;
+    stages[0].module = vert_mod;
+    stages[0].pName  = "main";
+    stages[1].sType  = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+    stages[1].stage  = VK_SHADER_STAGE_FRAGMENT_BIT;
+    stages[1].module = frag_mod;
+    stages[1].pName  = "main";
 
     // Fixed-function state
     VkPipelineVertexInputStateCreateInfo   vertex_input{VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO};
