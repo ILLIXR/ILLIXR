@@ -9,6 +9,10 @@ renderer, immersive game logic, assets, and CUDA environment setup. The ILLIXR
 plugins launch that runtime, deliver headset/controller poses, and return its
 rendered stereo images to the headset.
 
+For a step-by-step walkthrough from desktop setup through building, installing,
+and running the Quest APK, see the
+[Boba-ILLIXR operator guide](https://github.com/ILLIXR/Boba-ILLIXR/blob/main/IMMERSIVE_DEMO_OPERATOR_GUIDE.md).
+
 Two Quest 3 paths are available:
 
 - `boba_quest_native_server` uses the native ILLIXR Quest app and ILLIXR's
@@ -50,7 +54,7 @@ workspace/
   Boba-ILLIXR/  # simulation, renderer, immersive games, assets, environment setup
 ```
 
-The installer pins Boba-ILLIXR to `f4b75e611e0d7540cbe4dee6f2efb7e41bbf3772`, retrieves its Git
+The installer pins Boba-ILLIXR to `07278e9de566d05bf71aaca079254c644790ae35`, retrieves its Git
 LFS assets through the same public repository, and runs its
 `env_install/setup.sh`. That script creates or validates `boba-cu132`, builds the
 bundled CUDA/OpenGL, gsplat, and cuSOLVER extensions, and validates the Rope,
@@ -176,14 +180,6 @@ for your device's value. The `device` status means USB debugging is authorized.
 If it says `unauthorized`, accept the USB debugging prompt inside the headset
 and run `adb devices` again.
 
-Activate the ILLIXR Conda environment so the host-side `protoc` compiler is
-available, then run from the source checkout:
-
-```bash
-conda activate illixr
-./scripts/install_quest_app.sh --boba
-```
-
 With `--boba`, the script defaults to an optimized Release APK. Use `--debug`
 only when debugging the native application; an unoptimized Debug build is not a
 performance baseline. The signing keystore remains at `$HOME/illixr.keystore`.
@@ -201,6 +197,14 @@ This follows the repository's existing local research-build signing configuratio
 The key stays outside both source repositories.
 The helper's local sideload flag excludes only the Google Play target-API lint
 rule; all other release checks still run.
+
+Activate the ILLIXR Conda environment so the host-side `protoc` compiler is
+available, then run from the source checkout:
+
+```bash
+conda activate illixr
+./scripts/install_quest_app.sh --boba
+```
 
 The script builds the APK, installs it, launches `ILLIXRApp`, and prints the
 Quest's Wi-Fi address and the corresponding desktop option. Use `--no-build` to
