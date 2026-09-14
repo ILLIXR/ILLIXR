@@ -90,6 +90,9 @@ private:
                          data_format::boba_frame_overlay&& overlay, const data_format::boba_modal_overlay& modal,
                          double encode_time_us);
 
+    /** Report producer rejection, encoding, and synchronous TCP publication separately. */
+    void report_metrics();
+
     // Local input and network transports.
     const std::shared_ptr<switchboard>                           switchboard_;
     switchboard::reader<data_format::stereo_frame>               stereo_reader_;
@@ -109,10 +112,15 @@ private:
     // Runtime encoding configuration and one-second rolling metrics.
     std::int64_t                          bitrate_{30'000'000};
     int                                   framerate_{72};
+    std::chrono::steady_clock::time_point next_frame_time_{};
     std::chrono::steady_clock::time_point metrics_start_{std::chrono::steady_clock::now()};
     std::uint64_t                         metrics_frames_{0};
     std::uint64_t                         metrics_bytes_{0};
+    std::uint64_t                         metrics_encode_attempts_{0};
+    std::uint64_t                         metrics_rejected_{0};
+    std::uint64_t                         metrics_source_skips_{0};
     double                                metrics_encode_us_{0.0};
+    double                                metrics_send_us_{0.0};
 };
 
 } // namespace ILLIXR

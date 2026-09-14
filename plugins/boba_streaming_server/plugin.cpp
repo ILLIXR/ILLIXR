@@ -79,8 +79,16 @@ boba_streaming_server::~boba_streaming_server() = default;
 // The threadloop polls switchboard state but yields when no new producer
 // generation is available, avoiding a busy spin at the desktop frame rate.
 threadloop::skip_option boba_streaming_server::_p_should_skip() {
+    report_metrics();
+    const auto now = std::chrono::steady_clock::now();
+    if (now < next_frame_time_) {
+        // Keep stop responsiveness while pacing actual submissions to NVENC.
+        std::this_thread::sleep_until(std::min(next_frame_time_, now + std::chrono::milliseconds(1)));
+        return skip_option::skip_and_yield;
+    }
     const auto frame = stereo_reader_.get_ro_nullable();
     if (frame == nullptr || frame->source_frame_id == 0 || frame->source_frame_id <= last_frame_id_) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
         return skip_option::skip_and_yield;
     }
     return skip_option::run;
@@ -279,6 +287,11 @@ void boba_streaming_server::_p_one_iteration() {
     }
     // Mark this ID as handled even when invalid so a malformed ring slot cannot
     // spin the thread indefinitely; the next Boba frame remains eligible.
+    if (last_frame_id_ != 0) {
+        metrics_source_skips_ += frame->source_frame_id - last_frame_id_ - 1;
+    } else {
+        metrics_start_ = std::chrono::steady_clock::now();
+    }
     last_frame_id_ = frame->source_frame_id;
     if (frame->format != data_format::stereo_pixel_format::rgba8_unorm ||
         !map_file(frame->pixel_buffer_path, &frame_mapping_) || !image_range_valid(frame->left) ||
@@ -286,6 +299,7 @@ void boba_streaming_server::_p_one_iteration() {
         frame->left.height != frame->right.height ||
         !generation_matches(frame_mapping_, frame->pixel_generation_offset, frame->source_frame_id)) {
         plugin_logger_->warn("Dropping unsupported or stale Boba stereo frame {}", frame->source_frame_id);
+        ++metrics_rejected_;
         return;
     }
 
@@ -297,6 +311,7 @@ void boba_streaming_server::_p_one_iteration() {
             !generation_matches(overlay_mapping_, frame->overlay_generation_offset, frame->source_frame_id) ||
             !overlay_range_valid(frame->left_overlay_commands) || !overlay_range_valid(frame->right_overlay_commands)) {
             plugin_logger_->debug("Waiting for matching Boba overlay generation {}", frame->source_frame_id);
+            ++metrics_rejected_;
             return;
         }
         overlay_generation_required = true;
@@ -322,6 +337,7 @@ void boba_streaming_server::_p_one_iteration() {
             !generation_matches(modal_mapping_, frame->modal_generation_offset, frame->source_frame_id) ||
             !modal_range_valid(frame->modal)) {
             plugin_logger_->debug("Waiting for matching Boba modal generation {}", frame->source_frame_id);
+            ++metrics_rejected_;
             return;
         }
         modal_generation_required = true;
@@ -346,53 +362,73 @@ void boba_streaming_server::_p_one_iteration() {
         modal_mapping_.reset();
         if (frame->modal.visible) {
             plugin_logger_->warn("Boba frame {} declares a modal without a modal ring", frame->source_frame_id);
+            ++metrics_rejected_;
             return;
         }
     }
 
-    // Encode directly from the mmap rows. Generation markers are checked again
-    // afterward, giving the ring a seqlock-like stale-read guard without copying
-    // both high-resolution eye images on the CPU.
+    // Upload directly from mmap, then validate every copied ring before NVENC
+    // consumes the CUDA snapshot. Ring recycling after that point is harmless.
     initialize_encoder();
-    const auto*               left        = frame_mapping_.data + frame->left.byte_offset;
-    const auto*               right       = frame_mapping_.data + frame->right.byte_offset;
-    const std::size_t         left_pitch  = frame->left.row_stride_bytes;
-    const std::size_t         right_pitch = frame->right.row_stride_bytes;
-    const auto                start       = std::chrono::steady_clock::now();
+    const auto*       left           = frame_mapping_.data + frame->left.byte_offset;
+    const auto*       right          = frame_mapping_.data + frame->right.byte_offset;
+    const std::size_t left_pitch     = frame->left.row_stride_bytes;
+    const std::size_t right_pitch    = frame->right.row_stride_bytes;
+    const auto        start          = std::chrono::steady_clock::now();
+    bool              input_current  = true;
+    const auto        validate_input = [&] {
+        input_current = generation_matches(frame_mapping_, frame->pixel_generation_offset, frame->source_frame_id) &&
+            (!overlay_generation_required ||
+             generation_matches(overlay_mapping_, frame->overlay_generation_offset, frame->source_frame_id)) &&
+            (!modal_generation_required ||
+             generation_matches(modal_mapping_, frame->modal_generation_offset, frame->source_frame_id));
+        return input_current;
+    };
     std::vector<std::uint8_t> encoded =
         encoder_->encode_rgba_stereo(left, left_pitch, right, right_pitch, frame->left.width, frame->left.height,
-                                     frame->origin == data_format::stereo_image_origin::upper_left);
+                                     frame->origin == data_format::stereo_image_origin::upper_left, validate_input);
     const double encode_us = static_cast<double>(
         std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - start).count());
-    if (!generation_matches(frame_mapping_, frame->pixel_generation_offset, frame->source_frame_id) ||
-        (overlay_generation_required &&
-         !generation_matches(overlay_mapping_, frame->overlay_generation_offset, frame->source_frame_id)) ||
-        (modal_generation_required &&
-         !generation_matches(modal_mapping_, frame->modal_generation_offset, frame->source_frame_id))) {
-        plugin_logger_->debug("Boba ring recycled frame {} during encode; dropping it", frame->source_frame_id);
+    ++metrics_encode_attempts_;
+    metrics_encode_us_ += encode_us;
+    if (!input_current) {
+        ++metrics_rejected_;
+        plugin_logger_->debug("Boba ring recycled frame {} during upload; skipping before encode", frame->source_frame_id);
         return;
     }
     if (encoded.empty()) {
         plugin_logger_->warn("NVENC returned an empty frame for Boba frame {}", frame->source_frame_id);
         return;
     }
+    // Pace from this submission, with no catch-up burst after a slow send.
+    next_frame_time_ = start +
+        std::chrono::duration_cast<std::chrono::steady_clock::duration>(std::chrono::duration<double>(1.0 / framerate_));
+    const auto send_start = std::chrono::steady_clock::now();
     publish_modal_texture_if_needed(modal, modal_pixels);
     publish_encoded(*frame, std::move(encoded), std::move(overlay), modal, encode_us);
-
-    // Report transport-facing throughput rather than logging every frame.
+    metrics_send_us_ += std::chrono::duration<double, std::micro>(std::chrono::steady_clock::now() - send_start).count();
     ++metrics_frames_;
-    metrics_encode_us_ += encode_us;
+}
+
+void boba_streaming_server::report_metrics() {
     const auto   now      = std::chrono::steady_clock::now();
     const double interval = std::chrono::duration<double>(now - metrics_start_).count();
-    if (interval >= 1.0) {
-        plugin_logger_->info("Boba native stream: {:.1f} fps, {:.2f} ms encode, {:.1f} Mbps",
-                             static_cast<double>(metrics_frames_) / interval,
-                             metrics_encode_us_ / static_cast<double>(metrics_frames_) / 1000.0,
-                             static_cast<double>(metrics_bytes_) * 8.0 / interval / 1'000'000.0);
-        metrics_start_     = now;
-        metrics_frames_    = 0;
-        metrics_bytes_     = 0;
-        metrics_encode_us_ = 0.0;
+    if (interval >= 1.0 && last_frame_id_ != 0) {
+        plugin_logger_->info(
+            "Boba native stream: {:.1f} fps, {:.2f} ms encode, {:.2f} ms send, {:.1f} Mbps, "
+            "{} rejected inputs, {} skipped source frames",
+            static_cast<double>(metrics_frames_) / interval,
+            metrics_encode_us_ / static_cast<double>(std::max<std::uint64_t>(1, metrics_encode_attempts_)) / 1000.0,
+            metrics_send_us_ / static_cast<double>(std::max<std::uint64_t>(1, metrics_frames_)) / 1000.0,
+            static_cast<double>(metrics_bytes_) * 8.0 / interval / 1'000'000.0, metrics_rejected_, metrics_source_skips_);
+        metrics_start_           = now;
+        metrics_frames_          = 0;
+        metrics_bytes_           = 0;
+        metrics_encode_us_       = 0.0;
+        metrics_send_us_         = 0.0;
+        metrics_encode_attempts_ = 0;
+        metrics_rejected_        = 0;
+        metrics_source_skips_    = 0;
     }
 }
 

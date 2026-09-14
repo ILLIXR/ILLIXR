@@ -33,12 +33,14 @@ From an ILLIXR source checkout, run:
 The script installs Boba below
 `${XDG_DATA_HOME:-$HOME/.local/share}/illixr/boba_immersive` by default. It:
 
-- checks out pinned, compatible revisions of Boba-Public and Boba-Demo;
+- checks out Boba-Public at [`612d22a`](https://github.com/jianxiapyh/Boba-Public/commit/612d22a74c2d54e3f20d2c197182090a22a20494)
+  and Boba-Demo at [`684d3c2`](https://github.com/jianxiapyh/Boba-Demo/commit/684d3c2d7fc0cd4c5ba1202748cadf6584d2db01),
+  including the dedicated cuSOLVER rotation solver;
 - creates or validates the dedicated `boba-cu132` Conda environment using
   Boba-Public's pinned CUDA 13.2 environment specification;
-- applies checksum-verified compatibility patches to the setup-managed
-  Boba-Demo checkout so its launcher and Python environment guards use
-  `boba-cu132`;
+- applies checksum-verified compatibility patches so both repositories use
+  `boba-cu132`, and shared frame slots are invalidated before their pixels are
+  overwritten;
 - builds Boba's CUDA extensions;
 - downloads and extracts all five archives listed under Boba-Public's
   **Required Assets** section;
@@ -54,6 +56,11 @@ The optional Garden scene is a separate large download. Include it with:
 
 Downloads are resumable. Successfully extracted Boba-Public archives are
 removed by default to save disk space; pass `--keep-downloads` to retain them.
+When upgrading the previous pinned runtime, known installer patches are backed
+up under `.state/checkout-backups` before updating. Custom or staged edits are
+preserved and cause setup to stop; use a separate `--install-root` to test an
+update alongside a modified checkout. The native Lab demo can be installed with
+`--skip-public-assets` because it uses Boba-Demo's packaged assets.
 
 For a non-default location, use `--install-root` during setup and export the
 same root when launching ILLIXR:
@@ -85,7 +92,8 @@ it. It can be enabled independently with `-DILLIXR_ENABLE_QUEST_CONTROLLERS=ON`.
 runs `openxr_interface` on Android.
 
 For a manual Android build, use
-`./gradlew -PILLIXR_ENABLE_BOBA=ON :app:assembleDebug`. Other offload clients can
+`./gradlew -PILLIXR_ENABLE_BOBA=ON -PILLIXR_LOCAL_SIDELOAD=ON :app:assembleRelease`.
+Other offload clients can
 enable the same support with CMake's `-DILLIXR_ENABLE_BOBA=ON` option. To turn it
 off, use `-PILLIXR_ENABLE_BOBA=OFF` with Gradle or `-DILLIXR_ENABLE_BOBA=OFF`
 with CMake and select a desktop profile without `boba_streaming_server`. Ordinary
@@ -132,6 +140,12 @@ conda activate illixr
 ./scripts/install_quest_app.sh --boba
 ```
 
+With `--boba`, the script defaults to an optimized Release APK. Use `--debug`
+only when debugging the native application; an unoptimized Debug build is not a
+performance baseline. The signing keystore remains at `$HOME/illixr.keystore`.
+The helper's local sideload flag excludes only the Google Play target-API lint
+rule; all other release checks still run.
+
 The script builds the APK, installs it, launches `ILLIXRApp`, and prints the
 Quest's Wi-Fi address and the corresponding desktop option. Use `--no-build` to
 reinstall an existing APK, `--no-launch` to install without opening the app, or
@@ -147,6 +161,28 @@ shown by `adb devices`:
 
 The installed development APK appears in the Quest's **Unknown Sources** app
 list. USB is not used by the runtime and may be disconnected after installation.
+
+For performance diagnosis, leave USB connected to capture logs while video
+continues to use Wi-Fi:
+
+```bash
+adb -s QUEST_SERIAL logcat -v threadtime > quest-boba.log
+```
+
+Capture the desktop output in a separate terminal. Compare `Boba native stream`
+FPS, encode time, send time, rejected inputs, and skipped source frames with
+`Boba receiver`, `Selected decoder`, `Decoder FPS`, and decode latency in the
+Quest log. Source frame skips are expected when Boba renders faster than the
+configured stream rate. A slow synchronous TCP send is included in `ms send`.
+
+The native stream is paced at 72 FPS by default, with 30 Mbps AV1 and unchanged
+4288 × 2240 combined output. The 1344 × 1344 source eyes retain the upstream
+rendering settings. Native mode hides the separate desktop spectator view by
+default; enable it with `BOBA_DESKTOP_PREVIEW=true` when launching ILLIXR. That
+extra camera consumes rendering time without changing the headset image.
+Recycled input is rejected before NVENC advances its
+reference state. If the client drops an encoded input, it waits for a keyframe
+before accepting dependent frames again.
 
 ## Run over Wi-Fi without ALVR or SteamVR
 
@@ -184,3 +220,20 @@ valid tracking and controller data.
 For the `boba_quest` profile, Steam, SteamVR, and ALVR are outside the setup
 script. Start the paired ALVR Quest client and SteamVR before launching ILLIXR.
 This path remains available for comparison and rollback.
+
+## Frame delivery regression checks
+
+The keyframe recovery checks run without a headset or GPU:
+
+```bash
+cmake -S tests/boba -B build/boba-checks
+cmake --build build/boba-checks
+ctest --test-dir build/boba-checks --output-on-failure
+```
+
+To include the NVENC test, configure with
+`-DBOBA_NVENC_LIBRARY=/path/to/libplugin.boba_streaming_server.opt.so` and
+`-DVIDEO_CODEC_SDK_PATH=/path/to/nv-codec-headers`, using the same CUDA toolkit,
+C++ runtime, and dependency prefix as the desktop build. It rejects recycled
+inputs after upload, verifies that a requested keyframe survives rejection, and
+writes 12 accepted frames to `build/boba-checks/stereo.obu` for decoder checks.

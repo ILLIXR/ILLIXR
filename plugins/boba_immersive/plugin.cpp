@@ -508,12 +508,20 @@ bool boba_immersive::launch_boba() {
     }
     environment.push_back(nullptr);
 
-    std::array<char*, 4> arguments{
+    std::vector<char*> arguments{
         const_cast<char*>("/bin/bash"),
         boba_launcher_.data(),
         const_cast<char*>("--illixr"),
-        nullptr,
     };
+    if (switchboard_->get_env_bool("BOBA_NATIVE_QUEST_STREAM", "false")) {
+        // The upstream spectator view renders a separate desktop camera. Keep
+        // it optional so native headset delivery does not pay for a third view.
+        const bool preview = switchboard_->get_env_bool("BOBA_DESKTOP_PREVIEW", "false");
+        arguments.push_back(const_cast<char*>("--interactive_window_mode"));
+        arguments.push_back(const_cast<char*>(preview ? "visible" : "hidden"));
+        plugin_logger_->info("Boba desktop spectator preview: {}", preview ? "visible" : "hidden");
+    }
+    arguments.push_back(nullptr);
     // Give Boba its own process group because its shell launcher creates Python
     // and helper children that must all terminate with the ILLIXR plugin.
     posix_spawnattr_t attributes;

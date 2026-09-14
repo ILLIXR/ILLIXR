@@ -8,7 +8,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd -- "${SCRIPT_DIR}/.." && pwd)"
 
-BUILD_VARIANT="debug"
+BUILD_VARIANT=""
 BOBA_ENABLED="OFF"
 DEVICE_SERIAL=""
 SDK_ROOT_OVERRIDE=""
@@ -28,7 +28,8 @@ Usage:
 
 Options:
   --serial SERIAL       Select a device when more than one is connected.
-  --release             Build and install the release APK instead of debug.
+  --release             Build and install an optimized release APK (Boba default).
+  --debug               Build a debug APK for debugging, not performance testing.
   --boba                Enable frame metadata for a Boba streaming server.
   --no-build            Install the APK already present under app/build/outputs.
   --no-launch           Do not launch ILLIXRApp after installation.
@@ -56,6 +57,10 @@ while (($# > 0)); do
             ;;
         --release)
             BUILD_VARIANT="release"
+            shift
+            ;;
+        --debug)
+            BUILD_VARIANT="debug"
             shift
             ;;
         --boba)
@@ -94,6 +99,11 @@ while (($# > 0)); do
             ;;
     esac
 done
+
+if [[ -z "${BUILD_VARIANT}" ]]; then
+    BUILD_VARIANT="debug"
+    [[ "${BOBA_ENABLED}" == "ON" ]] && BUILD_VARIANT="release"
+fi
 
 # ---- Toolchain discovery ----------------------------------------------------
 
@@ -232,7 +242,8 @@ fi
 
 if ((BUILD_APP)); then
     printf 'Building ILLIXRApp (%s)...\n' "${BUILD_VARIANT}"
-    (cd "${REPO_ROOT}" && ./gradlew --no-daemon "-PILLIXR_ENABLE_BOBA=${BOBA_ENABLED}" ":app:${GRADLE_TASK}")
+    (cd "${REPO_ROOT}" && ./gradlew --no-daemon "-PILLIXR_ENABLE_BOBA=${BOBA_ENABLED}" \
+        -PILLIXR_LOCAL_SIDELOAD=ON ":app:${GRADLE_TASK}")
 fi
 [[ -f "${APK_PATH}" ]] || fail "APK not found: ${APK_PATH}"
 

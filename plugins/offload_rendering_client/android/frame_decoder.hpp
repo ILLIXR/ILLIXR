@@ -1,6 +1,9 @@
 #pragma once
 
 #ifdef __ANDROID__
+#    ifdef ILLIXR_ENABLE_BOBA
+#        include "keyframe_gate.hpp"
+#    endif
 #    include <android/hardware_buffer.h>
 #    include <atomic>
 #    include <chrono>
@@ -293,6 +296,9 @@ private:
     mutable std::mutex         input_mutex_;
     std::condition_variable    input_cv_;
     std::queue<encoded_packet> input_queue_;
+#    ifdef ILLIXR_ENABLE_BOBA
+    keyframe_gate input_gate_; // Protected by input_mutex_.
+#    endif
 
     // Feeder thread: dequeues input buffers from the codec and submits encoded packets.
     // Drainer thread: independently polls dequeueOutputBuffer and releases decoded frames.

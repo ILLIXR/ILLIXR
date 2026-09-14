@@ -70,6 +70,13 @@ android {
         }
     }
     namespace 'com.example.ILLIXR'
+    lint {
+        // ADB development installs do not submit to Google Play. Keep other
+        // release checks enabled; store builds retain the target-API check too.
+        if (providers.gradleProperty('ILLIXR_LOCAL_SIDELOAD').getOrElse('OFF') == 'ON') {
+            disable 'ExpiredTargetSdkVersion'
+        }
+    }
     buildFeatures {
         prefab = true
     }

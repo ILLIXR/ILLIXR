@@ -5,22 +5,30 @@ set -Eeuo pipefail
 # Checksums below also make the small compatibility patches fail closed if the
 # corresponding upstream file changes unexpectedly.
 readonly BOBA_PUBLIC_REPOSITORY="https://github.com/jianxiapyh/Boba-Public.git"
-readonly BOBA_PUBLIC_REF="9aa739542a2f85a8a6c207d1b6991bcc757b78b0"
+readonly BOBA_PUBLIC_REF="612d22a74c2d54e3f20d2c197182090a22a20494"
 readonly BOBA_DEMO_REPOSITORY="https://github.com/jianxiapyh/Boba-Demo.git"
-readonly BOBA_DEMO_REF="4612027e4dd2931d5860e5c27b0d36ddc7d6ee3b"
+readonly BOBA_DEMO_REF="684d3c2d7fc0cd4c5ba1202748cadf6584d2db01"
 readonly BOBA_ENVIRONMENT="boba-cu132"
 readonly GDOWN_VERSION="6.1.0"
 
 readonly DEMO_LFS_PATH="assets/sloth/sloth.ply"
 readonly DEMO_LFS_SHA256="fc0301db3e5fd077d153e3bb2d68cf609db1ebc6968932101f34d731b6aec5d2"
 readonly DEMO_LFS_URL="https://media.githubusercontent.com/media/jianxiapyh/Boba-Demo/${BOBA_DEMO_REF}/${DEMO_LFS_PATH}"
-readonly DEMO_MANAGED_PATHS="${DEMO_LFS_PATH}:boba_app.sh:boba_quest_immersive.py:gaussian_splatting/_gsplat_vendor.py:tools/fetch_demo_case_assets.py:qqtt/garden_assets.py"
+readonly DEMO_MANAGED_PATHS="${DEMO_LFS_PATH}:boba_app.sh:boba_quest_immersive.py:gaussian_splatting/_gsplat_vendor.py:tools/fetch_demo_case_assets.py:qqtt/garden_assets.py:gaussian_splatting/cuda_linalg.py:qqtt/quest_display.py:test/test_cuda_linalg_backend.py"
 
-readonly PATCHED_BOBA_APP_SHA256="d9193820fb1c79ee87d22389dbef9624d5631d5a4ddc93c116f74a0004a6b9b2"
-readonly PATCHED_BOBA_MAIN_SHA256="bb486ed6643813a2346e5e624dd9a07fa50b76a5d8785ebf8bff6f891a9619d5"
-readonly PATCHED_GSPLAT_VENDOR_SHA256="c4e1b07377bb0993c321cdb6cb5ce0bf2b1b0ecdafb941bd0172500ef8fdc3e0"
-readonly PATCHED_DEMO_ASSETS_SHA256="0f42bf6eef01f341f9f9dc6a67f69eef24eefb6879da355b74560b8d8ed6fdde"
+readonly PUBLIC_MANAGED_PATHS="env_install/build_cuda13_extensions.sh:gaussian_splatting/cuda_linalg.py:gaussian_splatting/_gsplat_vendor.py"
+
+readonly PATCHED_BOBA_APP_SHA256="e7cde1ef6356a089cf92418fead64ee60fbcf8579c0e86685cb16d8b12dc9d55"
+readonly PATCHED_BOBA_MAIN_SHA256="7c2e488e3530c37fdc4512e06ff72085d5e1ef64242d4a37319a4c93e80fad82"
+readonly PATCHED_GSPLAT_VENDOR_SHA256="9800963458fb8cef5fd6acc0033901466ca91e137e572b0fecfa86c074c8ae44"
+readonly PATCHED_DEMO_ASSETS_SHA256="8356763064d2993a4f1bd82c59ded2ee6c6cf3abbb138dfd8608c4024ccc97f9"
 readonly PATCHED_GARDEN_ASSETS_SHA256="3431640e18d85f8ccd38b8501fc9e7ed3ed185b75bea76ffad2f4ac7d7b6803d"
+readonly PATCHED_CUDA_LINALG_SHA256="b0dd5a4a21a933c5a29219ff81be8d570456fb28544d550e1516afb00a508fca"
+readonly PATCHED_QUEST_DISPLAY_SHA256="8d46faa96b3737fd23ee3c40efdd0a41096928fe498caf1a93ad45ca2351ed94"
+readonly PATCHED_PUBLIC_GSPLAT_SHA256="cc540b95d870db5ceb5ebaa08a93473a3d19ba24e79fb78072c39152a6acf317"
+readonly PATCHED_PUBLIC_BUILDER_SHA256="18d0911339c713137d1fcf7ad19f7bff0141ebf9e60c9fca7cf2e5ef04ab1dc5"
+
+readonly PATCHED_RUNTIME_TEST_SHA256="8013f4d838ee55189e6aed3716413e7e66540f87bbe2f2b4038f1eca023783a4"
 
 # These are the five archives linked from Boba-Public's Required Assets
 # section. Their array indices intentionally form name/URL pairs.
@@ -280,9 +288,10 @@ tracked_checkout_changes() {
 patch_boba_app_environment() {
     git -C "${BOBA_DEMO_ROOT}" apply --unidiff-zero <<'PATCH'
 diff --git a/boba_app.sh b/boba_app.sh
+index 43d5641..d9829b8 100755
 --- a/boba_app.sh
 +++ b/boba_app.sh
-@@ -7 +7 @@
+@@ -7 +7 @@ cd "${REPO_ROOT}"
 -RUNTIME_ENV="phystwin-cu132"
 +RUNTIME_ENV="${BOBA_RUNTIME_ENV:-boba-cu132}"
 PATCH
@@ -291,18 +300,13 @@ PATCH
 patch_boba_main_environment() {
     git -C "${BOBA_DEMO_ROOT}" apply --unidiff-zero <<'PATCH'
 diff --git a/boba_quest_immersive.py b/boba_quest_immersive.py
+index 5c3fad4..8e089f8 100644
 --- a/boba_quest_immersive.py
 +++ b/boba_quest_immersive.py
-@@ -28,7 +28,7 @@ SHARED_TUTORIAL_SLIDES = (
-     "interaction_tips.png",
- )
- RUNTIME_ENV_READY_SENTINEL = "BOBA_IMMERSIVE_RUNTIME_READY"
+@@ -41 +41 @@ RUNTIME_ENV_READY_SENTINEL = "BOBA_IMMERSIVE_RUNTIME_READY"
 -REQUIRED_RUNTIME_ENV = "phystwin-cu132"
 +REQUIRED_RUNTIME_ENV = os.environ.get("BOBA_RUNTIME_ENV", "boba-cu132")
- DEFAULT_CUDA_HOME = "/usr/local/cuda"
- BRIDGE_DEPS_CHECK_SCRIPT = (
-     REPO_ROOT / "linux_pose_probe" / "check_boba_immersive_bridge_deps.sh"
-@@ -123 +123 @@ def ensure_direct_launch_runtime_env(argv: list[str] | None = None) -> None:
+@@ -133 +133 @@ def ensure_direct_launch_runtime_env(argv: list[str] | None = None) -> None:
 -        "[startup] re-executing with phystwin-cu132 CUDA runtime libraries: "
 +        f"[startup] re-executing with {REQUIRED_RUNTIME_ENV} CUDA runtime libraries: "
 PATCH
@@ -311,93 +315,258 @@ PATCH
 patch_gsplat_vendor_environment() {
     git -C "${BOBA_DEMO_ROOT}" apply --unidiff-zero <<'PATCH'
 diff --git a/gaussian_splatting/_gsplat_vendor.py b/gaussian_splatting/_gsplat_vendor.py
+index e3c099d..b2cc140 100644
 --- a/gaussian_splatting/_gsplat_vendor.py
 +++ b/gaussian_splatting/_gsplat_vendor.py
-@@ -13 +13 @@
+@@ -16 +16 @@ import torch
 -EXPECTED_CONDA_ENV = "phystwin-cu132"
 +EXPECTED_CONDA_ENV = os.environ.get("BOBA_RUNTIME_ENV", "boba-cu132")
 PATCH
 }
 
 patch_demo_asset_hint_environment() {
-    git -C "${BOBA_DEMO_ROOT}" apply <<'PATCH'
+    git -C "${BOBA_DEMO_ROOT}" apply --unidiff-zero <<'PATCH'
 diff --git a/tools/fetch_demo_case_assets.py b/tools/fetch_demo_case_assets.py
+index ea8ce53..17e1f5a 100755
 --- a/tools/fetch_demo_case_assets.py
 +++ b/tools/fetch_demo_case_assets.py
-@@ -243,7 +243,7 @@ def resolve_shared_runtime_assets(
-             raise DemoAssetValidationError(
-                 f"Garden scene assets are not ready: {exc}\n"
-                 "Install them once with:\n"
+@@ -251 +251 @@ def resolve_shared_runtime_assets(
 -                "  conda run -n phystwin-cu132 env PYTHONNOUSERSITE=1 "
 +                "  conda run -n boba-cu132 env PYTHONNOUSERSITE=1 "
-                 "python tools/fetch_demo_case_assets.py --scene garden --fetch"
-             ) from exc
-         for index, path in enumerate(garden_paths):
 PATCH
 }
 
 patch_garden_asset_hint_environment() {
-    git -C "${BOBA_DEMO_ROOT}" apply <<'PATCH'
+    git -C "${BOBA_DEMO_ROOT}" apply --unidiff-zero <<'PATCH'
 diff --git a/qqtt/garden_assets.py b/qqtt/garden_assets.py
+index 9db464d..6a7bdac 100644
 --- a/qqtt/garden_assets.py
 +++ b/qqtt/garden_assets.py
-@@ -132,7 +132,7 @@ def validate_garden_source(repo_root: str | Path) -> Path:
-     if not source_path.is_file():
-         raise GardenAssetError(
-             "Garden source Gaussian is not installed. Run:\n"
+@@ -135 +135 @@ def validate_garden_source(repo_root: str | Path) -> Path:
 -            "  conda run -n phystwin-cu132 env PYTHONNOUSERSITE=1 "
 +            "  conda run -n boba-cu132 env PYTHONNOUSERSITE=1 "
-             "python tools/fetch_demo_case_assets.py --scene garden --fetch"
-         )
-     with source_path.open("rb") as handle:
-@@ -166,7 +166,7 @@ def validate_garden_quality(
-     if not ply_path.is_file() or not metadata_path.is_file():
-         raise GardenAssetError(
-             f"Garden {quality} runtime assets are missing. Run:\n"
+@@ -169 +169 @@ def validate_garden_quality(
 -            "  conda run -n phystwin-cu132 env PYTHONNOUSERSITE=1 "
 +            "  conda run -n boba-cu132 env PYTHONNOUSERSITE=1 "
-             "python tools/fetch_demo_case_assets.py --scene garden --fetch"
-         )
-     with ply_path.open("rb") as handle:
+PATCH
+}
+
+patch_demo_linalg_environment() {
+    git -C "${BOBA_DEMO_ROOT}" apply --unidiff-zero <<'PATCH'
+diff --git a/gaussian_splatting/cuda_linalg.py b/gaussian_splatting/cuda_linalg.py
+index 7ed3a83..862c97c 100644
+--- a/gaussian_splatting/cuda_linalg.py
++++ b/gaussian_splatting/cuda_linalg.py
+@@ -2,0 +3 @@
++import os
+@@ -6 +7 @@ from pathlib import Path
+-EXPECTED_CONDA_ENV = "phystwin-cu132"
++EXPECTED_CONDA_ENV = os.environ.get("BOBA_RUNTIME_ENV", "boba-cu132")
+@@ -14,2 +15,2 @@ def require_runtime(torch_module=None):
+-            "Boba requires the 'phystwin-cu132' conda environment. "
+-            f"Python prefix: {sys.prefix!r}. Run: conda activate phystwin-cu132"
++            f"Boba requires the {EXPECTED_CONDA_ENV!r} conda environment. "
++            f"Python prefix: {sys.prefix!r}. Run: conda activate {EXPECTED_CONDA_ENV}"
+@@ -27 +28 @@ def require_runtime(torch_module=None):
+-            f"phystwin-cu132; found torch.version.cuda={build!r}. "
++            f"{EXPECTED_CONDA_ENV}; found torch.version.cuda={build!r}. "
+PATCH
+}
+
+patch_demo_ring_generation() {
+    git -C "${BOBA_DEMO_ROOT}" apply --unidiff-zero <<'PATCH'
+diff --git a/qqtt/quest_display.py b/qqtt/quest_display.py
+index 72ea5d4..8cb7bba 100644
+--- a/qqtt/quest_display.py
++++ b/qqtt/quest_display.py
+@@ -544,0 +545,2 @@ class OpenXRFramePanelMirror:
++        # Invalidate the old generation before recycling its pixel storage.
++        self._write_frame_slot_metadata(slot=slot, frame_id=0)
+@@ -1079,0 +1082,2 @@ class OpenXRFramePanelMirror:
++        # Readers must reject the slot for the entire asynchronous overwrite.
++        self._write_frame_slot_metadata(slot=slot, frame_id=0)
+PATCH
+}
+
+patch_public_linalg_environment() {
+    git -C "${BOBA_PUBLIC_ROOT}" apply --unidiff-zero <<'PATCH'
+diff --git a/gaussian_splatting/cuda_linalg.py b/gaussian_splatting/cuda_linalg.py
+index 7ed3a83..862c97c 100644
+--- a/gaussian_splatting/cuda_linalg.py
++++ b/gaussian_splatting/cuda_linalg.py
+@@ -2,0 +3 @@
++import os
+@@ -6 +7 @@ from pathlib import Path
+-EXPECTED_CONDA_ENV = "phystwin-cu132"
++EXPECTED_CONDA_ENV = os.environ.get("BOBA_RUNTIME_ENV", "boba-cu132")
+@@ -14,2 +15,2 @@ def require_runtime(torch_module=None):
+-            "Boba requires the 'phystwin-cu132' conda environment. "
+-            f"Python prefix: {sys.prefix!r}. Run: conda activate phystwin-cu132"
++            f"Boba requires the {EXPECTED_CONDA_ENV!r} conda environment. "
++            f"Python prefix: {sys.prefix!r}. Run: conda activate {EXPECTED_CONDA_ENV}"
+@@ -27 +28 @@ def require_runtime(torch_module=None):
+-            f"phystwin-cu132; found torch.version.cuda={build!r}. "
++            f"{EXPECTED_CONDA_ENV}; found torch.version.cuda={build!r}. "
+PATCH
+}
+
+patch_public_gsplat_environment() {
+    git -C "${BOBA_PUBLIC_ROOT}" apply --unidiff-zero <<'PATCH'
+diff --git a/gaussian_splatting/_gsplat_vendor.py b/gaussian_splatting/_gsplat_vendor.py
+index 7bea322..895c428 100644
+--- a/gaussian_splatting/_gsplat_vendor.py
++++ b/gaussian_splatting/_gsplat_vendor.py
+@@ -11,2 +11,2 @@ from .cuda_linalg import require_runtime
+-EXPECTED_CONDA_ENV = "phystwin-cu132"
+-SUPPORTED_CONDA_ENVS = {"phystwin-cu132"}
++EXPECTED_CONDA_ENV = os.environ.get("BOBA_RUNTIME_ENV", "boba-cu132")
++SUPPORTED_CONDA_ENVS = {EXPECTED_CONDA_ENV}
+@@ -20 +20 @@ def _install_hint() -> str:
+-        "Activate phystwin-cu132 and run "
++        f"Activate {EXPECTED_CONDA_ENV} and run "
+@@ -97 +97 @@ def import_gsplat():
+-            "Boba could not import gsplat from the active phystwin-cu132 environment.\n"
++            f"Boba could not import gsplat from the active {EXPECTED_CONDA_ENV} environment.\n"
+PATCH
+}
+
+patch_public_builder_environment() {
+    git -C "${BOBA_PUBLIC_ROOT}" apply --unidiff-zero <<'PATCH'
+diff --git a/env_install/build_cuda13_extensions.sh b/env_install/build_cuda13_extensions.sh
+index de93159..82fa167 100755
+--- a/env_install/build_cuda13_extensions.sh
++++ b/env_install/build_cuda13_extensions.sh
+@@ -8 +8 @@ RUNTIME_HOOK_ROOT="${REPO_ROOT}/env_install/conda"
+-EXPECTED_ENV="phystwin-cu132"
++EXPECTED_ENV="${BOBA_CUDA_ENV_NAME:-boba-cu132}"
+@@ -69 +69 @@ BOBA_CUDA_DRIVER_LIBRARY="$({ ldconfig -p 2>/dev/null || true; } | awk '
+-  $1 == "libcuda.so" && $0 ~ /x86-64/ && !found { print $NF; found = 1 }
++  ($1 == "libcuda.so" || $1 == "libcuda.so.1") && $0 ~ /x86-64/ && !found { print $NF; found = 1 }
+@@ -75 +75,3 @@ fi
+-BOBA_CUDA_DRIVER_DIR="$(dirname "${BOBA_CUDA_DRIVER_LIBRARY}")"
++# Provide the linker name inside the Conda environment without changing the host driver.
++BOBA_CUDA_DRIVER_DIR="${ACTIVE_PREFIX}/lib"
++ln -sfn "${BOBA_CUDA_DRIVER_LIBRARY}" "${BOBA_CUDA_DRIVER_DIR}/libcuda.so"
+PATCH
+}
+
+patch_demo_runtime_policy_test() {
+    git -C "${BOBA_DEMO_ROOT}" apply --unidiff-zero <<'PATCH'
+--- a/test/test_cuda_linalg_backend.py
++++ b/test/test_cuda_linalg_backend.py
+@@ -6 +6 @@
+-from gaussian_splatting.cuda_linalg import configure_linalg_backend, require_runtime
++from gaussian_splatting.cuda_linalg import EXPECTED_CONDA_ENV, configure_linalg_backend, require_runtime
+@@ -13 +13 @@
+-                os.environ, {"CONDA_DEFAULT_ENV": "phystwin-cu132"}
++                os.environ, {"CONDA_DEFAULT_ENV": EXPECTED_CONDA_ENV}
+@@ -15 +15 @@
+-                with self.assertRaisesRegex(RuntimeError, "conda activate phystwin-cu132"):
++                with self.assertRaisesRegex(RuntimeError, f"conda activate {EXPECTED_CONDA_ENV}"):
+@@ -19 +19 @@
+-        with patch("sys.prefix", "/tmp/envs/phystwin-cu132"):
++        with patch("sys.prefix", f"/tmp/envs/{EXPECTED_CONDA_ENV}"):
+@@ -32 +32 @@
+-        with patch("sys.prefix", "/tmp/envs/phystwin-cu132"), patch.dict(
++        with patch("sys.prefix", f"/tmp/envs/{EXPECTED_CONDA_ENV}"), patch.dict(
 PATCH
 }
 
 # Apply a compatibility patch only to an unmodified pinned upstream file, then
 # verify the exact result. This avoids silently overwriting user or upstream
 # edits when setup is rerun.
-ensure_demo_patched_file() {
+ensure_runtime_patched_file() {
     local relative_path="$1"
     local expected_sha="$2"
     local patch_function="$3"
-    local target="${BOBA_DEMO_ROOT}/${relative_path}"
+    local directory="${4:-${BOBA_DEMO_ROOT}}"
+    local ref="${5:-${BOBA_DEMO_REF}}"
+    local target="${directory}/${relative_path}"
     local current_sha
     local original_sha
 
-    [[ -f "${target}" ]] || die "Missing Boba-Demo file required for environment patch: ${target}"
+    [[ -f "${target}" ]] || die "Missing Boba file required for compatibility patch: ${target}"
     current_sha="$(sha256_of "${target}")"
     if [[ "${current_sha}" == "${expected_sha}" ]]; then
         return
     fi
 
-    original_sha="$(git -C "${BOBA_DEMO_ROOT}" show "${BOBA_DEMO_REF}:${relative_path}" | sha256sum | awk '{print $1}')"
+    original_sha="$(git -C "${directory}" show "${ref}:${relative_path}" | sha256sum | awk '{print $1}')"
     [[ "${current_sha}" == "${original_sha}" ]] ||
-        die "Boba-Demo file has unexpected modifications: ${target}"
+        die "Boba file has unexpected modifications: ${target}"
 
     "${patch_function}"
     current_sha="$(sha256_of "${target}")"
     [[ "${current_sha}" == "${expected_sha}" ]] ||
-        die "Environment compatibility patch produced an unexpected file: ${target}"
+        die "Compatibility patch produced an unexpected file: ${target}"
 }
 
 # Configure every Boba-Demo entry point that either launches or documents the
 # Python/CUDA environment used by the ILLIXR integration.
-apply_demo_environment_patch() {
-    ensure_demo_patched_file "boba_app.sh" "${PATCHED_BOBA_APP_SHA256}" patch_boba_app_environment
-    ensure_demo_patched_file "boba_quest_immersive.py" "${PATCHED_BOBA_MAIN_SHA256}" patch_boba_main_environment
-    ensure_demo_patched_file "gaussian_splatting/_gsplat_vendor.py" "${PATCHED_GSPLAT_VENDOR_SHA256}" patch_gsplat_vendor_environment
-    ensure_demo_patched_file "tools/fetch_demo_case_assets.py" "${PATCHED_DEMO_ASSETS_SHA256}" patch_demo_asset_hint_environment
-    ensure_demo_patched_file "qqtt/garden_assets.py" "${PATCHED_GARDEN_ASSETS_SHA256}" patch_garden_asset_hint_environment
-    log "Boba-Demo is configured to use Conda environment ${BOBA_ENVIRONMENT}"
+apply_demo_compatibility_patches() {
+    ensure_runtime_patched_file "boba_app.sh" "${PATCHED_BOBA_APP_SHA256}" patch_boba_app_environment
+    ensure_runtime_patched_file "boba_quest_immersive.py" "${PATCHED_BOBA_MAIN_SHA256}" patch_boba_main_environment
+    ensure_runtime_patched_file "gaussian_splatting/_gsplat_vendor.py" "${PATCHED_GSPLAT_VENDOR_SHA256}" patch_gsplat_vendor_environment
+    ensure_runtime_patched_file "tools/fetch_demo_case_assets.py" "${PATCHED_DEMO_ASSETS_SHA256}" patch_demo_asset_hint_environment
+    ensure_runtime_patched_file "qqtt/garden_assets.py" "${PATCHED_GARDEN_ASSETS_SHA256}" patch_garden_asset_hint_environment
+    ensure_runtime_patched_file "gaussian_splatting/cuda_linalg.py" "${PATCHED_CUDA_LINALG_SHA256}" patch_demo_linalg_environment
+    ensure_runtime_patched_file "qqtt/quest_display.py" "${PATCHED_QUEST_DISPLAY_SHA256}" patch_demo_ring_generation
+    ensure_runtime_patched_file "test/test_cuda_linalg_backend.py" "${PATCHED_RUNTIME_TEST_SHA256}" patch_demo_runtime_policy_test
+    log "Boba-Demo compatibility patches verified for ${BOBA_ENVIRONMENT}"
+}
+
+apply_public_compatibility_patches() {
+    ensure_runtime_patched_file "gaussian_splatting/cuda_linalg.py" "${PATCHED_CUDA_LINALG_SHA256}" patch_public_linalg_environment "${BOBA_PUBLIC_ROOT}" "${BOBA_PUBLIC_REF}"
+    ensure_runtime_patched_file "gaussian_splatting/_gsplat_vendor.py" "${PATCHED_PUBLIC_GSPLAT_SHA256}" patch_public_gsplat_environment "${BOBA_PUBLIC_ROOT}" "${BOBA_PUBLIC_REF}"
+    ensure_runtime_patched_file "env_install/build_cuda13_extensions.sh" "${PATCHED_PUBLIC_BUILDER_SHA256}" patch_public_builder_environment "${BOBA_PUBLIC_ROOT}" "${BOBA_PUBLIC_REF}"
+    log "Boba-Public compatibility patches verified for ${BOBA_ENVIRONMENT}"
+}
+
+# Preserve known installer patches when changing revisions. Unknown edits,
+# including staged changes, are never reset. Unchanged LFS blobs stay hydrated.
+prepare_checkout_upgrade() {
+    local directory="$1" ref="$2" managed_paths="$3"
+    local path sha backup
+    local -a paths changed_paths=()
+    IFS=: read -r -a paths <<<"${managed_paths}"
+    git -C "${directory}" diff --cached --quiet ||
+        die "Checkout has staged changes; use a separate --install-root: ${directory}"
+    for path in "${paths[@]}"; do
+        [[ -n "${path}" ]] || continue
+        git -C "${directory}" diff --quiet -- "${path}" && continue
+        if [[ "${path}" == "${DEMO_LFS_PATH}" ]] &&
+           [[ "$(git -C "${directory}" rev-parse "HEAD:${path}")" == \
+              "$(git -C "${directory}" rev-parse "${ref}:${path}")" ]]; then
+            continue
+        fi
+        [[ -f "${directory}/${path}" && ! -L "${directory}/${path}" ]] ||
+            die "Managed file was removed or replaced: ${directory}/${path}"
+        sha="$(sha256_of "${directory}/${path}")"
+        # Exact compatibility-patch outputs from the previous installer.
+        case "${path}:${sha}" in
+            boba_app.sh:d9193820fb1c79ee87d22389dbef9624d5631d5a4ddc93c116f74a0004a6b9b2|\
+            boba_quest_immersive.py:bb486ed6643813a2346e5e624dd9a07fa50b76a5d8785ebf8bff6f891a9619d5|\
+            gaussian_splatting/_gsplat_vendor.py:c4e1b07377bb0993c321cdb6cb5ce0bf2b1b0ecdafb941bd0172500ef8fdc3e0|\
+            tools/fetch_demo_case_assets.py:0f42bf6eef01f341f9f9dc6a67f69eef24eefb6879da355b74560b8d8ed6fdde|\
+            qqtt/garden_assets.py:3431640e18d85f8ccd38b8501fc9e7ed3ed185b75bea76ffad2f4ac7d7b6803d|\
+            "${DEMO_LFS_PATH}:${DEMO_LFS_SHA256}")
+                changed_paths+=("${path}")
+                ;;
+            *)
+                die "Managed file has custom edits; use a separate --install-root: ${directory}/${path}"
+                ;;
+        esac
+    done
+    [[ ${#changed_paths[@]} -gt 0 ]] || return 0
+    mkdir -p "${STATE_ROOT}/checkout-backups"
+    backup="$(mktemp -d "${STATE_ROOT}/checkout-backups/$(basename "${directory}").XXXXXX")"
+    git -C "${directory}" rev-parse HEAD >"${backup}/revision"
+    for path in "${changed_paths[@]}"; do
+        mkdir -p "${backup}/$(dirname "${path}")"
+        cp -p -- "${directory}/${path}" "${backup}/${path}"
+    done
+    log "Backed up previous installer patches to ${backup}"
+    git -C "${directory}" restore --worktree -- "${changed_paths[@]}"
 }
 
 # Create or update a checkout to exactly `ref`. Local tracked changes cause a
@@ -417,7 +586,7 @@ ensure_checkout() {
         die "${label} target exists and is not a directory: ${directory}"
     fi
 
-    if [[ ! -d "${directory}/.git" ]]; then
+    if [[ ! -e "${directory}/.git" ]]; then
         if directory_has_content "${directory}"; then
             die "${label} target is nonempty but is not a Git checkout: ${directory}"
         fi
@@ -447,6 +616,7 @@ ensure_checkout() {
     log "Fetching ${label} revision ${ref}"
     GIT_LFS_SKIP_SMUDGE=1 git -C "${directory}" fetch \
         --depth=1 --filter=blob:none origin "${ref}"
+    prepare_checkout_upgrade "${directory}" "${ref}" "${ignored_tracked_path}"
     GIT_LFS_SKIP_SMUDGE=1 git -C "${directory}" \
         -c advice.detachedHead=false checkout --detach FETCH_HEAD
 
@@ -505,8 +675,9 @@ have_conda_environment() {
 # Prevent packages from the user's site directory from leaking into validation
 # or setup commands run in the dedicated Boba environment.
 run_in_boba_environment() {
-    "${CONDA_BIN}" run --no-capture-output -n "${BOBA_ENVIRONMENT}" \
-        env PYTHONNOUSERSITE=1 "$@"
+    env -u CONDA_PREFIX -u CONDA_DEFAULT_ENV -u CONDA_SHLVL \
+        "${CONDA_BIN}" run --no-capture-output -n "${BOBA_ENVIRONMENT}" \
+        env PYTHONNOUSERSITE=1 "BOBA_RUNTIME_ENV=${BOBA_ENVIRONMENT}" "$@"
 }
 
 # Reuse boba-cu132 only when it has the exact Python, PyTorch, and CUDA versions
@@ -720,14 +891,16 @@ ensure_checkout \
     "Boba-Public" \
     "${BOBA_PUBLIC_REPOSITORY}" \
     "${BOBA_PUBLIC_REF}" \
-    "${BOBA_PUBLIC_ROOT}"
+    "${BOBA_PUBLIC_ROOT}" \
+    "${PUBLIC_MANAGED_PATHS}"
 ensure_checkout \
     "Boba-Demo" \
     "${BOBA_DEMO_REPOSITORY}" \
     "${BOBA_DEMO_REF}" \
     "${BOBA_DEMO_ROOT}" \
     "${DEMO_MANAGED_PATHS}"
-apply_demo_environment_patch
+apply_public_compatibility_patches
+apply_demo_compatibility_patches
 ensure_demo_lfs_asset
 ensure_conda_environment
 ensure_cuda_extensions

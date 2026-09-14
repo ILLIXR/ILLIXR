@@ -89,6 +89,13 @@ bool frame_decoder::configure_codec() {
         spdlog::get("illixr")->error("[frame_decoder][{}] Failed to create {} codec", eye_index_, use_av1 ? "AV1" : "HEVC");
         return false;
     }
+#    ifdef ILLIXR_ENABLE_BOBA
+    char* codec_name = nullptr;
+    if (AMediaCodec_getName(codec_, &codec_name) == AMEDIA_OK && codec_name != nullptr) {
+        spdlog::get("illixr")->info("[frame_decoder][{}] Selected decoder: {}", eye_index_, codec_name);
+        AMediaCodec_releaseName(codec_, codec_name);
+    }
+#    endif
 
     AMediaFormat* format = AMediaFormat_new();
     AMediaFormat_setString(format, AMEDIAFORMAT_KEY_MIME, mime);
@@ -668,6 +675,22 @@ bool frame_decoder::queue_encoded_data(const uint8_t* data, size_t size, int64_t
     {
         std::lock_guard<std::mutex> lock(input_mutex_);
 
+#    ifdef ILLIXR_ENABLE_BOBA
+        constexpr size_t kMaxQueueDepth = 16;
+        const bool       queue_full     = input_queue_.size() >= kMaxQueueDepth;
+        if (!input_gate_.accept(is_keyframe, queue_full)) {
+            frames_dropped_.fetch_add(1, std::memory_order_relaxed);
+            return false;
+        }
+        if (queue_full) {
+            // Only a keyframe reaches here. It can replace the queued chain
+            // without depending on any of the pictures that are discarded.
+            frames_dropped_.fetch_add(input_queue_.size(), std::memory_order_relaxed);
+            while (!input_queue_.empty()) {
+                input_queue_.pop();
+            }
+        }
+#    else
         // Do not drop frames here.  The receiver loop in offload_rendering_client
         // already enforces MAX_DECODER_QUEUE_DEPTH and drops whole frames atomically
         // before they reach this point.  Dropping oldest frames blindly here is
@@ -685,6 +708,7 @@ bool frame_decoder::queue_encoded_data(const uint8_t* data, size_t size, int64_t
             input_queue_.pop();
             frames_dropped_.fetch_add(1, std::memory_order_relaxed);
         }
+#    endif
 
         input_queue_.push(std::move(pkt));
         frames_queued_.fetch_add(1, std::memory_order_relaxed);
@@ -723,6 +747,9 @@ void frame_decoder::flush() {
         while (!input_queue_.empty()) {
             input_queue_.pop();
         }
+#    ifdef ILLIXR_ENABLE_BOBA
+        input_gate_.reset();
+#    endif
     }
     // Discard any pending timestamp entries — their output buffers will never
     // arrive after a flush, so they would otherwise accumulate indefinitely.

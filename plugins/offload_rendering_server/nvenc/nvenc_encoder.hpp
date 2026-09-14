@@ -37,6 +37,7 @@
 #include <cstdint>
 #include <cuda.h>
 #include <cuda_runtime.h>
+#include <functional>
 #include <memory>
 #include <mutex>
 #include <nvEncodeAPI.h>
@@ -253,8 +254,11 @@ public:
     /// Encode two CPU-accessible RGBA8 eye images as one side-by-side frame.
     /// The images are copied to persistent CUDA buffers, resized/color-converted
     /// on the GPU, and passed directly to NVENC.
+    /// If supplied, validate_input runs after the upload completes. Returning
+    /// false rejects recycled shared-memory input before advancing codec state.
     std::vector<uint8_t> encode_rgba_stereo(const uint8_t* left_rgba, size_t left_pitch, const uint8_t* right_rgba,
-                                            size_t right_pitch, uint32_t source_width, uint32_t source_height, bool flip_y);
+                                            size_t right_pitch, uint32_t source_width, uint32_t source_height, bool flip_y,
+                                            const std::function<bool()>& validate_input = {});
 #    endif
 
 #endif // COMBINED_ENCODING

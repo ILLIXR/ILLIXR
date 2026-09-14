@@ -5,6 +5,9 @@
 #endif
 #ifdef __ANDROID__
 #    include "android/jni_helper.hpp"
+#    ifdef ILLIXR_ENABLE_BOBA
+#        include "android/keyframe_gate.hpp"
+#    endif
 #else
 #    include <cuda.h>
 #    include <cuda_runtime.h>
@@ -267,7 +270,7 @@ void offload_rendering_client::log_android_decode_timing() {
     // android_timing_frame_count_ = 0;
 }
 
-#ifdef ILLIXR_ENABLE_BOBA
+#    ifdef ILLIXR_ENABLE_BOBA
 void offload_rendering_client::drain_modal_texture_updates() {
     while (auto update = modal_texture_reader_.try_dequeue()) {
         const std::uint64_t expected_bytes = static_cast<std::uint64_t>(update->width) * update->height * 4ULL;
@@ -293,7 +296,7 @@ void offload_rendering_client::drain_modal_texture_updates() {
                    update->height);
     }
 }
-#endif
+#    endif
 
 // receiver_loop
 // Runs on receiver_thread_. Dequeues compressed frames from the network,
@@ -307,19 +310,24 @@ void offload_rendering_client::drain_modal_texture_updates() {
 // so they stay in sync), and stores frame metadata for _p_one_iteration.
 void offload_rendering_client::receiver_loop() {
     // spdlog::get("illixr")->info("[receiver_loop] Starting");
+#    ifdef ILLIXR_ENABLE_BOBA
+    keyframe_gate input_gate;
+    auto          receive_metrics_start = std::chrono::steady_clock::now();
+    uint64_t      received_frames = 0, skipped_frames = 0;
+#    endif
 
     while (receiver_running_) {
-#ifdef ILLIXR_ENABLE_BOBA
+#    ifdef ILLIXR_ENABLE_BOBA
         drain_modal_texture_updates();
-#endif
+#    endif
         auto current_frame = frames_reader_.dequeue();
         if (current_frame == nullptr) {
             spdlog::get("illixr")->debug("[receiver_loop] No frame available");
             continue;
         }
-#ifdef ILLIXR_ENABLE_BOBA
+#    ifdef ILLIXR_ENABLE_BOBA
         drain_modal_texture_updates();
-#endif
+#    endif
 
         // spdlog::get("illixr")->info("Rx Frame {}", current_frame->frame_number);
         //  Determine keyframe status for each stream.
@@ -352,6 +360,31 @@ void offload_rendering_client::receiver_loop() {
             ? is_hevc_keyframe(current_frame->left_motion_vec.data(), current_frame->left_motion_vec.size())
             : is_key_color;
 
+#    ifdef ILLIXR_ENABLE_BOBA
+        // After skipping an encoded input, every dependent frame is unusable
+        // until the streams restart at a keyframe, even if the queue has drained.
+        const bool queue_full = color_decoder_ &&
+            (color_decoder_->get_left_queue_depth() >= MAX_DECODER_QUEUE_DEPTH ||
+             color_decoder_->get_right_queue_depth() >= MAX_DECODER_QUEUE_DEPTH);
+        const bool accept_input = input_gate.accept(is_key_color && is_key_depth && is_key_mv, queue_full);
+        ++received_frames;
+        skipped_frames += accept_input ? 0 : 1;
+        const auto   now      = std::chrono::steady_clock::now();
+        const double interval = std::chrono::duration<double>(now - receive_metrics_start).count();
+        if (interval >= 1.0) {
+            spdlog::get("illixr")->info("Boba receiver: {:.1f} fps, {} skipped inputs, decoder queue left={} right={}",
+                                        static_cast<double>(received_frames) / interval, skipped_frames,
+                                        color_decoder_ ? color_decoder_->get_left_queue_depth() : 0,
+                                        color_decoder_ ? color_decoder_->get_right_queue_depth() : 0);
+            receive_metrics_start = now;
+            received_frames = skipped_frames = 0;
+        }
+        if (!accept_input) {
+            spdlog::get("illixr")->debug("[receiver_loop] Skipping frame {} until a keyframe after input loss",
+                                         current_frame->frame_number);
+            continue;
+        }
+#    else
         // Never drop a frame if any stream carries a keyframe - dropping a
         // keyframe causes decoder corruption until the next IDR arrives.
         const bool is_any_key = is_key_color || is_key_depth || is_key_mv;
@@ -369,6 +402,7 @@ void offload_rendering_client::receiver_loop() {
                 continue;
             }
         }
+#    endif
 
 #    ifdef ILLIXR_ENABLE_BOBA
         // Publish the complete metadata snapshot before queueing the bitstream.
