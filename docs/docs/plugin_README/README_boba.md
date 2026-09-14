@@ -40,7 +40,8 @@ The script installs Boba below
   Boba-Public's pinned CUDA 13.2 environment specification;
 - applies checksum-verified compatibility patches so both repositories use
   `boba-cu132`, and shared frame slots are invalidated before their pixels are
-  overwritten;
+  overwritten; CPU loading images use staged copies while GPU gameplay images
+  retain direct CUDA copies;
 - builds Boba's CUDA extensions;
 - downloads and extracts all five archives listed under Boba-Public's
   **Required Assets** section;
@@ -72,6 +73,10 @@ export BOBA_IMMERSIVE_ROOT=/path/to/boba_immersive
 
 `BOBA_DEMO_LAUNCHER` remains available as a direct launcher override. No
 machine-specific path is compiled into the plugin.
+
+The default launcher starts Rope. If a previous session used a Sloth launcher
+override, run `unset BOBA_DEMO_LAUNCHER` before launching to restore that default.
+Hold Y or B to open the object selector and switch between Rope and Sloth.
 
 ## Select Boba frame transport
 
@@ -237,3 +242,15 @@ To include the NVENC test, configure with
 C++ runtime, and dependency prefix as the desktop build. It rejects recycled
 inputs after upload, verifies that a requested keyframe survives rejection, and
 writes 12 accepted frames to `build/boba-checks/stereo.obu` for decoder checks.
+
+To check CPU loading images between GPU gameplay frames, run this from the
+ILLIXR checkout with the configured Boba CUDA environment:
+
+```bash
+conda run --no-capture-output -n boba-cu132 \
+  python tests/boba/cpu_loading_frames.py "$BOBA_IMMERSIVE_ROOT/Boba-Demo"
+```
+
+This GPU test uses temporary local IPC without a headset. It checks exact pixel
+contents and frame generations for alternating GPU and CPU stereo inputs, and
+verifies that GPU frames continue using direct copies after CPU loading images.

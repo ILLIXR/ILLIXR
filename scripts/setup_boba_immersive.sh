@@ -24,7 +24,8 @@ readonly PATCHED_GSPLAT_VENDOR_SHA256="9800963458fb8cef5fd6acc0033901466ca91e137
 readonly PATCHED_DEMO_ASSETS_SHA256="8356763064d2993a4f1bd82c59ded2ee6c6cf3abbb138dfd8608c4024ccc97f9"
 readonly PATCHED_GARDEN_ASSETS_SHA256="3431640e18d85f8ccd38b8501fc9e7ed3ed185b75bea76ffad2f4ac7d7b6803d"
 readonly PATCHED_CUDA_LINALG_SHA256="b0dd5a4a21a933c5a29219ff81be8d570456fb28544d550e1516afb00a508fca"
-readonly PATCHED_QUEST_DISPLAY_SHA256="8d46faa96b3737fd23ee3c40efdd0a41096928fe498caf1a93ad45ca2351ed94"
+readonly PREVIOUS_QUEST_DISPLAY_SHA256="8d46faa96b3737fd23ee3c40efdd0a41096928fe498caf1a93ad45ca2351ed94"
+readonly PATCHED_QUEST_DISPLAY_SHA256="fa9d7d6a938e6a5f9546e7c71abdfc52a51a782da9b8d314b31485a6c91af081"
 readonly PATCHED_PUBLIC_GSPLAT_SHA256="cc540b95d870db5ceb5ebaa08a93473a3d19ba24e79fb78072c39152a6acf317"
 readonly PATCHED_PUBLIC_BUILDER_SHA256="18d0911339c713137d1fcf7ad19f7bff0141ebf9e60c9fca7cf2e5ef04ab1dc5"
 
@@ -373,8 +374,8 @@ index 7ed3a83..862c97c 100644
 PATCH
 }
 
-patch_demo_ring_generation() {
-    git -C "${BOBA_DEMO_ROOT}" apply --unidiff-zero <<'PATCH'
+reverse_demo_ring_generation() {
+    git -C "${BOBA_DEMO_ROOT}" apply --reverse --unidiff-zero <<'PATCH'
 diff --git a/qqtt/quest_display.py b/qqtt/quest_display.py
 index 72ea5d4..8cb7bba 100644
 --- a/qqtt/quest_display.py
@@ -385,6 +386,45 @@ index 72ea5d4..8cb7bba 100644
 @@ -1079,0 +1082,2 @@ class OpenXRFramePanelMirror:
 +        # Readers must reject the slot for the entire asynchronous overwrite.
 +        self._write_frame_slot_metadata(slot=slot, frame_id=0)
+PATCH
+}
+
+patch_demo_frame_delivery() {
+    if [[ "$(sha256_of "${BOBA_DEMO_ROOT}/qqtt/quest_display.py")" == "${PREVIOUS_QUEST_DISPLAY_SHA256}" ]]; then
+        reverse_demo_ring_generation
+    fi
+    git -C "${BOBA_DEMO_ROOT}" apply --unidiff-zero <<'PATCH'
+diff --git a/qqtt/quest_display.py b/qqtt/quest_display.py
+index 72ea5d4..b300f93 100644
+--- a/qqtt/quest_display.py
++++ b/qqtt/quest_display.py
+@@ -544,0 +545,2 @@ class OpenXRFramePanelMirror:
++        # Invalidate the old generation before recycling its pixel storage.
++        self._write_frame_slot_metadata(slot=slot, frame_id=0)
+@@ -703 +705,3 @@ class OpenXRFramePanelMirror:
+-            if not self._direct_commit_enabled:
++            # Loading images may live on the CPU even while CUDA is active.
++            use_direct_commit = self._direct_commit_enabled and frame_tensor.is_cuda
++            if not use_direct_commit:
+@@ -719 +723 @@ class OpenXRFramePanelMirror:
+-                if self._direct_commit_enabled:
++                if use_direct_commit:
+@@ -1079,0 +1084,2 @@ class OpenXRFramePanelMirror:
++        # Readers must reject the slot for the entire asynchronous overwrite.
++        self._write_frame_slot_metadata(slot=slot, frame_id=0)
+@@ -4239 +4245,8 @@ class OpenXRImmersiveBridge(OpenXRFramePanelMirror):
+-            if not self._direct_commit_enabled:
++            # Object switches retain CPU images; never pass host pointers to
++            # the direct cudaMemcpyDeviceToHost path.
++            use_direct_commit = (
++                self._direct_commit_enabled
++                and left_copy_tensor.is_cuda
++                and right_copy_tensor.is_cuda
++            )
++            if not use_direct_commit:
+@@ -4262 +4275 @@ class OpenXRImmersiveBridge(OpenXRFramePanelMirror):
+-                if self._direct_commit_enabled:
++                if use_direct_commit:
 PATCH
 }
 
@@ -472,15 +512,16 @@ patch_demo_runtime_policy_test() {
 PATCH
 }
 
-# Apply a compatibility patch only to an unmodified pinned upstream file, then
-# verify the exact result. This avoids silently overwriting user or upstream
-# edits when setup is rerun.
+# Apply a compatibility patch only to pinned upstream content or an exact
+# previous installer output, then verify the exact result. This avoids silently
+# overwriting user or upstream edits when setup is rerun.
 ensure_runtime_patched_file() {
     local relative_path="$1"
     local expected_sha="$2"
     local patch_function="$3"
     local directory="${4:-${BOBA_DEMO_ROOT}}"
     local ref="${5:-${BOBA_DEMO_REF}}"
+    local previous_sha="${6:-}"
     local target="${directory}/${relative_path}"
     local current_sha
     local original_sha
@@ -492,7 +533,8 @@ ensure_runtime_patched_file() {
     fi
 
     original_sha="$(git -C "${directory}" show "${ref}:${relative_path}" | sha256sum | awk '{print $1}')"
-    [[ "${current_sha}" == "${original_sha}" ]] ||
+    [[ "${current_sha}" == "${original_sha}" ||
+       ( -n "${previous_sha}" && "${current_sha}" == "${previous_sha}" ) ]] ||
         die "Boba file has unexpected modifications: ${target}"
 
     "${patch_function}"
@@ -510,7 +552,8 @@ apply_demo_compatibility_patches() {
     ensure_runtime_patched_file "tools/fetch_demo_case_assets.py" "${PATCHED_DEMO_ASSETS_SHA256}" patch_demo_asset_hint_environment
     ensure_runtime_patched_file "qqtt/garden_assets.py" "${PATCHED_GARDEN_ASSETS_SHA256}" patch_garden_asset_hint_environment
     ensure_runtime_patched_file "gaussian_splatting/cuda_linalg.py" "${PATCHED_CUDA_LINALG_SHA256}" patch_demo_linalg_environment
-    ensure_runtime_patched_file "qqtt/quest_display.py" "${PATCHED_QUEST_DISPLAY_SHA256}" patch_demo_ring_generation
+    ensure_runtime_patched_file "qqtt/quest_display.py" "${PATCHED_QUEST_DISPLAY_SHA256}" patch_demo_frame_delivery \
+        "${BOBA_DEMO_ROOT}" "${BOBA_DEMO_REF}" "${PREVIOUS_QUEST_DISPLAY_SHA256}"
     ensure_runtime_patched_file "test/test_cuda_linalg_backend.py" "${PATCHED_RUNTIME_TEST_SHA256}" patch_demo_runtime_policy_test
     log "Boba-Demo compatibility patches verified for ${BOBA_ENVIRONMENT}"
 }
