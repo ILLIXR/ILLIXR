@@ -385,7 +385,7 @@ unsigned spatial_hash::append_mesh_match_and_insert(bool merge) {
 [[maybe_unused]] void spatial_hash::print_mesh_as_obj(unsigned id, unsigned type, const std::string& output_path) {
     (void) type;
     const std::string filename = output_path.empty() ? std::to_string(id) + ".obj" : output_path;
-    std::ofstream out_file(filename);
+    std::ofstream     out_file(filename);
     if (!out_file)
         throw std::runtime_error("Could not create final scene mesh: " + filename);
     out_file.exceptions(std::ios::badbit | std::ios::failbit);
