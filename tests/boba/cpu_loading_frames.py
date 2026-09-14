@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Check CPU loading images between GPU gameplay frames without a headset.
 
-Run with the configured Boba CUDA Python and pass the installed Boba-Demo root.
+Run with the configured Boba CUDA Python and pass the installed Boba-ILLIXR root.
 The bridge uses temporary local IPC files and requires a working NVIDIA GPU.
 """
 

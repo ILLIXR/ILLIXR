@@ -538,7 +538,7 @@ request!
 
 [TPP51]:   https://github.com/ILLIXR/draco_illixr
 
-[TPP52]:   https://github.com/jianxiapyh/Boba-Public/tree/9aa739542a2f85a8a6c207d1b6991bcc757b78b0
+[TPP52]:   https://github.com/ILLIXR/Boba-ILLIXR
 
 [//]: # (- Licenses -)
 
@@ -640,4 +640,4 @@ request!
 
 [L51]:  https://github.com/ILLIXR/draco_illixr/blob/master/LICENSE
 
-[L52]:  https://github.com/jianxiapyh/Boba-Public/blob/9aa739542a2f85a8a6c207d1b6991bcc757b78b0/LICENSE
+[L52]:  https://github.com/ILLIXR/Boba-ILLIXR/blob/main/LICENSE

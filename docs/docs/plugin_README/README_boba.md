@@ -2,9 +2,12 @@
 
 `boba_immersive` adds physics-based Gaussian digital twin support to ILLIXR,
 using [Boba](https://jianxiapyh.github.io/Boba-project-page/) as the simulation
-and rendering backend. The Boba simulation and rendering code stays in the Boba
-repository; the ILLIXR plugins launch it, deliver headset/controller poses to
-it, and return its rendered stereo images to the headset.
+and rendering backend. Two repositories provide the demo: ILLIXR contains the
+plugins, transport, and Quest application, while
+[ILLIXR/Boba-ILLIXR](https://github.com/ILLIXR/Boba-ILLIXR) contains the simulation,
+renderer, immersive game logic, assets, and CUDA environment setup. The ILLIXR
+plugins launch that runtime, deliver headset/controller poses, and return its
+rendered stereo images to the headset.
 
 Two Quest 3 paths are available:
 
@@ -24,59 +27,86 @@ Two Quest 3 paths are available:
 
 ## One-time Boba setup
 
-From an ILLIXR source checkout, run:
+Install Conda and Git LFS first. The companion repository is private, so your
+GitHub account must have access. Configure an SSH key for GitHub or an HTTPS
+credential helper that also works with Git LFS.
+
+From the ILLIXR source checkout, create the companion beside it:
 
 ```bash
-./scripts/setup_boba_immersive.sh
+./scripts/setup_boba_immersive.sh --install-root ..
+export BOBA_IMMERSIVE_ROOT="$(realpath ../Boba-ILLIXR)"
 ```
 
-The script installs Boba below
-`${XDG_DATA_HOME:-$HOME/.local/share}/illixr/boba_immersive` by default. It:
+This produces two source folders:
 
-- checks out Boba-Public at [`612d22a`](https://github.com/jianxiapyh/Boba-Public/commit/612d22a74c2d54e3f20d2c197182090a22a20494)
-  and Boba-Demo at [`684d3c2`](https://github.com/jianxiapyh/Boba-Demo/commit/684d3c2d7fc0cd4c5ba1202748cadf6584d2db01),
-  including the dedicated cuSOLVER rotation solver;
-- creates or validates the dedicated `boba-cu132` Conda environment using
-  Boba-Public's pinned CUDA 13.2 environment specification;
-- applies checksum-verified compatibility patches so both repositories use
-  `boba-cu132`, and shared frame slots are invalidated before their pixels are
-  overwritten; CPU loading images use staged copies while GPU gameplay images
-  retain direct CUDA copies;
-- builds Boba's CUDA extensions;
-- downloads and extracts all five archives listed under Boba-Public's
-  **Required Assets** section;
-- downloads and verifies Boba-Demo's Git LFS Sloth payload;
-- installs the demo-only Python requirement and validates the Rope, Sloth, and
-  Lab assets.
+```text
+workspace/
+  ILLIXR/       # plugins, profiles, desktop and Android application
+  Boba-ILLIXR/  # simulation, renderer, immersive games, assets, environment setup
+```
 
-The optional Garden scene is a separate large download. Include it with:
+The installer pins Boba-ILLIXR to `ff82409f25117ff6657dc6e81f6e9530d3111abb`, retrieves its Git
+LFS assets through the same authenticated repository, and runs its
+`env_install/setup.sh`. That script creates or validates `boba-cu132`, builds the
+bundled CUDA/OpenGL, gsplat, and cuSOLVER extensions, and validates the Rope,
+Sloth, and Lab assets. The runtime includes the shared frame-generation and CPU
+loading-image fixes; setup no longer applies patches to external checkouts.
+There are no Boba-Public archives or separate Boba-Demo downloads.
+
+SSH is the default transport. For an HTTPS credential helper, add
+`--repository https://github.com/ILLIXR/Boba-ILLIXR.git`. GitHub access is required
+only for installation/update; the default demo can then run without Internet.
+
+If both repositories are already cloned, use the existing companion directly:
 
 ```bash
-./scripts/setup_boba_immersive.sh --garden
+./scripts/setup_boba_immersive.sh --source-dir ../Boba-ILLIXR
+export BOBA_IMMERSIVE_ROOT="$(realpath ../Boba-ILLIXR)"
 ```
 
-Downloads are resumable. Successfully extracted Boba-Public archives are
-removed by default to save disk space; pass `--keep-downloads` to retain them.
-When upgrading the previous pinned runtime, known installer patches are backed
-up under `.state/checkout-backups` before updating. Custom or staged edits are
-preserved and cause setup to stop; use a separate `--install-root` to test an
-update alongside a modified checkout. The native Lab demo can be installed with
-`--skip-public-assets` because it uses Boba-Demo's packaged assets.
+`--source-dir` preserves the checkout revision and local edits, and reports a
+revision different from ILLIXR's pin. Managed installation refuses to overwrite
+local changes. Set `CONDA_ENVS_PATH` to a separate directory to test with an
+isolated environment. Use `--rebuild` to rebuild CUDA extensions explicitly.
 
-For a non-default location, use `--install-root` during setup and export the
-same root when launching ILLIXR:
+Without `--install-root` or `--source-dir`, setup installs below
+`${XDG_DATA_HOME:-$HOME/.local/share}/illixr/boba_immersive`; the plugin discovers
+that location automatically. `BOBA_IMMERSIVE_ROOT` accepts the companion checkout
+itself or the parent passed to `--install-root`. `BOBA_DEMO_LAUNCHER` remains a
+direct launcher override. No machine-specific path is compiled into the plugin.
+
+The default launcher starts Rope in the Lab. If a previous session used a Sloth
+launcher override, run `unset BOBA_DEMO_LAUNCHER` before launching. Hold Y or B to
+open the object selector and switch between Rope and Sloth. Rope, Sloth, Lab,
+and Ambulance assets are packaged in the companion repository. The optional
+Garden scene remains a separate large external download, requested with
+`--garden`; it is not needed for the default demo.
+
+## Build the native desktop server
+
+Install the normal ILLIXR dependencies from the [Getting Started guide](../getting_started.md),
+including OpenXR headers/loader, and provide a compatible CUDA toolkit and NVENC
+headers. The tested desktop uses CUDA 12.8 for ILLIXR; Boba's Python process uses
+its own CUDA 13.2 environment. With the ILLIXR build environment active, run:
 
 ```bash
-./scripts/setup_boba_immersive.sh --install-root /path/to/boba_immersive
-export BOBA_IMMERSIVE_ROOT=/path/to/boba_immersive
+cmake -S . -B build -G Ninja \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_INSTALL_PREFIX="$PWD/install" \
+  -DCMAKE_PREFIX_PATH="$CONDA_PREFIX" \
+  -DYAML_FILE=profiles/boba_quest_native_server.yaml \
+  -DBUILD_DOCS=OFF -DBUILD_DEP_MAP=OFF \
+  -DCMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc \
+  -DVIDEO_CODEC_SDK_PATH=/path/to/nvidia-video-codec-sdk
+cmake --build build --parallel 8
+cmake --install build
+export LD_LIBRARY_PATH="$PWD/install/lib:$CONDA_PREFIX/lib:${LD_LIBRARY_PATH:-}"
 ```
 
-`BOBA_DEMO_LAUNCHER` remains available as a direct launcher override. No
-machine-specific path is compiled into the plugin.
-
-The default launcher starts Rope. If a previous session used a Sloth launcher
-override, run `unset BOBA_DEMO_LAUNCHER` before launching to restore that default.
-Hold Y or B to open the object selector and switch between Rope and Sloth.
+Replace the CUDA and Video Codec SDK paths with your installations. The encoder
+also accepts an `nv-codec-headers` root containing `include/ffnvcodec/nvEncodeAPI.h`.
+Use the installed `./install/bin/main.opt.exe` in the launch command below.
 
 ## Select Boba frame transport
 
@@ -148,6 +178,18 @@ conda activate illixr
 With `--boba`, the script defaults to an optimized Release APK. Use `--debug`
 only when debugging the native application; an unoptimized Debug build is not a
 performance baseline. The signing keystore remains at `$HOME/illixr.keystore`.
+If this is a new developer machine, create your own local key once (do not
+replace an existing signing key):
+
+```bash
+keytool -genkeypair -keystore "$HOME/illixr.keystore" \
+  -alias illixr -keyalg RSA -keysize 2048 -validity 10000 \
+  -storepass illixr -keypass illixr
+chmod 600 "$HOME/illixr.keystore"
+```
+
+This follows the repository's existing local research-build signing configuration.
+The key stays outside both source repositories.
 The helper's local sideload flag excludes only the Google Play target-API lint
 rule; all other release checks still run.
 
@@ -195,7 +237,7 @@ Put the Quest and desktop on the same local network, open `ILLIXRApp` on an
 awake Quest, and pass its Wi-Fi address to the desktop process:
 
 ```bash
-./main.opt.exe \
+./install/bin/main.opt.exe \
   --yaml=profiles/boba_quest_native_server.yaml \
   --duration=600 \
   --quest-ip 192.168.x.x
@@ -253,7 +295,7 @@ ILLIXR checkout with the configured Boba CUDA environment:
 
 ```bash
 conda run --no-capture-output -n boba-cu132 \
-  python tests/boba/cpu_loading_frames.py "$BOBA_IMMERSIVE_ROOT/Boba-Demo"
+  python tests/boba/cpu_loading_frames.py "$BOBA_IMMERSIVE_ROOT"
 ```
 
 This GPU test uses temporary local IPC without a headset. It checks exact pixel

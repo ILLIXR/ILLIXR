@@ -27,7 +27,7 @@ extern char** environ;
 
 namespace {
 
-// Versioned, fixed-layout IPC contracts shared with Boba-Demo. These structs
+// Versioned, fixed-layout IPC contracts shared with Boba-ILLIXR. These structs
 // intentionally avoid C++ containers and Eigen types so the Python side can
 // unpack the bytes without depending on the ILLIXR ABI.
 constexpr std::uint32_t kInputVersion    = 1;
@@ -311,9 +311,14 @@ std::string resolve_boba_launcher(const std::shared_ptr<ILLIXR::switchboard>& sw
         install_root = default_boba_install_root();
     }
     if (install_root.empty()) {
-        return "Boba-Demo/boba_app.sh";
+        return "Boba-ILLIXR/boba_app.sh";
     }
-    return (install_root / "Boba-Demo" / "boba_app.sh").string();
+    // BOBA_IMMERSIVE_ROOT may name the companion checkout directly, or the
+    // parent directory used by --install-root and the default XDG installation.
+    if (std::filesystem::is_regular_file(install_root / "boba_app.sh")) {
+        return (install_root / "boba_app.sh").string();
+    }
+    return (install_root / "Boba-ILLIXR" / "boba_app.sh").string();
 }
 
 } // namespace
