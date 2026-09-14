@@ -46,7 +46,7 @@ workspace/
   Boba-ILLIXR/  # simulation, renderer, immersive games, assets, environment setup
 ```
 
-The installer pins Boba-ILLIXR to `ff82409f25117ff6657dc6e81f6e9530d3111abb`, retrieves its Git
+The installer pins Boba-ILLIXR to `23e800fc552770004fcbee58be2760f4c23748a8`, retrieves its Git
 LFS assets through the same authenticated repository, and runs its
 `env_install/setup.sh`. That script creates or validates `boba-cu132`, builds the
 bundled CUDA/OpenGL, gsplat, and cuSOLVER extensions, and validates the Rope,

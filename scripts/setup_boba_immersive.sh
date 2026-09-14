@@ -3,7 +3,7 @@ set -Eeuo pipefail
 
 # The companion repository owns the runtime, assets, and CUDA environment.
 # Keep this immutable revision in sync with the integration tested by this PR.
-readonly BOBA_REF="ff82409f25117ff6657dc6e81f6e9530d3111abb"
+readonly BOBA_REF="23e800fc552770004fcbee58be2760f4c23748a8"
 REPOSITORY="git@github.com:ILLIXR/Boba-ILLIXR.git"
 INSTALL_ROOT="${XDG_DATA_HOME:-${HOME:?HOME or XDG_DATA_HOME must be set}/.local/share}/illixr/boba_immersive"
 SOURCE_DIR=""
