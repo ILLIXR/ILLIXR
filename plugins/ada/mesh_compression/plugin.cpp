@@ -107,14 +107,14 @@ void compress(const uint idx, std::shared_ptr<switchboard::writer<mesh_type>> wr
             // expert_encoder->Reset(encoder.CreateExpertEncoderOptions(*draco_pc));
             draco_illixr::EncoderBuffer draco_buffer;
 
-            const draco_illixr::Status status   = expert_encoder_->EncodeToBuffer(&draco_buffer);
+            const draco_illixr::Status status = expert_encoder_->EncodeToBuffer(&draco_buffer);
             if (!status.ok()) {
                 spdlog::get("illixr")->error("Failed to encode scene {} chunk {}: {}", datum->id, datum->chunk_id,
                                              status.error_msg_string());
                 continue;
             }
-            auto                       end      = std::chrono::high_resolution_clock::now();
-            auto                       duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+            auto end      = std::chrono::high_resolution_clock::now();
+            auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
 
             unsigned mesh_t = datum->type;
             compression_latency_ << (duration / 1000.0) << "\n";
