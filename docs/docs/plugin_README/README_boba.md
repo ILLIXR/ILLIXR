@@ -104,8 +104,28 @@ format, and video uses TCP.
 ## Install the native Quest app
 
 The first installation requires a Quest with developer mode enabled, connected
-and authorized once through USB. Activate the ILLIXR Conda environment so the
-host-side `protoc` compiler is available, then run from the source checkout:
+and authorized once through USB. Before installing the APK, check that ADB can
+see the headset. With the Android SDK's `platform-tools` directory on your
+`PATH`, run:
+
+```bash
+adb devices
+```
+
+An authorized headset appears as:
+
+```text
+List of devices attached
+QUEST_SERIAL    device
+```
+
+The first column is the headset's serial number; `QUEST_SERIAL` is a placeholder
+for your device's value. The `device` status means USB debugging is authorized.
+If it says `unauthorized`, accept the USB debugging prompt inside the headset
+and run `adb devices` again.
+
+Activate the ILLIXR Conda environment so the host-side `protoc` compiler is
+available, then run from the source checkout:
 
 ```bash
 conda activate illixr
@@ -117,6 +137,13 @@ Quest's Wi-Fi address and the corresponding desktop option. Use `--no-build` to
 reinstall an existing APK, `--no-launch` to install without opening the app, or
 `--serial SERIAL` when multiple Android devices are connected. Run
 `./scripts/install_quest_app.sh --help` for Android SDK and JDK overrides.
+
+To select a specific headset, replace `QUEST_SERIAL` with the serial number
+shown by `adb devices`:
+
+```bash
+./scripts/install_quest_app.sh --boba --serial QUEST_SERIAL
+```
 
 The installed development APK appears in the Quest's **Unknown Sources** app
 list. USB is not used by the runtime and may be disconnected after installation.
