@@ -34,7 +34,7 @@ struct index_params {
 // Select before starting the process. Keep Quest 3 as the fallback for existing
 // Android launchers; the desktop Index launchers explicitly set ILLIXR_HEADSET.
 inline std::string configured_headset() {
-    const char* value = std::getenv("ILLIXR_HEADSET");
+    const char*       value   = std::getenv("ILLIXR_HEADSET");
     const std::string headset = value == nullptr ? "quest3" : value;
     if (headset != "quest3" && headset != "index") {
         throw std::runtime_error("Invalid ILLIXR_HEADSET='" + headset + "'; expected quest3 or index");
@@ -46,16 +46,15 @@ inline std::string configured_headset() {
 // These are runtime presets (radians), not compile-time constants. Overscan is
 // applied by the consumer, just as it was for the fixed server FOV.
 struct server_params {
-    inline static const std::string headset = configured_headset();
+    inline static const std::string          headset  = configured_headset();
     inline static const std::array<float, 2> fov_left = {
         headset == "index" ? index_params::fov_left[0] : quest3_params::fov_left[0],
         headset == "index" ? index_params::fov_left[1] : quest3_params::fov_left[1]};
     inline static const std::array<float, 2> fov_right = {
         headset == "index" ? index_params::fov_right[0] : quest3_params::fov_right[0],
         headset == "index" ? index_params::fov_right[1] : quest3_params::fov_right[1]};
-    inline static const std::array<float, 2> fov_up = {
-        headset == "index" ? index_params::fov_up[0] : quest3_params::fov_up[0],
-        headset == "index" ? index_params::fov_up[1] : quest3_params::fov_up[1]};
+    inline static const std::array<float, 2> fov_up = {headset == "index" ? index_params::fov_up[0] : quest3_params::fov_up[0],
+                                                       headset == "index" ? index_params::fov_up[1] : quest3_params::fov_up[1]};
     inline static const std::array<float, 2> fov_down = {
         headset == "index" ? index_params::fov_down[0] : quest3_params::fov_down[0],
         headset == "index" ? index_params::fov_down[1] : quest3_params::fov_down[1]};

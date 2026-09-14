@@ -13,9 +13,9 @@ namespace ILLIXR {
 // client-side ownership convention.
 template<typename... Args>
 std::shared_ptr<data_format::compressed_frame> make_ffmpeg_queued_frame(Args&&... args) {
-    auto frame = std::make_unique<data_format::compressed_frame>(std::forward<Args>(args)...);
-    const std::array<AVPacket*, 6> source = {frame->left_color, frame->right_color, frame->left_depth,
-                                           frame->right_depth, frame->left_motion_vec, frame->right_motion_vec};
+    auto                           frame  = std::make_unique<data_format::compressed_frame>(std::forward<Args>(args)...);
+    const std::array<AVPacket*, 6> source = {frame->left_color,  frame->right_color,     frame->left_depth,
+                                             frame->right_depth, frame->left_motion_vec, frame->right_motion_vec};
     frame->left_color = frame->right_color = frame->left_depth = frame->right_depth = nullptr;
     frame->left_motion_vec = frame->right_motion_vec = nullptr;
 
@@ -28,8 +28,8 @@ std::shared_ptr<data_format::compressed_frame> make_ffmpeg_queued_frame(Args&&..
         av_packet_free(&value->right_motion_vec);
         delete value;
     });
-    const std::array<AVPacket**, 6> destination = {&owned->left_color, &owned->right_color, &owned->left_depth,
-                                                &owned->right_depth, &owned->left_motion_vec, &owned->right_motion_vec};
+    const std::array<AVPacket**, 6> destination = {&owned->left_color,  &owned->right_color,     &owned->left_depth,
+                                                   &owned->right_depth, &owned->left_motion_vec, &owned->right_motion_vec};
     for (size_t i = 0; i < source.size(); ++i) {
         if (source[i] != nullptr) {
             *destination[i] = av_packet_clone(source[i]);

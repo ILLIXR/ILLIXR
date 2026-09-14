@@ -431,8 +431,8 @@ void offload_rendering_server::_p_one_iteration() {
             std::lock_guard<std::mutex> lock(send_queue_mutex_);
             queued_frames = send_queue_.size();
         }
-        log_->warn("[OFFLOAD_SLOW_ENCODE] frame={} encode_ms={:.2f} send_queue={}",
-                   frame_number_, encode_time / 1000.0, queued_frames);
+        log_->warn("[OFFLOAD_SLOW_ENCODE] frame={} encode_ms={:.2f} send_queue={}", frame_number_, encode_time / 1000.0,
+                   queued_frames);
     }
     auto acquire_image_time =
         std::chrono::duration_cast<std::chrono::microseconds>(acquire_image_end_time - acquire_image_start_time).count();
@@ -577,19 +577,19 @@ void offload_rendering_server::enqueue_for_network_send(BUFFER_TYPE& pose
 #    ifdef _WIN32
     if (use_pass_motion_vectors_) {
         frame = make_ffmpeg_queued_frame(encode_out_color_packets_[0], encode_out_color_packets_[1],
-                                                   encode_out_depth_packets_[0], encode_out_depth_packets_[1],
-                                                   encode_out_motion_vec_packets_[0], encode_out_motion_vec_packets_[1], pose,
-                                                   timestamp, frame_number_, near_z_, far_z_, nalu_only_);
+                                         encode_out_depth_packets_[0], encode_out_depth_packets_[1],
+                                         encode_out_motion_vec_packets_[0], encode_out_motion_vec_packets_[1], pose, timestamp,
+                                         frame_number_, near_z_, far_z_, nalu_only_);
     } else if (use_pass_depth_) {
 #    else
     if (use_pass_depth_) {
 #    endif
-        frame = make_ffmpeg_queued_frame(encode_out_color_packets_[0], encode_out_color_packets_[1],
-                                                   encode_out_depth_packets_[0], encode_out_depth_packets_[1], pose, timestamp,
-                                                   frame_number_, near_z_, far_z_, nalu_only_);
+        frame =
+            make_ffmpeg_queued_frame(encode_out_color_packets_[0], encode_out_color_packets_[1], encode_out_depth_packets_[0],
+                                     encode_out_depth_packets_[1], pose, timestamp, frame_number_, near_z_, far_z_, nalu_only_);
     } else {
         frame = make_ffmpeg_queued_frame(encode_out_color_packets_[0], encode_out_color_packets_[1], pose, timestamp,
-                                                   frame_number_, nalu_only_);
+                                         frame_number_, nalu_only_);
     }
 
 #    ifdef OPENXR_CLIENT

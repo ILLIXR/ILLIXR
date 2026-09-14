@@ -1,8 +1,8 @@
 // Common parameters. Ultimately, these need to be moved to a yaml file.
 #pragma once
 
-#include "relative_clock.hpp"
 #include "headset_fov.hpp"
+#include "relative_clock.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -17,11 +17,11 @@ namespace ILLIXR {
 /// Display parameters
 struct display_params {
     // Display width in pixels
-    static constexpr unsigned width_pixels = 2880;  // valve index
+    static constexpr unsigned width_pixels = 2880; // valve index
     // static constexpr unsigned width_pixels = 3360; // quest 3
 
     // Display height in pixels
-    static constexpr unsigned height_pixels = 1600;  // valve index
+    static constexpr unsigned height_pixels = 1600; // valve index
     // static constexpr unsigned height_pixels = 1816; // quest 3
 
     // Display width in meters

@@ -151,9 +151,7 @@ void x11_direct::tick() {
     register_display_timings_event(vk_device_);
 
     // Vulkan refreshRate is in milliHz, so we convert to nanoseconds
-    const auto display_period = std::chrono::nanoseconds{
-        1'000'000'000'000LL / selected_mode_.parameters.refreshRate
-    };
+    const auto display_period = std::chrono::nanoseconds{1'000'000'000'000LL / selected_mode_.parameters.refreshRate};
     now += display_period;
     vsync_topic_.put(vsync_topic_.allocate(now));
 }

@@ -755,11 +755,11 @@ void offload_rendering_client::_p_one_iteration() {
         if (ret < 0) {
             char error[AV_ERROR_MAX_STRING_SIZE];
             av_strerror(ret, error, sizeof(error));
-            throw std::runtime_error{std::string{"HEVC "} + operation + " failed: " + error +
-                " stream=" + stream + " eye=" + std::to_string(eye) +
-                " decoded=" + std::to_string(ctx->width) + "x" + std::to_string(ctx->height) +
-                " output=" + std::to_string(buffer_pool_->image_pool[0][0].image_info.extent.width) + "x" +
-                std::to_string(buffer_pool_->image_pool[0][0].image_info.extent.height)};
+            throw std::runtime_error{std::string{"HEVC "} + operation + " failed: " + error + " stream=" + stream +
+                                     " eye=" + std::to_string(eye) + " decoded=" + std::to_string(ctx->width) + "x" +
+                                     std::to_string(ctx->height) +
+                                     " output=" + std::to_string(buffer_pool_->image_pool[0][0].image_info.extent.width) + "x" +
+                                     std::to_string(buffer_pool_->image_pool[0][0].image_info.extent.height)};
         }
     };
     auto decode_start = std::chrono::high_resolution_clock::now();
@@ -1018,11 +1018,9 @@ void offload_rendering_client::_p_one_iteration() {
     if (processing_ms >= 10.0) {
         log_->warn("[OFFLOAD_SLOW_DECODE] processing_ms={:.2f} codec_ms={:.2f} conversion_ms={:.2f} "
                    "transfer_ms={:.2f} receive_queue={}",
-                   processing_ms,
-                   std::chrono::duration<double, std::milli>(decode_end - decode_start).count(),
+                   processing_ms, std::chrono::duration<double, std::milli>(decode_end - decode_start).count(),
                    std::chrono::duration<double, std::milli>(conversion_end - decode_end).count(),
-                   std::chrono::duration<double, std::milli>(transfer_end - transfer_start).count(),
-                   frames_reader_.size());
+                   std::chrono::duration<double, std::milli>(transfer_end - transfer_start).count(), frames_reader_.size());
     }
 
     // Update performance metrics
@@ -1549,9 +1547,9 @@ void offload_rendering_client::ffmpeg_init_decoder() {
     codec_color_ctx_->hw_device_ctx = av_buffer_ref(cuda_device_ctx_);
     // Let NVDEC size its decode surfaces from the stream headers. The Vulkan
     // output pool can differ from the encoded dimensions after a rebuild.
-    codec_color_ctx_->width         = static_cast<int>(buffer_pool_->image_pool[0][0].image_info.extent.width);
-    codec_color_ctx_->height        = static_cast<int>(buffer_pool_->image_pool[0][0].image_info.extent.height);
-    codec_color_ctx_->framerate     = {0, 1};
+    codec_color_ctx_->width     = static_cast<int>(buffer_pool_->image_pool[0][0].image_info.extent.width);
+    codec_color_ctx_->height    = static_cast<int>(buffer_pool_->image_pool[0][0].image_info.extent.height);
+    codec_color_ctx_->framerate = {0, 1};
     codec_color_ctx_->flags |= AV_CODEC_FLAG_LOW_DELAY;
     codec_color_ctx_->color_range     = AVCOL_RANGE_JPEG;
     codec_color_ctx_->colorspace      = AVCOL_SPC_BT709;
@@ -1596,7 +1594,6 @@ void offload_rendering_client::ffmpeg_init_decoder() {
         AV_ASSERT_SUCCESS(ret);
     }
     log_->info("HEVC decoder output pool: {}x{} per eye; decode surfaces follow stream dimensions",
-               buffer_pool_->image_pool[0][0].image_info.extent.width,
-               buffer_pool_->image_pool[0][0].image_info.extent.height);
+               buffer_pool_->image_pool[0][0].image_info.extent.width, buffer_pool_->image_pool[0][0].image_info.extent.height);
 }
 #endif
