@@ -27,16 +27,20 @@ Two Quest 3 paths are available:
 
 ## One-time Boba setup
 
-Install Conda and Git LFS first. The companion repository is private, so your
-GitHub account must have access. Configure an SSH key for GitHub or an HTTPS
-credential helper that also works with Git LFS.
+Install Conda and Git LFS first. Both repositories are public. The commands
+below use HTTPS, including Git LFS asset downloads, and do not require a GitHub
+account, SSH key, or access token.
 
-From the ILLIXR source checkout, create the companion beside it:
+For a fresh installation, clone ILLIXR and create the companion beside it:
 
 ```bash
+git clone --branch boba-immersive-integration https://github.com/ILLIXR/ILLIXR.git
+cd ILLIXR
 ./scripts/setup_boba_immersive.sh --install-root ..
 export BOBA_IMMERSIVE_ROOT="$(realpath ../Boba-ILLIXR)"
 ```
+
+If you already have this ILLIXR branch checked out, start with the setup command.
 
 This produces two source folders:
 
@@ -46,8 +50,8 @@ workspace/
   Boba-ILLIXR/  # simulation, renderer, immersive games, assets, environment setup
 ```
 
-The installer pins Boba-ILLIXR to `23e800fc552770004fcbee58be2760f4c23748a8`, retrieves its Git
-LFS assets through the same authenticated repository, and runs its
+The installer pins Boba-ILLIXR to `f4b75e611e0d7540cbe4dee6f2efb7e41bbf3772`, retrieves its Git
+LFS assets through the same public repository, and runs its
 `env_install/setup.sh`. That script creates or validates `boba-cu132`, builds the
 bundled CUDA/OpenGL, gsplat, and cuSOLVER extensions, and validates the Rope,
 Sloth, and Lab assets. The runtime includes the shared frame-generation and CPU
@@ -59,9 +63,9 @@ packages. Conda can display `Installing pip dependencies: ...working...` for
 an extended period because it prints pip's output after that phase completes.
 Subsequent setup runs reuse the environment and verified CUDA builds.
 
-SSH is the default transport. For an HTTPS credential helper, add
-`--repository https://github.com/ILLIXR/Boba-ILLIXR.git`. GitHub access is required
-only for installation/update; the default demo can then run without Internet.
+HTTPS is the default transport. If you prefer authenticated SSH, add
+`--repository git@github.com:ILLIXR/Boba-ILLIXR.git`. Internet access is required
+for installation/update; the default demo can then run without Internet.
 
 If both repositories are already cloned, use the existing companion directly:
 

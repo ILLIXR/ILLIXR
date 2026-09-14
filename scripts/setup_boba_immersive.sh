@@ -3,8 +3,8 @@ set -Eeuo pipefail
 
 # The companion repository owns the runtime, assets, and CUDA environment.
 # Keep this immutable revision in sync with the integration tested by this PR.
-readonly BOBA_REF="23e800fc552770004fcbee58be2760f4c23748a8"
-REPOSITORY="git@github.com:ILLIXR/Boba-ILLIXR.git"
+readonly BOBA_REF="f4b75e611e0d7540cbe4dee6f2efb7e41bbf3772"
+REPOSITORY="https://github.com/ILLIXR/Boba-ILLIXR.git"
 INSTALL_ROOT="${XDG_DATA_HOME:-${HOME:?HOME or XDG_DATA_HOME must be set}/.local/share}/illixr/boba_immersive"
 SOURCE_DIR=""
 INSTALL_ROOT_EXPLICIT=0
@@ -18,8 +18,8 @@ usage() {
 Usage: setup_boba_immersive.sh [options]
 
 Install ILLIXR/Boba-ILLIXR and configure its boba-cu132 environment.
-The companion repository is private; authenticated Git and Git LFS access
-are required. SSH is the default; an HTTPS credential helper is also supported.
+The companion repository is public. HTTPS is the default; Git and Git LFS
+downloads do not require GitHub credentials. Authenticated SSH is also supported.
 
   --install-root DIR   Create the pinned Boba-ILLIXR checkout below DIR.
                        Default: $XDG_DATA_HOME/illixr/boba_immersive, or
@@ -85,7 +85,7 @@ if [[ -z "${SOURCE_DIR}" ]]; then
     if [[ ! -e "${BOBA_ROOT}" ]]; then
         mkdir -p "${INSTALL_ROOT}"
         GIT_LFS_SKIP_SMUDGE=1 git clone --no-checkout "${REPOSITORY}" "${BOBA_ROOT}" ||
-            die 'Clone failed. Verify your GitHub access and SSH key or HTTPS credential helper.'
+            die 'Clone failed. Check network access to GitHub; SSH URLs also require a configured GitHub SSH key.'
     fi
     [[ -d "${BOBA_ROOT}/.git" || -f "${BOBA_ROOT}/.git" ]] || die "Not a Git checkout: ${BOBA_ROOT}"
     ORIGIN="$(git -C "${BOBA_ROOT}" remote get-url origin)"
@@ -115,7 +115,7 @@ fi
     die 'The checkout is missing the Boba-ILLIXR setup script or launcher.'
 git -C "${BOBA_ROOT}" lfs install --local
 git -C "${BOBA_ROOT}" lfs pull ||
-    die 'Git LFS download failed. Verify access to ILLIXR/Boba-ILLIXR and its LFS objects.'
+    die 'Git LFS download failed. Check network access to GitHub and its LFS storage; SSH URLs also require GitHub authentication.'
 "${BOBA_ROOT}/env_install/setup.sh" "${SETUP_ARGS[@]}"
 log 'Boba immersive setup is complete.'
 log "Set BOBA_IMMERSIVE_ROOT=${BOBA_ROOT} when launching ILLIXR."
