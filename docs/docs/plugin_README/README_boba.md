@@ -197,11 +197,11 @@ awake Quest, and pass its Wi-Fi address to the desktop process:
 ```bash
 ./main.opt.exe \
   --yaml=profiles/boba_quest_native_server.yaml \
-  --duration=3600 \
+  --duration=600 \
   --quest-ip 192.168.x.x
 ```
 
-`--duration=3600` allows one hour of testing; use Ctrl+C to stop earlier.
+`--duration=600` allows 10 minutes of testing; use Ctrl+C to stop earlier.
 Without a duration override, ILLIXR stops after 60 seconds and closes the native
 Quest app through the shutdown channel.
 
