@@ -749,36 +749,42 @@ void offload_rendering_client::_p_one_iteration() {
     auto timestamp = std::chrono::high_resolution_clock::now();
     auto diff      = timestamp - decoded_frame_pose_.predict_target_time.time_since_epoch();
 
-    // Decode frames
+    // Decode frames. Include the operation and dimensions in fatal errors so
+    // stream failures can be distinguished from stale display-buffer sizes.
+    auto check_decode = [this](int ret, const char* operation, const char* stream, int eye, AVCodecContext* ctx) {
+        if (ret < 0) {
+            char error[AV_ERROR_MAX_STRING_SIZE];
+            av_strerror(ret, error, sizeof(error));
+            throw std::runtime_error{std::string{"HEVC "} + operation + " failed: " + error +
+                " stream=" + stream + " eye=" + std::to_string(eye) +
+                " decoded=" + std::to_string(ctx->width) + "x" + std::to_string(ctx->height) +
+                " output=" + std::to_string(buffer_pool_->image_pool[0][0].image_info.extent.width) + "x" +
+                std::to_string(buffer_pool_->image_pool[0][0].image_info.extent.height)};
+        }
+    };
     auto decode_start = std::chrono::high_resolution_clock::now();
     for (auto eye = 0; eye < 2; eye++) {
         // Decode color frames
         auto ret = avcodec_send_packet(codec_color_ctx_, decode_src_color_packets_[eye]);
-        if (ret == AVERROR(EAGAIN)) {
-            throw std::runtime_error{"FFmpeg encoder returned EAGAIN. Internal buffer full? Try using a higher-end GPU."};
-        }
-        AV_ASSERT_SUCCESS(ret);
+        check_decode(ret, "send_packet", "color", eye, codec_color_ctx_);
 
         // Decode depth frames if enabled
         if (use_depth_) {
             ret = avcodec_send_packet(codec_depth_ctx_, decode_src_depth_packets_[eye]);
-            if (ret == AVERROR(EAGAIN)) {
-                throw std::runtime_error{"FFmpeg encoder returned EAGAIN. Internal buffer full? Try using a higher-end GPU."};
-            }
-            AV_ASSERT_SUCCESS(ret);
+            check_decode(ret, "send_packet", "depth", eye, codec_depth_ctx_);
         }
     }
 
-    // Receive decoded frames
+    // Receive decoded frames; check errors before accessing frame contents.
     for (auto eye = 0; eye < 2; eye++) {
         auto ret = avcodec_receive_frame(codec_color_ctx_, decode_out_color_frames_[eye]);
+        check_decode(ret, "receive_frame", "color", eye, codec_color_ctx_);
         assert(decode_out_color_frames_[eye]->format == AV_PIX_FMT_CUDA);
-        AV_ASSERT_SUCCESS(ret);
 
         if (use_depth_) {
             ret = avcodec_receive_frame(codec_depth_ctx_, decode_out_depth_frames_[eye]);
+            check_decode(ret, "receive_frame", "depth", eye, codec_depth_ctx_);
             assert(decode_out_depth_frames_[eye]->format == AV_PIX_FMT_CUDA);
-            AV_ASSERT_SUCCESS(ret);
         }
     }
     auto decode_end = std::chrono::high_resolution_clock::now();
@@ -1005,6 +1011,19 @@ void offload_rendering_client::_p_one_iteration() {
 
     auto transfer_end = std::chrono::high_resolution_clock::now();
     buffer_pool_->src_release_image(ind, std::move(decoded_frame_pose_));
+
+    // Include conversion and GPU waits: asynchronous decode work can finish
+    // there rather than inside avcodec_receive_frame. Excludes network receive.
+    const double processing_ms = std::chrono::duration<double, std::milli>(transfer_end - decode_start).count();
+    if (processing_ms >= 10.0) {
+        log_->warn("[OFFLOAD_SLOW_DECODE] processing_ms={:.2f} codec_ms={:.2f} conversion_ms={:.2f} "
+                   "transfer_ms={:.2f} receive_queue={}",
+                   processing_ms,
+                   std::chrono::duration<double, std::milli>(decode_end - decode_start).count(),
+                   std::chrono::duration<double, std::milli>(conversion_end - decode_end).count(),
+                   std::chrono::duration<double, std::milli>(transfer_end - transfer_start).count(),
+                   frames_reader_.size());
+    }
 
     // Update performance metrics
     metrics_["decode"] += std::chrono::duration_cast<std::chrono::microseconds>(decode_end - decode_start).count();
@@ -1528,7 +1547,8 @@ void offload_rendering_client::ffmpeg_init_decoder() {
     codec_color_ctx_->pix_fmt       = AV_PIX_FMT_CUDA;
     codec_color_ctx_->sw_pix_fmt    = AV_PIX_FMT_NV12;
     codec_color_ctx_->hw_device_ctx = av_buffer_ref(cuda_device_ctx_);
-    codec_color_ctx_->hw_frames_ctx = av_buffer_ref(cuda_nv12_frame_ctx_);
+    // Let NVDEC size its decode surfaces from the stream headers. The Vulkan
+    // output pool can differ from the encoded dimensions after a rebuild.
     codec_color_ctx_->width         = static_cast<int>(buffer_pool_->image_pool[0][0].image_info.extent.width);
     codec_color_ctx_->height        = static_cast<int>(buffer_pool_->image_pool[0][0].image_info.extent.height);
     codec_color_ctx_->framerate     = {0, 1};
@@ -1559,7 +1579,6 @@ void offload_rendering_client::ffmpeg_init_decoder() {
         codec_depth_ctx_->pix_fmt       = AV_PIX_FMT_CUDA;
         codec_depth_ctx_->sw_pix_fmt    = AV_PIX_FMT_NV12;
         codec_depth_ctx_->hw_device_ctx = av_buffer_ref(cuda_device_ctx_);
-        codec_depth_ctx_->hw_frames_ctx = av_buffer_ref(cuda_nv12_frame_ctx_);
         codec_depth_ctx_->width         = static_cast<int>(buffer_pool_->image_pool[0][0].image_info.extent.width);
         codec_depth_ctx_->height        = static_cast<int>(buffer_pool_->image_pool[0][0].image_info.extent.height);
         codec_depth_ctx_->framerate     = {0, 1};
@@ -1576,5 +1595,8 @@ void offload_rendering_client::ffmpeg_init_decoder() {
         ret = avcodec_open2(codec_depth_ctx_, decoder, nullptr);
         AV_ASSERT_SUCCESS(ret);
     }
+    log_->info("HEVC decoder output pool: {}x{} per eye; decode surfaces follow stream dimensions",
+               buffer_pool_->image_pool[0][0].image_info.extent.width,
+               buffer_pool_->image_pool[0][0].image_info.extent.height);
 }
 #endif
