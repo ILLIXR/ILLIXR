@@ -115,7 +115,7 @@ offload_rendering_client::offload_rendering_client(const std::string& name, phon
 #ifdef __ANDROID__
     overscan_ = switchboard_->get_env_double("ILLIXR_OVERSCAN", 1.0);
 
-    headset_width_ = static_cast<int>(headset_width_ * overscan_);
+    headset_width_  = static_cast<int>(headset_width_ * overscan_);
     headset_height_ = static_cast<int>(headset_height_ * overscan_);
 
     // Motion vectors are decoded through the Android MediaCodec path and also
@@ -242,7 +242,9 @@ void offload_rendering_client::log_android_decode_timing() {
         mv_stats = motion_vec_decoder_->get_and_reset_timing_stats();
         log_->info("  MV decode latency (left):  avg={:.2f}ms, min={:.2f}ms, max={:.2f}ms",
                    mv_stats.left_eye.avg_decode_time_us() / 1000.0,
-                   mv_stats.left_eye.min_decode_latency_us == UINT64_MAX ? 0 : static_cast<double>(mv_stats.left_eye.min_decode_latency_us) / 1000.0,
+                   mv_stats.left_eye.min_decode_latency_us == UINT64_MAX
+                       ? 0
+                       : static_cast<double>(mv_stats.left_eye.min_decode_latency_us) / 1000.0,
                    static_cast<double>(mv_stats.left_eye.max_decode_latency_us) / 1000.0);
 #    ifndef COMBINED_ENCODING
         log_->info("  MV decode latency (right): avg={:.2f}ms, min={:.2f}ms, max={:.2f}ms",
