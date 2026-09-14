@@ -91,6 +91,11 @@ compression workers on the server, eight decompression workers on the device, an
 `ILLIXR_RECORD_LOGGING: "0"`. Copy these settings into custom configurations.
 To change a default, edit the corresponding value in your configuration file.
 
+The server can also use the `ada_server_open3d` profile. Select `ada.infinitam`
+or `ada.open3d` in its `plugins` entry; loading both is an error. The device
+configuration is shared. See [Open3D reconstruction and final-mesh comparison](README_ada_open3d.md)
+for the required local Open3D build, matched settings, and backend differences.
+
 ### Example Device Configuration File
 ```yaml
 plugins: ada.offline_scannet,tcp_network_backend,ada.device_tx,ada.device_rx,ada.mesh_decompression_grey,ada.scene_management
@@ -247,7 +252,7 @@ Make sure both shells have `LD_LIBRARY_PATH` set to include your ILLIXR build di
 ```
 
 ### Output:
-- If you enable the `VERIFY` flag in `plugins/ada/scene_management/plugin.cpp`, Ada will write out a reconstructed mesh at the last update as `x.obj` (`x = FRAME_COUNT/FPS - 1`)
+- With `VERIFY` enabled in `plugins/ada/scene_management/plugin.cpp`, Ada exports the last fully completed scene after recording its `Ready` timestamp. Set `ADA_FINAL_MESH_PATH` in the device YAML to choose the output path; the default remains `x.obj` (`x = FRAME_COUNT/FPS - 1`). The export preserves centimeter coordinates and float32 precision while omitting nullified faces and unreferenced storage.
 - A `recorded_data` folder will be created inside your build directory. This folder contains diagnostic and intermediate data collected during the run
 
 ### FAQ:
@@ -310,8 +315,9 @@ Here are some common examples for reference:
 The reconstruction algorithm used in **Ada (InfinITAM)** is generally robust.  
 If your extracted mesh appears **corrupted**, **distorted**, or **missing**, it usually indicates that **depth or pose information** was not passed correctly.
 
-A **missing mesh (nothing is getting updated)** often causes a **segmentation fault**, since the compression stage expects non-empty submesh chunks.  
-If you encounter a segfault, you can verify whether the mesh is missing by printing out the `face_number` variable in the **InfiniTAM plugin** located at:  
+Empty submesh chunks are supported and still complete the scene update. If the
+whole scene remains empty, check the input depth and inspect the `face_number`
+variable in the **InfiniTAM plugin** located at:
 `build/_deps/infinitam_ext-src/plugin.cpp`
 
 `face_number` is assigned around **line 184** — simply add a `printf` to check its value.  

@@ -332,6 +332,11 @@ int ILLIXR::run(
             return EXIT_FAILURE;
         }
 
+        const auto reconstruction_count = std::count(plugins.begin(), plugins.end(), "ada.infinitam") +
+            std::count(plugins.begin(), plugins.end(), "ada.open3d");
+        if (reconstruction_count > 1) {
+            throw std::invalid_argument("Choose exactly one Ada reconstruction plugin: ada.infinitam or ada.open3d");
+        }
         check_plugins(plugins, dep_map);
         if (config["install_prefix"]) {
             std::string temp_path(switchboard_->get_env("LD_LIBRARY_PATH"));
