@@ -416,6 +416,11 @@ private:
     bool                 fov_cached_       = false;
 #endif
     uint64_t last_submitted_frame_{0};
+#ifdef __ANDROID__
+    int headset_width_  = HEADSET_WIDTH;
+    int headset_height_ = HEADSET_HEIGHT;
+    double overscan_;
+#endif
 };
 
 } // namespace ILLIXR

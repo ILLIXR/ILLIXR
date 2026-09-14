@@ -13,6 +13,11 @@ Relevant environment variables include:
   - ``ILLIXR_OFFLOAD_RENDERING_FRAMERATE`` sets the encoding framerate.
   - ``ILLIXR_OFFLOAD_RENDERING_NALU_ONLY`` set to non-zero indicates a Jetson client.
 
+When the client is an Android device with its own OpenXR runtime (e.g., Quest 3) you can enable overscanning to allow the
+onboard timewarp to produce complete images for display. To enable this feature set the `ILLIXR_OVERSCAN` environment
+variable in `main.cpp` to the scale factor you want to use. Testing has found a value of `1.1` works well for the Quest 3.
+You will also need to supply the same environment variable and value on the server side.
+
 Please refer to the README in [`network backends`][L10] for setting the server and client IP address and port number.
 
 ### NVENC Encoding

@@ -91,8 +91,8 @@ void offload_rendering_server::stop() {
 
 void offload_rendering_server::_p_thread_setup() {
 #ifdef OPENXR_CLIENT
-    hmd_setup_.recommended_image_width  = (uint32_t) (1680 * overscan_);
-    hmd_setup_.recommended_image_height = (uint32_t) (1760 * overscan_);
+    hmd_setup_.recommended_image_width  = (uint32_t) (width_pixels * overscan_ / 2.);
+    hmd_setup_.recommended_image_height = (uint32_t) (height_pixels * overscan_);
     for (int eye = 0; eye < 2; eye++) {
         hmd_setup_.fov_angle_left[eye]  = overscan_ * ILLIXR::server_params::fov_left[eye];
         hmd_setup_.fov_angle_right[eye] = overscan_ * ILLIXR::server_params::fov_right[eye];

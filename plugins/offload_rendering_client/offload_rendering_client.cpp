@@ -31,9 +31,6 @@ static bool is_hevc_keyframe(const uint8_t* data, size_t size) {
     return nal_type == 19 || nal_type == 20;
 }
 
-constexpr int I_HEADSET_WIDTH  = static_cast<int>(HEADSET_WIDTH * 1.1);
-constexpr int I_HEADSET_HEIGHT = static_cast<int>(HEADSET_HEIGHT * 1.1);
-
 #else
 using namespace ILLIXR::vulkan::ffmpeg_utils;
 
@@ -88,7 +85,7 @@ void assert_npp_success(NppStatus status, const char* operation, int eye, const 
 }
 #endif
 
-const int log_interval = 300; // pose logging interval in frames
+const int LOG_INTERVAL = 300; // pose logging interval in frames
 
 offload_rendering_client::offload_rendering_client(const std::string& name, phonebook* pb)
     : threadloop{name, pb}
@@ -116,6 +113,11 @@ offload_rendering_client::offload_rendering_client(const std::string& name, phon
 #endif
 
 #ifdef __ANDROID__
+    overscan_ = switchboard_->get_env_double("ILLIXR_OVERSCAN", 1.0);
+
+    headset_width_ = static_cast<int>(headset_width_ * overscan_);
+    headset_height_ = static_cast<int>(headset_height_ * overscan_);
+
     // Motion vectors are decoded through the Android MediaCodec path and also
     // require the depth-image path to be active.
     use_motion_vectors_ = switchboard_->get_env_bool("ILLIXR_USE_MOTION_VECTORS");
@@ -200,8 +202,8 @@ void offload_rendering_client::log_android_decode_timing() {
                        color_stats.left_eye.avg_decode_time_us() / 1000.0,
                        color_stats.left_eye.min_decode_latency_us == UINT64_MAX
                            ? 0
-                           : color_stats.left_eye.min_decode_latency_us / 1000.0,
-                       color_stats.left_eye.max_decode_latency_us / 1000.0);
+                           : static_cast<double>(color_stats.left_eye.min_decode_latency_us) / 1000.0,
+                       static_cast<double>(color_stats.left_eye.max_decode_latency_us) / 1000.0);
 #    ifndef COMBINED_ENCODING
             log_->info("  Color decode latency (right): avg={:.2f}ms, min={:.2f}ms, max={:.2f}ms",
                        color_stats.right_eye.avg_decode_time_us() / 1000.0,
@@ -221,8 +223,8 @@ void offload_rendering_client::log_android_decode_timing() {
                        depth_stats.left_eye.avg_decode_time_us() / 1000.0,
                        depth_stats.left_eye.min_decode_latency_us == UINT64_MAX
                            ? 0
-                           : depth_stats.left_eye.min_decode_latency_us / 1000.0,
-                       depth_stats.left_eye.max_decode_latency_us / 1000.0);
+                           : static_cast<double>(depth_stats.left_eye.min_decode_latency_us) / 1000.0,
+                       static_cast<double>(depth_stats.left_eye.max_decode_latency_us) / 1000.0);
         }
 #    ifndef COMBINED_ENCODING
         if (depth_stats.right_eye.avg_decode_time_us() > 0.) {
@@ -240,8 +242,8 @@ void offload_rendering_client::log_android_decode_timing() {
         mv_stats = motion_vec_decoder_->get_and_reset_timing_stats();
         log_->info("  MV decode latency (left):  avg={:.2f}ms, min={:.2f}ms, max={:.2f}ms",
                    mv_stats.left_eye.avg_decode_time_us() / 1000.0,
-                   mv_stats.left_eye.min_decode_latency_us == UINT64_MAX ? 0 : mv_stats.left_eye.min_decode_latency_us / 1000.0,
-                   mv_stats.left_eye.max_decode_latency_us / 1000.0);
+                   mv_stats.left_eye.min_decode_latency_us == UINT64_MAX ? 0 : static_cast<double>(mv_stats.left_eye.min_decode_latency_us) / 1000.0,
+                   static_cast<double>(mv_stats.left_eye.max_decode_latency_us) / 1000.0);
 #    ifndef COMBINED_ENCODING
         log_->info("  MV decode latency (right): avg={:.2f}ms, min={:.2f}ms, max={:.2f}ms",
                    mv_stats.right_eye.avg_decode_time_us() / 1000.0,
@@ -315,7 +317,7 @@ void offload_rendering_client::receiver_loop() {
         }
 
         // Wire timestamps are nanoseconds; MediaCodec PTS is in microseconds.
-        const int64_t presentation_time_us = static_cast<int64_t>(current_frame->sent_time / 1000);
+        const auto presentation_time_us = static_cast<int64_t>(current_frame->sent_time / 1000);
 
         // Queue encoded data to the hardware decoders.
         // All stream types are submitted together so they stay in sync -
@@ -633,7 +635,7 @@ void offload_rendering_client::_p_thread_setup() {
     spdlog::get("illixr")->info("[android_media_decoder] Thread setup starting");
 
     // Initialize color decoder - no GL/EGL arguments in the Vulkan path.
-    color_decoder_ = std::make_unique<stereo_surface_decoder>(I_HEADSET_WIDTH, I_HEADSET_HEIGHT, false);
+    color_decoder_ = std::make_unique<stereo_surface_decoder>(headset_width_, headset_height_, false);
     if (!color_decoder_->initialize()) {
         spdlog::get("illixr")->error("[android_media_decoder] Failed to initialize color decoder (Vulkan path)");
         color_decoder_.reset();
@@ -663,7 +665,7 @@ void offload_rendering_client::_p_thread_setup() {
                                         MOTION_VEC_HEIGHT);
         }
     } else if (use_depth_) {
-        depth_decoder_ = std::make_unique<stereo_surface_decoder>(I_HEADSET_WIDTH, I_HEADSET_HEIGHT, true);
+        depth_decoder_ = std::make_unique<stereo_surface_decoder>(headset_width_, headset_height_, true);
         if (!depth_decoder_->initialize()) {
             spdlog::get("illixr")->warn("[android_media_decoder] Failed to initialize depth decoder (Vulkan path), "
                                         "depth will be unavailable");
@@ -1126,7 +1128,7 @@ data_format::dual_frames offload_rendering_client::construct_dual_frames(time_po
                 frame.has_depth             = true;
 
                 static uint64_t log_counter = 0;
-                if (++log_counter % log_interval == 1) {
+                if (++log_counter % LOG_INTERVAL == 1) {
                     spdlog::get("illixr")->debug("[construct_dual_frames] depth: L={} R={}",
                                                  static_cast<void*>(frame.left_depth.hw_buffer),
                                                  static_cast<void*>(frame.right_depth.hw_buffer));
@@ -1138,7 +1140,7 @@ data_format::dual_frames offload_rendering_client::construct_dual_frames(time_po
                 depth_decoder_->release_frame(depth_frame);
 
                 static uint64_t depth_mismatch_log_counter = 0;
-                if (++depth_mismatch_log_counter % log_interval == 1) {
+                if (++depth_mismatch_log_counter % LOG_INTERVAL == 1) {
                     spdlog::get("illixr")->debug("[construct_dual_frames] depth frame_number {} != color {}, "
                                                  "submitting color-only this frame",
                                                  depth_frame.frame_number, decoded_frame_number);
@@ -1156,7 +1158,7 @@ data_format::dual_frames offload_rendering_client::construct_dual_frames(time_po
                     frame.has_motion_vectors         = true;
 
                     static uint64_t mv_log_counter = 0;
-                    if (++mv_log_counter % log_interval == 1) {
+                    if (++mv_log_counter % LOG_INTERVAL == 1) {
                         spdlog::get("illixr")->debug("[construct_dual_frames] Vulkan frame with motion vectors: "
                                                      "MV L={} R={}",
                                                      static_cast<void*>(frame.left_motion_vec.hw_buffer),
@@ -1166,7 +1168,7 @@ data_format::dual_frames offload_rendering_client::construct_dual_frames(time_po
                     motion_vec_decoder_->release_frame(mv_frame);
 
                     static uint64_t mv_mismatch_log_counter = 0;
-                    if (++mv_mismatch_log_counter % log_interval == 1) {
+                    if (++mv_mismatch_log_counter % LOG_INTERVAL == 1) {
                         spdlog::get("illixr")->debug("[construct_dual_frames] motion-vector frame_number {} != color {}, "
                                                      "submitting without motion vectors this frame",
                                                      mv_frame.frame_number, decoded_frame_number);
