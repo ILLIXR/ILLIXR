@@ -28,7 +28,7 @@ static XrPosef identity_pose() {
     , frame_reader_{switchboard_->get_reader<dual_frames>("unity_rendered_frame")}
     , oxr_relay_{std::make_shared<oxr_relay>(name_, pb_)} {
     use_depth_ = switchboard_->get_env_bool("ILLIXR_USE_DEPTH_IMAGES");
-    overscan_ = switchboard_->get_env_double("ILLIXR_OVERSCAN", 1.0);
+    overscan_  = switchboard_->get_env_double("ILLIXR_OVERSCAN", 1.0);
 
     headset_width_  = static_cast<int>(headset_width_ * overscan_);
     headset_height_ = static_cast<int>(headset_height_ * overscan_);
