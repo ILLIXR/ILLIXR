@@ -633,10 +633,10 @@ VkPipeline timewarp_vk::create_pipeline(VkRenderPass render_pass, [[maybe_unused
 #ifdef MONADO_REQUIRED
     // Native inputs are sampled in linear light; the Monado display target is UNORM.
     // Standalone offload clients retain the shader's default (already encoded RGB).
-    const VkBool32 encode_srgb = VK_TRUE;
-    const VkSpecializationMapEntry srgb_entry = {0, 0, sizeof(encode_srgb)};
-    const VkSpecializationInfo srgb_specialization = {1, &srgb_entry, sizeof(encode_srgb), &encode_srgb};
-    frag_stage_info.pSpecializationInfo = &srgb_specialization;
+    const VkBool32                 encode_srgb         = VK_TRUE;
+    const VkSpecializationMapEntry srgb_entry          = {0, 0, sizeof(encode_srgb)};
+    const VkSpecializationInfo     srgb_specialization = {1, &srgb_entry, sizeof(encode_srgb), &encode_srgb};
+    frag_stage_info.pSpecializationInfo                = &srgb_specialization;
 #endif
 
     VkPipelineShaderStageCreateInfo shader_stages[] = {vert_stage_info, frag_stage_info};
