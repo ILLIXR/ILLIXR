@@ -65,3 +65,5 @@ illixr_monado.sh
 illixr_monado.csh
 
 .run/
+
+python/

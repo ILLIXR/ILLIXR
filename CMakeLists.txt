@@ -51,7 +51,9 @@ set(GPL_LICENSED_CODE "openvins;orb_slam3;offload_rendering_server;offload_rende
 set(LGPL_LICENSED_CODE "audio_pipeline")
 
 set(DEPENDENCY_BUILD_SUFFIX "")
-if(WIN32 OR MSVC)
+if(BUILD_ANDROID)
+    message(STATUS "Android build enabled")
+elseif(WIN32 OR MSVC)
     if(NOT CMAKE_TOOLCHAIN_FILE)
         message(FATAL_ERROR "For windows builds the CMAKE_TOOLCHAIN_FILE must be given, pointing to the toolchain file of vcpkg.")
     endif()
@@ -64,8 +66,6 @@ if(WIN32 OR MSVC)
     set(DEPENDENCY_BUILD_SUFFIX "$<IF:$<CONFIG:Debug>,d, >")
 elseif(APPLE)
     message(FATAL_ERROR "MacOS is currently not supported")
-elseif(BUILD_ANDROID)
-    message(STATUS "Android build enabled")
 elseif(NOT UNIX)
     message(FATAL_ERROR "Unknown operating system")
 else()
@@ -119,9 +119,17 @@ option(PIP_LOCATION "The path of the pip script" "")
 mark_as_advanced(FORCE MKDOCS_LOCATION PIP_LOCATION BUILD_DOCS_FOR_RELEASE)
 
 option(USE_MONADO "Build for monado use" OFF)
+option(ILLIXR_ENABLE_BOBA "Enable Boba frame metadata on offload clients (automatic with boba_streaming_server)" OFF)
+option(ILLIXR_ENABLE_QUEST_CONTROLLERS "Enable Quest Touch controller actions" OFF)
 option(NO_GPL "Do not build any code licensed under GPL. This will affect any generated profile files as well." OFF)
 option(NO_LGPL "Do not build any code licensed under LGPL or GPL. This will affect any generated profile files as well." OFF)
 option(NO_ZED "Do not build and ZED related code" OFF)
+
+option(BUILD_QUEST_UNITY_INTERFACE "Build the interface to integrate ILLIXR into a Quest 3 Unity App." OFF)
+option(BUILD_UNITY_INTERFACE "Build the interface to integrate ILLIXR into a Unity App." OFF)
+if(BUILD_QUEST_UNITY_INTERFACE AND NOT BUILD_UNITY_INTERFACE)
+    set(BUILD_UNITY_INTERFACE ON CACHE BOOL "" FORCE)
+endif()
 
 set(LAST_NO_GPL "$CACHE{NO_GPL_CACHE}")
 set(LAST_NO_LGPL "$CACHE{NO_LGPL_CACHE}")
@@ -178,7 +186,9 @@ if(YAML_FILE)
         endforeach()
     endif()
 elseif(BUILD_ANDROID)
-    add_compile_definitions(UNITY_LIBRARY)
+    if(BUILD_UNITY_INTERFACE)
+        add_compile_definitions(UNITY_LIBRARY)
+    endif()
     set(USE_EXTENDED_WINDOW OFF)
     set(USE_COMMON_LOCK OFF)
     set(USE_POSE_PREDICTION OFF)
@@ -197,6 +207,8 @@ elseif(BUILD_ANDROID)
     set(USE_OPENXR_INTERFACE ON)
     set(USE_OFFLOAD_RENDERING_CLIENT ON)
     set(USE_NETWORK_LATENCY.TX ON)
+    set(USE_QUEST3.UNITY OFF)
+    set(USE_QUEST3.CONTROLLER OFF)
 endif()
 
 set(ILLIXR_SOURCE_DIR ${CMAKE_SOURCE_DIR})
@@ -316,6 +328,7 @@ elseif(ANDROID)
     set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE BOTH)
     set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)
     set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE BOTH)
+    include_directories(${ANDROID_NDK}/sources/android/native_app_glue)
 endif()
 
 set(CMAKE_CXX_STANDARD 17)
@@ -459,11 +472,11 @@ else()
 endif()
 
 if(ANDROID)
-    find_program(protoc_exe protoc HINTS /usr/bin REQUIRED)
-    add_executable(protobuf::protoc IMPORTED)
-    set_property(TARGET protobuf::protoc APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
-    set_target_properties(protobuf::protoc PROPERTIES IMPORTED_LOCATION_RELEASE ${protoc_exe})
-    find_package(protobuf_android REQUIRED CONFIG)
+#    find_program(protoc_exe protoc HINTS /usr/bin REQUIRED)
+#    add_executable(protobuf::protoc IMPORTED)
+#    set_property(TARGET protobuf::protoc APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
+#    set_target_properties(protobuf::protoc PROPERTIES IMPORTED_LOCATION_RELEASE ${protoc_exe})
+#    find_package(protobuf_android REQUIRED CONFIG)
 
     find_package(spdlog_android 1.15.3 REQUIRED)
 else()
@@ -487,10 +500,26 @@ if($ENV{ILLIXR_BUILD_FLAGS})
     endforeach()
 endif()
 
+# The frame serializer is shared by several plugins. Use one definition for the
+# whole build so every sender/receiver agrees on the optional Boba fields.
+if(USE_BOBA_STREAMING_SERVER OR ILLIXR_ENABLE_BOBA)
+    # Keep target source selection and preprocessor guards in agreement.
+    set(ILLIXR_ENABLE_BOBA ON)
+    add_compile_definitions(ILLIXR_ENABLE_BOBA)
+    message(STATUS "Boba frame metadata enabled; the peer must also enable Boba support")
+endif()
+
+# The Boba Quest integration needs controller actions and its optional LAN setup.
+# Generic phone/tablet and offload builds leave these device-specific paths out.
+if(ILLIXR_ENABLE_QUEST_CONTROLLERS OR ILLIXR_ENABLE_BOBA OR USE_BOBA_STREAMING_SERVER)
+    add_compile_definitions(ILLIXR_ENABLE_QUEST_CONTROLLERS)
+endif()
+
 # set any plugins that are being built
 set(FULL_PLUGIN_LIST "")
 
 add_subdirectory(utils)
+
 foreach(ITEM IN LISTS PLUGIN_LIST)
     string(TOUPPER "USE_${ITEM}" ITEM_UPPER)
     string(TOLOWER ${ITEM} ITEM_LOWER)
@@ -535,6 +564,8 @@ if(ANDROID)
 endif()
 
 include(src/CMakeLists.txt)
+
+add_subdirectory(interfaces)  # this must come after src
 
 list(SORT FULL_PLUGIN_LIST COMPARE STRING CASE INSENSITIVE ORDER ASCENDING)
 set(FULL_PLUGIN_LIST_STRING "\n")

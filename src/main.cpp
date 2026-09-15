@@ -2,7 +2,9 @@
 
 #    include "illixr.hpp"
 #    ifdef __ANDROID__
+#        include <condition_variable>
 #        include <EGL/egl.h>
+#        include <mutex>
 #        include <thread>
 #        include <vector>
 #    else
@@ -49,9 +51,55 @@ static void sigint_handler([[maybe_unused]] int sig) {
 using namespace ILLIXR;
 
 #    ifdef __ANDROID__
+#        if defined(ILLIXR_ENABLE_BOBA) && defined(ILLIXR_ENABLE_QUEST_CONTROLLERS)
+namespace {
+/// Synchronizes the Android lifecycle thread with Java's LAN bootstrap thread.
+/// The native runtime must not construct its network plugins until a desktop
+/// address has been supplied, but the Android looper must remain responsive.
+std::mutex              quest_config_mutex;
+std::condition_variable quest_config_cv;
+bool                    quest_config_ready        = false;
+bool                    android_destroy_requested = false;
+} // namespace
+
+#        endif
+
 extern "C" {
 // called from Java after permission is granted
 JNIEXPORT void JNICALL Java_com_example_ILLIXR_ILLIXRNativeActivity_nativeOnPermissionGranted(JNIEnv* env, jobject activity) { }
+
+// Keep the Java entry point in sync with the native build selection.
+JNIEXPORT jboolean JNICALL Java_com_example_ILLIXR_ILLIXRNativeActivity_nativeIsBobaEnabled(JNIEnv*, jobject) {
+#        if defined(ILLIXR_ENABLE_BOBA) && defined(ILLIXR_ENABLE_QUEST_CONTROLLERS)
+    return JNI_TRUE;
+#        else
+    return JNI_FALSE;
+#        endif
+}
+
+/// Store the Java-discovered desktop address and release the waiting runtime thread.
+JNIEXPORT void JNICALL Java_com_example_ILLIXR_ILLIXRNativeActivity_nativeConfigure(JNIEnv* env, jobject activity,
+                                                                                    jstring server_ip) {
+#        if defined(ILLIXR_ENABLE_BOBA) && defined(ILLIXR_ENABLE_QUEST_CONTROLLERS)
+    (void) activity;
+    if (server_ip == nullptr) {
+        return;
+    }
+    const char* value = env->GetStringUTFChars(server_ip, nullptr);
+    if (value != nullptr) {
+        if (value[0] != '\0') {
+            setenv("ILLIXR_SERVER_IP", value, true);
+            {
+                const std::lock_guard<std::mutex> lock{quest_config_mutex};
+                quest_config_ready = true;
+            }
+            quest_config_cv.notify_all();
+        }
+        env->ReleaseStringUTFChars(server_ip, value);
+    }
+
+#        endif
+}
 }
 
 /// Holds the ILLIXR runtime thread so it can be joined from android_main() once shutdown is
@@ -80,16 +128,20 @@ int main(int argc, const char* argv[]) {
         setenv("ILLIXR_RUN_DURATION", "1000000", true);
         setenv("ILLIXR_ENABLE_PRE_SLEEP", "False", true);
         setenv("ILLIXR_ENABLE_PRE_SLEEP", "False", true);
+#        ifndef ILLIXR_ENABLE_BOBA
         setenv("ILLIXR_TCP_CLIENT_IP", "192.168.8.140", true);
         setenv("ILLIXR_TCP_SERVER_IP", "192.168.8.158", true);
         setenv("ILLIXR_TCP_CLIENT_PORT", "9000", true);
+#        endif
         setenv("ILLIXR_UDP_CLIENT_PORT", "9002", true);
         setenv("ILLIXR_TCP_SERVER_PORT", "9001", true);
         setenv("ILLIXR_UDP_SERVER_PORT", "9003", true);
         setenv("ILLIXR_IS_CLIENT", "1", true);
         setenv("ILLIXR_USE_DEPTH_IMAGES", "0", true);
         setenv("ILLIXR_USE_MOTION_VECTOR_IMAGES", "0", true);
+#        ifndef ILLIXR_ENABLE_BOBA
         setenv("ILLIXR_OVERSCAN", "1.1", true); // overscanning
+#        endif
 #    else
     cxxopts::Options options("ILLIXR", "Main program");
     options.show_positional_help();
@@ -105,6 +157,10 @@ int main(int argc, const char* argv[]) {
         "h,help", "Produce help message")("realsense_cam", "", cxxopts::value<std::string>()->default_value("auto"))(
         "p,plugins", "The plugins to use",
         cxxopts::value<std::vector<std::string>>())("y,yaml", "Yaml config file", cxxopts::value<std::string>())("openxr", "");
+#        if defined(ILLIXR_ENABLE_BOBA) && defined(ILLIXR_ENABLE_QUEST_CONTROLLERS)
+    options.add_options()("quest-ip", "Quest IP address for native ILLIXR wireless setup", cxxopts::value<std::string>())(
+        "quest-connect-timeout", "Seconds to wait for ILLIXRApp", cxxopts::value<int>()->default_value("120"));
+#        endif
     auto result = options.parse(argc, argv);
     if (result.count("help")) {
         std::cout << options.help() << std::endl;
@@ -120,11 +176,38 @@ int main(int argc, const char* argv[]) {
         /// Shutting down method 1: Ctrl+C
         std::signal(SIGINT, sigint_handler);
 #    ifdef __ANDROID__
-        /// Run the ILLIXR runtime on its own thread and return control to the caller immediately;
-        /// it is joined later, from android_main(), once APP_CMD_DESTROY has been processed.
+#        if defined(ILLIXR_ENABLE_BOBA) && defined(ILLIXR_ENABLE_QUEST_CONTROLLERS)
+        /// Run the ILLIXR runtime on its own thread and return control to the caller immediately.
+        /// Keep the Android looper responsive while the app waits for the desktop's
+        /// wireless configuration packet.
+        runtime_thread_ = std::thread([plugins, app]() {
+            {
+                std::unique_lock<std::mutex> lock{quest_config_mutex};
+                // An existing configuration must not wait for a discovery packet.
+                const char* server        = std::getenv("ILLIXR_SERVER_IP");
+                const char* legacy_server = std::getenv("ILLIXR_TCP_SERVER_IP");
+                quest_config_ready        = quest_config_ready || (server && *server) || (legacy_server && *legacy_server);
+                quest_config_cv.wait(lock, []() {
+                    return quest_config_ready || android_destroy_requested;
+                });
+                if (android_destroy_requested) {
+                    return;
+                }
+            }
+            ILLIXR::run(plugins, app);
+        });
+#        else
         runtime_thread_ = std::thread(ILLIXR::run, plugins, app);
+#        endif
     } else if (cmd == APP_CMD_DESTROY) {
         /// Shutting down method 2: the activity is being destroyed
+#        if defined(ILLIXR_ENABLE_BOBA) && defined(ILLIXR_ENABLE_QUEST_CONTROLLERS)
+        {
+            const std::lock_guard<std::mutex> lock{quest_config_mutex};
+            android_destroy_requested = true;
+        }
+        quest_config_cv.notify_all();
+#        endif
         if (runtime_) {
             runtime_->stop();
         }
@@ -136,6 +219,8 @@ int main(int argc, const char* argv[]) {
 
 #    ifdef __ANDROID__
 void android_main(struct android_app* state) {
+    /// NativeActivity owns this looper. Plugin execution stays on runtime_thread_
+    /// so lifecycle and window events can still be dispatched during streaming.
     state->onAppCmd = handle_cmd;
     while (!state->destroyRequested) {
         int                         ident;

@@ -1,12 +1,16 @@
 #pragma once
 
 #ifdef __ANDROID__
+#    ifdef ILLIXR_ENABLE_BOBA
+#        include "keyframe_gate.hpp"
+#    endif
 #    include <android/hardware_buffer.h>
 #    include <atomic>
 #    include <chrono>
 #    include <condition_variable>
 #    include <cstdint>
 #    include <deque>
+#    include <map>
 #    include <media/NdkImageReader.h>
 #    include <media/NdkMediaCodec.h>
 #    include <mutex>
@@ -138,12 +142,9 @@ public:
     /**
      * @brief Acquire the latest decoded AHardwareBuffer and its frame number.
      *
-     * Returns the buffer and the server frame_number that was recorded by the
-     * drainer at the moment it released this output buffer to the AImageReader
-     * surface.  Both values come from the same drainer event so they are
-     * guaranteed to be consistent — there is no window where the drainer can
-     * update last_decoded_frame_number_ to the next frame between the buffer
-     * acquisition and the frame-number read.
+     * Boba builds use the AImage's exact presentation timestamp to recover its
+     * frame number. General offload builds retain the latest number published
+     * by the drainer before it releases an output image.
      *
      * The returned buffer is retained (AHardwareBuffer_acquire called).
      * The caller MUST call AHardwareBuffer_release() when finished.
@@ -159,7 +160,7 @@ public:
      * @return true if decoder is ready to decode.
      */
     [[nodiscard]] bool is_ready() const {
-        return initialized_.load();
+        return initialized_.load() && !codec_failed_.load();
     }
 
     /**
@@ -261,7 +262,7 @@ private:
         int64_t                               timestamp_us;
         bool                                  is_keyframe;
         std::chrono::steady_clock::time_point queue_time;
-        uint64_t                              frame_number; // ← add this
+        uint64_t                              frame_number;
     };
 
     // Internal helpers
@@ -289,11 +290,15 @@ private:
     // Lifecycle
     std::atomic<bool> running_{false};
     std::atomic<bool> initialized_{false};
+    std::atomic<bool> codec_failed_{false};
 
     // Input queue (encoded packets waiting to be fed to the codec)
     mutable std::mutex         input_mutex_;
     std::condition_variable    input_cv_;
     std::queue<encoded_packet> input_queue_;
+#    ifdef ILLIXR_ENABLE_BOBA
+    keyframe_gate input_gate_; // Protected by input_mutex_.
+#    endif
 
     // Feeder thread: dequeues input buffers from the codec and submits encoded packets.
     // Drainer thread: independently polls dequeueOutputBuffer and releases decoded frames.
@@ -334,12 +339,17 @@ private:
     mutable std::mutex                           pending_timestamps_mutex_;
     std::unordered_map<int64_t, timestamp_entry> pending_timestamps_;
 
-    // Written by the drainer with release ordering BEFORE calling
-    // releaseOutputBuffer, and read by acquire_latest_buffer() with acquire
-    // ordering AFTER AImageReader_acquireLatestImage returns.  This ordering
-    // guarantee ensures the frame number always corresponds to an image that
-    // is already available in the AImageReader — no mutex required.
+    // General offload frame association; diagnostics in the Boba path.
     std::atomic<uint64_t> last_decoded_frame_number_{0};
+
+#    ifdef ILLIXR_ENABLE_BOBA
+    // MediaCodec PTS is supplied in microseconds; AImage exposes the matching
+    // timestamp in nanoseconds. Mapping by timestamp avoids pairing an acquired
+    // image with a newer frame number when the drainer advances concurrently.
+    std::mutex                  released_frame_numbers_mutex_;
+    std::map<int64_t, uint64_t> released_frame_numbers_by_timestamp_ns_;
+
+#    endif
 
     float last_decode_time_{0.f};
 

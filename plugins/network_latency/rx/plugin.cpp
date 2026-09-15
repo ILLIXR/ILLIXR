@@ -32,7 +32,7 @@ threadloop::skip_option network_latency_rx::_p_should_skip() {
 void network_latency_rx::_p_one_iteration() {
     // Process all available pings from the buffered reader
     while (true) {
-        auto ping = ping_reader_.dequeue();
+        auto ping = ping_reader_.try_dequeue();
         if (!ping) {
             break;
         }

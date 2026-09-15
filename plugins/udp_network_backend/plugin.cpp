@@ -1,5 +1,10 @@
 #include "plugin.hpp"
 
+#include "illixr/network/udp_packet.hpp"
+
+#include <algorithm>
+#include <cstring>
+
 using namespace ILLIXR;
 
 udp_network_backend::udp_network_backend(const std::string& name_, phonebook* pb_)
@@ -51,12 +56,15 @@ udp_network_backend::udp_network_backend(const std::string& name_, phonebook* pb
 #ifdef __ANDROID__
         auto* socket = new network::UDPSocket();
         socket->socket_set_reuseaddr();
+        socket->socket_set_receive_timeout(100);
         // Always bind so the OS assigns a local port, making the client reachable for
         // server -> client datagrams (e.g., future round-trip topics).  If
         // ILLIXR_UDP_CLIENT_PORT is set, bind to that specific port; otherwise bind to
         // port 0 and let the OS assign an ephemeral port.
         if (!client_ip_.empty())
             socket->socket_bind(client_ip_, client_port_);
+        else if (client_port_ != 0)
+            socket->socket_bind(client_port_);
         else
             socket->socket_bind(0);
 
@@ -67,9 +75,9 @@ udp_network_backend::udp_network_backend(const std::string& name_, phonebook* pb
         // UDP is connectionless � set_peer() is sufficient; no connect() needed
         spdlog::get("illixr")->info("[udp_network_backend] Client ready");
 #else
-        std::thread([this]() {
+        io_thread_ = std::thread([this]() {
             start_client();
-        }).detach();
+        });
 
         // wait till we are connected
         while (!ready_) {
@@ -83,15 +91,16 @@ udp_network_backend::udp_network_backend(const std::string& name_, phonebook* pb
 #ifdef __ANDROID__
         auto* socket = new network::UDPSocket();
         socket->socket_set_reuseaddr();
+        socket->socket_set_receive_timeout(100);
         socket->socket_bind(server_ip_, server_port_);
 
         spdlog::get("illixr")->info("[udp_network_backend] Listening on UDP port {}", server_port_);
 
         peer_socket_ = socket;
 #else
-        std::thread([this]() {
+        io_thread_ = std::thread([this]() {
             start_server();
-        }).detach();
+        });
 
         while (!ready_) {
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -104,21 +113,24 @@ udp_network_backend::udp_network_backend(const std::string& name_, phonebook* pb
 #ifdef __ANDROID__
 void udp_network_backend::start() {
     plugin::start();
-    std::thread([this]() {
+    io_thread_ = std::thread([this]() {
         read_loop(peer_socket_);
-    }).detach();
+    });
 }
 #else
 
 void udp_network_backend::start_client() {
     auto* socket = new network::UDPSocket();
     socket->socket_set_reuseaddr();
+    socket->socket_set_receive_timeout(100);
     // Always bind so the OS assigns a local port, making the client reachable for
     // server -> client datagrams (e.g., future round-trip topics).  If
     // ILLIXR_UDP_CLIENT_PORT is set, bind to that specific port; otherwise bind to
     // port 0 and let the OS assign an ephemeral port.
     if (!client_ip_.empty())
         socket->socket_bind(client_ip_, client_port_);
+    else if (client_port_ != 0)
+        socket->socket_bind(client_port_);
     else
         socket->socket_bind(0);
     socket->set_peer(server_ip_, server_port_);
@@ -135,6 +147,7 @@ void udp_network_backend::start_client() {
 void udp_network_backend::start_server() {
     auto* socket = new network::UDPSocket();
     socket->socket_set_reuseaddr();
+    socket->socket_set_receive_timeout(100);
     socket->socket_bind(server_ip_, server_port_);
 
     // If the client's address is already known from the environment (rather than
@@ -171,25 +184,7 @@ void udp_network_backend::read_loop(network::UDPSocket* socket) {
         if (!socket->has_peer())
             socket->set_peer(src_addr);
 
-        // Packet format: total_length(4) | topic_name_length(4) | topic_name | message
-        if (packet.size() < 8) {
-            spdlog::get("illixr")->warn("[udp_network_backend] Undersized datagram ({} bytes), dropping", packet.size());
-            continue;
-        }
-
-        uint32_t total_length      = *reinterpret_cast<const uint32_t*>(packet.data());
-        uint32_t topic_name_length = *reinterpret_cast<const uint32_t*>(packet.data() + 4);
-
-        if (packet.size() < total_length || total_length < 8 + topic_name_length) {
-            spdlog::get("illixr")->warn("[udp_network_backend] Truncated datagram (got={} expected={}), dropping",
-                                        packet.size(), total_length);
-            continue;
-        }
-
-        std::string       topic_name(packet.data() + 8, topic_name_length);
-        std::vector<char> message(packet.begin() + 8 + topic_name_length, packet.begin() + total_length);
-
-        topic_receive(topic_name, message);
+        receive_packet(std::move(packet));
     }
 }
 
@@ -209,7 +204,8 @@ void udp_network_backend::topic_create(std::string topic_name, network::topic_co
             send_control(ctrl_message);
     } else {
         spdlog::get("illixr")->error("[udp_network_backend]: ERROR socket: {}  has_peer: {}",
-                                     (peer_socket_ == nullptr) ? "null" : "valid", peer_socket_->has_peer());
+                                     (peer_socket_ == nullptr) ? "null" : "valid",
+                                     peer_socket_ != nullptr && peer_socket_->has_peer());
     }
 }
 
@@ -233,8 +229,38 @@ void udp_network_backend::topic_send(std::string topic_name, std::string&& messa
     packet.append(topic_name);
     packet.append(message);
 
-    if (!peer_socket_->write_data(packet))
-        spdlog::get("illixr")->warn("[udp_network_backend] write_data failed for topic={}", topic_name);
+    send_packet(std::move(packet));
+}
+
+void udp_network_backend::send_packet(std::string&& packet) {
+    if (peer_socket_ == nullptr || !peer_socket_->has_peer()) {
+        spdlog::get("illixr")->warn("[udp_network_backend] Cannot send UDP packet: peer unavailable");
+        return;
+    }
+    // Preserve the original single-datagram wire format for tracking/control.
+    // Large payloads such as video frames belong on the TCP backend.
+    if (packet.size() > network::max_udp_payload_bytes) {
+        spdlog::get("illixr")->warn("[udp_network_backend] UDP message exceeds the datagram limit ({} bytes); use TCP",
+                                    packet.size());
+        return;
+    }
+    std::lock_guard<std::mutex> lock{send_mutex_};
+    if (!peer_socket_->write_data(packet)) {
+        spdlog::get("illixr")->warn("[udp_network_backend] Failed to send UDP packet");
+    }
+}
+
+// Keep wire-length validation separate from socket/lifecycle handling. This helper
+// decodes one complete datagram with the original topic envelope.
+void udp_network_backend::receive_packet(std::string&& packet) {
+    network::udp_packet_view decoded;
+    if (!network::decode_udp_packet(packet, decoded)) {
+        spdlog::get("illixr")->warn("[udp_network_backend] Invalid UDP envelope ({} bytes), dropping", packet.size());
+        return;
+    }
+    const std::string topic_name{decoded.topic};
+    std::vector<char> message(decoded.payload.begin(), decoded.payload.end());
+    topic_receive(topic_name, message);
 }
 
 // Helper function to queue a received message into the corresponding topic
@@ -259,13 +285,39 @@ void udp_network_backend::topic_receive(const std::string& topic_name, std::vect
     if (!switchboard_->topic_exists(topic_name)) {
         return;
     }
-    switchboard_->get_topic(topic_name).deserialize_and_put(message, networked_topics_configs_[topic_name]);
+    auto config = networked_topics_configs_.find(topic_name);
+    if (config == networked_topics_configs_.end()) {
+        // A producer may start before the UDP peer is known, so its unreliable
+        // create_topic announcement can be missed. Data topics used by this
+        // backend default to Boost serialization; accepting that default keeps
+        // startup order from preventing tracking updates from arriving.
+        network::topic_config fallback;
+        fallback.serialization_method = network::topic_config::SerializationMethod::BOOST;
+        fallback.transport_method     = network::topic_config::TransportMethod::UDP;
+        config                        = networked_topics_configs_.emplace(topic_name, fallback).first;
+        if (std::find(networked_topics_.begin(), networked_topics_.end(), topic_name) == networked_topics_.end()) {
+            networked_topics_.push_back(topic_name);
+        }
+        spdlog::get("illixr")->info("[udp_network_backend] Inferred Boost/UDP configuration for {}", topic_name);
+    }
+    switchboard_->get_topic(topic_name).deserialize_and_put(message, config->second);
 }
 
 void udp_network_backend::stop() {
-    running_ = false;
+    // Wake the timeout-bounded receive loop, then keep the socket alive until
+    // its only reader has returned.
+    if (!running_.exchange(false)) {
+        return;
+    }
+    if (peer_socket_ != nullptr) {
+        peer_socket_->socket_shutdown();
+    }
+    if (io_thread_.joinable() && io_thread_.get_id() != std::this_thread::get_id()) {
+        io_thread_.join();
+    }
     delete peer_socket_;
     peer_socket_ = nullptr;
+    plugin::stop();
 }
 
 udp_network_backend::~udp_network_backend() {
@@ -285,13 +337,14 @@ void udp_network_backend::send_control(const std::string& message) {
     packet.append("illixr_control");
     packet.append(message);
 
-    if (!peer_socket_->write_data(packet))
-        spdlog::get("illixr")->warn("[udp_network_backend] send_control failed");
+    send_packet(std::move(packet));
 }
 
 extern "C" MY_EXPORT_API plugin* this_plugin_factory(phonebook* pb) {
-    auto plugin_ptr = std::make_shared<udp_network_backend>("udp_network_backend", pb);
-    pb->register_impl<network::udp_backend>(std::static_pointer_cast<network::udp_backend>(plugin_ptr));
-    auto* obj = plugin_ptr.get();
+    auto* obj = new udp_network_backend("udp_network_backend", pb);
+    // The runtime owns the plugin returned by this factory. Register a non-owning
+    // service alias so the phonebook does not try to delete the same object again.
+    pb->register_impl<network::udp_backend>(
+        std::shared_ptr<network::udp_backend>(static_cast<network::udp_backend*>(obj), [](network::udp_backend*) { }));
     return obj;
 }

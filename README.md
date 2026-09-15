@@ -93,6 +93,11 @@ component. ILLIXR currently contains the following [plugins][P66] and [services]
   scene provisioning system, allowing reconstruction to run on a server and meshes
   to be delivered to the XR device over the network.
 
+### Interfaces
+
+- [semantic_python][P71]
+
+
 [^1]: Source is hosted in an external repository under the [ILLIXR project][E7].
 
 Some components, such as eye tracking, are available as standalone components and are in the process
@@ -229,6 +234,7 @@ according to those licenses:
 |:-------------------------------------|:-----------------------------------------------------|
 | [abseil-cpp][TPP48]                  | [Apache v2][L48]                                     |
 | [ARM NEON 2 x86 SSE][TPP42]          | [BSD-2 clause][L42][^3]                              |
+| [Boba][TPP52]                        | [Apache v2][L52]                                     |
 | [concurrentqueue][TPP1]              | [BSD-2 clause][L1]                                   |
 | [cxxopts][TPP2]                      | [MIT][L2]                                            |
 | [Depthai Core][TPP3]                 | [MIT][L3]                                            |
@@ -271,7 +277,7 @@ according to those licenses:
 | [yaml-cpp][TPP26]                    | [MIT][L26]                                           |
 | zed_opencv (Sterolabs)               | [MIT][L27]                                           |
 
-[^2]: Current as of March 5, 2025.
+[^2]: Existing entries were current as of March 5, 2025; the Boba entry was added August 29, 2026.
 
 [^3]: Also known as the Simplified BSD License.
 
@@ -437,6 +443,8 @@ request!
 
 [P70]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#udp_network_backend
 
+[P71]:   https://illixr.github.io/ILLIXR/illixr_plugins/index.html#semantic_python
+
 [//]: # (- Third Party Packages -)
 
 [TPP1]:   https://github.com/cameron314/concurrentqueue
@@ -537,6 +545,8 @@ request!
 
 [TPP51]:   https://github.com/ILLIXR/draco_illixr
 
+[TPP52]:   https://github.com/ILLIXR/Boba-ILLIXR
+
 [//]: # (- Licenses -)
 
 [L1]:   https://github.com/cameron314/concurrentqueue/blob/master/LICENSE.md
@@ -636,3 +646,5 @@ request!
 [L50]:  https://github.com/ILLIXR/InfiniTAM/blob/master/LICENSE
 
 [L51]:  https://github.com/ILLIXR/draco_illixr/blob/master/LICENSE
+
+[L52]:  https://github.com/ILLIXR/Boba-ILLIXR/blob/main/LICENSE

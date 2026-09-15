@@ -5,6 +5,9 @@
 #endif
 #ifdef __ANDROID__
 #    include "android/jni_helper.hpp"
+#    ifdef ILLIXR_ENABLE_BOBA
+#        include "android/keyframe_gate.hpp"
+#    endif
 #else
 #    include <cuda.h>
 #    include <cuda_runtime.h>
@@ -98,6 +101,9 @@ offload_rendering_client::offload_rendering_client(const std::string& name, phon
 #endif
     , frames_reader_{switchboard_->get_buffered_reader<compressed_frame>("compressed_frames")}
     , network_latency_reader_{switchboard_->get_reader<network_latency_result>("network_latency")}
+#ifdef ILLIXR_ENABLE_BOBA
+    , modal_texture_reader_{switchboard_->get_buffered_reader<boba_modal_texture>("boba_modal_texture")}
+#endif
 #ifndef USING_OPENXR
     , pose_writer_{switchboard_->get_network_writer<pose::fast_head_pose_type>("render_pose", {})}
 #endif
@@ -113,10 +119,12 @@ offload_rendering_client::offload_rendering_client(const std::string& name, phon
 #endif
 
 #ifdef __ANDROID__
+#    ifndef ILLIXR_ENABLE_BOBA
     overscan_ = switchboard_->get_env_double("ILLIXR_OVERSCAN", 1.0);
 
     headset_width_  = static_cast<int>(headset_width_ * overscan_);
     headset_height_ = static_cast<int>(headset_height_ * overscan_);
+#    endif
 
     // Motion vectors are decoded through the Android MediaCodec path and also
     // require the depth-image path to be active.
@@ -263,6 +271,34 @@ void offload_rendering_client::log_android_decode_timing() {
     // android_timing_frame_count_ = 0;
 }
 
+#    ifdef ILLIXR_ENABLE_BOBA
+void offload_rendering_client::drain_modal_texture_updates() {
+    while (auto update = modal_texture_reader_.try_dequeue()) {
+        const std::uint64_t expected_bytes = static_cast<std::uint64_t>(update->width) * update->height * 4ULL;
+        if (update->texture_id == 0 || update->magic != boba_modal_texture::wire_magic || update->width == 0 ||
+            update->height == 0 || expected_bytes != update->rgba.size()) {
+            log_->warn("[receiver_loop] Ignoring invalid Boba modal texture update");
+            continue;
+        }
+
+        auto pixels = std::make_shared<const std::vector<std::uint8_t>>(update->rgba);
+        {
+            std::lock_guard<std::mutex> lock(frame_meta_map_mutex_);
+            modal_texture_cache_[update->texture_id] = {update->width, update->height, std::move(pixels)};
+            while (modal_texture_cache_.size() > 8) {
+                auto stale = modal_texture_cache_.begin();
+                if (stale->first == update->texture_id && modal_texture_cache_.size() > 1) {
+                    ++stale;
+                }
+                modal_texture_cache_.erase(stale);
+            }
+        }
+        log_->info("[receiver_loop] Cached Boba modal texture id={} size={}x{}", update->texture_id, update->width,
+                   update->height);
+    }
+}
+#    endif
+
 // receiver_loop
 // Runs on receiver_thread_. Dequeues compressed frames from the network,
 // drops frames when the decoder input queue is full to prevent growing latency,
@@ -274,12 +310,25 @@ void offload_rendering_client::log_android_decode_timing() {
 // queues encoded data to the hardware decoders (all three stream types together
 // so they stay in sync), and stores frame metadata for _p_one_iteration.
 void offload_rendering_client::receiver_loop() {
+    // spdlog::get("illixr")->info("[receiver_loop] Starting");
+#    ifdef ILLIXR_ENABLE_BOBA
+    keyframe_gate input_gate;
+    auto          receive_metrics_start = std::chrono::steady_clock::now();
+    uint64_t      received_frames = 0, skipped_frames = 0;
+#    endif
+
     while (receiver_running_) {
+#    ifdef ILLIXR_ENABLE_BOBA
+        drain_modal_texture_updates();
+#    endif
         auto current_frame = frames_reader_.dequeue();
         if (current_frame == nullptr) {
             spdlog::get("illixr")->debug("[receiver_loop] No frame available");
             continue;
         }
+#    ifdef ILLIXR_ENABLE_BOBA
+        drain_modal_texture_updates();
+#    endif
 
         // Determine keyframe status for each stream.
         //
@@ -300,6 +349,31 @@ void offload_rendering_client::receiver_loop() {
             ? is_hevc_keyframe(current_frame->left_motion_vec.data(), current_frame->left_motion_vec.size())
             : is_key_color;
 
+#    ifdef ILLIXR_ENABLE_BOBA
+        // After skipping an encoded input, every dependent frame is unusable
+        // until the streams restart at a keyframe, even if the queue has drained.
+        const bool queue_full = color_decoder_ &&
+            (color_decoder_->get_left_queue_depth() >= MAX_DECODER_QUEUE_DEPTH ||
+             color_decoder_->get_right_queue_depth() >= MAX_DECODER_QUEUE_DEPTH);
+        const bool accept_input = input_gate.accept(is_key_color && is_key_depth && is_key_mv, queue_full);
+        ++received_frames;
+        skipped_frames += accept_input ? 0 : 1;
+        const auto   now      = std::chrono::steady_clock::now();
+        const double interval = std::chrono::duration<double>(now - receive_metrics_start).count();
+        if (interval >= 1.0) {
+            spdlog::get("illixr")->info("Boba receiver: {:.1f} fps, {} skipped inputs, decoder queue left={} right={}",
+                                        static_cast<double>(received_frames) / interval, skipped_frames,
+                                        color_decoder_ ? color_decoder_->get_left_queue_depth() : 0,
+                                        color_decoder_ ? color_decoder_->get_right_queue_depth() : 0);
+            receive_metrics_start = now;
+            received_frames = skipped_frames = 0;
+        }
+        if (!accept_input) {
+            spdlog::get("illixr")->debug("[receiver_loop] Skipping frame {} until a keyframe after input loss",
+                                         current_frame->frame_number);
+            continue;
+        }
+#    else
         // Never drop a frame if any stream carries a keyframe - dropping a
         // keyframe causes decoder corruption until the next IDR arrives.
         const bool is_any_key = is_key_color || is_key_depth || is_key_mv;
@@ -317,6 +391,35 @@ void offload_rendering_client::receiver_loop() {
                 continue;
             }
         }
+#    endif
+
+#    ifdef ILLIXR_ENABLE_BOBA
+        // Publish the complete metadata snapshot before queueing the bitstream.
+        // A fast decoder may make the output image visible immediately; storing
+        // first guarantees that an acquired image can only be paired with its
+        // own pose/FOV/overlay metadata.
+        {
+            std::lock_guard<std::mutex> lock(frame_meta_map_mutex_);
+            frame_meta&                 meta = frame_meta_map_[current_frame->frame_number];
+            meta.pose                        = current_frame->pose;
+            meta.frame_number                = current_frame->frame_number;
+            meta.frame_time                  = current_frame->sent_time;
+            meta.pose_id                     = current_frame->pose_id;
+            meta.near_z                      = current_frame->near_z;
+            meta.far_z                       = current_frame->far_z;
+            meta.encode_time                 = current_frame->encode_time;
+            meta.presentation_mode           = current_frame->presentation_mode;
+            meta.content_aspect_ratio        = current_frame->content_aspect_ratio;
+            meta.boba_overlay                = current_frame->boba_overlay;
+            meta.boba_modal                  = current_frame->boba_modal;
+            meta.fov_left                    = current_frame->fov_left;
+            meta.fov_right                   = current_frame->fov_right;
+            meta.fov_up                      = current_frame->fov_up;
+            meta.fov_down                    = current_frame->fov_down;
+            meta.consumed                    = false;
+        }
+
+#    endif
 
         // Wire timestamps are nanoseconds; MediaCodec PTS is in microseconds.
         const auto presentation_time_us = static_cast<int64_t>(current_frame->sent_time / 1000);
@@ -376,7 +479,7 @@ void offload_rendering_client::receiver_loop() {
             }
         }
 #    endif // COMBINED_ENCODING
-
+#    ifndef ILLIXR_ENABLE_BOBA
         // Store metadata so _p_one_iteration can populate dual_frames.
         // The mutex ensures _p_one_iteration always sees a consistent snapshot.
         {
@@ -399,6 +502,7 @@ void offload_rendering_client::receiver_loop() {
                 fov_cached_       = true;
             }
         }
+#    endif
     }
 }
 #else
@@ -1070,14 +1174,77 @@ void offload_rendering_client::push_pose() {
 #endif
 
 #ifdef __ANDROID__
-// construct_dual_frames now takes frame_meta by const-ref instead of reading
-// stale member variables, so receiver_thread_ and _p_one_iteration never race
-// on the same pose/frame_number/etc. fields.
+// Boba requires exact image/metadata matching; general offload builds retain
+// their latest-metadata fallback. The receiver and renderer share the metadata
+// map under frame_meta_map_mutex_.
 data_format::dual_frames offload_rendering_client::construct_dual_frames(time_point render_time) {
     // Vulkan path: acquire AHardwareBuffers from both decoders
     dual_frames frame = color_decoder_->get_current_frame(render_time);
-    frame_meta  meta;
-    uint64_t    decoded_frame_number;
+#    ifdef ILLIXR_ENABLE_BOBA
+    if (!frame.is_valid()) {
+        return {};
+    }
+
+    if (frame.frame_number == 0 || frame.frame_number <= last_submitted_frame_) {
+        color_decoder_->release_frame(frame);
+        return {};
+    }
+
+    const uint64_t decoded_frame_number = frame.frame_number;
+    frame_meta     meta;
+    bool           exact_metadata_found = false;
+    {
+        std::lock_guard<std::mutex> lock(frame_meta_map_mutex_);
+        auto                        it = frame_meta_map_.find(decoded_frame_number);
+        if (it != frame_meta_map_.end() && !it->second.consumed) {
+            meta                 = it->second;
+            it->second.consumed  = true;
+            exact_metadata_found = true;
+
+            if (meta.boba_modal.visible) {
+                const auto texture = modal_texture_cache_.find(meta.boba_modal.texture_id);
+                if (texture != modal_texture_cache_.end() && texture->second.width == meta.boba_modal.width &&
+                    texture->second.height == meta.boba_modal.height) {
+                    frame.boba_modal_rgba = texture->second.rgba;
+                }
+            }
+
+            // Everything older than the decoded image can no longer be used.
+            auto stale = frame_meta_map_.begin();
+            while (stale != frame_meta_map_.end() && stale->first < decoded_frame_number) {
+                stale = frame_meta_map_.erase(stale);
+            }
+        }
+    }
+
+    if (!exact_metadata_found) {
+        static std::uint64_t missing_metadata_count = 0;
+        if (++missing_metadata_count % 120 == 1) {
+            spdlog::get("illixr")->warn("[offload_rendering_client] Dropping decoded frame {} without exact metadata "
+                                        "(count={})",
+                                        decoded_frame_number, missing_metadata_count);
+        }
+        color_decoder_->release_frame(frame);
+        return {};
+    }
+
+    frame.pose                 = meta.pose;
+    frame.near_z               = meta.near_z;
+    frame.far_z                = meta.far_z;
+    frame.pose_id              = meta.pose_id;
+    frame.encode_time          = meta.encode_time;
+    frame.presentation_mode    = meta.presentation_mode;
+    frame.content_aspect_ratio = meta.content_aspect_ratio;
+    frame.boba_overlay         = std::move(meta.boba_overlay);
+    frame.boba_modal           = meta.boba_modal;
+    frame.fov_left             = meta.fov_left;
+    frame.fov_right            = meta.fov_right;
+    frame.fov_up               = meta.fov_up;
+    frame.fov_down             = meta.fov_down;
+
+#    else
+    frame_meta meta;
+    uint64_t   decoded_frame_number;
     if (frame.is_valid()) {
         // frame.frame_number was set atomically with the buffer acquisition
         // inside acquire_latest_buffer() - no separate call needed.
@@ -1130,6 +1297,8 @@ data_format::dual_frames offload_rendering_client::construct_dual_frames(time_po
     frame.fov_right   = cached_fov_right_;
     frame.fov_up      = cached_fov_up_;
     frame.fov_down    = cached_fov_down_;
+
+#    endif
 
     // Depth and motion-vector buffers are only attached when they carry the
     // same server frame_number as the color frame above.  Each decoder is an

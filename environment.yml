@@ -1,0 +1,47 @@
+# Core build and runtime environment for ILLIXR 4.1 on Linux.
+# Camera and GPU-specific plugins may additionally require vendor drivers/SDKs.
+name: illixr
+
+channels:
+  - conda-forge
+  - nodefaults
+
+dependencies:
+  # Build tools
+  - cmake >=3.24,<4
+  - ninja
+  - clang =18
+  - clangxx =18
+  # Clang 18 is not compatible with the newer GCC 16 C++ headers.
+  - libgcc-devel_linux-64 =14
+  - libstdcxx-devel_linux-64 =14
+  - pkg-config
+  - git
+
+  # Python is used by ILLIXR's dependency-map generator.
+  - python =3.12
+  - pyyaml
+
+  # ILLIXR core dependencies
+  - boost-cpp
+  - eigen =3.4
+  - opencv >=4,<5
+  - openxr-sdk >=1.1,<2
+  - spdlog
+  - sqlite
+  - yaml-cpp
+
+  # Linux display and rendering dependencies
+  - glew
+  - glfw
+  - glm
+  - libgl-devel
+  - libglu
+  - libopengl-devel
+  - xorg-libx11
+
+  # ILLIXR 4.1 requires Vulkan >=1.4 and a shader compiler.
+  - glslang
+  - libvulkan-headers >=1.4
+  - libvulkan-loader >=1.4
+  - vulkan-memory-allocator
