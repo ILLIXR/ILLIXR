@@ -470,6 +470,7 @@ void frame_decoder::feeder_loop() {
                 std::lock_guard<std::mutex> ts_lock(pending_timestamps_mutex_);
                 pending_timestamps_[pkt.timestamp_us] = {pkt.queue_time, submit_time, pkt.frame_number};
             }
+#    ifdef ILLIXR_ENABLE_BOBA
             const media_status_t queue_status =
                 AMediaCodec_queueInputBuffer(codec_, static_cast<size_t>(buf_idx),
                                              /*offset=*/0, pkt.data.size(), static_cast<uint64_t>(pkt.timestamp_us), flags);
@@ -486,7 +487,7 @@ void frame_decoder::feeder_loop() {
                 break;
             }
             packets_fed++;
-
+#    endif
             const auto now = std::chrono::steady_clock::now();
             uint64_t   queue_us =
                 static_cast<uint64_t>(std::chrono::duration_cast<std::chrono::microseconds>(now - pkt.queue_time).count());
