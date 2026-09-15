@@ -1211,6 +1211,15 @@ VkPipeline openwarp_vk::create_distortion_correction_pipeline(VkRenderPass rende
                                                         .pName  = "main",
                                                         .pSpecializationInfo = nullptr};
 
+#ifdef MONADO_REQUIRED
+    // Native inputs are sampled in linear light; the Monado display target is UNORM.
+    // Standalone offload clients retain the shader's default (already encoded RGB).
+    const VkBool32 encode_srgb = VK_TRUE;
+    const VkSpecializationMapEntry srgb_entry = {0, 0, sizeof(encode_srgb)};
+    const VkSpecializationInfo srgb_specialization = {1, &srgb_entry, sizeof(encode_srgb), &encode_srgb};
+    frage_stage_info.pSpecializationInfo = &srgb_specialization;
+#endif
+
     VkPipelineShaderStageCreateInfo shader_stages[] = {vert_stage_info, frage_stage_info};
 
     auto bindingDescription    = DistortionCorrectionVertex::get_binding_description();
