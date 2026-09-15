@@ -1,10 +1,13 @@
 #include "plugin.hpp"
 
 #include "illixr/concurrentqueue/readwritequeue/readerwritercircularbuffer.h"
+#include "illixr/data_format/formatted_mesh.hpp"
+#include "mesh_formatter.hpp"
 
 #include <mutex>
 #include <queue>
 #include <spdlog/spdlog.h>
+#include <stdexcept>
 #include <thread>
 
 using namespace ILLIXR;
@@ -17,15 +20,9 @@ std::mutex           writer_mutex_;
 std::atomic<bool>    done_{false};
 std::string          data_path_;
 
-unsigned hash_vb(const ILLIXR::VoxelBlockIndex& index) {
-    int x, y, z;
-    std::tie(x, y, z) = index;
-    auto hash         = (x * 73856093) ^ (y * 19349669) ^ (z * 83492791);
-    return static_cast<unsigned>(std::abs(hash) % 25600);
-}
-
 void decompress(const uint idx, std::shared_ptr<switchboard::writer<draco_type>> writer) {
     std::shared_ptr<const mesh_type> datum;
+    mesh_formatter                   formatter;
 
     std::fstream decoding_latency;
 
@@ -58,78 +55,21 @@ void decompress(const uint idx, std::shared_ptr<switchboard::writer<draco_type>>
             const auto decoding_us   = std::chrono::duration_cast<std::chrono::microseconds>(decoding_done - start).count();
             decoding_latency << "Decode " << datum->id << " " << datum->chunk_id << " " << (decoding_us / 1000.0) << "\n";
 
-            // pyh: formatting the decoded mesh into Live Mesh Format
-            std::unordered_map<unsigned, std::vector<NewVB>> AllocateNewVB;
-            AllocateNewVB.reserve(256);
-
-            const draco_illixr::PointAttribute* pos_attribute =
-                dracoMesh->GetNamedAttribute(draco_illixr::GeometryAttribute::POSITION);
-
-            if (!pos_attribute) {
-                spdlog::get("illixr")->error("No position attribute found in the draco_illixr mesh.");
-                return;
-            }
-
-            // pyh get voxel block info attached to each face (see section 4.2)
-            const int vb_id = dracoMesh->GetAttributeIdByMetadataEntry("attribute_name", "_VOXELBLOCK_INFO");
-            auto      vb    = dracoMesh->GetAttributeByUniqueId(vb_id);
-
+            // Group each chunk independently and publish it as soon as it is ready.
             spdlog::get("illixr")->info("Decompressing chunk {} with {} faces", datum->chunk_id, dracoMesh->num_faces());
-            for (draco_illixr::FaceIndex faceIndex(0); faceIndex < dracoMesh->num_faces(); ++faceIndex) {
-                float dracoVertex_v1[3], dracoVertex_v2[3], dracoVertex_v3[3];
-                int   vb_index_v1[3];
-
-                auto face = dracoMesh->face(faceIndex).data();
-                auto v1   = draco_illixr::PointIndex(face[0].value());
-                auto v2   = draco_illixr::PointIndex(face[1].value());
-                auto v3   = draco_illixr::PointIndex(face[2].value());
-
-                pos_attribute->GetMappedValue(v1, dracoVertex_v1);
-                pos_attribute->GetMappedValue(v2, dracoVertex_v2);
-                pos_attribute->GetMappedValue(v3, dracoVertex_v3);
-
-                vb->GetMappedValue(v1, vb_index_v1);
-
-                VoxelBlockIndex vb_index{vb_index_v1[0], vb_index_v1[1], vb_index_v1[2]};
-                unsigned        hash_idx = hash_vb(vb_index);
-
-                Eigen::Vector3d vertex1(dracoVertex_v1[0], dracoVertex_v1[1], dracoVertex_v1[2]);
-                Eigen::Vector3d vertex2(dracoVertex_v2[0], dracoVertex_v2[1], dracoVertex_v2[2]);
-                Eigen::Vector3d vertex3(dracoVertex_v3[0], dracoVertex_v3[1], dracoVertex_v3[2]);
-
-                auto& bucketlist = AllocateNewVB[hash_idx];
-
-                bool appended = false;
-                for (auto& vb_entry : bucketlist) {
-                    if (std::get<0>(vb_entry) == vb_index) {
-                        // pyh find existing entry and append vertices
-                        std::get<1>(vb_entry).push_back(vertex1);
-                        std::get<1>(vb_entry).push_back(vertex2);
-                        std::get<1>(vb_entry).push_back(vertex3);
-                        appended = true;
-                        break;
-                    }
-                }
-                if (!appended) {
-                    // pyh means 2 scenarios:
-                    // 1. there is a hash collision 2. nothing has been allocated for this VB
-                    // either case we need to create a new VB entry
-                    std::vector<Eigen::Vector3d> new_vertices;
-                    std::vector<Eigen::Vector3d> new_colors; // pyh kept for color case
-                    // 8x8x8 vb x 3 faces (avg 2.8 faces in MC possibilities)  * 3 point each
-                    new_vertices.reserve(4608);
-
-                    new_vertices.push_back(vertex1);
-                    new_vertices.push_back(vertex2);
-                    new_vertices.push_back(vertex3);
-
-                    bucketlist.emplace_back(vb_index, std::move(new_vertices), std::move(new_colors));
-                }
+            std::shared_ptr<const scene_update_data> formatted;
+            try {
+                formatted = formatter.format(*dracoMesh);
+            } catch (const std::exception& error) {
+                spdlog::get("illixr")->error("Unable to format mesh chunk {}: {}", datum->chunk_id, error.what());
+                return;
             }
             {
                 std::lock_guard<std::mutex> lock(writer_mutex_);
 
-                writer->put(writer->allocate<draco_type>(draco_type{datum->id, datum->chunk_id, std::move(AllocateNewVB)}));
+                std::shared_ptr<draco_type> event =
+                    std::make_shared<formatted_mesh_type>(datum->id, datum->chunk_id, std::move(formatted));
+                writer->put(std::move(event));
             }
             auto end       = std::chrono::high_resolution_clock::now();
             auto pvbgen_us = std::chrono::duration_cast<std::chrono::microseconds>(end - decoding_done).count();
@@ -157,9 +97,17 @@ void decompress(const uint idx, std::shared_ptr<switchboard::writer<draco_type>>
     }
     spdlog::get("illixr")->debug("[md] {}", data_path_);
     mesh_count_ = switchboard_->get_env_ulong("MESH_DECOMPRESS_PARALLELISM", 8);
+    if (mesh_count_ == 0) {
+        throw std::invalid_argument("MESH_DECOMPRESS_PARALLELISM must be positive");
+    }
 
+    // Finish constructing the shared queue vector before any worker reads it.
+    queue_.reserve(mesh_count_);
     for (uint i = 0; i < mesh_count_; i++) {
-        queue_.push_back(b_queue(8));
+        queue_.emplace_back(8);
+    }
+    done_ = false;
+    for (uint i = 0; i < mesh_count_; i++) {
         decompress_thread_.push_back(std::thread(decompress, i, decoded_mesh_));
     }
     switchboard_->schedule<mesh_type>(id_, "compressed_scene", [&](switchboard::ptr<const mesh_type> datum, std::size_t) {
@@ -168,7 +116,12 @@ void decompress(const uint idx, std::shared_ptr<switchboard::writer<draco_type>>
 }
 
 void mesh_decompression::process_frame(switchboard::ptr<const mesh_type> datum) {
-    while (!queue_[datum->type].try_enqueue(datum)) { }
+    if (datum->max_chunk == 0 || datum->chunk_id >= datum->max_chunk) {
+        spdlog::get("illixr")->error("Invalid mesh chunk {} of {} for scene {}", datum->chunk_id, datum->max_chunk, datum->id);
+        return;
+    }
+    const auto worker = datum->chunk_id % mesh_count_;
+    while (!queue_[worker].try_enqueue(datum)) { }
 }
 
 mesh_decompression::~mesh_decompression() {

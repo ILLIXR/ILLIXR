@@ -370,8 +370,10 @@ int ILLIXR::run(
 
         delete runtime_;
     } catch (const std::exception& ex) {
-        std::cout << "ERROR: Exception caught in main: " << ex.what() << std::endl;
+        std::cerr << "ERROR: " << ex.what() << std::endl;
         delete runtime_;
+        runtime_ = nullptr;
+        return EXIT_FAILURE;
     }
     return 0;
 }

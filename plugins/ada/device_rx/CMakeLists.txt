@@ -17,6 +17,7 @@ PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS ${CMAKE_CURRENT_SOURCE_DIR}/../proto
 add_library(${PLUGIN_NAME} SHARED
             plugin.cpp
             plugin.hpp
+            wifi_power_save.hpp
             ${PROTO_SRCS}
             ${PROTO_HDRS}
             ${ILLIXR_SOURCE_DIR}/include/illixr/data_format/mesh.hpp

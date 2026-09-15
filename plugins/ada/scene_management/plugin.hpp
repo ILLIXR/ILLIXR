@@ -7,10 +7,12 @@
 #include "illixr/relative_clock.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
+#include "ordered_scene_updates.hpp"
 #include "spatial_hash.hpp"
 
 #include <filesystem>
 #include <fstream>
+#include <mutex>
 
 namespace ILLIXR {
 class scene_management : public threadloop {
@@ -27,25 +29,18 @@ protected:
     void _p_one_iteration() override { }
 
 private:
-    // ILLIXR related variables
-    const std::shared_ptr<switchboard> switchboard_;
-    // switchboard::buffered_reader<data_format::draco_type> input_inactive_mesh_;
-    // switchboard::buffered_reader<data_format::vb_type>    input_vb_lists_;
+    void process_ready_scenes();
 
-    std::vector<switchboard::ptr<const data_format::draco_type>> pending_chunks_;
-    std::vector<switchboard::ptr<const data_format::vb_type>>    pending_clean_reqs_;
+    const std::shared_ptr<switchboard> switchboard_;
+    const unsigned                     frame_count_;
+    const unsigned                     fps_;
+    const unsigned                     thread_count_;
+
+    ordered_scene_updates<switchboard::ptr<const data_format::draco_type>, switchboard::ptr<const data_format::vb_type>>
+               pending_;
+    std::mutex scene_mutex_;
 
     spatial_hash grid_;
-
-    int      current_id_;
-    int      last_processed_;
-    unsigned chunk_counter_;
-    bool     mesh_processing_;
-    bool     clean_waiting_;
-    int      last_cleaned_;
-    unsigned frame_count_;
-    unsigned fps_;
-    unsigned thread_count_;
 
     const std::string data_path_ = std::filesystem::current_path().string() + "/recorded_data";
     std::ofstream     mesh_management_latency_;

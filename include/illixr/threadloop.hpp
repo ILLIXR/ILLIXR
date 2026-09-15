@@ -161,6 +161,14 @@ private:
                 ++skip_no;
                 break;
             case skip_option::run: {
+                if (!it_log) {
+                    RAC_ERRNO();
+                    _p_one_iteration();
+                    RAC_ERRNO();
+                    ++iteration_no;
+                    skip_no = 0;
+                    break;
+                }
                 auto iteration_start_cpu_time  = thread_cpu_time();
                 auto iteration_start_wall_time = std::chrono::high_resolution_clock::now();
 

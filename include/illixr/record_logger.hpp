@@ -6,6 +6,8 @@
 #include <atomic>
 #include <cassert>
 #include <chrono>
+#include <cstdlib>
+#include <cstring>
 #include <memory>
 #include <optional>
 #include <spdlog/spdlog.h>
@@ -20,6 +22,17 @@
 #endif
 
 namespace ILLIXR {
+
+// Read once, before plugins start. Preserve the existing default for other
+// applications; Ada explicitly disables unused framework performance records.
+// This controls structured records only, independently of spdlog and Ada CSVs.
+[[nodiscard]] static inline bool record_logging_enabled() {
+    static const bool enabled = [] {
+        const char* value = std::getenv("ILLIXR_RECORD_LOGGING");
+        return !value || (std::strcmp(value, "0") != 0 && std::strcmp(value, "false") != 0 && std::strcmp(value, "off") != 0);
+    }();
+    return enabled;
+}
 
 /**
  * @brief Schema of each record.
@@ -276,7 +289,7 @@ static std::chrono::milliseconds LOG_BUFFER_DELAY{1000};
 class record_coalescer {
 public:
     explicit record_coalescer(std::shared_ptr<record_logger> logger_)
-        : logger_{std::move(logger_)}
+        : logger_{record_logging_enabled() ? std::move(logger_) : nullptr}
         , last_log_{std::chrono::high_resolution_clock::now()} { }
 
     ~record_coalescer() {
