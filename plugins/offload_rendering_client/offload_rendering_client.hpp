@@ -446,6 +446,16 @@ private:
     bool                 fov_cached_       = false;
 #endif
     uint64_t                                       last_submitted_frame_{0};
+#ifdef __ANDROID__
+#    ifdef ILLIXR_ENABLE_BOBA
+    int    headset_width_  = NATIVE_STREAM_EYE_WIDTH;
+    int    headset_height_ = NATIVE_STREAM_EYE_HEIGHT;
+#    else
+    int    headset_width_  = HEADSET_WIDTH;
+    int    headset_height_ = HEADSET_HEIGHT;
+    double overscan_;
+#    endif
+#endif
 };
 
 } // namespace ILLIXR
