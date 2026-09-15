@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.22)
-
+if(ANDROID)
+    message(WARNING "native_renderer is not yet available on Android")
+    set(USE_NATIVE_RENDERER OFF)
+    return()
+endif()
 set(PLUGIN_NAME plugin.native_renderer${ILLIXR_BUILD_SUFFIX})
 
 set(CMAKE_CXX_STANDARD 17)

@@ -1,11 +1,13 @@
-#include "x11_direct.hpp"
+#ifndef __ANDROID__
 
-#include "illixr/vk/vulkan_utils.hpp"
-#include "X11/extensions/Xrandr.h"
+#    include "x11_direct.hpp"
 
-#include <vulkan/vulkan.h>
-#include <vulkan/vulkan_xlib_xrandr.h>
-#include <X11/Xlib.h>
+#    include "illixr/vk/vulkan_utils.hpp"
+#    include "X11/extensions/Xrandr.h"
+
+#    include <vulkan/vulkan.h>
+#    include <vulkan/vulkan_xlib_xrandr.h>
+#    include <X11/Xlib.h>
 
 using namespace ILLIXR::display;
 
@@ -148,7 +150,9 @@ void x11_direct::tick() {
     vkDestroyFence(vk_device_, display_event_fence_, nullptr);
     register_display_timings_event(vk_device_);
 
-    now += std::chrono::nanoseconds(1000000000 / selected_mode_.parameters.refreshRate);
+    // Vulkan refreshRate is in milliHz, so we convert to nanoseconds
+    const auto display_period = std::chrono::nanoseconds{1'000'000'000'000LL / selected_mode_.parameters.refreshRate};
+    now += display_period;
     vsync_topic_.put(vsync_topic_.allocate(now));
 }
 
@@ -185,3 +189,5 @@ std::set<const char*> x11_direct::get_required_device_extensions() {
 display_backend::display_backend_type x11_direct::get_type() {
     return X11_DIRECT;
 }
+
+#endif

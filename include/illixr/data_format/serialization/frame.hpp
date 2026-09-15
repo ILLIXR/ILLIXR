@@ -10,7 +10,7 @@
 #include <spdlog/spdlog.h>
 #ifdef ILLIXR_LIBAV
 extern "C" {
-    #include "libavcodec_illixr/avcodec.h"
+#    include "libavcodec_illixr/avcodec.h"
 }
 #endif
 
@@ -49,9 +49,11 @@ template<class Archive>
 static void load_packet(Archive& ar, AVPacket* pkt) {
     int32_t pkt_size; // Use fixed-width type
     ar >> pkt_size;
-    pkt->size = pkt_size;
-    pkt->buf  = av_buffer_alloc(pkt->size);
-    pkt->data = pkt->buf->data;
+    // FFmpeg's bitstream readers require zeroed AV_INPUT_BUFFER_PADDING_SIZE
+    // bytes beyond the payload. A payload-sized av_buffer_alloc is insufficient.
+    if (pkt_size < 0 || av_new_packet(pkt, pkt_size) < 0) {
+        throw std::runtime_error{"Failed to allocate received video packet"};
+    }
     ar >> boost::serialization::make_array(pkt->data, pkt->size);
     ar >> pkt->pts;
     ar >> pkt->dts;
@@ -63,17 +65,20 @@ static void load_packet(Archive& ar, AVPacket* pkt) {
     ar >> pkt->time_base.den;
     int32_t side_data_elems; // Use fixed-width type
     ar >> side_data_elems;
-    pkt->side_data_elems = side_data_elems;
-    pkt->side_data       = (AVPacketSideData*) malloc(sizeof(AVPacketSideData) * pkt->side_data_elems);
-    for (int i = 0; i < pkt->side_data_elems; i++) {
+    if (side_data_elems < 0) {
+        throw std::runtime_error{"Invalid video packet side-data count"};
+    }
+    for (int i = 0; i < side_data_elems; i++) {
         int32_t  side_data_type;
         uint64_t side_data_size;
         ar >> side_data_type;
         ar >> side_data_size;
-        pkt->side_data[i].type = static_cast<AVPacketSideDataType>(side_data_type);
-        pkt->side_data[i].size = static_cast<size_t>(side_data_size);
-        pkt->side_data[i].data = (uint8_t*) malloc(pkt->side_data[i].size);
-        ar >> boost::serialization::make_array(pkt->side_data[i].data, pkt->side_data[i].size);
+        auto* data = av_packet_new_side_data(pkt, static_cast<AVPacketSideDataType>(side_data_type),
+                                             static_cast<size_t>(side_data_size));
+        if (data == nullptr) {
+            throw std::runtime_error{"Failed to allocate received video packet side data"};
+        }
+        ar >> boost::serialization::make_array(data, static_cast<size_t>(side_data_size));
     }
 }
 
@@ -146,9 +151,9 @@ void save(Archive& ar, const ILLIXR::data_format::compressed_frame& f, const uns
             ILLIXR::detail::save_packet(ar, f.left_motion_vec);
             ILLIXR::detail::save_packet(ar, f.right_motion_vec);
         }
-    #ifdef ILLIXR_LIBAV
+#    ifdef ILLIXR_LIBAV
     }
-    #endif
+#    endif
 #else
     static_assert(false, "Not compiled with libav or NVENC/NVDEC");
 #endif
@@ -205,69 +210,69 @@ void load(Archive& ar, ILLIXR::data_format::compressed_frame& f, const unsigned 
     } else {
 #if defined(ILLIXR_LIBAV) || defined(NVENC_ENCODER) || defined(NVDEC_DECODER)
 
-    #ifdef ILLIXR_LIBAV
+#    ifdef ILLIXR_LIBAV
         f.left_color  = av_packet_alloc();
         f.right_color = av_packet_alloc();
-    #endif
+#    endif
         ILLIXR::detail::load_packet(ar, f.left_color);
         ILLIXR::detail::load_packet(ar, f.right_color);
 
         if (f.use_depth) {
-    #ifdef ILLIXR_LIBAV
+#    ifdef ILLIXR_LIBAV
             f.left_depth  = av_packet_alloc();
             f.right_depth = av_packet_alloc();
-    #endif
+#    endif
             ILLIXR::detail::load_packet(ar, f.left_depth);
             ILLIXR::detail::load_packet(ar, f.right_depth);
         }
         if (f.use_motion_vectors) {
-    #ifdef ILLIXR_LIBAV
+#    ifdef ILLIXR_LIBAV
             f.left_motion_vec  = av_packet_alloc();
             f.right_motion_vec = av_packet_alloc();
-    #endif
+#    endif
             ILLIXR::detail::load_packet(ar, f.left_motion_vec);
             ILLIXR::detail::load_packet(ar, f.right_motion_vec);
         }
 #else
         static_assert(false, "Not compiled with libav or NVENC/NVDEC");
 #endif
-#ifdef USING_OPENXR
-        ar >> f.pose[0];
-        ar >> f.pose[1];
-#else
     }
+#ifdef USING_OPENXR
+    ar >> f.pose[0];
+    ar >> f.pose[1];
+#else
     ar >> f.pose;
 #endif
 
-        ar >> f.near_z;
-        ar >> f.far_z;
+    ar >> f.near_z;
+    ar >> f.far_z;
 #ifdef USING_OPENXR
-        ar >> f.fov_left[0];
-        ar >> f.fov_left[1];
-        ar >> f.fov_right[0];
-        ar >> f.fov_right[1];
-        ar >> f.fov_up[0];
-        ar >> f.fov_up[1];
-        ar >> f.fov_down[0];
-        ar >> f.fov_down[1];
+    ar >> f.fov_left[0];
+    ar >> f.fov_left[1];
+    ar >> f.fov_right[0];
+    ar >> f.fov_right[1];
+    ar >> f.fov_up[0];
+    ar >> f.fov_up[1];
+    ar >> f.fov_down[0];
+    ar >> f.fov_down[1];
 #endif
 
-        ar >> f.sent_time;
-        ar >> f.frame_number;
-        ar >> f.pose_id;
-        ar >> f.encode_time;
-        ar >> f.is_keyframe;
-        ar >> f.magic;
-        if (f.magic != 0xdeadbeef) {
-            throw std::runtime_error("compressed_frame: magic number mismatch");
-        }
+    ar >> f.sent_time;
+    ar >> f.frame_number;
+    ar >> f.pose_id;
+    ar >> f.encode_time;
+    ar >> f.is_keyframe;
+    ar >> f.magic;
+    if (f.magic != 0xdeadbeef) {
+        throw std::runtime_error("compressed_frame: magic number mismatch");
     }
+}
 
-    // Register the split free functions with Boost
-    template<class Archive>
-    void serialize(Archive & ar, ILLIXR::data_format::compressed_frame & f, const unsigned int version) {
-        boost::serialization::split_free(ar, f, version);
-    }
+// Register the split free functions with Boost
+template<class Archive>
+void serialize(Archive& ar, ILLIXR::data_format::compressed_frame& f, const unsigned int version) {
+    boost::serialization::split_free(ar, f, version);
+}
 
 } // namespace boost::serialization
 

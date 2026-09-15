@@ -37,10 +37,11 @@ public:
      */
     virtual void topic_send(std::string topic_name, std::string&& message) = 0;
 
+#ifndef __ANDROID__
     virtual void start_client() = 0;
 
     virtual void start_server() = 0;
-
+#endif
     [[nodiscard]] virtual network::topic_config::TransportMethod transport_method() const = 0;
 };
 

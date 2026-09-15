@@ -61,6 +61,17 @@ static void ffmpeg_unlock_queue(struct AVHWDeviceContext* ctx, uint32_t queue_fa
 }
 
 static std::optional<AVPixelFormat> get_pix_format_from_vk_format(VkFormat format) {
+    switch (format) {
+    case VK_FORMAT_R8G8B8A8_UNORM:
+    case VK_FORMAT_R8G8B8A8_SRGB:
+        return AV_PIX_FMT_RGBA;
+    case VK_FORMAT_B8G8R8A8_UNORM:
+    case VK_FORMAT_B8G8R8A8_SRGB:
+        return AV_PIX_FMT_BGRA;
+    default:
+        break;
+    }
+
     for (int fmt = AV_PIX_FMT_NONE; fmt < AV_PIX_FMT_NB; fmt++) {
         auto vk_fmt = av_vkfmt_from_pixfmt(static_cast<AVPixelFormat>(fmt));
         if (vk_fmt && *vk_fmt == format) {
