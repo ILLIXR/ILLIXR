@@ -1254,8 +1254,8 @@ data_format::dual_frames offload_rendering_client::construct_dual_frames(time_po
     frame.fov_down             = meta.fov_down;
 
 #    else
-    frame_meta  meta;
-    uint64_t    decoded_frame_number;
+    frame_meta meta;
+    uint64_t   decoded_frame_number;
     if (frame.is_valid()) {
         // frame.frame_number was set atomically with the buffer acquisition
         // inside acquire_latest_buffer() - no separate call needed.

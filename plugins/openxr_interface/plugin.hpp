@@ -88,7 +88,7 @@ private:
     struct android_app*                   app_;
     const std::shared_ptr<relative_clock> clock_;
 #    ifdef ILLIXR_ENABLE_BOBA
-    const std::shared_ptr<stoplight>      stoplight_;
+    const std::shared_ptr<stoplight> stoplight_;
 #    endif
 
     // Frame reading
@@ -101,7 +101,7 @@ private:
 
     std::shared_ptr<const data_format::dual_frames> current_frames_ = nullptr;
 #    ifdef ILLIXR_ENABLE_BOBA
-    bool                                            client_shutdown_requested_{false};
+    bool client_shutdown_requested_{false};
 #    endif
 
     // OpenXR handles
@@ -114,12 +114,12 @@ private:
     XrBool32                session_running_ = XR_FALSE;
     XrViewConfigurationView view_configs_[2]{};
     XrView                  views_[2]{};
-#ifdef ILLIXR_ENABLE_BOBA
+#    ifdef ILLIXR_ENABLE_BOBA
     // World-panel anchor persists across head motion until presentation mode changes.
     bool                                  world_panel_anchor_initialized_{false};
     XrPosef                               world_panel_pose_{};
     data_format::stereo_presentation_mode previous_presentation_mode_{data_format::stereo_presentation_mode::stereo_fullscreen};
-#endif
+#    endif
 
     // Vulkan device objects
     VkInstance       vk_instance_        = VK_NULL_HANDLE;

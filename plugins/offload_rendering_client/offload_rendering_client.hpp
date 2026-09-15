@@ -190,13 +190,13 @@ private:
 #    endif
     };
 
-#ifdef ILLIXR_ENABLE_BOBA
+#    ifdef ILLIXR_ENABLE_BOBA
     struct modal_texture_cache_entry {
         std::uint32_t                                    width{0};
         std::uint32_t                                    height{0};
         std::shared_ptr<const std::vector<std::uint8_t>> rgba;
     };
-#endif
+#    endif
 
     /**
      * @brief Receiver thread: dequeues compressed frames from the network,
@@ -205,10 +205,10 @@ private:
      */
     void receiver_loop();
 
-#ifdef ILLIXR_ENABLE_BOBA
+#    ifdef ILLIXR_ENABLE_BOBA
     /** Drain reliable modal-texture updates and cache them by content ID. */
     void drain_modal_texture_updates();
-#endif
+#    endif
 
     /**
      * @brief Log Android decode timing statistics.
@@ -357,9 +357,9 @@ private:
     // the same time, so the map stays bounded even if the decoder skips frames.
     std::map<uint64_t, frame_meta> frame_meta_map_;
     std::mutex                     frame_meta_map_mutex_;
-#ifdef ILLIXR_ENABLE_BOBA
+#    ifdef ILLIXR_ENABLE_BOBA
     std::unordered_map<std::uint64_t, modal_texture_cache_entry> modal_texture_cache_;
-#endif
+#    endif
     // Bounds how many submitted dual_frames are kept alive awaiting release.
     // Rather than requiring an explicit GPU-completion signal from the
     // render-side consumer (oxr_interface), a submitted frame's
@@ -446,9 +446,9 @@ private:
 #endif
     uint64_t last_submitted_frame_{0};
 #ifdef __ANDROID__
-    #    ifdef ILLIXR_ENABLE_BOBA
-    int    headset_width_  = NATIVE_STREAM_EYE_WIDTH;
-    int    headset_height_ = NATIVE_STREAM_EYE_HEIGHT;
+#    ifdef ILLIXR_ENABLE_BOBA
+    int headset_width_  = NATIVE_STREAM_EYE_WIDTH;
+    int headset_height_ = NATIVE_STREAM_EYE_HEIGHT;
 #    else
     int    headset_width_  = HEADSET_WIDTH;
     int    headset_height_ = HEADSET_HEIGHT;

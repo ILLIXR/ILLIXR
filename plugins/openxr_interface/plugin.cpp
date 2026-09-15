@@ -15,8 +15,8 @@ using namespace ILLIXR;
 using namespace ILLIXR::data_format;
 
 #    ifdef ILLIXR_ENABLE_BOBA
-constexpr int   I_HEADSET_WIDTH            = NATIVE_STREAM_EYE_WIDTH;
-constexpr int   I_HEADSET_HEIGHT           = NATIVE_STREAM_EYE_HEIGHT;
+constexpr int I_HEADSET_WIDTH  = NATIVE_STREAM_EYE_WIDTH;
+constexpr int I_HEADSET_HEIGHT = NATIVE_STREAM_EYE_HEIGHT;
 #    else
 constexpr int I_HEADSET_WIDTH  = static_cast<int>(HEADSET_WIDTH * 1.1);
 constexpr int I_HEADSET_HEIGHT = static_cast<int>(HEADSET_HEIGHT * 1.1);
@@ -443,9 +443,9 @@ void oxr_interface::run_frame() {
     XrFrameBeginInfo begin_info = {XR_TYPE_FRAME_BEGIN_INFO};
     xrBeginFrame(session_, &begin_info);
 
-    XrCompositionLayerProjection     projectionLayer    = {XR_TYPE_COMPOSITION_LAYER_PROJECTION};
+    XrCompositionLayerProjection projectionLayer = {XR_TYPE_COMPOSITION_LAYER_PROJECTION};
 #    ifdef ILLIXR_ENABLE_BOBA
-    XrCompositionLayerQuad           panelLayer         = {XR_TYPE_COMPOSITION_LAYER_QUAD};
+    XrCompositionLayerQuad panelLayer = {XR_TYPE_COMPOSITION_LAYER_QUAD};
 #    endif
     XrCompositionLayerProjectionView projectionViews[2] = {{XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW},
                                                            {XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW}};

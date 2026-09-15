@@ -198,7 +198,7 @@ public:
 #if defined(_WIN32) || defined(_WIN64)
         int size = sizeof(local);
 #else
-        socklen_t   size = sizeof(local);
+        socklen_t size = sizeof(local);
 #endif
         getsockname(fd_, reinterpret_cast<sockaddr*>(&local), &size);
 #if defined(_WIN32) || defined(_WIN64)

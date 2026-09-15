@@ -241,7 +241,7 @@ void udp_network_backend::send_packet(std::string&& packet) {
     // Large payloads such as video frames belong on the TCP backend.
     if (packet.size() > network::max_udp_payload_bytes) {
         spdlog::get("illixr")->warn("[udp_network_backend] UDP message exceeds the datagram limit ({} bytes); use TCP",
-                                  packet.size());
+                                    packet.size());
         return;
     }
     std::lock_guard<std::mutex> lock{send_mutex_};

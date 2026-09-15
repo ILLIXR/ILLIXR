@@ -220,7 +220,7 @@ private:
      * Sends combined_pose to the offload rendering server, which contains
      * the head pose, hand tracking data, and time conversion fields.
      */
-    switchboard::network_writer<data_format::pose::combined_pose>    combined_pose_writer_;
+    switchboard::network_writer<data_format::pose::combined_pose> combined_pose_writer_;
 #ifdef ILLIXR_ENABLE_BOBA
     switchboard::network_writer<data_format::quest_controller_input> quest_controller_writer_;
     switchboard::network_writer<data_format::openxr_view_frame>      openxr_view_writer_;
@@ -348,9 +348,9 @@ private:
 
 #endif
 
-    std::mutex                                           actions_mutex_;
+    std::mutex actions_mutex_;
 #ifdef ILLIXR_ENABLE_BOBA
-    std::atomic<std::uint64_t>                           boba_input_sequence_{0};
+    std::atomic<std::uint64_t> boba_input_sequence_{0};
 #endif
 
     bool                                  initialized_{false};
