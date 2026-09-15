@@ -1,7 +1,7 @@
 #pragma once
 #define DOUBLE_INCLUDE
 #ifndef HAVE_ZED
-    #define HAVE_ZED
+#    define HAVE_ZED
 #endif
 #include "illixr/data_format/misc.hpp"
 #include "illixr/data_format/zed_cam.hpp"

@@ -1,12 +1,13 @@
 // Common parameters. Ultimately, these need to be moved to a yaml file.
 #pragma once
 
+#include "headset_fov.hpp"
 #include "relative_clock.hpp"
 
 #include <algorithm>
 #include <cmath>
 #ifndef M_PI
-    #define M_PI 3.14159265358979323846
+#    define M_PI 3.14159265358979323846
 #endif
 #include <stdexcept>
 #include <string>
@@ -16,10 +17,12 @@ namespace ILLIXR {
 /// Display parameters
 struct display_params {
     // Display width in pixels
-    static constexpr unsigned width_pixels = 2880;
+    static constexpr unsigned width_pixels = 2880; // valve index
+    // static constexpr unsigned width_pixels = 3360; // quest 3
 
     // Display height in pixels
-    static constexpr unsigned height_pixels = 1600;
+    static constexpr unsigned height_pixels = 1600; // valve index
+    // static constexpr unsigned height_pixels = 1816; // quest 3
 
     // Display width in meters
     static constexpr float width_meters = 0.11047f;
@@ -68,31 +71,6 @@ struct rendering_params {
 
 // Offloading parameters - this really should be extended to everything though
 constexpr float server_fov = 0.99f;
-
-struct server_params {
-    // static constexpr float fov_left[2] = {-server_fov, -server_fov};
-    // static constexpr float fov_right[2] = {server_fov, server_fov};
-    // static constexpr float fov_up[2] = {server_fov, server_fov};
-    // static constexpr float fov_down[2] = {-server_fov, -server_fov};
-    //
-    //    // The server can render at an arbitrary resolution
-    //    static constexpr unsigned width_pixels = 2160;
-    //    static constexpr unsigned height_pixels = 2400;
-
-    static constexpr float fov_left[2]  = {-0.907341f, -0.897566f};
-    static constexpr float fov_right[2] = {0.897500f, 0.907700f};
-    static constexpr float fov_up[2]    = {0.953644f, 0.954293f};
-    static constexpr float fov_down[2]  = {-0.953628f, -0.952802f};
-};
-
-struct index_params {
-    static constexpr float fov_left[2]  = {-0.907341f, -0.897566f};
-    static constexpr float fov_right[2] = {0.897500f, 0.907700f};
-    static constexpr float fov_up[2]    = {0.953644f, 0.954293f};
-    static constexpr float fov_down[2]  = {-0.953628f, -0.952802f};
-};
-
-;
 
 /**
  * @brief Convert a string containing a (python) boolean to the bool type

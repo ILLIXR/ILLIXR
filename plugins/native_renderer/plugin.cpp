@@ -191,15 +191,13 @@ void native_renderer::_p_one_iteration() {
         std::this_thread::sleep_for(display_params::period / 6.0 * 5);
         log_->debug("No vsync estimate!");
     } else {
-        // convert next_swap_time to std::chrono::time_point
-        auto next_swap_time_point = std::chrono::time_point<std::chrono::system_clock>(
-            std::chrono::duration_cast<std::chrono::system_clock::duration>((**next_swap).time_since_epoch()));
-        auto current_time = clock_->now().time_since_epoch();
-        auto diff         = next_swap_time_point - current_time;
-        log_->debug("swap diff: {} ms", std::chrono::duration_cast<std::chrono::milliseconds>(diff.time_since_epoch()).count());
-        next_swap_time_point -= std::chrono::duration_cast<std::chrono::system_clock::duration>(
-            display_params::period / 6.0 * 5); // sleep till 1/6 of the period before vsync to begin timewarp
-        std::this_thread::sleep_until(next_swap_time_point);
+        ILLIXR::time_point warp_start = **next_swap;
+        warp_start -= display_params::period / 6; // leave 1/6 of the frame for warping
+
+        const ILLIXR::duration remaining = warp_start - clock_->now();
+        if (remaining > ILLIXR::duration::zero()) {
+            std::this_thread::sleep_for(remaining);
+        }
     }
 
     if (!timewarp_->is_external()) {
@@ -501,11 +499,12 @@ void native_renderer::create_offscreen_pool() {
     };
 
     uint32_t                mem_type_index;
-    VmaAllocationCreateInfo alloc_info;
+    VmaAllocationCreateInfo alloc_info{};
     alloc_info.flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT;
     alloc_info.usage = VMA_MEMORY_USAGE_GPU_ONLY;
 
-    vmaFindMemoryTypeIndexForImageInfo(display_sink_->vma_allocator_, &sample_create_info, &alloc_info, &mem_type_index);
+    VK_ASSERT_SUCCESS(
+        vmaFindMemoryTypeIndexForImageInfo(display_sink_->vma_allocator_, &sample_create_info, &alloc_info, &mem_type_index));
 
     offscreen_export_mem_alloc_info_.sType = VK_STRUCTURE_TYPE_EXPORT_MEMORY_ALLOCATE_INFO;
     offscreen_export_mem_alloc_info_.handleTypes =

@@ -4,9 +4,9 @@
 #include "illixr/threadloop.hpp"
 
 #if __has_include("input.pb.h")
-    #include "input.pb.h"
+#    include "input.pb.h"
 #else
-    #include "../proto/input_stub.hpp"
+#    include "../proto/input_stub.hpp"
 #endif
 
 #include <random>
