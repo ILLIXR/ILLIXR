@@ -1,6 +1,6 @@
 # module to build and install the record_imu_cam ILLIXR plugin
-if(WIN32 OR MSVC OR ANDROID)
-    message(WARNING "record_imu_cam is not yet available for Windows or Android")
+if(ANDROID)
+    message(WARNING "record_imu_cam is not yet available for Android")
     set(USE_RECORD_IMU_CAM OFF)
     return()
 endif()
@@ -16,8 +16,25 @@ add_library(${PLUGIN_NAME} SHARED plugin.cpp
             ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
 )
 
-target_include_directories(${PLUGIN_NAME} PRIVATE ${BOOST_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR}/include)
-target_link_libraries(${PLUGIN_NAME} ${OpenCV_LIBRARIES} boost_filesystem Eigen3::Eigen)
+target_include_directories(${PLUGIN_NAME} PRIVATE
+                           ${OpenCV_INCLUDE_DIRS}
+                           ${ILLIXR_SOURCE_DIR}/include
+)
+
+target_link_libraries(${PLUGIN_NAME} PUBLIC
+                      opencv_core
+                      opencv_imgproc
+                      opencv_imgcodecs
+                      Boost::filesystem
+                      Boost::serialization
+                      Eigen3::Eigen
+                      spdlog::spdlog
+)
+
 target_compile_features(${PLUGIN_NAME} PRIVATE cxx_std_17)
+
+if(WIN32 OR MSVC)
+    target_compile_definitions(${PLUGIN_NAME} PRIVATE BUILDING_LIBRARY)
+endif()
 
 install(TARGETS ${PLUGIN_NAME} DESTINATION lib)
