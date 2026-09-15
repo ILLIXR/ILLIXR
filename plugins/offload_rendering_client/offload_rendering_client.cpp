@@ -341,17 +341,6 @@ void offload_rendering_client::receiver_loop() {
         // so they continue to use the NAL-unit scan.
         const bool is_key_color = current_frame->is_keyframe;
 
-#    ifdef ILLIXR_ENABLE_BOBA
-        // compressed_frame::sent_time is expressed in nanoseconds, whereas
-        // MediaCodec presentation timestamps are expressed in microseconds.
-        // Passing the nanosecond value through unchanged overflows the codec's
-        // internal time conversion and breaks decoded-frame metadata matching.
-        const int64_t presentation_time_us = static_cast<int64_t>(current_frame->sent_time / 1'000U);
-
-#    else
-        const auto presentation_time_us = static_cast<int64_t>(current_frame->sent_time);
-#    endif
-
         const bool is_key_depth = (use_depth_ && !current_frame->left_depth.empty())
             ? is_hevc_keyframe(current_frame->left_depth.data(), current_frame->left_depth.size())
             : is_key_color;
