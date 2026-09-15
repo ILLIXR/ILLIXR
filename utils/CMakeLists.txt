@@ -21,8 +21,8 @@ else()
                 ${CMAKE_SOURCE_DIR}/include/illixr/hmd.hpp
     )
 
-target_include_directories(illixr_hmd_gl PUBLIC ${CMAKE_SOURCE_DIR}/include)
-target_compile_definitions(illixr_hmd_gl PUBLIC USE_GL)
+    target_include_directories(illixr_hmd_gl PUBLIC ${CMAKE_SOURCE_DIR}/include)
+    target_compile_definitions(illixr_hmd_gl PUBLIC USE_GL)
 
     add_library(illixr_vulkan_utils STATIC
                 ${CMAKE_SOURCE_DIR}/include/illixr/vk/vulkan_utils.hpp
