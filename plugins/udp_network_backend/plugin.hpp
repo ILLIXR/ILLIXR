@@ -8,8 +8,19 @@
 #include "illixr/plugin.hpp"
 #include "illixr/switchboard.hpp"
 
+#include <chrono>
+#include <cstdint>
+#include <thread>
+#include <unordered_map>
+#include <vector>
+
 namespace ILLIXR {
 
+/**
+ * Switchboard UDP transport for tracking and small control messages.
+ * Each logical topic message uses the original single-datagram format;
+ * large payloads such as video frames use the TCP backend.
+ */
 class MY_EXPORT_API udp_network_backend
     : public plugin
     , public network::udp_backend {
@@ -36,6 +47,13 @@ public:
     bool client;
 
 private:
+    /** Send one topic packet without application-level fragmentation. */
+    void send_packet(std::string&& packet);
+
+    /** Validate and dispatch a received topic packet. */
+    void receive_packet(std::string&& packet);
+
+    /** Send a backend-control packet on the illixr_control topic. */
     void send_control(const std::string& message);
 
     std::shared_ptr<switchboard> switchboard_;
@@ -44,12 +62,13 @@ private:
     std::atomic<bool> ready_ = false;
 #endif
     network::UDPSocket* peer_socket_ = nullptr;
+    std::thread         io_thread_;
 
     std::string server_ip_;
-    int         server_port_;
+    int         server_port_{9003};
     std::string client_ip_;
-    int         client_port_;
-    int         is_client_;
+    int         client_port_{9002};
+    int         is_client_{0};
 
     std::vector<std::string>                               networked_topics_;
     std::unordered_map<std::string, network::topic_config> networked_topics_configs_;

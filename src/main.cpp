@@ -82,10 +82,10 @@ int main(int argc, const char* argv[]) {
         setenv("ILLIXR_ENABLE_PRE_SLEEP", "False", true);
         setenv("ILLIXR_TCP_CLIENT_IP", "192.168.8.140", true);
         setenv("ILLIXR_TCP_SERVER_IP", "192.168.8.158", true);
-        setenv("ILLIXR_TCP_CLIENT_PORT", "9000", true);
-        setenv("ILLIXR_UDP_CLIENT_PORT", "9002", true);
-        setenv("ILLIXR_TCP_SERVER_PORT", "9001", true);
-        setenv("ILLIXR_UDP_SERVER_PORT", "9003", true);
+        setenv("ILLIXR_TCP_CLIENT_PORT", "9004", true);
+        setenv("ILLIXR_UDP_CLIENT_PORT", "9006", true);
+        setenv("ILLIXR_TCP_SERVER_PORT", "9005", true);
+        setenv("ILLIXR_UDP_SERVER_PORT", "9007", true);
         setenv("ILLIXR_IS_CLIENT", "1", true);
         setenv("ILLIXR_USE_DEPTH_IMAGES", "0", true);
         setenv("ILLIXR_USE_MOTION_VECTOR_IMAGES", "0", true);

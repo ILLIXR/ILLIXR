@@ -38,15 +38,15 @@ android {
                 version '3.22.1'
                 cppFlags '-std=c++17', '-frtti', '-fexceptions'
                 arguments "-DTHIRD_PARTY_DIR=${root_library_path}",
-                          "-DBUILD_ANDROID=ON",
+                          "-DBUILD_ANDROID=ON"
                           // If running offload rendering use the following to select the encoding scheme
                           // it must match what was used on the server, and only one may be "ON"
                           //"-DUSE_AV1_ENCODING=ON",
                           //"-DUSE_HEVC_ENCODING=ON"
                           // If building the Unity Interface set the following line to ON and provide the appropriate
                           // path to your Unity editor's PluginAPI
-                          "-DBUILD_QUEST_UNITY_INTERFACE=ON",
-                          "-DUNITY_PLUGIN_API_DIR=C:/Program Files/Unity/Hub/Editor/6000.4.0f1/Editor/Data/PluginAPI"
+                          //"-DBUILD_QUEST_UNITY_INTERFACE=ON",
+                          //"-DUNITY_PLUGIN_API_DIR=C:/Program Files/Unity/Hub/Editor/6000.4.0f1/Editor/Data/PluginAPI"
             }
         }
     }
@@ -75,6 +75,13 @@ android {
         }
     }
     namespace 'com.example.ILLIXR'
+    lint {
+        // ADB development installs do not submit to Google Play. Keep other
+        // release checks enabled; store builds retain the target-API check too.
+        if (providers.gradleProperty('ILLIXR_LOCAL_SIDELOAD').getOrElse('OFF') == 'ON') {
+            disable 'ExpiredTargetSdkVersion'
+        }
+    }
     buildFeatures {
         prefab = true
     }
