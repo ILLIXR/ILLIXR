@@ -77,10 +77,10 @@ JNIEXPORT jboolean JNICALL Java_com_example_ILLIXR_ILLIXRNativeActivity_nativeIs
 #        endif
 }
 
-#        if defined(ILLIXR_ENABLE_BOBA) && defined(ILLIXR_ENABLE_QUEST_CONTROLLERS)
 /// Store the Java-discovered desktop address and release the waiting runtime thread.
 JNIEXPORT void JNICALL Java_com_example_ILLIXR_ILLIXRNativeActivity_nativeConfigure(JNIEnv* env, jobject activity,
                                                                                     jstring server_ip) {
+#        if defined(ILLIXR_ENABLE_BOBA) && defined(ILLIXR_ENABLE_QUEST_CONTROLLERS)
     (void) activity;
     if (server_ip == nullptr) {
         return;
@@ -97,8 +97,9 @@ JNIEXPORT void JNICALL Java_com_example_ILLIXR_ILLIXRNativeActivity_nativeConfig
         }
         env->ReleaseStringUTFChars(server_ip, value);
     }
-}
+
 #        endif
+}
 }
 
 /// Holds the ILLIXR runtime thread so it can be joined from android_main() once shutdown is
