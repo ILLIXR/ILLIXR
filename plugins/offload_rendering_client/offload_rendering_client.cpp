@@ -100,10 +100,10 @@ offload_rendering_client::offload_rendering_client(const std::string& name, phon
     , display_provider_{pb->lookup_impl<vulkan::display_provider>()}
 #endif
     , frames_reader_{switchboard_->get_buffered_reader<compressed_frame>("compressed_frames")}
+    , network_latency_reader_{switchboard_->get_reader<network_latency_result>("network_latency")}
 #ifdef ILLIXR_ENABLE_BOBA
     , modal_texture_reader_{switchboard_->get_buffered_reader<boba_modal_texture>("boba_modal_texture")}
 #endif
-    , network_latency_reader_{switchboard_->get_reader<network_latency_result>("network_latency")}
 #ifndef USING_OPENXR
     , pose_writer_{switchboard_->get_network_writer<pose::fast_head_pose_type>("render_pose", {})}
 #endif
@@ -330,16 +330,15 @@ void offload_rendering_client::receiver_loop() {
         drain_modal_texture_updates();
 #    endif
 
-        // spdlog::get("illixr")->info("Rx Frame {}", current_frame->frame_number);
-        //  Determine keyframe status for each stream.
+        // Determine keyframe status for each stream.
         //
-        //  Color: use the authoritative flag set by the server from
-        //  nvenc_encoder::last_frame_was_keyframe().  This works correctly for
-        //  both HEVC (IDR NAL) and AV1 (KEY_FRAME OBU) without any bitstream
-        //  parsing on the client side.
+        // Color: use the authoritative flag set by the server from
+        // nvenc_encoder::last_frame_was_keyframe().  This works correctly for
+        // both HEVC (IDR NAL) and AV1 (KEY_FRAME OBU) without any bitstream
+        // parsing on the client side.
         //
-        //  Depth / motion-vector streams are always HEVC regardless of USE_AV1,
-        //  so they continue to use the NAL-unit scan.
+        // Depth / motion-vector streams are always HEVC regardless of USE_AV1,
+        // so they continue to use the NAL-unit scan.
         const bool is_key_color = current_frame->is_keyframe;
 
 #    ifdef ILLIXR_ENABLE_BOBA
@@ -432,6 +431,9 @@ void offload_rendering_client::receiver_loop() {
         }
 
 #    endif
+
+        // Wire timestamps are nanoseconds; MediaCodec PTS is in microseconds.
+        const auto presentation_time_us = static_cast<int64_t>(current_frame->sent_time / 1000);
 
         // Queue encoded data to the hardware decoders.
         // All stream types are submitted together so they stay in sync -
@@ -1187,9 +1189,9 @@ void offload_rendering_client::push_pose() {
 // their latest-metadata fallback. The receiver and renderer share the metadata
 // map under frame_meta_map_mutex_.
 data_format::dual_frames offload_rendering_client::construct_dual_frames(time_point render_time) {
-#    ifdef ILLIXR_ENABLE_BOBA
     // Vulkan path: acquire AHardwareBuffers from both decoders
     dual_frames frame = color_decoder_->get_current_frame(render_time);
+#    ifdef ILLIXR_ENABLE_BOBA
     if (!frame.is_valid()) {
         return {};
     }
@@ -1252,30 +1254,49 @@ data_format::dual_frames offload_rendering_client::construct_dual_frames(time_po
     frame.fov_down             = meta.fov_down;
 
 #    else
-    // General offload builds keep the cached FOV and latest-metadata fallback.
-    dual_frames frame = color_decoder_->get_current_frame(render_time);
-    if (!frame.is_valid()) {
-        return {};
-    }
-    if (frame.frame_number <= last_submitted_frame_) {
-        color_decoder_->release_frame(frame);
-        return {};
-    }
-    const uint64_t decoded_frame_number = frame.frame_number;
-    frame_meta     meta{};
-    {
-        std::lock_guard<std::mutex> lock(frame_meta_map_mutex_);
-        const auto                  it = frame_meta_map_.find(decoded_frame_number);
-        if (it != frame_meta_map_.end()) {
-            meta = it->second;
-            frame_meta_map_.erase(frame_meta_map_.begin(), it);
-        } else if (!frame_meta_map_.empty()) {
-            // Keep the original approximation when the exact entry is absent.
-            meta = frame_meta_map_.rbegin()->second;
-        } else {
-            spdlog::get("illixr")->error("[offload_rendering_client] No meta for frame {}, dropping", decoded_frame_number);
+    frame_meta  meta;
+    uint64_t    decoded_frame_number;
+    if (frame.is_valid()) {
+        // frame.frame_number was set atomically with the buffer acquisition
+        // inside acquire_latest_buffer() - no separate call needed.
+        if (frame.frame_number <= last_submitted_frame_) {
             color_decoder_->release_frame(frame);
             return {};
+        }
+        decoded_frame_number = frame.frame_number;
+        {
+            std::lock_guard<std::mutex> lock(frame_meta_map_mutex_);
+            auto                        it = frame_meta_map_.find(decoded_frame_number);
+            if (it != frame_meta_map_.end()) {
+                meta = it->second;
+                // Erase this entry and everything older - the map is ordered by
+                // frame_number so begin()..next(it) covers all stale entries.
+                auto it2 = frame_meta_map_.begin();
+                while (it2 != frame_meta_map_.end()) {
+                    if (it2->first < decoded_frame_number) {
+                        it2 = frame_meta_map_.erase(it2);
+                    } else {
+                        ++it2;
+                    }
+                }
+            } else if (!frame_meta_map_.empty()) {
+                spdlog::get("illixr")->debug("Could not find meta for {}", decoded_frame_number);
+                // Decoded frame not in map (dropped or not yet arrived).
+                // Use the most recent available entry as the best approximation.
+                meta = frame_meta_map_.rbegin()->second;
+            } else if (it == frame_meta_map_.end()) {
+                spdlog::get("illixr")->error("[openxr_interface] No meta for frame {}, dropping", decoded_frame_number);
+                color_decoder_->release_frame(frame);
+                return {};
+            } else {
+                spdlog::get("illixr")->debug("meta map empty");
+            }
+            // If map is empty, meta stays default-constructed - frame will likely
+            // fail is_valid() and be discarded by the caller.
+        }
+        if (meta.consumed) {
+            color_decoder_->release_frame(frame);
+            return {}; // another thread already claimed this frame
         }
     }
     frame.pose        = meta.pose;
@@ -1401,7 +1422,6 @@ bool offload_rendering_client::network_receive() {
 
     // Store depth packet data
     if (use_depth_) {
-        spdlog::get("illixr")->info("Use depth");
         decode_src_depth_packets_[0] = current_frame->left_depth;
         decode_src_depth_packets_[1] = current_frame->right_depth;
     }

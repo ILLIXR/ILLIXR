@@ -48,4 +48,8 @@ target_include_directories(${PLUGIN_NAME} PUBLIC ${CUDA_INCLUDE_DIRS} ${ZED_INCL
 target_link_libraries(${PLUGIN_NAME} ${ZED_LIBS} ${OpenCV_LIBRARIES} Eigen3::Eigen Threads::Threads spdlog::spdlog)
 target_compile_features(${PLUGIN_NAME} PRIVATE cxx_std_17)
 
+if(USE_HAND_TRACKING)
+    target_compile_definitions(${PLUGIN_NAME} PUBLIC HAND_TRACKING_CONFIG)
+endif()
+
 install(TARGETS ${PLUGIN_NAME} DESTINATION lib)

@@ -170,14 +170,15 @@ private:
      * rather than whichever frame arrived most recently from the network.
      */
     struct frame_meta {
-        BUFFER_TYPE                           pose;
-        uint64_t                              frame_number{0};
-        uint64_t                              frame_time{0};
-        uint64_t                              pose_id{0};
-        float                                 near_z{0.f};
-        float                                 far_z{0.f};
-        double                                encode_time{0.};
-#ifdef ILLIXR_ENABLE_BOBA
+        BUFFER_TYPE pose;
+        uint64_t    frame_number{0};
+        uint64_t    frame_time{0};
+        uint64_t    pose_id{0};
+        float       near_z{0.f};
+        float       far_z{0.f};
+        double      encode_time{0.};
+        bool        consumed{false};
+#    ifdef ILLIXR_ENABLE_BOBA
         data_format::stereo_presentation_mode presentation_mode{data_format::stereo_presentation_mode::stereo_fullscreen};
         float                                 content_aspect_ratio{0.0F};
         data_format::boba_frame_overlay       boba_overlay{};
@@ -186,7 +187,6 @@ private:
         std::array<float, 2>                  fov_right{0.0F, 0.0F};
         std::array<float, 2>                  fov_up{0.0F, 0.0F};
         std::array<float, 2>                  fov_down{0.0F, 0.0F};
-        bool                                  consumed{false};
 #    endif
     };
 
@@ -314,11 +314,11 @@ private:
 #else
     std::shared_ptr<vulkan::display_provider> display_provider_;
 #endif
-    switchboard::buffered_reader<data_format::compressed_frame>   frames_reader_;
+    switchboard::buffered_reader<data_format::compressed_frame> frames_reader_;
+    switchboard::reader<data_format::network_latency_result>    network_latency_reader_;
 #ifdef ILLIXR_ENABLE_BOBA
     switchboard::buffered_reader<data_format::boba_modal_texture> modal_texture_reader_;
 #endif
-    switchboard::reader<data_format::network_latency_result>      network_latency_reader_;
 
 #ifndef USING_OPENXR
     // Pose transmission to server
@@ -355,12 +355,11 @@ private:
     // Read and pruned by _p_one_iteration once the decoded frame_number is known.
     // Entries for frame numbers older than the one just consumed are erased at
     // the same time, so the map stays bounded even if the decoder skips frames.
-    std::map<uint64_t, frame_meta>                               frame_meta_map_;
-    std::mutex                                                   frame_meta_map_mutex_;
+    std::map<uint64_t, frame_meta> frame_meta_map_;
+    std::mutex                     frame_meta_map_mutex_;
 #ifdef ILLIXR_ENABLE_BOBA
     std::unordered_map<std::uint64_t, modal_texture_cache_entry> modal_texture_cache_;
 #endif
-
     // Bounds how many submitted dual_frames are kept alive awaiting release.
     // Rather than requiring an explicit GPU-completion signal from the
     // render-side consumer (oxr_interface), a submitted frame's
@@ -445,9 +444,9 @@ private:
     std::array<float, 2> cached_fov_down_  = {0.0f, 0.0f};
     bool                 fov_cached_       = false;
 #endif
-    uint64_t                                       last_submitted_frame_{0};
+    uint64_t last_submitted_frame_{0};
 #ifdef __ANDROID__
-#    ifdef ILLIXR_ENABLE_BOBA
+    #    ifdef ILLIXR_ENABLE_BOBA
     int    headset_width_  = NATIVE_STREAM_EYE_WIDTH;
     int    headset_height_ = NATIVE_STREAM_EYE_HEIGHT;
 #    else

@@ -118,6 +118,27 @@
       ]
     },
     {
+      "name": "boba_immersive",
+      "cmake_flag": "USE_BOBA_IMMERSIVE=ON",
+      "dependencies": [
+        "openxr"
+      ],
+      "OS": [
+        "linux"
+      ]
+    },
+    {
+      "name": "boba_streaming_server",
+      "cmake_flags": "USE_BOBA_STREAMING_SERVER=ON",
+      "dependencies": [
+        "openxr",
+        "cuda-toolkit"
+      ],
+      "OS": [
+        "linux"
+      ]
+    },
+    {
       "name": "common_lock",
       "cmake_flag": "",
       "dependencies": [],
@@ -506,6 +527,16 @@
     {
       "name": "quest3.controller",
       "cmake_flag": "USE_QUEST3.CONTROLLER=ON",
+      "dependencies": [
+        "openxr"
+      ],
+      "OS": [
+        "android"
+      ]
+    },
+    {
+      "name": "quest3.unity",
+      "cmake_flag": "USE_QUEST3.UNITY=ON",
       "dependencies": [],
       "OS": [
         "android"
@@ -545,6 +576,16 @@
         "linux",
         "windows",
         "android"
+      ]
+    },
+    {
+      "name": "semantic_python",
+      "cmake_flag": "USE_SEMANTIC_PYTHON=ON",
+      "dependencies": [
+        "pybind11"
+      ],
+      "OS": [
+        "linux"
       ]
     },
     {
@@ -1668,6 +1709,22 @@
           },
           "Fedora": {
             "pkg": "protobuf-devel protobuf-compiler",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "pybind11": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "pybind11-dev python3-pybind11",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "pybind11-dev python3-pybind11",
             "postnotes": "",
             "notes": ""
           }

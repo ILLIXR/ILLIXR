@@ -109,6 +109,26 @@ Topic details:
 
 &nbsp;&nbsp;[**Details**][P10]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C1]
 
+## boba_immersive
+
+Topic details:
+
+-   Asynchronously *reads* [`controller_input`][A33] from `quest_controller` topic.
+-   Asynchronously *reads* [`openxr_view_frame`][A34] from `openxr_view` topic.
+-   *Publishes* [`stereo_frame`][A35] to `stereo_frame` topic.
+
+&nbsp;&nbsp;[**Details**][P40]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C46]
+
+## boba_streaming_server
+
+Topic details:
+
+-   Asynchronously *reads* [`stereo_frame`][A35] from `stereo_frame` topic.
+-   *Publishes* [`compressed_frame`][A37] to `compressed_frames` topic.
+-   *Publishes* [`boba_modal_texture`][A36] to `boba_modal_texture` topic.
+
+&nbsp;&nbsp;[**Details**][P40]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C47]
+
 ## debugview ![Linux Logo](images/tux.png)
 
 Renders incoming [_frames_][G11] from the graphics pipeline for debugging live executions of the application.
@@ -298,10 +318,17 @@ Receives encoded frames from the network, sent by [offload_rendering_server](#of
 
 Topic details:
 
+Linux:
 -   *Calls* [`vulkan::display_provider`][E15]
 -   *Calls* [`pose_prediction`][E16]
--   Asynchronously *reads* `compressed_frame` from `compressed_frames` topic.
+-   Asynchronously *reads* [`compressed_frame`][A37] from `compressed_frames` topic.
 -   *Publishes* [`fast_pose_type`][A11] to `render_pose` topic.
+-   Asynchronously *reads* [`network_latency_result`][A28] from `network_latency`
+
+Android:
+-   Asynchronously *reads* [`compressed_frame`][A37] from `compressed_frames` topic.
+-   *Publishes* [`dual_frames`][A29] to `unity_rendered_frame` topic.
+-   Asynchronously *reads* [`network_latency_result`][A28] from `network_latency`
 
 &nbsp;&nbsp;[**Details**][P22]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C14]
 
@@ -313,7 +340,7 @@ Topic details:
 
 -   *Calls* [`vulkan::display_provider`][E15]
 -   Asynchronously *reads* [`fast_pose_type`][A11] from `render_pose_` topic.
--   *Publishes* `compressed_frame` to `compressed_frames` topic.
+-   *Publishes* [`compressed_frame`][A37] to `compressed_frames` topic.
 
 &nbsp;&nbsp;[**Details**][P16]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C16]
 
@@ -365,6 +392,20 @@ Topic details:
 
 &nbsp;&nbsp;[**Details**][P19]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C19]
 
+## openxr_interface ![Android Logo](images/android.png)
+
+Connects to the OpenXR runtime on an Android device, gathers head and hand poses, sending them over the network. Receives decoded frames and puts them in the OpenXR swapchain for display.
+
+Topic details:
+
+-   *Publishes* [`combined_pose`][A??] to `combined_pose` topic
+-   Asynchronously *reads* [`network_latency_result`][A28] from `network_latency topic
+-   Asynchronously *reads* [`dual_frames`][A29] from `unity_rendered_frames` topic
+
+&nbsp;&nbsp;[**Details**][P36]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C42]
+
+
+
 ## openwarp_vk ![Linux Logo](images/tux.png)
 
 Provides a Vulkan-based reprojection service.
@@ -400,6 +441,29 @@ Topic details:
 -   *Publishes* [`imu_raw_type`][A16] to `imu_raw` topic.
 
 &nbsp;&nbsp;**Details**&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C22]
+
+## quest3.controller
+
+Provides an interface to the Quest 3 hand controller
+
+Topic details:
+
+-   *Publishes* [`quest_controller_input`][A33] to `quest_controller` topic.
+-   *Publishes* [`openxr_view_frame`][A34] to `openxr_view` topic.
+-   Asynchronously *reads* [`stereo_frame`][A35] from `stereo_frame` topic.
+
+&nbsp;&nbsp;[**Details**][P40]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C45]
+
+## quest3.unity ![Windows logo](images/android.png)
+
+Captures camera and depth images from a Quest 3 headset, encodes them, and sends them over the network to a server. The
+camera images are captured via standard Android APIs. The depth images have to come over OpenXR, so the plugin hooks into the Unity app and uses it to acquire the depth images.
+
+Topic details:
+
+-   *Publishes* [`semantic_frame][A30] to `semantic_frame` topic
+
+&nbsp;&nbsp;[**Details**][P37]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C44]
 
 ## realsense ![Linux Logo](images/tux.png)
 
@@ -446,6 +510,18 @@ Topic details:
 -   *Publishes* [`imu_raw_type`][A16] to `imu_raw` topic.
 
 &nbsp;&nbsp;**Details**&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C26]
+
+## semantic_python ![Linux Logo](images/tux.png)
+
+Provides reader and writer handles to a Python script, allowing the script to access the switchboard directly.
+
+Topic details:
+
+-   Asynchronously *reads* [`semantic_frame`][A30] from `semantic_frame` topic
+-   Asynchronously *reads* [`voice_query`][A31] from `semantic_query` topic
+-   *Publishes* [`query_response`][A32] to `semantic_response` networked topic
+
+&nbsp;&nbsp;[**Details**][P38]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C43]
 
 ## tcp_network_backend ![Linux Logo](images/tux.png) ![Windows logo](images/windows.png) ![Android_Logo](images/android.png)
 
@@ -608,6 +684,14 @@ See [Getting Started][I11] for more information on adding plugins to a [_profile
 
 [P35]:  plugin_README/README_network_latency.md
 
+[P36]:  plugin_README/README_openxr_interface.md
+
+[P37]:  plugin_README/README_quest3_unity.md
+
+[P38]:   plugin_README/README_semantic_python.md
+
+[P40]:   plugin_README/README_boba.md
+
 [S10]:   illixr_services.md#pose_prediction
 
 
@@ -712,6 +796,18 @@ See [Getting Started][I11] for more information on adding plugins to a [_profile
 
 [C41]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/network_latency
 
+[C42]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/openxr_interface
+
+[C43]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/semantic_python
+
+[C44]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/quest3/unity
+
+[C45]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/quest3/controller
+
+[C46]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/boba_immersive
+
+[C47]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/boba_streaming_server
+
 [//]: # (- Internal -)
 
 [I10]:   working_with/writing_your_plugin.md
@@ -777,3 +873,23 @@ See [Getting Started][I11] for more information on adding plugins to a [_profile
 [A26]:   api/structILLIXR_1_1data__format_1_1draco__type.md
 
 [A27]:   api/structILLIXR_1_1data__format_1_1latency__data.md
+
+[A28]:   api/structILLIXR_1_1data__format_1_1network__latency__result.md
+
+[A29]:   api/structILLIXR_1_1data__format_1_1dual__frames.md
+
+[A30]:   api/structILLIXR_1_1data__format_1_1semantic__frame.md
+
+[A31]:   api/structILLIXR_1_1data__format_1_1semantic__xr_1_1voice__query.md
+
+[A32]:   api/structILLIXR_1_1data__format_1_1semantic__xr_1_1query__response.md
+
+[A33]:   api/structILLIXR_1_1data__format_1_1quest__controller__input.md
+
+[A34]:   api/structILLIXR_1_1data__format_1_1openxr__view__frame.md
+
+[A35]:   api/structILLIXR_1_1data__format_1_1stereo__frame.md
+
+[A36]:   api/structILLIXR_1_1data__format_1_1boba__modal__texture.md
+
+[A37]:   api/structILLIXR_1_1data__format_1_1compressed__frame.md

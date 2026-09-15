@@ -731,6 +731,13 @@ VkPipeline timewarp_vk::create_pipeline(VkRenderPass render_pass, [[maybe_unused
 }
 
 void timewarp_vk::build_timewarp(HMD::hmd_info_t& hmd_info) {
+    // Interpret input images using the same render FOV and overscan as Monado.
+    const char* overscan_env = std::getenv("ILLIXR_OVERSCAN");
+    const float render_scale = overscan_env == nullptr ? 1.0f : std::stof(overscan_env);
+    if (!std::isfinite(render_scale) || render_scale <= 0.0f) {
+        throw std::runtime_error("ILLIXR_OVERSCAN must be finite and positive");
+    }
+    spdlog::get("illixr")->info("Timewarp render FOV: headset={}, overscan={}", server_params::headset, render_scale);
     // Calculate the number of vertices+indices in the distortion mesh.
     num_distortion_vertices_ = (hmd_info.eye_tiles_high + 1) * (hmd_info.eye_tiles_wide + 1);
     num_distortion_indices_  = hmd_info.eye_tiles_high * hmd_info.eye_tiles_wide * 6;
@@ -799,9 +806,10 @@ void timewarp_vk::build_timewarp(HMD::hmd_info_t& hmd_info) {
             }
         }
 
-        // Construct perspective projection matrix according to Unreal -- different FOVs not supported here.
-        math_util::unreal_projection(&basic_projection_[eye], index_params::fov_left[eye], index_params::fov_right[eye],
-                                     index_params::fov_up[eye], index_params::fov_down[eye]);
+        // Construct the projection used to render the incoming eye image.
+        math_util::unreal_projection(&basic_projection_[eye], render_scale * server_params::fov_left[eye],
+                                     render_scale * server_params::fov_right[eye], render_scale * server_params::fov_up[eye],
+                                     render_scale * server_params::fov_down[eye]);
     }
 }
 

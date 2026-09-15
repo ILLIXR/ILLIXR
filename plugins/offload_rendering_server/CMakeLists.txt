@@ -13,11 +13,27 @@ if(WIN32 OR MSVC)
     set(USE_NVENC_ENCODER ON)
 endif()
 
+option(USE_COMBINED_ENCODING "Encode both eyes in one side-by-side NVENC color stream" ${WIN32})
+if(USE_COMBINED_ENCODING AND NOT USE_NVENC_ENCODER)
+    message(FATAL_ERROR "USE_COMBINED_ENCODING requires USE_NVENC_ENCODER")
+endif()
+
+
 if(USE_NVENC_ENCODER)
     enable_language(CUDA)
     set(CMAKE_CUDA_STANDARD 17)
     set(CMAKE_CUDA_STANDARD_REQUIRED ON)
     find_package(CUDAToolkit REQUIRED)
+
+    option(USE_AV1_ENCODING "Use AV1 encoding for offload rendering" OFF)
+    option(USE_HEVC_ENCODING "Use HEVC encoding for offload rendering" OFF)
+    if(USE_AV1_ENCODING AND USE_HEVC_ENCODING)
+        message(FATAL_ERROR "Only one of USE_AV1_ENCODING or USE_HEVC_ENCODING can be specified, not both")
+    endif()
+    if(NOT USE_AV1_ENCODING AND NOT USE_HEVC_ENCODING)
+        set(USE_AV1_ENCODING ON)
+    endif()
+
 endif()
 
 if(MSVC)
@@ -229,7 +245,11 @@ target_link_libraries(${PLUGIN_NAME} PUBLIC
                       ${Vulkan_LIBRARIES}
 )
 
-target_compile_definitions(${PLUGIN_NAME} PRIVATE MONADO_REQUIRED USE_AV1)
+target_compile_definitions(${PLUGIN_NAME} PRIVATE MONADO_REQUIRED)
+
+if(USE_NVENC_ENCODER AND USE_AV1_ENCODING)
+    target_compile_definitions(${PLUGIN_NAME} PRIVATE USE_AV1)
+endif()
 
 target_include_directories(${PLUGIN_NAME} BEFORE PUBLIC
                            ${Vulkan_INCLUDE_DIRS}
@@ -242,13 +262,16 @@ target_include_directories(${PLUGIN_NAME} BEFORE PUBLIC
 target_include_directories(${PLUGIN_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 set_target_properties(${PLUGIN_NAME} PROPERTIES OUTPUT_NAME ${PLUGIN_NAME})
 
+if(USE_COMBINED_ENCODING)
+    target_compile_definitions(${PLUGIN_NAME} PRIVATE COMBINED_ENCODING)
+endif()
+
 if(WIN32 OR MSVC)
     target_compile_definitions(${PLUGIN_NAME} PRIVATE
                                BUILDING_LIBRARY
                                VK_USE_PLATFORM_WIN32_KHR
                                WIN32_LEAN_AND_MEAN
                                NOMINMAX
-                               COMBINED_ENCODING
                                NVENC_ENCODER
     )
 else()
@@ -274,6 +297,7 @@ install(TARGETS ${PLUGIN_NAME} DESTINATION lib)
 # Print configuration summary
 message(STATUS "=== offload_rendering_server Configuration ===")
 message(STATUS "  Encoder backend: ${USE_NVENC_ENCODER}")
+message(STATUS "  Combined encoding: ${USE_COMBINED_ENCODING}")
 if(USE_NVENC_ENCODER)
     message(STATUS "    - Using direct NVENC (no FFmpeg)")
 else()

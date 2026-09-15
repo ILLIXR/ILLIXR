@@ -74,6 +74,9 @@ private:
 #endif
     // To delimit the topic_name and the serialization method when creating a topic
     std::string delimiter_ = "|";
+
+    // Hold across the entire packet, including partial socket writes.
+    std::mutex send_mutex_;
 };
 
 } // namespace ILLIXR

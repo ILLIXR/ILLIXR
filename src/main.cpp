@@ -128,19 +128,20 @@ int main(int argc, const char* argv[]) {
         setenv("ILLIXR_RUN_DURATION", "1000000", true);
         setenv("ILLIXR_ENABLE_PRE_SLEEP", "False", true);
         setenv("ILLIXR_ENABLE_PRE_SLEEP", "False", true);
-        // Preserve connection settings supplied by an Android GUI or intent.
-        // Legacy address defaults remain on the general offload path.
 #        ifndef ILLIXR_ENABLE_BOBA
-        setenv("ILLIXR_TCP_CLIENT_IP", "192.168.8.140", false);
-        setenv("ILLIXR_TCP_SERVER_IP", "192.168.8.158", false);
-        setenv("ILLIXR_TCP_CLIENT_PORT", "9000", false);
+        setenv("ILLIXR_TCP_CLIENT_IP", "192.168.8.140", true);
+        setenv("ILLIXR_TCP_SERVER_IP", "192.168.8.158", true);
+        setenv("ILLIXR_TCP_CLIENT_PORT", "9000", true);
 #        endif
-        setenv("ILLIXR_UDP_CLIENT_PORT", "9002", false);
-        setenv("ILLIXR_TCP_SERVER_PORT", "9001", false);
-        setenv("ILLIXR_UDP_SERVER_PORT", "9003", false);
-        setenv("ILLIXR_IS_CLIENT", "1", false);
-        setenv("ILLIXR_USE_DEPTH_IMAGES", "0", false);
-        setenv("ILLIXR_USE_MOTION_VECTOR_IMAGES", "0", false);
+        setenv("ILLIXR_UDP_CLIENT_PORT", "9002", true);
+        setenv("ILLIXR_TCP_SERVER_PORT", "9001", true);
+        setenv("ILLIXR_UDP_SERVER_PORT", "9003", true);
+        setenv("ILLIXR_IS_CLIENT", "1", true);
+        setenv("ILLIXR_USE_DEPTH_IMAGES", "0", true);
+        setenv("ILLIXR_USE_MOTION_VECTOR_IMAGES", "0", true);
+#        ifndef ILLIXR_ENABLE_BOBA
+        setenv("ILLIXR_OVERSCAN", "1.1", true); // overscanning
+#        endif
 #    else
     cxxopts::Options options("ILLIXR", "Main program");
     options.show_positional_help();

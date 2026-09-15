@@ -244,6 +244,7 @@ void udp_network_backend::send_packet(std::string&& packet) {
                                   packet.size());
         return;
     }
+    std::lock_guard<std::mutex> lock{send_mutex_};
     if (!peer_socket_->write_data(packet)) {
         spdlog::get("illixr")->warn("[udp_network_backend] Failed to send UDP packet");
     }

@@ -23,7 +23,7 @@ if (MONADO_VK_FOUND AND MONADO_VK_OXR_LIB_FOUND AND MONADO_LIBRARY_FOUND)
 else ()
     fetch_git(NAME Monado_VK
               REPO https://github.com/ILLIXR/monado_update.git
-              TAG  31a14a9ab57c574c90c9b458c83f73b66017b46c
+              TAG  cb1d448bb99561166828e8761f73c205e32000c9
     )
     if (UNIX)
         set(XRT_HAVE_LIBUDEV ON)
@@ -41,10 +41,10 @@ else ()
         XRT_BUILD_DRIVER_ROKID XRT_FEATURE_SLAM XRT_FEATURE_COLOR_LOG XRT_MODULE_MONADO_GUI)
 
     foreach(ITEM IN LISTS ON_VARS)
-        set(${ITEM} ON CACHE BOOL "" FORCE)
+        set(${ITEM} ON)
     endforeach()
     foreach(ITEM IN LISTS OFF_VARS)
-        set(${ITEM} OFF CACHE BOOL "" FORCE)
+        set(${ITEM} OFF)
     endforeach()
 
     if(MSVC OR WIN32)
