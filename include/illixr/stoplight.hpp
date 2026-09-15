@@ -117,6 +117,11 @@ public:
         return should_stop_.is_set();
     }
 
+    /** Block until any plugin or runtime caller requests application shutdown. */
+    void wait_for_should_stop() const {
+        should_stop_.wait();
+    }
+
     void signal_should_stop() {
         should_stop_.set();
     }
