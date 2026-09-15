@@ -13,9 +13,6 @@
 using namespace ILLIXR;
 using namespace ILLIXR::data_format;
 
-constexpr int I_HEADSET_WIDTH  = static_cast<int>(HEADSET_WIDTH * 1.1);
-constexpr int I_HEADSET_HEIGHT = static_cast<int>(HEADSET_HEIGHT * 1.1);
-
 // Identity pose helper
 static XrPosef identity_pose() {
     XrPosef pose       = {{0}};
@@ -31,6 +28,11 @@ static XrPosef identity_pose() {
     , frame_reader_{switchboard_->get_reader<dual_frames>("unity_rendered_frame")}
     , oxr_relay_{std::make_shared<oxr_relay>(name_, pb_)} {
     use_depth_ = switchboard_->get_env_bool("ILLIXR_USE_DEPTH_IMAGES");
+    overscan_ = switchboard_->get_env_double("ILLIXR_OVERSCAN", 1.0);
+
+    headset_width_  = static_cast<int>(headset_width_ * overscan_);
+    headset_height_ = static_cast<int>(headset_height_ * overscan_);
+
     init_xr();
     create_session();
     oxr_relay_->initialize(instance_, session_, local_space_, view_space_);
@@ -45,8 +47,8 @@ void oxr_interface::_p_thread_setup() {
         spdlog::get("illixr")->error("oxr_interface: Failed to initialize Vulkan renderer");
         return;
     }
-    renderer_->set_crop_region(I_HEADSET_WIDTH, I_HEADSET_HEIGHT,                            // Original
-                               (I_HEADSET_WIDTH + 31) & ~31, (I_HEADSET_HEIGHT + 31) & ~31); // Padded
+    renderer_->set_crop_region(headset_width_, headset_height_,                            // Original
+                               (headset_width_ + 31) & ~31, (headset_height_ + 31) & ~31); // Padded
 
 #    ifdef COMBINED_ENCODING
     // Tell the renderer that color frames contain both eyes side-by-side.
@@ -663,8 +665,8 @@ void oxr_interface::create_swapchains() {
         swapchain_info& sc = swapchains_[eye];
 
         sc.format = chosen_fmt;
-        sc.width  = I_HEADSET_WIDTH;  // Your input resolution
-        sc.height = I_HEADSET_HEIGHT; // Your input resolution
+        sc.width  = headset_width_;  // Your input resolution
+        sc.height = headset_height_; // Your input resolution
 
         XrSwapchainCreateInfo swapchainInfo = {XR_TYPE_SWAPCHAIN_CREATE_INFO};
         swapchainInfo.arraySize             = 1;
@@ -785,8 +787,8 @@ void oxr_interface::create_swapchains() {
             for (int eye = 0; eye < 2; eye++) {
                 swapchain_info& sc = depth_swapchains_[eye];
                 sc.format          = depth_format_;
-                sc.width           = I_HEADSET_WIDTH;
-                sc.height          = I_HEADSET_HEIGHT;
+                sc.width           = headset_width_;
+                sc.height          = headset_height_;
 
                 XrSwapchainCreateInfo depth_info = {XR_TYPE_SWAPCHAIN_CREATE_INFO};
                 depth_info.arraySize             = 1;
