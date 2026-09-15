@@ -163,7 +163,7 @@ Topic details:
 
 &nbsp;&nbsp;**Details**&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C5]
 
-## gtsam_integrator ![Linux Logo](images/tux.png)
+## gtsam_integrator ![Linux Logo](images/tux.png) ![Windows logo](images/windows.png) ![Android_Logo](images/android.png)
 
 Integrates over all [_IMU_][G13] samples since the last published visual-inertial [_pose_][G14] to provide a
 [_fast pose_][G14] every time a new IMU sample arrives using the GTSAM library ([upstream][E10]).
