@@ -102,8 +102,7 @@ void timewarp_vk::initialize() {
 
 void timewarp_vk::setup(VkRenderPass render_pass, uint32_t subpass,
                         std::shared_ptr<vulkan::buffer_pool<pose::fast_head_pose_type>> buffer_pool,
-                        bool                                                            input_texture_external_in,
-                        struct illixr_framebuffer* framebuffer_array, VkExtent2D extent) {
+                        bool input_texture_external_in, struct illixr_framebuffer* framebuffer_array, VkExtent2D extent) {
     (void) framebuffer_array;
     (void) extent;
     std::lock_guard<std::mutex> lock{setup_mutex_};
