@@ -467,6 +467,56 @@ cudaError_t launch_rg_depth_to_nv12_scaled(cudaTextureObject_t tex, uint8_t* dst
 }
 
 // ---------------------------------------------------------------------------
+// RGBA8 grayscale depth to NV12 kernel (Linux)
+//
+// Input: RGBA8 texture where illixr_depth.comp has written the same 8-bit
+//        depth value into R, G, and B (alpha fixed at 1.0) -- see
+//        comp_illixr_depth.h / illixr_depth.comp. Unlike the RG-packed
+//        16-bit scheme above, there is no split precision to reassemble:
+//        any one channel already carries the full depth value.
+// Output: NV12 buffer.
+//   Y  plane (full resolution): the depth value directly, at full 8-bit
+//      precision -- this is the whole point of using the Y plane alone
+//      rather than splitting across Y and UV like the RG path does.
+//   UV plane: left untouched. convert_bgra_to_nv12_gpu() already memsets
+//      the destination buffer to 128 (neutral chroma) before calling this
+//      kernel, and there is no chroma information to encode for pure
+//      grayscale depth, so nothing needs to be written here.
+// ---------------------------------------------------------------------------
+__global__ void rgba8_depth_to_nv12_scaled_kernel(cudaTextureObject_t tex, uint8_t* __restrict__ dst_nv12, size_t dst_pitch,
+                                                  uint32_t dst_width, uint32_t dst_height) {
+    uint32_t x = blockIdx.x * blockDim.x + threadIdx.x;
+    uint32_t y = blockIdx.y * blockDim.y + threadIdx.y;
+
+    if (x >= dst_width || y >= dst_height)
+        return;
+
+    // Sample RGBA8 texture with normalized coordinates.
+    float  u     = (x + 0.5f) / dst_width;
+    float  v     = (y + 0.5f) / dst_height;
+    float4 pixel = tex2D<float4>(tex, u, v);
+
+    // R, G, and B all carry the same depth value; read R.
+    uint8_t depth_byte          = (uint8_t) (pixel.x * 255.0f);
+    dst_nv12[y * dst_pitch + x] = depth_byte;
+}
+
+cudaError_t launch_rgba8_depth_to_nv12_scaled(cudaTextureObject_t tex, uint8_t* dst_nv12, size_t dst_pitch, uint32_t dst_width,
+                                              uint32_t dst_height, uint32_t aligned_height, cudaStream_t stream) {
+    // aligned_height is accepted (unused) so this matches the calling
+    // convention of the other _scaled launch_* functions -- the caller
+    // passes the same argument list regardless of which kernel it selects.
+    (void) aligned_height;
+
+    dim3 block(16, 16);
+    dim3 grid((dst_width + 15) / 16, (dst_height + 15) / 16);
+
+    rgba8_depth_to_nv12_scaled_kernel<<<grid, block, 0, stream>>>(tex, dst_nv12, dst_pitch, dst_width, dst_height);
+
+    return cudaGetLastError();
+}
+
+// ---------------------------------------------------------------------------
 // RGBA16F motion vector to NV12 kernel
 //
 // Input:  RGBA16F texture where R=Vx, G=Vy, B=Vz, A=unused (always 1.0).

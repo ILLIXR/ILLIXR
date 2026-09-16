@@ -55,13 +55,10 @@ offload_rendering_server::offload_rendering_server(const std::string& name, phon
         log_->info("Not encoding motion vector images for the client");
     }
 #endif
-#if defined(__linux__) && !defined(__ANDROID__) && defined(NVENC_ENCODER)
-    // The direct encoder's depth conversion still consumes Windows packed RG.
-    // Reject this combination rather than silently interpreting Linux RGBA as RG.
-    if (use_pass_depth_) {
-        throw std::runtime_error{"Linux grayscale depth requires USE_NVENC_ENCODER=OFF (FFmpeg)"};
-    }
-#endif
+    // Linux's depth pipeline (comp_illixr_depth.h) produces grayscale packed
+    // into RGBA8, not Windows' packed RG. nvenc_import_buffer_pool_images()
+    // below imports depth with the matching format for each platform, so
+    // NVENC depth is no longer restricted to Windows.
     if (use_pass_depth_) {
         log_->debug("Encoding depth images for the client");
     } else {
@@ -191,6 +188,21 @@ void offload_rendering_server::setup(VkRenderPass render_pass, uint32_t subpass,
     motion_vec_imported_indices_.assign(OFFLOAD_BUFFER_POOL_SIZE, {-1, -1});
 
     log_->info("Initialized index vectors for {} buffers", OFFLOAD_BUFFER_POOL_SIZE);
+
+    // Initialize encoders and import framebuffer images immediately, same
+    // reasoning as the FFmpeg branch below: comp_renderer.c guarantees
+    // fb->image/fb->depth_image are already valid by the time setup() runs,
+    // since Monado creates and assigns them in renderer_ensure_images_and_renderings()
+    // before illixr_initialize_timewarp() ever runs. Deferring this to the
+    // first successful _p_one_iteration() made depth import depend on that
+    // particular frame's app-submitted depth layer being present -- and unlike
+    // the FFmpeg path, a miss here fails silently: depth_imported_indices_
+    // just stays at -1 for that slot forever, with no log line to explain why.
+    // vk_ctx_ is ready here since nvenc_init_vulkan_context() runs in
+    // _p_thread_setup() before ready_ is set, and setup() waits on ready_
+    // above.
+    nvenc_init_encoders();
+    nvenc_import_buffer_pool_images();
 
 #else
     // Populate image_info immediately -- comp_renderer.c guarantees fb.image
@@ -346,16 +358,28 @@ void offload_rendering_server::_p_one_iteration() {
         buffer_pool_->post_processing_release_image(ind);
         return;
     }
+#elif defined(_WIN32) && defined(NVENC_ENCODER)
+    // Same reasoning as the Linux block above: depth_valid describes only the
+    // current frame (comp_renderer.c sets it true only on the fully-successful
+    // depth-to-RG conversion path, false on every failure branch), so a stale
+    // depth_image handle imported once at setup() is never silently paired
+    // with fresh color. FFmpeg is Linux-only in this codebase, so this only
+    // needs to cover the NVENC backend here.
+    if (use_pass_depth_ && (!framebuffer_array_[2 * ind].depth_valid || !framebuffer_array_[2 * ind + 1].depth_valid)) {
+        static uint64_t missing_depth_frames = 0;
+        if (++missing_depth_frames % 300 == 1) {
+            log_->warn("Skipping frame without valid depth for both eyes ({} skipped); "
+                       "the application must submit a depth projection layer on the color fast path",
+                       missing_depth_frames);
+        }
+        buffer_pool_->post_processing_release_image(ind);
+        return;
+    }
 #endif
 
     // Import images on first frame ONLY (one-time operation)
     if (!framebuffers_imported_.load()) {
-#ifdef NVENC_ENCODER
-        log_->info("First frame available - importing framebuffers into NVENC encoders");
-        // extent_ is valid (from setup()), so encoders can be initialized
-        nvenc_init_encoders();
-        nvenc_import_buffer_pool_images();
-#else
+#ifndef NVENC_ENCODER
         log_->info("First frame available - initializing FFmpeg frame contexts and encoders");
         // setup() snapshots stable allocation metadata (including dimensions).
         // Only this block initializes encoders, after acquiring valid depth.
@@ -883,7 +907,17 @@ void offload_rendering_server::nvenc_import_buffer_pool_images() {
                 depth_vk_image.memory_offset = fb->depth_offset;
                 depth_vk_image.width         = fb->depth_extent.width;
                 depth_vk_image.height        = fb->depth_extent.height;
-                depth_vk_image.format        = VK_FORMAT_R8G8_UNORM;
+#    if defined(__linux__) && !defined(__ANDROID__) && !defined(USING_OPENXR)
+                // Linux's depth pipeline (comp_illixr_depth.h) writes grayscale
+                // packed into all four RGBA8 channels, not Windows' packed RG.
+                // Only when USING_OPENXR is unset -- spacewarp clients need
+                // full 16-bit depth, so comp_illixr_depth.h packs RG the same
+                // way Windows does whenever USING_OPENXR is defined, even on
+                // Linux.
+                depth_vk_image.format = VK_FORMAT_R8G8B8A8_UNORM;
+#    else
+                depth_vk_image.format = VK_FORMAT_R8G8_UNORM;
+#    endif
                 depth_vk_image.tiling        = VK_IMAGE_TILING_OPTIMAL;
 
                 int depth_idx = depth_encoder_[eye]->import_vulkan_image(depth_vk_image);
@@ -1339,6 +1373,10 @@ void offload_rendering_server::ffmpeg_populate_buffer_pool_from_framebuffers() {
                     VK_IMAGE_TYPE_2D,
 #    if defined(__linux__) && !defined(__ANDROID__)
                     // Matches Monado's compute output: linear grayscale RGBA8.
+                    // FFmpeg is never built with USING_OPENXR by convention
+                    // (that combination always uses NVENC instead), so this
+                    // stays unconditional on Linux -- no need to track
+                    // comp_illixr_depth.h's USING_OPENXR branch here.
                     VK_FORMAT_R8G8B8A8_UNORM,
 #    else
                     VK_FORMAT_R8G8_UNORM,

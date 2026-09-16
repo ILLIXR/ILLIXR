@@ -982,12 +982,23 @@ void nvenc_encoder::convert_bgra_to_nv12_gpu(const cuda_imported_vulkan_image& i
         cudaMemsetAsync(reinterpret_cast<void*>(cuda_nv12_buffer_), 128, y_plane_size, cu_stream_);
         cudaMemsetAsync(reinterpret_cast<void*>(cuda_nv12_buffer_ + y_plane_size), 128, uv_plane_size, cu_stream_);
 
-        // Use RG-to-NV12 kernel (preserves depth bytes)
+        // Two source formats: RG-packed 16-bit depth (Windows always;
+        // Linux too when USING_OPENXR is defined, since spacewarp needs the
+        // full precision -- see comp_illixr_depth.h) vs Linux's
+        // grayscale-in-RGBA8 depth (comp_illixr_depth.h / illixr_depth.comp,
+        // only when USING_OPENXR is unset). import_vulkan_memory() already
+        // creates the CUDA array with the right channel count for either;
+        // this selects the matching conversion kernel to go with it.
+#if defined(__linux__) && !defined(__ANDROID__) && !defined(USING_OPENXR)
+        cudaError_t err = launch_rgba8_depth_to_nv12_scaled(imported.texture, reinterpret_cast<uint8_t*>(cuda_nv12_buffer_),
+                                                            cuda_nv12_pitch_, width_, height_, aligned_height_, cu_stream_);
+#else
         cudaError_t err = launch_rg_depth_to_nv12_scaled(imported.texture, reinterpret_cast<uint8_t*>(cuda_nv12_buffer_),
                                                          cuda_nv12_pitch_, width_, height_, aligned_height_, cu_stream_);
+#endif
 
         if (err != cudaSuccess) {
-            spdlog::get("illixr")->error("nvenc_encoder: RG depth conversion failed: {}", cudaGetErrorString(err));
+            spdlog::get("illixr")->error("nvenc_encoder: depth conversion failed: {}", cudaGetErrorString(err));
             throw std::runtime_error("GPU depth conversion failed");
         }
     } else if (mode_ == encoder_mode::motion_vector) {
