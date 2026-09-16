@@ -264,11 +264,11 @@ void tcp_network_backend::topic_receive(const std::string& topic_name, std::vect
 }
 
 void tcp_network_backend::stop() {
+    std::lock_guard<std::mutex> lock{stop_mutex_};
     // shutdown() wakes read_loop without invalidating the descriptor; deletion
-    // is deferred until the owning thread has returned.
-    if (!running_.exchange(false)) {
-        return;
-    }
+    // is deferred until the owning thread has returned. A read/send failure may
+    // already have cleared running_, but its worker still needs to be joined.
+    running_.store(false);
     if (peer_socket_ != nullptr) {
         peer_socket_->socket_shutdown();
     }

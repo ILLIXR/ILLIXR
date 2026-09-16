@@ -59,6 +59,7 @@ private:
     // stop() interrupts socket I/O and joins this worker before peer/plugin destruction.
     // Detaching would let read_loop keep using freed plugin state.
     std::thread io_thread_;
+    std::mutex  stop_mutex_;
 
     std::string server_ip_;
     int         server_port_{9001};

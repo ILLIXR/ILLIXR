@@ -470,7 +470,8 @@ void frame_decoder::feeder_loop() {
                 std::lock_guard<std::mutex> ts_lock(pending_timestamps_mutex_);
                 pending_timestamps_[pkt.timestamp_us] = {pkt.queue_time, submit_time, pkt.frame_number};
             }
-#    ifdef ILLIXR_ENABLE_BOBA
+            // Each acquired input buffer must be queued exactly once; ownership
+            // returns to MediaCodec after a successful submission.
             const media_status_t queue_status =
                 AMediaCodec_queueInputBuffer(codec_, static_cast<size_t>(buf_idx),
                                              /*offset=*/0, pkt.data.size(), static_cast<uint64_t>(pkt.timestamp_us), flags);
@@ -483,28 +484,17 @@ void frame_decoder::feeder_loop() {
                                              "keyframe={}): {}",
                                              eye_index_, pkt.frame_number, pkt.data.size(), pkt.is_keyframe,
                                              static_cast<int>(queue_status));
+#    ifdef ILLIXR_ENABLE_BOBA
                 codec_failed_.store(true);
                 break;
+#    else
+                continue;
+#    endif
             }
             packets_fed++;
-#    endif
             const auto now = std::chrono::steady_clock::now();
             uint64_t   queue_us =
                 static_cast<uint64_t>(std::chrono::duration_cast<std::chrono::microseconds>(now - pkt.queue_time).count());
-
-            // Register metadata before the codec can make output available to
-            // the drainer thread, otherwise a fast decode loses its frame ID.
-            const media_status_t status =
-                AMediaCodec_queueInputBuffer(codec_, static_cast<size_t>(buf_idx), /*offset=*/0, pkt.data.size(),
-                                             static_cast<uint64_t>(pkt.timestamp_us), flags);
-            if (status != AMEDIA_OK) {
-                std::lock_guard<std::mutex> ts_lock(pending_timestamps_mutex_);
-                pending_timestamps_.erase(pkt.timestamp_us);
-                spdlog::get("illixr")->error("[frame_decoder][{}] queueInputBuffer failed: {}", eye_index_,
-                                             static_cast<int>(status));
-                continue;
-            }
-            packets_fed++;
 
             {
                 std::lock_guard<std::mutex> t_lock(timing_mutex_);
