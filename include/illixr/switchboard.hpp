@@ -257,6 +257,10 @@ private:
                 // Process event
                 // Also, record and log the time
                 dequeued_++;
+                if (!cb_log_) {
+                    callback_(std::move(this_event), dequeued_);
+                    return;
+                }
                 auto cb_start_cpu_time  = thread_cpu_time();
                 auto cb_start_wall_time = std::chrono::high_resolution_clock::now();
                 // std::cerr << "deq " << ptr_to_str(reinterpret_cast<const void*>(this_event.get_ro())) << " " <<
@@ -295,7 +299,7 @@ private:
             }
 
             // Log stats
-            if (record_logger_) {
+            if (record_logger_ && record_logging_enabled()) {
                 record_logger_->log(record{_switchboard_topic_stop_header,
                                            {
                                                {plugin_id_},

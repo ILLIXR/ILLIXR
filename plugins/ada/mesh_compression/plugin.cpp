@@ -58,27 +58,63 @@ void compress(const uint idx, std::shared_ptr<switchboard::writer<mesh_type>> wr
         if (queue_[idx].wait_dequeue_timed(datum, std::chrono::milliseconds(2))) {
             auto start = std::chrono::high_resolution_clock::now();
 
-            std::unique_ptr<draco_illixr::PlyDecoder> ply_decoder = std::make_unique<draco_illixr::PlyDecoder>();
-            std::unique_ptr<draco_illixr::Mesh>       draco_mesh  = std::make_unique<draco_illixr::Mesh>();
+            auto draco_mesh = datum->draco_mesh;
+            if (draco_mesh) {
+                // Producers using the direct indexed builder have already
+                // completed the same attribute and point deduplication.
+                if (!datum->draco_mesh_prepared && draco_mesh->num_faces() != 0) {
+#ifdef DRACO_ATTRIBUTE_VALUES_DEDUPLICATION_SUPPORTED
+                    if (!draco_mesh->DeduplicateAttributeValues()) {
+                        spdlog::get("illixr")->error("Failed to deduplicate scene {} chunk {}", datum->id, datum->chunk_id);
+                        continue;
+                    }
+#endif
+#ifdef DRACO_ATTRIBUTE_INDICES_DEDUPLICATION_SUPPORTED
+                    draco_mesh->DeduplicatePointIds();
+#endif
+                }
+            } else {
+                // Retain support for producers that still publish PLY data.
+                draco_mesh = std::make_shared<draco_illixr::Mesh>();
+                draco_illixr::PlyDecoder ply_decoder;
+                ply_decoder.out_mesh_        = draco_mesh.get();
+                ply_decoder.out_point_cloud_ = draco_mesh.get();
+                if (!datum->reader || !ply_decoder.DecodeExternal(datum->reader, false).ok()) {
+                    spdlog::get("illixr")->error("Failed to prepare scene {} chunk {}", datum->id, datum->chunk_id);
+                    continue;
+                }
+            }
 
-            ply_decoder->out_mesh_        = draco_mesh.get();
-            ply_decoder->out_point_cloud_ = static_cast<draco_illixr::PointCloud*>(draco_mesh.get());
-
-            ply_decoder->DecodeExternal(datum->reader, false);
-            // ply_decoder->DecodeExternal(std::move(datum->reader), false);
-
-            // expert_encoder.reset(new draco_illixr::ExpertEncoder(*(std::move(draco_mesh))));
-            // draco_illixr::PointCloud *draco_pc = draco_mesh.get();
+            // Edgebreaker rejects zero-face meshes, and empty attribute streams
+            // do not round-trip through Draco. A native sequential mesh with
+            // no attributes represents an empty chunk in the same wire format.
+            bool empty = true;
+            for (draco_illixr::FaceIndex f(0); f < draco_mesh->num_faces(); ++f) {
+                const auto& face = draco_mesh->face(f);
+                if (face[0] != face[1] && face[1] != face[2] && face[0] != face[2]) {
+                    empty = false;
+                    break;
+                }
+            }
+            if (empty)
+                draco_mesh = std::make_shared<draco_illixr::Mesh>();
             std::unique_ptr<draco_illixr::ExpertEncoder> expert_encoder_ =
                 std::make_unique<draco_illixr::ExpertEncoder>(*draco_mesh);
             expert_encoder_->Reset(encoder_.CreateExpertEncoderOptions(*draco_mesh));
+            if (empty)
+                expert_encoder_->SetEncodingMethod(draco_illixr::MESH_SEQUENTIAL_ENCODING);
 
             // expert_encoder->Reset(encoder.CreateExpertEncoderOptions(*draco_pc));
             draco_illixr::EncoderBuffer draco_buffer;
 
-            const draco_illixr::Status status   = expert_encoder_->EncodeToBuffer(&draco_buffer);
-            auto                       end      = std::chrono::high_resolution_clock::now();
-            auto                       duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+            const draco_illixr::Status status = expert_encoder_->EncodeToBuffer(&draco_buffer);
+            if (!status.ok()) {
+                spdlog::get("illixr")->error("Failed to encode scene {} chunk {}: {}", datum->id, datum->chunk_id,
+                                             status.error_msg_string());
+                continue;
+            }
+            auto end      = std::chrono::high_resolution_clock::now();
+            auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
 
             unsigned mesh_t = datum->type;
             compression_latency_ << (duration / 1000.0) << "\n";
@@ -113,6 +149,8 @@ void compress(const uint idx, std::shared_ptr<switchboard::writer<mesh_type>> wr
 
     for (uint i = 0; i < mesh_count_; i++) {
         queue_.push_back(b_queue(8));
+    }
+    for (uint i = 0; i < mesh_count_; i++) {
         compress_thread_.push_back(std::thread(compress, i, compressed_mesh_));
     }
     switchboard_->schedule<mesh_type>(id_, "requested_scene", [&](switchboard::ptr<const mesh_type> datum, std::size_t) {

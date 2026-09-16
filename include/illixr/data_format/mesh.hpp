@@ -3,6 +3,7 @@
 #include "illixr/switchboard.hpp"
 
 #include <draco_illixr/io/ply_reader.h>
+#include <draco_illixr/mesh/mesh.h>
 #include <vector>
 
 namespace ILLIXR::data_format {
@@ -25,6 +26,24 @@ struct mesh_type : public switchboard::event {
     // 12/29 draco integration
     //[[maybe_unused]] std::unique_ptr<draco_illixr::PlyReader> reader;
     [[maybe_unused]] std::shared_ptr<draco_illixr::PlyReader> reader;
+
+    // Owned by the event after publication. Producers can supply a mesh with
+    // deduplication complete; other producers retain worker-side preparation.
+    [[maybe_unused]] std::shared_ptr<draco_illixr::Mesh> draco_mesh;
+    [[maybe_unused]] bool                                draco_mesh_prepared = false;
+
+    [[maybe_unused]] mesh_type(const unsigned type_, std::unique_ptr<draco_illixr::Mesh> input_mesh, unsigned id_,
+                               unsigned chunk_id_, unsigned max_chunk_, unsigned num_faces_, unsigned num_vertices_,
+                               bool is_active, bool is_prepared = false)
+        : type{type_}
+        , active{is_active}
+        , id{id_}
+        , chunk_id{chunk_id_}
+        , max_chunk{max_chunk_}
+        , num_faces{num_faces_}
+        , num_vertices{num_vertices_}
+        , draco_mesh{std::move(input_mesh)}
+        , draco_mesh_prepared{is_prepared} { }
 
     [[maybe_unused]] mesh_type(const unsigned type_, std::shared_ptr<draco_illixr::PlyReader> input_reader, unsigned id_)
         : type{type_}
