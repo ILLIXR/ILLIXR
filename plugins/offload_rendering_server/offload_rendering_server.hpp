@@ -260,6 +260,10 @@ private:
      */
     void ffmpeg_init_cuda_frame_ctx();
 
+    // Linux depth is a separate RGBA grayscale stream, not the color context.
+    void ffmpeg_init_depth_frame_ctx();
+    void ffmpeg_transfer_depth(size_t buffer_index, size_t eye);
+
     /**
      * @brief Initializes the frame buffer pool for both color and depth frames
      *
@@ -367,6 +371,12 @@ private:
     AVBufferRef* cuda_device_ctx_ = nullptr;
     AVBufferRef* frame_ctx_       = nullptr;
     AVBufferRef* cuda_frame_ctx_  = nullptr;
+    AVBufferRef* depth_frame_ctx_ = nullptr;
+    AVBufferRef* cuda_depth_frame_ctx_ = nullptr;
+    VkCommandPool depth_transfer_pool_ = VK_NULL_HANDLE;
+    VkCommandBuffer depth_transfer_cmd_ = VK_NULL_HANDLE;
+    VkFence depth_transfer_fence_ = VK_NULL_HANDLE;
+    PFN_vkWaitSemaphores depth_wait_semaphores_ = nullptr;
 
     AVCodecContext*         codec_color_ctx_ = nullptr;
     std::array<AVFrame*, 2> encode_src_color_frames_{};

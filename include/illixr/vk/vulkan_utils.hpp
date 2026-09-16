@@ -94,7 +94,9 @@ void wait_timeline_semaphores(VkDevice device, const std::map<VkSemaphore, uint6
  * @param vk_device The Vulkan device to use.
  * @return The created VMA allocator.
  */
-VmaAllocator create_vma_allocator(VkInstance vk_instance, VkPhysicalDevice vk_physical_device, VkDevice vk_device);
+// Borrowed instances may use an older API than the physical device supports.
+VmaAllocator create_vma_allocator(VkInstance vk_instance, VkPhysicalDevice vk_physical_device, VkDevice vk_device,
+                                  uint32_t api_version = VK_API_VERSION_1_2);
 
 /**
  * @brief Creates a one-time command buffer.
