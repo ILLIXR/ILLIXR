@@ -185,6 +185,15 @@ private:
 
     std::shared_ptr<oxr_relay> oxr_relay_;
     // std::atomic<uint64_t> next_frame_id_{0};
+#    ifdef ILLIXR_ENABLE_BOBA
+    int headset_width_  = NATIVE_STREAM_EYE_WIDTH;
+    int headset_height_ = NATIVE_STREAM_EYE_HEIGHT;
+#    else
+
+    int    headset_width_  = HEADSET_WIDTH;
+    int    headset_height_ = HEADSET_HEIGHT;
+    double overscan_;
+#endif
 };
 
 } // namespace ILLIXR
