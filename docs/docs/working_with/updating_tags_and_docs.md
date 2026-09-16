@@ -2,7 +2,7 @@
 
 ## Updating Tags
 
-For releases, perform these steps from `master` once the desired features have been merged in.
+For releases, perform these steps from `main` once the desired features have been merged in.
 
 1. Get latest tags:
 

@@ -644,7 +644,7 @@ The signature for the function is:
 
 - **PROTO_PATH** - the path to the protobuf file (not including the file name), relative to the mediapipe directory
 - **OBJ_NAME** - the name of the protobuf file (without the extension)
-- **DESCRIPTORS** - A flag that will append descriptor files to the master list in CACHE
+- **DESCRIPTORS** - A flag that will append descriptor files to the main list in CACHE
 
 In the above example the CMake TARGET will be named calculators.util.annotation_overlay_calculator_proto. At the current
 time,

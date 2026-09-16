@@ -22,19 +22,19 @@ Please follow these steps when making pull requests (PRs):
 
 8. Once you have your PR number, create a PR documentation file. See [here][13] for instructions.
 
-9. As you make progress on your PR, keep your branch up-to-date with the `master` branch which may have been updated
-   *after* starting your PR. Your PR **MUST** be updated to reflect changes to `master` in order to be merged. Use the
+9. As you make progress on your PR, keep your branch up-to-date with the `main` branch which may have been updated
+   *after* starting your PR. Your PR **MUST** be updated to reflect changes to `main` in order to be merged. Use the
    following procedure for updating your branch and when you are ready to commit your changes:
 
     ``` bash
     ## While on your PR branch <issue-branch> hosted at <your-remote> repository:
     git commit # or git stash                                  ## Line A
-    git checkout master
+    git checkout main
 
-    git pull <illixr-remote> master --rebase && git fetch <illixr-remote>   ## Line B
+    git pull <illixr-remote> main --rebase && git fetch <illixr-remote>   ## Line B
 
     git checkout <issue-branch>
-    git rebase master                                          ## Line C
+    git rebase main                                          ## Line C
 
     ## If you stashed your changes on 'Line A':
     git stash apply <stash-number> && git commit
@@ -51,25 +51,25 @@ Please follow these steps when making pull requests (PRs):
       To preserve branch commit histories in the case that a rollback is needed, we will employ a checkpointing process
       for force updated branches. This process will be manually performed, but may be automated in the future.
 
-    If `Line B` shows an update to master, the following example illustrates your local repository just after
+    If `Line B` shows an update to main, the following example illustrates your local repository just after
     performing `Line B`:
 
     ``` bash
-    A -- B -- C -- P -- Q -- R       ## master
+    A -- B -- C -- P -- Q -- R       ## main
                \
                 D -- E -- F          ## issue-123-fixing-bug
     ```
 
-    In this example, commits `P`, `Q`, and `R` have been merged to `master`
+    In this example, commits `P`, `Q`, and `R` have been merged to `main`
     (from feature branches not shown) after feature branch `issue-123-fixing-bug` was
-    forked from `master`.
+    forked from `main`.
 
     To checkpoint the `issue-123-fixing-bug` branch while it is checked out:
 
     ```bash
     git branch issue-123.0-fixing-bug                                   ## Make alias for old issue-123-fixing-bug
-    git checkout -b issue-123.1-fixing-bug                              ## Make new branch to rebase with master
-    git rebase master                                                   ## Replay issue-123-fixing-bug onto master
+    git checkout -b issue-123.1-fixing-bug                              ## Make new branch to rebase with main
+    git rebase main                                                     ## Replay issue-123-fixing-bug onto main
     git branch -D issue-123-fixing-bug                                  ## Remove old issue-123-fixing-bug
     git branch issue-123-fixing-bug                                     ## Make issue-123-fixing-bug an alias of new branch
     git push <illixr-remote> issue-123.{0,1}-fixing-bug                 ## Push new checkpointed branches to remote
@@ -85,7 +85,7 @@ Please follow these steps when making pull requests (PRs):
     ``` bash
                                D' -- E' -- F'   ## issue-123.1-fixing-bug, issue-123-fixing-bug
                               /
-    A -- B -- C -- P -- Q -- R                  ## master
+    A -- B -- C -- P -- Q -- R                  ## main
                \
                 D -- E -- F                     ## issue-123.0-fixing-bug
     ```
@@ -108,21 +108,21 @@ Please follow these steps when making pull requests (PRs):
 
     !!! note
 
-        `Line B` rebases the `master` branch assuming that we have checked out `master`. Forgetting to specify `master` in
-        `Line B` may result in a _lossy_ forced update in the example below. Forgetting to checkout `master` will
+        `Line B` rebases the `main` branch assuming that we have checked out `main`. Forgetting to specify `main` in
+        `Line B` may result in a _lossy_ forced update in the example below. Forgetting to checkout `main` will
         immediately apply your checked out feature branch's changes, possibly also resulting in a _lossy_ forced update.
 
     The output of `Line B` for a collaborator after the checkpointing process may contain something like this:
 
     ``` bash
     From github.com:ILLIXR/ILLIXR
-      A..R          master                  -> <illixr-remote>/master
+      A..R          main                    -> <illixr-remote>/main
     + A..F'         issue-123-fixing-bug    -> <illixr-remote>/issue-123-fixing-bug  (forced update)
     * [new branch]  issue-123.0-fixing-bug  -> <illixr-remote>/issue-123.0-fixing-bug
     * [new branch]  issue-123.1-fixing-bug  -> <illixr-remote>/issue-123.1-fixing-bug
     ```
 
-    Conflicts which do not involve updates to the `master` branch can be resolved simply by rebasing the current
+    Conflicts which do not involve updates to the `main` branch can be resolved simply by rebasing the current
     feature branch with the updated feature branch, applying new changes on top of the updated feature branch:
 
     ``` bash
@@ -144,10 +144,10 @@ Please follow these steps when making pull requests (PRs):
         We do this because `Line B` will not fast-forward or force update our local branches
         (with the same subversion number as a conflicting remote branch, if any).
 
-    In the case of a conflict with updates to `master`, `Line A` should show updates to both the `master` branch _and_
+    In the case of a conflict with updates to `main`, `Line A` should show updates to both the `main` branch _and_
     the feature branch to be pushed in `Line D`. A checkpointed version of the feature branch may also appear. This is
-    because a feature branch should only be checkpointed in the presence of a change to the `master` branch. Forced
-    pushes should generally _not_ be used for any other purpose. If multiple updates to `master` and the feature
+    because a feature branch should only be checkpointed in the presence of a change to the `main` branch. Forced
+    pushes should generally _not_ be used for any other purpose. If multiple updates to `main` and the feature
     branch have occurred, additional checkpointed versions of the feature branch may also appear. In this scenario, we
     need to rebase our latest version of the feature branch with the latest version of the feature branch pulled from
     `<illixr-remote>`.
@@ -200,7 +200,7 @@ Why are the above steps necessary?
 3. Linking the issue to the PR ensures that we know which issue is being resolved, and also automatically closes the
    issue when the PR gets merged.
 
-4. Using rebases keeps the `master` and feature branch histories streamlined (minimizing branching), thus making it
+4. Using rebases keeps the `main` and feature branch histories streamlined (minimizing branching), thus making it
    easier to compose feature branches for integration testing. See this article on [rebasing public branches][E13] for
    more information.
 

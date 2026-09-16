@@ -78,17 +78,17 @@ Topic details:
 [D45]:	plugin_README/README_vkdemo.md
 
 
-[C42]:  https://github.com/ILLIXR/ILLIXR/tree/master/services/fauxpose
+[C42]:  https://github.com/ILLIXR/ILLIXR/tree/main/services/fauxpose
 
-[C43]:   https://github.com/ILLIXR/ILLIXR/tree/master/services/pose_lookup
+[C43]:   https://github.com/ILLIXR/ILLIXR/tree/main/services/pose_lookup
 
-[C44]:   https://github.com/ILLIXR/ILLIXR/tree/master/services/pose_prediction
+[C44]:   https://github.com/ILLIXR/ILLIXR/tree/main/services/pose_prediction
 
-[C45]:   https://github.com/ILLIXR/ILLIXR/tree/master/services/vkdemo
+[C45]:   https://github.com/ILLIXR/ILLIXR/tree/main/services/vkdemo
 
-[C46]:   https://github.com/ILLIXR/ILLIXR/tree/master/services/common_lock
+[C46]:   https://github.com/ILLIXR/ILLIXR/tree/main/services/common_lock
 
-[C47]:   https://github.com/ILLIXR/ILLIXR/tree/master/services/extended_window
+[C47]:   https://github.com/ILLIXR/ILLIXR/tree/main/services/extended_window
 
 
 [36]:   glossary.md#inertial-measurement-unit
@@ -107,4 +107,4 @@ Topic details:
 
 [60]:   api/structILLIXR_1_1data__format_1_1pose_1_1fast__head__pose__type.md
 
-[30]:   https://github.com/ILLIXR/ILLIXR/tree/master/include/illixr/vk
+[30]:   https://github.com/ILLIXR/ILLIXR/tree/main/include/illixr/vk

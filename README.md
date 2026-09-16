@@ -353,7 +353,7 @@ request!
 
 [E55]:   https://illixr.github.io/ILLIXR/plugin_README/zed_capture/
 
-[E56]:   https://github.com/ILLIXR/ILLIXR/tree/master/docker
+[E56]:   https://github.com/ILLIXR/ILLIXR/tree/main/docker
 
 [//]: # (- Plugins -)
 
@@ -547,7 +547,7 @@ request!
 
 [L4]:   https://github.com/ILLIXR/FFmpeg/blob/master/LICENSE.md
 
-[L5]:   https://github.com/ILLIXR/ILLIXR/blob/master/plugins/gtsam_integrator/third_party/filter.h
+[L5]:   https://github.com/ILLIXR/ILLIXR/blob/main/plugins/gtsam_integrator/third_party/filter.h
 
 [L6]:   https://github.com/KhronosGroup/glslang/blob/main/LICENSE.txt
 
@@ -589,7 +589,7 @@ request!
 
 [L26]:   https://github.com/jbeder/yaml-cpp/blob/master/LICENSE
 
-[L27]:   https://github.com/ILLIXR/ILLIXR/blob/master/plugins/zed/include/LICENSE
+[L27]:   https://github.com/ILLIXR/ILLIXR/blob/main/plugins/zed/include/LICENSE
 
 [L28]:   https://github.com/videolabs/libspatialaudio/blob/master/LICENSE
 

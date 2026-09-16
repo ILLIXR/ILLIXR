@@ -23,7 +23,7 @@ ILLIXR GitHub [repository][1].
 
 - **stale**: GitHub’s definition is a branch that has not had any commits in at least 3 months. Since this is an active
   research project that includes students who may not be active for several months at a time (breaks, internships,
-  etc.), we will take a looser time definition of 12 months. Note: the master branch can never be considered stale.
+  etc.), we will take a looser time definition of 12 months. Note: the main branch can never be considered stale.
 
 - **active**: The inverse of ‘stale’. We will consider a branch to be active if it has had any commits within the last
   12 months.

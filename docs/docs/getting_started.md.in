@@ -315,7 +315,7 @@ Where the entries are defined as (* indicates required field):
 : environment variables to use, any environment variable ILLIXR uses can be set here and will be valid during program execution.
 
 
-In general, you should not edit a [profile][G23] file directly. The exception to this is when you are testing things on your own machine. [Profile][G23] files are generated automatically from the master `profiles/plugins.yaml` during the cmake configuration stage. This is done so that any changes to a [profile][G23] or the addition or removal of a [plugin][G22] can be managed from a single file. The build system will generate an *illixr.yaml* file which contains entries from the command line and any input profile file and can be freely edited (it is generated every time `cmake` is called).
+In general, you should not edit a [profile][G23] file directly. The exception to this is when you are testing things on your own machine. [Profile][G23] files are generated automatically from the main `profiles/plugins.yaml` during the cmake configuration stage. This is done so that any changes to a [profile][G23] or the addition or removal of a [plugin][G22] can be managed from a single file. The build system will generate an *illixr.yaml* file which contains entries from the command line and any input profile file and can be freely edited (it is generated every time `cmake` is called).
 
 ## Environment Variables
 

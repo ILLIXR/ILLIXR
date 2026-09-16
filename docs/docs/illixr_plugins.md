@@ -585,7 +585,7 @@ See [Getting Started][I11] for more information on adding plugins to a [_profile
 
 [//]: # (- References -)
 
-[P10]:   https://github.com/ILLIXR/audio_pipeline/blob/master/README.md
+[P10]:   https://github.com/ILLIXR/audio_pipeline/blob/main/README.md
 
 [P11]:   plugin_README/README_debugview.md
 
@@ -603,7 +603,7 @@ See [Getting Started][I11] for more information on adding plugins to a [_profile
 
 [P18]:  plugin_README/README_openni.md
 
-[P19]:  https://github.com/ILLIXR/open_vins/blob/master/ReadMe.md
+[P19]:  https://github.com/ILLIXR/open_vins/blob/main/ReadMe.md
 
 [P20]:  plugin_README/README_openwarp_vk.md
 
@@ -646,9 +646,9 @@ See [Getting Started][I11] for more information on adding plugins to a [_profile
 
 [E14]:   https://www.intelrealsense.com/depth-camera-d435
 
-[E15]:   https://github.com/ILLIXR/ILLIXR/tree/master/include/illixr/vk
+[E15]:   https://github.com/ILLIXR/ILLIXR/tree/main/include/illixr/vk
 
-[E16]:   https://github.com/ILLIXR/ILLIXR/tree/master/services/pose_prediction
+[E16]:   https://github.com/ILLIXR/ILLIXR/tree/main/services/pose_prediction
 
 [E17]:   https://github.com/google/draco
 
@@ -657,85 +657,85 @@ See [Getting Started][I11] for more information on adding plugins to a [_profile
 
 [C1]:   https://github.com/ILLIXR/audio_pipeline
 
-[C2]:   https://github.com/ILLIXR/ILLIXR/tree/master/plugins/debugview
+[C2]:   https://github.com/ILLIXR/ILLIXR/tree/main/plugins/debugview
 
-[C3]:   https://github.com/ILLIXR/ILLIXR/tree/master/plugins/depthai
+[C3]:   https://github.com/ILLIXR/ILLIXR/tree/main/plugins/depthai
 
-[C4]:   https://github.com/ILLIXR/ILLIXR/tree/master/plugins/gldemo
+[C4]:   https://github.com/ILLIXR/ILLIXR/tree/main/plugins/gldemo
 
-[C5]:   https://github.com/ILLIXR/ILLIXR/tree/master/plugins/ground_truth_slam
+[C5]:   https://github.com/ILLIXR/ILLIXR/tree/main/plugins/ground_truth_slam
 
-[C6]:   https://github.com/ILLIXR/ILLIXR/tree/master/plugins/gtsam_integrator
+[C6]:   https://github.com/ILLIXR/ILLIXR/tree/main/plugins/gtsam_integrator
 
 [C7]:   https://github.com/ILLIXR/hand_tracking
 
-[C8]:   https://github.com/ILLIXR/ILLIXR/tree/master/plugins/hand_tracking/viewer
+[C8]:   https://github.com/ILLIXR/ILLIXR/tree/main/plugins/hand_tracking/viewer
 
-[C9]:   https://github.com/ILLIXR/ILLIXR/tree/master/plugins/lighthouse
+[C9]:   https://github.com/ILLIXR/ILLIXR/tree/main/plugins/lighthouse
 
-[C10]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/native_renderer
+[C10]:  https://github.com/ILLIXR/ILLIXR/tree/main/plugins/native_renderer
 
-[C11]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/offline_cam
+[C11]:  https://github.com/ILLIXR/ILLIXR/tree/main/plugins/offline_cam
 
-[C12]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/offline_imu
+[C12]:  https://github.com/ILLIXR/ILLIXR/tree/main/plugins/offline_imu
 
-[C13]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/offload_data
+[C13]:  https://github.com/ILLIXR/ILLIXR/tree/main/plugins/offload_data
 
-[C14]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/offload_rendering_client
+[C14]:  https://github.com/ILLIXR/ILLIXR/tree/main/plugins/offload_rendering_client
 
-[C16]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/offload_rendering_server
+[C16]:  https://github.com/ILLIXR/ILLIXR/tree/main/plugins/offload_rendering_server
 
-[C17]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/offload_vio
+[C17]:  https://github.com/ILLIXR/ILLIXR/tree/main/plugins/offload_vio
 
-[C18]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/openni
+[C18]:  https://github.com/ILLIXR/ILLIXR/tree/main/plugins/openni
 
 [C19]:  https://github.com/ILLIXR/open_vins
 
-[C20]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/openwarp_vk
+[C20]:  https://github.com/ILLIXR/ILLIXR/tree/main/plugins/openwarp_vk
 
 [C21]:  https://github.com/ILLIXR/ORB_SLAM3
 
-[C22]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/passthrough_integrator
+[C22]:  https://github.com/ILLIXR/ILLIXR/tree/main/plugins/passthrough_integrator
 
-[C23]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/realsense
+[C23]:  https://github.com/ILLIXR/ILLIXR/tree/main/plugins/realsense
 
-[C24]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/record_imu_cam
+[C24]:  https://github.com/ILLIXR/ILLIXR/tree/main/plugins/record_imu_cam
 
-[C25]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/record_rgb_depth
+[C25]:  https://github.com/ILLIXR/ILLIXR/tree/main/plugins/record_rgb_depth
 
-[C26]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/rk4_integrator
+[C26]:  https://github.com/ILLIXR/ILLIXR/tree/main/plugins/rk4_integrator
 
-[C27]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/tcp_network_backend
+[C27]:  https://github.com/ILLIXR/ILLIXR/tree/main/plugins/tcp_network_backend
 
-[C28]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/timewarp_gl
+[C28]:  https://github.com/ILLIXR/ILLIXR/tree/main/plugins/timewarp_gl
 
-[C29]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/timewarp_vk
+[C29]:  https://github.com/ILLIXR/ILLIXR/tree/main/plugins/timewarp_vk
 
-[C30]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/webcam
+[C30]:  https://github.com/ILLIXR/ILLIXR/tree/main/plugins/webcam
 
-[C31]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/zed
+[C31]:  https://github.com/ILLIXR/ILLIXR/tree/main/plugins/zed
 
-[C32]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/zed/data_injection
+[C32]:  https://github.com/ILLIXR/ILLIXR/tree/main/plugins/zed/data_injection
 
-[C33]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/ada
+[C33]:  https://github.com/ILLIXR/ILLIXR/tree/main/plugins/ada
 
-[C34]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/ada/infinitam
+[C34]:  https://github.com/ILLIXR/ILLIXR/tree/main/plugins/ada/infinitam
 
-[C35]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/ada/mesh_compression
+[C35]:  https://github.com/ILLIXR/ILLIXR/tree/main/plugins/ada/mesh_compression
 
-[C36]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/ada/mesh_decompression_grey
+[C36]:  https://github.com/ILLIXR/ILLIXR/tree/main/plugins/ada/mesh_decompression_grey
 
-[C37]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/ada/offline_scannet
+[C37]:  https://github.com/ILLIXR/ILLIXR/tree/main/plugins/ada/offline_scannet
 
-[C38]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/ada/scene_management
+[C38]:  https://github.com/ILLIXR/ILLIXR/tree/main/plugins/ada/scene_management
 
-[C39]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/udp_network_backend
+[C39]:  https://github.com/ILLIXR/ILLIXR/tree/main/plugins/udp_network_backend
 
-[C40]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/android_data
+[C40]:  https://github.com/ILLIXR/ILLIXR/tree/main/plugins/android_data
 
-[C41]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/network_latency
+[C41]:  https://github.com/ILLIXR/ILLIXR/tree/main/plugins/network_latency
 
-[C42]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/openxr_interface
+[C42]:  https://github.com/ILLIXR/ILLIXR/tree/main/plugins/openxr_interface
 
 [//]: # (- Internal -)
 
