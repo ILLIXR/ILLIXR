@@ -61,11 +61,11 @@ static XrPosef panel_pose_from_view(const XrPosef& view_pose) {
     , oxr_relay_{std::make_shared<oxr_relay>(name_, pb_)} {
     use_depth_ = switchboard_->get_env_bool("ILLIXR_USE_DEPTH_IMAGES");
 #    ifndef ILLIXR_ENABLE_BOBA
-    overscan_  = switchboard_->get_env_double("ILLIXR_OVERSCAN", 1.0);
+    overscan_ = switchboard_->get_env_double("ILLIXR_OVERSCAN", 1.0);
 
     headset_width_  = static_cast<int>(headset_width_ * overscan_);
     headset_height_ = static_cast<int>(headset_height_ * overscan_);
-#endif
+#    endif
 
     init_xr();
     create_session();

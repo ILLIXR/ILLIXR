@@ -193,7 +193,7 @@ private:
     int    headset_width_  = HEADSET_WIDTH;
     int    headset_height_ = HEADSET_HEIGHT;
     double overscan_;
-#endif
+#    endif
 };
 
 } // namespace ILLIXR
