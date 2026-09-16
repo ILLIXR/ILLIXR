@@ -918,7 +918,7 @@ void offload_rendering_server::nvenc_import_buffer_pool_images() {
 #    else
                 depth_vk_image.format = VK_FORMAT_R8G8_UNORM;
 #    endif
-                depth_vk_image.tiling        = VK_IMAGE_TILING_OPTIMAL;
+                depth_vk_image.tiling = VK_IMAGE_TILING_OPTIMAL;
 
                 int depth_idx = depth_encoder_[eye]->import_vulkan_image(depth_vk_image);
                 if (depth_idx >= 0) {
