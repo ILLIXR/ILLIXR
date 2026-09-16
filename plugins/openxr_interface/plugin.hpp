@@ -165,6 +165,10 @@ private:
 
     std::shared_ptr<oxr_relay> oxr_relay_;
     // std::atomic<uint64_t> next_frame_id_{0};
+
+    int    headset_width_  = HEADSET_WIDTH;
+    int    headset_height_ = HEADSET_HEIGHT;
+    double overscan_;
 };
 
 } // namespace ILLIXR

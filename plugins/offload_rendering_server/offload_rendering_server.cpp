@@ -186,7 +186,17 @@ void offload_rendering_server::setup(VkRenderPass render_pass, uint32_t subpass,
     log_->info("Initialized index vectors for {} buffers", OFFLOAD_BUFFER_POOL_SIZE);
 
 #else
-    log_->info("Deferring FFmpeg frame/encoder initialization until first framebuffer is available");
+    // Populate image_info immediately -- comp_renderer.c guarantees fb.image
+    // and fb.depth_image (when depth is enabled) are already valid, non-null,
+    // and correctly sized by the time this setup() call happens, since Monado
+    // creates and assigns them in renderer_ensure_images_and_renderings()
+    // before illixr_initialize_timewarp() ever runs. Populating here instead
+    // of on the first successful _p_one_iteration() removes the dependency on
+    // that particular frame's app-submitted depth layer being present --
+    // exactly the race that left codec_depth_ctx_->width/height at 0 when the
+    // one-shot population happened to land on a frame without depth.
+    ffmpeg_populate_buffer_pool_from_framebuffers();
+    log_->info("Populated buffer pool image_info from framebuffer array");
 #endif
 }
 
@@ -276,7 +286,10 @@ void offload_rendering_server::_p_one_iteration() {
         nvenc_import_buffer_pool_images();
 #else
         log_->info("First frame available - initializing FFmpeg frame contexts and encoders");
-        ffmpeg_populate_buffer_pool_from_framebuffers();
+        // image_info is now populated eagerly in setup() (see above), so it
+        // isn't repeated here -- these three only need the metadata setup()
+        // already filled in, not any actual rendered content, so they're
+        // still safe to defer to the first real frame.
         ffmpeg_init_frame_ctx();
         ffmpeg_init_cuda_frame_ctx();
         ffmpeg_init_buffer_pool();

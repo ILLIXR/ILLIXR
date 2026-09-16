@@ -22,10 +22,8 @@
 #include <GLFW/glfw3.h>
 #include <vector>
 
-#if defined(ENABLE_MONADO) || defined(BUILDING_MONADO_ILLIXR_DRIVER)
 // Forward declaration - full definition in illixr_framebuffer.h
 struct illixr_framebuffer;
-#endif
 
 namespace ILLIXR::vulkan {
 
@@ -67,11 +65,6 @@ public:
 // timewarp defines the interface for a warping render pass as a service.
 class timewarp : public render_pass {
 public:
-#if defined(ENABLE_MONADO) || defined(BUILDING_MONADO_ILLIXR_DRIVER)
-    virtual void setup(VkRenderPass render_pass, uint32_t subpass,
-                       std::shared_ptr<vulkan::buffer_pool<BUFFER_TYPE>> buffer_pool, bool input_texture_vulkan_coordinates,
-                       struct illixr_framebuffer* framebuffer_array, VkExtent2D extent) = 0;
-#else
     /**
      * @brief Setup the timewarp render pass and initailize required Vulkan resources.
      *
@@ -81,9 +74,8 @@ public:
      * @param input_texture_vulkan_coordinates Whether the input texture is in Vulkan coordinates.
      */
     virtual void setup(VkRenderPass render_pass, uint32_t subpass,
-                       std::shared_ptr<buffer_pool<data_format::pose::fast_head_pose_type>> buffer_pool,
-                       bool input_texture_vulkan_coordinates) = 0;
-#endif
+                       std::shared_ptr<vulkan::buffer_pool<BUFFER_TYPE>> buffer_pool, bool input_texture_vulkan_coordinates,
+                       struct illixr_framebuffer* framebuffer_array = nullptr, VkExtent2D extent = {}) = 0;
 };
 
 // app defines the interface for an application render pass as a service.
