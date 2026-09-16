@@ -367,15 +367,15 @@ private:
     std::vector<std::array<vulkan::ffmpeg_utils::ffmpeg_vk_frame, 2>> avvk_color_frames_;
     std::vector<std::array<vulkan::ffmpeg_utils::ffmpeg_vk_frame, 2>> avvk_depth_frames_;
 
-    AVBufferRef* device_ctx_      = nullptr;
-    AVBufferRef* cuda_device_ctx_ = nullptr;
-    AVBufferRef* frame_ctx_       = nullptr;
-    AVBufferRef* cuda_frame_ctx_  = nullptr;
-    AVBufferRef* depth_frame_ctx_ = nullptr;
-    AVBufferRef* cuda_depth_frame_ctx_ = nullptr;
-    VkCommandPool depth_transfer_pool_ = VK_NULL_HANDLE;
-    VkCommandBuffer depth_transfer_cmd_ = VK_NULL_HANDLE;
-    VkFence depth_transfer_fence_ = VK_NULL_HANDLE;
+    AVBufferRef*         device_ctx_            = nullptr;
+    AVBufferRef*         cuda_device_ctx_       = nullptr;
+    AVBufferRef*         frame_ctx_             = nullptr;
+    AVBufferRef*         cuda_frame_ctx_        = nullptr;
+    AVBufferRef*         depth_frame_ctx_       = nullptr;
+    AVBufferRef*         cuda_depth_frame_ctx_  = nullptr;
+    VkCommandPool        depth_transfer_pool_   = VK_NULL_HANDLE;
+    VkCommandBuffer      depth_transfer_cmd_    = VK_NULL_HANDLE;
+    VkFence              depth_transfer_fence_  = VK_NULL_HANDLE;
     PFN_vkWaitSemaphores depth_wait_semaphores_ = nullptr;
 
     AVCodecContext*         codec_color_ctx_ = nullptr;

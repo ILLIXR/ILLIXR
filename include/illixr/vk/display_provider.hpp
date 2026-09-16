@@ -59,19 +59,31 @@ public:
 
     // Queue handles borrowed from another runtime must also borrow its host
     // synchronization. A private ILLIXR mutex cannot serialize Monado submits.
-    virtual void lock_queue(queue::queue_type type) { queues_.at(type).mutex->lock(); }
-    virtual void unlock_queue(queue::queue_type type) { queues_.at(type).mutex->unlock(); }
+    virtual void lock_queue(queue::queue_type type) {
+        queues_.at(type).mutex->lock();
+    }
 
+    virtual void unlock_queue(queue::queue_type type) {
+        queues_.at(type).mutex->unlock();
+    }
 };
+
 // RAII keeps the runtime's queue lock exception-safe at Vulkan call sites.
 class queue_guard {
 public:
-    queue_guard(display_provider& provider, queue::queue_type type) : provider_(provider), type_(type) {
+    queue_guard(display_provider& provider, queue::queue_type type)
+        : provider_(provider)
+        , type_(type) {
         provider_.lock_queue(type_);
     }
-    ~queue_guard() { provider_.unlock_queue(type_); }
-    queue_guard(const queue_guard&) = delete;
+
+    ~queue_guard() {
+        provider_.unlock_queue(type_);
+    }
+
+    queue_guard(const queue_guard&)            = delete;
     queue_guard& operator=(const queue_guard&) = delete;
+
 private:
     display_provider& provider_;
     queue::queue_type type_;

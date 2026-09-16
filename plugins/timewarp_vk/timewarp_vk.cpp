@@ -162,10 +162,10 @@ void timewarp_vk::update_uniforms(const BUFFER_TYPE& render_pose) {
         // The preview mesh supplies texture UVs directly. The shader passes
         // (u, v, -1, 1), then divides xy by z, so make z positive one.
         const glm::mat4 transform = glm::scale(glm::mat4{1.0f}, glm::vec3{1.0f, 1.0f, -1.0f});
-        auto* ubo = static_cast<uniform_buffer_object*>(uniform_alloc_info_.pMappedData);
+        auto*           ubo       = static_cast<uniform_buffer_object*>(uniform_alloc_info_.pMappedData);
         for (int eye = 0; eye < 2; ++eye) {
             ubo->timewarp_start_transform[eye] = transform;
-            ubo->timewarp_end_transform[eye] = transform;
+            ubo->timewarp_end_transform[eye]   = transform;
         }
         return;
     }
@@ -841,13 +841,13 @@ void timewarp_vk::build_timewarp(HMD::hmd_info_t& hmd_info) {
                 if (raw_preview_) {
                     // Cover the full eye viewport, including non-tile-aligned
                     // window sizes. Preserve the existing input Y convention.
-                    const float u = static_cast<float>(x) / hmd_info.eye_tiles_wide;
-                    const float v = static_cast<float>(y) / hmd_info.eye_tiles_high;
-                    const auto vertex_index = eye * num_distortion_vertices_ + index;
+                    const float u                         = static_cast<float>(x) / hmd_info.eye_tiles_wide;
+                    const float v                         = static_cast<float>(y) / hmd_info.eye_tiles_high;
+                    const auto  vertex_index              = eye * num_distortion_vertices_ + index;
                     distortion_positions_[vertex_index].y = (input_texture_external_ ? -1.0f : 1.0f) * (1.0f - 2.0f * v);
-                    distortion_uv0_[vertex_index] = {u, v};
-                    distortion_uv1_[vertex_index] = {u, v};
-                    distortion_uv2_[vertex_index] = {u, v};
+                    distortion_uv0_[vertex_index]         = {u, v};
+                    distortion_uv1_[vertex_index]         = {u, v};
+                    distortion_uv2_[vertex_index]         = {u, v};
                 }
             }
         }

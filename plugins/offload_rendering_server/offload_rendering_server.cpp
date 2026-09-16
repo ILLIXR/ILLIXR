@@ -336,8 +336,7 @@ void offload_rendering_server::_p_one_iteration() {
     // Read per-frame metadata only after acquiring the slot. Allocation handles
     // stay stable, but validity is published with each rendered frame. Never
     // encode an old depth image with new color, including startup/no-depth frames.
-    if (use_pass_depth_ && (!framebuffer_array_[2 * ind].depth_valid ||
-                           !framebuffer_array_[2 * ind + 1].depth_valid)) {
+    if (use_pass_depth_ && (!framebuffer_array_[2 * ind].depth_valid || !framebuffer_array_[2 * ind + 1].depth_valid)) {
         static uint64_t missing_depth_frames = 0;
         if (++missing_depth_frames % 300 == 1) {
             log_->warn("Skipping frame without valid depth for both eyes ({} skipped); "
@@ -1001,7 +1000,7 @@ void offload_rendering_server::nvenc_encode_frames(int ind) {
     }
 }
 
-#else  // FFmpeg implementation
+#else // FFmpeg implementation
 
 void offload_rendering_server::ffmpeg_init_device() {
     this->device_ctx_     = av_hwdevice_ctx_alloc(AV_HWDEVICE_TYPE_VULKAN);
@@ -1043,12 +1042,12 @@ void offload_rendering_server::ffmpeg_init_device() {
         std::vector<VkQueueFamilyProperties> families(count);
         vkGetPhysicalDeviceQueueFamilyProperties(display_provider_->vk_physical_device_, &count, families.data());
         const auto family = vulkan_hwdev_ctx->queue_family_index;
-        if (vulkan_hwdev_ctx->nb_graphics_queues < 1 || family < 0 ||
-            static_cast<uint32_t>(family) >= count || !(families[family].queueFlags & VK_QUEUE_COMPUTE_BIT)) {
+        if (vulkan_hwdev_ctx->nb_graphics_queues < 1 || family < 0 || static_cast<uint32_t>(family) >= count ||
+            !(families[family].queueFlags & VK_QUEUE_COMPUTE_BIT)) {
             throw std::runtime_error{"FFmpeg needs a compute-capable queue exposed by Monado"};
         }
         vulkan_hwdev_ctx->queue_family_comp_index = family;
-        vulkan_hwdev_ctx->nb_comp_queues = 1;
+        vulkan_hwdev_ctx->nb_comp_queues          = 1;
     }
 
     // Configure dedicated transfer queue if available
@@ -1149,8 +1148,8 @@ void offload_rendering_server::ffmpeg_init_depth_frame_ctx() {
     if (!use_pass_depth_) {
         return;
     }
-    const auto& info = buffer_pool_->depth_image_pool[0][0].image_info;
-    const auto format = vulkan::ffmpeg_utils::get_pix_format_from_vk_format(info.format);
+    const auto& info   = buffer_pool_->depth_image_pool[0][0].image_info;
+    const auto  format = vulkan::ffmpeg_utils::get_pix_format_from_vk_format(info.format);
     if (!format || !info.extent.width || !info.extent.height) {
         throw std::runtime_error{"Depth image has no supported format or dimensions"};
     }
@@ -1159,11 +1158,11 @@ void offload_rendering_server::ffmpeg_init_depth_frame_ctx() {
         if (!output) {
             throw std::runtime_error{"Failed to allocate depth frame context"};
         }
-        auto* context = reinterpret_cast<AVHWFramesContext*>(output->data);
-        context->format = hardware_format;
+        auto* context      = reinterpret_cast<AVHWFramesContext*>(output->data);
+        context->format    = hardware_format;
         context->sw_format = *format;
-        context->width = static_cast<int>(info.extent.width);
-        context->height = static_cast<int>(info.extent.height);
+        context->width     = static_cast<int>(info.extent.width);
+        context->height    = static_cast<int>(info.extent.height);
         AV_ASSERT_SUCCESS(av_hwframe_ctx_init(output));
     };
     init_context(device_ctx_, AV_PIX_FMT_VULKAN, depth_frame_ctx_);
@@ -1175,24 +1174,22 @@ void offload_rendering_server::ffmpeg_init_depth_frame_ctx() {
     // timeline semaphores work. Resolve the device's extension entry point first,
     // with a core fallback for providers that use Vulkan 1.2 without the extension.
     // Keep this pointer local to our device instead of modifying Volk globals.
-    depth_wait_semaphores_ = reinterpret_cast<PFN_vkWaitSemaphores>(
-        vkGetDeviceProcAddr(device, "vkWaitSemaphoresKHR"));
+    depth_wait_semaphores_ = reinterpret_cast<PFN_vkWaitSemaphores>(vkGetDeviceProcAddr(device, "vkWaitSemaphoresKHR"));
     if (!depth_wait_semaphores_) {
-        depth_wait_semaphores_ = reinterpret_cast<PFN_vkWaitSemaphores>(
-            vkGetDeviceProcAddr(device, "vkWaitSemaphores"));
+        depth_wait_semaphores_ = reinterpret_cast<PFN_vkWaitSemaphores>(vkGetDeviceProcAddr(device, "vkWaitSemaphores"));
     }
     if (!depth_wait_semaphores_) {
         throw std::runtime_error{"Depth transfer requires vkWaitSemaphoresKHR or vkWaitSemaphores"};
     }
     VkCommandPoolCreateInfo pool_info{VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO};
-    pool_info.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+    pool_info.flags            = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
     pool_info.queueFamilyIndex = display_provider_->queues_[vulkan::queue::GRAPHICS].family;
     if (vkCreateCommandPool(device, &pool_info, nullptr, &depth_transfer_pool_) != VK_SUCCESS) {
         throw std::runtime_error{"Failed to create depth transfer command pool"};
     }
     VkCommandBufferAllocateInfo command_info{VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO};
-    command_info.commandPool = depth_transfer_pool_;
-    command_info.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    command_info.commandPool        = depth_transfer_pool_;
+    command_info.level              = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
     command_info.commandBufferCount = 1;
     if (vkAllocateCommandBuffers(device, &command_info, &depth_transfer_cmd_) != VK_SUCCESS) {
         throw std::runtime_error{"Failed to allocate depth transfer command buffer"};
@@ -1201,22 +1198,20 @@ void offload_rendering_server::ffmpeg_init_depth_frame_ctx() {
     if (vkCreateFence(device, &fence_info, nullptr, &depth_transfer_fence_) != VK_SUCCESS) {
         throw std::runtime_error{"Failed to create depth transfer fence"};
     }
-
 }
 
 void offload_rendering_server::ffmpeg_transfer_depth(size_t buffer_index, size_t eye) {
     // This checkout's ILLIXR_FFmpeg fork returns immediately from prepare_frame().
     // It performs the CUDA copy/semaphore operations, but NOT Vulkan layout or
     // external queue-family transfers. Supply those explicitly for depth.
-    auto* frame = avvk_depth_frames_[buffer_index][eye].vk_frame;
-    auto& queue = display_provider_->queues_[vulkan::queue::GRAPHICS];
+    auto*      frame  = avvk_depth_frames_[buffer_index][eye].vk_frame;
+    auto&      queue  = display_provider_->queues_[vulkan::queue::GRAPHICS];
     const auto device = display_provider_->vk_device_;
-    auto check = [buffer_index, eye](VkResult result, const char* operation) {
+    auto       check  = [buffer_index, eye](VkResult result, const char* operation) {
         if (result != VK_SUCCESS) {
             throw std::runtime_error{"Depth Vulkan/CUDA handoff failed at " + std::string{operation} +
-                                     " (buffer=" + std::to_string(buffer_index) + ", eye=" + std::to_string(eye) +
-                                     "): " + (result == VK_ERROR_DEVICE_LOST ? "VK_ERROR_DEVICE_LOST " : "") +
-                                     std::to_string(result)};
+                                     " (buffer=" + std::to_string(buffer_index) + ", eye=" + std::to_string(eye) + "): " +
+                                     (result == VK_ERROR_DEVICE_LOST ? "VK_ERROR_DEVICE_LOST " : "") + std::to_string(result)};
         }
     };
     auto submit_barrier = [&](bool release) {
@@ -1225,31 +1220,31 @@ void offload_rendering_server::ffmpeg_transfer_depth(size_t buffer_index, size_t
         begin.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
         check(vkBeginCommandBuffer(depth_transfer_cmd_, &begin), "begin command buffer");
         VkImageMemoryBarrier barrier{VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER};
-        barrier.image = frame->img[0];
-        barrier.subresourceRange = {VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1};
-        barrier.oldLayout = release ? VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL : VK_IMAGE_LAYOUT_GENERAL;
-        barrier.newLayout = release ? VK_IMAGE_LAYOUT_GENERAL : VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+        barrier.image               = frame->img[0];
+        barrier.subresourceRange    = {VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1};
+        barrier.oldLayout           = release ? VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL : VK_IMAGE_LAYOUT_GENERAL;
+        barrier.newLayout           = release ? VK_IMAGE_LAYOUT_GENERAL : VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
         barrier.srcQueueFamilyIndex = release ? queue.family : VK_QUEUE_FAMILY_EXTERNAL;
         barrier.dstQueueFamilyIndex = release ? VK_QUEUE_FAMILY_EXTERNAL : queue.family;
-        barrier.srcAccessMask = release ? VK_ACCESS_MEMORY_WRITE_BIT : 0;
-        barrier.dstAccessMask = release ? 0 : VK_ACCESS_SHADER_READ_BIT;
-        vkCmdPipelineBarrier(depth_transfer_cmd_, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT,
-                             VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, 0, 0, nullptr, 0, nullptr, 1, &barrier);
+        barrier.srcAccessMask       = release ? VK_ACCESS_MEMORY_WRITE_BIT : 0;
+        barrier.dstAccessMask       = release ? 0 : VK_ACCESS_SHADER_READ_BIT;
+        vkCmdPipelineBarrier(depth_transfer_cmd_, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, 0, 0,
+                             nullptr, 0, nullptr, 1, &barrier);
         check(vkEndCommandBuffer(depth_transfer_cmd_), "end command buffer");
         check(vkResetFences(device, 1, &depth_transfer_fence_), "reset fence");
         VkTimelineSemaphoreSubmitInfo timeline{VK_STRUCTURE_TYPE_TIMELINE_SEMAPHORE_SUBMIT_INFO};
-        VkSubmitInfo submit{VK_STRUCTURE_TYPE_SUBMIT_INFO};
+        VkSubmitInfo                  submit{VK_STRUCTURE_TYPE_SUBMIT_INFO};
         submit.commandBufferCount = 1;
-        submit.pCommandBuffers = &depth_transfer_cmd_;
+        submit.pCommandBuffers    = &depth_transfer_cmd_;
         if (release) {
             // FFmpeg waits on this value, then CUDA signals the following value
             // after copying the image into its private encoding buffer.
             ++frame->sem_value[0];
             timeline.signalSemaphoreValueCount = 1;
-            timeline.pSignalSemaphoreValues = &frame->sem_value[0];
-            submit.pNext = &timeline;
-            submit.signalSemaphoreCount = 1;
-            submit.pSignalSemaphores = &frame->sem[0];
+            timeline.pSignalSemaphoreValues    = &frame->sem_value[0];
+            submit.pNext                       = &timeline;
+            submit.signalSemaphoreCount        = 1;
+            submit.pSignalSemaphores           = &frame->sem[0];
         }
         {
             vulkan::queue_guard lock(*display_provider_, vulkan::queue::GRAPHICS);
@@ -1267,22 +1262,21 @@ void offload_rendering_server::ffmpeg_transfer_depth(size_t buffer_index, size_t
         check(vkQueueWaitIdle(queue.vk_queue), "diagnostic queue idle before depth release");
     }
     submit_barrier(true);
-    frame->layout[0] = VK_IMAGE_LAYOUT_GENERAL;
+    frame->layout[0]       = VK_IMAGE_LAYOUT_GENERAL;
     frame->queue_family[0] = VK_QUEUE_FAMILY_EXTERNAL;
-    frame->access[0] = static_cast<VkAccessFlagBits>(0);
-    AV_ASSERT_SUCCESS(av_hwframe_transfer_data(encode_src_depth_frames_[eye],
-                                              avvk_depth_frames_[buffer_index][eye].frame, 0));
+    frame->access[0]       = static_cast<VkAccessFlagBits>(0);
+    AV_ASSERT_SUCCESS(av_hwframe_transfer_data(encode_src_depth_frames_[eye], avvk_depth_frames_[buffer_index][eye].frame, 0));
     VkSemaphoreWaitInfo wait{VK_STRUCTURE_TYPE_SEMAPHORE_WAIT_INFO};
     wait.semaphoreCount = 1;
-    wait.pSemaphores = &frame->sem[0];
-    wait.pValues = &frame->sem_value[0];
+    wait.pSemaphores    = &frame->sem[0];
+    wait.pValues        = &frame->sem_value[0];
     check(depth_wait_semaphores_(device, &wait, UINT64_MAX), "wait CUDA copy semaphore");
     // Do not release the buffer-pool slot while CUDA still reads its source.
     // Reacquire ownership before Monado records the next conversion into it.
     submit_barrier(false);
-    frame->layout[0] = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    frame->layout[0]       = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
     frame->queue_family[0] = queue.family;
-    frame->access[0] = VK_ACCESS_SHADER_READ_BIT;
+    frame->access[0]       = VK_ACCESS_SHADER_READ_BIT;
 }
 
 void offload_rendering_server::ffmpeg_populate_buffer_pool_from_framebuffers() {
@@ -1343,12 +1337,12 @@ void offload_rendering_server::ffmpeg_populate_buffer_pool_from_framebuffers() {
                     nullptr,
                     0,
                     VK_IMAGE_TYPE_2D,
-#if defined(__linux__) && !defined(__ANDROID__)
+#    if defined(__linux__) && !defined(__ANDROID__)
                     // Matches Monado's compute output: linear grayscale RGBA8.
                     VK_FORMAT_R8G8B8A8_UNORM,
-#else
+#    else
                     VK_FORMAT_R8G8_UNORM,
-#endif
+#    endif
                     {fb.depth_extent.width, fb.depth_extent.height, 1},
                     1,
                     1,
@@ -1559,8 +1553,7 @@ void offload_rendering_server::ffmpeg_init_encoder() {
 
         // Configure pixel format and hardware acceleration
         codec_depth_ctx_->pix_fmt       = AV_PIX_FMT_CUDA;
-        codec_depth_ctx_->sw_pix_fmt =
-            reinterpret_cast<AVHWFramesContext*>(cuda_depth_frame_ctx_->data)->sw_format;
+        codec_depth_ctx_->sw_pix_fmt    = reinterpret_cast<AVHWFramesContext*>(cuda_depth_frame_ctx_->data)->sw_format;
         codec_depth_ctx_->hw_frames_ctx = av_buffer_ref(cuda_depth_frame_ctx_);
 
         // Set frame dimensions and timing
