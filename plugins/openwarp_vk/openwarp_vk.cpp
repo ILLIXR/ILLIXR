@@ -53,7 +53,10 @@ void openwarp_vk::initialize() {
 
 void openwarp_vk::setup(VkRenderPass render_pass, uint32_t subpass,
                         std::shared_ptr<vulkan::buffer_pool<pose::fast_head_pose_type>> buffer_pool,
-                        bool                                                            input_texture_external) {
+                        bool                                                            input_texture_external,
+                        struct illixr_framebuffer* framebuffer_array, VkExtent2D extent) {
+    (void) framebuffer_array;
+    (void) extent;
     std::lock_guard<std::mutex> lock{setup_mutex_};
 
     display_provider_ = phonebook_->lookup_impl<vulkan::display_provider>();
