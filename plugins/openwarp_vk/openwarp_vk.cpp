@@ -32,8 +32,12 @@ void openwarp_vk::initialize() {
     if (display_provider_->vma_allocator_) {
         this->vma_allocator_ = display_provider_->vma_allocator_;
     } else {
-        this->vma_allocator_ = vulkan::create_vma_allocator(
-            display_provider_->vk_instance_, display_provider_->vk_physical_device_, display_provider_->vk_device_);
+        // No allocator/version was supplied for this borrowed device. Use VMA's
+        // core-1.0 path: Monado can request API 1.0 even on a Vulkan 1.2 GPU.
+        // Claiming 1.2 makes VMA load unavailable core memory-requirements calls.
+        this->vma_allocator_ =
+            vulkan::create_vma_allocator(display_provider_->vk_instance_, display_provider_->vk_physical_device_,
+                                         display_provider_->vk_device_, VK_API_VERSION_1_0);
         deletion_queue_.emplace([=]() {
             vmaDestroyAllocator(vma_allocator_);
         });

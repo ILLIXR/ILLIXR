@@ -34,7 +34,7 @@ static void ffmpeg_lock_queue(struct AVHWDeviceContext* ctx, uint32_t queue_fami
         if (!queue) {
             throw std::runtime_error{"Failed to find queue with family " + std::to_string(queue_family)};
         }
-        queue->mutex->lock();
+        dp->lock_queue(queue->type);
     } else {
         throw std::runtime_error{"Weak pointer to display_provider is expired"};
     }
@@ -54,7 +54,7 @@ static void ffmpeg_unlock_queue(struct AVHWDeviceContext* ctx, uint32_t queue_fa
         if (!queue) {
             throw std::runtime_error{"Failed to find queue with family " + std::to_string(queue_family)};
         }
-        queue->mutex->unlock();
+        dp->unlock_queue(queue->type);
     } else {
         throw std::runtime_error{"Weak pointer to display_provider is expired"};
     }

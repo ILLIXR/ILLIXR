@@ -75,14 +75,17 @@ timewarp_vk::timewarp_vk(const phonebook* const pb)
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
     , pose_prediction_{phonebook_->lookup_impl<pose_prediction>()}
     , vsync_{switchboard_->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")}
-    , disable_warp_{switchboard_->get_env_bool("ILLIXR_TIMEWARP_DISABLE", "False")} { }
+    , disable_warp_{switchboard_->get_env_bool("ILLIXR_TIMEWARP_DISABLE", "False")}
+    , raw_preview_{switchboard_->get_env_bool("ILLIXR_TIMEWARP_RAW_PREVIEW", "False")} { }
 
 void timewarp_vk::initialize() {
     if (display_provider_->vma_allocator_) {
         this->vma_allocator_ = display_provider_->vma_allocator_;
     } else {
         this->vma_allocator_ = vulkan::create_vma_allocator(
-            display_provider_->vk_instance_, display_provider_->vk_physical_device_, display_provider_->vk_device_);
+            // A borrowed Monado instance may only request core Vulkan 1.0.
+            display_provider_->vk_instance_, display_provider_->vk_physical_device_, display_provider_->vk_device_,
+            VK_API_VERSION_1_0);
         deletion_queue_.emplace([=]() {
             vmaDestroyAllocator(vma_allocator_);
         });
@@ -154,6 +157,18 @@ void timewarp_vk::partial_destroy() {
 
 void timewarp_vk::update_uniforms(const BUFFER_TYPE& render_pose) {
     num_update_uniforms_calls_++;
+
+    if (raw_preview_) {
+        // The preview mesh supplies texture UVs directly. The shader passes
+        // (u, v, -1, 1), then divides xy by z, so make z positive one.
+        const glm::mat4 transform = glm::scale(glm::mat4{1.0f}, glm::vec3{1.0f, 1.0f, -1.0f});
+        auto*           ubo       = static_cast<uniform_buffer_object*>(uniform_alloc_info_.pMappedData);
+        for (int eye = 0; eye < 2; ++eye) {
+            ubo->timewarp_start_transform[eye] = transform;
+            ubo->timewarp_end_transform[eye]   = transform;
+        }
+        return;
+    }
 
     // Generate "starting" view matrix, from the pose sampled at the time of rendering the frame
     Eigen::Matrix4f view_matrix   = Eigen::Matrix4f::Identity();
@@ -241,9 +256,9 @@ void timewarp_vk::record_command_buffer(VkCommandBuffer commandBuffer, VkFramebu
     VkRenderPassBeginInfo tw_render_pass_info{};
     tw_render_pass_info.sType                    = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
     tw_render_pass_info.renderPass               = timewarp_render_pass_;
-    tw_render_pass_info.renderArea.offset.x      = left ? 0 : static_cast<int32_t>(swapchain_width_ / 2);
+    tw_render_pass_info.renderArea.offset.x      = 0;
     tw_render_pass_info.renderArea.offset.y      = 0;
-    tw_render_pass_info.renderArea.extent.width  = static_cast<uint32_t>(swapchain_width_ / 2);
+    tw_render_pass_info.renderArea.extent.width  = static_cast<uint32_t>(swapchain_width_);
     tw_render_pass_info.renderArea.extent.height = static_cast<uint32_t>(swapchain_height_);
     tw_render_pass_info.framebuffer              = framebuffer;
     tw_render_pass_info.clearValueCount          = 1;
@@ -263,7 +278,11 @@ void timewarp_vk::record_command_buffer(VkCommandBuffer commandBuffer, VkFramebu
     tw_scissor.extent.width  = static_cast<uint32_t>(swapchain_width_ / 2);
     tw_scissor.extent.height = static_cast<uint32_t>(swapchain_height_);
 
-    vkCmdBeginRenderPass(commandBuffer, &tw_render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
+    // Callers record left then right into the same command buffer. Keep both
+    // eyes in one pass: Monado's pass starts from UNDEFINED, so beginning a
+    // second pass may discard the first eye's attachment contents.
+    if (left)
+        vkCmdBeginRenderPass(commandBuffer, &tw_render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
     vkCmdSetViewport(commandBuffer, 0, 1, &tw_viewport);
     vkCmdSetScissor(commandBuffer, 0, 1, &tw_scissor);
 
@@ -276,7 +295,8 @@ void timewarp_vk::record_command_buffer(VkCommandBuffer commandBuffer, VkFramebu
                             &descriptor_sets_[!left][buffer_ind], 0, nullptr);
     vkCmdBindIndexBuffer(commandBuffer, index_buffer_, 0, VK_INDEX_TYPE_UINT32);
     vkCmdDrawIndexed(commandBuffer, num_distortion_indices_, 1, 0, static_cast<int>(num_distortion_vertices_ * !left), 0);
-    vkCmdEndRenderPass(commandBuffer);
+    if (!left)
+        vkCmdEndRenderPass(commandBuffer);
 }
 
 void timewarp_vk::destroy() {
@@ -749,6 +769,9 @@ void timewarp_vk::build_timewarp(HMD::hmd_info_t& hmd_info) {
         throw std::runtime_error("ILLIXR_OVERSCAN must be finite and positive");
     }
     spdlog::get("illixr")->info("Timewarp render FOV: headset={}, overscan={}", server_params::headset, render_scale);
+    if (raw_preview_) {
+        spdlog::get("illixr")->info("Timewarp raw eye preview: lens distortion and pose reprojection bypassed");
+    }
     // Calculate the number of vertices+indices in the distortion mesh.
     num_distortion_vertices_ = (hmd_info.eye_tiles_high + 1) * (hmd_info.eye_tiles_wide + 1);
     num_distortion_indices_  = hmd_info.eye_tiles_high * hmd_info.eye_tiles_wide * 6;
@@ -814,10 +837,25 @@ void timewarp_vk::build_timewarp(HMD::hmd_info_t& hmd_info) {
                 distortion_uv1_[eye * num_distortion_vertices_ + index].v = distort_coords[eye][1][index].y;
                 distortion_uv2_[eye * num_distortion_vertices_ + index].u = distort_coords[eye][2][index].x;
                 distortion_uv2_[eye * num_distortion_vertices_ + index].v = distort_coords[eye][2][index].y;
+
+                if (raw_preview_) {
+                    // Cover the full eye viewport, including non-tile-aligned
+                    // window sizes. Preserve the existing input Y convention.
+                    const float u                         = static_cast<float>(x) / hmd_info.eye_tiles_wide;
+                    const float v                         = static_cast<float>(y) / hmd_info.eye_tiles_high;
+                    const auto  vertex_index              = eye * num_distortion_vertices_ + index;
+                    distortion_positions_[vertex_index].y = (input_texture_external_ ? -1.0f : 1.0f) * (1.0f - 2.0f * v);
+                    distortion_uv0_[vertex_index]         = {u, v};
+                    distortion_uv1_[vertex_index]         = {u, v};
+                    distortion_uv2_[vertex_index]         = {u, v};
+                }
             }
         }
 
         // Construct the projection used to render the incoming eye image.
+        spdlog::get("illixr")->info("Timewarp FOV eye={}: L/R/U/D={:.6f},{:.6f},{:.6f},{:.6f} radians", eye,
+                                    render_scale * server_params::fov_left[eye], render_scale * server_params::fov_right[eye],
+                                    render_scale * server_params::fov_up[eye], render_scale * server_params::fov_down[eye]);
         math_util::unreal_projection(&basic_projection_[eye], render_scale * server_params::fov_left[eye],
                                      render_scale * server_params::fov_right[eye], render_scale * server_params::fov_up[eye],
                                      render_scale * server_params::fov_down[eye]);

@@ -82,6 +82,17 @@ cudaError_t launch_bgra_stereo_to_nv12(cudaTextureObject_t left_tex, cudaTexture
 cudaError_t launch_rg_depth_to_nv12_scaled(cudaTextureObject_t tex_obj, uint8_t* dst_nv12, size_t dst_pitch, uint32_t dst_width,
                                            uint32_t dst_height, uint32_t aligned_height, cudaStream_t stream);
 
+/// RGBA8 grayscale depth → NV12 (Linux). illixr_depth.comp writes the same
+/// 8-bit depth value into R, G, and B; this reads one channel and writes it
+/// directly into the Y plane at full resolution. UV is left at whatever the
+/// caller already cleared it to (neutral 128) -- there is no chroma to
+/// encode. aligned_height is accepted for calling-convention symmetry with
+/// launch_rg_depth_to_nv12_scaled but is unused, since this kernel never
+/// touches the UV plane.
+cudaError_t launch_rgba8_depth_to_nv12_scaled(cudaTextureObject_t tex_obj, uint8_t* dst_nv12, size_t dst_pitch,
+                                              uint32_t dst_width, uint32_t dst_height, uint32_t aligned_height,
+                                              cudaStream_t stream);
+
 /// Motion-vector RGBA16F → NV12.
 /// R=Vx → Y plane, G=Vy → UV.U, B=Vz → UV.V (Vy/Vz at half resolution).
 /// Velocities are normalised from [-MV_MAX_VEL, +MV_MAX_VEL] to [0, 255].
@@ -177,7 +188,12 @@ struct cuda_imported_vulkan_image {
 /// Selects the pixel-format path used during GPU colour conversion.
 enum class encoder_mode {
     color,         ///< BGRA → NV12 via BT.709 (default)
-    depth,         ///< RG → NV12 (16-bit depth, two bytes preserved)
+    depth,         ///< Depth → NV12. RG (16-bit depth, two bytes preserved)
+                   ///< on Windows, and on Linux whenever USING_OPENXR is
+                   ///< defined (spacewarp needs full precision regardless of
+                   ///< server platform). Grayscale packed in RGBA8 (one 8-bit
+                   ///< value, written to Y only) on Linux otherwise. See
+                   ///< convert_bgra_to_nv12_gpu() for the exact condition.
     motion_vector, ///< RGBA16F → NV12 (Vx→Y, Vy→U, Vz→V, normalised)
 };
 
