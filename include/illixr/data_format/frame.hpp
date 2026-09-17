@@ -64,6 +64,12 @@ namespace ILLIXR::data_format {
  * producer's 14-float layout and is interpreted in source-image pixels.
  * Keeping these commands out of the video bitstream lets the Quest render
  * controller rays and placement markers at the OpenXR swapchain resolution.
+ * Types 0/1 draw lines/rectangles. Type 2 is an optional local hand mesh cursor:
+ * [2, tip_x, tip_y, side(0=left/1=right), fallback_count, size_pixels, alpha,
+ *  red, green, blue, highlighted, 0, 0, 0]. The next fallback_count commands draw
+ * the old icon (and optional tip marker) for clients without mesh support.
+ * Upgraded clients replace that group using their local OpenXR mesh/joints.
+ * No packet layout or controller input changes are needed for this extension.
  */
 struct boba_frame_overlay {
     static constexpr std::uint32_t command_stride_floats = 14;

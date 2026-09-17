@@ -83,6 +83,9 @@ void oxr_interface::_p_thread_setup() {
     }
     renderer_->set_crop_region(headset_width_, headset_height_,                            // Original
                                (headset_width_ + 31) & ~31, (headset_height_ + 31) & ~31); // Padded
+#    ifdef ILLIXR_ENABLE_BOBA
+    renderer_->set_boba_hand_meshes(oxr_relay_->hand_meshes_);
+#    endif
 
 #    ifdef COMBINED_ENCODING
     // Tell the renderer that color frames contain both eyes side-by-side.
@@ -127,6 +130,11 @@ void oxr_interface::init_xr() {
         if (strcmp(ext.extensionName, XR_EXT_HAND_TRACKING_EXTENSION_NAME) == 0) {
             oxr_relay_->hand_tracking_supported_ = true;
         }
+#    ifdef ILLIXR_ENABLE_BOBA
+        if (strcmp(ext.extensionName, XR_FB_HAND_TRACKING_MESH_EXTENSION_NAME) == 0) {
+            oxr_relay_->hand_mesh_supported_ = true;
+        }
+#    endif
         if (strcmp(ext.extensionName, XR_EXT_HAND_INTERACTION_EXTENSION_NAME) == 0) {
             oxr_relay_->hand_interaction_supported_ = true;
             spdlog::get("illixr")->info("Hand interaction extension available");
@@ -150,6 +158,11 @@ void oxr_interface::init_xr() {
     if (oxr_relay_->hand_tracking_supported_) {
         enabled_extensions.push_back(XR_EXT_HAND_TRACKING_EXTENSION_NAME);
         spdlog::get("illixr")->info("Hand tracking extension will be enabled");
+#    ifdef ILLIXR_ENABLE_BOBA
+        if (oxr_relay_->hand_mesh_supported_) {
+            enabled_extensions.push_back(XR_FB_HAND_TRACKING_MESH_EXTENSION_NAME);
+        }
+#    endif
     }
     if (oxr_relay_->hand_interaction_supported_) {
         enabled_extensions.push_back(XR_EXT_HAND_INTERACTION_EXTENSION_NAME);
@@ -475,11 +488,15 @@ void oxr_interface::run_frame() {
         const XrResult locate_views_result = xrLocateViews(session_, &view_locate_info, &view_state, 2, &view_count, views_);
         if (XR_SUCCEEDED(locate_views_result) && view_count == 2) {
 #    ifdef ILLIXR_ENABLE_BOBA
-            oxr_relay_->publish_boba_input(frame_state.predictedDisplayTime, frame_state.predictedDisplayPeriod,
-                                           frame_state.shouldRender, view_state.viewStateFlags, views_, view_configs_);
+            renderer_->set_boba_hand_frame(
+                oxr_relay_->publish_boba_input(frame_state.predictedDisplayTime, frame_state.predictedDisplayPeriod,
+                                               frame_state.shouldRender, view_state.viewStateFlags, views_, view_configs_));
 #    endif
 
         } else {
+#    ifdef ILLIXR_ENABLE_BOBA
+            renderer_->set_boba_hand_frame({});
+#    endif
             spdlog::get("illixr")->warn("xrLocateViews failed or returned {} views: {}", view_count,
                                         static_cast<int>(locate_views_result));
         }

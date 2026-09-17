@@ -2,6 +2,11 @@
 
 #include "illixr/data_format/frame.hpp"
 #include "illixr/quest3_params.hpp"
+#ifdef ILLIXR_ENABLE_BOBA
+#    include "boba_hand_mesh.hpp"
+
+#    include <chrono>
+#endif
 
 #include <android/hardware_buffer.h>
 #include <array>
@@ -72,6 +77,15 @@ public:
      * For nv12 format: uploads pixel data to internal textures.
      */
     void receive_frame(const data_format::dual_frames& frame);
+
+#ifdef ILLIXR_ENABLE_BOBA
+    void set_boba_hand_meshes(const std::array<std::shared_ptr<const boba::hand_mesh>, 2>& meshes) {
+        hand_meshes_ = meshes;
+    }
+
+    /** Render-thread snapshot from the SAME joint locate used by Boba input. */
+    void set_boba_hand_frame(const boba::hand_mesh_frame& frame);
+#endif
 
     /**
      * @brief Record and submit a command buffer that renders one eye's color.
@@ -203,14 +217,7 @@ private:
 #ifdef ILLIXR_ENABLE_BOBA
     // ── Boba vector/modal overlay helpers ────────────────────────────────────
     /** Vertex generated from one of Boba's source-pixel vector commands. */
-    struct overlay_vertex {
-        float x;
-        float y;
-        float red;
-        float green;
-        float blue;
-        float alpha;
-    };
+    using overlay_vertex = boba::hand_mesh_vertex;
 
     /** Vertex for the projected bitmap card, including normalized texture UV. */
     struct modal_vertex {
@@ -298,12 +305,19 @@ private:
 
 #ifdef ILLIXR_ENABLE_BOBA
     // Boba vector overlays (controller rays, placement rectangle, markers).
-    VkPipelineLayout                           overlay_pipeline_layout_ = VK_NULL_HANDLE;
-    VkPipeline                                 overlay_pipeline_        = VK_NULL_HANDLE;
-    std::array<VkBuffer, 2>                    overlay_vertex_buffers_{VK_NULL_HANDLE, VK_NULL_HANDLE};
-    std::array<VkDeviceMemory, 2>              overlay_vertex_memories_{VK_NULL_HANDLE, VK_NULL_HANDLE};
-    std::array<void*, 2>                       overlay_vertex_mapped_{nullptr, nullptr};
-    std::array<std::vector<overlay_vertex>, 2> overlay_vertices_{};
+    VkPipelineLayout                                      overlay_pipeline_layout_ = VK_NULL_HANDLE;
+    VkPipeline                                            overlay_pipeline_        = VK_NULL_HANDLE;
+    std::array<VkBuffer, 2>                               overlay_vertex_buffers_{VK_NULL_HANDLE, VK_NULL_HANDLE};
+    std::array<VkDeviceMemory, 2>                         overlay_vertex_memories_{VK_NULL_HANDLE, VK_NULL_HANDLE};
+    std::array<void*, 2>                                  overlay_vertex_mapped_{nullptr, nullptr};
+    std::array<std::vector<overlay_vertex>, 2>            overlay_vertices_{};
+    std::array<std::shared_ptr<const boba::hand_mesh>, 2> hand_meshes_{};
+    std::array<boba::skinned_hand, 2>                     skinned_hands_{};
+    std::array<bool, 2>                                   hand_present_{};
+    std::array<bool, 2>                                   hand_mesh_logged_{};
+    std::array<XrQuaternionf, 2>                          hand_eye_orientations_{};
+    std::uint64_t                                         last_boba_frame_number_ = ~std::uint64_t{0};
+    std::chrono::steady_clock::time_point                 last_boba_frame_time_{};
 
     // Boba modal bitmap card.
     VkDescriptorSetLayout                      modal_desc_set_layout_ = VK_NULL_HANDLE;

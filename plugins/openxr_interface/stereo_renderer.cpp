@@ -569,8 +569,8 @@ bool stereo_renderer::create_boba_overlay_resources() {
         return false;
     }
 
-    constexpr VkDeviceSize overlay_buffer_bytes =
-        sizeof(overlay_vertex) * data_format::boba_frame_overlay::max_commands_per_eye * 6ULL;
+    constexpr VkDeviceSize overlay_buffer_bytes = sizeof(overlay_vertex) *
+        (data_format::boba_frame_overlay::max_commands_per_eye * 6ULL + 2ULL * boba::max_hand_mesh_indices);
     constexpr VkDeviceSize modal_buffer_bytes = sizeof(modal_vertex) * 6ULL;
     for (int eye = 0; eye < 2; ++eye) {
         if (!create_host_visible_buffer(overlay_buffer_bytes, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, &overlay_vertex_buffers_[eye],
@@ -580,7 +580,7 @@ bool stereo_renderer::create_boba_overlay_resources() {
             spdlog::get("illixr")->error("[stereo_renderer] Could not allocate Boba overlay vertex buffers");
             return false;
         }
-        overlay_vertices_[eye].reserve(data_format::boba_frame_overlay::max_commands_per_eye * 6ULL);
+        overlay_vertices_[eye].reserve(overlay_buffer_bytes / sizeof(overlay_vertex));
     }
     spdlog::get("illixr")->info("[stereo_renderer] Boba overlay pipelines initialized");
     return true;
@@ -791,12 +791,30 @@ bool stereo_renderer::upload_modal_texture(std::uint64_t texture_id, std::uint32
     return true;
 }
 
+void stereo_renderer::set_boba_hand_frame(const boba::hand_mesh_frame& frame) {
+    hand_eye_orientations_ = frame.eye_orientations;
+    for (std::size_t side = 0; side < 2; ++side) {
+        hand_present_[side] = boba::hand_present(frame.hands[side]);
+        skinned_hands_[side].positions.clear();
+        skinned_hands_[side].normals.clear();
+        if (hand_meshes_[side]) {
+            boba::skin_hand(*hand_meshes_[side], frame.hands[side], skinned_hands_[side]);
+        }
+    }
+}
+
 void stereo_renderer::update_boba_overlay_state(const data_format::dual_frames& frame) {
     overlay_source_width_  = frame.boba_overlay.source_width;
     overlay_source_height_ = frame.boba_overlay.source_height;
     render_boba_overlays_  = frame.presentation_mode == data_format::stereo_presentation_mode::stereo_fullscreen &&
         overlay_source_width_ > 0 && overlay_source_height_ > 0;
-    active_modal_ = frame.boba_modal;
+    active_modal_  = frame.boba_modal;
+    const auto now = std::chrono::steady_clock::now();
+    if (frame.frame_number != last_boba_frame_number_) {
+        last_boba_frame_number_ = frame.frame_number;
+        last_boba_frame_time_   = now;
+    }
+    const bool cursor_fresh = now - last_boba_frame_time_ < std::chrono::milliseconds{250};
 
     // Boba sends compact 14-float commands. Expand lines and rectangles into
     // triangles once per decoded frame so command buffers need only draw them.
@@ -826,6 +844,7 @@ void stereo_renderer::update_boba_overlay_state(const data_format::dual_frames& 
         const std::size_t command_count =
             std::min<std::size_t>(commands.size() / data_format::boba_frame_overlay::command_stride_floats,
                                   data_format::boba_frame_overlay::max_commands_per_eye);
+        std::array<bool, 2> hand_drawn{};
         for (std::size_t command_index = 0; command_index < command_count; ++command_index) {
             const float* command = commands.data() + command_index * data_format::boba_frame_overlay::command_stride_floats;
             if (!std::all_of(command, command + 10, [](float value) {
@@ -834,12 +853,42 @@ void stereo_renderer::update_boba_overlay_state(const data_format::dual_frames& 
                 continue;
             }
 
-            const int   command_type = static_cast<int>(std::round(command[0]));
+            const float command_type = command[0];
             const float alpha        = command[6];
             const float red          = command[7];
             const float green        = command[8];
             const float blue         = command[9];
-            if (command_type == 0) {
+            if (command_type == 2 && boba::valid_hand_cursor_command(command, command_count - command_index - 1)) {
+                const auto side           = static_cast<std::size_t>(command[3]);
+                const auto fallback_count = static_cast<std::size_t>(command[4]);
+                if (hand_drawn[side] || !cursor_fresh || !hand_present_[side]) {
+                    command_index += fallback_count;
+                    continue;
+                }
+                hand_drawn[side] = true;
+                if (hand_meshes_[side] && !skinned_hands_[side].positions.empty()) {
+                    auto triangles =
+                        boba::hand_cursor_triangles(*hand_meshes_[side], skinned_hands_[side], hand_eye_orientations_[eye],
+                                                    command[1], command[2], command[5], {red, green, blue});
+                    if (!triangles.empty()) {
+                        vertices.insert(vertices.end(), triangles.begin(), triangles.end());
+                        // Retain the exact targeting feedback above the animated tip.
+                        if (command[10] == 1) {
+                            const float x = command[1], y = command[2], r = 2;
+                            append_triangle(vertices, x - r, y - r, x + r, y - r, x + r, y + r, 255, 255, 255, 0.98F);
+                            append_triangle(vertices, x - r, y - r, x + r, y + r, x - r, y + r, 255, 255, 255, 0.98F);
+                        }
+                        command_index += fallback_count;
+                        if (!hand_mesh_logged_[side]) {
+                            spdlog::get("illixr")->info("[boba_hand_mesh] {}: rendering animated cursor mesh",
+                                                        side == 0 ? "left" : "right");
+                            hand_mesh_logged_[side] = true;
+                        }
+                    }
+                }
+                // If the mesh is unavailable, the following ordinary commands
+                // remain the icon fallback. No stale/missing hand reaches here.
+            } else if (command_type == 0) {
                 const float start_x = command[1];
                 const float start_y = command[2];
                 const float end_x   = command[3];

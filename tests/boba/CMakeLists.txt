@@ -13,6 +13,16 @@ find_package(Python3 COMPONENTS Interpreter REQUIRED)
 add_test(NAME boba_hand_input
          COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/hand_input.py" --cxx "${CMAKE_CXX_COMPILER}")
 
+find_package(Eigen3 REQUIRED)
+find_path(OPENXR_INCLUDE_DIR openxr/openxr.h REQUIRED)
+add_executable(hand_mesh hand_mesh.cpp)
+target_compile_features(hand_mesh PRIVATE cxx_std_17)
+target_include_directories(hand_mesh PRIVATE "${ILLIXR_ROOT}" "${OPENXR_INCLUDE_DIR}")
+target_link_libraries(hand_mesh PRIVATE Eigen3::Eigen)
+# These checks use assertions even when validating a Release build.
+target_compile_options(hand_mesh PRIVATE -UNDEBUG)
+add_test(NAME boba_hand_mesh COMMAND hand_mesh)
+
 # Optional hardware regression against a built boba_streaming_server plugin.
 set(BOBA_NVENC_LIBRARY "" CACHE FILEPATH "Built libplugin.boba_streaming_server.opt.so")
 if(BOBA_NVENC_LIBRARY)

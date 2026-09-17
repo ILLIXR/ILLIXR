@@ -25,6 +25,9 @@
 #include <map>
 #include <mutex>
 #include <openxr/openxr.h>
+#ifdef ILLIXR_ENABLE_BOBA
+#    include "boba_hand_mesh.hpp"
+#endif
 
 #define OXR_CheckErrors(cmd, pfunc)                                                                                     \
     do {                                                                                                                \
@@ -62,8 +65,9 @@ public:
 
 #ifdef ILLIXR_ENABLE_BOBA
     /** Publish a coherent Quest controller + stereo-view sample for Boba. */
-    void publish_boba_input(XrTime predicted_time, XrDuration predicted_period, XrBool32 should_render,
-                            XrViewStateFlags view_flags, const XrView views[2], const XrViewConfigurationView view_configs[2]);
+    boba::hand_mesh_frame publish_boba_input(XrTime predicted_time, XrDuration predicted_period, XrBool32 should_render,
+                                             XrViewStateFlags view_flags, const XrView views[2],
+                                             const XrViewConfigurationView view_configs[2]);
 
 #endif
 
@@ -127,7 +131,12 @@ private:
      * @param predicted_time The predicted display time for this frame
      * @param hand_poses Caller-owned output, cleared when tracking is unavailable
      */
-    void update_hand_tracking(XrTime predicted_time, data_format::pose::hand_joint_poses_pair& hand_poses);
+    void update_hand_tracking(XrTime predicted_time, data_format::pose::hand_joint_poses_pair& hand_poses
+#ifdef ILLIXR_ENABLE_BOBA
+                              ,
+                              std::array<boba::hand_mesh_pose, 2>* mesh_poses = nullptr
+#endif
+    );
 
     // ==================== Hand Interaction ====================
 
@@ -259,6 +268,11 @@ private:
 
     /// Function pointer for xrLocateHandJointsEXT
     PFN_xrLocateHandJointsEXT xr_locate_hand_joints_{nullptr};
+
+#ifdef ILLIXR_ENABLE_BOBA
+    bool                                                  hand_mesh_supported_{false};
+    std::array<std::shared_ptr<const boba::hand_mesh>, 2> hand_meshes_{};
+#endif
 
     // ==================== Hand Interaction State ====================
 

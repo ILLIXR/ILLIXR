@@ -211,6 +211,26 @@ bool oxr_relay::init_hand_tracking() {
     }
 
     spdlog::get("illixr")->info("Hand trackers created successfully");
+#ifdef ILLIXR_ENABLE_BOBA
+    if (hand_mesh_supported_) {
+        PFN_xrGetHandMeshFB get_mesh = nullptr;
+        if (XR_SUCCEEDED(
+                xrGetInstanceProcAddr(instance_, "xrGetHandMeshFB", reinterpret_cast<PFN_xrVoidFunction*>(&get_mesh)))) {
+            hand_meshes_[0] = boba::load_hand_mesh(get_mesh, left_hand_tracker_);
+            hand_meshes_[1] = boba::load_hand_mesh(get_mesh, right_hand_tracker_);
+        }
+    }
+    for (std::size_t side = 0; side < hand_meshes_.size(); ++side) {
+        if (hand_meshes_[side]) {
+            spdlog::get("illixr")->info("[boba_hand_mesh] {}: cached {} vertices, {} triangles from OpenXR",
+                                        side == 0 ? "left" : "right", hand_meshes_[side]->positions.size(),
+                                        hand_meshes_[side]->indices.size() / 3);
+        } else {
+            spdlog::get("illixr")->info("[boba_hand_mesh] {}: mesh unavailable; using hand cursor fallback",
+                                        side == 0 ? "left" : "right");
+        }
+    }
+#endif
     return true;
 }
 
@@ -227,10 +247,20 @@ void oxr_relay::destroy_hand_tracking() {
     }
 }
 
-void oxr_relay::update_hand_tracking(XrTime predicted_time, pose::hand_joint_poses_pair& hand_poses) {
+void oxr_relay::update_hand_tracking(XrTime predicted_time, pose::hand_joint_poses_pair& hand_poses
+#ifdef ILLIXR_ENABLE_BOBA
+                                     ,
+                                     std::array<boba::hand_mesh_pose, 2>* mesh_poses
+#endif
+) {
     // The pose thread and Boba frame sampler each own their output. Never use a
     // cached hand from an earlier frame, including on failure or a missing tracker.
     hand_poses = {};
+#ifdef ILLIXR_ENABLE_BOBA
+    if (mesh_poses) {
+        *mesh_poses = {};
+    }
+#endif
     if (!hand_tracking_supported_ || !xr_locate_hand_joints_) {
         return;
     }
@@ -266,6 +296,16 @@ void oxr_relay::update_hand_tracking(XrTime predicted_time, pose::hand_joint_pos
         locations.jointLocations          = joint_locations.data();
         locations.isActive                = XR_FALSE; // Initialize to false
 
+#ifdef ILLIXR_ENABLE_BOBA
+        // Query scale without overriding it: all existing tracking/interaction
+        // consumers must keep receiving the runtime's original joint positions.
+        XrHandTrackingScaleFB scale{XR_TYPE_HAND_TRACKING_SCALE_FB};
+        scale.sensorOutput = scale.currentOutput = 1.0F;
+        if (mesh_poses && hand_mesh_supported_) {
+            velocities.next = &scale;
+        }
+#endif
+
         // Locate info
         XrHandJointsLocateInfoEXT locate_info = {XR_TYPE_HAND_JOINTS_LOCATE_INFO_EXT};
         locate_info.baseSpace                 = local_space_;
@@ -292,6 +332,13 @@ void oxr_relay::update_hand_tracking(XrTime predicted_time, pose::hand_joint_pos
 
             // Convert all joints
             hand_states[hand_idx]->update(joint_locations, joint_velocities);
+#ifdef ILLIXR_ENABLE_BOBA
+            if (mesh_poses) {
+                (*mesh_poses)[hand_idx].joints = joint_locations;
+                (*mesh_poses)[hand_idx].scale  = scale.currentOutput;
+                (*mesh_poses)[hand_idx].active = true;
+            }
+#endif
 
             if (ht_should_log) {
                 const auto& wrist     = hand_states[hand_idx]->joints[XR_HAND_JOINT_WRIST_EXT];
@@ -1252,13 +1299,14 @@ bool oxr_relay::query_controller_hand(std::size_t hand_index, XrTime sample_time
 #endif
 
 #ifdef ILLIXR_ENABLE_BOBA
-void oxr_relay::publish_boba_input(XrTime predicted_time, XrDuration predicted_period, XrBool32 should_render,
-                                   XrViewStateFlags view_flags, const XrView views[2],
-                                   const XrViewConfigurationView view_configs[2]) {
+boba::hand_mesh_frame oxr_relay::publish_boba_input(XrTime predicted_time, XrDuration predicted_period, XrBool32 should_render,
+                                                    XrViewStateFlags view_flags, const XrView views[2],
+                                                    const XrViewConfigurationView view_configs[2]) {
     // One sequence and host timestamp bind the separately transported events
     // into a coherent predicted-display-time snapshot on the desktop.
-    const std::uint64_t sequence = boba_input_sequence_.fetch_add(1, std::memory_order_relaxed);
-    const time_point    now      = clock_->now();
+    const std::uint64_t   sequence = boba_input_sequence_.fetch_add(1, std::memory_order_relaxed);
+    const time_point      now      = clock_->now();
+    boba::hand_mesh_frame mesh_frame;
 
     quest_controller_input controller;
     controller.sequence       = sequence;
@@ -1271,10 +1319,14 @@ void oxr_relay::publish_boba_input(XrTime predicted_time, XrDuration predicted_p
             pose::hand_joint_poses_pair hand_poses;
             if (controller_profiles_[0] == quest_controller_profile::hand_interaction ||
                 controller_profiles_[1] == quest_controller_profile::hand_interaction) {
-                update_hand_tracking(predicted_time, hand_poses);
+                update_hand_tracking(predicted_time, hand_poses, &mesh_frame.hands);
             }
             const bool left_ok  = query_controller_hand(0, predicted_time, &controller.left, hand_poses[pose::LEFT]);
             const bool right_ok = query_controller_hand(1, predicted_time, &controller.right, hand_poses[pose::RIGHT]);
+            mesh_frame.hands[0].active &= left_ok && controller.left.available &&
+                controller.left.interaction_profile == quest_controller_profile::hand_interaction;
+            mesh_frame.hands[1].active &= right_ok && controller.right.available &&
+                controller.right.interaction_profile == quest_controller_profile::hand_interaction;
             if (!left_ok || !right_ok) {
                 spdlog::get("illixr")->warn("Could not sample all Quest controller actions");
             }
@@ -1307,11 +1359,16 @@ void oxr_relay::publish_boba_input(XrTime predicted_time, XrDuration predicted_p
     };
     copy_view(views[0], view_configs[0], &frame.left);
     copy_view(views[1], view_configs[1], &frame.right);
+    for (std::size_t eye = 0; eye < 2; ++eye) {
+        mesh_frame.eye_orientations[eye] = views[eye].pose.orientation;
+        mesh_frame.hands[eye].active &= pose_valid && should_render == XR_TRUE;
+    }
 
     // Publish only after both objects are complete; consumers reject a sample
     // until the matching sequence has arrived on both UDP topics.
     quest_controller_writer_.put(std::make_shared<quest_controller_input>(std::move(controller)));
     openxr_view_writer_.put(std::make_shared<openxr_view_frame>(std::move(frame)));
+    return mesh_frame;
 }
 
 #endif
