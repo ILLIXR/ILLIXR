@@ -26,8 +26,10 @@ joint tracking also produces neutral hand input. The pose thread and Boba frame
 sampler use separate output snapshots; Boba never reads an older cached hand.
 
 The [companion runtime](https://github.com/ILLIXR/Boba-ILLIXR/tree/hand-interaction)
-adds a floating **Game Select** button at the lower-right
-of the view. Aim and pinch opens a panel with Rope, Sloth, and Close buttons.
+adds a floating **Game Select** button at the upper-right
+of the view. Put the hand icon's index fingertip on it, wait for the teal
+highlight and white fingertip dot, then pinch and release. The Rope, Sloth, and
+Close panel expands leftward and downward from the same corner.
 This uses the existing bitmap overlay, texture cache, and native transport.
 Pinch recognition comes from the runtime; no new hand tracker is needed.
 
@@ -37,13 +39,18 @@ ready. Pinching selects or grabs; releasing keeps the pointer visible while the
 hand is tracked. The client draws pointing feedback above the selector panel.
 The decorative arrows are removed, and hand mode draws no laser or
 controller-origin dots. The aim ray is still used internally for targeting.
-The cursor follows that aim location during hover and grabs, independently of
-attachment markers. Hand selection uses the adapter's pinch button state;
+The open-hand cursor follows the aim location without snapping to nearby
+markers. During a pinched grab it follows the exact contact marker, so large
+movements do not separate the icon from the grabbed point. Release restores
+free aiming. Menu hits use the displayed fingertip and current-frame panel;
+the cursor is placed at that same panel point in each stereo eye. Release an
+object before using that hand for the menu. Hand selection uses the adapter's
+pinch button state;
 weak analog pinch values do not acquire or sustain a grab. Releasing the pinch
 or losing pinch readiness ends the grab with the existing two-frame release
 confirmation. A new first tutorial slide explains these hand controls.
 
-These release, cursor-motion, and tutorial fixes run on the desktop. If the
+These release, cursor, menu, and tutorial fixes run on the desktop. If the
 Quest already has the hand-input APK with the per-hand presence check from
 commit `78ce974`, restart the desktop demo without reinstalling the APK.
 
@@ -143,11 +150,11 @@ On a physical Quest, put down the controllers and show both open hands:
 | Tutorial | The first page explains hand controls. Pinch and release for each page; weak pinch values must not advance it. Wait for Ready before the final pinch. |
 | Open-hand pointer | Before pinching, move each open hand. Its red/blue hand-only icon should follow continuously in both eyes, without arrows or a laser. |
 | Marker | Place the hand icon's fingertip on an interaction marker. |
-| Grab / move / release | Hold an index–thumb pinch, move the hand, then release. |
+| Grab / move / release | Hold an index–thumb pinch and move the hand, including a large upward motion. The fingertip stays on the grabbed contact in both eyes. Release to let go and return to free aiming. |
 | Hover / release | Move an open hand near the rope. The cursor follows the aim location without snapping to a marker or grabbing. After a grab, open the pinch: the attachment must release without pinching again, even if readiness drops. |
 | Tracking recovery | Hide the hand while holding; the pointer disappears and the grab releases. Show an open hand before pinching again. |
 | One hand missing | Hide only the left hand while both are holding, then repeat for the right. The missing hand must disappear and release immediately; the other must keep working. Returning while still pinching must not resume the lost grab. |
-| Menu | Aim at the lower-right **Game Select** button and pinch. The pointer should stay visible above the panel. |
+| Menu | Move the fingertip onto upper-right **Game Select**. When the button fills teal and the white fingertip dot appears, pinch and release. Check alignment while turning the head and at each button edge. |
 | Close | Pinch **Close**. Holding that pinch must not grab an object behind the panel. |
 | Game switching | Select Sloth, wait for loading, then choose Rope. |
 | Both hands | Repeat with each hand. Pinching off-panel must not activate the other hand's hovered button. |
