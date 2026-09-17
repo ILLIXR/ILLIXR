@@ -54,10 +54,6 @@ if(NOT ANDROID)
 
     target_compile_definitions(plugin.main${ILLIXR_BUILD_SUFFIX} PRIVATE ILLIXR_INSTALL_PATH="${CMAKE_INSTALL_PREFIX}")
 
-    get_external(Yamlcpp)
-
-    target_compile_definitions(plugin.main${ILLIXR_BUILD_SUFFIX} PRIVATE ILLIXR_INSTALL_PATH="${CMAKE_INSTALL_PREFIX}")
-
     target_include_directories(plugin.main${ILLIXR_BUILD_SUFFIX} PUBLIC
                                ${SQLite3_INCLUDE_DIR}
                                ${yaml-cpp_INCLUDE_DIRS}
