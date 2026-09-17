@@ -188,6 +188,7 @@ else()
                               plugin.network_latency.tx${ILLIXR_BUILD_SUFFIX}
                               plugin.offload_rendering_client${ILLIXR_BUILD_SUFFIX}
                               plugin.openxr_interface${ILLIXR_BUILD_SUFFIX}
+                              #plugin.quest3.unity${ILLIXR_BUILD_SUFFIX}
                               android
                               native_app_glue
                               EGL
