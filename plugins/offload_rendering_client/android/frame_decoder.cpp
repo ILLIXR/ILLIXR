@@ -2,6 +2,7 @@
 #    include "frame_decoder.hpp"
 
 #    include <cstring>
+#    include <iterator>
 #    include <media/NdkMediaFormat.h>
 #    include <spdlog/spdlog.h>
 
@@ -50,6 +51,8 @@ bool frame_decoder::initialize() {
     // Retain the window for the lifetime of the codec.
     ANativeWindow_acquire(native_window_);
 
+    codec_failed_.store(false);
+
     // IMPORTANT: Set running_ BEFORE configure_codec() because async callbacks
     // can fire immediately after AMediaCodec_start() and they check this flag
     running_.store(true);
@@ -86,6 +89,13 @@ bool frame_decoder::configure_codec() {
         spdlog::get("illixr")->error("[frame_decoder][{}] Failed to create {} codec", eye_index_, use_av1 ? "AV1" : "HEVC");
         return false;
     }
+#    ifdef ILLIXR_ENABLE_BOBA
+    char* codec_name = nullptr;
+    if (AMediaCodec_getName(codec_, &codec_name) == AMEDIA_OK && codec_name != nullptr) {
+        spdlog::get("illixr")->info("[frame_decoder][{}] Selected decoder: {}", eye_index_, codec_name);
+        AMediaCodec_releaseName(codec_, codec_name);
+    }
+#    endif
 
     AMediaFormat* format = AMediaFormat_new();
     AMediaFormat_setString(format, AMEDIAFORMAT_KEY_MIME, mime);
@@ -123,6 +133,20 @@ bool frame_decoder::configure_codec() {
             // AV1ProfileMain8 = 1  (android.media.MediaCodecInfo.CodecProfileLevel)
             AMediaFormat_setInt32(format, AMEDIAFORMAT_KEY_PROFILE, 1);
             AMediaFormat_setInt32(format, AMEDIAFORMAT_KEY_MAX_INPUT_SIZE, width_ * height_);
+
+#        ifdef ILLIXR_ENABLE_BOBA
+            // Match the server's full-range BT.709 conversion and its AV1
+            // sequence-header metadata. Explicit MediaFormat hints avoid a
+            // vendor default to limited range on the Quest decoder.
+            // Android MediaFormat constants:
+            //   COLOR_STANDARD_BT709   = 1
+            //   COLOR_TRANSFER_SDR_VIDEO = 3
+            //   COLOR_RANGE_FULL       = 1
+            AMediaFormat_setInt32(format, AMEDIAFORMAT_KEY_COLOR_STANDARD, 1);
+            AMediaFormat_setInt32(format, AMEDIAFORMAT_KEY_COLOR_TRANSFER, 3);
+            AMediaFormat_setInt32(format, AMEDIAFORMAT_KEY_COLOR_RANGE, 1);
+
+#        endif
 
             spdlog::get("illixr")->info("[frame_decoder][{}] Configuring AV1 Main 8-bit {}x{}", eye_index_, width_, height_);
         }
@@ -238,17 +262,43 @@ std::pair<AHardwareBuffer*, uint64_t> frame_decoder::acquire_latest_buffer() {
         return {nullptr, 0};
     }
 
+#    ifdef ILLIXR_ENABLE_BOBA
+    int64_t image_timestamp_ns = 0;
+    status                     = AImage_getTimestamp(image, &image_timestamp_ns);
+
+#    endif
+
     // Retain the buffer so the caller can hold it independently of the AImage.
     AHardwareBuffer_acquire(hw_buffer);
 
-    // Read frame number with acquire ordering, pairing with the release store
-    // in the drainer that was written BEFORE releaseOutputBuffer was called.
-    // By the time AImageReader_acquireLatestImage returns a given image,
-    // the drainer has already stored the matching frame number, so this
-    // load always observes a value >= the frame number of the image acquired.
+#    ifdef ILLIXR_ENABLE_BOBA
+    uint64_t frame_num = 0;
+    if (status == AMEDIA_OK) {
+        std::lock_guard<std::mutex> lock(released_frame_numbers_mutex_);
+        const auto                  it = released_frame_numbers_by_timestamp_ns_.find(image_timestamp_ns);
+        if (it != released_frame_numbers_by_timestamp_ns_.end()) {
+            frame_num = it->second;
+            released_frame_numbers_by_timestamp_ns_.erase(released_frame_numbers_by_timestamp_ns_.begin(), std::next(it));
+        }
+    }
+
+#    else
     const uint64_t frame_num = last_decoded_frame_number_.load(std::memory_order_acquire);
+#    endif
 
     AImage_delete(image);
+
+#    ifdef ILLIXR_ENABLE_BOBA
+    if (frame_num == 0) {
+        static std::atomic<uint64_t> missing_timestamp_count{0};
+        const uint64_t               count = missing_timestamp_count.fetch_add(1, std::memory_order_relaxed) + 1;
+        if (count % 120 == 1) {
+            spdlog::get("illixr")->warn("[frame_decoder][{}] No exact frame number for AImage timestamp {} (count={})",
+                                        eye_index_, image_timestamp_ns, count);
+        }
+    }
+
+#    endif
 
     uint64_t n = frames_decoded_.fetch_add(1, std::memory_order_relaxed) + 1;
     if (n <= 5 || n % 200 == 0) {
@@ -264,7 +314,7 @@ void frame_decoder::feeder_loop() {
     uint64_t packets_fed      = 0;
     uint64_t dequeue_timeouts = 0;
 
-    while (running_.load()) {
+    while (running_.load() && !codec_failed_.load()) {
         // Block until there is an encoded packet to submit.  Do this BEFORE
         // calling dequeueInputBuffer so we never hold a codec buffer slot idle
         // while waiting for the producer.
@@ -333,17 +383,30 @@ void frame_decoder::feeder_loop() {
                 // Submit the bytes up through the end of the Sequence Header OBU
                 // as a CODEC_CONFIG buffer (no timestamp needed).
                 ssize_t cfg_idx = -1;
-                while (running_.load() && cfg_idx < 0) {
+                while (running_.load() && !codec_failed_.load() && cfg_idx < 0) {
                     cfg_idx = AMediaCodec_dequeueInputBuffer(codec_, /*timeoutUs=*/2000);
+                    if (cfg_idx < 0 && cfg_idx != AMEDIACODEC_INFO_TRY_AGAIN_LATER) {
+                        spdlog::get("illixr")->error("[frame_decoder][{}] Fatal dequeueInputBuffer error {} while "
+                                                     "submitting AV1 codec configuration",
+                                                     eye_index_, cfg_idx);
+                        codec_failed_.store(true);
+                    }
                 }
                 if (cfg_idx >= 0) {
                     size_t   cfg_buf_size = 0;
                     uint8_t* cfg_buf      = AMediaCodec_getInputBuffer(codec_, static_cast<size_t>(cfg_idx), &cfg_buf_size);
                     if (cfg_buf && cfg_buf_size >= seq_hdr_end) {
                         std::memcpy(cfg_buf, d, seq_hdr_end);
-                        AMediaCodec_queueInputBuffer(codec_, static_cast<size_t>(cfg_idx),
-                                                     /*offset=*/0, seq_hdr_end,
-                                                     /*presentationTimeUs=*/0, AMEDIACODEC_BUFFER_FLAG_CODEC_CONFIG);
+                        const media_status_t queue_status =
+                            AMediaCodec_queueInputBuffer(codec_, static_cast<size_t>(cfg_idx),
+                                                         /*offset=*/0, seq_hdr_end,
+                                                         /*presentationTimeUs=*/0, AMEDIACODEC_BUFFER_FLAG_CODEC_CONFIG);
+                        if (queue_status != AMEDIA_OK) {
+                            spdlog::get("illixr")->error("[frame_decoder][{}] AV1 CODEC_CONFIG queue failed: {}", eye_index_,
+                                                         static_cast<int>(queue_status));
+                            codec_failed_.store(true);
+                            break;
+                        }
                         codec_config_sent_ = true;
                         spdlog::get("illixr")->info("[frame_decoder][{}] AV1 CODEC_CONFIG submitted ({} bytes)", eye_index_,
                                                     seq_hdr_end);
@@ -358,15 +421,19 @@ void frame_decoder::feeder_loop() {
         }
 #    endif // USE_AV1
 
+        if (codec_failed_.load()) {
+            break;
+        }
+
         // Acquire a codec input buffer.  Use a short timeout so the thread
         // stays responsive to shutdown without busy-spinning.  Output draining
         // is handled by the dedicated drainer thread, so a timeout here does
         // NOT stall frame delivery.
         ssize_t buf_idx          = -1;
         int     dequeue_attempts = 0;
-        while (running_.load() && buf_idx < 0) {
+        while (running_.load() && !codec_failed_.load() && buf_idx < 0) {
             buf_idx = AMediaCodec_dequeueInputBuffer(codec_, /*timeoutUs=*/2000);
-            if (buf_idx < 0) {
+            if (buf_idx == AMEDIACODEC_INFO_TRY_AGAIN_LATER) {
                 dequeue_attempts++;
                 dequeue_timeouts++;
                 if (dequeue_attempts == 1 || dequeue_attempts % 10 == 0) {
@@ -374,9 +441,13 @@ void frame_decoder::feeder_loop() {
                                                 "(attempt {}), packets_fed={}",
                                                 eye_index_, buf_idx, dequeue_attempts, packets_fed);
                 }
+            } else if (buf_idx < 0) {
+                spdlog::get("illixr")->error("[frame_decoder][{}] Fatal dequeueInputBuffer error {} after {} packets",
+                                             eye_index_, buf_idx, packets_fed);
+                codec_failed_.store(true);
             }
         }
-        if (!running_.load())
+        if (!running_.load() || codec_failed_.load())
             break;
 
         // Write the encoded data directly into the codec's input buffer to
@@ -389,31 +460,41 @@ void frame_decoder::feeder_loop() {
             std::memcpy(buf, pkt.data.data(), pkt.data.size());
             uint32_t flags = pkt.is_keyframe ? AMEDIACODEC_BUFFER_FLAG_KEY_FRAME : 0;
 
-            auto     now = std::chrono::steady_clock::now();
-            uint64_t queue_us =
-                static_cast<uint64_t>(std::chrono::duration_cast<std::chrono::microseconds>(now - pkt.queue_time).count());
-
-            // Record queue_time, submit_time, and frame_number so the drainer
-            // can compute decode/total latency and update last_decoded_frame_number_
-            // for the consumer's pose lookup.
+            // Install the PTS mapping before exposing the input buffer to
+            // MediaCodec. A low-latency decoder may make its output visible as
+            // soon as queueInputBuffer returns; publishing the mapping first
+            // prevents the drainer from observing an otherwise valid output
+            // without its exact frame number.
+            const auto submit_time = std::chrono::steady_clock::now();
             {
                 std::lock_guard<std::mutex> ts_lock(pending_timestamps_mutex_);
-                pending_timestamps_[pkt.timestamp_us] = {pkt.queue_time, now, pkt.frame_number};
+                pending_timestamps_[pkt.timestamp_us] = {pkt.queue_time, submit_time, pkt.frame_number};
             }
-
-            // Register metadata before the codec can make output available to
-            // the drainer thread, otherwise a fast decode loses its frame ID.
-            const media_status_t status =
-                AMediaCodec_queueInputBuffer(codec_, static_cast<size_t>(buf_idx), /*offset=*/0, pkt.data.size(),
-                                             static_cast<uint64_t>(pkt.timestamp_us), flags);
-            if (status != AMEDIA_OK) {
-                std::lock_guard<std::mutex> ts_lock(pending_timestamps_mutex_);
-                pending_timestamps_.erase(pkt.timestamp_us);
-                spdlog::get("illixr")->error("[frame_decoder][{}] queueInputBuffer failed: {}", eye_index_,
-                                             static_cast<int>(status));
+            // Each acquired input buffer must be queued exactly once; ownership
+            // returns to MediaCodec after a successful submission.
+            const media_status_t queue_status =
+                AMediaCodec_queueInputBuffer(codec_, static_cast<size_t>(buf_idx),
+                                             /*offset=*/0, pkt.data.size(), static_cast<uint64_t>(pkt.timestamp_us), flags);
+            if (queue_status != AMEDIA_OK) {
+                {
+                    std::lock_guard<std::mutex> ts_lock(pending_timestamps_mutex_);
+                    pending_timestamps_.erase(pkt.timestamp_us);
+                }
+                spdlog::get("illixr")->error("[frame_decoder][{}] queueInputBuffer failed for frame {} ({} bytes, "
+                                             "keyframe={}): {}",
+                                             eye_index_, pkt.frame_number, pkt.data.size(), pkt.is_keyframe,
+                                             static_cast<int>(queue_status));
+#    ifdef ILLIXR_ENABLE_BOBA
+                codec_failed_.store(true);
+                break;
+#    else
                 continue;
+#    endif
             }
             packets_fed++;
+            const auto now = std::chrono::steady_clock::now();
+            uint64_t   queue_us =
+                static_cast<uint64_t>(std::chrono::duration_cast<std::chrono::microseconds>(now - pkt.queue_time).count());
 
             {
                 std::lock_guard<std::mutex> t_lock(timing_mutex_);
@@ -436,7 +517,7 @@ void frame_decoder::drainer_loop() {
     uint64_t output_drained        = 0;
     uint64_t output_format_changes = 0;
 
-    while (running_.load()) {
+    while (running_.load() && !codec_failed_.load()) {
         AMediaCodecBufferInfo info{};
         // Use a 1ms blocking timeout: responsive enough to log per-frame timing
         // accurately without busy-spinning.  At 90 Hz one frame is ~11ms, so
@@ -446,10 +527,17 @@ void frame_decoder::drainer_loop() {
         if (out_idx >= 0) {
             // Decode latency: submit_time → output available.
             // Total latency:  queue_time  → output available.
-            auto     drain_start          = std::chrono::steady_clock::now();
-            uint64_t decode_us            = 0;                          // submit → output
-            uint64_t total_us             = 0;                          // queue_encoded_data → output
-            uint64_t decoded_frame_number = last_decoded_frame_number_; // fallback if not found
+            auto     drain_start = std::chrono::steady_clock::now();
+            uint64_t decode_us   = 0; // submit → output
+            uint64_t total_us    = 0; // queue_encoded_data → output
+#    ifdef ILLIXR_ENABLE_BOBA
+            // A missing timestamp entry must remain unmatched. Falling back to
+            // the previous output number can pair a valid image with another
+            // frame's pose/FOV and causes visible world-locked jitter.
+            uint64_t decoded_frame_number = 0;
+#    else
+            uint64_t decoded_frame_number = last_decoded_frame_number_.load();
+#    endif
             {
                 std::lock_guard<std::mutex> ts_lock(pending_timestamps_mutex_);
                 auto                        it = pending_timestamps_.find(info.presentationTimeUs);
@@ -490,16 +578,22 @@ void frame_decoder::drainer_loop() {
                                             static_cast<double>(total_us) / 1000.0, current_fps);
             }
 
-            // Write last_decoded_frame_number_ BEFORE releasing the output buffer
-            // to the AImageReader surface.  releaseOutputBuffer is what makes the
-            // decoded image visible to AImageReader_acquireLatestImage, so by the
-            // time any consumer can acquire this image, last_decoded_frame_number_
-            // is already set to the matching value.  The release store here pairs
-            // with the acquire load in acquire_latest_buffer(), ensuring the
-            // consumer always reads a frame number >= the frame it just acquired.
-            // No mutex is needed — holding acquire_mutex_ here was blocking the
-            // drainer from making new frames available while the consumer was
-            // acquiring, causing repeated delivery of the same stale frame.
+#    ifdef ILLIXR_ENABLE_BOBA
+            // Record the exact timestamp → frame mapping before exposing this
+            // output to AImageReader. AImage_getTimestamp returns the MediaCodec
+            // presentation timestamp in nanoseconds, so the consumer can recover
+            // this precise frame number even if newer outputs are released while
+            // it is acquiring the image.
+            if (decoded_frame_number != 0) {
+                const int64_t               timestamp_ns = info.presentationTimeUs * 1'000LL;
+                std::lock_guard<std::mutex> released_lock(released_frame_numbers_mutex_);
+                released_frame_numbers_by_timestamp_ns_[timestamp_ns] = decoded_frame_number;
+                while (released_frame_numbers_by_timestamp_ns_.size() > 64) {
+                    released_frame_numbers_by_timestamp_ns_.erase(released_frame_numbers_by_timestamp_ns_.begin());
+                }
+            }
+#    endif
+
             last_decoded_frame_number_.store(decoded_frame_number, std::memory_order_release);
             AMediaCodec_releaseOutputBuffer(codec_, static_cast<size_t>(out_idx), /*render=*/true);
             auto drain_end = std::chrono::steady_clock::now();
@@ -535,6 +629,12 @@ void frame_decoder::drainer_loop() {
                                         output_format_changes, fmt_str);
             if (fmt)
                 AMediaFormat_delete(fmt);
+        } else if (out_idx != AMEDIACODEC_INFO_TRY_AGAIN_LATER && out_idx != AMEDIACODEC_INFO_OUTPUT_BUFFERS_CHANGED) {
+            spdlog::get("illixr")->error("[frame_decoder][{}] Fatal dequeueOutputBuffer error {} after {} outputs", eye_index_,
+                                         out_idx, output_drained);
+            codec_failed_.store(true);
+            input_cv_.notify_all();
+            break;
         }
         // AMEDIACODEC_INFO_TRY_AGAIN_LATER (-1) and other negative values are
         // normal — they just mean no output was ready within the timeout.
@@ -547,7 +647,7 @@ void frame_decoder::drainer_loop() {
 
 bool frame_decoder::queue_encoded_data(const uint8_t* data, size_t size, int64_t timestamp_us, bool is_keyframe,
                                        uint64_t frame_number) {
-    if (!running_.load() || !initialized_.load()) {
+    if (!running_.load() || !initialized_.load() || codec_failed_.load()) {
         return false;
     }
 
@@ -583,6 +683,22 @@ bool frame_decoder::queue_encoded_data(const uint8_t* data, size_t size, int64_t
     {
         std::lock_guard<std::mutex> lock(input_mutex_);
 
+#    ifdef ILLIXR_ENABLE_BOBA
+        constexpr size_t kMaxQueueDepth = 16;
+        const bool       queue_full     = input_queue_.size() >= kMaxQueueDepth;
+        if (!input_gate_.accept(is_keyframe, queue_full)) {
+            frames_dropped_.fetch_add(1, std::memory_order_relaxed);
+            return false;
+        }
+        if (queue_full) {
+            // Only a keyframe reaches here. It can replace the queued chain
+            // without depending on any of the pictures that are discarded.
+            frames_dropped_.fetch_add(input_queue_.size(), std::memory_order_relaxed);
+            while (!input_queue_.empty()) {
+                input_queue_.pop();
+            }
+        }
+#    else
         // Do not drop frames here.  The receiver loop in offload_rendering_client
         // already enforces MAX_DECODER_QUEUE_DEPTH and drops whole frames atomically
         // before they reach this point.  Dropping oldest frames blindly here is
@@ -600,6 +716,7 @@ bool frame_decoder::queue_encoded_data(const uint8_t* data, size_t size, int64_t
             input_queue_.pop();
             frames_dropped_.fetch_add(1, std::memory_order_relaxed);
         }
+#    endif
 
         input_queue_.push(std::move(pkt));
         frames_queued_.fetch_add(1, std::memory_order_relaxed);
@@ -638,6 +755,9 @@ void frame_decoder::flush() {
         while (!input_queue_.empty()) {
             input_queue_.pop();
         }
+#    ifdef ILLIXR_ENABLE_BOBA
+        input_gate_.reset();
+#    endif
     }
     // Discard any pending timestamp entries — their output buffers will never
     // arrive after a flush, so they would otherwise accumulate indefinitely.
@@ -645,6 +765,12 @@ void frame_decoder::flush() {
         std::lock_guard<std::mutex> ts_lock(pending_timestamps_mutex_);
         pending_timestamps_.clear();
     }
+#    ifdef ILLIXR_ENABLE_BOBA
+    {
+        std::lock_guard<std::mutex> released_lock(released_frame_numbers_mutex_);
+        released_frame_numbers_by_timestamp_ns_.clear();
+    }
+#    endif
     spdlog::get("illixr")->debug("[frame_decoder][{}] Flushed", eye_index_);
 }
 
@@ -668,6 +794,13 @@ void frame_decoder::stop() {
         spdlog::get("illixr")->debug("[frame_decoder][{}] Waiting for drainer thread to exit", eye_index_);
         drainer_thread_.join();
     }
+
+#    ifdef ILLIXR_ENABLE_BOBA
+    {
+        std::lock_guard<std::mutex> released_lock(released_frame_numbers_mutex_);
+        released_frame_numbers_by_timestamp_ns_.clear();
+    }
+#    endif
 
     if (codec_) {
         AMediaCodec_stop(codec_);

@@ -19,6 +19,7 @@
 #    include <arpa/inet.h>
 #    include <netinet/in.h>
 #    include <sys/socket.h>
+#    include <sys/time.h>
 #    include <unistd.h>
 #    define BYTE_TYPE   ssize_t
 #    define SOCKET_TYPE int
@@ -26,7 +27,9 @@
 
 #include "illixr/export.hpp"
 
+#include <cstdint>
 #include <cstring>
+#include <mutex>
 #include <stdexcept>
 #include <string>
 
@@ -36,13 +39,13 @@ class MY_EXPORT_API UDPSocket {
 public:
     UDPSocket() {
 #if defined(_WIN32) || defined(_WIN64)
-        static bool initialized = false;
-        if (!initialized) {
+        static const bool initialized = [] {
             WSAData wsa_data;
             if (WSAStartup(MAKEWORD(2, 2), &wsa_data) != 0)
                 throw std::runtime_error("WSAStartup failed.");
-            initialized = true;
-        }
+            return true;
+        }();
+        (void) initialized;
         fd_ = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
         if (fd_ == INVALID_SOCKET)
             throw std::runtime_error("UDP socket creation failed");
@@ -77,8 +80,7 @@ public:
     }
 
     // Allow reuse of local addresses.
-    // On Linux/Android, also sets SO_REUSEPORT so that a new socket can bind
-    // to a port still in TIME_WAIT after a crash, without waiting ~60 seconds.
+    // On Linux/Android, SO_REUSEPORT also permits rebinding during a restart.
     void socket_set_reuseaddr() const {
 #if defined(_WIN32) || defined(_WIN64)
         int enable = 1;
@@ -92,10 +94,35 @@ public:
 #endif
     }
 
+    /// Bound the time a receive thread can remain asleep so plugin shutdown can
+    /// join it even when the peer is no longer sending datagrams.
+    void socket_set_receive_timeout(int milliseconds) const {
+#if defined(_WIN32) || defined(_WIN64)
+        const DWORD timeout = static_cast<DWORD>(milliseconds);
+        if (setsockopt(fd_, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<const char*>(&timeout), sizeof(timeout)) < 0)
+            throw std::runtime_error("SO_RCVTIMEO failed");
+#else
+        const timeval timeout{milliseconds / 1000, (milliseconds % 1000) * 1000};
+        if (setsockopt(fd_, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout)) < 0)
+            throw std::runtime_error("SO_RCVTIMEO failed");
+#endif
+    }
+
+    /// Interrupt a blocking receive when supported. The receive timeout above
+    /// remains the fallback for unconnected UDP sockets.
+    void socket_shutdown() const noexcept {
+#if defined(_WIN32) || defined(_WIN64)
+        shutdown(fd_, SD_BOTH);
+#else
+        shutdown(fd_, SHUT_RDWR);
+#endif
+    }
+
     // Store the peer address for use by write_data().
     // On the client this is called once with the server's address.
     // On the server this is called each time a datagram is received from a new peer.
     void set_peer(const std::string& ip, int port) {
+        std::lock_guard<std::mutex> lock(peer_mutex_);
         std::memset(&peer_addr_, 0, sizeof(peer_addr_));
         peer_addr_.sin_family = AF_INET;
         peer_addr_.sin_port   = htons(static_cast<uint16_t>(port));
@@ -108,6 +135,7 @@ public:
     // datagram, since UDP is connectionless and the server has no peer until it hears
     // from one.
     void set_peer(const sockaddr_in& addr) {
+        std::lock_guard<std::mutex> lock(peer_mutex_);
         peer_addr_ = addr;
         peer_set_  = true;
     }
@@ -115,6 +143,7 @@ public:
     // Send a datagram to the previously set peer address.
     // Returns false if no peer has been set or the send fails.
     bool write_data(const std::string& buffer) const {
+        std::lock_guard<std::mutex> lock(peer_mutex_);
         if (!peer_set_)
             return false;
         BYTE_TYPE sent = sendto(fd_,
@@ -166,7 +195,11 @@ public:
     /* accessors */
     [[nodiscard]] std::string local_address() const {
         sockaddr_in local{};
-        socklen_t   size = sizeof(local);
+#if defined(_WIN32) || defined(_WIN64)
+        int size = sizeof(local);
+#else
+        socklen_t size = sizeof(local);
+#endif
         getsockname(fd_, reinterpret_cast<sockaddr*>(&local), &size);
 #if defined(_WIN32) || defined(_WIN64)
         char ip[INET_ADDRSTRLEN];
@@ -178,13 +211,15 @@ public:
     }
 
     [[nodiscard]] bool has_peer() const {
+        std::lock_guard<std::mutex> lock(peer_mutex_);
         return peer_set_;
     }
 
 private:
-    SOCKET_TYPE fd_;
-    sockaddr_in peer_addr_{};
-    bool        peer_set_{false};
+    SOCKET_TYPE        fd_;
+    mutable std::mutex peer_mutex_;
+    sockaddr_in        peer_addr_{};
+    bool               peer_set_{false};
 
     static constexpr size_t BUFFER_SIZE = 1024 * 64; // 64 KB max datagram
 };

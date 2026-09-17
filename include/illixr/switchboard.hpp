@@ -349,6 +349,15 @@ private:
             return obj;
         }
 
+        /** Remove one queued event without waiting; return false when empty. */
+        bool try_dequeue(ptr<const event>& obj) {
+            if (!queue_.try_dequeue(token_, obj)) {
+                return false;
+            }
+            queue_size_--;
+            return true;
+        }
+
     private:
         moodycamel::BlockingConcurrentQueue<ptr<const event>> queue_{8 /*max size estimate*/};
         moodycamel::ConsumerToken                             token_{queue_};
@@ -447,12 +456,20 @@ private:
         [[maybe_unused]] void deserialize_and_put(std::vector<char>& buffer, network::topic_config& config) {
             if (config.serialization_method == network::topic_config::SerializationMethod::BOOST) {
                 // TODO: Need to differentiate and support protobuf deserialization
-                boost::iostreams::stream<boost::iostreams::array_source> stream{buffer.data(), buffer.size()};
-                // Use no_header for cross-platform compatibility (sizeof(long) differs between Windows and Linux)
-                boost::archive::binary_iarchive ia{stream, boost::archive::no_header};
-                ptr<event>                      this_event;
-                ia >> this_event;
-                put(std::move(this_event));
+                try {
+                    boost::iostreams::stream<boost::iostreams::array_source> stream{buffer.data(), buffer.size()};
+                    // Use no_header for cross-platform compatibility (sizeof(long) differs between Windows and Linux)
+                    boost::archive::binary_iarchive ia{stream, boost::archive::no_header};
+                    ptr<event>                      this_event;
+                    ia >> this_event;
+                    put(std::move(this_event));
+                } catch (const std::exception& e) {
+                    std::cerr << "[switchboard] dropping undeserializable message on topic '" << name() << "' ("
+                              << buffer.size() << " bytes): " << e.what() << std::endl;
+                } catch (...) {
+                    std::cerr << "[switchboard] dropping undeserializable message on topic '" << name() << "' ("
+                              << buffer.size() << " bytes): unknown exception" << std::endl;
+                }
             } else {
                 ptr<event> message = std::make_shared<event_wrapper<std::string>>((std::string(buffer.begin(), buffer.end())));
                 put(std::move(message));
@@ -591,6 +608,16 @@ public:
             return this_specific_event;
         }
 
+        /** Return the next typed event immediately, or nullptr when none is queued. */
+        ptr<const Specific_event> try_dequeue() {
+            ptr<const event> this_event;
+            if (!topic_buffer_.try_dequeue(this_event)) {
+                return nullptr;
+            }
+            serial_no_++;
+            return std::dynamic_pointer_cast<const Specific_event>(this_event);
+        }
+
     private:
         topic&        topic_;
         size_t        serial_no_ = 0;
@@ -641,7 +668,7 @@ public:
     };
 
     template<typename Serializable_event>
-    class network_writer : public writer<Serializable_event> {
+    class network_writer final : public writer<Serializable_event> {
     public:
         explicit network_writer(topic& topic, ptr<network::network_backend> backend = nullptr,
                                 const network::topic_config& config = {})
@@ -820,6 +847,15 @@ public:
         std::string val = get_env(var, std::to_string(_default));
         try {
             double res = std::stod(val);
+            return res;
+        } catch (...) { }
+        return _default;
+    }
+
+    [[maybe_unused]] float get_env_float(const std::string& var, const double _default = 0.f) {
+        std::string val = get_env(var, std::to_string(_default));
+        try {
+            int res = std::stof(val);
             return res;
         } catch (...) { }
         return _default;

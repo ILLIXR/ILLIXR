@@ -18,10 +18,6 @@ add_library(${PLUGIN_NAME} SHARED
             ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
 )
 
-    #add_definitions(-Wall -Wextra -Werror)
-    target_include_directories(${PLUGIN_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${ILLIXR_SOURCE_DIR}/include)
-    target_link_libraries(${PLUGIN_NAME} gtsam Eigen3::Eigen spdlog::spdlog)
-
 #add_definitions(-Wall -Wextra -Werror)
 target_include_directories(${PLUGIN_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${GTSAM_INCLUDE_DIR} ${ILLIXR_SOURCE_DIR}/include)
 target_link_libraries(${PLUGIN_NAME} ${GTSAM_LIBRARIES} Eigen3::Eigen spdlog::spdlog)

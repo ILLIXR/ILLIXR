@@ -38,6 +38,7 @@
 #    include <mutex>
 #    include <openxr/openxr.h>
 #    include <thread>
+#    include <unordered_map>
 #    ifdef __ANDROID__
 #        include "android/stereo_surface_decoder.hpp"
 #        include "illixr/quest3_params.hpp"
@@ -177,7 +178,25 @@ private:
         float       far_z{0.f};
         double      encode_time{0.};
         bool        consumed{false};
+#    ifdef ILLIXR_ENABLE_BOBA
+        data_format::stereo_presentation_mode presentation_mode{data_format::stereo_presentation_mode::stereo_fullscreen};
+        float                                 content_aspect_ratio{0.0F};
+        data_format::boba_frame_overlay       boba_overlay{};
+        data_format::boba_modal_overlay       boba_modal{};
+        std::array<float, 2>                  fov_left{0.0F, 0.0F};
+        std::array<float, 2>                  fov_right{0.0F, 0.0F};
+        std::array<float, 2>                  fov_up{0.0F, 0.0F};
+        std::array<float, 2>                  fov_down{0.0F, 0.0F};
+#    endif
     };
+
+#    ifdef ILLIXR_ENABLE_BOBA
+    struct modal_texture_cache_entry {
+        std::uint32_t                                    width{0};
+        std::uint32_t                                    height{0};
+        std::shared_ptr<const std::vector<std::uint8_t>> rgba;
+    };
+#    endif
 
     /**
      * @brief Receiver thread: dequeues compressed frames from the network,
@@ -185,6 +204,11 @@ private:
      *        to the hardware decoders, and updates frame_meta_map_.
      */
     void receiver_loop();
+
+#    ifdef ILLIXR_ENABLE_BOBA
+    /** Drain reliable modal-texture updates and cache them by content ID. */
+    void drain_modal_texture_updates();
+#    endif
 
     /**
      * @brief Log Android decode timing statistics.
@@ -292,6 +316,9 @@ private:
 #endif
     switchboard::buffered_reader<data_format::compressed_frame> frames_reader_;
     switchboard::reader<data_format::network_latency_result>    network_latency_reader_;
+#ifdef ILLIXR_ENABLE_BOBA
+    switchboard::buffered_reader<data_format::boba_modal_texture> modal_texture_reader_;
+#endif
 
 #ifndef USING_OPENXR
     // Pose transmission to server
@@ -330,7 +357,9 @@ private:
     // the same time, so the map stays bounded even if the decoder skips frames.
     std::map<uint64_t, frame_meta> frame_meta_map_;
     std::mutex                     frame_meta_map_mutex_;
-
+#    ifdef ILLIXR_ENABLE_BOBA
+    std::unordered_map<std::uint64_t, modal_texture_cache_entry> modal_texture_cache_;
+#    endif
     // Bounds how many submitted dual_frames are kept alive awaiting release.
     // Rather than requiring an explicit GPU-completion signal from the
     // render-side consumer (oxr_interface), a submitted frame's
@@ -408,7 +437,7 @@ private:
     uint16_t                                       fps_counter_    = 0;
     std::chrono::high_resolution_clock::time_point fps_start_time_ = std::chrono::high_resolution_clock::now();
     std::map<std::string, uint32_t>                metrics_{};
-#ifdef USING_OPENXR
+#if defined(USING_OPENXR) && !defined(ILLIXR_ENABLE_BOBA)
     std::array<float, 2> cached_fov_left_  = {0.0f, 0.0f};
     std::array<float, 2> cached_fov_right_ = {0.0f, 0.0f};
     std::array<float, 2> cached_fov_up_    = {0.0f, 0.0f};
@@ -417,9 +446,14 @@ private:
 #endif
     uint64_t last_submitted_frame_{0};
 #ifdef __ANDROID__
+#    ifdef ILLIXR_ENABLE_BOBA
+    int headset_width_  = NATIVE_STREAM_EYE_WIDTH;
+    int headset_height_ = NATIVE_STREAM_EYE_HEIGHT;
+#    else
     int    headset_width_  = HEADSET_WIDTH;
     int    headset_height_ = HEADSET_HEIGHT;
     double overscan_;
+#    endif
 #endif
 };
 

@@ -1,0 +1,25 @@
+cmake_minimum_required(VERSION 3.22)
+project(illixr_network_checks LANGUAGES CXX)
+enable_testing()
+find_package(Threads REQUIRED)
+add_executable(udp_checks udp_checks.cpp)
+target_compile_features(udp_checks PRIVATE cxx_std_17)
+target_compile_definitions(udp_checks PRIVATE BUILDING_LIBRARY)
+target_include_directories(udp_checks PRIVATE ../../include)
+target_link_libraries(udp_checks PRIVATE Threads::Threads)
+if(WIN32)
+    target_link_libraries(udp_checks PRIVATE ws2_32)
+endif()
+add_test(NAME udp_checks COMMAND udp_checks)
+set_tests_properties(udp_checks PROPERTIES TIMEOUT 20)
+
+# Optional integration regression against a built desktop runtime and TCP plugin.
+set(ILLIXR_RUNTIME "" CACHE FILEPATH "Built ILLIXR main executable")
+set(ILLIXR_TCP_PLUGIN_DIR "" CACHE PATH "Directory containing the built TCP backend plugin")
+if(ILLIXR_RUNTIME AND ILLIXR_TCP_PLUGIN_DIR)
+    find_package(Python3 REQUIRED COMPONENTS Interpreter)
+    add_test(NAME tcp_shutdown
+             COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tcp_shutdown.py"
+                     --runtime "${ILLIXR_RUNTIME}" --plugin-dir "${ILLIXR_TCP_PLUGIN_DIR}")
+    set_tests_properties(tcp_shutdown PROPERTIES TIMEOUT 60)
+endif()
