@@ -518,6 +518,17 @@ endif()
 # set any plugins that are being built
 set(FULL_PLUGIN_LIST "")
 
+option(BUILD_UNIT_TESTS "Build the ILLIXR unit test suite" OFF)
+
+set(UNIT_TEST_LIST "" CACHE INTERNAL "")
+if(BUILD_UNIT_TESTS)
+    include(GetGTest)
+    add_custom_target(unit_tests)
+    if(EXISTS "${CMAKE_SOURCE_DIR}/tests")
+        add_subdirectory(tests)
+    endif()
+endif()
+
 add_subdirectory(utils)
 
 foreach(ITEM IN LISTS PLUGIN_LIST)
@@ -535,6 +546,9 @@ foreach(ITEM IN LISTS PLUGIN_LIST)
     endif()
     if(${ITEM_UPPER})
         add_subdirectory(${CURRENT_PLUGIN_SRC})
+        if(BUILD_UNIT_TESTS AND EXISTS "${CMAKE_SOURCE_DIR}/${CURRENT_PLUGIN_SRC}/tests")
+            add_subdirectory(${CURRENT_PLUGIN_SRC}/tests)
+        endif()
         if (${ITEM_UPPER})  # this can change when adding the target
             list(FIND PLUGIN_UNORDERED ${ITEM_LOWER} ITEM_FOUND)
             if(${ITEM_FOUND} EQUAL -1)

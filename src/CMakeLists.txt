@@ -199,4 +199,28 @@ else()
                               spdlog::spdlog_android
         )
     endif()
+    if(BUILD_UNIT_TESTS)
+        add_library(unit-tests-activity SHARED
+                    unit_test_runner_android.cpp # TODO: runner logic not yet written
+                    ${CMAKE_SOURCE_DIR}/include/illixr/dynamic_lib.hpp
+                    ${CMAKE_SOURCE_DIR}/include/illixr/unit_test.hpp
+        )
+
+        target_include_directories(unit-tests-activity PRIVATE
+                                   ${ILLIXR_SOURCE_DIR}/include
+                                   ${ANDROID_NDK}/sources/android/native_app_glue
+        )
+
+        target_link_libraries(unit-tests-activity
+                              gtest
+                              android
+                              native_app_glue
+                              spdlog::spdlog_android
+                              ${UNIT_TEST_LIST}
+        )
+    endif()
+endif()
+
+if(BUILD_UNIT_TESTS AND EXISTS "${CMAKE_SOURCE_DIR}/src/tests")
+    add_subdirectory(tests)
 endif()

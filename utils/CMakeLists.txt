@@ -186,3 +186,6 @@ if(USE_ADA.DEVICE_TX OR USE_ADA.SERVER_RX OR USE_OFFLOAD_VIO.SERVER_RX OR USE_OF
         target_compile_definitions(video_decoder_vio PUBLIC VIO)
     endif()
 endif()
+if(BUILD_UNIT_TESTS AND EXISTS "${CMAKE_SOURCE_DIR}/utils/tests")
+    add_subdirectory(tests)
+endif()

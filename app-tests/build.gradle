@@ -8,13 +8,13 @@ def root_library_path = "${root_path}/android_libraries/third_party/"
 android {
     signingConfigs {
         debug {
-            storeFile file("${home}/illixr.keystore")
+            storeFile file("${System.getenv('HOME')}/illixr.keystore")
             storePassword 'illixr'
             keyAlias 'illixr'
             keyPassword 'illixr'
         }
         release {
-            storeFile file("${home}/illixr.keystore")
+            storeFile file("${System.getenv('HOME')}/illixr.keystore")
             storePassword 'illixr'
             keyAlias 'illixr'
             keyPassword 'illixr'
@@ -24,7 +24,7 @@ android {
     ndkVersion '27.2.12479018'
 
     defaultConfig {
-        applicationId = 'com.example.native_activity'
+        applicationId = 'com.example.native_activity.tests'
         minSdk 32
         targetSdkVersion 32
         ndk {
@@ -35,28 +35,28 @@ android {
             cmake {
                 version '3.22.1'
                 cppFlags '-std=c++17', '-frtti', '-fexceptions'
-                arguments "-DTHIRD_PARTY_DIR=${root_library_path}",
-                          // If running offload rendering use the following to select the encoding scheme
-                          // it must match what was used on the server, and only one may be "ON"
-                          //"-DUSE_AV1_ENCODING=ON",
-                          //"-DUSE_HEVC_ENCODING=ON"
-                          // If building the Unity Interface set the following line to ON and provide the appropriate
-                          // path to your Unity editor's PluginAPI
-                          //"-DBUILD_QUEST_UNITY_INTERFACE=ON",
-                          //"-DUNITY_PLUGIN_API_DIR=C:/Program Files/Unity/Hub/Editor/6000.4.0f1/Editor/Data/PluginAPI",
-                          // Opt in with -PILLIXR_ENABLE_BOBA=ON; OFF keeps the general frame protocol.
-                          // Rebuild both the host and app with matching settings (see README_boba.md).
-                          "-DILLIXR_ENABLE_BOBA=${providers.gradleProperty('ILLIXR_ENABLE_BOBA').getOrElse('OFF')}",
-                          "-DBUILD_ANDROID=ON"
+                arguments arguments "-DTHIRD_PARTY_DIR=${root_library_path}",
+                                                    // If running offload rendering use the following to select the encoding scheme
+                                                    // it must match what was used on the server, and only one may be "ON"
+                                                    //"-DUSE_AV1_ENCODING=ON",
+                                                    //"-DUSE_HEVC_ENCODING=ON"
+                                                    // If building the Unity Interface set the following line to ON and provide the appropriate
+                                                    // path to your Unity editor's PluginAPI
+                                                    //"-DBUILD_QUEST_UNITY_INTERFACE=ON",
+                                                    //"-DUNITY_PLUGIN_API_DIR=C:/Program Files/Unity/Hub/Editor/6000.4.0f1/Editor/Data/PluginAPI",
+                                                    // Opt in with -PILLIXR_ENABLE_BOBA=ON; OFF keeps the general frame protocol.
+                                                    // Rebuild both the host and app with matching settings (see README_boba.md).
+                                                    //"-DILLIXR_ENABLE_BOBA=${providers.gradleProperty('ILLIXR_ENABLE_BOBA').getOrElse('OFF')}",
+                                                    "-DBUILD_ANDROID=ON",
+                                                    "-DBUILD_UNIT_TESTS=ON"
+                targets "unit-tests-activity"
             }
         }
     }
 
     buildTypes {
         release {
-//            debuggable true
             minifyEnabled false
-            debuggable false
             proguardFiles getDefaultProguardFile('proguard-android.txt'),
                     'proguard-rules.pro'
             signingConfig signingConfigs.release
@@ -72,10 +72,9 @@ android {
         cmake {
             version '3.22.1'
             path "${root_path}/CMakeLists.txt"
-
         }
     }
-    namespace 'com.example.ILLIXR'
+    namespace 'com.example.ILLIXR.tests'
     lint {
         // ADB development installs do not submit to Google Play. Keep other
         // release checks enabled; store builds retain the target-API check too.
@@ -86,7 +85,6 @@ android {
     buildFeatures {
         prefab = true
     }
-
 }
 
 dependencies {

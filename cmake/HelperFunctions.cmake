@@ -520,3 +520,55 @@ macro(configure_target)
         endif()
     endif()
 endmacro()
+
+############# Testing helpers
+
+# Defines one unit test shared library for a single ILLIXR component (a plugin, a service, utils,
+# src, or the top-level include/illixr headers). All SOURCES are compiled into one shared library
+# named unittest.<COMPONENT>${ILLIXR_BUILD_SUFFIX}, linked against the shared GoogleTest build (see
+# GetGTest.cmake) so its TEST()/TEST_F() cases register into the same process-wide GoogleTest
+# registry as every other unit test library, regardless of load order. The resulting library is
+# placed in a single unit_tests/ output directory and appended to UNIT_TEST_LIST, which both the
+# unit_tests aggregate target and (on Android) the unit-tests-activity target depend on.
+#
+# Usage:
+#   add_illixr_unit_test(plugin.offload_rendering_client
+#                         SOURCES test_encoder.cpp test_decoder.cpp
+#                         LIBRARIES illixr_vulkan_utils
+#   )
+function(add_illixr_unit_test COMPONENT)
+    set(multiValueArgs SOURCES LIBRARIES INCLUDES)
+    cmake_parse_arguments(UT "" "" "${multiValueArgs}" ${ARGN})
+
+    if(NOT UT_SOURCES)
+        message(FATAL_ERROR "add_illixr_unit_test(${COMPONENT}): SOURCES must be specified.")
+    endif()
+
+    include(GetGTest)
+
+    set(UT_TARGET unittest.${COMPONENT}${ILLIXR_BUILD_SUFFIX})
+
+    add_library(${UT_TARGET} SHARED ${UT_SOURCES})
+
+    target_include_directories(${UT_TARGET} PRIVATE
+                               ${CMAKE_SOURCE_DIR}/include
+                               ${UT_INCLUDES}
+    )
+
+    target_link_libraries(${UT_TARGET} PRIVATE
+                          gtest
+                          ${UT_LIBRARIES}
+    )
+
+    target_compile_features(${UT_TARGET} PRIVATE cxx_std_17)
+
+    set_target_properties(${UT_TARGET} PROPERTIES
+                          RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/unit_tests
+                          LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/unit_tests
+    )
+
+    list(APPEND UNIT_TEST_LIST ${UT_TARGET})
+    set(UNIT_TEST_LIST ${UNIT_TEST_LIST} CACHE INTERNAL "")
+
+    add_dependencies(unit_tests ${UT_TARGET})
+endfunction()
