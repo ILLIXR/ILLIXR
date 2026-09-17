@@ -903,17 +903,6 @@ void stereo_renderer::record_boba_overlays(VkCommandBuffer command_buffer, int e
     }
 
     const float source_size[2] = {static_cast<float>(overlay_source_width_), static_cast<float>(overlay_source_height_)};
-    const auto& overlay        = overlay_vertices_[eye];
-    if (!overlay.empty()) {
-        std::memcpy(overlay_vertex_mapped_[eye], overlay.data(), overlay.size() * sizeof(overlay_vertex));
-        const VkDeviceSize offset = 0;
-        vkCmdBindPipeline(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, overlay_pipeline_);
-        vkCmdPushConstants(command_buffer, overlay_pipeline_layout_, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(source_size),
-                           source_size);
-        vkCmdBindVertexBuffers(command_buffer, 0, 1, &overlay_vertex_buffers_[eye], &offset);
-        vkCmdDraw(command_buffer, static_cast<std::uint32_t>(overlay.size()), 1, 0, 0);
-    }
-
     if (active_modal_.visible && modal_vertex_counts_[eye] == 6 && modal_texture_id_ == active_modal_.texture_id &&
         modal_image_view_ != VK_NULL_HANDLE) {
         std::memcpy(modal_vertex_mapped_[eye], modal_vertices_[eye].data(), sizeof(modal_vertices_[eye]));
@@ -925,6 +914,18 @@ void stereo_renderer::record_boba_overlays(VkCommandBuffer command_buffer, int e
                            source_size);
         vkCmdBindVertexBuffers(command_buffer, 0, 1, &modal_vertex_buffers_[eye], &offset);
         vkCmdDraw(command_buffer, 6, 1, 0, 0);
+    }
+
+    // Draw pointing feedback above the selector, including the hand cursor.
+    const auto& overlay = overlay_vertices_[eye];
+    if (!overlay.empty()) {
+        std::memcpy(overlay_vertex_mapped_[eye], overlay.data(), overlay.size() * sizeof(overlay_vertex));
+        const VkDeviceSize offset = 0;
+        vkCmdBindPipeline(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, overlay_pipeline_);
+        vkCmdPushConstants(command_buffer, overlay_pipeline_layout_, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(source_size),
+                           source_size);
+        vkCmdBindVertexBuffers(command_buffer, 0, 1, &overlay_vertex_buffers_[eye], &offset);
+        vkCmdDraw(command_buffer, static_cast<std::uint32_t>(overlay.size()), 1, 0, 0);
     }
 }
 #endif

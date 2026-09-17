@@ -17,6 +17,7 @@ enum class quest_controller_profile : std::uint8_t {
     valve_index,
     microsoft_motion,
     unknown,
+    hand_interaction, //!< XR_EXT_hand_interaction; aim/grip poses and pinch-as-select.
 };
 
 /** A controller pose expressed in the OpenXR LOCAL reference space. */
@@ -65,7 +66,7 @@ struct quest_controller_axis2d {
     std::int64_t    last_change_time{0}; //!< OpenXR runtime time domain.
 };
 
-/** State for one physical hand controller. */
+/** State for one controller or tracked hand, using the same interaction transport. */
 struct quest_hand_controller {
     /** True when at least one OpenXR action source for this hand is active. */
     bool available{false};
@@ -75,7 +76,7 @@ struct quest_hand_controller {
     quest_controller_pose grip_pose;
     quest_controller_pose aim_pose;
 
-    quest_controller_button trigger;
+    quest_controller_button trigger; //!< Trigger, or the existing runtime pinch action for a tracked hand.
     quest_controller_button squeeze;
     quest_controller_button primary;   //!< X on the left controller, A on the right.
     quest_controller_button secondary; //!< Y on the left controller, B on the right.

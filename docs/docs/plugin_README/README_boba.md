@@ -12,6 +12,8 @@ rendered stereo images to the headset.
 For a step-by-step walkthrough from desktop setup through building, installing,
 and running the Quest APK, see the
 [Boba-ILLIXR operator guide](https://github.com/ILLIXR/Boba-ILLIXR/blob/main/IMMERSIVE_DEMO_OPERATOR_GUIDE.md).
+For hands-only interaction and the floating Game Select menu, see
+[Boba hand input](README_boba_hand_input.md).
 
 Two Quest 3 paths are available:
 
