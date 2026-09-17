@@ -22,13 +22,26 @@ def main():
     header = (root / "include/illixr/data_format/quest_controller.hpp").read_text()
     start = header.index("enum class quest_controller_profile")
     profile_enum = header[start:header.index("\n};", start) + 3]
+    header = (root / "include/illixr/data_format/poses/openxr_defines.hpp").read_text()
+    start = header.index("enum xrt_space_relation_flags")
+    relation_enum = header[start:header.index("\n};", start) + 3]
     harness = r'''
 #include <array>
 #include <cassert>
 #include <cstdint>
 #include <algorithm>
 using XrTime = std::int64_t;
-namespace pose { enum { AIM, GRIP, PINCH, POKE }; }
+namespace pose {
+enum { AIM, GRIP, PINCH, POKE, WRIST = 1 };
+RELATION_ENUM
+struct hand_joint_poses {
+    struct joint {
+        struct { uint32_t relation_flags = XRT_SPACE_RELATION_BITMASK_ALL; } relation;
+    };
+    std::array<joint, 26> joints;
+    bool is_active = true;
+};
+}
 constexpr float kControllerTriggerThreshold = 0.75F;
 constexpr float kControllerSqueezeThreshold = 0.85F;
 PROFILE_ENUM
@@ -64,6 +77,7 @@ struct oxr_relay {
     int controller_secondary_click_action_ = 64, controller_thumbstick_click_action_ = 65;
     int controller_thumbstick_axis_action_ = 66;
     bool ready = true, action_active = true, tracked = true, failed = false;
+    pose::hand_joint_poses joints[2];
     float pinch[2] = {1.0F, 0.0F};
     int physical_queries = 0;
     bool query_controller_pose(int action, int space, int hand, XrTime t, quest_controller_pose* out) {
@@ -94,7 +108,10 @@ struct oxr_relay {
         out->pressed |= value.pressed;
         out->value = std::max(out->value, value.value);
     }
-    bool query_controller_hand(std::size_t, XrTime, quest_hand_controller*);
+    bool query_controller_hand(std::size_t, XrTime, quest_hand_controller*, const pose::hand_joint_poses&);
+    bool sample(std::size_t side, XrTime time, quest_hand_controller* hand) {
+        return query_controller_hand(side, time, hand, joints[side]);
+    }
 };
 SAMPLER
 int main() {
@@ -124,19 +141,48 @@ int main() {
     assert(!hand.available && !hand.trigger.active && !hand.grip_pose.active);
     relay.failed = false;
     relay.action_active = true;
+    // Runtime aim/grip and pinch remain fully active: independently hiding
+    // either joint-tracked hand must still neutralize every input for that hand.
+    for (int missing = 0; missing < 2; ++missing) {
+        relay.pinch[0] = relay.pinch[1] = 1;
+        relay.joints[missing].is_active = false;
+        assert(relay.sample(missing, 123, &hand));
+        assert(hand.interaction_profile == quest_controller_profile::hand_interaction);
+        assert(!hand.available && !hand.grip_pose.active && !hand.aim_pose.active);
+        assert(!hand.trigger.active && !hand.trigger.pressed && hand.trigger.value == 0);
+        assert(relay.sample(1 - missing, 123, &hand));
+        assert(hand.available && hand.trigger.pressed);
+        relay.joints[missing].is_active = true;
+        const auto all_flags = relay.joints[missing].joints[pose::WRIST].relation.relation_flags;
+        for (auto lost_flag : {pose::XRT_SPACE_RELATION_POSITION_VALID_BIT,
+                              pose::XRT_SPACE_RELATION_ORIENTATION_VALID_BIT,
+                              pose::XRT_SPACE_RELATION_POSITION_TRACKED_BIT,
+                              pose::XRT_SPACE_RELATION_ORIENTATION_TRACKED_BIT}) {
+            relay.joints[missing].joints[pose::WRIST].relation.relation_flags = all_flags & ~lost_flag;
+            assert(relay.sample(missing, 123, &hand));
+            assert(!hand.available && !hand.trigger.pressed && !hand.grip_pose.active);
+            assert(relay.sample(1 - missing, 123, &hand));
+            assert(hand.available && hand.trigger.pressed);
+        }
+        relay.joints[missing].joints[pose::WRIST].relation.relation_flags = all_flags;
+        assert(relay.sample(missing, 123, &hand));
+        assert(hand.available && hand.trigger.pressed);
+    }
     relay.controller_profiles_[0] = quest_controller_profile::oculus_touch;
+    relay.joints[0].is_active = false; // Physical controllers do not need joints.
     assert(relay.query_controller_hand(0, 123, &hand));
     assert(hand.trigger.pressed && hand.primary.pressed && hand.thumbstick.active);
     assert(relay.physical_queries == 7);
 }
-'''.replace("PROFILE_ENUM", profile_enum).replace("SAMPLER", sampler)
+'''.replace("relay.query_controller_hand(", "relay.sample(")
+    harness = harness.replace("PROFILE_ENUM", profile_enum).replace("RELATION_ENUM", relation_enum).replace("SAMPLER", sampler)
     with tempfile.TemporaryDirectory(prefix="boba-hand-input-") as directory:
         path = Path(directory)
         (path / "sampler.cpp").write_text(harness)
         subprocess.run([args.cxx, "-std=c++17", "-Wall", "-Wextra", str(path / "sampler.cpp"),
                         "-o", str(path / "sampler")], check=True)
         subprocess.run([str(path / "sampler")], check=True)
-    print("PASS: existing hand actions, release, readiness, loss, failure, both hands, controller fallback")
+    print("PASS: existing hand actions, readiness, independent hand loss, predicted wrist rejection, failure, controller fallback")
 
 
 if __name__ == "__main__":

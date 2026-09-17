@@ -119,14 +119,15 @@ private:
     void destroy_hand_tracking();
 
     /**
-     * @brief Update hand tracking and palm pose data for the current frame.
+     * @brief Locate joint poses using the existing hand trackers.
      *
-     * Locates hand joints at the predicted display time, publishes joint tracking
-     * data to "hand_tracking" and extracts palm poses to publish on "palm_poses".
+     * The pose thread and Boba input sampler supply their own output snapshots
+     * so they do not share mutable joint data across threads.
      *
      * @param predicted_time The predicted display time for this frame
+     * @param hand_poses Caller-owned output, cleared when tracking is unavailable
      */
-    void update_hand_tracking(XrTime predicted_time);
+    void update_hand_tracking(XrTime predicted_time, data_format::pose::hand_joint_poses_pair& hand_poses);
 
     // ==================== Hand Interaction ====================
 
@@ -173,8 +174,9 @@ private:
     /** Refresh the runtime-selected interaction profile for each hand. */
     void refresh_controller_profiles();
 
-    /** Query every pose/button/axis source for one controller. */
-    bool query_controller_hand(std::size_t hand_index, XrTime sample_time, data_format::quest_hand_controller* hand);
+    /** Query one controller, requiring current joint tracking for bare hands. */
+    bool query_controller_hand(std::size_t hand_index, XrTime sample_time, data_format::quest_hand_controller* hand,
+                               const data_format::pose::hand_joint_poses& joints);
 
     /** Locate one active pose action in LOCAL space at sample_time. */
     bool query_controller_pose(XrAction action, XrSpace space, XrPath hand_path, XrTime sample_time,

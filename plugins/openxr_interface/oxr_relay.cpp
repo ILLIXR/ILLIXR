@@ -164,7 +164,7 @@ void oxr_relay::_p_one_iteration() {
     }
 
     // Update hand tracking at the predicted display time
-    update_hand_tracking(pose_time);
+    update_hand_tracking(pose_time, current_hand_poses_);
     // Update hand interaction poses at the predicted display time
     update_hand_interaction(pose_time);
 
@@ -227,16 +227,19 @@ void oxr_relay::destroy_hand_tracking() {
     }
 }
 
-void oxr_relay::update_hand_tracking(XrTime predicted_time) {
+void oxr_relay::update_hand_tracking(XrTime predicted_time, pose::hand_joint_poses_pair& hand_poses) {
+    // The pose thread and Boba frame sampler each own their output. Never use a
+    // cached hand from an earlier frame, including on failure or a missing tracker.
+    hand_poses = {};
     if (!hand_tracking_supported_ || !xr_locate_hand_joints_) {
         return;
     }
 
-    current_hand_poses_.sensor_time = clock_->now();
+    hand_poses.sensor_time = clock_->now();
 
     // Process both hands
     XrHandTrackerEXT        trackers[2]    = {left_hand_tracker_, right_hand_tracker_};
-    pose::hand_joint_poses* hand_states[2] = {&current_hand_poses_[pose::LEFT], &current_hand_poses_[pose::RIGHT]};
+    pose::hand_joint_poses* hand_states[2] = {&hand_poses[pose::LEFT], &hand_poses[pose::RIGHT]};
     const char*             hand_names[2]  = {"left", "right"};
 
     for (int hand_idx = 0; hand_idx < 2; hand_idx++) {
@@ -276,8 +279,8 @@ void oxr_relay::update_hand_tracking(XrTime predicted_time) {
             spdlog::get("illixr")->warn("[oxr_timing] xrLocateHandJointsEXT ({}) took {:.2f}ms", hand_names[hand_idx], ms);
 
         // Throttle per-hand logging to once every 300 frames (~5 s at 60 Hz)
-        static uint64_t ht_log_counter[2] = {0, 0};
-        const bool      ht_should_log     = (++ht_log_counter[hand_idx] % log_interval) == 1;
+        static std::atomic<uint64_t> ht_log_counter[2]{};
+        const bool                   ht_should_log = (++ht_log_counter[hand_idx] % log_interval) == 1;
 
         if (ht_should_log) {
             spdlog::get("illixr")->debug("[hand_tracking] {} xrLocateHandJointsEXT result={} isActive={}", hand_names[hand_idx],
@@ -316,19 +319,14 @@ void oxr_relay::update_hand_tracking(XrTime predicted_time) {
         }
     }
 
-    if (current_hand_poses_.has_hands()) {
-        // spdlog::get("illixr")->debug("[hand_tracking] publishing: left={} right={}",
-        //                              current_hand_poses_.hands[pose::LEFT].is_active  ? "tracked" : "not tracked",
-        //                              current_hand_poses_.hands[pose::RIGHT].is_active ? "tracked" : "not tracked");
-
-    } else {
+    if (!hand_poses.has_hands()) {
         // Only log occasionally to avoid spam
-        static uint64_t no_tracking_count = 0;
-        if (++no_tracking_count % log_interval == 1) {
-            spdlog::get("illixr")->info("[hand_tracking] not publishing — has_hands()=false "
+        static std::atomic<uint64_t> no_tracking_count{0};
+        const auto                   count = ++no_tracking_count;
+        if (count % log_interval == 1) {
+            spdlog::get("illixr")->info("[hand_tracking] has_hands()=false "
                                         "(left tracked={} right tracked={}) count={}",
-                                        current_hand_poses_.hands[pose::LEFT].is_active,
-                                        current_hand_poses_.hands[pose::RIGHT].is_active, no_tracking_count);
+                                        hand_poses.hands[pose::LEFT].is_active, hand_poses.hands[pose::RIGHT].is_active, count);
         }
     }
 }
@@ -1188,9 +1186,21 @@ void oxr_relay::merge_controller_button(quest_controller_button* destination, co
     destination->last_change_time        = std::max(destination->last_change_time, source.last_change_time);
 }
 
-bool oxr_relay::query_controller_hand(std::size_t hand_index, XrTime sample_time, quest_hand_controller* hand) {
+bool oxr_relay::query_controller_hand(std::size_t hand_index, XrTime sample_time, quest_hand_controller* hand,
+                                      const pose::hand_joint_poses& joints) {
     *hand                     = quest_hand_controller{};
     hand->interaction_profile = controller_profiles_[hand_index];
+    if (hand->interaction_profile == quest_controller_profile::hand_interaction) {
+        // Action poses can remain valid/predicted after a hand leaves view. Use
+        // the existing per-hand joint tracker at this frame's display time as
+        // the presence check, independently of pinch readiness or the other hand.
+        constexpr auto required_flags = pose::XRT_SPACE_RELATION_POSITION_VALID_BIT |
+            pose::XRT_SPACE_RELATION_ORIENTATION_VALID_BIT | pose::XRT_SPACE_RELATION_POSITION_TRACKED_BIT |
+            pose::XRT_SPACE_RELATION_ORIENTATION_TRACKED_BIT;
+        if (!joints.is_active || (joints.joints[pose::WRIST].relation.relation_flags & required_flags) != required_flags) {
+            return true; // Neutral output hides this hand and releases its grab.
+        }
+    }
     if (!query_controller_pose(interaction_pose_actions_[pose::GRIP], interaction_pose_spaces_[hand_index][pose::GRIP],
                                hand_subaction_paths_[hand_index], sample_time, &hand->grip_pose) ||
         !query_controller_pose(interaction_pose_actions_[pose::AIM], interaction_pose_spaces_[hand_index][pose::AIM],
@@ -1258,8 +1268,14 @@ void oxr_relay::publish_boba_input(XrTime predicted_time, XrDuration predicted_p
         std::lock_guard<std::mutex> actions_lock{actions_mutex_};
         if (sync_actions()) {
             refresh_controller_profiles();
-            if (!query_controller_hand(0, predicted_time, &controller.left) ||
-                !query_controller_hand(1, predicted_time, &controller.right)) {
+            pose::hand_joint_poses_pair hand_poses;
+            if (controller_profiles_[0] == quest_controller_profile::hand_interaction ||
+                controller_profiles_[1] == quest_controller_profile::hand_interaction) {
+                update_hand_tracking(predicted_time, hand_poses);
+            }
+            const bool left_ok  = query_controller_hand(0, predicted_time, &controller.left, hand_poses[pose::LEFT]);
+            const bool right_ok = query_controller_hand(1, predicted_time, &controller.right, hand_poses[pose::RIGHT]);
+            if (!left_ok || !right_ok) {
                 spdlog::get("illixr")->warn("Could not sample all Quest controller actions");
             }
         }

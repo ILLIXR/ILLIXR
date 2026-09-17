@@ -17,6 +17,14 @@ as `hand_interaction` (value 7). Controller sampling retains the existing Touch
 bindings. The Quest manifest already declares hand tracking and the OpenXR
 interface already enables `XR_EXT_hand_interaction` when available.
 
+For bare hands, the sampler also calls the existing `XR_EXT_hand_tracking`
+routine at that display time. Each hand must have an active joint tracker and a
+valid, tracked wrist. Aim/grip actions alone can retain predicted poses after
+tracking is lost. An absent hand therefore produces neutral input even if its
+actions still appear active, releasing only its own grab. Failed or unavailable
+joint tracking also produces neutral hand input. The pose thread and Boba frame
+sampler use separate output snapshots; Boba never reads an older cached hand.
+
 The [companion runtime](https://github.com/ILLIXR/Boba-ILLIXR/tree/hand-interaction)
 adds a floating **Game Select** button at the lower-right
 of the view. Aim and pinch opens a panel with Rope, Sloth, and Close buttons.
@@ -27,6 +35,8 @@ The companion also reuses the phone demo's red and blue hand icons. Their
 fingertips follow the pointing target in both eyes even before pinch input is
 ready. Pinching selects or grabs; releasing keeps the pointer visible while the
 hand is tracked. The client draws pointing feedback above the selector panel.
+The decorative arrows are removed, and hand mode draws no laser or
+controller-origin dots. The aim ray is still used internally for targeting.
 
 ## Build and install
 
@@ -48,7 +58,9 @@ export QUEST_SERIAL=YOUR_QUEST_SERIAL  # Use the identifier shown as "device".
 Wait for `Success` and note the Wi-Fi address printed by the installer. Add
 `--no-build` only when reinstalling an APK already built from this checkout.
 Installing the older PR #498 APK replaces this app; reinstall the hand-input
-APK before testing hand rays and pinch controls.
+APK before testing hand pointers and pinch controls. These presence checks run
+on the Quest, so installing the updated APK is required; restart the desktop
+demo to load the matching pointer rendering changes.
 
 If ADB reports `device not found`, run `adb devices` again and use the current
 identifier with status `device`. Reconnect the USB data cable if the list is
@@ -109,7 +121,8 @@ ctest --test-dir build/boba-checks --output-on-failure
 ```
 
 `boba_hand_input` compiles the production sampling method against deterministic
-action sources to check both hands, runtime readiness, tracking loss, failed
+action sources to check each hand independently, runtime readiness, inactive
+joint trackers, predicted/untracked wrists, tracking loss, failed
 queries, and controller fallback. Android compilation checks the actual OpenXR
 API. The companion's `test/test_hand_interaction.py` covers the input bridge,
 existing grab path, menu interaction, and stale-input handling.
@@ -119,10 +132,11 @@ On a physical Quest, put down the controllers and show both open hands:
 | Check | Action and expected behavior |
 | --- | --- |
 | Tutorial | Pinch and release for each page; wait for Ready before the final pinch. |
-| Open-hand pointer | Before pinching, move each open hand. Its ray and red/blue hand icon should follow continuously in both eyes. |
-| Marker | Aim the hand ray at an interaction marker. |
+| Open-hand pointer | Before pinching, move each open hand. Its red/blue hand-only icon should follow continuously in both eyes, without arrows or a laser. |
+| Marker | Place the hand icon's fingertip on an interaction marker. |
 | Grab / move / release | Hold an index–thumb pinch, move the hand, then release. |
 | Tracking recovery | Hide the hand while holding; the pointer disappears and the grab releases. Show an open hand before pinching again. |
+| One hand missing | Hide only the left hand while both are holding, then repeat for the right. The missing hand must disappear and release immediately; the other must keep working. Returning while still pinching must not resume the lost grab. |
 | Menu | Aim at the lower-right **Game Select** button and pinch. The pointer should stay visible above the panel. |
 | Close | Pinch **Close**. Holding that pinch must not grab an object behind the panel. |
 | Game switching | Select Sloth, wait for loading, then choose Rope. |
@@ -130,6 +144,6 @@ On a physical Quest, put down the controllers and show both open hands:
 | Controllers | Pick up Touch controllers and check trigger grab/release and Y/B + joystick selection. |
 | Shutdown | Press Ctrl+C or let the run end. Relaunch the app and server to check reconnection. |
 
-Check both eyes for button visibility and ray alignment while moving the head.
+Check both eyes for button visibility and pointer alignment while moving the head.
 Physical gesture recognition and headset comfort still require Quest testing;
 synthetic input checks cannot establish these.
