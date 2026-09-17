@@ -23,6 +23,11 @@ of the view. Aim and pinch opens a panel with Rope, Sloth, and Close buttons.
 This uses the existing bitmap overlay, texture cache, and native transport.
 Pinch recognition comes from the runtime; no new hand tracker is needed.
 
+The companion also reuses the phone demo's red and blue hand icons. Their
+fingertips follow the pointing target in both eyes even before pinch input is
+ready. Pinching selects or grabs; releasing keeps the pointer visible while the
+hand is tracked. The client draws pointing feedback above the selector panel.
+
 ## Build and install
 
 Use `scripts/setup_boba_immersive.sh` to install this branch's pinned companion,
@@ -114,10 +119,11 @@ On a physical Quest, put down the controllers and show both open hands:
 | Check | Action and expected behavior |
 | --- | --- |
 | Tutorial | Pinch and release for each page; wait for Ready before the final pinch. |
+| Open-hand pointer | Before pinching, move each open hand. Its ray and red/blue hand icon should follow continuously in both eyes. |
 | Marker | Aim the hand ray at an interaction marker. |
 | Grab / move / release | Hold an index–thumb pinch, move the hand, then release. |
-| Tracking recovery | Hide the hand while holding; the grab releases. Show an open hand before pinching again. |
-| Menu | Aim at the lower-right **Game Select** button and pinch. |
+| Tracking recovery | Hide the hand while holding; the pointer disappears and the grab releases. Show an open hand before pinching again. |
+| Menu | Aim at the lower-right **Game Select** button and pinch. The pointer should stay visible above the panel. |
 | Close | Pinch **Close**. Holding that pinch must not grab an object behind the panel. |
 | Game switching | Select Sloth, wait for loading, then choose Rope. |
 | Both hands | Repeat with each hand. Pinching off-panel must not activate the other hand's hovered button. |
