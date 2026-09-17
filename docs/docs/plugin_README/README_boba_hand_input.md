@@ -37,6 +37,15 @@ ready. Pinching selects or grabs; releasing keeps the pointer visible while the
 hand is tracked. The client draws pointing feedback above the selector panel.
 The decorative arrows are removed, and hand mode draws no laser or
 controller-origin dots. The aim ray is still used internally for targeting.
+The cursor follows that aim location during hover and grabs, independently of
+attachment markers. Hand selection uses the adapter's pinch button state;
+weak analog pinch values do not acquire or sustain a grab. Releasing the pinch
+or losing pinch readiness ends the grab with the existing two-frame release
+confirmation. A new first tutorial slide explains these hand controls.
+
+These release, cursor-motion, and tutorial fixes run on the desktop. If the
+Quest already has the hand-input APK with the per-hand presence check from
+commit `78ce974`, restart the desktop demo without reinstalling the APK.
 
 ## Build and install
 
@@ -131,10 +140,11 @@ On a physical Quest, put down the controllers and show both open hands:
 
 | Check | Action and expected behavior |
 | --- | --- |
-| Tutorial | Pinch and release for each page; wait for Ready before the final pinch. |
+| Tutorial | The first page explains hand controls. Pinch and release for each page; weak pinch values must not advance it. Wait for Ready before the final pinch. |
 | Open-hand pointer | Before pinching, move each open hand. Its red/blue hand-only icon should follow continuously in both eyes, without arrows or a laser. |
 | Marker | Place the hand icon's fingertip on an interaction marker. |
 | Grab / move / release | Hold an index–thumb pinch, move the hand, then release. |
+| Hover / release | Move an open hand near the rope. The cursor follows the aim location without snapping to a marker or grabbing. After a grab, open the pinch: the attachment must release without pinching again, even if readiness drops. |
 | Tracking recovery | Hide the hand while holding; the pointer disappears and the grab releases. Show an open hand before pinching again. |
 | One hand missing | Hide only the left hand while both are holding, then repeat for the right. The missing hand must disappear and release immediately; the other must keep working. Returning while still pinching must not resume the lost grab. |
 | Menu | Aim at the lower-right **Game Select** button and pinch. The pointer should stay visible above the panel. |
