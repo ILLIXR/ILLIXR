@@ -184,10 +184,12 @@ else()
                               #plugin.gldemo${ILLIXR_BUILD_SUFFIX}
                               #plugin.android_data${ILLIXR_BUILD_SUFFIX}
                               plugin.tcp_network_backend${ILLIXR_BUILD_SUFFIX}
-                              plugin.udp_network_backend${ILLIXR_BUILD_SUFFIX}
-                              plugin.network_latency.tx${ILLIXR_BUILD_SUFFIX}
-                              plugin.offload_rendering_client${ILLIXR_BUILD_SUFFIX}
-                              plugin.openxr_interface${ILLIXR_BUILD_SUFFIX}
+                              #plugin.udp_network_backend${ILLIXR_BUILD_SUFFIX}
+                              #plugin.network_latency.tx${ILLIXR_BUILD_SUFFIX}
+                              #plugin.offload_rendering_client${ILLIXR_BUILD_SUFFIX}
+                              #plugin.openxr_interface${ILLIXR_BUILD_SUFFIX}
+                              plugin.quest3.unity${ILLIXR_BUILD_SUFFIX}
+                              unity_android_interface${ILLIXR_BUILD_SUFFIX}
                               android
                               native_app_glue
                               EGL
