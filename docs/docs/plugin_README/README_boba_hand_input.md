@@ -26,10 +26,12 @@ joint tracking also produces neutral hand input. The pose thread and Boba frame
 sampler use separate output snapshots; Boba never reads an older cached hand.
 
 The [companion runtime](https://github.com/ILLIXR/Boba-ILLIXR/tree/hand-interaction)
-adds a floating **Game Select** button at the upper-right
+adds a floating **Game Select** button inset from the upper-right
 of the view. Put the hand icon's index fingertip on it, wait for the teal
-highlight and white fingertip dot, then pinch and release. The Rope, Sloth, and
-Close panel expands leftward and downward from the same corner.
+highlight and white fingertip dot, then pinch and release. The Rope, Sloth,
+Exit Game, and Close panel expands leftward and downward. Close dismisses the
+menu; Exit Game uses the existing demo shutdown path and requests native client
+shutdown. Exit needs a fresh pinch, so holding the opening pinch cannot quit.
 This uses the existing bitmap overlay, texture cache, and native transport.
 Pinch recognition comes from the runtime; no new hand tracker is needed.
 
@@ -159,7 +161,7 @@ On a physical Quest, put down the controllers and show both open hands:
 | Game switching | Select Sloth, wait for loading, then choose Rope. |
 | Both hands | Repeat with each hand. Pinching off-panel must not activate the other hand's hovered button. |
 | Controllers | Pick up Touch controllers and check trigger grab/release and Y/B + joystick selection. |
-| Shutdown | Press Ctrl+C or let the run end. Relaunch the app and server to check reconnection. |
+| Shutdown | Open Game Select, release the opening pinch, then point at Exit Game and pinch. The desktop demo and native client should stop. Ctrl+C and a 0.75-second controller side-grip hold also exit. Relaunch the app and server to check reconnection. |
 
 Check both eyes for button visibility and pointer alignment while moving the head.
 Physical gesture recognition and headset comfort still require Quest testing;
