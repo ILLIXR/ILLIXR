@@ -27,6 +27,8 @@ ILLIXR::data_format::quest_controller_profile controller_profile_from_path(const
         return profile::simple_controller;
     if (path == "/interaction_profiles/oculus/touch_controller")
         return profile::oculus_touch;
+    if (path == "/interaction_profiles/ext/hand_interaction_ext")
+        return profile::hand_interaction;
     if (path == "/interaction_profiles/htc/vive_controller")
         return profile::htc_vive;
     if (path == "/interaction_profiles/valve/index_controller")
@@ -1194,6 +1196,26 @@ bool oxr_relay::query_controller_hand(std::size_t hand_index, XrTime sample_time
         !query_controller_pose(interaction_pose_actions_[pose::AIM], interaction_pose_spaces_[hand_index][pose::AIM],
                                hand_subaction_paths_[hand_index], sample_time, &hand->aim_pose)) {
         return false;
+    }
+
+    if (hand->interaction_profile == quest_controller_profile::hand_interaction) {
+        // Reuse the XR_EXT_hand_interaction actions already created/bound by
+        // init_hand_interaction(). The runtime recognizes the pinch; Boba consumes
+        // its value through the existing select channel and moves with grip pose.
+        quest_controller_button ready;
+        if (!query_controller_boolean(interaction_ready_actions_[pose::PINCH], hand_subaction_paths_[hand_index], &ready) ||
+            !query_controller_float(interaction_value_actions_[pose::PINCH], hand_subaction_paths_[hand_index],
+                                    kControllerTriggerThreshold, &hand->trigger)) {
+            *hand = quest_hand_controller{};
+            return false;
+        }
+        hand->trigger.active = hand->trigger.active && ready.active && ready.pressed;
+        if (!hand->trigger.active || !ready.pressed || !hand->grip_pose.tracked() || !hand->aim_pose.valid()) {
+            hand->trigger.pressed = false;
+            hand->trigger.value   = 0.0F;
+        }
+        hand->available = hand->grip_pose.valid() || hand->aim_pose.valid();
+        return true;
     }
 
     quest_controller_button trigger_click;

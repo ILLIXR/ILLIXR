@@ -2015,6 +2015,8 @@ const char* openxr_quest_controller::profile_label(controller_profile profile) {
         return "microsoft_motion";
     case controller_profile::unknown:
         return "unknown";
+    case controller_profile::hand_interaction:
+        return "hand_interaction";
     }
     return "unknown";
 }

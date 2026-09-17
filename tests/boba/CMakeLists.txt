@@ -9,6 +9,10 @@ target_compile_features(keyframe_gate PRIVATE cxx_std_17)
 target_include_directories(keyframe_gate PRIVATE "${ILLIXR_ROOT}")
 add_test(NAME boba_keyframe_recovery COMMAND keyframe_gate)
 
+find_package(Python3 COMPONENTS Interpreter REQUIRED)
+add_test(NAME boba_hand_input
+         COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/hand_input.py" --cxx "${CMAKE_CXX_COMPILER}")
+
 # Optional hardware regression against a built boba_streaming_server plugin.
 set(BOBA_NVENC_LIBRARY "" CACHE FILEPATH "Built libplugin.boba_streaming_server.opt.so")
 if(BOBA_NVENC_LIBRARY)
