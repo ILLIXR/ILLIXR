@@ -18,11 +18,11 @@ template<class Archive>
 void serialize(Archive& ar, HAND_JOINT_SET& hand, const unsigned int version) {
     (void) version;
     for (size_t i = 0; i < HAND_JOINT_COUNT; ++i) {
-    #ifdef ENABLE_MONADO
+#    ifdef ENABLE_MONADO
         ar & hand.values.hand_joint_set_default[i];
-    #else
+#    else
         ar & hand.joints[i];
-    #endif
+#    endif
     }
 
     ar & hand.is_active;

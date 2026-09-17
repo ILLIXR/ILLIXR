@@ -18,8 +18,7 @@ using namespace ILLIXR::data_format;
     , stoplight_{phonebook_->lookup_impl<stoplight>()}
     , cam_{switchboard_->get_buffered_reader<binocular_cam_type>("cam")}
     , imu_cam_writer_{switchboard_->get_network_writer<switchboard::event_wrapper<std::string>>(
-          "compressed_imu_cam",
-          network::topic_config{.serialization_method = network::topic_config::SerializationMethod::PROTOBUF})}
+          "compressed_imu_cam", network::topic_config{network::topic_config::SerializationMethod::PROTOBUF})}
     , log_(spdlogger(switchboard_->get_env_char("OFFLOAD_VIO_LOG_LEVEL"))) {
     std::srand(std::time(0));
 }

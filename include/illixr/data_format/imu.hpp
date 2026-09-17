@@ -2,7 +2,11 @@
 
 #include "illixr/switchboard.hpp"
 
-#include <eigen3/Eigen/Dense>
+#ifdef __ANDROID__
+#    include <Eigen/Dense>
+#else
+#    include <eigen3/Eigen/Dense>
+#endif
 
 namespace ILLIXR::data_format {
 /**

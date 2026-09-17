@@ -1,7 +1,9 @@
 #pragma once
 
-#include "illixr/switchboard.hpp"
-#include "illixr/vk/display_provider.hpp"
+#ifndef __ANDROID__
+
+#    include "illixr/switchboard.hpp"
+#    include "illixr/vk/display_provider.hpp"
 
 namespace ILLIXR::display {
 
@@ -24,3 +26,5 @@ protected:
 };
 
 } // namespace ILLIXR::display
+
+#endif

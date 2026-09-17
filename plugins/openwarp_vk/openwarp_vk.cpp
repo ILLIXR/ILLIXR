@@ -32,8 +32,12 @@ void openwarp_vk::initialize() {
     if (display_provider_->vma_allocator_) {
         this->vma_allocator_ = display_provider_->vma_allocator_;
     } else {
-        this->vma_allocator_ = vulkan::create_vma_allocator(
-            display_provider_->vk_instance_, display_provider_->vk_physical_device_, display_provider_->vk_device_);
+        // No allocator/version was supplied for this borrowed device. Use VMA's
+        // core-1.0 path: Monado can request API 1.0 even on a Vulkan 1.2 GPU.
+        // Claiming 1.2 makes VMA load unavailable core memory-requirements calls.
+        this->vma_allocator_ =
+            vulkan::create_vma_allocator(display_provider_->vk_instance_, display_provider_->vk_physical_device_,
+                                         display_provider_->vk_device_, VK_API_VERSION_1_0);
         deletion_queue_.emplace([=]() {
             vmaDestroyAllocator(vma_allocator_);
         });
@@ -53,7 +57,9 @@ void openwarp_vk::initialize() {
 
 void openwarp_vk::setup(VkRenderPass render_pass, uint32_t subpass,
                         std::shared_ptr<vulkan::buffer_pool<pose::fast_head_pose_type>> buffer_pool,
-                        bool                                                            input_texture_external) {
+                        bool input_texture_external, struct illixr_framebuffer* framebuffer_array, VkExtent2D extent) {
+    (void) framebuffer_array;
+    (void) extent;
     std::lock_guard<std::mutex> lock{setup_mutex_};
 
     display_provider_ = phonebook_->lookup_impl<vulkan::display_provider>();
@@ -128,7 +134,7 @@ void openwarp_vk::partial_destroy() {
     descriptor_pool_ = VK_NULL_HANDLE;
 }
 
-void openwarp_vk::update_uniforms(const pose::fast_head_pose_type& render_pose) {
+void openwarp_vk::update_uniforms(const data_format::pose::fast_head_pose_type& render_pose) {
     num_update_uniforms_calls_++;
 
     pose::head_pose_type latest_pose = disable_warp_ ? render_pose.pose : pose_prediction_->get_fast_pose().pose;
@@ -1210,6 +1216,15 @@ VkPipeline openwarp_vk::create_distortion_correction_pipeline(VkRenderPass rende
                                                         .module = frag,
                                                         .pName  = "main",
                                                         .pSpecializationInfo = nullptr};
+
+#ifdef MONADO_REQUIRED
+    // Native inputs are sampled in linear light; the Monado display target is UNORM.
+    // Standalone offload clients retain the shader's default (already encoded RGB).
+    const VkBool32                 encode_srgb         = VK_TRUE;
+    const VkSpecializationMapEntry srgb_entry          = {0, 0, sizeof(encode_srgb)};
+    const VkSpecializationInfo     srgb_specialization = {1, &srgb_entry, sizeof(encode_srgb), &encode_srgb};
+    frage_stage_info.pSpecializationInfo               = &srgb_specialization;
+#endif
 
     VkPipelineShaderStageCreateInfo shader_stages[] = {vert_stage_info, frage_stage_info};
 

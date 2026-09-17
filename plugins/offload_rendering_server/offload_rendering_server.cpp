@@ -1,20 +1,64 @@
+/**
+ * @file offload_rendering_server.cpp
+ * @brief Offload Rendering Server Implementation
+ *
+ * This file implements the server-side component of ILLIXR's offload rendering system.
+ * It captures rendered frames, encodes them using hardware-accelerated encoding,
+ * and sends them to a remote client for display.
+ *
+ * Two encoding backends are supported:
+ * - FFmpeg with NVENC (default): Uses FFmpeg's Vulkan-CUDA hwaccel pipeline
+ * - Direct NVENC (compile with -DNVENC_ENCODER): Uses NVENC directly without FFmpeg
+ */
 #include "offload_rendering_server.hpp"
+
+#include "illixr/global_module_defs.hpp"
 
 using namespace ILLIXR;
 using namespace ILLIXR::data_format;
+
+#ifndef NVENC_ENCODER
+#    include "ffmpeg_queued_frame.hpp"
 using namespace vulkan::ffmpeg_utils;
+#elif DUMP_FRAMES
+#    include "nvenc/frame_saver_integration.hpp"
+#endif
 
 offload_rendering_server::offload_rendering_server(const std::string& name, phonebook* pb)
     : threadloop{name, pb}
     , log_{spdlogger("debug")}
     , switchboard_{pb->lookup_impl<switchboard>()}
-    , frames_topic_{switchboard_->get_network_writer<compressed_frame>("compressed_frames", {})}
-    , render_pose_{switchboard_->get_reader<pose::fast_head_pose_type>("render_pose")} {
+    , frames_topic_{switchboard_->get_network_writer<compressed_frame>("compressed_frames",
+                                                                       network::topic_config{network::topic_config::BOOST})}
+    , pose_relay_{std::make_shared<pose_relay>(name, pb)} {
     // Only encode and pass depth if requested - otherwise skip it.
     use_pass_depth_ = switchboard_->get_env_char("ILLIXR_USE_DEPTH_IMAGES") != nullptr &&
         std::stoi(switchboard_->get_env_char("ILLIXR_USE_DEPTH_IMAGES"));
+#ifdef _WIN32
+    use_pass_motion_vectors_ = switchboard_->get_env_char("ILLIXR_USE_MOTION_VECTOR_IMAGES") != nullptr &&
+        std::stoi(switchboard_->get_env_char("ILLIXR_USE_MOTION_VECTOR_IMAGES"));
+#endif
     nalu_only_ = switchboard_->get_env_char("ILLIXR_OFFLOAD_RENDERING_NALU_ONLY") != nullptr &&
         std::stoi(switchboard_->get_env_char("ILLIXR_OFFLOAD_RENDERING_NALU_ONLY"));
+#ifdef OPENXR_CLIENT
+    const char* overscan_env = std::getenv("ILLIXR_OVERSCAN");
+    if (overscan_env != nullptr) {
+        overscan_ = std::stof(overscan_env);
+    }
+#endif
+#ifdef _WIN32
+    if (use_pass_motion_vectors_) {
+        log_->info("Encoding motion vector images for the client");
+        // motion vectors require depth data as well
+        use_pass_depth_ = true;
+    } else {
+        log_->info("Not encoding motion vector images for the client");
+    }
+#endif
+    // Linux's depth pipeline (comp_illixr_depth.h) produces grayscale packed
+    // into RGBA8, not Windows' packed RG. nvenc_import_buffer_pool_images()
+    // below imports depth with the matching format for each platform, so
+    // NVENC depth is no longer restricted to Windows.
     if (use_pass_depth_) {
         log_->debug("Encoding depth images for the client");
     } else {
@@ -24,21 +68,54 @@ offload_rendering_server::offload_rendering_server(const std::string& name, phon
     if (nalu_only_) {
         log_->info("Only sending NALUs to the client");
     }
-    spd_add_file_sink("fps", "csv", "warn");
-    log_->warn("Log Time,FPS");
+
+#ifdef NVENC_ENCODER
+    log_->info("Using NVENC encoder (no FFmpeg)");
+#else
+    log_->info("Using FFmpeg encoder");
+#endif
 }
 
 void offload_rendering_server::start() {
+    pose_relay_->start();
+    sender_running_ = true;
+    sender_thread_  = std::thread([this]() {
+        sender_loop();
+    });
     threadloop::start();
 }
 
+void offload_rendering_server::stop() {
+    pose_relay_->stop();
+    sender_running_ = false;
+    send_queue_cv_.notify_all();
+    if (sender_thread_.joinable())
+        sender_thread_.join();
+    threadloop::stop();
+}
+
 void offload_rendering_server::_p_thread_setup() {
+    log_->info("Server render FOV: headset={}", server_params::headset);
+#ifdef OPENXR_CLIENT
+    display_params disp_p;
+    hmd_setup_.recommended_image_width  = (uint32_t) (disp_p.width_pixels * overscan_ / 2.);
+    hmd_setup_.recommended_image_height = (uint32_t) (disp_p.height_pixels * overscan_);
+    for (int eye = 0; eye < 2; eye++) {
+        hmd_setup_.fov_angle_left[eye]  = overscan_ * ILLIXR::server_params::fov_left[eye];
+        hmd_setup_.fov_angle_right[eye] = overscan_ * ILLIXR::server_params::fov_right[eye];
+        hmd_setup_.fov_angle_up[eye]    = overscan_ * ILLIXR::server_params::fov_up[eye];
+        hmd_setup_.fov_angle_down[eye]  = overscan_ * ILLIXR::server_params::fov_down[eye];
+    }
+#endif
+
     // Wait for display provider to be ready
     while (display_provider_ == nullptr) {
         try {
-            display_provider_       = phonebook_->lookup_impl<vulkan::display_provider>();
+            display_provider_ = phonebook_->lookup_impl<vulkan::display_provider>();
+#ifndef NVENC_ENCODER
             display_provider_ffmpeg = display_provider_;
-        } catch (const std::exception& e) {
+#endif
+        } catch (const std::exception&) {
             log_->debug("Display provider not ready yet");
             std::this_thread::sleep_for(std::chrono::seconds(1));
         }
@@ -60,7 +137,11 @@ void offload_rendering_server::_p_thread_setup() {
     // Configure framerate from environment or use default
     auto framerate_env = switchboard_->get_env_char("ILLIXR_OFFLOAD_RENDERING_FRAMERATE");
     if (framerate_env == nullptr) {
+#ifdef OPENXR_CLIENT
+        framerate_ = 90;
+#else
         framerate_ = 144;
+#endif
     } else {
         framerate_ = std::stoi(framerate_env);
     }
@@ -69,15 +150,21 @@ void offload_rendering_server::_p_thread_setup() {
     }
     log_->info("Using framerate: {}", framerate_);
 
+#ifdef NVENC_ENCODER
+    // Initialize Vulkan context for CUDA interop
+    nvenc_init_vulkan_context();
+#else
     // Initialize FFmpeg and CUDA resources
     ffmpeg_init_device();
     ffmpeg_init_cuda_device();
+#endif
     ready_ = true;
 }
 
 void offload_rendering_server::setup(VkRenderPass render_pass, uint32_t subpass,
-                                     std::shared_ptr<vulkan::buffer_pool<pose::fast_head_pose_type>> buffer_pool,
-                                     bool input_texture_vulkan_coordinates) {
+                                     std::shared_ptr<vulkan::buffer_pool<BUFFER_TYPE>> buffer_pool,
+                                     bool input_texture_vulkan_coordinates, struct illixr_framebuffer* framebuffer_array,
+                                     VkExtent2D extent) {
     (void) render_pass;
     (void) subpass;
     (void) input_texture_vulkan_coordinates;
@@ -86,24 +173,65 @@ void offload_rendering_server::setup(VkRenderPass render_pass, uint32_t subpass,
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 
-    this->buffer_pool_ = buffer_pool;
+    buffer_pool_       = buffer_pool;
+    framebuffer_array_ = framebuffer_array;
+    extent_            = extent;
 
-    // Initialize FFmpeg frame contexts and encoders
-    ffmpeg_init_frame_ctx();
-    ffmpeg_init_cuda_frame_ctx();
-    ffmpeg_init_buffer_pool();
-    ffmpeg_init_encoder();
+    log_->info("Setup called:");
+    log_->info("  Buffer pool: {}", (void*) buffer_pool.get());
+    log_->info("  Framebuffer array: {}", (void*) framebuffer_array);
+    log_->info("  Extent: {}x{}", extent.width, extent.height);
+#ifdef NVENC_ENCODER
+    // Initialize index vectors with -1 (not yet imported)
+    color_imported_indices_.assign(OFFLOAD_BUFFER_POOL_SIZE, {-1, -1});
+    depth_imported_indices_.assign(OFFLOAD_BUFFER_POOL_SIZE, {-1, -1});
+    motion_vec_imported_indices_.assign(OFFLOAD_BUFFER_POOL_SIZE, {-1, -1});
 
-    // Allocate output packets for encoded frames
-    for (auto eye = 0; eye < 2; eye++) {
-        encode_out_color_packets_[eye] = av_packet_alloc();
-        if (use_pass_depth_) {
-            encode_out_depth_packets_[eye] = av_packet_alloc();
-        }
-    }
+    log_->info("Initialized index vectors for {} buffers", OFFLOAD_BUFFER_POOL_SIZE);
+
+    // Initialize encoders and import framebuffer images immediately, same
+    // reasoning as the FFmpeg branch below: comp_renderer.c guarantees
+    // fb->image/fb->depth_image are already valid by the time setup() runs,
+    // since Monado creates and assigns them in renderer_ensure_images_and_renderings()
+    // before illixr_initialize_timewarp() ever runs. Deferring this to the
+    // first successful _p_one_iteration() made depth import depend on that
+    // particular frame's app-submitted depth layer being present -- and unlike
+    // the FFmpeg path, a miss here fails silently: depth_imported_indices_
+    // just stays at -1 for that slot forever, with no log line to explain why.
+    // vk_ctx_ is ready here since nvenc_init_vulkan_context() runs in
+    // _p_thread_setup() before ready_ is set, and setup() waits on ready_
+    // above.
+    nvenc_init_encoders();
+    nvenc_import_buffer_pool_images();
+
+#else
+    // Populate image_info immediately -- comp_renderer.c guarantees fb.image
+    // and fb.depth_image (when depth is enabled) are already valid, non-null,
+    // and correctly sized by the time this setup() call happens, since Monado
+    // creates and assigns them in renderer_ensure_images_and_renderings()
+    // before illixr_initialize_timewarp() ever runs. Populating here instead
+    // of on the first successful _p_one_iteration() removes the dependency on
+    // that particular frame's app-submitted depth layer being present --
+    // exactly the race that left codec_depth_ctx_->width/height at 0 when the
+    // one-shot population happened to land on a frame without depth.
+    ffmpeg_populate_buffer_pool_from_framebuffers();
+    log_->info("Populated buffer pool image_info from framebuffer array");
+#endif
 }
 
 void offload_rendering_server::destroy() {
+#ifdef NVENC_ENCODER
+    // NVENC encoders clean up in their destructors
+    for (auto eye = 0; eye < 2; eye++) {
+        color_encoder_[eye].reset();
+        depth_encoder_[eye].reset();
+    }
+
+    // Clean up Vulkan command pool
+    if (vk_ctx_.command_pool && vk_ctx_.device) {
+        vkDestroyCommandPool(vk_ctx_.device, vk_ctx_.command_pool, nullptr);
+    }
+#else
     // Free color frame resources
     for (auto& frame : avvk_color_frames_) {
         for (auto& eye : frame) {
@@ -120,43 +248,183 @@ void offload_rendering_server::destroy() {
         }
     }
 
+    for (size_t eye = 0; eye < 2; ++eye) {
+        av_frame_free(&encode_src_color_frames_[eye]);
+        av_frame_free(&encode_src_depth_frames_[eye]);
+        av_packet_free(&encode_out_color_packets_[eye]);
+        av_packet_free(&encode_out_depth_packets_[eye]);
+    }
+    avcodec_free_context(&codec_color_ctx_);
+    avcodec_free_context(&codec_depth_ctx_);
+    if (depth_transfer_fence_) {
+        vkDestroyFence(display_provider_->vk_device_, depth_transfer_fence_, nullptr);
+        depth_transfer_fence_ = VK_NULL_HANDLE;
+    }
+    if (depth_transfer_pool_) {
+        vkDestroyCommandPool(display_provider_->vk_device_, depth_transfer_pool_, nullptr);
+        depth_transfer_pool_ = VK_NULL_HANDLE;
+    }
+    av_buffer_unref(&depth_frame_ctx_);
+    av_buffer_unref(&cuda_depth_frame_ctx_);
+    av_buffer_unref(&cuda_frame_ctx_);
+    av_buffer_unref(&cuda_device_ctx_);
     // Release FFmpeg contexts
     av_buffer_unref(&frame_ctx_);
     av_buffer_unref(&device_ctx_);
-}
-
-pose::fast_head_pose_type offload_rendering_server::get_fast_pose() const {
-    auto pose = render_pose_.get_ro_nullable();
-    if (pose == nullptr) {
-        return {};
-    } else {
-        return *pose;
-    }
+#endif
 }
 
 void offload_rendering_server::_p_one_iteration() {
-    // Skip if no new frame is available
-    if (buffer_pool_ == nullptr || buffer_pool_->latest_decoded_image == -1) {
-        log_->info("no decoded image, returning");
+    // -- Iteration cadence measurement -------------------------------------
+    // Measures the wall-clock gap between successive _p_one_iteration calls.
+    // If this is significantly above 1/90s (~11ms) the threadloop itself is
+    // being throttled (e.g. by a sleep or by the switchboard schedule).
+    {
+        static auto   last_iter_time = std::chrono::high_resolution_clock::now();
+        static double iter_gap_acc   = 0.0;
+        static int    iter_gap_count = 0;
+        const auto    now            = std::chrono::high_resolution_clock::now();
+        const double  gap_ms         = std::chrono::duration<double, std::milli>(now - last_iter_time).count();
+        last_iter_time               = now;
+        iter_gap_acc += gap_ms;
+        iter_gap_count++;
+        if (iter_gap_count >= 90) {
+            iter_gap_acc   = 0.0;
+            iter_gap_count = 0;
+        }
+    }
+
+    // Wait until setup() has been called (framebuffer_array_ and extent_ set)
+    if (framebuffer_array_ == nullptr || extent_.width == 0) {
         return;
+    }
+
+    // Wait until first frame has been rendered
+    if (buffer_pool_ == nullptr || buffer_pool_->latest_decoded_image == -1) {
+        return;
+    }
+
+    // Skip rendering input before encoding when the sender falls behind.
+    // Dropping an already encoded picture breaks HEVC reference chains for
+    // subsequent pictures, even though TCP delivers the remaining bytes intact.
+    // This thread is the only producer; the sender can only shrink the queue
+    // between this check and enqueueing the encoded frame below.
+    {
+        std::lock_guard<std::mutex> lock(send_queue_mutex_);
+        if (send_queue_.size() >= MAX_QUEUE_DEPTH) {
+            return;
+        }
     }
 
     // Record timing for performance analysis
     auto acquire_image_start_time = std::chrono::high_resolution_clock::now();
-
+    frame_timing_[frame_number_]  = acquire_image_start_time;
     // Acquire the latest frame and pose data
-    std::pair<ILLIXR::vulkan::image_index_t, pose::fast_head_pose_type> res =
+    std::pair<ILLIXR::vulkan::image_index_t, BUFFER_TYPE> res =
         buffer_pool_->post_processing_acquire_image(static_cast<signed char>(last_frame_ind_));
     auto acquire_image_end_time = std::chrono::high_resolution_clock::now();
 
-    auto ind  = res.first;
-    auto pose = res.second;
+    auto ind   = res.first;
+    auto poses = res.second;
 
     if (ind == -1) {
         return;
     }
-    last_frame_ind_ = static_cast<unsigned char>(ind);
+    if (ind == last_frame_ind_) {
+        // Unity has not submitted a new buffer since last iteration.
+        static uint64_t same_buf_drops = 0;
+        if (++same_buf_drops % 90 == 1) {
+            log_->info("[server_diag] same buffer index drop #{} (ind={}) — "
+                       "Unity submit rate may be below iteration rate",
+                       same_buf_drops, ind);
+        }
+        buffer_pool_->post_processing_release_image(ind);
+        return;
+    }
 
+    last_frame_ind_ = ind;
+
+#if defined(__linux__) && !defined(__ANDROID__)
+    // Read per-frame metadata only after acquiring the slot. Allocation handles
+    // stay stable, but validity is published with each rendered frame. Never
+    // encode an old depth image with new color, including startup/no-depth frames.
+    if (use_pass_depth_ && (!framebuffer_array_[2 * ind].depth_valid || !framebuffer_array_[2 * ind + 1].depth_valid)) {
+        static uint64_t missing_depth_frames = 0;
+        if (++missing_depth_frames % 300 == 1) {
+            log_->warn("Skipping frame without valid depth for both eyes ({} skipped); "
+                       "the application must submit a depth projection layer on the color fast path",
+                       missing_depth_frames);
+        }
+        buffer_pool_->post_processing_release_image(ind);
+        return;
+    }
+#elif defined(_WIN32) && defined(NVENC_ENCODER)
+    // Same reasoning as the Linux block above: depth_valid describes only the
+    // current frame (comp_renderer.c sets it true only on the fully-successful
+    // depth-to-RG conversion path, false on every failure branch), so a stale
+    // depth_image handle imported once at setup() is never silently paired
+    // with fresh color. FFmpeg is Linux-only in this codebase, so this only
+    // needs to cover the NVENC backend here.
+    if (use_pass_depth_ && (!framebuffer_array_[2 * ind].depth_valid || !framebuffer_array_[2 * ind + 1].depth_valid)) {
+        static uint64_t missing_depth_frames = 0;
+        if (++missing_depth_frames % 300 == 1) {
+            log_->warn("Skipping frame without valid depth for both eyes ({} skipped); "
+                       "the application must submit a depth projection layer on the color fast path",
+                       missing_depth_frames);
+        }
+        buffer_pool_->post_processing_release_image(ind);
+        return;
+    }
+#endif
+
+    // Import images on first frame ONLY (one-time operation)
+    if (!framebuffers_imported_.load()) {
+#ifndef NVENC_ENCODER
+        log_->info("First frame available - initializing FFmpeg frame contexts and encoders");
+        // setup() snapshots stable allocation metadata (including dimensions).
+        // Only this block initializes encoders, after acquiring valid depth.
+        // Do not reintroduce a second initializer before the validity check:
+        // it would mark imports complete without creating the depth contexts.
+        ffmpeg_init_frame_ctx();
+        ffmpeg_init_cuda_frame_ctx();
+        ffmpeg_init_depth_frame_ctx();
+        ffmpeg_init_buffer_pool();
+        ffmpeg_init_encoder();
+
+        for (auto eye = 0; eye < 2; eye++) {
+            encode_out_color_packets_[eye] = av_packet_alloc();
+            if (use_pass_depth_) {
+                encode_out_depth_packets_[eye] = av_packet_alloc();
+            }
+        }
+#endif
+        framebuffers_imported_.store(true);
+    }
+#ifdef USING_OPENXR
+    last_sent_pose_ = poses[0];
+
+    // Find the combined_pose id that corresponds to the eye poses Unity
+    // rendered with. Average the two eye orientations to reconstruct the
+    // head orientation, then search pose_map_ for the closest match.
+    Eigen::Quaternionf render_q{poses[0].orientation.w, poses[0].orientation.x, poses[0].orientation.y, poses[0].orientation.z};
+
+    uint64_t frame_pose_id = pose_relay_->find_pose_id_by_orientation(render_q);
+#else
+    last_sent_pose_ = poses;
+    log_->info("[POSE_DIAG][current_pose] valid={} pos=({:.3f},{:.3f},{:.3f}) "
+               "ori=({:.3f},{:.3f},{:.3f},{:.3f})",
+               poses.pose.valid, poses.pose.position.x(), poses.pose.position.y(), poses.pose.position.z(),
+               poses.pose.orientation.x(), poses.pose.orientation.y(), poses.pose.orientation.z(), poses.pose.orientation.w());
+
+#endif
+
+    // Record encode operation timing
+    auto encode_start_time = std::chrono::high_resolution_clock::now();
+#ifdef NVENC_ENCODER
+
+    // Encode using NVENC directly
+    nvenc_encode_frames(ind);
+#else
     // Record copy operation timing
     auto copy_start_time = std::chrono::high_resolution_clock::now();
 
@@ -169,17 +437,12 @@ void offload_rendering_server::_p_one_iteration() {
 
         // Process depth frame if enabled
         if (use_pass_depth_) {
-            ret = av_hwframe_transfer_data(encode_src_depth_frames_[eye], avvk_depth_frames_[ind][eye].frame, 0);
-            AV_ASSERT_SUCCESS(ret);
+            ffmpeg_transfer_depth(static_cast<size_t>(ind), eye);
             encode_src_depth_frames_[eye]->pts = static_cast<int64_t>(frame_count_++);
         }
     }
 
     auto copy_end_time = std::chrono::high_resolution_clock::now();
-    buffer_pool_->post_processing_release_image(ind);
-
-    // Record encode operation timing
-    auto encode_start_time = std::chrono::high_resolution_clock::now();
 
     // Encode frames for both eyes
     for (auto eye = 0; eye < 2; eye++) {
@@ -218,62 +481,560 @@ void offload_rendering_server::_p_one_iteration() {
             AV_ASSERT_SUCCESS(ret);
         }
     }
+
+    auto copy_time = std::chrono::duration_cast<std::chrono::microseconds>(copy_end_time - copy_start_time).count();
+    metrics_["copy_time"] += copy_time;
+
+    // Populate near/far clip planes from the framebuffer array (mirrors what nvenc_encode_frames does).
+    if (use_pass_depth_ && framebuffer_array_ != nullptr) {
+        near_z_ = framebuffer_array_[ind * 2].near_z;
+        far_z_  = framebuffer_array_[ind * 2].far_z;
+    } else {
+        near_z_ = 0.0f;
+        far_z_  = 0.0f;
+    }
+
+    // Detect keyframe from the AVPacket flags on eye 0. Both eyes share the same GOP
+    // position so eye 0 is sufficient as the reference for the is_keyframe field.
+    color_frame_is_keyframe_ =
+        (encode_out_color_packets_[0] != nullptr) && (encode_out_color_packets_[0]->flags & AV_PKT_FLAG_KEY) != 0;
+#endif
     auto encode_end_time = std::chrono::high_resolution_clock::now();
+    buffer_pool_->post_processing_release_image(ind);
 
     // Calculate timing metrics
-    auto copy_time   = std::chrono::duration_cast<std::chrono::microseconds>(copy_end_time - copy_start_time).count();
     auto encode_time = std::chrono::duration_cast<std::chrono::microseconds>(encode_end_time - encode_start_time).count();
+    // Catch transient stalls that disappear in one-second averages (both eyes;
+    // includes the input GPU transfer on the FFmpeg path).
+    if (encode_time >= 10000) {
+        size_t queued_frames;
+        {
+            std::lock_guard<std::mutex> lock(send_queue_mutex_);
+            queued_frames = send_queue_.size();
+        }
+        log_->warn("[OFFLOAD_SLOW_ENCODE] frame={} encode_ms={:.2f} send_queue={}", frame_number_, encode_time / 1000.0,
+                   queued_frames);
+    }
     auto acquire_image_time =
         std::chrono::duration_cast<std::chrono::microseconds>(acquire_image_end_time - acquire_image_start_time).count();
 
     // Update performance metrics
-    metrics_["copy_time"] += copy_time;
     metrics_["encode_time"] += encode_time;
     metrics_["acquire_image_time"] += acquire_image_time;
 
-    // Send encoded frame to client
-    enqueue_for_network_send(pose);
+// Send the encoded frame to the client
+#ifdef USING_OPENXR
+    enqueue_for_network_send(poses, frame_pose_id);
+#else
+    enqueue_for_network_send(poses);
+#endif
+    current_encode_time_ = (double) encode_time / 1000.;
 
-    // Log performance metrics every second
-    if (std::chrono::duration_cast<std::chrono::seconds>(std::chrono::high_resolution_clock::now() - fps_start_time_).count() >=
-        1) {
-        log_->info("Encoder FPS: {}", fps_counter_);
-        fps_start_time_ = std::chrono::high_resolution_clock::now();
-        log_->warn("{},{}", fps_start_time_.time_since_epoch().count(), fps_counter_);
+    // Update boxcar FPS window and log per-frame encode time + FPS.
+    {
+        static uint64_t total_encoded = 0;
+        total_encoded++;
 
-        for (auto& metric : metrics_) {
-            double fps = std::max(fps_counter_, (double) 0);
-            log_->info("{}: {}", metric.first, metric.second / fps);
-            metric.second = 0;
+        const auto now = std::chrono::high_resolution_clock::now();
+        fps_window_.push_back(now);
+        const auto cutoff = now - std::chrono::seconds(1);
+        while (!fps_window_.empty() && fps_window_.front() < cutoff) {
+            fps_window_.pop_front();
         }
-
-        if (use_pass_depth_) {
-            log_->info("Depth frame sizes - Left: {} Right: {}", encode_out_depth_packets_[0]->size,
-                       encode_out_depth_packets_[1]->size);
-            // std::cout << "depth left: " << encode_out_depth_packets_[0]->size << " depth right: " <<
-            // encode_out_depth_packets_[0]->size << std::endl;
-        }
-
-        fps_counter_ = 0;
-    } else {
-        fps_counter_++;
+        const float current_fps = static_cast<float>(fps_window_.size());
     }
+
+    // Log accumulated metrics averages once per second.
+    if (!fps_window_.empty()) {
+        const double fps              = static_cast<double>(fps_window_.size());
+        static auto  last_metrics_log = std::chrono::high_resolution_clock::now();
+        const auto   now_check        = std::chrono::high_resolution_clock::now();
+        if (std::chrono::duration_cast<std::chrono::seconds>(now_check - last_metrics_log).count() >= 1) {
+            last_metrics_log = now_check;
+            for (auto& metric : metrics_) {
+                metric.second = 0;
+            }
+#ifdef NVENC_ENCODER
+            if (use_pass_depth_) {
+                log_->info("Depth frame sizes - Left: {} Right: {}", encode_out_depth_packets_[0].size(),
+                           encode_out_depth_packets_[1].size());
+            }
+#else
+            if (use_pass_depth_) {
+                log_->info("Depth frame sizes - Left: {} Right: {}", encode_out_depth_packets_[0]->size,
+                           encode_out_depth_packets_[1]->size);
+            }
+#endif
+        }
+    }
+    frame_number_++;
 }
 
-void offload_rendering_server::enqueue_for_network_send(pose::fast_head_pose_type& pose) {
+void offload_rendering_server::enqueue_for_network_send(BUFFER_TYPE& pose
+#ifdef USING_OPENXR
+                                                        ,
+                                                        uint64_t pose_id
+#endif
+) {
     uint64_t timestamp =
         std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch())
             .count();
 
+#ifdef NVENC_ENCODER
+    // Create compressed frame from NVENC encoded data.
+    //
+    // COMBINED_ENCODING: the color data is a single combined bitstream in
+    // encode_out_combined_color_packet_.  It is passed as the left-eye packet
+    // with an empty right-eye packet so the existing compressed_frame wire
+    // format is unchanged.  The decoder-side change to interpret this as a
+    // combined frame is handled separately.
+    //
+    // Default: two independent per-eye color bitstreams.
+    std::shared_ptr<compressed_frame> frame;
+#    ifdef COMBINED_ENCODING
+    // compressed_frame takes packet references; use an lvalue for the empty eye.
+    PACKET_TYPE empty_right_color{};
+#    endif
+
+#    ifdef _WIN32
+    if (use_pass_motion_vectors_) {
+#        ifdef COMBINED_ENCODING
+        frame = std::make_shared<compressed_frame>(encode_out_combined_color_packet_, empty_right_color,
+                                                   encode_out_depth_packets_[0], encode_out_depth_packets_[1],
+                                                   encode_out_motion_vec_packets_[0], encode_out_motion_vec_packets_[1], pose,
+                                                   timestamp, frame_number_, near_z_, far_z_, nalu_only_);
+#        else
+        frame = std::make_shared<compressed_frame>(encode_out_color_packets_[0], encode_out_color_packets_[1],
+                                                   encode_out_depth_packets_[0], encode_out_depth_packets_[1],
+                                                   encode_out_motion_vec_packets_[0], encode_out_motion_vec_packets_[1], pose,
+                                                   timestamp, frame_number_, near_z_, far_z_, nalu_only_);
+#        endif // COMBINED_ENCODING
+    } else if (use_pass_depth_) {
+#    else
     if (use_pass_depth_) {
-        frames_topic_.put(std::make_shared<compressed_frame>(encode_out_color_packets_[0], encode_out_color_packets_[1],
-                                                             encode_out_depth_packets_[0], encode_out_depth_packets_[1], pose,
-                                                             timestamp, 0, 0.f, 0.f, nalu_only_));
+#    endif
+#    ifdef COMBINED_ENCODING
+        frame = std::make_shared<compressed_frame>(encode_out_combined_color_packet_, empty_right_color,
+                                                   encode_out_depth_packets_[0], encode_out_depth_packets_[1], pose, timestamp,
+                                                   frame_number_, near_z_, far_z_, nalu_only_);
+#    else
+        frame = std::make_shared<compressed_frame>(encode_out_color_packets_[0], encode_out_color_packets_[1],
+                                                   encode_out_depth_packets_[0], encode_out_depth_packets_[1], pose, timestamp,
+                                                   frame_number_, near_z_, far_z_, nalu_only_);
+#    endif // COMBINED_ENCODING
     } else {
-        frames_topic_.put(std::make_shared<compressed_frame>(encode_out_color_packets_[0], encode_out_color_packets_[1], pose,
-                                                             timestamp, 0, nalu_only_));
+#    ifdef COMBINED_ENCODING
+        frame = std::make_shared<compressed_frame>(encode_out_combined_color_packet_, empty_right_color, pose, timestamp,
+                                                   frame_number_, nalu_only_);
+#    else
+        frame = std::make_shared<compressed_frame>(encode_out_color_packets_[0], encode_out_color_packets_[1], pose, timestamp,
+                                                   frame_number_, nalu_only_);
+#    endif // COMBINED_ENCODING
+    }
+#    ifdef OPENXR_CLIENT
+    // Forward render FOV to headset for correct timewarp with overdraw
+    for (int eye = 0; eye < 2; eye++) {
+        frame->fov_left[eye]  = hmd_setup_.fov_angle_left[eye];
+        frame->fov_right[eye] = hmd_setup_.fov_angle_right[eye];
+        frame->fov_up[eye]    = hmd_setup_.fov_angle_up[eye];
+        frame->fov_down[eye]  = hmd_setup_.fov_angle_down[eye];
+    }
+#    endif
+#    ifdef USING_OPENXR
+    frame->pose_id = pose_id;
+#    endif
+    frame->is_keyframe = color_frame_is_keyframe_;
+    frame->encode_time = current_encode_time_;
+
+    {
+        std::lock_guard<std::mutex> lock(send_queue_mutex_);
+        send_queue_.push_back(std::move(frame));
+    }
+    send_queue_cv_.notify_one();
+#else
+    // FFmpeg path: build the same compressed_frame shape as NVENC and route it
+    // through the send queue so the encoding thread is never blocked on network I/O.
+    std::shared_ptr<compressed_frame> frame;
+#    ifdef _WIN32
+    if (use_pass_motion_vectors_) {
+        frame = make_ffmpeg_queued_frame(encode_out_color_packets_[0], encode_out_color_packets_[1],
+                                         encode_out_depth_packets_[0], encode_out_depth_packets_[1],
+                                         encode_out_motion_vec_packets_[0], encode_out_motion_vec_packets_[1], pose, timestamp,
+                                         frame_number_, near_z_, far_z_, nalu_only_);
+    } else if (use_pass_depth_) {
+#    else
+    if (use_pass_depth_) {
+#    endif
+        frame =
+            make_ffmpeg_queued_frame(encode_out_color_packets_[0], encode_out_color_packets_[1], encode_out_depth_packets_[0],
+                                     encode_out_depth_packets_[1], pose, timestamp, frame_number_, near_z_, far_z_, nalu_only_);
+    } else {
+        frame = make_ffmpeg_queued_frame(encode_out_color_packets_[0], encode_out_color_packets_[1], pose, timestamp,
+                                         frame_number_, nalu_only_);
+    }
+
+#    ifdef OPENXR_CLIENT
+    for (int eye = 0; eye < 2; eye++) {
+        frame->fov_left[eye]  = hmd_setup_.fov_angle_left[eye];
+        frame->fov_right[eye] = hmd_setup_.fov_angle_right[eye];
+        frame->fov_up[eye]    = hmd_setup_.fov_angle_up[eye];
+        frame->fov_down[eye]  = hmd_setup_.fov_angle_down[eye];
+    }
+#    endif
+    // frame->pose_id     = pose_id;
+#    ifdef USING_OPENXR
+    frame->pose_id = pose_id;
+#    endif
+    frame->is_keyframe = color_frame_is_keyframe_;
+    frame->encode_time = current_encode_time_;
+
+    {
+        std::lock_guard<std::mutex> lock(send_queue_mutex_);
+        send_queue_.push_back(std::move(frame));
+    }
+    send_queue_cv_.notify_one();
+#endif
+}
+
+#ifdef NVENC_ENCODER
+
+void offload_rendering_server::nvenc_init_vulkan_context() {
+    vk_ctx_.instance              = display_provider_->vk_instance_;
+    vk_ctx_.physical_device       = display_provider_->vk_physical_device_;
+    vk_ctx_.device                = display_provider_->vk_device_;
+    vk_ctx_.graphics_queue        = display_provider_->queues_[vulkan::queue::GRAPHICS].vk_queue;
+    vk_ctx_.graphics_queue_family = display_provider_->queues_[vulkan::queue::GRAPHICS].family;
+
+// Get extension function pointers
+#    ifdef _WIN32
+    vk_ctx_.vkGetMemoryWin32HandleKHR =
+        reinterpret_cast<PFN_vkGetMemoryWin32HandleKHR>(vkGetDeviceProcAddr(vk_ctx_.device, "vkGetMemoryWin32HandleKHR"));
+    vk_ctx_.vkGetSemaphoreWin32HandleKHR =
+        reinterpret_cast<PFN_vkGetSemaphoreWin32HandleKHR>(vkGetDeviceProcAddr(vk_ctx_.device, "vkGetSemaphoreWin32HandleKHR"));
+
+    if (!vk_ctx_.vkGetMemoryWin32HandleKHR) {
+        throw std::runtime_error("vkGetMemoryWin32HandleKHR not available - ensure VK_KHR_external_memory_win32 is enabled");
+    }
+#    else
+    vk_ctx_.vkGetMemoryFdKHR = reinterpret_cast<PFN_vkGetMemoryFdKHR>(vkGetDeviceProcAddr(vk_ctx_.device, "vkGetMemoryFdKHR"));
+    vk_ctx_.vkGetSemaphoreFdKHR =
+        reinterpret_cast<PFN_vkGetSemaphoreFdKHR>(vkGetDeviceProcAddr(vk_ctx_.device, "vkGetSemaphoreFdKHR"));
+
+    if (!vk_ctx_.vkGetMemoryFdKHR) {
+        throw std::runtime_error("vkGetMemoryFdKHR not available - ensure VK_KHR_external_memory_fd is enabled");
+    }
+#    endif
+
+    // Create command pool (may be needed for synchronization)
+    VkCommandPoolCreateInfo pool_info = {};
+    pool_info.sType                   = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+    pool_info.queueFamilyIndex        = vk_ctx_.graphics_queue_family;
+    pool_info.flags                   = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+
+    if (vkCreateCommandPool(vk_ctx_.device, &pool_info, nullptr, &vk_ctx_.command_pool) != VK_SUCCESS) {
+        throw std::runtime_error("Failed to create command pool for NVENC");
+    }
+
+    log_->info("NVENC: Vulkan context initialized");
+}
+
+void offload_rendering_server::nvenc_init_encoders() {
+    // extent_ is the native display resolution (per swapchain).
+    // The framebuffer images were allocated by Monado at render_scale * native.
+    uint32_t encode_width  = extent_.width / 2;
+    uint32_t encode_height = extent_.height;
+
+    if (encode_width == 0 || encode_height == 0) {
+        throw std::runtime_error("Invalid image dimensions - extent not set");
+    }
+
+    // extent_ is the full (both eyes side-by-side) render resolution that Monado produced.
+    // Monado's default XRT_COMPOSITOR_SCALE_PERCENTAGE is 140, meaning it renders at 1.4x
+    // the native headset resolution.  We want to encode at native resolution, so we divide
+    // by the scale factor here.  When running at 100% (SCALE_PERCENTAGE=100) render_scale_
+    // is 1.0 and the division is a no-op.
+    //
+    // The scale factor is read from the same environment variable Monado uses so that the
+    // two always stay in sync.
+
+    auto  scale_env    = switchboard_->get_env_int("XRT_COMPOSITOR_SCALE_PERCENTAGE", 140);
+    float render_scale = static_cast<float>(scale_env) / 100.0f;
+
+    // Source dimensions are what Monado actually rendered (native * scale).
+    // These are informational only — the true values come from fb->image_extent at import time.
+    uint32_t source_width  = static_cast<uint32_t>(std::round(encode_width * render_scale));
+    uint32_t source_height = static_cast<uint32_t>(std::round(encode_height * render_scale));
+
+    log_->info("NVENC: Monado render scale {:.0f}% -> source {}x{} per eye -> encode {}x{} per eye", render_scale * 100.0f,
+               source_width, source_height, encode_width, encode_height);
+// Create color encoders.
+//
+// COMBINED_ENCODING: one encoder at double width encodes both eyes into a
+// single bitstream.  color_encoder_[1] is left null.
+//
+// Default: one encoder per eye at per-eye width.
+#    ifdef COMBINED_ENCODING
+    {
+        const uint32_t combined_width = encode_width * 2;
+        log_->info("NVENC: COMBINED_ENCODING — single color encoder {}x{}", combined_width, encode_height);
+        color_encoder_[0] = std::make_unique<nvenc_encoder>(combined_width, encode_height, bitrate_, framerate_);
+        if (!color_encoder_[0]->initialize(vk_ctx_)) {
+            throw std::runtime_error("Failed to initialize combined color encoder");
+        }
+    }
+#    else
+    // Encoder dimensions are the target (native) resolution; the source (oversized)
+    // Vulkan images are imported separately and the GPU kernel downsamples during
+    // color conversion.
+    for (int eye = 0; eye < 2; eye++) {
+        color_encoder_[eye] = std::make_unique<nvenc_encoder>(encode_width, encode_height, bitrate_, framerate_);
+
+        if (!color_encoder_[eye]->initialize(vk_ctx_)) {
+            std::string eye_label = (eye == 0) ? "left" : "right";
+            throw std::runtime_error("Failed to initialize " + eye_label + " color encoder");
+        }
+    }
+#    endif // COMBINED_ENCODING
+#    ifdef _WIN32
+    if (use_pass_motion_vectors_) {
+        // Motion vectors are encoded at a fixed 432x432 (the resolution produced by
+        // comp_renderer when it blits the Unity quad layer into illixr_framebuffer).
+        // A modest bitrate is sufficient because the image carries quantised
+        // floating-point velocity values, not visually rich content.
+        constexpr uint32_t mv_width   = 432;
+        constexpr uint32_t mv_height  = 432;
+        constexpr int64_t  mv_bitrate = 10000000; // 10 Mbps
+
+        encode_width  = mv_width;
+        encode_height = mv_height;
+        log_->info("NVENC: Initializing motion-vector encoders for {}x{} RGBA16F @ {} Mbps", mv_width, mv_height,
+                   mv_bitrate / 1000000);
+
+        for (int eye = 0; eye < 2; eye++) {
+            motion_vec_encoder_[eye] =
+                std::make_unique<nvenc_encoder>(mv_width, mv_height, mv_bitrate, framerate_, encoder_mode::motion_vector);
+            if (!motion_vec_encoder_[eye]->initialize(vk_ctx_)) {
+                std::string eye_label = (eye == 0) ? "left" : "right";
+                throw std::runtime_error("Failed to initialize " + eye_label + " motion-vector encoder");
+            }
+            log_->info("NVENC: Motion-vector encoder {} initialized", eye);
+        }
+    }
+#    endif
+    if (use_pass_depth_) {
+        // Depth uses lower bitrate (RG format compresses better than color)
+        // Color: 50-100 Mbps, Depth: 15-25 Mbps
+        int64_t depth_bitrate = bitrate_ / 4; // 25 Mbps if color is 100 Mbps
+        if (depth_bitrate < 15000000) {
+            depth_bitrate = 15000000; // Minimum 15 Mbps for quality
+        }
+
+        log_->info("NVENC: Initializing depth encoders for {}x{} RG format @ {} Mbps", encode_width, encode_height,
+                   depth_bitrate / 1000000);
+
+        for (int eye = 0; eye < 2; eye++) {
+            depth_encoder_[eye] =
+                std::make_unique<nvenc_encoder>(encode_width, encode_height, depth_bitrate, framerate_, encoder_mode::depth);
+
+            if (!depth_encoder_[eye]->initialize(vk_ctx_)) {
+                std::string eye_label = (eye == 0) ? "left" : "right";
+                throw std::runtime_error("Failed to initialize " + eye_label + " depth encoder");
+            }
+            log_->info("NVENC: Depth encoder {} initialized (RG format, {} Mbps)", eye, depth_bitrate / 1000000);
+        }
+    }
+
+    log_->info("NVENC: All encoders initialized successfully");
+}
+
+void offload_rendering_server::nvenc_import_buffer_pool_images() {
+    log_->info("Importing Vulkan framebuffers into NVENC encoders");
+
+    // Use framebuffer array passed through setup()
+    if (framebuffer_array_ == nullptr) {
+        log_->error("Framebuffer array not set - setup() not called?");
+        return;
+    }
+
+    for (int buffer_idx = 0; buffer_idx < OFFLOAD_BUFFER_POOL_SIZE; buffer_idx++) {
+        for (int eye = 0; eye < 2; eye++) {
+            int                        fb_idx = buffer_idx * 2 + eye;
+            struct illixr_framebuffer* fb     = &framebuffer_array_[fb_idx];
+
+            if (fb->image == VK_NULL_HANDLE) {
+                log_->warn("Color image buffer {} eye {} still NULL", buffer_idx, eye);
+                continue;
+            }
+            log_->info("Framebuffer[{}] (buffer={}, eye={}): "
+                       "color={}x{} (image={:p}), depth={}x{} (image={:p})",
+                       fb_idx, buffer_idx, eye, fb->image_extent.width, fb->image_extent.height, (void*) fb->image,
+                       fb->depth_extent.width, fb->depth_extent.height, (void*) fb->depth_image);
+
+            // Import COLOR
+            //
+            // COMBINED_ENCODING: each eye image is imported into the single combined
+            // encoder (color_encoder_[0]).  The per-eye Vulkan image dimensions are
+            // passed verbatim; the CUDA texture spans exactly one eye's pixels and the
+            // stereo kernel places it in the correct half of the output NV12 buffer.
+            //
+            // Default: each eye is imported into its own per-eye encoder.
+            vulkan_image_info vk_image;
+            vk_image.image         = fb->image;
+            vk_image.memory        = fb->memory;
+            vk_image.memory_size   = fb->image_size;
+            vk_image.memory_offset = fb->image_offset;
+            vk_image.width         = fb->image_extent.width;
+            vk_image.height        = fb->image_extent.height;
+            vk_image.format        = VK_FORMAT_R8G8B8A8_UNORM;
+            vk_image.tiling        = VK_IMAGE_TILING_OPTIMAL;
+
+#    ifdef COMBINED_ENCODING
+            int imported_idx = color_encoder_[0]->import_vulkan_image(vk_image);
+#    else
+            int imported_idx = color_encoder_[eye]->import_vulkan_image(vk_image);
+#    endif // COMBINED_ENCODING
+            if (imported_idx >= 0) {
+                color_imported_indices_[buffer_idx][eye] = imported_idx;
+                log_->info("Imported color buffer {} eye {} -> encoder index {}", buffer_idx, eye, imported_idx);
+            }
+
+            // Import DEPTH
+            if (use_pass_depth_ && fb->depth_image != VK_NULL_HANDLE) {
+                vulkan_image_info depth_vk_image;
+                depth_vk_image.image         = fb->depth_image;
+                depth_vk_image.memory        = fb->depth_memory;
+                depth_vk_image.memory_size   = fb->depth_size;
+                depth_vk_image.memory_offset = fb->depth_offset;
+                depth_vk_image.width         = fb->depth_extent.width;
+                depth_vk_image.height        = fb->depth_extent.height;
+#    if defined(__linux__) && !defined(__ANDROID__) && !defined(USING_OPENXR)
+                // Linux's depth pipeline (comp_illixr_depth.h) writes grayscale
+                // packed into all four RGBA8 channels, not Windows' packed RG.
+                // Only when USING_OPENXR is unset -- spacewarp clients need
+                // full 16-bit depth, so comp_illixr_depth.h packs RG the same
+                // way Windows does whenever USING_OPENXR is defined, even on
+                // Linux.
+                depth_vk_image.format = VK_FORMAT_R8G8B8A8_UNORM;
+#    else
+                depth_vk_image.format = VK_FORMAT_R8G8_UNORM;
+#    endif
+                depth_vk_image.tiling = VK_IMAGE_TILING_OPTIMAL;
+
+                int depth_idx = depth_encoder_[eye]->import_vulkan_image(depth_vk_image);
+                if (depth_idx >= 0) {
+                    depth_imported_indices_[buffer_idx][eye] = depth_idx;
+                    log_->info("Imported depth buffer {} eye {} -> encoder index {}", buffer_idx, eye, depth_idx);
+                }
+            }
+#    ifdef _WIN32
+            // Import MOTION VECTORS
+            if (use_pass_motion_vectors_ && fb->motion_vec_image != VK_NULL_HANDLE) {
+                vulkan_image_info mv_vk_image;
+                mv_vk_image.image         = fb->motion_vec_image;
+                mv_vk_image.memory        = fb->motion_vec_memory;
+                mv_vk_image.memory_size   = fb->motion_vec_size;
+                mv_vk_image.memory_offset = fb->motion_vec_offset;
+                mv_vk_image.width         = fb->motion_vec_extent.width;
+                mv_vk_image.height        = fb->motion_vec_extent.height;
+                mv_vk_image.format        = VK_FORMAT_R16G16B16A16_SFLOAT;
+                mv_vk_image.tiling        = VK_IMAGE_TILING_OPTIMAL;
+
+                int mv_idx = motion_vec_encoder_[eye]->import_vulkan_image(mv_vk_image);
+                if (mv_idx >= 0) {
+                    motion_vec_imported_indices_[buffer_idx][eye] = mv_idx;
+                    log_->info("Imported motion-vector buffer {} eye {} -> encoder index {}", buffer_idx, eye, mv_idx);
+                } else {
+                    log_->warn("Failed to import motion-vector buffer {} eye {}", buffer_idx, eye);
+                }
+            } else {
+                log_->warn("No MV in buffer");
+            }
+#    endif
+        }
     }
 }
+
+void offload_rendering_server::nvenc_encode_frames(int ind) {
+    // Bounds check
+    if (ind < 0 || ind >= static_cast<int>(color_imported_indices_.size())) {
+        log_->error("Buffer index {} out of range (size={})", ind, color_imported_indices_.size());
+        return;
+    }
+
+    // Capture per-frame near/far clip planes from the depth framebuffer so they can
+    // be forwarded to the decoder via compressed_frame.  Eye 0 is used as the
+    // reference; both eyes share the same projection clip planes in Unity.
+    // Values are 0 when no depth layer was submitted this frame.
+    if (use_pass_depth_ && framebuffer_array_ != nullptr) {
+        int fb_idx = ind * 2; // eye 0
+        near_z_    = framebuffer_array_[fb_idx].near_z;
+        far_z_     = framebuffer_array_[fb_idx].far_z;
+    } else {
+        near_z_ = 0.0f;
+        far_z_  = 0.0f;
+    }
+
+// Encode color.
+//
+// COMBINED_ENCODING: call encode_stereo on color_encoder_[0] using both eye
+// indices.  The result is a single bitstream containing both eyes side-by-side
+// and is stored in encode_out_combined_color_packet_.
+//
+// Default: encode each eye independently into encode_out_color_packets_[eye].
+#    ifdef COMBINED_ENCODING
+    {
+        const int left_idx  = color_imported_indices_[ind][0];
+        const int right_idx = color_imported_indices_[ind][1];
+        if (left_idx < 0 || right_idx < 0) {
+            log_->warn("Buffer {} color not fully imported yet (left={} right={}), skipping", ind, left_idx, right_idx);
+        } else {
+            encode_out_combined_color_packet_ = color_encoder_[0]->encode_stereo(left_idx, right_idx);
+            color_frame_is_keyframe_          = color_encoder_[0]->last_frame_was_keyframe();
+        }
+    }
+#    else
+    for (int eye = 0; eye < 2; eye++) {
+        const int color_index = color_imported_indices_[ind][eye];
+        if (color_index < 0) {
+            log_->warn("Buffer {} eye {} not imported yet, skipping", ind, eye);
+            continue;
+        }
+        encode_out_color_packets_[eye] = color_encoder_[eye]->encode(color_index);
+        // Both eyes share the same GOP position; eye 0 is the reference.
+        if (eye == 0) {
+            color_frame_is_keyframe_ = color_encoder_[0]->last_frame_was_keyframe();
+        }
+    }
+#    endif // COMBINED_ENCODING
+
+    // Depth and motion-vector encoding is unchanged by COMBINED_ENCODING
+    // (they remain per-eye because the decoder still expects separate streams).
+    for (int eye = 0; eye < 2; eye++) {
+        // Encode depth frame if enabled
+        if (use_pass_depth_) {
+            int depth_index = depth_imported_indices_[ind][eye];
+            if (depth_index >= 0) {
+                std::vector<uint8_t> encoded_depth = depth_encoder_[eye]->encode(depth_index);
+                encode_out_depth_packets_[eye]     = std::move(encoded_depth);
+            }
+        }
+
+        // Encode motion vector frame if enabled
+#    ifdef _WIN32
+        if (use_pass_motion_vectors_) {
+            int mv_index = motion_vec_imported_indices_[ind][eye];
+            if (mv_index >= 0) {
+                std::vector<uint8_t> encoded_mv     = motion_vec_encoder_[eye]->encode(mv_index);
+                encode_out_motion_vec_packets_[eye] = std::move(encoded_mv);
+            } else {
+                log_->warn("Motion-vector buffer {} eye {} not imported, skipping", ind, eye);
+            }
+        }
+#    endif
+    }
+}
+
+#else // FFmpeg implementation
 
 void offload_rendering_server::ffmpeg_init_device() {
     this->device_ctx_     = av_hwdevice_ctx_alloc(AV_HWDEVICE_TYPE_VULKAN);
@@ -303,6 +1064,24 @@ void offload_rendering_server::ffmpeg_init_device() {
         default:
             break;
         }
+    }
+
+    if (vulkan_hwdev_ctx->nb_comp_queues == 0) {
+        // Monado exposes one graphics queue, not a separate COMPUTE entry.
+        // FFmpeg still creates a compute execution pool: a zero count led to
+        // vkAllocateCommandBuffers(commandBufferCount=0). Reuse the actual
+        // graphics queue only after checking that its family supports compute.
+        uint32_t count = 0;
+        vkGetPhysicalDeviceQueueFamilyProperties(display_provider_->vk_physical_device_, &count, nullptr);
+        std::vector<VkQueueFamilyProperties> families(count);
+        vkGetPhysicalDeviceQueueFamilyProperties(display_provider_->vk_physical_device_, &count, families.data());
+        const auto family = vulkan_hwdev_ctx->queue_family_index;
+        if (vulkan_hwdev_ctx->nb_graphics_queues < 1 || family < 0 || static_cast<uint32_t>(family) >= count ||
+            !(families[family].queueFlags & VK_QUEUE_COMPUTE_BIT)) {
+            throw std::runtime_error{"FFmpeg needs a compute-capable queue exposed by Monado"};
+        }
+        vulkan_hwdev_ctx->queue_family_comp_index = family;
+        vulkan_hwdev_ctx->nb_comp_queues          = 1;
     }
 
     // Configure dedicated transfer queue if available
@@ -356,12 +1135,13 @@ void offload_rendering_server::ffmpeg_init_frame_ctx() {
     // Configure pixel format based on Vulkan image format
     auto pix_format = vulkan::ffmpeg_utils::get_pix_format_from_vk_format(buffer_pool_->image_pool[0][0].image_info.format);
     if (!pix_format) {
-        throw std::runtime_error{"Unsupported Vulkan image format when creating FFmpeg Vulkan hwframe context"};
+        throw std::runtime_error{"Unsupported Vulkan image format " +
+                                 std::to_string(buffer_pool_->image_pool[0][0].image_info.format) +
+                                 " when creating FFmpeg Vulkan hwframe context"};
     }
-    assert(pix_format == AV_PIX_FMT_BGRA);
 
     // Set frame properties
-    hwframe_ctx->sw_format         = AV_PIX_FMT_BGRA;
+    hwframe_ctx->sw_format         = *pix_format;
     hwframe_ctx->width             = static_cast<int>(buffer_pool_->image_pool[0][0].image_info.extent.width);
     hwframe_ctx->height            = static_cast<int>(buffer_pool_->image_pool[0][0].image_info.extent.height);
     hwframe_ctx->initial_pool_size = 0;
@@ -377,16 +1157,244 @@ void offload_rendering_server::ffmpeg_init_cuda_frame_ctx() {
         throw std::runtime_error{"Failed to create FFmpeg CUDA hwframe context"};
     }
 
+    // sw_format must match the actual Vulkan source pixel layout: the Vulkan->CUDA
+    // transfer is a zero-copy remap of the same GPU memory, not a format conversion.
+    auto pix_format = vulkan::ffmpeg_utils::get_pix_format_from_vk_format(buffer_pool_->image_pool[0][0].image_info.format);
+    if (!pix_format) {
+        throw std::runtime_error{"Unsupported Vulkan image format " +
+                                 std::to_string(buffer_pool_->image_pool[0][0].image_info.format) +
+                                 " when creating FFmpeg CUDA hwframe context"};
+    }
+
     // Configure CUDA frame properties
     auto cuda_hwframe_ctx       = reinterpret_cast<AVHWFramesContext*>(cuda_frame_ref->data);
     cuda_hwframe_ctx->format    = AV_PIX_FMT_CUDA;
-    cuda_hwframe_ctx->sw_format = AV_PIX_FMT_BGRA;
+    cuda_hwframe_ctx->sw_format = *pix_format;
     cuda_hwframe_ctx->width     = static_cast<int>(buffer_pool_->image_pool[0][0].image_info.extent.width);
     cuda_hwframe_ctx->height    = static_cast<int>(buffer_pool_->image_pool[0][0].image_info.extent.height);
 
     auto ret = av_hwframe_ctx_init(cuda_frame_ref);
     AV_ASSERT_SUCCESS(ret);
     this->cuda_frame_ctx_ = cuda_frame_ref;
+}
+
+void offload_rendering_server::ffmpeg_init_depth_frame_ctx() {
+    if (!use_pass_depth_) {
+        return;
+    }
+    const auto& info   = buffer_pool_->depth_image_pool[0][0].image_info;
+    const auto  format = vulkan::ffmpeg_utils::get_pix_format_from_vk_format(info.format);
+    if (!format || !info.extent.width || !info.extent.height) {
+        throw std::runtime_error{"Depth image has no supported format or dimensions"};
+    }
+    auto init_context = [&](AVBufferRef* device, AVPixelFormat hardware_format, AVBufferRef*& output) {
+        output = av_hwframe_ctx_alloc(device);
+        if (!output) {
+            throw std::runtime_error{"Failed to allocate depth frame context"};
+        }
+        auto* context      = reinterpret_cast<AVHWFramesContext*>(output->data);
+        context->format    = hardware_format;
+        context->sw_format = *format;
+        context->width     = static_cast<int>(info.extent.width);
+        context->height    = static_cast<int>(info.extent.height);
+        AV_ASSERT_SUCCESS(av_hwframe_ctx_init(output));
+    };
+    init_context(device_ctx_, AV_PIX_FMT_VULKAN, depth_frame_ctx_);
+    init_context(cuda_device_ctx_, AV_PIX_FMT_CUDA, cuda_depth_frame_ctx_);
+
+    const auto device = display_provider_->vk_device_;
+    // Monado enables VK_KHR_timeline_semaphore on an older Vulkan API version.
+    // Volk's global core-1.2 vkWaitSemaphores may therefore be null even though
+    // timeline semaphores work. Resolve the device's extension entry point first,
+    // with a core fallback for providers that use Vulkan 1.2 without the extension.
+    // Keep this pointer local to our device instead of modifying Volk globals.
+    depth_wait_semaphores_ = reinterpret_cast<PFN_vkWaitSemaphores>(vkGetDeviceProcAddr(device, "vkWaitSemaphoresKHR"));
+    if (!depth_wait_semaphores_) {
+        depth_wait_semaphores_ = reinterpret_cast<PFN_vkWaitSemaphores>(vkGetDeviceProcAddr(device, "vkWaitSemaphores"));
+    }
+    if (!depth_wait_semaphores_) {
+        throw std::runtime_error{"Depth transfer requires vkWaitSemaphoresKHR or vkWaitSemaphores"};
+    }
+    VkCommandPoolCreateInfo pool_info{VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO};
+    pool_info.flags            = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+    pool_info.queueFamilyIndex = display_provider_->queues_[vulkan::queue::GRAPHICS].family;
+    if (vkCreateCommandPool(device, &pool_info, nullptr, &depth_transfer_pool_) != VK_SUCCESS) {
+        throw std::runtime_error{"Failed to create depth transfer command pool"};
+    }
+    VkCommandBufferAllocateInfo command_info{VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO};
+    command_info.commandPool        = depth_transfer_pool_;
+    command_info.level              = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    command_info.commandBufferCount = 1;
+    if (vkAllocateCommandBuffers(device, &command_info, &depth_transfer_cmd_) != VK_SUCCESS) {
+        throw std::runtime_error{"Failed to allocate depth transfer command buffer"};
+    }
+    VkFenceCreateInfo fence_info{VK_STRUCTURE_TYPE_FENCE_CREATE_INFO};
+    if (vkCreateFence(device, &fence_info, nullptr, &depth_transfer_fence_) != VK_SUCCESS) {
+        throw std::runtime_error{"Failed to create depth transfer fence"};
+    }
+}
+
+void offload_rendering_server::ffmpeg_transfer_depth(size_t buffer_index, size_t eye) {
+    // This checkout's ILLIXR_FFmpeg fork returns immediately from prepare_frame().
+    // It performs the CUDA copy/semaphore operations, but NOT Vulkan layout or
+    // external queue-family transfers. Supply those explicitly for depth.
+    auto*      frame  = avvk_depth_frames_[buffer_index][eye].vk_frame;
+    auto&      queue  = display_provider_->queues_[vulkan::queue::GRAPHICS];
+    const auto device = display_provider_->vk_device_;
+    auto       check  = [buffer_index, eye](VkResult result, const char* operation) {
+        if (result != VK_SUCCESS) {
+            throw std::runtime_error{"Depth Vulkan/CUDA handoff failed at " + std::string{operation} +
+                                     " (buffer=" + std::to_string(buffer_index) + ", eye=" + std::to_string(eye) + "): " +
+                                     (result == VK_ERROR_DEVICE_LOST ? "VK_ERROR_DEVICE_LOST " : "") + std::to_string(result)};
+        }
+    };
+    auto submit_barrier = [&](bool release) {
+        check(vkResetCommandBuffer(depth_transfer_cmd_, 0), "reset command buffer");
+        VkCommandBufferBeginInfo begin{VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO};
+        begin.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+        check(vkBeginCommandBuffer(depth_transfer_cmd_, &begin), "begin command buffer");
+        VkImageMemoryBarrier barrier{VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER};
+        barrier.image               = frame->img[0];
+        barrier.subresourceRange    = {VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1};
+        barrier.oldLayout           = release ? VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL : VK_IMAGE_LAYOUT_GENERAL;
+        barrier.newLayout           = release ? VK_IMAGE_LAYOUT_GENERAL : VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+        barrier.srcQueueFamilyIndex = release ? queue.family : VK_QUEUE_FAMILY_EXTERNAL;
+        barrier.dstQueueFamilyIndex = release ? VK_QUEUE_FAMILY_EXTERNAL : queue.family;
+        barrier.srcAccessMask       = release ? VK_ACCESS_MEMORY_WRITE_BIT : 0;
+        barrier.dstAccessMask       = release ? 0 : VK_ACCESS_SHADER_READ_BIT;
+        vkCmdPipelineBarrier(depth_transfer_cmd_, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, 0, 0,
+                             nullptr, 0, nullptr, 1, &barrier);
+        check(vkEndCommandBuffer(depth_transfer_cmd_), "end command buffer");
+        check(vkResetFences(device, 1, &depth_transfer_fence_), "reset fence");
+        VkTimelineSemaphoreSubmitInfo timeline{VK_STRUCTURE_TYPE_TIMELINE_SEMAPHORE_SUBMIT_INFO};
+        VkSubmitInfo                  submit{VK_STRUCTURE_TYPE_SUBMIT_INFO};
+        submit.commandBufferCount = 1;
+        submit.pCommandBuffers    = &depth_transfer_cmd_;
+        if (release) {
+            // FFmpeg waits on this value, then CUDA signals the following value
+            // after copying the image into its private encoding buffer.
+            ++frame->sem_value[0];
+            timeline.signalSemaphoreValueCount = 1;
+            timeline.pSignalSemaphoreValues    = &frame->sem_value[0];
+            submit.pNext                       = &timeline;
+            submit.signalSemaphoreCount        = 1;
+            submit.pSignalSemaphores           = &frame->sem[0];
+        }
+        {
+            vulkan::queue_guard lock(*display_provider_, vulkan::queue::GRAPHICS);
+            check(vkQueueSubmit(queue.vk_queue, 1, &submit, depth_transfer_fence_),
+                  release ? "submit release to CUDA" : "submit acquire from CUDA");
+        }
+        check(vkWaitForFences(device, 1, &depth_transfer_fence_, VK_TRUE, UINT64_MAX),
+              release ? "wait release fence (before depth copy)" : "wait acquire fence (after depth copy)");
+    };
+    // Device loss can be reported by the next wait even when an earlier color
+    // operation caused it. This optional checkpoint separates that case from
+    // failure of the depth release submission without changing normal timing.
+    if (switchboard_->get_env_bool("ILLIXR_DEPTH_SYNC_DIAGNOSTICS")) {
+        vulkan::queue_guard lock(*display_provider_, vulkan::queue::GRAPHICS);
+        check(vkQueueWaitIdle(queue.vk_queue), "diagnostic queue idle before depth release");
+    }
+    submit_barrier(true);
+    frame->layout[0]       = VK_IMAGE_LAYOUT_GENERAL;
+    frame->queue_family[0] = VK_QUEUE_FAMILY_EXTERNAL;
+    frame->access[0]       = static_cast<VkAccessFlagBits>(0);
+    AV_ASSERT_SUCCESS(av_hwframe_transfer_data(encode_src_depth_frames_[eye], avvk_depth_frames_[buffer_index][eye].frame, 0));
+    VkSemaphoreWaitInfo wait{VK_STRUCTURE_TYPE_SEMAPHORE_WAIT_INFO};
+    wait.semaphoreCount = 1;
+    wait.pSemaphores    = &frame->sem[0];
+    wait.pValues        = &frame->sem_value[0];
+    check(depth_wait_semaphores_(device, &wait, UINT64_MAX), "wait CUDA copy semaphore");
+    // Do not release the buffer-pool slot while CUDA still reads its source.
+    // Reacquire ownership before Monado records the next conversion into it.
+    submit_barrier(false);
+    frame->layout[0]       = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    frame->queue_family[0] = queue.family;
+    frame->access[0]       = VK_ACCESS_SHADER_READ_BIT;
+}
+
+void offload_rendering_server::ffmpeg_populate_buffer_pool_from_framebuffers() {
+    assert(this->buffer_pool_ != nullptr);
+    if (framebuffer_array_ == nullptr) {
+        throw std::runtime_error{"Cannot initialize FFmpeg frames before Monado framebuffer array is available"};
+    }
+
+    for (size_t buffer_idx = 0; buffer_idx < buffer_pool_->image_pool.size(); buffer_idx++) {
+        for (size_t eye = 0; eye < 2; eye++) {
+            const size_t                     fb_idx = buffer_idx * 2 + eye;
+            const struct illixr_framebuffer& fb     = framebuffer_array_[fb_idx];
+
+            if (fb.image == VK_NULL_HANDLE || fb.memory == VK_NULL_HANDLE || fb.image_extent.width == 0 ||
+                fb.image_extent.height == 0) {
+                throw std::runtime_error{"Monado framebuffer " + std::to_string(fb_idx) +
+                                         " is not ready for FFmpeg initialization"};
+            }
+
+            auto& image                        = buffer_pool_->image_pool[buffer_idx][eye];
+            image.image                        = fb.image;
+            image.image_view                   = fb.view;
+            image.allocation_info.deviceMemory = fb.memory;
+            image.allocation_info.size         = fb.image_size;
+            image.allocation_info.offset       = fb.image_offset;
+            image.image_info                   = {
+                VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
+                nullptr,
+                0,
+                VK_IMAGE_TYPE_2D,
+                VK_FORMAT_R8G8B8A8_UNORM,
+                {fb.image_extent.width, fb.image_extent.height, 1},
+                1,
+                1,
+                VK_SAMPLE_COUNT_1_BIT,
+                VK_IMAGE_TILING_OPTIMAL,
+                VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+                VK_SHARING_MODE_EXCLUSIVE,
+                0,
+                nullptr,
+                VK_IMAGE_LAYOUT_UNDEFINED,
+            };
+
+            if (use_pass_depth_) {
+                // All slots are allocated before setup; a missing handle is an
+                // initialization error, not a zero-sized image for FFmpeg.
+                if (!fb.depth_image || !fb.depth_memory || !fb.depth_extent.width || !fb.depth_extent.height) {
+                    throw std::runtime_error{"Missing depth allocation for Monado framebuffer " + std::to_string(fb_idx)};
+                }
+                auto& depth_image                        = buffer_pool_->depth_image_pool[buffer_idx][eye];
+                depth_image.image                        = fb.depth_image;
+                depth_image.image_view                   = fb.depth_view;
+                depth_image.allocation_info.deviceMemory = fb.depth_memory;
+                depth_image.allocation_info.size         = fb.depth_size;
+                depth_image.allocation_info.offset       = fb.depth_offset;
+                depth_image.image_info                   = {
+                    VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
+                    nullptr,
+                    0,
+                    VK_IMAGE_TYPE_2D,
+#    if defined(__linux__) && !defined(__ANDROID__)
+                    // Matches Monado's compute output: linear grayscale RGBA8.
+                    // FFmpeg is never built with USING_OPENXR by convention
+                    // (that combination always uses NVENC instead), so this
+                    // stays unconditional on Linux -- no need to track
+                    // comp_illixr_depth.h's USING_OPENXR branch here.
+                    VK_FORMAT_R8G8B8A8_UNORM,
+#    else
+                    VK_FORMAT_R8G8_UNORM,
+#    endif
+                    {fb.depth_extent.width, fb.depth_extent.height, 1},
+                    1,
+                    1,
+                    VK_SAMPLE_COUNT_1_BIT,
+                    VK_IMAGE_TILING_OPTIMAL,
+                    VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+                    VK_SHARING_MODE_EXCLUSIVE,
+                    0,
+                    nullptr,
+                    VK_IMAGE_LAYOUT_UNDEFINED,
+                };
+            }
+        }
+    }
 }
 
 void offload_rendering_server::ffmpeg_init_buffer_pool() {
@@ -470,7 +1478,7 @@ void offload_rendering_server::ffmpeg_init_buffer_pool() {
                 av_depth_frame->format = AV_PIX_FMT_VULKAN;
                 av_depth_frame->width  = static_cast<int>(buffer_pool_->depth_image_pool[i][eye].image_info.extent.width);
                 av_depth_frame->height = static_cast<int>(buffer_pool_->depth_image_pool[i][eye].image_info.extent.height);
-                av_depth_frame->hw_frames_ctx = av_buffer_ref(frame_ctx_);
+                av_depth_frame->hw_frames_ctx = av_buffer_ref(depth_frame_ctx_);
                 av_depth_frame->data[0]       = reinterpret_cast<uint8_t*>(vk_depth_frame);
                 av_depth_frame->buf[0] = av_buffer_create(av_depth_frame->data[0], 0, [](void*, uint8_t*) { }, nullptr, 0);
                 av_depth_frame->pts    = 0;
@@ -502,7 +1510,7 @@ void offload_rendering_server::ffmpeg_init_buffer_pool() {
         if (use_pass_depth_) {
             encode_src_depth_frames_[eye]                = av_frame_alloc();
             encode_src_depth_frames_[eye]->format        = AV_PIX_FMT_CUDA;
-            encode_src_depth_frames_[eye]->hw_frames_ctx = av_buffer_ref(cuda_frame_ctx_);
+            encode_src_depth_frames_[eye]->hw_frames_ctx = av_buffer_ref(cuda_depth_frame_ctx_);
             encode_src_depth_frames_[eye]->width =
                 static_cast<int>(buffer_pool_->depth_image_pool[0][0].image_info.extent.width);
             encode_src_depth_frames_[eye]->height =
@@ -515,7 +1523,7 @@ void offload_rendering_server::ffmpeg_init_buffer_pool() {
             encode_src_depth_frames_[eye]->color_primaries = AVCOL_PRI_BT709;
             encode_src_depth_frames_[eye]->pict_type       = AV_PICTURE_TYPE_I;
 
-            ret = av_hwframe_get_buffer(cuda_frame_ctx_, encode_src_depth_frames_[eye], 0);
+            ret = av_hwframe_get_buffer(cuda_depth_frame_ctx_, encode_src_depth_frames_[eye], 0);
             AV_ASSERT_SUCCESS(ret);
         }
     }
@@ -539,8 +1547,13 @@ void offload_rendering_server::ffmpeg_init_encoder() {
     codec_color_ctx_->thread_type  = FF_THREAD_SLICE;
 
     // Configure pixel format and hardware acceleration
-    codec_color_ctx_->pix_fmt       = AV_PIX_FMT_CUDA;
-    codec_color_ctx_->sw_pix_fmt    = AV_PIX_FMT_BGRA;
+    codec_color_ctx_->pix_fmt = AV_PIX_FMT_CUDA;
+    auto color_pix_format =
+        vulkan::ffmpeg_utils::get_pix_format_from_vk_format(buffer_pool_->image_pool[0][0].image_info.format);
+    if (!color_pix_format) {
+        throw std::runtime_error{"Unsupported Vulkan image format when configuring FFmpeg encoder"};
+    }
+    codec_color_ctx_->sw_pix_fmt    = *color_pix_format;
     codec_color_ctx_->hw_frames_ctx = av_buffer_ref(cuda_frame_ctx_);
 
     // Set frame dimensions and timing
@@ -578,8 +1591,8 @@ void offload_rendering_server::ffmpeg_init_encoder() {
 
         // Configure pixel format and hardware acceleration
         codec_depth_ctx_->pix_fmt       = AV_PIX_FMT_CUDA;
-        codec_depth_ctx_->sw_pix_fmt    = AV_PIX_FMT_BGRA;
-        codec_depth_ctx_->hw_frames_ctx = av_buffer_ref(cuda_frame_ctx_);
+        codec_depth_ctx_->sw_pix_fmt    = reinterpret_cast<AVHWFramesContext*>(cuda_depth_frame_ctx_->data)->sw_format;
+        codec_depth_ctx_->hw_frames_ctx = av_buffer_ref(cuda_depth_frame_ctx_);
 
         // Set frame dimensions and timing
         codec_depth_ctx_->width     = static_cast<int>(buffer_pool_->depth_image_pool[0][0].image_info.extent.width);
@@ -602,5 +1615,29 @@ void offload_rendering_server::ffmpeg_init_encoder() {
 
         ret = avcodec_open2(codec_depth_ctx_, encoder, nullptr);
         AV_ASSERT_SUCCESS(ret);
+    }
+}
+#endif // NVENC_ENCODER
+
+void offload_rendering_server::sender_loop() {
+    while (sender_running_) {
+        std::shared_ptr<data_format::compressed_frame> frame;
+        {
+            std::unique_lock<std::mutex> lock(send_queue_mutex_);
+            send_queue_cv_.wait(lock, [this] {
+                return !send_queue_.empty() || !sender_running_;
+            });
+            if (!sender_running_ && send_queue_.empty())
+                break;
+            frame = std::move(send_queue_.front());
+            send_queue_.pop_front();
+        }
+        if (pose_usage_.count(frame->pose_id) == 0) {
+            pose_usage_[frame->pose_id] = 1;
+        } else {
+            pose_usage_[frame->pose_id]++;
+        }
+
+        frames_topic_.put(std::move(frame));
     }
 }

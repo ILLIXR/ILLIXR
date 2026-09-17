@@ -16,7 +16,8 @@ public:
     void initialize();
     void setup(VkRenderPass render_pass, uint32_t subpass,
                std::shared_ptr<vulkan::buffer_pool<data_format::pose::fast_head_pose_type>> buffer_pool,
-               bool input_texture_vulkan_coordinates_in) override;
+               bool input_texture_vulkan_coordinates_in, struct illixr_framebuffer* framebuffer_array,
+               VkExtent2D extent) override;
     void partial_destroy();
     void update_uniforms(const BUFFER_TYPE& render_pose) override;
     void record_command_buffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left) override;
@@ -46,6 +47,7 @@ private:
     const std::shared_ptr<data_format::pose_prediction>         pose_prediction_;
     switchboard::reader<switchboard::event_wrapper<time_point>> vsync_;
     bool                                                        disable_warp_     = false;
+    bool                                                        raw_preview_      = false;
     std::shared_ptr<vulkan::display_provider>                   display_provider_ = nullptr;
     std::mutex                                                  setup_mutex_;
 

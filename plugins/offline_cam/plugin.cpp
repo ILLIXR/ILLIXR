@@ -11,8 +11,7 @@ using namespace ILLIXR;
 using namespace ILLIXR::data_format;
 
 // combine two maps into one
-std::map<ullong, sensor_types> make_map(const std::map<ullong, lazy_load_image>& cam0,
-                                        const std::map<ullong, lazy_load_image>& cam1) {
+std::map<ullong, sensor_types> make_map(const std::map<ullong, LAZY_TYPE>& cam0, const std::map<ullong, LAZY_TYPE>& cam1) {
     std::map<ullong, sensor_types> data;
     for (auto& it : cam0) {
         data[it.first].cam0 = it.second;
@@ -23,12 +22,16 @@ std::map<ullong, sensor_types> make_map(const std::map<ullong, lazy_load_image>&
     return data;
 }
 
-inline std::map<ullong, lazy_load_image> read_data(std::ifstream& gt_file, const std::string& file_name) {
-    std::map<ullong, lazy_load_image> data;
-    auto                              name = std::regex_replace(file_name, std::regex("\\.csv"), "/");
+inline std::map<ullong, LAZY_TYPE> read_data(std::ifstream& gt_file, const std::string& file_name) {
+    std::map<ullong, LAZY_TYPE> data;
+    auto                        name = std::regex_replace(file_name, std::regex("\\.csv"), "/");
     for (csv_iterator row{gt_file, 1}; row != csv_iterator{}; ++row) {
         ullong t = std::stoull(row[0]);
-        data[t]  = lazy_load_image{name + row[1]};
+#ifdef __ANDROID__
+        data[t] = new lazy_load_image(name + row[1]);
+#else
+        data[t] = lazy_load_image{name + row[1]};
+#endif
     }
     return data;
 }
@@ -37,8 +40,8 @@ inline std::map<ullong, lazy_load_image> read_data(std::ifstream& gt_file, const
     : threadloop{name, pb}
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
     , cam_publisher_{switchboard_->get_writer<binocular_cam_type>("cam")}
-    , sensor_data_{make_map(load_data<lazy_load_image>("cam0", "offline_cam", &read_data, switchboard_),
-                            load_data<lazy_load_image>("cam1", "offline_cam", &read_data, switchboard_))}
+    , sensor_data_{make_map(load_data<LAZY_TYPE>("cam0", "offline_cam", &read_data, switchboard_),
+                            load_data<LAZY_TYPE>("cam1", "offline_cam", &read_data, switchboard_))}
     , dataset_first_time_{sensor_data_.cbegin()->first}
     , last_timestamp_{0}
     , clock_{phonebook_->lookup_impl<relative_clock>()}
@@ -47,60 +50,38 @@ inline std::map<ullong, lazy_load_image> read_data(std::ifstream& gt_file, const
 }
 
 ILLIXR::threadloop::skip_option offline_cam::_p_should_skip() {
-    if (true) {
-        return skip_option::run;
-    } else {
+    if (next_row_ == sensor_data_.end()) {
         return skip_option::stop;
     }
+
+    const auto target_time = std::chrono::nanoseconds{next_row_->first - dataset_first_time_};
+    std::this_thread::sleep_for(target_time - clock_->now().time_since_epoch());
+    return skip_option::run;
 }
 
 void offline_cam::_p_one_iteration() {
-    duration time_since_start = clock_->now().time_since_epoch();
-    // duration begin            = time_since_start;
-    ullong lookup_time = std::chrono::nanoseconds{time_since_start}.count() + dataset_first_time_;
-    std::map<ullong, sensor_types>::const_iterator nearest_row;
+    assert(next_row_ != sensor_data_.end());
+    auto current_row = next_row_++;
 
-    // "std::map::upper_bound" returns an iterator to the first pair whose key is GREATER than the argument.
-    auto after_nearest_row = sensor_data_.upper_bound(lookup_time);
+    if (last_timestamp_ != current_row->first) {
+        last_timestamp_ = current_row->first;
 
-    if (after_nearest_row == sensor_data_.cend()) {
-#ifndef NDEBUG
-        spdlog::get(name_)->warn("Running out of the dataset! Time {} ({} + {}) after last datum {}", lookup_time,
-                                 clock_->now().time_since_epoch().count(), dataset_first_time_, sensor_data_.rbegin()->first);
+#ifdef __ANDROID__
+        auto img0 = current_row->second.cam0->load();
+        auto img1 = current_row->second.cam1->load();
+#else
+        auto img0 = current_row->second.cam0.load();
+        auto img1 = current_row->second.cam1.load();
 #endif
-        // Handling the last camera images. There's no more rows after the nearest_row, so we set after_nearest_row
-        // to be nearest_row to avoiding sleeping at the end.
-        nearest_row       = std::prev(after_nearest_row, 1);
-        after_nearest_row = nearest_row;
-        // We are running out of the dataset and the loop will stop next time.
-        internal_stop();
-    } else if (after_nearest_row == sensor_data_.cbegin()) {
-        // Should not happen because lookup_time is bigger than dataset_first_time_
-#ifndef NDEBUG
-        spdlog::get(name_)->warn("Time {} ({} + {}) before first datum {}", lookup_time,
-                                 clock_->now().time_since_epoch().count(), dataset_first_time_, sensor_data_.cbegin()->first);
-#endif
-    } else {
-        // Most recent
-        nearest_row = std::prev(after_nearest_row, 1);
-    }
-
-    if (last_timestamp_ != nearest_row->first) {
-        last_timestamp_ = nearest_row->first;
-
-        auto img0 = nearest_row->second.cam0.load();
-        auto img1 = nearest_row->second.cam1.load();
 
         time_point expected_real_time_given_dataset_time(
-            std::chrono::duration<long long, std::nano>{nearest_row->first - dataset_first_time_});
+            std::chrono::duration<long long, std::nano>{current_row->first - dataset_first_time_});
         cam_publisher_.put(cam_publisher_.allocate<binocular_cam_type>(binocular_cam_type{
             expected_real_time_given_dataset_time,
             img0,
             img1,
         }));
     }
-    std::this_thread::sleep_for(std::chrono::nanoseconds(after_nearest_row->first - dataset_first_time_ -
-                                                         clock_->now().time_since_epoch().count() - 2));
 }
 
 PLUGIN_MAIN(offline_cam)

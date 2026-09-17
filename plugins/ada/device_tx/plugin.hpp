@@ -11,9 +11,9 @@
 #include "video_encoder.hpp"
 
 #if __has_include("sr_input.pb.h")
-    #include "sr_input.pb.h"
+#    include "sr_input.pb.h"
 #else
-    #include "../proto/input_stub.hpp"
+#    include "../proto/input_stub.hpp"
 #endif
 
 #include <filesystem>

@@ -1,0 +1,27 @@
+---
+- author.astro-friedel
+- pr.474
+---
+This work introduces Windows support for ILLIXR for the first time. The changes are primarily focussed on the internal ILLIXR systems (e.g., switchboard, common headers, etc.). These changes include:
+  - Fixing definitions that are not pre-defined on Windows (e.g., M_PI)
+  - Clock updates to use OS-specific mechanisms
+  - Dependency installation via vcpkg on Windows
+  - Rework vulkan initialization, as Windows does not allow our current style of struct initialization
+  - Update Gl code to work on Windows
+  - Update CMakeLists.txt files to work with Windows (proper library linking)
+  - Update src files to use OS specific library loading and environment variable retrieval
+  - Removal of all symlinks, which led to some restructuring of the code
+  - Added OS detection to all plugin CMakeLists.txt files, defaulting to not building on Windows. Individual plugins will be enabled as they are updated.
+Some pluigns and servies are also included in this work:
+  - native_renderer
+  - offline_cam
+  - offline_imu
+  - offload_rendering_server, utilizing NVIDIA's NVENC libraries to support HEVC and AV1 encoding as well as both CUDA 12 and 13
+  - passthrough_integrator
+  - rk4_integrator
+  - timewarp_vk
+  - fauxpose
+  - pose_lookup
+  - pose_prediction
+  - vkdemo
+  - tcp_network_backend

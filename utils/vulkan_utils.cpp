@@ -11,19 +11,19 @@
 #include <vulkan/vulkan.h>
 
 #ifdef __linux__
-    #pragma clang diagnostic push
-    #pragma clang diagnostic ignored "-Weverything"
+#    pragma clang diagnostic push
+#    pragma clang diagnostic ignored "-Weverything"
 #endif
 #define VMA_STATIC_VULKAN_FUNCTIONS  0
 #define VMA_DYNAMIC_VULKAN_FUNCTIONS 1
 #include "illixr/switchboard.hpp"
 #ifdef __linux__
-    #include "illixr/vk/third_party/vk_mem_alloc.h"
+#    include "illixr/vk/third_party/vk_mem_alloc.h"
 #else
-    #include <vma/vk_mem_alloc.h>
+#    include <vma/vk_mem_alloc.h>
 #endif
 #ifdef __linux__
-    #pragma clang diagnostic pop
+#    pragma clang diagnostic pop
 #endif
 
 using namespace ILLIXR::vulkan;
@@ -187,7 +187,7 @@ void ILLIXR::vulkan::wait_timeline_semaphores(VkDevice device, const std::map<Vk
  * @return The created VMA allocator.
  */
 VmaAllocator ILLIXR::vulkan::create_vma_allocator(VkInstance vk_instance, VkPhysicalDevice vk_physical_device,
-                                                  VkDevice vk_device) {
+                                                  VkDevice vk_device, uint32_t api_version) {
     VmaVulkanFunctions vulkanFunctions{};
     vulkanFunctions.vkGetInstanceProcAddr = &vkGetInstanceProcAddr;
     vulkanFunctions.vkGetDeviceProcAddr   = &vkGetDeviceProcAddr;
@@ -197,7 +197,9 @@ VmaAllocator ILLIXR::vulkan::create_vma_allocator(VkInstance vk_instance, VkPhys
     allocatorCreateInfo.device           = vk_device;
     allocatorCreateInfo.pVulkanFunctions = &vulkanFunctions;
     allocatorCreateInfo.instance         = vk_instance;
-    allocatorCreateInfo.vulkanApiVersion = VK_API_VERSION_1_2;
+    // This must not exceed the API requested when creating the instance.
+    // A newer physical-device version alone does not enable core entry points.
+    allocatorCreateInfo.vulkanApiVersion = api_version;
 
     VmaAllocator allocator;
     VK_ASSERT_SUCCESS(vmaCreateAllocator(&allocatorCreateInfo, &allocator))

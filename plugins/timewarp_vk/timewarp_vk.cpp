@@ -7,6 +7,8 @@
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #define GLM_ENABLE_EXPERIMENTAL
+#include <algorithm>
+#include <cmath>
 #include <future>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -73,14 +75,17 @@ timewarp_vk::timewarp_vk(const phonebook* const pb)
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
     , pose_prediction_{phonebook_->lookup_impl<pose_prediction>()}
     , vsync_{switchboard_->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")}
-    , disable_warp_{switchboard_->get_env_bool("ILLIXR_TIMEWARP_DISABLE", "False")} { }
+    , disable_warp_{switchboard_->get_env_bool("ILLIXR_TIMEWARP_DISABLE", "False")}
+    , raw_preview_{switchboard_->get_env_bool("ILLIXR_TIMEWARP_RAW_PREVIEW", "False")} { }
 
 void timewarp_vk::initialize() {
     if (display_provider_->vma_allocator_) {
         this->vma_allocator_ = display_provider_->vma_allocator_;
     } else {
         this->vma_allocator_ = vulkan::create_vma_allocator(
-            display_provider_->vk_instance_, display_provider_->vk_physical_device_, display_provider_->vk_device_);
+            // A borrowed Monado instance may only request core Vulkan 1.0.
+            display_provider_->vk_instance_, display_provider_->vk_physical_device_, display_provider_->vk_device_,
+            VK_API_VERSION_1_0);
         deletion_queue_.emplace([=]() {
             vmaDestroyAllocator(vma_allocator_);
         });
@@ -100,7 +105,9 @@ void timewarp_vk::initialize() {
 
 void timewarp_vk::setup(VkRenderPass render_pass, uint32_t subpass,
                         std::shared_ptr<vulkan::buffer_pool<pose::fast_head_pose_type>> buffer_pool,
-                        bool                                                            input_texture_external_in) {
+                        bool input_texture_external_in, struct illixr_framebuffer* framebuffer_array, VkExtent2D extent) {
+    (void) framebuffer_array;
+    (void) extent;
     std::lock_guard<std::mutex> lock{setup_mutex_};
 
     display_provider_ = phonebook_->lookup_impl<vulkan::display_provider>();
@@ -151,6 +158,18 @@ void timewarp_vk::partial_destroy() {
 void timewarp_vk::update_uniforms(const BUFFER_TYPE& render_pose) {
     num_update_uniforms_calls_++;
 
+    if (raw_preview_) {
+        // The preview mesh supplies texture UVs directly. The shader passes
+        // (u, v, -1, 1), then divides xy by z, so make z positive one.
+        const glm::mat4 transform = glm::scale(glm::mat4{1.0f}, glm::vec3{1.0f, 1.0f, -1.0f});
+        auto*           ubo       = static_cast<uniform_buffer_object*>(uniform_alloc_info_.pMappedData);
+        for (int eye = 0; eye < 2; ++eye) {
+            ubo->timewarp_start_transform[eye] = transform;
+            ubo->timewarp_end_transform[eye]   = transform;
+        }
+        return;
+    }
+
     // Generate "starting" view matrix, from the pose sampled at the time of rendering the frame
     Eigen::Matrix4f view_matrix   = Eigen::Matrix4f::Identity();
     view_matrix.block(0, 0, 3, 3) = render_pose.pose.orientation.toRotationMatrix();
@@ -167,6 +186,38 @@ void timewarp_vk::update_uniforms(const BUFFER_TYPE& render_pose) {
     pose::head_pose_type latest_pose = disable_warp_
         ? render_pose.pose
         : (next_vsync == nullptr ? pose_prediction_->get_fast_pose().pose : pose_prediction_->get_fast_pose(**next_vsync).pose);
+
+    static unsigned long long tw_pose_count = 0;
+    ++tw_pose_count;
+
+    const Eigen::Vector3f pos_delta = latest_pose.position - render_pose.pose.position;
+    Eigen::Quaternionf    render_q  = render_pose.pose.orientation.normalized();
+    Eigen::Quaternionf    latest_q  = latest_pose.orientation.normalized();
+    const float           quat_dot  = std::clamp(std::abs(render_q.dot(latest_q)), 0.0f, 1.0f);
+    const float           angle_deg = 2.0f * std::acos(quat_dot) * 180.0f / static_cast<float>(M_PI);
+    const long long       render_sensor_ns =
+        std::chrono::duration_cast<std::chrono::nanoseconds>(render_pose.pose.sensor_time.time_since_epoch()).count();
+    const long long latest_sensor_ns =
+        std::chrono::duration_cast<std::chrono::nanoseconds>(latest_pose.sensor_time.time_since_epoch()).count();
+    const long long predict_computed_ns =
+        std::chrono::duration_cast<std::chrono::nanoseconds>(render_pose.predict_computed_time.time_since_epoch()).count();
+    const long long predict_target_ns =
+        std::chrono::duration_cast<std::chrono::nanoseconds>(render_pose.predict_target_time.time_since_epoch()).count();
+    const long long vsync_ns = next_vsync == nullptr
+        ? -1
+        : std::chrono::duration_cast<std::chrono::nanoseconds>((**next_vsync).time_since_epoch()).count();
+
+    printf("[TW_POSE] count=%llu disable_warp=%d render_sensor_ns=%lld latest_sensor_ns=%lld "
+           "predict_computed_ns=%lld predict_target_ns=%lld vsync_ns=%lld "
+           "render_pos=(%.6f,%.6f,%.6f) latest_pos=(%.6f,%.6f,%.6f) "
+           "dpos=(%.6f,%.6f,%.6f) dpos_norm=%.6f "
+           "render_q_xyzw=(%.6f,%.6f,%.6f,%.6f) latest_q_xyzw=(%.6f,%.6f,%.6f,%.6f) "
+           "angle_deg=%.6f\n",
+           tw_pose_count, disable_warp_ ? 1 : 0, render_sensor_ns, latest_sensor_ns, predict_computed_ns, predict_target_ns,
+           vsync_ns, render_pose.pose.position.x(), render_pose.pose.position.y(), render_pose.pose.position.z(),
+           latest_pose.position.x(), latest_pose.position.y(), latest_pose.position.z(), pos_delta.x(), pos_delta.y(),
+           pos_delta.z(), pos_delta.norm(), render_q.x(), render_q.y(), render_q.z(), render_q.w(), latest_q.x(), latest_q.y(),
+           latest_q.z(), latest_q.w(), angle_deg);
 
     view_matrix_begin.block(0, 0, 3, 3) = latest_pose.orientation.toRotationMatrix();
 
@@ -205,9 +256,9 @@ void timewarp_vk::record_command_buffer(VkCommandBuffer commandBuffer, VkFramebu
     VkRenderPassBeginInfo tw_render_pass_info{};
     tw_render_pass_info.sType                    = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
     tw_render_pass_info.renderPass               = timewarp_render_pass_;
-    tw_render_pass_info.renderArea.offset.x      = left ? 0 : static_cast<int32_t>(swapchain_width_ / 2);
+    tw_render_pass_info.renderArea.offset.x      = 0;
     tw_render_pass_info.renderArea.offset.y      = 0;
-    tw_render_pass_info.renderArea.extent.width  = static_cast<uint32_t>(swapchain_width_ / 2);
+    tw_render_pass_info.renderArea.extent.width  = static_cast<uint32_t>(swapchain_width_);
     tw_render_pass_info.renderArea.extent.height = static_cast<uint32_t>(swapchain_height_);
     tw_render_pass_info.framebuffer              = framebuffer;
     tw_render_pass_info.clearValueCount          = 1;
@@ -227,7 +278,11 @@ void timewarp_vk::record_command_buffer(VkCommandBuffer commandBuffer, VkFramebu
     tw_scissor.extent.width  = static_cast<uint32_t>(swapchain_width_ / 2);
     tw_scissor.extent.height = static_cast<uint32_t>(swapchain_height_);
 
-    vkCmdBeginRenderPass(commandBuffer, &tw_render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
+    // Callers record left then right into the same command buffer. Keep both
+    // eyes in one pass: Monado's pass starts from UNDEFINED, so beginning a
+    // second pass may discard the first eye's attachment contents.
+    if (left)
+        vkCmdBeginRenderPass(commandBuffer, &tw_render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
     vkCmdSetViewport(commandBuffer, 0, 1, &tw_viewport);
     vkCmdSetScissor(commandBuffer, 0, 1, &tw_scissor);
 
@@ -240,7 +295,8 @@ void timewarp_vk::record_command_buffer(VkCommandBuffer commandBuffer, VkFramebu
                             &descriptor_sets_[!left][buffer_ind], 0, nullptr);
     vkCmdBindIndexBuffer(commandBuffer, index_buffer_, 0, VK_INDEX_TYPE_UINT32);
     vkCmdDrawIndexed(commandBuffer, num_distortion_indices_, 1, 0, static_cast<int>(num_distortion_vertices_ * !left), 0);
-    vkCmdEndRenderPass(commandBuffer);
+    if (!left)
+        vkCmdEndRenderPass(commandBuffer);
 }
 
 void timewarp_vk::destroy() {
@@ -596,6 +652,15 @@ VkPipeline timewarp_vk::create_pipeline(VkRenderPass render_pass, [[maybe_unused
     frag_stage_info.module                          = frag;
     frag_stage_info.pName                           = "main";
 
+#ifdef MONADO_REQUIRED
+    // Native inputs are sampled in linear light; the Monado display target is UNORM.
+    // Standalone offload clients retain the shader's default (already encoded RGB).
+    const VkBool32                 encode_srgb         = VK_TRUE;
+    const VkSpecializationMapEntry srgb_entry          = {0, 0, sizeof(encode_srgb)};
+    const VkSpecializationInfo     srgb_specialization = {1, &srgb_entry, sizeof(encode_srgb), &encode_srgb};
+    frag_stage_info.pSpecializationInfo                = &srgb_specialization;
+#endif
+
     VkPipelineShaderStageCreateInfo shader_stages[] = {vert_stage_info, frag_stage_info};
 
     auto binding_description    = vertex::get_binding_description();
@@ -697,6 +762,16 @@ VkPipeline timewarp_vk::create_pipeline(VkRenderPass render_pass, [[maybe_unused
 }
 
 void timewarp_vk::build_timewarp(HMD::hmd_info_t& hmd_info) {
+    // Interpret input images using the same render FOV and overscan as Monado.
+    const char* overscan_env = std::getenv("ILLIXR_OVERSCAN");
+    const float render_scale = overscan_env == nullptr ? 1.0f : std::stof(overscan_env);
+    if (!std::isfinite(render_scale) || render_scale <= 0.0f) {
+        throw std::runtime_error("ILLIXR_OVERSCAN must be finite and positive");
+    }
+    spdlog::get("illixr")->info("Timewarp render FOV: headset={}, overscan={}", server_params::headset, render_scale);
+    if (raw_preview_) {
+        spdlog::get("illixr")->info("Timewarp raw eye preview: lens distortion and pose reprojection bypassed");
+    }
     // Calculate the number of vertices+indices in the distortion mesh.
     num_distortion_vertices_ = (hmd_info.eye_tiles_high + 1) * (hmd_info.eye_tiles_wide + 1);
     num_distortion_indices_  = hmd_info.eye_tiles_high * hmd_info.eye_tiles_wide * 6;
@@ -762,12 +837,28 @@ void timewarp_vk::build_timewarp(HMD::hmd_info_t& hmd_info) {
                 distortion_uv1_[eye * num_distortion_vertices_ + index].v = distort_coords[eye][1][index].y;
                 distortion_uv2_[eye * num_distortion_vertices_ + index].u = distort_coords[eye][2][index].x;
                 distortion_uv2_[eye * num_distortion_vertices_ + index].v = distort_coords[eye][2][index].y;
+
+                if (raw_preview_) {
+                    // Cover the full eye viewport, including non-tile-aligned
+                    // window sizes. Preserve the existing input Y convention.
+                    const float u                         = static_cast<float>(x) / hmd_info.eye_tiles_wide;
+                    const float v                         = static_cast<float>(y) / hmd_info.eye_tiles_high;
+                    const auto  vertex_index              = eye * num_distortion_vertices_ + index;
+                    distortion_positions_[vertex_index].y = (input_texture_external_ ? -1.0f : 1.0f) * (1.0f - 2.0f * v);
+                    distortion_uv0_[vertex_index]         = {u, v};
+                    distortion_uv1_[vertex_index]         = {u, v};
+                    distortion_uv2_[vertex_index]         = {u, v};
+                }
             }
         }
 
-        // Construct perspective projection matrix according to Unreal -- different FOVs not supported here.
-        math_util::unreal_projection(&basic_projection_[eye], index_params::fov_left[eye], index_params::fov_right[eye],
-                                     index_params::fov_up[eye], index_params::fov_down[eye]);
+        // Construct the projection used to render the incoming eye image.
+        spdlog::get("illixr")->info("Timewarp FOV eye={}: L/R/U/D={:.6f},{:.6f},{:.6f},{:.6f} radians", eye,
+                                    render_scale * server_params::fov_left[eye], render_scale * server_params::fov_right[eye],
+                                    render_scale * server_params::fov_up[eye], render_scale * server_params::fov_down[eye]);
+        math_util::unreal_projection(&basic_projection_[eye], render_scale * server_params::fov_left[eye],
+                                     render_scale * server_params::fov_right[eye], render_scale * server_params::fov_up[eye],
+                                     render_scale * server_params::fov_down[eye]);
     }
 }
 

@@ -102,11 +102,13 @@ nav:
           - 'Monado Dataflow': plugin_README/monado_integration_dataflow.md
           - 'Native Renderer': plugin_README/README_native_renderer.md
           - 'Networking (TCP and UDP)': plugin_README/README_network_backends.md
+          - 'Network Latency': plugin_README/README_network_latency.md
           - 'Offload Rendering Client': plugin_README/README_offload_rendering_client.md
           - 'Offload Rendering Server': plugin_README/README_offload_rendering_server.md
           - 'Offload VIO': plugin_README/README_offload_vio.md
           - 'OpenNI': plugin_README/README_openni.md
           - 'Openwarp': plugin_README/README_openwarp_vk.md
+          - 'OpenXR Interface': plugin_README/README_openxr_interface.md
           - 'ORM_SLAM3': plugin_README/README_orb_slam3.md
           - 'Record_imu_cam': plugin_README/README_record_imu_cam.md
           - 'Timewarp_gl': plugin_README/README_timewarp_gl.md
@@ -154,12 +156,6 @@ nav:
                   - 'even': api/classILLIXR_1_1event.md
                   - 'pose_prediction': api/classILLIXR_1_1data__format_1_1pose__prediction.md
           - 'Data Structures':
-              - 'Points':
-                  - 'point': api/structILLIXR_1_1data__format_1_1point.md
-                  - 'point_with_validity': api/structILLIXR_1_1data__format_1_1point__with__validity.md
-                  - 'point_with_units': api/structILLIXR_1_1data__format_1_1point__with__units.md
-                  - 'points_with_units': api/structILLIXR_1_1data__format_1_1points__with__units.md
-                  - 'raw_point':   api/structILLIXR_1_1data__format_1_1raw__point.md
               - 'Camera':
                   - 'cam_base_type' : api/structILLIXR_1_1data__format_1_1cam__base__type.md
                   - 'monocular_cam_type' : api/structILLIXR_1_1data__format_1_1monocular__cam__type.md
@@ -204,13 +200,6 @@ nav:
                   - 'imu_type': api/structILLIXR_1_1data__format_1_1imu__type.md
                   - 'imu_integrator_input': api/structILLIXR_1_1data__format_1_1imu__integrator__input.md
                   - 'imu_raw_type': api/structILLIXR_1_1data__format_1_1imu__raw__type.md
-              - 'Hands':
-                  - 'hand_points': api/structILLIXR_1_1data__format_1_1ht_1_1hand__points.md
-                  - 'ht_detection': api/structILLIXR_1_1data__format_1_1ht_1_1ht__detection.md
-                  - 'position': api/structILLIXR_1_1data__format_1_1ht_1_1position.md
-                  - 'velocity': api/structILLIXR_1_1data__format_1_1ht_1_1velocity.md
-                  - 'ht_frame': api/structILLIXR_1_1data__format_1_1ht_1_1ht__frame.md
-                  - 'raw_ht_data': api/structILLIXR_1_1data__format_1_1ht_1_1raw__ht__data.md
               - 'compressed_frame': api/structILLIXR_1_1data__format_1_1compressed__frame.md
               - 'connection_signal': api/structILLIXR_1_1data__format_1_1connection__signal.md
               - 'draco_type': api/structILLIXR_1_1data__format_1_1draco__type.md
@@ -220,7 +209,6 @@ nav:
               - 'image_handle': api/structILLIXR_1_1data__format_1_1image__handle.md
               - 'mesh_type': api/structILLIXR_1_1data__format_1_1mesh__type.md
               - 'proper_quaternion': api/classILLIXR_1_1data__format_1_1proper__quaternion.md
-              - 'rect': api/structILLIXR_1_1data__format_1_1rect.md
               - 'rendered_frame': api/structILLIXR_1_1data__format_1_1rendered__frame.md
               - 'scene_recon_path': api/structILLIXR_1_1data__format_1_1scene__recon__path.md
               - 'scene_recon_type': api/structILLIXR_1_1data__format_1_1scene__recon__type.md

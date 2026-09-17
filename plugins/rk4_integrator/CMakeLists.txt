@@ -11,17 +11,38 @@ add_library(${PLUGIN_NAME} SHARED
             ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
 )
 
-target_include_directories(${PLUGIN_NAME} PRIVATE ${ILLIXR_SOURCE_DIR}/include ${Eigen3_INCLUDE_DIRS})
-target_link_libraries(${PLUGIN_NAME} 
-        spdlog::spdlog
-        Boost::serialization
-        Eigen3::Eigen
+target_include_directories(${PLUGIN_NAME} PRIVATE ${ILLIXR_SOURCE_DIR}/include)
+
+target_link_libraries(${PLUGIN_NAME} PUBLIC
+                      Boost::serialization
+                      Eigen3::Eigen
 )
 
-if(WIN32 OR MSVC)
-    target_compile_definitions(${PLUGIN_NAME} PRIVATE BUILDING_LIBRARY)
+if(ANDROID)
+    target_include_directories(${PLUGIN_NAME} PRIVATE
+                               ${jnigraphics-lib}
+                               ${ANDROID_NDK}/sources/android/native_app_glue
+    )
+
+    target_link_libraries(${PLUGIN_NAME} PUBLIC
+                          EGL
+                          GLESv3
+                          Eigen3::Eigen
+                          spdlog::spdlog_android
+    )
+
+else()
+    target_link_libraries(${PLUGIN_NAME} PUBLIC
+                          spdlog::spdlog
+    )
+
+    if(WIN32 OR MSVC)
+        target_compile_definitions(${PLUGIN_NAME} PRIVATE BUILDING_LIBRARY)
+    endif()
 endif()
 
 target_compile_features(${PLUGIN_NAME} PRIVATE cxx_std_17)
 
-install(TARGETS ${PLUGIN_NAME} DESTINATION lib)
+if(NOT ANDROID)
+    install(TARGETS ${PLUGIN_NAME} DESTINATION lib)
+endif()
