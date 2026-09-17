@@ -1,4 +1,4 @@
-# Core build and runtime environment for ILLIXR 4.1 on Linux.
+# Core build and runtime environment for ILLIXR 4.2 on Linux.
 # Camera and GPU-specific plugins may additionally require vendor drivers/SDKs.
 name: illixr
 
@@ -40,7 +40,7 @@ dependencies:
   - libopengl-devel
   - xorg-libx11
 
-  # ILLIXR 4.1 requires Vulkan >=1.4 and a shader compiler.
+  # ILLIXR 4.2 requires Vulkan >=1.4 and a shader compiler.
   - glslang
   - libvulkan-headers >=1.4
   - libvulkan-loader >=1.4
