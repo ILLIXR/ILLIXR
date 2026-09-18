@@ -519,10 +519,42 @@ endif()
 set(FULL_PLUGIN_LIST "")
 
 option(BUILD_UNIT_TESTS "Build the ILLIXR unit test suite" OFF)
+if(UNIX AND NOT BUILD_ANDROID)
+    include(CMakeDependentOption)
+    cmake_dependent_option(ENABLE_UNIT_TEST_COVERAGE "Enable gathering of unit test coverage" OFF "BUILD_UNIT_TESTS" OFF)
+
+    if(ENABLE_UNIT_TEST_COVERAGE)
+        find_program(LCOV_EXECUTABLE lcov)
+        find_program(GENHTML_EXECUTABLE genhtml)
+        if(NOT LCOV_EXECUTABLE OR NOT GENHTML_EXECUTABLE)
+            message(FATAL_ERROR
+                    "ENABLE_UNIT_TEST_COVERAGE is ON but lcov and/or genhtml were not found on PATH. "
+                    "Install lcov (e.g. 'sudo apt install lcov') or configure with -DENABLE_UNIT_TEST_COVERAGE=OFF."
+            )
+        endif()
+
+        if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+            string(REPLACE "." ";" _clang_version_list "${CMAKE_CXX_COMPILER_VERSION}")
+            list(GET _clang_version_list 0 _clang_major)
+            find_program(LLVM_COV_EXECUTABLE NAMES "llvm-cov-${_clang_major}" llvm-cov)
+            unset(_clang_version_list)
+            unset(_clang_major)
+            if(NOT LLVM_COV_EXECUTABLE)
+                message(FATAL_ERROR
+                        "ENABLE_UNIT_TEST_COVERAGE is ON with Clang (ILLIXR's required Linux compiler), but "
+                        "no matching llvm-cov was found on PATH. GNU gcov cannot read Clang-produced coverage "
+                        "data. Install the llvm-cov package matching your Clang version "
+                        "(e.g. 'sudo apt install llvm-cov-<version>')."
+                )
+            endif()
+        endif()
+    endif()
+endif()
 
 set(UNIT_TEST_LIST "" CACHE INTERNAL "")
+message("BUILD_UNIT_TESTS is set to ${BUILD_UNIT_TESTS}")
 if(BUILD_UNIT_TESTS)
-    include(GetGTest)
+    include(cmake/GetGTest.cmake)
     add_custom_target(unit_tests)
     if(EXISTS "${CMAKE_SOURCE_DIR}/tests")
         add_subdirectory(tests)
@@ -632,6 +664,16 @@ endif()
 
 # set up documentaiton build
 add_subdirectory(docs)
+
+if(BUILD_UNIT_TESTS)
+    set(UNIT_TEST_COVERAGE_MANIFEST "${CMAKE_BINARY_DIR}/unit_tests/unit_test_coverage_manifest.txt")
+    file(WRITE "${UNIT_TEST_COVERAGE_MANIFEST}" "")
+    foreach(_ut_target IN LISTS UNIT_TEST_LIST)
+        get_target_property(_ut_binary_dir ${_ut_target} BINARY_DIR)
+        file(APPEND "${UNIT_TEST_COVERAGE_MANIFEST}"
+             "${_ut_target}|${_ut_binary_dir}/CMakeFiles/${_ut_target}.dir\n")
+    endforeach()
+endif()
 
 # give a summary of what will be done
 include(cmake/ConfigurationSummary.cmake)

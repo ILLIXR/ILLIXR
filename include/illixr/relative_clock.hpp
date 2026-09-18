@@ -46,7 +46,7 @@ public:
         return *this;
     }
 
-    duration time_since_epoch_;
+    duration time_since_epoch_{};
 };
 
 inline time_point::duration operator-(const time_point& lhs, const time_point& rhs) {

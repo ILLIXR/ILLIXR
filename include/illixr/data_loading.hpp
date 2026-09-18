@@ -15,8 +15,7 @@
 #include <spdlog/spdlog.h>
 #include <string>
 
-using namespace ILLIXR;
-
+namespace ILLIXR {
 template<typename T>
 static std::map<ullong, T> load_data(const std::string& spath, const std::string& plugin_name,
                                      std::map<ullong, T> (*func)(std::ifstream&, const std::string&),
@@ -37,3 +36,5 @@ static std::map<ullong, T> load_data(const std::string& spath, const std::string
 
     return func(gt_file, illixr_data + subpath);
 }
+
+} // namespace ILLIXR

@@ -16,7 +16,7 @@
 #include <typeinfo>
 #include <utility>
 
-#if !defined(DOUBLE_INCLUDE) && !defined(BUILDING_MONADO_ILLIXR_DRIVER)
+#if !defined(DOUBLE_INCLUDE) && !defined(BUILDING_MONADO_ILLIXR_DRIVER) && !defined(BUILDING_UNIT_TESTS)
 extern "C" {
 MY_EXPORT_API bool needs_monado() {
 #    ifdef MONADO_REQUIRED

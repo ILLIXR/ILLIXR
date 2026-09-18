@@ -17,6 +17,8 @@ target_include_directories(${UNIT_TEST_RUNNER_NAME} PRIVATE
 
 target_link_libraries(${UNIT_TEST_RUNNER_NAME} PRIVATE
                       gtest
+                      spdlog::spdlog
+                      Threads::Threads
 )
 
 if(NOT WIN32 AND NOT MSVC)

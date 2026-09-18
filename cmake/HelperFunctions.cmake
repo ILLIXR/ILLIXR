@@ -537,7 +537,7 @@ endmacro()
 #                         LIBRARIES illixr_vulkan_utils
 #   )
 function(add_illixr_unit_test COMPONENT)
-    set(multiValueArgs SOURCES LIBRARIES INCLUDES)
+    set(multiValueArgs SOURCES LIBRARIES INCLUDE_PATHS INCLUDES)
     cmake_parse_arguments(UT "" "" "${multiValueArgs}" ${ARGN})
 
     if(NOT UT_SOURCES)
@@ -546,27 +546,47 @@ function(add_illixr_unit_test COMPONENT)
 
     include(GetGTest)
 
+    if(UT_INCLUDES)
+        foreach(ITEM IN LISTS UT_INCLUDES)
+            list(APPEND UT_SOURCES ${CMAKE_SOURCE_DIR}/include/illixr/${ITEM})
+        endforeach()
+    endif()
     set(UT_TARGET unittest.${COMPONENT}${ILLIXR_BUILD_SUFFIX})
 
     add_library(${UT_TARGET} SHARED ${UT_SOURCES})
 
     target_include_directories(${UT_TARGET} PRIVATE
                                ${CMAKE_SOURCE_DIR}/include
-                               ${UT_INCLUDES}
+                               ${UT_INCLUDE_PATHS}
     )
 
     target_link_libraries(${UT_TARGET} PRIVATE
                           gtest
+                          Threads::Threads
+                          Eigen3::Eigen
+                          Boost::serialization
                           ${UT_LIBRARIES}
     )
 
+    if(ANDROID)
+        target_link_libraries(${UT_TARGET} PRIVATE spdlog::spdlog_android)
+    else()
+        target_link_libraries(${UT_TARGET} PRIVATE spdlog::spdlog)
+    endif()
+    if(NOT WIN32 AND NOT MSVC)
+        target_link_libraries(${UT_TARGET} PRIVATE dl)
+    endif()
     target_compile_features(${UT_TARGET} PRIVATE cxx_std_17)
 
+    target_compile_definitions(${UT_TARGET} PRIVATE BUILDING_UNIT_TESTS)
     set_target_properties(${UT_TARGET} PROPERTIES
                           RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/unit_tests
                           LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/unit_tests
     )
-
+    if(ENABLE_UNIT_TEST_COVERAGE)
+        target_compile_options(${UT_TARGET} PRIVATE --coverage -O0 -g)
+        target_link_options(${UT_TARGET} PRIVATE --coverage)
+    endif()
     list(APPEND UNIT_TEST_LIST ${UT_TARGET})
     set(UNIT_TEST_LIST ${UNIT_TEST_LIST} CACHE INTERNAL "")
 

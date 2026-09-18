@@ -200,14 +200,25 @@ else()
         )
     endif()
     if(BUILD_UNIT_TESTS)
+        set(UNIT_TEST_MANIFEST_ENTRIES "")
+        foreach(_ut_lib IN LISTS UNIT_TEST_LIST)
+            string(APPEND UNIT_TEST_MANIFEST_ENTRIES "    \"lib${_ut_lib}.so\",\n")
+        endforeach()
+        list(LENGTH UNIT_TEST_LIST ILLIXR_UNIT_TEST_COUNT)
+
+        configure_file(${CMAKE_SOURCE_DIR}/tests/runner/unit_test_manifest.hpp.in
+                       ${CMAKE_CURRENT_BINARY_DIR}/generated/unit_test_manifest.hpp
+                       @ONLY
+        )
+
         add_library(unit-tests-activity SHARED
-                    unit_test_runner_android.cpp # TODO: runner logic not yet written
+                    ${CMAKE_SOURCE_DIR}/tests/runner/unit_test_runner.cpp
                     ${CMAKE_SOURCE_DIR}/include/illixr/dynamic_lib.hpp
-                    ${CMAKE_SOURCE_DIR}/include/illixr/unit_test.hpp
         )
 
         target_include_directories(unit-tests-activity PRIVATE
                                    ${ILLIXR_SOURCE_DIR}/include
+                                   ${CMAKE_CURRENT_BINARY_DIR}/generated
                                    ${ANDROID_NDK}/sources/android/native_app_glue
         )
 
