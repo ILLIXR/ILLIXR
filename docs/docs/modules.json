@@ -504,6 +504,14 @@
       ]
     },
     {
+      "name": "quest3.unity",
+      "cmake_flag": "USE_QUEST3.UNITY=ON",
+      "dependencies": [],
+      "OS": [
+        "android"
+      ]
+    },
+    {
       "name": "realsense",
       "cmake_flag": "USE_REALSENSE=ON",
       "dependencies": [
@@ -537,6 +545,16 @@
         "linux",
         "windows",
         "android"
+      ]
+    },
+    {
+      "name": "semantic_python",
+      "cmake_flag": "USE_SEMANTIC_PYTHON=ON",
+      "dependencies": [
+        "pybind11"
+      ],
+      "OS": [
+        "linux"
       ]
     },
     {
@@ -1660,6 +1678,22 @@
           },
           "Fedora": {
             "pkg": "protobuf-devel protobuf-compiler",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "pybind11": {
+        "pkg": {
+          "Ubuntu": {
+            "pkg": "pybind11-dev python3-pybind11",
+            "postnotes": "",
+            "notes": ""
+          },
+          "Fedora": {
+            "pkg": "pybind11-dev python3-pybind11",
             "postnotes": "",
             "notes": ""
           }

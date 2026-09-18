@@ -232,7 +232,7 @@ void udp_network_backend::topic_send(std::string topic_name, std::string&& messa
     packet.append(reinterpret_cast<const char*>(&topic_name_length), 4);
     packet.append(topic_name);
     packet.append(message);
-
+    std::lock_guard<std::mutex> lock{send_mutex_};
     if (!peer_socket_->write_data(packet))
         spdlog::get("illixr")->warn("[udp_network_backend] write_data failed for topic={}", topic_name);
 }

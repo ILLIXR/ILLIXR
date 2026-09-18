@@ -2,6 +2,8 @@
 
 #include <cstring>
 
+static constexpr uint32_t MAX_PACKET_BYTES = 256u * 1024u * 1024u;
+
 using namespace ILLIXR;
 
 tcp_network_backend::tcp_network_backend(const std::string& name_, phonebook* pb_)
@@ -46,7 +48,12 @@ tcp_network_backend::tcp_network_backend(const std::string& name_, phonebook* pb
 #ifdef __ANDROID__
         auto* socket = new network::TCPSocket();
         if (switchboard_->get_env_char("ILLIXR_TCP_CLIENT_IP") && switchboard_->get_env_char("ILLIXR_TCP_CLIENT_PORT")) {
+            // socket_bind() sets SO_REUSEADDR, SO_REUSEPORT, and SO_LINGER=0 internally.
             socket->socket_bind(client_ip_, client_port_);
+        } else {
+            // Not binding to a specific local port but still need linger-zero
+            // so the connection doesn't hold TIME_WAIT after a force-quit.
+            socket->socket_set_linger_zero();
         }
         socket->socket_set_reuseaddr();
         peer_socket_ = socket;
@@ -75,6 +82,9 @@ tcp_network_backend::tcp_network_backend(const std::string& name_, phonebook* pb
         server_socket_.socket_listen();
 
         auto* client_socket = new network::TCPSocket(server_socket_.socket_accept());
+        // Set linger-zero on the accepted socket so it sends RST on close
+        // rather than entering TIME_WAIT after a force-quit.
+        client_socket->socket_set_linger_zero();
         spdlog::get("illixr")->debug("Accepted connection from client: " + client_socket->peer_address());
         peer_socket_ = client_socket;
 #else
@@ -105,7 +115,10 @@ tcp_network_backend::~tcp_network_backend() {
 void tcp_network_backend::start_client() {
     auto* socket = new network::TCPSocket();
     if (switchboard_->get_env_char("ILLIXR_TCP_CLIENT_IP") && switchboard_->get_env_char("ILLIXR_TCP_CLIENT_PORT")) {
+        // socket_bind() sets SO_REUSEADDR, SO_REUSEPORT, and SO_LINGER=0 internally.
         socket->socket_bind(client_ip_, client_port_);
+    } else {
+        socket->socket_set_linger_zero();
     }
     socket->socket_set_reuseaddr();
     socket->enable_no_delay();
@@ -127,6 +140,7 @@ void tcp_network_backend::start_server() {
     server_socket.socket_listen();
 
     auto* client_socket = new network::TCPSocket(server_socket.socket_accept());
+    client_socket->socket_set_linger_zero();
     client_socket->enable_no_delay();
     spdlog::get("illixr")->info("[tcp_network_backend] TCP_NODELAY verified = {}", client_socket->is_no_delay());
     std::cout << "Accepted connection from client: " << client_socket->peer_address() << std::endl;
@@ -162,10 +176,11 @@ void tcp_network_backend::read_loop(network::TCPSocket* socket) {
             uint32_t topic_name_length;
             std::memcpy(&total_length, buffer.data(), sizeof(total_length));
             std::memcpy(&topic_name_length, buffer.data() + 4, sizeof(topic_name_length));
-            if (total_length < 8 || topic_name_length > total_length - 8) {
-                spdlog::get("illixr")->error(
-                    "[tcp_network_backend] Invalid TCP packet lengths: total={} topic={}; restart the session", total_length,
-                    topic_name_length);
+            if (total_length < 8 || total_length > MAX_PACKET_BYTES || topic_name_length > total_length - 8) {
+                spdlog::get("illixr")->error("[tcp_network_backend] malformed packet header (total_length={}, "
+                                             "topic_name_length={}, buffered={} B) -- stream is desynced, "
+                                             "closing the read loop",
+                                             total_length, topic_name_length, buffer.size());
                 running_ = false;
                 return;
             }

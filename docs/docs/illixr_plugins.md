@@ -422,6 +422,17 @@ Topic details:
 
 &nbsp;&nbsp;**Details**&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C22]
 
+## quest3.unity ![Windows logo](images/android.png)
+
+Captures camera and depth images from a Quest 3 headset, encodes them, and sends them over the network to a server. The
+camera images are captured via standard Android APIs. The depth images have to come over OpenXR, so the plugin hooks into the Unity app and uses it to acquire the depth images.
+
+Topic details:
+
+-   *Publishes* [`semantic_frame][A30] to `semantic_frame` topic
+
+&nbsp;&nbsp;[**Details**][P37]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C44]
+
 ## realsense ![Linux Logo](images/tux.png)
 
 Reads images and [_IMU_][G13] measurements from the [Intel Realsense][E14].
@@ -467,6 +478,18 @@ Topic details:
 -   *Publishes* [`imu_raw_type`][A16] to `imu_raw` topic.
 
 &nbsp;&nbsp;**Details**&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C26]
+
+## semantic_python ![Linux Logo](images/tux.png)
+
+Provides reader and writer handles to a Python script, allowing the script to access the switchboard directly.
+
+Topic details:
+
+-   Asynchronously *reads* [`semantic_frame`][A30] from `semantic_frame` topic
+-   Asynchronously *reads* [`voice_query`][A31] from `semantic_query` topic
+-   *Publishes* [`query_response`][A32] to `semantic_response` networked topic
+
+&nbsp;&nbsp;[**Details**][P38]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C43]
 
 ## tcp_network_backend ![Linux Logo](images/tux.png) ![Windows logo](images/windows.png) ![Android_Logo](images/android.png)
 
@@ -631,6 +654,10 @@ See [Getting Started][I11] for more information on adding plugins to a [_profile
 
 [P36]:  plugin_README/README_openxr_interface.md
 
+[P37]:  plugin_README/README_quest3_unity.md
+
+[P38]:   plugin_README/README_semantic_python.md
+
 [S10]:   illixr_services.md#pose_prediction
 
 
@@ -737,6 +764,10 @@ See [Getting Started][I11] for more information on adding plugins to a [_profile
 
 [C42]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/openxr_interface
 
+[C43]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/semantic_python
+
+[C44]:  https://github.com/ILLIXR/ILLIXR/tree/master/plugins/quest3/unity
+
 [//]: # (- Internal -)
 
 [I10]:   working_with/writing_your_plugin.md
@@ -806,3 +837,9 @@ See [Getting Started][I11] for more information on adding plugins to a [_profile
 [A28]:   api/structILLIXR_1_1data__format_1_1network__latency__result.md
 
 [A29]:   api/structILLIXR_1_1data__format_1_1dual__frames.md
+
+[A30]:   api/structILLIXR_1_1data__format_1_1semantic__frame.md
+
+[A31]:   api/structILLIXR_1_1data__format_1_1semantic__xr_1_1voice__query.md
+
+[A32]:   api/structILLIXR_1_1data__format_1_1semantic__xr_1_1query__response.md
