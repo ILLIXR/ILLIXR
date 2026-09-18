@@ -176,7 +176,7 @@ void tcp_network_backend::read_loop(network::TCPSocket* socket) {
             uint32_t topic_name_length;
             std::memcpy(&total_length, buffer.data(), sizeof(total_length));
             std::memcpy(&topic_name_length, buffer.data() + 4, sizeof(topic_name_length));
-            if (total_length < 8 || topic_name_length > total_length - 8) {
+            if (total_length < 8 || total_length > MAX_PACKET_BYTES || topic_name_length > total_length - 8) {
                 spdlog::get("illixr")->error("[tcp_network_backend] malformed packet header (total_length={}, "
                                              "topic_name_length={}, buffered={} B) -- stream is desynced, "
                                              "closing the read loop",
