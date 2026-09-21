@@ -1,0 +1,126 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="vulkan__context__provider_8hpp" kind="file" language="C++">
+    <compoundname>vulkan_context_provider.hpp</compoundname>
+    <includes refid="vulkan__context_8hpp" local="yes">illixr/data_format/vulkan_context.hpp</includes>
+    <includes refid="phonebook_8hpp" local="yes">illixr/phonebook.hpp</includes>
+    <incdepgraph>
+      <node id="2">
+        <label>illixr/data_format/vulkan_context.hpp</label>
+        <link refid="vulkan__context_8hpp"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>export.hpp</label>
+        <link refid="export_8hpp"/>
+      </node>
+      <node id="5">
+        <label>illixr/phonebook.hpp</label>
+        <link refid="phonebook_8hpp"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/vk/vulkan_context_provider.hpp</label>
+        <link refid="vulkan__context__provider_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>cassert</label>
+      </node>
+      <node id="3">
+        <label>cstdint</label>
+      </node>
+      <node id="8">
+        <label>iostream</label>
+      </node>
+      <node id="9">
+        <label>memory</label>
+      </node>
+      <node id="10">
+        <label>mutex</label>
+      </node>
+      <node id="11">
+        <label>shared_mutex</label>
+      </node>
+      <node id="15">
+        <label>spdlog/spdlog.h</label>
+      </node>
+      <node id="12">
+        <label>stdexcept</label>
+      </node>
+      <node id="13">
+        <label>typeindex</label>
+      </node>
+      <node id="14">
+        <label>unordered_map</label>
+      </node>
+      <node id="4">
+        <label>vulkan/vulkan.h</label>
+      </node>
+    </incdepgraph>
+    <innerclass refid="classILLIXR_1_1vk_1_1vulkan__context__provider" prot="public">ILLIXR::vk::vulkan_context_provider</innerclass>
+    <innernamespace refid="namespaceILLIXR">ILLIXR</innernamespace>
+    <innernamespace refid="namespaceILLIXR_1_1vk">ILLIXR::vk</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="vulkan__context_8hpp" kindref="compound">illixr/data_format/vulkan_context.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="phonebook_8hpp" kindref="compound">illixr/phonebook.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight></codeline>
+<codeline lineno="6" refid="namespaceILLIXR_1_1vk" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceILLIXR_1_1vk" kindref="compound">ILLIXR::vk</ref><sp/>{</highlight></codeline>
+<codeline lineno="7" refid="classILLIXR_1_1vk_1_1vulkan__context__provider" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classILLIXR_1_1vk_1_1vulkan__context__provider" kindref="compound">vulkan_context_provider</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1phonebook_1_1service" kindref="compound">phonebook::service</ref><sp/>{</highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="9" refid="classILLIXR_1_1vk_1_1vulkan__context__provider_1a0a05171bb1605131445b1e08eb9e9253" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1vulkan__device__context" kindref="compound">data_format::vulkan_device_context</ref><sp/><ref refid="classILLIXR_1_1vk_1_1vulkan__context__provider_1a0a05171bb1605131445b1e08eb9e9253" kindref="member">get_context</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="10"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1vk_1_1vulkan__context__provider_1acd9d7543108d992baab456691cd73957" kindref="member">context_</ref>;</highlight></codeline>
+<codeline lineno="11"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="keyword">protected</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="14" refid="classILLIXR_1_1vk_1_1vulkan__context__provider_1a357424f30681f5da51f9cb0373e9ef76" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1vk_1_1vulkan__context__provider_1a357424f30681f5da51f9cb0373e9ef76" kindref="member">set_context</ref>(<ref refid="structILLIXR_1_1data__format_1_1vulkan__device__context" kindref="compound">data_format::vulkan_device_context</ref>&amp;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">context</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="15"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1vk_1_1vulkan__context__provider_1acd9d7543108d992baab456691cd73957" kindref="member">context_</ref><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">context</ref>;</highlight></codeline>
+<codeline lineno="16"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight></codeline>
+<codeline lineno="18" refid="classILLIXR_1_1vk_1_1vulkan__context__provider_1a1e9db02ada8b7d3b567558b7c2793c03" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1vk_1_1vulkan__context__provider_1a1e9db02ada8b7d3b567558b7c2793c03" kindref="member">set_context</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkInstance</ref><sp/>instance,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkPhysicalDevice</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">p_device</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkDevice</ref><sp/>device,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkQueue</ref><sp/>queue,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint32_t</ref><sp/>family)<sp/>{</highlight></codeline>
+<codeline lineno="19"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1vk_1_1vulkan__context__provider_1acd9d7543108d992baab456691cd73957" kindref="member">context_</ref>.<ref refid="structILLIXR_1_1data__format_1_1vulkan__device__context_1a7fa850a22b4676fc5d3c4c5b18acfd0e" kindref="member">instance</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>instance;</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1vk_1_1vulkan__context__provider_1acd9d7543108d992baab456691cd73957" kindref="member">context_</ref>.<ref refid="structILLIXR_1_1data__format_1_1vulkan__device__context_1af73660e491c8bd9ec46cfb18cac823ed" kindref="member">physical_device</ref><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">p_device</ref>;</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1vk_1_1vulkan__context__provider_1acd9d7543108d992baab456691cd73957" kindref="member">context_</ref>.<ref refid="structILLIXR_1_1data__format_1_1vulkan__device__context_1ace3b777c4a7efdb44079388679e393b8" kindref="member">device</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>device;</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1vk_1_1vulkan__context__provider_1acd9d7543108d992baab456691cd73957" kindref="member">context_</ref>.<ref refid="structILLIXR_1_1data__format_1_1vulkan__device__context_1a86a8363342efc7254d3d733f8f661fa8" kindref="member">queue</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>queue;</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1vk_1_1vulkan__context__provider_1acd9d7543108d992baab456691cd73957" kindref="member">context_</ref>.<ref refid="structILLIXR_1_1data__format_1_1vulkan__device__context_1a735e9a84dc163995834bd1bba501275e" kindref="member">queue_family</ref><sp/><sp/><sp/><sp/>=<sp/>family;</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="27" refid="classILLIXR_1_1vk_1_1vulkan__context__provider_1acd9d7543108d992baab456691cd73957" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1vulkan__device__context" kindref="compound">data_format::vulkan_device_context</ref><sp/><ref refid="classILLIXR_1_1vk_1_1vulkan__context__provider_1acd9d7543108d992baab456691cd73957" kindref="member">context_</ref>;</highlight></codeline>
+<codeline lineno="28"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="29"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>ILLIXR::vk</highlight></codeline>
+    </programlisting>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/vk/vulkan_context_provider.hpp"/>
+  </compounddef>
+</doxygen>

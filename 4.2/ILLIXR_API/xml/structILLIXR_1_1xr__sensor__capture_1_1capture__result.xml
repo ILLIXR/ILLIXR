@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structILLIXR_1_1xr__sensor__capture_1_1capture__result" kind="struct" language="C++" prot="public">
+    <compoundname>ILLIXR::xr_sensor_capture::capture_result</compoundname>
+    <includes refid="plugins_2quest3_2unity_2plugin_8hpp" local="no">plugin.hpp</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structILLIXR_1_1xr__sensor__capture_1_1capture__result_1a59aa6fb15b5687941c07c47509e85082" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">float</ref></type>
+        <definition>float ILLIXR::xr_sensor_capture::capture_result::pose[16]</definition>
+        <argsstring>[16]</argsstring>
+        <name>pose</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::capture_result::pose</qualifiedname>
+        <initializer>= {}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="139" column="16" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="139" bodyend="139"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1xr__sensor__capture_1_1capture__result_1a1089705b7bb4733a742fe954b08c865e" prot="public" static="no" mutable="no">
+        <type><ref refid="pose__relay_8hpp_1afc70e0010cc8c79eeadfce48f0b60920" kindref="member">XrTime</ref></type>
+        <definition>XrTime ILLIXR::xr_sensor_capture::capture_result::capture_time</definition>
+        <argsstring></argsstring>
+        <name>capture_time</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::capture_result::capture_time</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="140" column="16" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="140" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1xr__sensor__capture_1_1capture__result_1ad09b449ae373113e597cc929c7af76f7" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::xr_sensor_capture::capture_result::valid</definition>
+        <argsstring></argsstring>
+        <name>valid</name>
+        <qualifiedname>ILLIXR::xr_sensor_capture::capture_result::valid</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">false</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="141" column="16" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="141" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" line="138" column="5" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/unity/plugin.hpp" bodystart="138" bodyend="142"/>
+    <listofallmembers>
+      <member refid="structILLIXR_1_1xr__sensor__capture_1_1capture__result_1a1089705b7bb4733a742fe954b08c865e" prot="public" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture::capture_result</scope><name>capture_time</name></member>
+      <member refid="structILLIXR_1_1xr__sensor__capture_1_1capture__result_1a59aa6fb15b5687941c07c47509e85082" prot="public" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture::capture_result</scope><name>pose</name></member>
+      <member refid="structILLIXR_1_1xr__sensor__capture_1_1capture__result_1ad09b449ae373113e597cc929c7af76f7" prot="public" virt="non-virtual"><scope>ILLIXR::xr_sensor_capture::capture_result</scope><name>valid</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

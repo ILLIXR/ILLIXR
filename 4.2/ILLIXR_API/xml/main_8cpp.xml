@@ -1,0 +1,653 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="main_8cpp" kind="file" language="C++">
+    <compoundname>main.cpp</compoundname>
+    <includes refid="illixr_8hpp" local="yes">illixr.hpp</includes>
+    <includes local="no">iostream</includes>
+    <includes local="no">csignal</includes>
+    <incdepgraph>
+      <node id="19">
+        <label>illixr/export.hpp</label>
+        <link refid="export_8hpp"/>
+      </node>
+      <node id="31">
+        <label>managed_thread.hpp</label>
+        <link refid="managed__thread_8hpp"/>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+      </node>
+      <node id="35">
+        <label>network/network_backend.hpp</label>
+        <link refid="network__backend_8hpp"/>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+      </node>
+      <node id="36">
+        <label>topic_config.hpp</label>
+        <link refid="topic__config_8hpp"/>
+        <childnode refid="37" relation="include">
+        </childnode>
+        <childnode refid="38" relation="include">
+        </childnode>
+      </node>
+      <node id="21">
+        <label>illixr/phonebook.hpp</label>
+        <link refid="phonebook_8hpp"/>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+      </node>
+      <node id="39">
+        <label>record_logger.hpp</label>
+        <link refid="record__logger_8hpp"/>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="40" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="38" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="20">
+        <label>illixr/runtime.hpp</label>
+        <link refid="runtime_8hpp"/>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+      </node>
+      <node id="29">
+        <label>illixr/switchboard.hpp</label>
+        <link refid="switchboard_8hpp"/>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="39" relation="include">
+        </childnode>
+        <childnode refid="41" relation="include">
+        </childnode>
+        <childnode refid="42" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="43" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="44" relation="include">
+        </childnode>
+        <childnode refid="45" relation="include">
+        </childnode>
+        <childnode refid="46" relation="include">
+        </childnode>
+        <childnode refid="47" relation="include">
+        </childnode>
+        <childnode refid="48" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>cxxopts.hpp</label>
+        <link refid="src_2cxxopts_8hpp"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>illixr.hpp</label>
+        <link refid="illixr_8hpp"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/main.cpp</label>
+        <link refid="main_8cpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="49" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>algorithm</label>
+      </node>
+      <node id="40">
+        <label>any</label>
+      </node>
+      <node id="32">
+        <label>atomic</label>
+      </node>
+      <node id="44">
+        <label>boost/archive/binary_iarchive.hpp</label>
+      </node>
+      <node id="45">
+        <label>boost/archive/binary_oarchive.hpp</label>
+      </node>
+      <node id="46">
+        <label>boost/iostreams/device/back_inserter.hpp</label>
+      </node>
+      <node id="47">
+        <label>boost/iostreams/stream.hpp</label>
+      </node>
+      <node id="48">
+        <label>boost/serialization/shared_ptr.hpp</label>
+      </node>
+      <node id="22">
+        <label>cassert</label>
+      </node>
+      <node id="37">
+        <label>chrono</label>
+      </node>
+      <node id="30">
+        <label>concurrentqueue/blockingconcurrentqueue.hpp</label>
+      </node>
+      <node id="49">
+        <label>csignal</label>
+      </node>
+      <node id="5">
+        <label>cstring</label>
+      </node>
+      <node id="41">
+        <label>eigen3/Eigen/Core</label>
+      </node>
+      <node id="42">
+        <label>eigen3/Eigen/Geometry</label>
+      </node>
+      <node id="6">
+        <label>exception</label>
+      </node>
+      <node id="33">
+        <label>functional</label>
+      </node>
+      <node id="7">
+        <label>initializer_list</label>
+      </node>
+      <node id="23">
+        <label>iostream</label>
+      </node>
+      <node id="8">
+        <label>limits</label>
+      </node>
+      <node id="43">
+        <label>list</label>
+      </node>
+      <node id="9">
+        <label>locale</label>
+      </node>
+      <node id="10">
+        <label>map</label>
+      </node>
+      <node id="11">
+        <label>memory</label>
+      </node>
+      <node id="24">
+        <label>mutex</label>
+      </node>
+      <node id="38">
+        <label>optional</label>
+      </node>
+      <node id="18">
+        <label>regex</label>
+      </node>
+      <node id="25">
+        <label>shared_mutex</label>
+      </node>
+      <node id="28">
+        <label>spdlog/spdlog.h</label>
+      </node>
+      <node id="12">
+        <label>sstream</label>
+      </node>
+      <node id="26">
+        <label>stdexcept</label>
+      </node>
+      <node id="13">
+        <label>string</label>
+      </node>
+      <node id="34">
+        <label>thread</label>
+      </node>
+      <node id="27">
+        <label>typeindex</label>
+      </node>
+      <node id="14">
+        <label>unordered_map</label>
+      </node>
+      <node id="15">
+        <label>unordered_set</label>
+      </node>
+      <node id="16">
+        <label>utility</label>
+      </node>
+      <node id="17">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="main_8cpp_1a75b049ec64ecbcb740d628d8e3d2274a" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>static void sigill_handler</definition>
+        <argsstring>(int sig)</argsstring>
+        <name>sigill_handler</name>
+        <param>
+          <type>int</type>
+          <declname>sig</declname>
+        </param>
+        <briefdescription>
+<para>A signal handler for SIGILL. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Forward SIGILL from illegal instructions to catchsegv in <computeroutput>ci.yaml</computeroutput>. Provides additional debugging information via <computeroutput>-rdynamic</computeroutput>. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/main.cpp" line="22" column="13" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/main.cpp" bodystart="22" bodyend="25"/>
+      </memberdef>
+      <memberdef kind="function" id="main_8cpp_1a7d8b49676e120bb55844ce171e2d82b0" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>static void sigabrt_handler</definition>
+        <argsstring>(int sig)</argsstring>
+        <name>sigabrt_handler</name>
+        <param>
+          <type>int</type>
+          <declname>sig</declname>
+        </param>
+        <briefdescription>
+<para>A signal handler for SIGABRT. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Forward SIGABRT from <computeroutput>std::abort</computeroutput> and <computeroutput>assert</computeroutput> to catchsegv in <computeroutput>ci.yaml</computeroutput>. Provides additional debugging information via <computeroutput>-rdynamic</computeroutput>. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/main.cpp" line="33" column="13" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/main.cpp" bodystart="33" bodyend="36"/>
+      </memberdef>
+      <memberdef kind="function" id="main_8cpp_1aed429b7c618757d735b6bea2609c229a" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>static void sigint_handler</definition>
+        <argsstring>(int sig)</argsstring>
+        <name>sigint_handler</name>
+        <param>
+          <type>int</type>
+          <declname>sig</declname>
+        </param>
+        <briefdescription>
+<para>NDEBUG. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>A signal handler for SIGINT.</para>
+<para>Stops the execution of the application via the <ref refid="namespaceILLIXR" kindref="compound">ILLIXR</ref> runtime. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/main.cpp" line="44" column="13" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/main.cpp" bodystart="44" bodyend="49"/>
+      </memberdef>
+      <memberdef kind="function" id="main_8cpp_1ac0f2228420376f4db7e1274f2b41667c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int main</definition>
+        <argsstring>(int argc, const char *argv[])</argsstring>
+        <name>main</name>
+        <param>
+          <type>int</type>
+          <declname>argc</declname>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>argv</declname>
+          <array>[]</array>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+<para>When debugging, register the SIGILL and SIGABRT handlers for capturing more info</para>
+<para>NDEBUG</para>
+<para>Shutting down method 1: Ctrl+C</para>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/main.cpp" line="112" column="5" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/main.cpp" bodystart="112" bodyend="218"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#ifndef<sp/>ENABLE_MONADO</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>include<sp/>&quot;<ref refid="illixr_8hpp" kindref="compound">illixr.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>ifdef<sp/>__ANDROID__</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>include<sp/>&lt;condition_variable&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>include<sp/>&lt;EGL/egl.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>include<sp/>&lt;mutex&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>include<sp/>&lt;thread&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>include<sp/>&lt;vector&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>include<sp/>&lt;iostream&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>include<sp/>&lt;csignal&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>ifndef<sp/>NDEBUG</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="main_8cpp_1a75b049ec64ecbcb740d628d8e3d2274a" kindref="member">sigill_handler</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">sig</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">assert</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">sig</ref><sp/>==<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">SIGILL</ref><sp/>&amp;&amp;<sp/></highlight><highlight class="stringliteral">&quot;sigill_handler<sp/>is<sp/>for<sp/>SIGILL&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/>std::raise(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">SIGSEGV</ref>);</highlight></codeline>
+<codeline lineno="25"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="main_8cpp_1a7d8b49676e120bb55844ce171e2d82b0" kindref="member">sigabrt_handler</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">sig</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">assert</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">sig</ref><sp/>==<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">SIGABRT</ref><sp/>&amp;&amp;<sp/></highlight><highlight class="stringliteral">&quot;sigabrt_handler<sp/>is<sp/>for<sp/>SIGABRT&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/>std::raise(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">SIGSEGV</ref>);</highlight></codeline>
+<codeline lineno="36"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>endif<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight></codeline>
+<codeline lineno="44"><highlight class="normal"></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="main_8cpp_1aed429b7c618757d735b6bea2609c229a" kindref="member">sigint_handler</ref>([[<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">maybe_unused</ref>]]<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">sig</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">assert</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">sig</ref><sp/>==<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">SIGINT</ref><sp/>&amp;&amp;<sp/></highlight><highlight class="stringliteral">&quot;sigint_handler<sp/>is<sp/>for<sp/>SIGINT&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="illixr_8hpp_1aa51d4f5b7475fbe39399a8ec260a4b96" kindref="member">runtime_</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="illixr_8hpp_1aa51d4f5b7475fbe39399a8ec260a4b96" kindref="member">runtime_</ref>-&gt;<ref refid="classILLIXR_1_1runtime_1a43cda807e0520d6005ed53ac58e57d2a" kindref="member">stop</ref>();</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="49"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"></highlight></codeline>
+<codeline lineno="51"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceILLIXR" kindref="compound">ILLIXR</ref>;</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"></highlight></codeline>
+<codeline lineno="53"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>ifdef<sp/>__ANDROID__</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="54"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>defined(ILLIXR_ENABLE_BOBA)<sp/>&amp;&amp;<sp/>defined(ILLIXR_ENABLE_QUEST_CONTROLLERS)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="55"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="59"><highlight class="normal">std::mutex<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">quest_config_mutex</ref>;</highlight></codeline>
+<codeline lineno="60"><highlight class="normal">std::condition_variable<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">quest_config_cv</ref>;</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">quest_config_ready</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">android_destroy_requested</ref><sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="63"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="64"><highlight class="normal"></highlight></codeline>
+<codeline lineno="65"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="66"><highlight class="normal"></highlight></codeline>
+<codeline lineno="67"><highlight class="normal"></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;C&quot;</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"></highlight><highlight class="comment">//<sp/>called<sp/>from<sp/>Java<sp/>after<sp/>permission<sp/>is<sp/>granted</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">JNIEXPORT</ref><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">JNICALL</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">Java_com_example_ILLIXR_ILLIXRNativeActivity_nativeOnPermissionGranted</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">JNIEnv</ref>*<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">env</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">jobject</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">activity</ref>)<sp/>{<sp/>}</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"></highlight></codeline>
+<codeline lineno="71"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Keep<sp/>the<sp/>Java<sp/>entry<sp/>point<sp/>in<sp/>sync<sp/>with<sp/>the<sp/>native<sp/>build<sp/>selection.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">JNIEXPORT</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">jboolean</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">JNICALL</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">Java_com_example_ILLIXR_ILLIXRNativeActivity_nativeIsBobaEnabled</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">JNIEnv</ref>*,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">jobject</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>defined(ILLIXR_ENABLE_BOBA)<sp/>&amp;&amp;<sp/>defined(ILLIXR_ENABLE_QUEST_CONTROLLERS)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">JNI_TRUE</ref>;</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">JNI_FALSE</ref>;</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="78"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"></highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">JNIEXPORT</ref><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">JNICALL</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">Java_com_example_ILLIXR_ILLIXRNativeActivity_nativeConfigure</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">JNIEnv</ref>*<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">env</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">jobject</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">activity</ref>,</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">jstring</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">server_ip</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>defined(ILLIXR_ENABLE_BOBA)<sp/>&amp;&amp;<sp/>defined(ILLIXR_ENABLE_QUEST_CONTROLLERS)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref>)<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">activity</ref>;</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">server_ip</ref><sp/>==<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">)<sp/>{</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/><ref refid="namespacecxxopts_1a6b58e451713ebbf12866c1cd8e0a66ab" kindref="member">value</ref><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">env</ref>-&gt;GetStringUTFChars(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">server_ip</ref>,<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(value<sp/>!=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">)<sp/>{</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(value[0]<sp/>!=<sp/></highlight><highlight class="charliteral">&apos;\0&apos;</highlight><highlight class="normal">)<sp/>{</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">setenv</ref>(</highlight><highlight class="stringliteral">&quot;ILLIXR_SERVER_IP&quot;</highlight><highlight class="normal">,<sp/>value,<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::lock_guard&lt;std::mutex&gt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">lock</ref>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">quest_config_mutex</ref>};</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">quest_config_ready</ref><sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">quest_config_cv</ref>.notify_all();</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">env</ref>-&gt;ReleaseStringUTFChars(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">server_ip</ref>,<sp/>value);</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"></highlight></codeline>
+<codeline lineno="101"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="102"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="103"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"></highlight></codeline>
+<codeline lineno="108"><highlight class="keyword">static</highlight><highlight class="normal"><sp/>std::thread<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">runtime_thread_</ref>;</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"></highlight></codeline>
+<codeline lineno="110"><highlight class="normal"></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">handle_cmd</ref>(</highlight><highlight class="keyword">struct</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">android_app</ref>*<sp/>app,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int32_t</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cmd</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="112"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="main_8cpp_1ac0f2228420376f4db7e1274f2b41667c" kindref="member">main</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">argc</ref>,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">argv</ref>[])<sp/>{</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="114"><highlight class="normal"></highlight></codeline>
+<codeline lineno="115"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>ifdef<sp/>__ANDROID__</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cmd</ref><sp/>==<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">APP_CMD_INIT_WINDOW</ref><sp/>&amp;&amp;<sp/>!<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">runtime_thread_</ref>.joinable())<sp/>{</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::vector&lt;std::string&gt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">plugins</ref><sp/>=<sp/>{</highlight><highlight class="stringliteral">&quot;tcp_network_backend&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;udp_network_backend&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;network_latency.tx&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;offload_rendering_client&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;openxr_interface&quot;</highlight><highlight class="normal">};</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"></highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>EuRoC</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">setenv</ref>(</highlight><highlight class="stringliteral">&quot;ILLIXR_DATA&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;/sdcard/Android/data/com.example.native_activity/mav0&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">setenv</ref>(</highlight><highlight class="stringliteral">&quot;ILLIXR_LOG&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;/sdcard/Android/data/com.example.native_activity/log.txt&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"></highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">setenv</ref>(</highlight><highlight class="stringliteral">&quot;ILLIXR_DEMO_DATA&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;/sdcard/Android/data/com.example.native_activity/demo_data&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">setenv</ref>(</highlight><highlight class="stringliteral">&quot;ILLIXR_OFFLOAD_ENABLE&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;False&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">setenv</ref>(</highlight><highlight class="stringliteral">&quot;ILLIXR_ALIGNMENT_ENABLE&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;False&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">setenv</ref>(</highlight><highlight class="stringliteral">&quot;ILLIXR_ENABLE_VERBOSE_ERRORS&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;False&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="128"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">setenv</ref>(</highlight><highlight class="stringliteral">&quot;ILLIXR_RUN_DURATION&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;1000000&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">setenv</ref>(</highlight><highlight class="stringliteral">&quot;ILLIXR_ENABLE_PRE_SLEEP&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;False&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="130"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">setenv</ref>(</highlight><highlight class="stringliteral">&quot;ILLIXR_ENABLE_PRE_SLEEP&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;False&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ifndef<sp/>ILLIXR_ENABLE_BOBA</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">setenv</ref>(</highlight><highlight class="stringliteral">&quot;ILLIXR_TCP_CLIENT_IP&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;192.168.8.140&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">setenv</ref>(</highlight><highlight class="stringliteral">&quot;ILLIXR_TCP_SERVER_IP&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;192.168.8.158&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">setenv</ref>(</highlight><highlight class="stringliteral">&quot;ILLIXR_TCP_CLIENT_PORT&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;9000&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="135"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">setenv</ref>(</highlight><highlight class="stringliteral">&quot;ILLIXR_UDP_CLIENT_PORT&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;9002&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">setenv</ref>(</highlight><highlight class="stringliteral">&quot;ILLIXR_TCP_SERVER_PORT&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;9001&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">setenv</ref>(</highlight><highlight class="stringliteral">&quot;ILLIXR_UDP_SERVER_PORT&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;9003&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="139"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">setenv</ref>(</highlight><highlight class="stringliteral">&quot;ILLIXR_IS_CLIENT&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;1&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="140"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">setenv</ref>(</highlight><highlight class="stringliteral">&quot;ILLIXR_USE_DEPTH_IMAGES&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;0&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="141"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">setenv</ref>(</highlight><highlight class="stringliteral">&quot;ILLIXR_USE_MOTION_VECTOR_IMAGES&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;0&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="142"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ifndef<sp/>ILLIXR_ENABLE_BOBA</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="143"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">setenv</ref>(</highlight><highlight class="stringliteral">&quot;ILLIXR_OVERSCAN&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;1.1&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">);<sp/></highlight><highlight class="comment">//<sp/>overscanning</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="144"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="145"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="146"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classcxxopts_1_1Options" kindref="compound">cxxopts::Options</ref><sp/>options(</highlight><highlight class="stringliteral">&quot;ILLIXR&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;Main<sp/>program&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="147"><highlight class="normal"><sp/><sp/><sp/><sp/>options.show_positional_help();</highlight></codeline>
+<codeline lineno="148"><highlight class="normal"><sp/><sp/><sp/><sp/>options.allow_unrecognised_options();</highlight></codeline>
+<codeline lineno="149"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>std::string<sp/>illixr_data,<sp/>illixr_demo_data,<sp/>realsense_cam;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="150"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>illixr_data<sp/>=<sp/>illixr_demo_data<sp/>=<sp/>realsense_cam<sp/>=<sp/>&quot;&quot;;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="151"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>bool<sp/>offload_enable,<sp/>alignment_enable,<sp/>enable_verbose_errors,<sp/>enable_pre_sleep;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="152"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>offload_enable<sp/>=<sp/>alignment_enable<sp/>=<sp/>enable_verbose_errors<sp/>=<sp/>enable_pre_sleep<sp/>=<sp/>false;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="153"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>long<sp/>run_dur<sp/>=<sp/>0;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="154"><highlight class="normal"><sp/><sp/><sp/><sp/>options.add_options()(</highlight><highlight class="stringliteral">&quot;d,duration&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;The<sp/>duration<sp/>to<sp/>run<sp/>for&quot;</highlight><highlight class="normal">,<sp/>cxxopts::value&lt;long&gt;())(</highlight></codeline>
+<codeline lineno="155"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;data&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;The<sp/>data&quot;</highlight><highlight class="normal">,<sp/>cxxopts::value&lt;std::string&gt;())(</highlight><highlight class="stringliteral">&quot;demo_data&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;The<sp/>demo<sp/>data&quot;</highlight><highlight class="normal">,<sp/>cxxopts::value&lt;std::string&gt;())(</highlight></codeline>
+<codeline lineno="156"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;enable_offload&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;&quot;</highlight><highlight class="normal">)(</highlight><highlight class="stringliteral">&quot;enable_alignment&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;&quot;</highlight><highlight class="normal">)(</highlight><highlight class="stringliteral">&quot;enable_verbose_errors&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;&quot;</highlight><highlight class="normal">)(</highlight><highlight class="stringliteral">&quot;enable_pre_sleep&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;&quot;</highlight><highlight class="normal">)(</highlight></codeline>
+<codeline lineno="157"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;h,help&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;Produce<sp/>help<sp/>message&quot;</highlight><highlight class="normal">)(</highlight><highlight class="stringliteral">&quot;realsense_cam&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;&quot;</highlight><highlight class="normal">,<sp/>cxxopts::value&lt;std::string&gt;()-&gt;default_value(</highlight><highlight class="stringliteral">&quot;auto&quot;</highlight><highlight class="normal">))(</highlight></codeline>
+<codeline lineno="158"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;p,plugins&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;The<sp/>plugins<sp/>to<sp/>use&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="159"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacecxxopts_1a6b58e451713ebbf12866c1cd8e0a66ab" kindref="member">cxxopts::value</ref>&lt;std::vector&lt;std::string&gt;&gt;())(</highlight><highlight class="stringliteral">&quot;y,yaml&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;Yaml<sp/>config<sp/>file&quot;</highlight><highlight class="normal">,<sp/>cxxopts::value&lt;std::string&gt;())(</highlight><highlight class="stringliteral">&quot;openxr&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="160"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>defined(ILLIXR_ENABLE_BOBA)<sp/>&amp;&amp;<sp/>defined(ILLIXR_ENABLE_QUEST_CONTROLLERS)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="161"><highlight class="normal"><sp/><sp/><sp/><sp/>options.add_options()(</highlight><highlight class="stringliteral">&quot;quest-ip&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;Quest<sp/>IP<sp/>address<sp/>for<sp/>native<sp/>ILLIXR<sp/>wireless<sp/>setup&quot;</highlight><highlight class="normal">,<sp/>cxxopts::value&lt;std::string&gt;())(</highlight></codeline>
+<codeline lineno="162"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;quest-connect-timeout&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;Seconds<sp/>to<sp/>wait<sp/>for<sp/>ILLIXRApp&quot;</highlight><highlight class="normal">,<sp/>cxxopts::value&lt;int&gt;()-&gt;default_value(</highlight><highlight class="stringliteral">&quot;120&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="163"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="164"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/><ref refid="namespaceparser_1a7acabb726ac23c1e78c136bd4631eb84" kindref="member">result</ref><sp/>=<sp/>options.parse(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">argc</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">argv</ref>);</highlight></codeline>
+<codeline lineno="165"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="namespaceparser_1a7acabb726ac23c1e78c136bd4631eb84" kindref="member">result</ref>.count(</highlight><highlight class="stringliteral">&quot;help&quot;</highlight><highlight class="normal">))<sp/>{</highlight></codeline>
+<codeline lineno="166"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::cout<sp/>&lt;&lt;<sp/>options.help()<sp/>&lt;&lt;<sp/>std::endl;</highlight></codeline>
+<codeline lineno="167"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">EXIT_SUCCESS</ref>;</highlight></codeline>
+<codeline lineno="168"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="169"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="170"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>ifndef<sp/>NDEBUG</highlight></codeline>
+<codeline lineno="172"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::signal(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">SIGILL</ref>,<sp/><ref refid="main_8cpp_1a75b049ec64ecbcb740d628d8e3d2274a" kindref="member">sigill_handler</ref>);</highlight></codeline>
+<codeline lineno="173"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::signal(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">SIGABRT</ref>,<sp/><ref refid="main_8cpp_1a7d8b49676e120bb55844ce171e2d82b0" kindref="member">sigabrt_handler</ref>);</highlight></codeline>
+<codeline lineno="174"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>endif<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="175"><highlight class="normal"></highlight></codeline>
+<codeline lineno="177"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::signal(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">SIGINT</ref>,<sp/><ref refid="main_8cpp_1aed429b7c618757d735b6bea2609c229a" kindref="member">sigint_handler</ref>);</highlight></codeline>
+<codeline lineno="178"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>ifdef<sp/>__ANDROID__</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="179"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>defined(ILLIXR_ENABLE_BOBA)<sp/>&amp;&amp;<sp/>defined(ILLIXR_ENABLE_QUEST_CONTROLLERS)</highlight></codeline>
+<codeline lineno="183"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">runtime_thread_</ref><sp/>=<sp/>std::thread([<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">plugins</ref>,<sp/>app]()<sp/>{</highlight></codeline>
+<codeline lineno="184"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="185"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::unique_lock&lt;std::mutex&gt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">lock</ref>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">quest_config_mutex</ref>};</highlight></codeline>
+<codeline lineno="186"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>An<sp/>existing<sp/>configuration<sp/>must<sp/>not<sp/>wait<sp/>for<sp/>a<sp/>discovery<sp/>packet.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="187"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">server</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>std::getenv(</highlight><highlight class="stringliteral">&quot;ILLIXR_SERVER_IP&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="188"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">legacy_server</ref><sp/>=<sp/>std::getenv(</highlight><highlight class="stringliteral">&quot;ILLIXR_TCP_SERVER_IP&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="189"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">quest_config_ready</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">quest_config_ready</ref><sp/>||<sp/>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">server</ref><sp/>&amp;&amp;<sp/>*<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">server</ref>)<sp/>||<sp/>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">legacy_server</ref><sp/>&amp;&amp;<sp/>*<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">legacy_server</ref>);</highlight></codeline>
+<codeline lineno="190"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">quest_config_cv</ref>.wait(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">lock</ref>,<sp/>[]()<sp/>{</highlight></codeline>
+<codeline lineno="191"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">quest_config_ready</ref><sp/>||<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">android_destroy_requested</ref>;</highlight></codeline>
+<codeline lineno="192"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>});</highlight></codeline>
+<codeline lineno="193"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">android_destroy_requested</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="194"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="195"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="196"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="197"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a2af9a564922083dabfca03e0522b4a9d" kindref="member">ILLIXR::run</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">plugins</ref>,<sp/>app);</highlight></codeline>
+<codeline lineno="198"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>});</highlight></codeline>
+<codeline lineno="199"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="200"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">runtime_thread_</ref><sp/>=<sp/>std::thread(<ref refid="namespaceILLIXR_1a2af9a564922083dabfca03e0522b4a9d" kindref="member">ILLIXR::run</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">plugins</ref>,<sp/>app);</highlight></codeline>
+<codeline lineno="201"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="202"><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cmd</ref><sp/>==<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">APP_CMD_DESTROY</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="204"><highlight class="preprocessor">#<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>defined(ILLIXR_ENABLE_BOBA)<sp/>&amp;&amp;<sp/>defined(ILLIXR_ENABLE_QUEST_CONTROLLERS)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="205"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="206"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::lock_guard&lt;std::mutex&gt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">lock</ref>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">quest_config_mutex</ref>};</highlight></codeline>
+<codeline lineno="207"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">android_destroy_requested</ref><sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="208"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="209"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">quest_config_cv</ref>.notify_all();</highlight></codeline>
+<codeline lineno="210"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="211"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="illixr_8hpp_1aa51d4f5b7475fbe39399a8ec260a4b96" kindref="member">runtime_</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="212"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="illixr_8hpp_1aa51d4f5b7475fbe39399a8ec260a4b96" kindref="member">runtime_</ref>-&gt;<ref refid="classILLIXR_1_1runtime_1a43cda807e0520d6005ed53ac58e57d2a" kindref="member">stop</ref>();</highlight></codeline>
+<codeline lineno="213"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="214"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="215"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="216"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a2af9a564922083dabfca03e0522b4a9d" kindref="member">ILLIXR::run</ref>(result);</highlight></codeline>
+<codeline lineno="217"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="218"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="219"><highlight class="normal"></highlight></codeline>
+<codeline lineno="220"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>ifdef<sp/>__ANDROID__</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="221"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">android_main</ref>(</highlight><highlight class="keyword">struct</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">android_app</ref>*<sp/>state)<sp/>{</highlight></codeline>
+<codeline lineno="224"><highlight class="normal"><sp/><sp/><sp/><sp/>state-&gt;onAppCmd<sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">handle_cmd</ref>;</highlight></codeline>
+<codeline lineno="225"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">while</highlight><highlight class="normal"><sp/>(!state-&gt;destroyRequested)<sp/>{</highlight></codeline>
+<codeline lineno="226"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">ident</ref>;</highlight></codeline>
+<codeline lineno="227"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">events</ref>;</highlight></codeline>
+<codeline lineno="228"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">android_poll_source</ref>*<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">source</ref>;</highlight></codeline>
+<codeline lineno="229"><highlight class="normal"></highlight></codeline>
+<codeline lineno="230"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>This<sp/>loop<sp/>performs<sp/>no<sp/>per-frame<sp/>work<sp/>of<sp/>its<sp/>own<sp/>--<sp/>rendering<sp/>happens<sp/>on</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="231"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>runtime_thread_<sp/>via<sp/>OpenXR/Vulkan<sp/>--<sp/>so<sp/>it<sp/>blocks<sp/>indefinitely<sp/>and<sp/>only<sp/>wakes<sp/>to</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="232"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>dispatch<sp/>the<sp/>next<sp/>lifecycle<sp/>command<sp/>or<sp/>input<sp/>event.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="233"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">do</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="234"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">ident</ref><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">ALooper_pollOnce</ref>(-1,<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">,<sp/>&amp;<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">events</ref>,<sp/>(</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">**)<sp/>&amp;<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">source</ref>);</highlight></codeline>
+<codeline lineno="235"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">ident</ref><sp/>&gt;=<sp/>0)<sp/>{</highlight></codeline>
+<codeline lineno="236"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Process<sp/>this<sp/>event.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="237"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">source</ref><sp/>!=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">)<sp/>{</highlight></codeline>
+<codeline lineno="238"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">source</ref>-&gt;process(state,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">source</ref>);</highlight></codeline>
+<codeline lineno="239"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="240"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="241"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">while</highlight><highlight class="normal"><sp/>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">ident</ref><sp/>&gt;=<sp/>0<sp/>&amp;&amp;<sp/>!state-&gt;destroyRequested);</highlight></codeline>
+<codeline lineno="242"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="243"><highlight class="normal"></highlight></codeline>
+<codeline lineno="247"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">runtime_thread_</ref>.joinable())<sp/>{</highlight></codeline>
+<codeline lineno="248"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">runtime_thread_</ref>.join();</highlight></codeline>
+<codeline lineno="249"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="250"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="251"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="252"><highlight class="normal"></highlight></codeline>
+<codeline lineno="253"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+    </programlisting>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/main.cpp"/>
+  </compounddef>
+</doxygen>

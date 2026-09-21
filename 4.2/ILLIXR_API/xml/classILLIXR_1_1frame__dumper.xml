@@ -1,0 +1,414 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classILLIXR_1_1frame__dumper" kind="class" language="C++" prot="public">
+    <compoundname>ILLIXR::frame_dumper</compoundname>
+    <includes refid="frame__dumper_8hpp" local="no">frame_dumper.hpp</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1frame__dumper_1ad38b9e149f8822072c31f72b40bd5391" prot="private" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string ILLIXR::frame_dumper::base_path_</definition>
+        <argsstring></argsstring>
+        <name>base_path_</name>
+        <qualifiedname>ILLIXR::frame_dumper::base_path_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/frame_dumper.hpp" line="228" column="17" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/frame_dumper.hpp" bodystart="228" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1frame__dumper_1afe3609cb6676967374a3753afb7c9009" prot="private" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string ILLIXR::frame_dumper::dump_dir_</definition>
+        <argsstring></argsstring>
+        <name>dump_dir_</name>
+        <qualifiedname>ILLIXR::frame_dumper::dump_dir_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/frame_dumper.hpp" line="229" column="17" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/frame_dumper.hpp" bodystart="229" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1frame__dumper_1a612acccbcc0eea751fd10ff4ba9c5d90" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+        <definition>int ILLIXR::frame_dumper::max_dumps_</definition>
+        <argsstring></argsstring>
+        <name>max_dumps_</name>
+        <qualifiedname>ILLIXR::frame_dumper::max_dumps_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/frame_dumper.hpp" line="230" column="17" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/frame_dumper.hpp" bodystart="230" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1frame__dumper_1a2b8bdf76642ea7fc2a4363c422b784ee" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+        <definition>int ILLIXR::frame_dumper::dump_count_</definition>
+        <argsstring></argsstring>
+        <name>dump_count_</name>
+        <qualifiedname>ILLIXR::frame_dumper::dump_count_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/frame_dumper.hpp" line="231" column="17" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/frame_dumper.hpp" bodystart="231" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classILLIXR_1_1frame__dumper_1a8077413c436732fbb7867e7fdfa55afb" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::frame_dumper::frame_dumper</definition>
+        <argsstring>(const std::string &amp;base_path, int max_dumps=200)</argsstring>
+        <name>frame_dumper</name>
+        <qualifiedname>ILLIXR::frame_dumper::frame_dumper</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> std::string &amp;</type>
+          <declname>base_path</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+          <declname>max_dumps</declname>
+          <defval>200</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/frame_dumper.hpp" line="28" column="14" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/frame_dumper.hpp" bodystart="28" bodyend="37"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1frame__dumper_1a491c20eb815763b48d61071c1b35d823" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void ILLIXR::frame_dumper::dump_nv12</definition>
+        <argsstring>(const uint8_t *data, int width, int height, int eye, uint64_t frame_num)</argsstring>
+        <name>dump_nv12</name>
+        <qualifiedname>ILLIXR::frame_dumper::dump_nv12</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint8_t</ref> *</type>
+          <declname>data</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+          <declname>width</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+          <declname>height</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+          <declname>eye</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint64_t</ref></type>
+          <declname>frame_num</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/frame_dumper.hpp" line="40" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/frame_dumper.hpp" bodystart="40" bodyend="58"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1frame__dumper_1aa659c8605d8670fc47cd223e91e5765f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void ILLIXR::frame_dumper::dump_nv12_as_ppm</definition>
+        <argsstring>(const uint8_t *data, int width, int height, int eye, uint64_t frame_num)</argsstring>
+        <name>dump_nv12_as_ppm</name>
+        <qualifiedname>ILLIXR::frame_dumper::dump_nv12_as_ppm</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint8_t</ref> *</type>
+          <declname>data</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+          <declname>width</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+          <declname>height</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+          <declname>eye</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint64_t</ref></type>
+          <declname>frame_num</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/frame_dumper.hpp" line="61" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/frame_dumper.hpp" bodystart="61" bodyend="82"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1frame__dumper_1a869dc64c072e5f9f0d460862d68aa132" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void ILLIXR::frame_dumper::dump_gl_texture</definition>
+        <argsstring>(GLuint texture_id, int width, int height, int eye, uint64_t frame_num, bool is_external_oes=false)</argsstring>
+        <name>dump_gl_texture</name>
+        <qualifiedname>ILLIXR::frame_dumper::dump_gl_texture</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">GLuint</ref></type>
+          <declname>texture_id</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+          <declname>width</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+          <declname>height</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+          <declname>eye</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint64_t</ref></type>
+          <declname>frame_num</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+          <declname>is_external_oes</declname>
+          <defval><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">false</ref></defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/frame_dumper.hpp" line="85" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/frame_dumper.hpp" bodystart="85" bodyend="96"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1frame__dumper_1a331d665624e2064fb9305f4a3a3eb8ef" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void ILLIXR::frame_dumper::dump_framebuffer</definition>
+        <argsstring>(int width, int height, int eye, uint64_t frame_num)</argsstring>
+        <name>dump_framebuffer</name>
+        <qualifiedname>ILLIXR::frame_dumper::dump_framebuffer</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+          <declname>width</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+          <declname>height</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+          <declname>eye</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint64_t</ref></type>
+          <declname>frame_num</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/frame_dumper.hpp" line="99" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/frame_dumper.hpp" bodystart="99" bodyend="130"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1frame__dumper_1a6c7793e4f96f9d966764c0d607aa792d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void ILLIXR::frame_dumper::log_texture_info</definition>
+        <argsstring>(GLuint texture_id, const char *name)</argsstring>
+        <name>log_texture_info</name>
+        <qualifiedname>ILLIXR::frame_dumper::log_texture_info</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">GLuint</ref></type>
+          <declname>texture_id</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">char</ref> *</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/frame_dumper.hpp" line="133" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/frame_dumper.hpp" bodystart="133" bodyend="148"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1frame__dumper_1a1d4397544546b68e5202f125e96d6522" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+        <definition>int ILLIXR::frame_dumper::get_dump_count</definition>
+        <argsstring>() const</argsstring>
+        <name>get_dump_count</name>
+        <qualifiedname>ILLIXR::frame_dumper::get_dump_count</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/frame_dumper.hpp" line="151" column="9" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/frame_dumper.hpp" bodystart="151" bodyend="153"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1frame__dumper_1a9e5e2c4d8e82da692c96585ad0bb2587" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void ILLIXR::frame_dumper::reset_count</definition>
+        <argsstring>()</argsstring>
+        <name>reset_count</name>
+        <qualifiedname>ILLIXR::frame_dumper::reset_count</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/frame_dumper.hpp" line="156" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/frame_dumper.hpp" bodystart="156" bodyend="158"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1frame__dumper_1a524842c2bed8364e1d84f24ab1a5d042" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> std::string &amp;</type>
+        <definition>const std::string &amp; ILLIXR::frame_dumper::get_dump_dir</definition>
+        <argsstring>() const</argsstring>
+        <name>get_dump_dir</name>
+        <qualifiedname>ILLIXR::frame_dumper::get_dump_dir</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/frame_dumper.hpp" line="161" column="23" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/frame_dumper.hpp" bodystart="161" bodyend="163"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classILLIXR_1_1frame__dumper_1a07dafcea6c75a1721c93d3f03eff4cca" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void ILLIXR::frame_dumper::nv12_to_rgb</definition>
+        <argsstring>(const uint8_t *nv12, uint8_t *rgb, int width, int height)</argsstring>
+        <name>nv12_to_rgb</name>
+        <qualifiedname>ILLIXR::frame_dumper::nv12_to_rgb</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint8_t</ref> *</type>
+          <declname>nv12</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint8_t</ref> *</type>
+          <declname>rgb</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+          <declname>width</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+          <declname>height</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/frame_dumper.hpp" line="166" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/frame_dumper.hpp" bodystart="166" bodyend="199"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1frame__dumper_1a0eaef31465677364be5a0b17d2f2c835" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void ILLIXR::frame_dumper::dump_regular_texture</definition>
+        <argsstring>(GLuint texture_id, int width, int height, int eye, uint64_t frame_num)</argsstring>
+        <name>dump_regular_texture</name>
+        <qualifiedname>ILLIXR::frame_dumper::dump_regular_texture</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">GLuint</ref></type>
+          <declname>texture_id</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+          <declname>width</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+          <declname>height</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+          <declname>eye</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint64_t</ref></type>
+          <declname>frame_num</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/frame_dumper.hpp" line="201" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/frame_dumper.hpp" bodystart="201" bodyend="216"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1frame__dumper_1afcf9270cb0efbc6ddf1fec1ec0e68cb1" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void ILLIXR::frame_dumper::dump_external_oes_texture</definition>
+        <argsstring>(GLuint texture_id, int width, int height, int eye, uint64_t frame_num)</argsstring>
+        <name>dump_external_oes_texture</name>
+        <qualifiedname>ILLIXR::frame_dumper::dump_external_oes_texture</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">GLuint</ref></type>
+          <declname>texture_id</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+          <declname>width</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+          <declname>height</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+          <declname>eye</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint64_t</ref></type>
+          <declname>frame_num</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/frame_dumper.hpp" line="218" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/frame_dumper.hpp" bodystart="218" bodyend="226"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/frame_dumper.hpp" line="25" column="1" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/frame_dumper.hpp" bodystart="25" bodyend="232"/>
+    <listofallmembers>
+      <member refid="classILLIXR_1_1frame__dumper_1ad38b9e149f8822072c31f72b40bd5391" prot="private" virt="non-virtual"><scope>ILLIXR::frame_dumper</scope><name>base_path_</name></member>
+      <member refid="classILLIXR_1_1frame__dumper_1a2b8bdf76642ea7fc2a4363c422b784ee" prot="private" virt="non-virtual"><scope>ILLIXR::frame_dumper</scope><name>dump_count_</name></member>
+      <member refid="classILLIXR_1_1frame__dumper_1afe3609cb6676967374a3753afb7c9009" prot="private" virt="non-virtual"><scope>ILLIXR::frame_dumper</scope><name>dump_dir_</name></member>
+      <member refid="classILLIXR_1_1frame__dumper_1afcf9270cb0efbc6ddf1fec1ec0e68cb1" prot="private" virt="non-virtual"><scope>ILLIXR::frame_dumper</scope><name>dump_external_oes_texture</name></member>
+      <member refid="classILLIXR_1_1frame__dumper_1a331d665624e2064fb9305f4a3a3eb8ef" prot="public" virt="non-virtual"><scope>ILLIXR::frame_dumper</scope><name>dump_framebuffer</name></member>
+      <member refid="classILLIXR_1_1frame__dumper_1a869dc64c072e5f9f0d460862d68aa132" prot="public" virt="non-virtual"><scope>ILLIXR::frame_dumper</scope><name>dump_gl_texture</name></member>
+      <member refid="classILLIXR_1_1frame__dumper_1a491c20eb815763b48d61071c1b35d823" prot="public" virt="non-virtual"><scope>ILLIXR::frame_dumper</scope><name>dump_nv12</name></member>
+      <member refid="classILLIXR_1_1frame__dumper_1aa659c8605d8670fc47cd223e91e5765f" prot="public" virt="non-virtual"><scope>ILLIXR::frame_dumper</scope><name>dump_nv12_as_ppm</name></member>
+      <member refid="classILLIXR_1_1frame__dumper_1a0eaef31465677364be5a0b17d2f2c835" prot="private" virt="non-virtual"><scope>ILLIXR::frame_dumper</scope><name>dump_regular_texture</name></member>
+      <member refid="classILLIXR_1_1frame__dumper_1a8077413c436732fbb7867e7fdfa55afb" prot="public" virt="non-virtual"><scope>ILLIXR::frame_dumper</scope><name>frame_dumper</name></member>
+      <member refid="classILLIXR_1_1frame__dumper_1a1d4397544546b68e5202f125e96d6522" prot="public" virt="non-virtual"><scope>ILLIXR::frame_dumper</scope><name>get_dump_count</name></member>
+      <member refid="classILLIXR_1_1frame__dumper_1a524842c2bed8364e1d84f24ab1a5d042" prot="public" virt="non-virtual"><scope>ILLIXR::frame_dumper</scope><name>get_dump_dir</name></member>
+      <member refid="classILLIXR_1_1frame__dumper_1a6c7793e4f96f9d966764c0d607aa792d" prot="public" virt="non-virtual"><scope>ILLIXR::frame_dumper</scope><name>log_texture_info</name></member>
+      <member refid="classILLIXR_1_1frame__dumper_1a612acccbcc0eea751fd10ff4ba9c5d90" prot="private" virt="non-virtual"><scope>ILLIXR::frame_dumper</scope><name>max_dumps_</name></member>
+      <member refid="classILLIXR_1_1frame__dumper_1a07dafcea6c75a1721c93d3f03eff4cca" prot="private" virt="non-virtual"><scope>ILLIXR::frame_dumper</scope><name>nv12_to_rgb</name></member>
+      <member refid="classILLIXR_1_1frame__dumper_1a9e5e2c4d8e82da692c96585ad0bb2587" prot="public" virt="non-virtual"><scope>ILLIXR::frame_dumper</scope><name>reset_count</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

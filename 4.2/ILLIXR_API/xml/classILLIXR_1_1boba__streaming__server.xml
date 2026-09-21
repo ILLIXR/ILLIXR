@@ -1,0 +1,864 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classILLIXR_1_1boba__streaming__server" kind="class" language="C++" prot="public" final="yes">
+    <compoundname>ILLIXR::boba_streaming_server</compoundname>
+    <basecompoundref refid="classILLIXR_1_1threadloop" prot="public" virt="non-virtual">ILLIXR::threadloop</basecompoundref>
+    <includes refid="plugins_2boba__streaming__server_2plugin_8hpp" local="no">plugin.hpp</includes>
+    <innerclass refid="structILLIXR_1_1boba__streaming__server_1_1mapped__file" prot="private">ILLIXR::boba_streaming_server::mapped_file</innerclass>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1boba__streaming__server_1a5a66223e20f548366877a3fd8233e6f8" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> std::shared_ptr&lt; <ref refid="classILLIXR_1_1switchboard" kindref="compound">switchboard</ref> &gt;</type>
+        <definition>const std::shared_ptr&lt;switchboard&gt; ILLIXR::boba_streaming_server::switchboard_</definition>
+        <argsstring></argsstring>
+        <name>switchboard_</name>
+        <qualifiedname>ILLIXR::boba_streaming_server::switchboard_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" line="97" column="53" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" bodystart="97" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1boba__streaming__server_1a412349f6f0e3545e710c3c556b6c08d9" prot="private" static="no" mutable="no">
+        <type><ref refid="classILLIXR_1_1switchboard_1_1reader" kindref="compound">switchboard::reader</ref>&lt; <ref refid="structILLIXR_1_1data__format_1_1stereo__frame" kindref="compound">data_format::stereo_frame</ref> &gt;</type>
+        <definition>switchboard::reader&lt;data_format::stereo_frame&gt; ILLIXR::boba_streaming_server::stereo_reader_</definition>
+        <argsstring></argsstring>
+        <name>stereo_reader_</name>
+        <qualifiedname>ILLIXR::boba_streaming_server::stereo_reader_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" line="98" column="39" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" bodystart="98" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1boba__streaming__server_1a17881dbe06fa7a9cb183feb72aacf301" prot="private" static="no" mutable="no">
+        <type><ref refid="classILLIXR_1_1switchboard_1_1network__writer" kindref="compound">switchboard::network_writer</ref>&lt; <ref refid="structILLIXR_1_1data__format_1_1compressed__frame" kindref="compound">data_format::compressed_frame</ref> &gt;</type>
+        <definition>switchboard::network_writer&lt;data_format::compressed_frame&gt; ILLIXR::boba_streaming_server::frames_writer_</definition>
+        <argsstring></argsstring>
+        <name>frames_writer_</name>
+        <qualifiedname>ILLIXR::boba_streaming_server::frames_writer_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" line="99" column="35" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" bodystart="99" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1boba__streaming__server_1acfce22a7198c40a848446126f8000df5" prot="private" static="no" mutable="no">
+        <type><ref refid="classILLIXR_1_1switchboard_1_1network__writer" kindref="compound">switchboard::network_writer</ref>&lt; <ref refid="structILLIXR_1_1data__format_1_1boba__modal__texture" kindref="compound">data_format::boba_modal_texture</ref> &gt;</type>
+        <definition>switchboard::network_writer&lt;data_format::boba_modal_texture&gt; ILLIXR::boba_streaming_server::modal_writer_</definition>
+        <argsstring></argsstring>
+        <name>modal_writer_</name>
+        <qualifiedname>ILLIXR::boba_streaming_server::modal_writer_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" line="100" column="33" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" bodystart="100" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1boba__streaming__server_1acec78a1dac67a8961ffe0cca5ebf2c1c" prot="private" static="no" mutable="no">
+        <type><ref refid="structILLIXR_1_1boba__streaming__server_1_1mapped__file" kindref="compound">mapped_file</ref></type>
+        <definition>mapped_file ILLIXR::boba_streaming_server::frame_mapping_</definition>
+        <argsstring></argsstring>
+        <name>frame_mapping_</name>
+        <qualifiedname>ILLIXR::boba_streaming_server::frame_mapping_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" line="103" column="36" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" bodystart="103" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1boba__streaming__server_1add16a0ac8a7430640d9d2b9366795d59" prot="private" static="no" mutable="no">
+        <type><ref refid="structILLIXR_1_1boba__streaming__server_1_1mapped__file" kindref="compound">mapped_file</ref></type>
+        <definition>mapped_file ILLIXR::boba_streaming_server::overlay_mapping_</definition>
+        <argsstring></argsstring>
+        <name>overlay_mapping_</name>
+        <qualifiedname>ILLIXR::boba_streaming_server::overlay_mapping_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" line="104" column="36" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" bodystart="104" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1boba__streaming__server_1a29344147e5042c440c922023f27e531a" prot="private" static="no" mutable="no">
+        <type><ref refid="structILLIXR_1_1boba__streaming__server_1_1mapped__file" kindref="compound">mapped_file</ref></type>
+        <definition>mapped_file ILLIXR::boba_streaming_server::modal_mapping_</definition>
+        <argsstring></argsstring>
+        <name>modal_mapping_</name>
+        <qualifiedname>ILLIXR::boba_streaming_server::modal_mapping_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" line="105" column="36" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" bodystart="105" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1boba__streaming__server_1ac8af28bc86a77dbbb7559d477fc43e4e" prot="private" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">nvenc_encoder</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;nvenc_encoder&gt; ILLIXR::boba_streaming_server::encoder_</definition>
+        <argsstring></argsstring>
+        <name>encoder_</name>
+        <qualifiedname>ILLIXR::boba_streaming_server::encoder_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" line="106" column="21" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" bodystart="106" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1boba__streaming__server_1aa192465c1320bbdfbf51d73f609f3867" prot="private" static="no" mutable="no">
+        <type>std::uint64_t</type>
+        <definition>std::uint64_t ILLIXR::boba_streaming_server::last_frame_id_</definition>
+        <argsstring></argsstring>
+        <name>last_frame_id_</name>
+        <qualifiedname>ILLIXR::boba_streaming_server::last_frame_id_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" line="108" column="19" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" bodystart="108" bodyend="108"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1boba__streaming__server_1a8950381a6665f286c4240eec663768e7" prot="private" static="no" mutable="no">
+        <type>std::uint64_t</type>
+        <definition>std::uint64_t ILLIXR::boba_streaming_server::last_modal_texture_id_</definition>
+        <argsstring></argsstring>
+        <name>last_modal_texture_id_</name>
+        <qualifiedname>ILLIXR::boba_streaming_server::last_modal_texture_id_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" line="109" column="19" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" bodystart="109" bodyend="109"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1boba__streaming__server_1a56293ee830237985ca20c02429165df1" prot="private" static="no" mutable="no">
+        <type>std::uint64_t</type>
+        <definition>std::uint64_t ILLIXR::boba_streaming_server::modal_visible_frame_count_</definition>
+        <argsstring></argsstring>
+        <name>modal_visible_frame_count_</name>
+        <qualifiedname>ILLIXR::boba_streaming_server::modal_visible_frame_count_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" line="110" column="19" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" bodystart="110" bodyend="110"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1boba__streaming__server_1ad97cae556de64fd3074318867a4a5617" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::boba_streaming_server::last_modal_visible_</definition>
+        <argsstring></argsstring>
+        <name>last_modal_visible_</name>
+        <qualifiedname>ILLIXR::boba_streaming_server::last_modal_visible_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">false</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" line="111" column="19" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" bodystart="111" bodyend="111"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1boba__streaming__server_1a8a535267487bdd053a253c503b93492b" prot="private" static="no" mutable="no">
+        <type>std::int64_t</type>
+        <definition>std::int64_t ILLIXR::boba_streaming_server::bitrate_</definition>
+        <argsstring></argsstring>
+        <name>bitrate_</name>
+        <qualifiedname>ILLIXR::boba_streaming_server::bitrate_</qualifiedname>
+        <initializer>{30&apos;000&apos;000}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" line="113" column="43" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" bodystart="113" bodyend="113"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1boba__streaming__server_1a0dc1dfbebe24cadfe083120553ae10ba" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+        <definition>int ILLIXR::boba_streaming_server::framerate_</definition>
+        <argsstring></argsstring>
+        <name>framerate_</name>
+        <qualifiedname>ILLIXR::boba_streaming_server::framerate_</qualifiedname>
+        <initializer>{72}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" line="114" column="43" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" bodystart="114" bodyend="114"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1boba__streaming__server_1a7a38ac779baa6b6801ed80f3023979f5" prot="private" static="no" mutable="no">
+        <type>std::chrono::steady_clock::time_point</type>
+        <definition>std::chrono::steady_clock::time_point ILLIXR::boba_streaming_server::next_frame_time_</definition>
+        <argsstring></argsstring>
+        <name>next_frame_time_</name>
+        <qualifiedname>ILLIXR::boba_streaming_server::next_frame_time_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" line="115" column="43" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" bodystart="115" bodyend="115"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1boba__streaming__server_1a348f6a12c8a1ca49e6f87bf3a4017327" prot="private" static="no" mutable="no">
+        <type>std::chrono::steady_clock::time_point</type>
+        <definition>std::chrono::steady_clock::time_point ILLIXR::boba_streaming_server::metrics_start_</definition>
+        <argsstring></argsstring>
+        <name>metrics_start_</name>
+        <qualifiedname>ILLIXR::boba_streaming_server::metrics_start_</qualifiedname>
+        <initializer>{std::chrono::steady_clock::now()}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" line="116" column="43" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" bodystart="116" bodyend="116"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1boba__streaming__server_1a072db80b4dacf744cec4ad0e9dead741" prot="private" static="no" mutable="no">
+        <type>std::uint64_t</type>
+        <definition>std::uint64_t ILLIXR::boba_streaming_server::metrics_frames_</definition>
+        <argsstring></argsstring>
+        <name>metrics_frames_</name>
+        <qualifiedname>ILLIXR::boba_streaming_server::metrics_frames_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" line="117" column="43" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" bodystart="117" bodyend="117"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1boba__streaming__server_1ab3c574eef09690a351f32215a5646ba0" prot="private" static="no" mutable="no">
+        <type>std::uint64_t</type>
+        <definition>std::uint64_t ILLIXR::boba_streaming_server::metrics_bytes_</definition>
+        <argsstring></argsstring>
+        <name>metrics_bytes_</name>
+        <qualifiedname>ILLIXR::boba_streaming_server::metrics_bytes_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" line="118" column="43" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" bodystart="118" bodyend="118"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1boba__streaming__server_1a7b141919688862e8c0f8b92a43adc9ed" prot="private" static="no" mutable="no">
+        <type>std::uint64_t</type>
+        <definition>std::uint64_t ILLIXR::boba_streaming_server::metrics_encode_attempts_</definition>
+        <argsstring></argsstring>
+        <name>metrics_encode_attempts_</name>
+        <qualifiedname>ILLIXR::boba_streaming_server::metrics_encode_attempts_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" line="119" column="43" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" bodystart="119" bodyend="119"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1boba__streaming__server_1afe5a39518ea93291c8339bf09138d77e" prot="private" static="no" mutable="no">
+        <type>std::uint64_t</type>
+        <definition>std::uint64_t ILLIXR::boba_streaming_server::metrics_rejected_</definition>
+        <argsstring></argsstring>
+        <name>metrics_rejected_</name>
+        <qualifiedname>ILLIXR::boba_streaming_server::metrics_rejected_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" line="120" column="43" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" bodystart="120" bodyend="120"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1boba__streaming__server_1addc7e49919b937b09078f667cb313d9d" prot="private" static="no" mutable="no">
+        <type>std::uint64_t</type>
+        <definition>std::uint64_t ILLIXR::boba_streaming_server::metrics_source_skips_</definition>
+        <argsstring></argsstring>
+        <name>metrics_source_skips_</name>
+        <qualifiedname>ILLIXR::boba_streaming_server::metrics_source_skips_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" line="121" column="43" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" bodystart="121" bodyend="121"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1boba__streaming__server_1a8864bbd648a2acb2efd155105f01248d" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">double</ref></type>
+        <definition>double ILLIXR::boba_streaming_server::metrics_encode_us_</definition>
+        <argsstring></argsstring>
+        <name>metrics_encode_us_</name>
+        <qualifiedname>ILLIXR::boba_streaming_server::metrics_encode_us_</qualifiedname>
+        <initializer>{0.0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" line="122" column="43" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" bodystart="122" bodyend="122"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1boba__streaming__server_1a0ab755f9044756d183b4d0ac2ce5323d" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">double</ref></type>
+        <definition>double ILLIXR::boba_streaming_server::metrics_send_us_</definition>
+        <argsstring></argsstring>
+        <name>metrics_send_us_</name>
+        <qualifiedname>ILLIXR::boba_streaming_server::metrics_send_us_</qualifiedname>
+        <initializer>{0.0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" line="123" column="43" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" bodystart="123" bodyend="123"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classILLIXR_1_1boba__streaming__server_1a07641a4b97bde48c576a6925b0dc4393" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::boba_streaming_server::boba_streaming_server</definition>
+        <argsstring>(const std::string &amp;name, phonebook *pb)</argsstring>
+        <name>boba_streaming_server</name>
+        <qualifiedname>ILLIXR::boba_streaming_server::boba_streaming_server</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> std::string &amp;</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type><ref refid="classILLIXR_1_1phonebook" kindref="compound">phonebook</ref> *</type>
+          <declname>pb</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Bind the local stereo input and the TCP network outputs. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" line="30" column="5" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.cpp" bodystart="62" bodyend="75"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1boba__streaming__server_1a41be90ecf88d9f63699f5579f2188ca4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::boba_streaming_server::~boba_streaming_server</definition>
+        <argsstring>() override</argsstring>
+        <name>~boba_streaming_server</name>
+        <qualifiedname>ILLIXR::boba_streaming_server::~boba_streaming_server</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Release the encoder and any mapped producer rings. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" line="32" column="5"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classILLIXR_1_1boba__streaming__server_1a08fa729fd6b933882eb5d94e7c1ca443" prot="protected" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="classILLIXR_1_1threadloop_1a26c08942158dc019cbc78c9880417652" kindref="member">skip_option</ref></type>
+        <definition>threadloop::skip_option ILLIXR::boba_streaming_server::_p_should_skip</definition>
+        <argsstring>() override</argsstring>
+        <name>_p_should_skip</name>
+        <qualifiedname>ILLIXR::boba_streaming_server::_p_should_skip</qualifiedname>
+        <reimplements refid="classILLIXR_1_1threadloop_1a9ff83bb9e47beff3efccbd26bc3e874a">_p_should_skip</reimplements>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Sleep until Boba publishes a source frame newer than the last handled ID. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" line="36" column="17" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.cpp" bodystart="81" bodyend="95"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1boba__streaming__server_1a21f27da940a375d5c6bfd18b600f6b77" prot="protected" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void ILLIXR::boba_streaming_server::_p_one_iteration</definition>
+        <argsstring>() override</argsstring>
+        <name>_p_one_iteration</name>
+        <qualifiedname>ILLIXR::boba_streaming_server::_p_one_iteration</qualifiedname>
+        <reimplements refid="classILLIXR_1_1threadloop_1a609dc44adc6c56cf304408c7ac5f15be">_p_one_iteration</reimplements>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Snapshot, validate, encode, and publish one Boba frame. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" line="39" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.cpp" bodystart="283" bodyend="411"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classILLIXR_1_1boba__streaming__server_1a9b47997b75590c54d97ef768e3989030" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::boba_streaming_server::map_file</definition>
+        <argsstring>(const std::string &amp;path, mapped_file *mapping)</argsstring>
+        <name>map_file</name>
+        <qualifiedname>ILLIXR::boba_streaming_server::map_file</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> std::string &amp;</type>
+          <declname>path</declname>
+        </param>
+        <param>
+          <type><ref refid="structILLIXR_1_1boba__streaming__server_1_1mapped__file" kindref="compound">mapped_file</ref> *</type>
+          <declname>mapping</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Reuse an existing mapping or replace it when the producer path changes. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" line="58" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.cpp" bodystart="97" bodyend="126"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1boba__streaming__server_1ae1208505f4205e0b0d0d4bfc30d704dd" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::boba_streaming_server::generation_matches</definition>
+        <argsstring>(const mapped_file &amp;mapping, std::uint64_t generation_offset, std::uint64_t expected_generation) const</argsstring>
+        <name>generation_matches</name>
+        <qualifiedname>ILLIXR::boba_streaming_server::generation_matches</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="structILLIXR_1_1boba__streaming__server_1_1mapped__file" kindref="compound">mapped_file</ref> &amp;</type>
+          <declname>mapping</declname>
+        </param>
+        <param>
+          <type>std::uint64_t</type>
+          <declname>generation_offset</declname>
+        </param>
+        <param>
+          <type>std::uint64_t</type>
+          <declname>expected_generation</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Test the ring-slot generation marker without unaligned integer access. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" line="61" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.cpp" bodystart="128" bodyend="137"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1boba__streaming__server_1afa6f61eb183e4cc8751c67ec18bac210" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::boba_streaming_server::image_range_valid</definition>
+        <argsstring>(const data_format::stereo_shared_image &amp;image) const</argsstring>
+        <name>image_range_valid</name>
+        <qualifiedname>ILLIXR::boba_streaming_server::image_range_valid</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="structILLIXR_1_1data__format_1_1stereo__shared__image" kindref="compound">data_format::stereo_shared_image</ref> &amp;</type>
+          <declname>image</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Bounds-check a shared RGBA image against the currently mapped frame ring. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" line="65" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.cpp" bodystart="139" bodyend="145"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1boba__streaming__server_1a1bbdfb5e025b09fffb183e83f5d9ed34" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::boba_streaming_server::overlay_range_valid</definition>
+        <argsstring>(const data_format::stereo_overlay_command_range &amp;range) const</argsstring>
+        <name>overlay_range_valid</name>
+        <qualifiedname>ILLIXR::boba_streaming_server::overlay_range_valid</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="structILLIXR_1_1data__format_1_1stereo__overlay__command__range" kindref="compound">data_format::stereo_overlay_command_range</ref> &amp;</type>
+          <declname>range</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Validate count, stride, and byte range for one eye&apos;s vector overlays. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" line="68" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.cpp" bodystart="147" bodyend="158"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1boba__streaming__server_1af553891d3ec81eaeb277baee4aee063b" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::boba_streaming_server::modal_range_valid</definition>
+        <argsstring>(const data_format::stereo_modal_overlay &amp;modal) const</argsstring>
+        <name>modal_range_valid</name>
+        <qualifiedname>ILLIXR::boba_streaming_server::modal_range_valid</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="structILLIXR_1_1data__format_1_1stereo__modal__overlay" kindref="compound">data_format::stereo_modal_overlay</ref> &amp;</type>
+          <declname>modal</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Validate dimensions, row pitch, and byte range for an optional modal bitmap. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" line="71" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.cpp" bodystart="160" bodyend="171"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1boba__streaming__server_1ad58ad49b89dc67e029d6741a5ce012ba" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>std::vector&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">float</ref> &gt;</type>
+        <definition>std::vector&lt; float &gt; ILLIXR::boba_streaming_server::copy_overlay_commands</definition>
+        <argsstring>(const data_format::stereo_overlay_command_range &amp;range) const</argsstring>
+        <name>copy_overlay_commands</name>
+        <qualifiedname>ILLIXR::boba_streaming_server::copy_overlay_commands</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="structILLIXR_1_1data__format_1_1stereo__overlay__command__range" kindref="compound">data_format::stereo_overlay_command_range</ref> &amp;</type>
+          <declname>range</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Copy overlay commands out of the recyclable producer ring. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" line="74" column="17" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.cpp" bodystart="173" bodyend="180"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1boba__streaming__server_1a60ad526b2f4ed4f325ac4a2aa691af76" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>std::vector&lt; std::uint8_t &gt;</type>
+        <definition>std::vector&lt; std::uint8_t &gt; ILLIXR::boba_streaming_server::copy_modal_pixels</definition>
+        <argsstring>(const data_format::stereo_modal_overlay &amp;modal) const</argsstring>
+        <name>copy_modal_pixels</name>
+        <qualifiedname>ILLIXR::boba_streaming_server::copy_modal_pixels</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="structILLIXR_1_1data__format_1_1stereo__modal__overlay" kindref="compound">data_format::stereo_modal_overlay</ref> &amp;</type>
+          <declname>modal</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Repack a potentially padded modal bitmap into tightly packed RGBA rows. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" line="77" column="17" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.cpp" bodystart="182" bodyend="191"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1boba__streaming__server_1a981911d6ad770fbb295d71735c91a860" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>std::uint64_t</type>
+        <definition>std::uint64_t ILLIXR::boba_streaming_server::modal_texture_id</definition>
+        <argsstring>(const std::vector&lt; std::uint8_t &gt; &amp;rgba, std::uint32_t width, std::uint32_t height) const</argsstring>
+        <name>modal_texture_id</name>
+        <qualifiedname>ILLIXR::boba_streaming_server::modal_texture_id</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> std::vector&lt; std::uint8_t &gt; &amp;</type>
+          <declname>rgba</declname>
+        </param>
+        <param>
+          <type>std::uint32_t</type>
+          <declname>width</declname>
+        </param>
+        <param>
+          <type>std::uint32_t</type>
+          <declname>height</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Produce a stable content identity from modal dimensions and RGBA bytes. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" line="80" column="19" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.cpp" bodystart="195" bodyend="212"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1boba__streaming__server_1a4853003cc7b0ab1bb1094e683bb4008b" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void ILLIXR::boba_streaming_server::publish_modal_texture_if_needed</definition>
+        <argsstring>(const data_format::boba_modal_overlay &amp;modal, const std::vector&lt; std::uint8_t &gt; &amp;rgba)</argsstring>
+        <name>publish_modal_texture_if_needed</name>
+        <qualifiedname>ILLIXR::boba_streaming_server::publish_modal_texture_if_needed</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="structILLIXR_1_1data__format_1_1boba__modal__overlay" kindref="compound">data_format::boba_modal_overlay</ref> &amp;</type>
+          <declname>modal</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> std::vector&lt; std::uint8_t &gt; &amp;</type>
+          <declname>rgba</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Reliably publish a changed modal texture and periodically refresh the cache. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" line="83" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.cpp" bodystart="214" bodyend="237"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1boba__streaming__server_1a1eb94300b0822a29a4d9f37e9faf0b55" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void ILLIXR::boba_streaming_server::initialize_encoder</definition>
+        <argsstring>()</argsstring>
+        <name>initialize_encoder</name>
+        <qualifiedname>ILLIXR::boba_streaming_server::initialize_encoder</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Lazily create the side-by-side AV1 NVENC encoder. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" line="86" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.cpp" bodystart="239" bodyend="249"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1boba__streaming__server_1ab686d6dcd26019b31cafeb8638aa44b6" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void ILLIXR::boba_streaming_server::publish_encoded</definition>
+        <argsstring>(const data_format::stereo_frame &amp;frame, std::vector&lt; std::uint8_t &gt; &amp;&amp;encoded, data_format::boba_frame_overlay &amp;&amp;overlay, const data_format::boba_modal_overlay &amp;modal, double encode_time_us)</argsstring>
+        <name>publish_encoded</name>
+        <qualifiedname>ILLIXR::boba_streaming_server::publish_encoded</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="structILLIXR_1_1data__format_1_1stereo__frame" kindref="compound">data_format::stereo_frame</ref> &amp;</type>
+          <declname>frame</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; std::uint8_t &gt; &amp;&amp;</type>
+          <declname>encoded</declname>
+        </param>
+        <param>
+          <type><ref refid="structILLIXR_1_1data__format_1_1boba__frame__overlay" kindref="compound">data_format::boba_frame_overlay</ref> &amp;&amp;</type>
+          <declname>overlay</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="structILLIXR_1_1data__format_1_1boba__modal__overlay" kindref="compound">data_format::boba_modal_overlay</ref> &amp;</type>
+          <declname>modal</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">double</ref></type>
+          <declname>encode_time_us</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Attach timing, pose, and overlay metadata and send the encoded frame over TCP. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" line="89" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.cpp" bodystart="253" bodyend="281"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1boba__streaming__server_1a50828dd6fc53ce4ebf4da96a399bfe9a" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void ILLIXR::boba_streaming_server::report_metrics</definition>
+        <argsstring>()</argsstring>
+        <name>report_metrics</name>
+        <qualifiedname>ILLIXR::boba_streaming_server::report_metrics</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Report producer rejection, encoding, and synchronous TCP publication separately. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" line="94" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.cpp" bodystart="413" bodyend="433"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Encode Boba&apos;s mmap-backed RGBA output and stream it to the native Quest client.</para>
+<para>Encoded frames and small vector overlays travel together over the existing <computeroutput>compressed_frames</computeroutput> TCP transport used by the offload renderer. Modal textures are content-addressed, cached on the Quest, and sent on a separate TCP topic. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>ILLIXR::boba_streaming_server</label>
+        <link refid="classILLIXR_1_1boba__streaming__server"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>ILLIXR::plugin</label>
+        <link refid="classILLIXR_1_1plugin"/>
+      </node>
+      <node id="2">
+        <label>ILLIXR::threadloop</label>
+        <link refid="classILLIXR_1_1threadloop"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>ILLIXR::boba_streaming_server</label>
+        <link refid="classILLIXR_1_1boba__streaming__server"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>stereo_reader_</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>frames_writer_</edgelabel>
+        </childnode>
+        <childnode refid="10" relation="usage">
+          <edgelabel>modal_writer_</edgelabel>
+        </childnode>
+        <childnode refid="12" relation="usage">
+          <edgelabel>frame_mapping_</edgelabel>
+          <edgelabel>modal_mapping_</edgelabel>
+          <edgelabel>overlay_mapping_</edgelabel>
+        </childnode>
+      </node>
+      <node id="12">
+        <label>ILLIXR::boba_streaming_server::mapped_file</label>
+        <link refid="structILLIXR_1_1boba__streaming__server_1_1mapped__file"/>
+      </node>
+      <node id="9">
+        <label>ILLIXR::network::topic_config</label>
+        <link refid="structILLIXR_1_1network_1_1topic__config"/>
+      </node>
+      <node id="4">
+        <label>ILLIXR::phonebook</label>
+        <link refid="classILLIXR_1_1phonebook"/>
+      </node>
+      <node id="3">
+        <label>ILLIXR::plugin</label>
+        <link refid="classILLIXR_1_1plugin"/>
+        <childnode refid="4" relation="usage">
+          <edgelabel>phonebook_</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>ILLIXR::switchboard::topic</label>
+        <link refid="classILLIXR_1_1switchboard_1_1topic"/>
+      </node>
+      <node id="11">
+        <label>ILLIXR::switchboard::writer&lt; Specific_event &gt;</label>
+        <link refid="classILLIXR_1_1switchboard_1_1writer"/>
+        <childnode refid="6" relation="usage">
+          <edgelabel>topic_</edgelabel>
+        </childnode>
+      </node>
+      <node id="8">
+        <label>ILLIXR::switchboard::writer&lt; Specific_event &gt;</label>
+        <link refid="classILLIXR_1_1switchboard_1_1writer"/>
+        <childnode refid="6" relation="usage">
+          <edgelabel>topic_</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ILLIXR::threadloop</label>
+        <link refid="classILLIXR_1_1threadloop"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>ILLIXR::switchboard::network_writer&lt; ILLIXR::data_format::boba_modal_texture &gt;</label>
+        <link refid="classILLIXR_1_1switchboard_1_1network__writer"/>
+        <childnode refid="11" relation="public-inheritance">
+        </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>config_</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>ILLIXR::switchboard::network_writer&lt; ILLIXR::data_format::compressed_frame &gt;</label>
+        <link refid="classILLIXR_1_1switchboard_1_1network__writer"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>config_</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>ILLIXR::switchboard::reader&lt; ILLIXR::data_format::stereo_frame &gt;</label>
+        <link refid="classILLIXR_1_1switchboard_1_1reader"/>
+        <childnode refid="6" relation="usage">
+          <edgelabel>topic_</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" line="27" column="1" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp" bodystart="27" bodyend="124"/>
+    <listofallmembers>
+      <member refid="classILLIXR_1_1boba__streaming__server_1a21f27da940a375d5c6bfd18b600f6b77" prot="protected" virt="virtual"><scope>ILLIXR::boba_streaming_server</scope><name>_p_one_iteration</name></member>
+      <member refid="classILLIXR_1_1boba__streaming__server_1a08fa729fd6b933882eb5d94e7c1ca443" prot="protected" virt="virtual"><scope>ILLIXR::boba_streaming_server</scope><name>_p_should_skip</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a00a89b3f3e9caa870f4c70bbc2f8fe97" prot="protected" virt="virtual"><scope>ILLIXR::boba_streaming_server</scope><name>_p_thread_setup</name></member>
+      <member refid="classILLIXR_1_1boba__streaming__server_1a8a535267487bdd053a253c503b93492b" prot="private" virt="non-virtual"><scope>ILLIXR::boba_streaming_server</scope><name>bitrate_</name></member>
+      <member refid="classILLIXR_1_1boba__streaming__server_1a07641a4b97bde48c576a6925b0dc4393" prot="public" virt="non-virtual"><scope>ILLIXR::boba_streaming_server</scope><name>boba_streaming_server</name></member>
+      <member refid="classILLIXR_1_1boba__streaming__server_1a60ad526b2f4ed4f325ac4a2aa691af76" prot="private" virt="non-virtual"><scope>ILLIXR::boba_streaming_server</scope><name>copy_modal_pixels</name></member>
+      <member refid="classILLIXR_1_1boba__streaming__server_1ad58ad49b89dc67e029d6741a5ce012ba" prot="private" virt="non-virtual"><scope>ILLIXR::boba_streaming_server</scope><name>copy_overlay_commands</name></member>
+      <member refid="classILLIXR_1_1boba__streaming__server_1ac8af28bc86a77dbbb7559d477fc43e4e" prot="private" virt="non-virtual"><scope>ILLIXR::boba_streaming_server</scope><name>encoder_</name></member>
+      <member refid="classILLIXR_1_1boba__streaming__server_1acec78a1dac67a8961ffe0cca5ebf2c1c" prot="private" virt="non-virtual"><scope>ILLIXR::boba_streaming_server</scope><name>frame_mapping_</name></member>
+      <member refid="classILLIXR_1_1boba__streaming__server_1a0dc1dfbebe24cadfe083120553ae10ba" prot="private" virt="non-virtual"><scope>ILLIXR::boba_streaming_server</scope><name>framerate_</name></member>
+      <member refid="classILLIXR_1_1boba__streaming__server_1a17881dbe06fa7a9cb183feb72aacf301" prot="private" virt="non-virtual"><scope>ILLIXR::boba_streaming_server</scope><name>frames_writer_</name></member>
+      <member refid="classILLIXR_1_1boba__streaming__server_1ae1208505f4205e0b0d0d4bfc30d704dd" prot="private" virt="non-virtual"><scope>ILLIXR::boba_streaming_server</scope><name>generation_matches</name></member>
+      <member refid="classILLIXR_1_1plugin_1aebda022998bd35983e83f391dc0e5193" prot="public" virt="non-virtual"><scope>ILLIXR::boba_streaming_server</scope><name>get_name</name></member>
+      <member refid="classILLIXR_1_1plugin_1aaedb3f9178bdd11e53815e158454aaf3" prot="protected" virt="non-virtual"><scope>ILLIXR::boba_streaming_server</scope><name>id_</name></member>
+      <member refid="classILLIXR_1_1boba__streaming__server_1afa6f61eb183e4cc8751c67ec18bac210" prot="private" virt="non-virtual"><scope>ILLIXR::boba_streaming_server</scope><name>image_range_valid</name></member>
+      <member refid="classILLIXR_1_1boba__streaming__server_1a1eb94300b0822a29a4d9f37e9faf0b55" prot="private" virt="non-virtual"><scope>ILLIXR::boba_streaming_server</scope><name>initialize_encoder</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a3e12891e504c782da98e21328dbcf0af" prot="public" virt="virtual"><scope>ILLIXR::boba_streaming_server</scope><name>internal_stop</name></member>
+      <member refid="classILLIXR_1_1threadloop_1addfbade169288512c9be438f4ae9bc07" prot="private" virt="non-virtual"><scope>ILLIXR::boba_streaming_server</scope><name>internal_stop_</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a54e0814711e7a582630d38d45ddbe3f3" prot="protected" virt="non-virtual"><scope>ILLIXR::boba_streaming_server</scope><name>iteration_no</name></member>
+      <member refid="classILLIXR_1_1boba__streaming__server_1aa192465c1320bbdfbf51d73f609f3867" prot="private" virt="non-virtual"><scope>ILLIXR::boba_streaming_server</scope><name>last_frame_id_</name></member>
+      <member refid="classILLIXR_1_1boba__streaming__server_1a8950381a6665f286c4240eec663768e7" prot="private" virt="non-virtual"><scope>ILLIXR::boba_streaming_server</scope><name>last_modal_texture_id_</name></member>
+      <member refid="classILLIXR_1_1boba__streaming__server_1ad97cae556de64fd3074318867a4a5617" prot="private" virt="non-virtual"><scope>ILLIXR::boba_streaming_server</scope><name>last_modal_visible_</name></member>
+      <member refid="classILLIXR_1_1boba__streaming__server_1a9b47997b75590c54d97ef768e3989030" prot="private" virt="non-virtual"><scope>ILLIXR::boba_streaming_server</scope><name>map_file</name></member>
+      <member refid="classILLIXR_1_1boba__streaming__server_1ab3c574eef09690a351f32215a5646ba0" prot="private" virt="non-virtual"><scope>ILLIXR::boba_streaming_server</scope><name>metrics_bytes_</name></member>
+      <member refid="classILLIXR_1_1boba__streaming__server_1a7b141919688862e8c0f8b92a43adc9ed" prot="private" virt="non-virtual"><scope>ILLIXR::boba_streaming_server</scope><name>metrics_encode_attempts_</name></member>
+      <member refid="classILLIXR_1_1boba__streaming__server_1a8864bbd648a2acb2efd155105f01248d" prot="private" virt="non-virtual"><scope>ILLIXR::boba_streaming_server</scope><name>metrics_encode_us_</name></member>
+      <member refid="classILLIXR_1_1boba__streaming__server_1a072db80b4dacf744cec4ad0e9dead741" prot="private" virt="non-virtual"><scope>ILLIXR::boba_streaming_server</scope><name>metrics_frames_</name></member>
+      <member refid="classILLIXR_1_1boba__streaming__server_1afe5a39518ea93291c8339bf09138d77e" prot="private" virt="non-virtual"><scope>ILLIXR::boba_streaming_server</scope><name>metrics_rejected_</name></member>
+      <member refid="classILLIXR_1_1boba__streaming__server_1a0ab755f9044756d183b4d0ac2ce5323d" prot="private" virt="non-virtual"><scope>ILLIXR::boba_streaming_server</scope><name>metrics_send_us_</name></member>
+      <member refid="classILLIXR_1_1boba__streaming__server_1addc7e49919b937b09078f667cb313d9d" prot="private" virt="non-virtual"><scope>ILLIXR::boba_streaming_server</scope><name>metrics_source_skips_</name></member>
+      <member refid="classILLIXR_1_1boba__streaming__server_1a348f6a12c8a1ca49e6f87bf3a4017327" prot="private" virt="non-virtual"><scope>ILLIXR::boba_streaming_server</scope><name>metrics_start_</name></member>
+      <member refid="classILLIXR_1_1boba__streaming__server_1a29344147e5042c440c922023f27e531a" prot="private" virt="non-virtual"><scope>ILLIXR::boba_streaming_server</scope><name>modal_mapping_</name></member>
+      <member refid="classILLIXR_1_1boba__streaming__server_1af553891d3ec81eaeb277baee4aee063b" prot="private" virt="non-virtual"><scope>ILLIXR::boba_streaming_server</scope><name>modal_range_valid</name></member>
+      <member refid="classILLIXR_1_1boba__streaming__server_1a981911d6ad770fbb295d71735c91a860" prot="private" virt="non-virtual"><scope>ILLIXR::boba_streaming_server</scope><name>modal_texture_id</name></member>
+      <member refid="classILLIXR_1_1boba__streaming__server_1a56293ee830237985ca20c02429165df1" prot="private" virt="non-virtual"><scope>ILLIXR::boba_streaming_server</scope><name>modal_visible_frame_count_</name></member>
+      <member refid="classILLIXR_1_1boba__streaming__server_1acfce22a7198c40a848446126f8000df5" prot="private" virt="non-virtual"><scope>ILLIXR::boba_streaming_server</scope><name>modal_writer_</name></member>
+      <member refid="classILLIXR_1_1plugin_1aa963c518af83966173840a8558490888" prot="protected" virt="non-virtual"><scope>ILLIXR::boba_streaming_server</scope><name>name_</name></member>
+      <member refid="classILLIXR_1_1boba__streaming__server_1a7a38ac779baa6b6801ed80f3023979f5" prot="private" virt="non-virtual"><scope>ILLIXR::boba_streaming_server</scope><name>next_frame_time_</name></member>
+      <member refid="classILLIXR_1_1boba__streaming__server_1add16a0ac8a7430640d9d2b9366795d59" prot="private" virt="non-virtual"><scope>ILLIXR::boba_streaming_server</scope><name>overlay_mapping_</name></member>
+      <member refid="classILLIXR_1_1boba__streaming__server_1a1bbdfb5e025b09fffb183e83f5d9ed34" prot="private" virt="non-virtual"><scope>ILLIXR::boba_streaming_server</scope><name>overlay_range_valid</name></member>
+      <member refid="classILLIXR_1_1plugin_1a6f7a2a9012350591c00d67a5bc0fd5a6" prot="protected" virt="non-virtual"><scope>ILLIXR::boba_streaming_server</scope><name>phonebook_</name></member>
+      <member refid="classILLIXR_1_1plugin_1abc91c0e5be180a8e0bbeaf114a127f17" prot="public" virt="non-virtual"><scope>ILLIXR::boba_streaming_server</scope><name>plugin</name></member>
+      <member refid="classILLIXR_1_1plugin_1a8d40c2421cde09079372d12bfe7d45fe" prot="protected" virt="non-virtual"><scope>ILLIXR::boba_streaming_server</scope><name>plugin_logger_</name></member>
+      <member refid="classILLIXR_1_1boba__streaming__server_1ab686d6dcd26019b31cafeb8638aa44b6" prot="private" virt="non-virtual"><scope>ILLIXR::boba_streaming_server</scope><name>publish_encoded</name></member>
+      <member refid="classILLIXR_1_1boba__streaming__server_1a4853003cc7b0ab1bb1094e683bb4008b" prot="private" virt="non-virtual"><scope>ILLIXR::boba_streaming_server</scope><name>publish_modal_texture_if_needed</name></member>
+      <member refid="classILLIXR_1_1plugin_1aef671d0cd9b6de45d3ade16dedbf4974" prot="protected" virt="non-virtual"><scope>ILLIXR::boba_streaming_server</scope><name>record_logger_</name></member>
+      <member refid="classILLIXR_1_1boba__streaming__server_1a50828dd6fc53ce4ebf4da96a399bfe9a" prot="private" virt="non-virtual"><scope>ILLIXR::boba_streaming_server</scope><name>report_metrics</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a75009fa785455bdb4b285424f0494bf7" prot="protected" virt="non-virtual"><scope>ILLIXR::boba_streaming_server</scope><name>should_terminate</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a8f6ce8b95d3d9aadf83e4e1414477cd0" prot="protected" virt="non-virtual"><scope>ILLIXR::boba_streaming_server</scope><name>skip_no</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a26c08942158dc019cbc78c9880417652" prot="protected" virt="non-virtual"><scope>ILLIXR::boba_streaming_server</scope><name>skip_option</name></member>
+      <member refid="classILLIXR_1_1plugin_1a7c1c7c1a0ec2e43bfa1118586a28932f" prot="public" virt="non-virtual"><scope>ILLIXR::boba_streaming_server</scope><name>spd_add_file_sink</name></member>
+      <member refid="classILLIXR_1_1plugin_1a569297189ef365cf93f6a95202c76d76" prot="public" virt="non-virtual"><scope>ILLIXR::boba_streaming_server</scope><name>spdlogger</name></member>
+      <member refid="classILLIXR_1_1threadloop_1af001e97f74595e18f589f66ac0595bfb" prot="public" virt="virtual"><scope>ILLIXR::boba_streaming_server</scope><name>start</name></member>
+      <member refid="classILLIXR_1_1boba__streaming__server_1a412349f6f0e3545e710c3c556b6c08d9" prot="private" virt="non-virtual"><scope>ILLIXR::boba_streaming_server</scope><name>stereo_reader_</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a7a968606c7ddfbd1ac6b0fb067ecc5a5" prot="public" virt="virtual"><scope>ILLIXR::boba_streaming_server</scope><name>stop</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a2390e3eff6ab0c0cc11f061f34cf7b39" prot="private" virt="non-virtual"><scope>ILLIXR::boba_streaming_server</scope><name>stoplight_</name></member>
+      <member refid="classILLIXR_1_1boba__streaming__server_1a5a66223e20f548366877a3fd8233e6f8" prot="private" virt="non-virtual"><scope>ILLIXR::boba_streaming_server</scope><name>switchboard_</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a468309a771ef1d60c4cc107cf2e9cab2" prot="private" virt="non-virtual"><scope>ILLIXR::boba_streaming_server</scope><name>thread_</name></member>
+      <member refid="classILLIXR_1_1threadloop_1ace62d94a271fd7a253eb1ee71589da61" prot="private" virt="non-virtual"><scope>ILLIXR::boba_streaming_server</scope><name>thread_main</name></member>
+      <member refid="classILLIXR_1_1threadloop_1a8e69bfe104a92c0b98caa5583439c34a" prot="public" virt="non-virtual"><scope>ILLIXR::boba_streaming_server</scope><name>threadloop</name></member>
+      <member refid="classILLIXR_1_1boba__streaming__server_1a41be90ecf88d9f63699f5579f2188ca4" prot="public" virt="non-virtual"><scope>ILLIXR::boba_streaming_server</scope><name>~boba_streaming_server</name></member>
+      <member refid="classILLIXR_1_1plugin_1a44d7b00c86e227bbc1a0b221da43d454" prot="public" virt="virtual"><scope>ILLIXR::boba_streaming_server</scope><name>~plugin</name></member>
+      <member refid="classILLIXR_1_1threadloop_1afbf7b56801b484b60e9cf43448332195" prot="public" virt="non-virtual"><scope>ILLIXR::boba_streaming_server</scope><name>~threadloop</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

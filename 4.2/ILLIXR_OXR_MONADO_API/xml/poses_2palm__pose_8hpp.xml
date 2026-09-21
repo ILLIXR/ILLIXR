@@ -1,0 +1,125 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="poses_2palm__pose_8hpp" kind="file" language="C++">
+    <compoundname>palm_pose.hpp</compoundname>
+    <includes refid="poses_2pose__base_8hpp" local="yes">illixr/data_format/poses/pose_base.hpp</includes>
+    <includes local="yes">illixr/switchboard.hpp</includes>
+    <includes local="no">map</includes>
+    <includedby refid="poses_2combined__pose_8hpp" local="yes">/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/combined_pose.hpp</includedby>
+    <includedby refid="serialization_2palm__pose_8hpp" local="yes">/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/palm_pose.hpp</includedby>
+    <incdepgraph>
+      <node id="1">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/palm_pose.hpp</label>
+        <link refid="poses_2palm__pose_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>illixr/data_format/poses/pose_base.hpp</label>
+        <link refid="poses_2pose__base_8hpp"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>illixr/switchboard.hpp</label>
+      </node>
+      <node id="3">
+        <label>map</label>
+      </node>
+      <node id="4">
+        <label>xrt/xrt_defines.h</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="2">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/combined_pose.hpp</label>
+        <link refid="poses_2combined__pose_8hpp"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/palm_pose.hpp</label>
+        <link refid="poses_2palm__pose_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/combined_pose.hpp</label>
+        <link refid="serialization_2combined__pose_8hpp"/>
+      </node>
+      <node id="4">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/palm_pose.hpp</label>
+        <link refid="serialization_2palm__pose_8hpp"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="structILLIXR_1_1data__format_1_1pose_1_1palm__pose" prot="public">ILLIXR::data_format::pose::palm_pose</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1pose_1_1palm__poses__pair" prot="public">ILLIXR::data_format::pose::palm_poses_pair</innerclass>
+    <innernamespace refid="namespaceILLIXR">ILLIXR</innernamespace>
+    <innernamespace refid="namespaceILLIXR_1_1data__format">ILLIXR::data_format</innernamespace>
+    <innernamespace refid="namespaceILLIXR_1_1data__format_1_1pose">ILLIXR::data_format::pose</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>USING_OPENXR</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>include<sp/>&quot;<ref refid="poses_2pose__base_8hpp" kindref="compound">illixr/data_format/poses/pose_base.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>include<sp/>&quot;illixr/switchboard.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>include<sp/>&lt;map&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceILLIXR_1_1data__format_1_1pose" kindref="compound">ILLIXR::data_format::pose</ref><sp/>{</highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight></codeline>
+<codeline lineno="13" refid="structILLIXR_1_1data__format_1_1pose_1_1palm__pose" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structILLIXR_1_1data__format_1_1pose_1_1palm__pose" kindref="compound">palm_pose</ref><sp/>:<sp/>xrt_space_relation<sp/>{</highlight></codeline>
+<codeline lineno="17" refid="structILLIXR_1_1data__format_1_1pose_1_1palm__pose_1a5cb4f5060f2b3b3f4589d48a77641177" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>[[nodiscard]]<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1palm__pose_1a5cb4f5060f2b3b3f4589d48a77641177" kindref="member">is_valid</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="18"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>relation_flags<sp/>&gt;<sp/>0;</highlight></codeline>
+<codeline lineno="19"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>ifndef<sp/>ENABLE_MONADO</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>update(XrSpaceLocation&amp;<sp/>location,<sp/>XrSpaceVelocity&amp;<sp/>velocity)<sp/>{</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>pose<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>location.pose;</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>linear_velocity<sp/><sp/>=<sp/>velocity.linearVelocity;</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>angular_velocity<sp/>=<sp/>velocity.angularVelocity;</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>set_flags(location.locationFlags,<sp/>velocity.velocityFlags);</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight></codeline>
+<codeline lineno="42" refid="structILLIXR_1_1data__format_1_1pose_1_1palm__poses__pair" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structILLIXR_1_1data__format_1_1pose_1_1palm__poses__pair" kindref="compound">palm_poses_pair</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/>switchboard::event<sp/>{</highlight></codeline>
+<codeline lineno="43" refid="structILLIXR_1_1data__format_1_1pose_1_1palm__poses__pair_1a14aa0846503e188d9da7f95e47207c7f" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::map&lt;side,<sp/>palm_pose&gt;<sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1palm__poses__pair_1a14aa0846503e188d9da7f95e47207c7f" kindref="member">hands</ref>;<sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="44" refid="structILLIXR_1_1data__format_1_1pose_1_1palm__poses__pair_1ab17717b488a254f201e2ce2f9a2ee090" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>time_point<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1palm__poses__pair_1ab17717b488a254f201e2ce2f9a2ee090" kindref="member">sensor_time</ref>;<sp/></highlight></codeline>
+<codeline lineno="45"><highlight class="normal"></highlight></codeline>
+<codeline lineno="49" refid="structILLIXR_1_1data__format_1_1pose_1_1palm__poses__pair_1aae18f083ad3d0876c214522a1dbe398a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1palm__poses__pair_1aae18f083ad3d0876c214522a1dbe398a" kindref="member">palm_poses_pair</ref>()</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1palm__poses__pair_1a14aa0846503e188d9da7f95e47207c7f" kindref="member">hands</ref>{{<ref refid="namespaceILLIXR_1_1data__format_1_1pose_1a32b031315a1ac6a41a1033c10c02f372a362edc549a08e94007634bdf2dd5274f" kindref="member">LEFT</ref>,<sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1palm__pose" kindref="compound">palm_pose</ref>{}},<sp/>{<ref refid="namespaceILLIXR_1_1data__format_1_1pose_1a32b031315a1ac6a41a1033c10c02f372a2ff363d8128801252a0b35d81d98dd85" kindref="member">RIGHT</ref>,<sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1palm__pose" kindref="compound">palm_pose</ref>{}}}</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/>sensor_time{time_point{}}<sp/>{<sp/>}</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"></highlight></codeline>
+<codeline lineno="58" refid="structILLIXR_1_1data__format_1_1pose_1_1palm__poses__pair_1aff8a979a399e446e842cc5084e8059ff" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1palm__poses__pair_1aff8a979a399e446e842cc5084e8059ff" kindref="member">palm_poses_pair</ref>(std::map&lt;side,<sp/>palm_pose&gt;<sp/>hands_,<sp/>time_point<sp/>sensor_time_)</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>hands{std::move(hands_)}</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/>sensor_time{sensor_time_}<sp/>{<sp/>}</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"></highlight></codeline>
+<codeline lineno="62" refid="structILLIXR_1_1data__format_1_1pose_1_1palm__poses__pair_1a5e02a5cd3916340640919a710508004a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>[[nodiscard]]<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1palm__poses__pair_1a5e02a5cd3916340640919a710508004a" kindref="member">is_valid</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>hands.at(<ref refid="namespaceILLIXR_1_1data__format_1_1pose_1a32b031315a1ac6a41a1033c10c02f372a362edc549a08e94007634bdf2dd5274f" kindref="member">LEFT</ref>).relation_flags<sp/>!=<sp/>XRT_SPACE_RELATION_BITMASK_NONE<sp/>||</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>hands.at(<ref refid="namespaceILLIXR_1_1data__format_1_1pose_1a32b031315a1ac6a41a1033c10c02f372a2ff363d8128801252a0b35d81d98dd85" kindref="member">RIGHT</ref>).relation_flags<sp/>!=<sp/>XRT_SPACE_RELATION_BITMASK_NONE;</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"></highlight></codeline>
+<codeline lineno="67" refid="structILLIXR_1_1data__format_1_1pose_1_1palm__poses__pair_1a3eaa4506ab62c201c47699bbcc1f7944" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1palm__pose" kindref="compound">palm_pose</ref>&amp;<sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1palm__poses__pair_1a3eaa4506ab62c201c47699bbcc1f7944" kindref="member">operator[]</ref>(<ref refid="namespaceILLIXR_1_1data__format_1_1pose_1a32b031315a1ac6a41a1033c10c02f372" kindref="member">side</ref><sp/>h)<sp/>{</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>hands[h];</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="70"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"></highlight></codeline>
+<codeline lineno="72"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>ILLIXR::data_format::pose</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="73"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+    </programlisting>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/palm_pose.hpp"/>
+  </compounddef>
+</doxygen>

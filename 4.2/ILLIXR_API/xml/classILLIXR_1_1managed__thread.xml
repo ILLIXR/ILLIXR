@@ -1,0 +1,304 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classILLIXR_1_1managed__thread" kind="class" language="C++" prot="public">
+    <compoundname>ILLIXR::managed_thread</compoundname>
+    <includes refid="managed__thread_8hpp" local="no">managed_thread.hpp</includes>
+    <sectiondef kind="public-type">
+      <memberdef kind="enum" id="classILLIXR_1_1managed__thread_1a5468c10675b43488736ae3d628cd1d1d" prot="public" static="no" strong="yes">
+        <type></type>
+        <name>state</name>
+        <qualifiedname>ILLIXR::managed_thread::state</qualifiedname>
+        <enumvalue id="classILLIXR_1_1managed__thread_1a5468c10675b43488736ae3d628cd1d1da33361ca8d9806bdc5d8b1047b74bb595" prot="public">
+          <name>nonstartable</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="classILLIXR_1_1managed__thread_1a5468c10675b43488736ae3d628cd1d1dad95ef5b9d3f4769f8b4fffdba31bbb6f" prot="public">
+          <name>startable</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="classILLIXR_1_1managed__thread_1a5468c10675b43488736ae3d628cd1d1da75101dcdfc88455bcafc9e53e0b06689" prot="public">
+          <name>running</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="classILLIXR_1_1managed__thread_1a5468c10675b43488736ae3d628cd1d1daf0a0bfe6bc7d2c58d2989034f83183e0" prot="public">
+          <name>stopped</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+<para>Possible states for a <ref refid="classILLIXR_1_1managed__thread" kindref="compound">managed_thread</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/managed_thread.hpp" line="18" column="5" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/managed_thread.hpp" bodystart="18" bodyend="23"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1managed__thread_1a97b8c6f551031e7e01474d5e13a683b5" prot="private" static="no" mutable="no">
+        <type>std::atomic&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref> &gt;</type>
+        <definition>std::atomic&lt;bool&gt; ILLIXR::managed_thread::stop_</definition>
+        <argsstring></argsstring>
+        <name>stop_</name>
+        <qualifiedname>ILLIXR::managed_thread::stop_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">false</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/managed_thread.hpp" line="95" column="21" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/managed_thread.hpp" bodystart="95" bodyend="95"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1managed__thread_1a11365bddaccf1840c296f2057978cd12" prot="private" static="no" mutable="no">
+        <type>std::thread</type>
+        <definition>std::thread ILLIXR::managed_thread::thread_</definition>
+        <argsstring></argsstring>
+        <name>thread_</name>
+        <qualifiedname>ILLIXR::managed_thread::thread_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/managed_thread.hpp" line="96" column="27" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/managed_thread.hpp" bodystart="96" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1managed__thread_1a92bdc38322779c027c1eaa7d52628249" prot="private" static="no" mutable="no">
+        <type>std::function&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref>()&gt;</type>
+        <definition>std::function&lt;void()&gt; ILLIXR::managed_thread::body_</definition>
+        <argsstring></argsstring>
+        <name>body_</name>
+        <qualifiedname>ILLIXR::managed_thread::body_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/managed_thread.hpp" line="97" column="19" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/managed_thread.hpp" bodystart="97" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1managed__thread_1a2da4ee20b0a04ba34bdd3c8ab6b67834" prot="private" static="no" mutable="no">
+        <type>std::function&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref>()&gt;</type>
+        <definition>std::function&lt;void()&gt; ILLIXR::managed_thread::on_start_</definition>
+        <argsstring></argsstring>
+        <name>on_start_</name>
+        <qualifiedname>ILLIXR::managed_thread::on_start_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/managed_thread.hpp" line="98" column="19" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/managed_thread.hpp" bodystart="98" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1managed__thread_1a5a69e1511f360d2c63eacfdc8371c8ec" prot="private" static="no" mutable="no">
+        <type>std::function&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref>()&gt;</type>
+        <definition>std::function&lt;void()&gt; ILLIXR::managed_thread::on_stop_</definition>
+        <argsstring></argsstring>
+        <name>on_stop_</name>
+        <qualifiedname>ILLIXR::managed_thread::on_stop_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/managed_thread.hpp" line="99" column="19" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/managed_thread.hpp" bodystart="99" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classILLIXR_1_1managed__thread_1a48ba44563b382e865c9694e32d8b6e53" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::managed_thread::managed_thread</definition>
+        <argsstring>() noexcept=default</argsstring>
+        <name>managed_thread</name>
+        <qualifiedname>ILLIXR::managed_thread::managed_thread</qualifiedname>
+        <briefdescription>
+<para>Constructs a non-startable thread. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/managed_thread.hpp" line="28" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1managed__thread_1abdfbecd1df1f8f67d298b589563e479b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classILLIXR_1_1managed__thread" kindref="compound">managed_thread</ref> &amp;</type>
+        <definition>managed_thread &amp; ILLIXR::managed_thread::operator=</definition>
+        <argsstring>(const managed_thread &amp;other)=delete</argsstring>
+        <name>operator=</name>
+        <qualifiedname>ILLIXR::managed_thread::operator=</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="classILLIXR_1_1managed__thread" kindref="compound">managed_thread</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/managed_thread.hpp" line="30" column="20"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1managed__thread_1a2f7717d45f648f702271034e03271c63" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::managed_thread::managed_thread</definition>
+        <argsstring>(const managed_thread &amp;other)=delete</argsstring>
+        <name>managed_thread</name>
+        <qualifiedname>ILLIXR::managed_thread::managed_thread</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="classILLIXR_1_1managed__thread" kindref="compound">managed_thread</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/managed_thread.hpp" line="32" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1managed__thread_1a49e2bec5e813c51bc70ca29863eb5d1e" prot="public" static="no" const="no" explicit="yes" inline="yes" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::managed_thread::managed_thread</definition>
+        <argsstring>(std::function&lt; void()&gt; body, std::function&lt; void()&gt; on_start=std::function&lt; void()&gt;{}, std::function&lt; void()&gt; on_stop=std::function&lt; void()&gt;{}) noexcept</argsstring>
+        <name>managed_thread</name>
+        <qualifiedname>ILLIXR::managed_thread::managed_thread</qualifiedname>
+        <param>
+          <type>std::function&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref>()&gt;</type>
+          <declname>body</declname>
+        </param>
+        <param>
+          <type>std::function&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref>()&gt;</type>
+          <declname>on_start</declname>
+          <defval>std::function&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref>()&gt;{}</defval>
+        </param>
+        <param>
+          <type>std::function&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref>()&gt;</type>
+          <declname>on_stop</declname>
+          <defval>std::function&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref>()&gt;{}</defval>
+        </param>
+        <briefdescription>
+<para>Constructs a startable thread. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><computeroutput>on_stop</computeroutput> is called once (if present) <computeroutput>on_start</computeroutput> is called as the thread is joining <computeroutput>body</computeroutput> is called in a tight loop </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/managed_thread.hpp" line="41" column="14" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/managed_thread.hpp" bodystart="41" bodyend="45"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1managed__thread_1a24b2a08ab885d7f22235b1e67dd2d873" prot="public" static="no" const="no" explicit="no" inline="yes" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::managed_thread::~managed_thread</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~managed_thread</name>
+        <qualifiedname>ILLIXR::managed_thread::~managed_thread</qualifiedname>
+        <briefdescription>
+<para>Stops a thread, if necessary. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/managed_thread.hpp" line="50" column="5" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/managed_thread.hpp" bodystart="50" bodyend="56"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1managed__thread_1a3291df2d2e33d018cc53ec4fa70e08c4" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classILLIXR_1_1managed__thread_1a5468c10675b43488736ae3d628cd1d1d" kindref="member">state</ref></type>
+        <definition>state ILLIXR::managed_thread::get_state</definition>
+        <argsstring>()</argsstring>
+        <name>get_state</name>
+        <qualifiedname>ILLIXR::managed_thread::get_state</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/managed_thread.hpp" line="60" column="11" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/managed_thread.hpp" bodystart="60" bodyend="73"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1managed__thread_1a4b9872f2246c30d72266d45f6fc4ab09" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void ILLIXR::managed_thread::start</definition>
+        <argsstring>()</argsstring>
+        <name>start</name>
+        <qualifiedname>ILLIXR::managed_thread::start</qualifiedname>
+        <briefdescription>
+<para>Moves a <ref refid="classILLIXR_1_1managed__thread" kindref="compound">managed_thread</ref> from startable to running. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/managed_thread.hpp" line="78" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/managed_thread.hpp" bodystart="78" bodyend="82"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1managed__thread_1aea73f54e75390e1909905ccdd90572d4" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void ILLIXR::managed_thread::stop</definition>
+        <argsstring>()</argsstring>
+        <name>stop</name>
+        <qualifiedname>ILLIXR::managed_thread::stop</qualifiedname>
+        <briefdescription>
+<para>Moves a <ref refid="classILLIXR_1_1managed__thread" kindref="compound">managed_thread</ref> from running to stopped. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/managed_thread.hpp" line="87" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/managed_thread.hpp" bodystart="87" bodyend="92"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classILLIXR_1_1managed__thread_1a7aec8c2bde4ef3b5c92ed56ebfb1c107" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void ILLIXR::managed_thread::thread_main</definition>
+        <argsstring>()</argsstring>
+        <name>thread_main</name>
+        <qualifiedname>ILLIXR::managed_thread::thread_main</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/managed_thread.hpp" line="101" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/managed_thread.hpp" bodystart="101" bodyend="112"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>An object that manages a std::thread; it joins and exits when the object gets destructed. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/managed_thread.hpp" line="15" column="1" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/managed_thread.hpp" bodystart="15" bodyend="113"/>
+    <listofallmembers>
+      <member refid="classILLIXR_1_1managed__thread_1a92bdc38322779c027c1eaa7d52628249" prot="private" virt="non-virtual"><scope>ILLIXR::managed_thread</scope><name>body_</name></member>
+      <member refid="classILLIXR_1_1managed__thread_1a3291df2d2e33d018cc53ec4fa70e08c4" prot="public" virt="non-virtual"><scope>ILLIXR::managed_thread</scope><name>get_state</name></member>
+      <member refid="classILLIXR_1_1managed__thread_1a48ba44563b382e865c9694e32d8b6e53" prot="public" virt="non-virtual"><scope>ILLIXR::managed_thread</scope><name>managed_thread</name></member>
+      <member refid="classILLIXR_1_1managed__thread_1a2f7717d45f648f702271034e03271c63" prot="public" virt="non-virtual"><scope>ILLIXR::managed_thread</scope><name>managed_thread</name></member>
+      <member refid="classILLIXR_1_1managed__thread_1a49e2bec5e813c51bc70ca29863eb5d1e" prot="public" virt="non-virtual"><scope>ILLIXR::managed_thread</scope><name>managed_thread</name></member>
+      <member refid="classILLIXR_1_1managed__thread_1a2da4ee20b0a04ba34bdd3c8ab6b67834" prot="private" virt="non-virtual"><scope>ILLIXR::managed_thread</scope><name>on_start_</name></member>
+      <member refid="classILLIXR_1_1managed__thread_1a5a69e1511f360d2c63eacfdc8371c8ec" prot="private" virt="non-virtual"><scope>ILLIXR::managed_thread</scope><name>on_stop_</name></member>
+      <member refid="classILLIXR_1_1managed__thread_1abdfbecd1df1f8f67d298b589563e479b" prot="public" virt="non-virtual"><scope>ILLIXR::managed_thread</scope><name>operator=</name></member>
+      <member refid="classILLIXR_1_1managed__thread_1a4b9872f2246c30d72266d45f6fc4ab09" prot="public" virt="non-virtual"><scope>ILLIXR::managed_thread</scope><name>start</name></member>
+      <member refid="classILLIXR_1_1managed__thread_1a5468c10675b43488736ae3d628cd1d1d" prot="public" virt="non-virtual"><scope>ILLIXR::managed_thread</scope><name>state</name></member>
+      <member refid="classILLIXR_1_1managed__thread_1aea73f54e75390e1909905ccdd90572d4" prot="public" virt="non-virtual"><scope>ILLIXR::managed_thread</scope><name>stop</name></member>
+      <member refid="classILLIXR_1_1managed__thread_1a97b8c6f551031e7e01474d5e13a683b5" prot="private" virt="non-virtual"><scope>ILLIXR::managed_thread</scope><name>stop_</name></member>
+      <member refid="classILLIXR_1_1managed__thread_1a11365bddaccf1840c296f2057978cd12" prot="private" virt="non-virtual"><scope>ILLIXR::managed_thread</scope><name>thread_</name></member>
+      <member refid="classILLIXR_1_1managed__thread_1a7aec8c2bde4ef3b5c92ed56ebfb1c107" prot="private" virt="non-virtual"><scope>ILLIXR::managed_thread</scope><name>thread_main</name></member>
+      <member refid="classILLIXR_1_1managed__thread_1a24b2a08ab885d7f22235b1e67dd2d873" prot="public" virt="non-virtual"><scope>ILLIXR::managed_thread</scope><name>~managed_thread</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

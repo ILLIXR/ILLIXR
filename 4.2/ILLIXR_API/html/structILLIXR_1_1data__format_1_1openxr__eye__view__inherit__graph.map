@@ -1,0 +1,5 @@
+<map id="ILLIXR::data_format::openxr_eye_view" name="ILLIXR::data_format::openxr_eye_view">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,93,156,133"/>
+<area shape="rect" id="Node000002" href="$structILLIXR_1_1data__format_1_1pose_1_1pose__base.html" title="Base struct for all pose types in ILLIXR." alt="" coords="5,5,156,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="83,59,83,93,78,93,78,59"/>
+</map>

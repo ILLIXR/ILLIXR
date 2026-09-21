@@ -1,0 +1,538 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="files_8cpp" kind="file" language="C++">
+    <compoundname>files.cpp</compoundname>
+    <includes refid="files_8hpp" local="yes">files.hpp</includes>
+    <includes refid="poses_2head__pose_8hpp" local="yes">illixr/data_format/poses/head_pose.hpp</includes>
+    <includes local="no">boost/filesystem.hpp</includes>
+    <includes local="no">sstream</includes>
+    <incdepgraph>
+      <node id="4">
+        <label>illixr/data_format/camera_data.hpp</label>
+        <link refid="camera__data_8hpp"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="43" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="44">
+        <label>illixr/data_format/opencv_data_types.hpp</label>
+        <link refid="opencv__data__types_8hpp"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="45" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="46" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="47">
+        <label>illixr/data_format/poses/head_pose.hpp</label>
+        <link refid="poses_2head__pose_8hpp"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>illixr/data_format/poses/pose_base.hpp</label>
+        <link refid="poses_2pose__base_8hpp"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>illixr/data_format/zed_cam.hpp</label>
+        <link refid="zed__cam_8hpp"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="44" relation="include">
+        </childnode>
+        <childnode refid="47" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>export.hpp</label>
+        <link refid="export_8hpp"/>
+      </node>
+      <node id="12">
+        <label>managed_thread.hpp</label>
+        <link refid="managed__thread_8hpp"/>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="18">
+        <label>network/network_backend.hpp</label>
+        <link refid="network__backend_8hpp"/>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+      </node>
+      <node id="27">
+        <label>topic_config.hpp</label>
+        <link refid="topic__config_8hpp"/>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+      </node>
+      <node id="19">
+        <label>illixr/phonebook.hpp</label>
+        <link refid="phonebook_8hpp"/>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+      </node>
+      <node id="31">
+        <label>record_logger.hpp</label>
+        <link refid="record__logger_8hpp"/>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>illixr/switchboard.hpp</label>
+        <link refid="switchboard_8hpp"/>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="38" relation="include">
+        </childnode>
+        <childnode refid="39" relation="include">
+        </childnode>
+        <childnode refid="40" relation="include">
+        </childnode>
+        <childnode refid="41" relation="include">
+        </childnode>
+        <childnode refid="42" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/zed/capture/files.cpp</label>
+        <link refid="files_8cpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="47" relation="include">
+        </childnode>
+        <childnode refid="48" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>files.hpp</label>
+        <link refid="files_8hpp"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="48" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="49" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="32">
+        <label>any</label>
+      </node>
+      <node id="13">
+        <label>atomic</label>
+      </node>
+      <node id="38">
+        <label>boost/archive/binary_iarchive.hpp</label>
+      </node>
+      <node id="39">
+        <label>boost/archive/binary_oarchive.hpp</label>
+      </node>
+      <node id="48">
+        <label>boost/filesystem.hpp</label>
+      </node>
+      <node id="40">
+        <label>boost/iostreams/device/back_inserter.hpp</label>
+      </node>
+      <node id="41">
+        <label>boost/iostreams/stream.hpp</label>
+      </node>
+      <node id="42">
+        <label>boost/serialization/shared_ptr.hpp</label>
+      </node>
+      <node id="14">
+        <label>cassert</label>
+      </node>
+      <node id="28">
+        <label>chrono</label>
+      </node>
+      <node id="10">
+        <label>concurrentqueue/blockingconcurrentqueue.hpp</label>
+      </node>
+      <node id="43">
+        <label>cstddef</label>
+      </node>
+      <node id="49">
+        <label>cstdint</label>
+      </node>
+      <node id="35">
+        <label>eigen3/Eigen/Core</label>
+      </node>
+      <node id="7">
+        <label>eigen3/Eigen/Dense</label>
+      </node>
+      <node id="36">
+        <label>eigen3/Eigen/Geometry</label>
+      </node>
+      <node id="45">
+        <label>fstream</label>
+      </node>
+      <node id="15">
+        <label>functional</label>
+      </node>
+      <node id="20">
+        <label>iostream</label>
+      </node>
+      <node id="37">
+        <label>list</label>
+      </node>
+      <node id="6">
+        <label>map</label>
+      </node>
+      <node id="21">
+        <label>memory</label>
+      </node>
+      <node id="22">
+        <label>mutex</label>
+      </node>
+      <node id="46">
+        <label>opencv2/core/mat.hpp</label>
+      </node>
+      <node id="29">
+        <label>optional</label>
+      </node>
+      <node id="23">
+        <label>shared_mutex</label>
+      </node>
+      <node id="26">
+        <label>spdlog/spdlog.h</label>
+      </node>
+      <node id="34">
+        <label>sstream</label>
+      </node>
+      <node id="16">
+        <label>stdexcept</label>
+      </node>
+      <node id="33">
+        <label>string</label>
+      </node>
+      <node id="17">
+        <label>thread</label>
+      </node>
+      <node id="24">
+        <label>typeindex</label>
+      </node>
+      <node id="25">
+        <label>unordered_map</label>
+      </node>
+      <node id="8">
+        <label>utility</label>
+      </node>
+      <node id="30">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <sectiondef kind="define">
+      <memberdef kind="define" id="files_8cpp_1aa2f49001be13949a16a57e6c99ab00ad" prot="public" static="no">
+        <name>COMMA</name>
+        <initializer>&quot;,&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/zed/capture/files.cpp" line="9" column="9" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/zed/capture/files.cpp" bodystart="9" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="var">
+      <memberdef kind="variable" id="files_8cpp_1a4fc5b06d4ff6d361f0f95feaf947b87d" prot="public" static="no" mutable="no">
+        <type>const <ref refid="plugins_2offload__rendering__server_2CMakeLists_8txt_1a5a320a78f5d255e59cead61a98c7cbea" kindref="member">std::string</ref></type>
+        <definition>const std::string d_file</definition>
+        <argsstring></argsstring>
+        <name>d_file</name>
+        <initializer>= &quot;/data.csv&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/zed/capture/files.cpp" line="12" column="19" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/zed/capture/files.cpp" bodystart="12" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="files_8cpp_1aef0bc8e07b90710dd2eb55f8cd013ebb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::ostream &amp;</type>
+        <definition>std::ostream &amp; operator&lt;&lt;</definition>
+        <argsstring>(std::ostream &amp;os, const ILLIXR::data_format::pose::head_pose_type &amp;dt)</argsstring>
+        <name>operator&lt;&lt;</name>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>os</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structILLIXR_1_1data__format_1_1pose_1_1head__pose__type" kindref="compound">ILLIXR::data_format::pose::head_pose_type</ref> &amp;</type>
+          <declname>dt</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/zed/capture/files.cpp" line="69" column="1" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/zed/capture/files.cpp" bodystart="69" bodyend="74"/>
+      </memberdef>
+      <memberdef kind="function" id="files_8cpp_1a85ebb1a13efe7c81115f856776918e46" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::ostream &amp;</type>
+        <definition>std::ostream &amp; operator&lt;&lt;</definition>
+        <argsstring>(std::ostream &amp;os, ILLIXR::data_format::ccd_data const &amp;cd)</argsstring>
+        <name>operator&lt;&lt;</name>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>os</declname>
+        </param>
+        <param>
+          <type><ref refid="structILLIXR_1_1data__format_1_1ccd__data" kindref="compound">ILLIXR::data_format::ccd_data</ref> const &amp;</type>
+          <declname>cd</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/zed/capture/files.cpp" line="76" column="1" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/zed/capture/files.cpp" bodystart="76" bodyend="79"/>
+      </memberdef>
+      <memberdef kind="function" id="files_8cpp_1a6081fa2766e578760c00884749eefbf3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::ostream &amp;</type>
+        <definition>std::ostream &amp; operator&lt;&lt;</definition>
+        <argsstring>(std::ostream &amp;os, ILLIXR::data_format::camera_data const &amp;cc)</argsstring>
+        <name>operator&lt;&lt;</name>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>os</declname>
+        </param>
+        <param>
+          <type><ref refid="structILLIXR_1_1data__format_1_1camera__data" kindref="compound">ILLIXR::data_format::camera_data</ref> const &amp;</type>
+          <declname>cc</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/zed/capture/files.cpp" line="81" column="1" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/zed/capture/files.cpp" bodystart="81" bodyend="86"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#include<sp/>&quot;<ref refid="files_8hpp" kindref="compound">files.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="poses_2head__pose_8hpp" kindref="compound">illixr/data_format/poses/head_pose.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;boost/filesystem.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;sstream&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="comment">//<sp/>#include<sp/>&lt;string_view&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>COMMA<sp/>&quot;,&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceILLIXR_1_1zed__capture" kindref="compound">ILLIXR::zed_capture</ref>;</highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/><ref refid="files_8cpp_1a4fc5b06d4ff6d361f0f95feaf947b87d" kindref="member">d_file</ref><sp/>=<sp/></highlight><highlight class="stringliteral">&quot;/data.csv&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal">boost::filesystem::path<sp/><ref refid="classILLIXR_1_1zed__capture_1_1files_1a54db20b630b9a2953087b7172fc19d16" kindref="member">files::data_path_</ref>;</highlight></codeline>
+<codeline lineno="15"><highlight class="normal">boost::filesystem::path<sp/><ref refid="classILLIXR_1_1zed__capture_1_1files_1a3145bb32f883938cec5a65b312afc7de" kindref="member">files::img_path_</ref>;</highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal">boost::filesystem::path<sp/><ref refid="classILLIXR_1_1zed__capture_1_1files_1a2977298968c9b139df165e165e5c2efe" kindref="member">files::camL_path_</ref>;</highlight></codeline>
+<codeline lineno="18"><highlight class="normal">boost::filesystem::path<sp/><ref refid="classILLIXR_1_1zed__capture_1_1files_1a6180980c4ca5f2ba345c5399bd3f9569" kindref="member">files::camR_path_</ref>;</highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight><highlight class="comment">//<sp/>boost::filesystem::path<sp/>files::depth_path;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="comment">//<sp/>boost::filesystem::path<sp/>files::conf_path;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal">std::string<sp/><ref refid="classILLIXR_1_1zed__capture_1_1files_1abe34d8fdebdb4151446056d1a6635c3f" kindref="member">files::data_file_</ref>;</highlight></codeline>
+<codeline lineno="23"><highlight class="normal">std::string<sp/><ref refid="classILLIXR_1_1zed__capture_1_1files_1a0796cdf4beb71381df6ebb1789f701bb" kindref="member">files::camL_file_</ref>;</highlight></codeline>
+<codeline lineno="24"><highlight class="normal">std::string<sp/><ref refid="classILLIXR_1_1zed__capture_1_1files_1a1ea23720866295d100f510b66aadebab" kindref="member">files::camR_file_</ref>;</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight><highlight class="comment">//<sp/>std::string<sp/>files::depth_file;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight><highlight class="comment">//<sp/>std::string<sp/>files::conf_file;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal">std::string<sp/><ref refid="classILLIXR_1_1zed__capture_1_1files_1a8b897d9181c559cb24ea166a8cc0bdd3" kindref="member">files::cam_file_</ref>;</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"><ref refid="classILLIXR_1_1zed__capture_1_1files" kindref="compound">files</ref>*<sp/><ref refid="classILLIXR_1_1zed__capture_1_1files_1a684139471783efc481ec4ba8bd3af5aa" kindref="member">files::instance_</ref><sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><ref refid="classILLIXR_1_1zed__capture_1_1files" kindref="compound">files</ref>*<sp/><ref refid="classILLIXR_1_1zed__capture_1_1files_1a6e5cd392343f1f14089c5a4f3b0aa44f" kindref="member">files::getInstance</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classILLIXR_1_1zed__capture_1_1files_1a684139471783efc481ec4ba8bd3af5aa" kindref="member">instance_</ref><sp/>==<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal"><sp/>std::runtime_error(</highlight><highlight class="stringliteral">&quot;Must<sp/>be<sp/>given<sp/>a<sp/>path&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1zed__capture_1_1files_1a684139471783efc481ec4ba8bd3af5aa" kindref="member">instance_</ref>;</highlight></codeline>
+<codeline lineno="35"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><ref refid="classILLIXR_1_1zed__capture_1_1files" kindref="compound">files</ref>*<sp/><ref refid="classILLIXR_1_1zed__capture_1_1files_1a6e5cd392343f1f14089c5a4f3b0aa44f" kindref="member">files::getInstance</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">rt</ref>,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>path)<sp/>{</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classILLIXR_1_1zed__capture_1_1files_1a684139471783efc481ec4ba8bd3af5aa" kindref="member">instance_</ref><sp/>==<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">)<sp/>{</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1zed__capture_1_1files_1a684139471783efc481ec4ba8bd3af5aa" kindref="member">instance_</ref><sp/>=<sp/></highlight><highlight class="keyword">new</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1zed__capture_1_1files_1ada3c1a1b22cdbb04950a49273c14e29f" kindref="member">files</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">rt</ref>,<sp/>path);</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1zed__capture_1_1files_1a684139471783efc481ec4ba8bd3af5aa" kindref="member">instance_</ref>;</highlight></codeline>
+<codeline lineno="42"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"></highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><ref refid="classILLIXR_1_1zed__capture_1_1files_1ada3c1a1b22cdbb04950a49273c14e29f" kindref="member">files::files</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">rt</ref>,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">sub_path</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1zed__capture_1_1files_1a28fe1997785319f8dfb06cac0e86ca52" kindref="member">root_</ref><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">rt</ref>;</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/>std::cout<sp/>&lt;&lt;<sp/><ref refid="classILLIXR_1_1zed__capture_1_1files_1a28fe1997785319f8dfb06cac0e86ca52" kindref="member">root_</ref><sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;<sp/><sp/><sp/><sp/>&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">sub_path</ref><sp/>&lt;&lt;<sp/>std::endl;</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1zed__capture_1_1files_1a54db20b630b9a2953087b7172fc19d16" kindref="member">data_path_</ref><sp/>=<sp/><ref refid="classILLIXR_1_1zed__capture_1_1files_1a28fe1997785319f8dfb06cac0e86ca52" kindref="member">root_</ref><sp/>+<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">sub_path</ref><sp/>+<sp/><ref refid="classILLIXR_1_1zed__capture_1_1files_1adab355c9ea350b254558e5a7bfe73130" kindref="member">data_sub_path_</ref>;</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1zed__capture_1_1files_1a3145bb32f883938cec5a65b312afc7de" kindref="member">img_path_</ref><sp/><sp/>=<sp/><ref refid="classILLIXR_1_1zed__capture_1_1files_1a28fe1997785319f8dfb06cac0e86ca52" kindref="member">root_</ref><sp/>+<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">sub_path</ref><sp/>+<sp/><ref refid="classILLIXR_1_1zed__capture_1_1files_1a08db7221fe810269e088cefcaaa18f68" kindref="member">img_sub_path_</ref>;</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"></highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1zed__capture_1_1files_1a2977298968c9b139df165e165e5c2efe" kindref="member">camL_path_</ref><sp/>=<sp/><ref refid="classILLIXR_1_1zed__capture_1_1files_1a3145bb32f883938cec5a65b312afc7de" kindref="member">img_path_</ref>.string()<sp/>+<sp/></highlight><highlight class="stringliteral">&quot;/camL&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1zed__capture_1_1files_1a6180980c4ca5f2ba345c5399bd3f9569" kindref="member">camR_path_</ref><sp/>=<sp/><ref refid="classILLIXR_1_1zed__capture_1_1files_1a3145bb32f883938cec5a65b312afc7de" kindref="member">img_path_</ref>.string()<sp/>+<sp/></highlight><highlight class="stringliteral">&quot;/camR&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>depth_path<sp/>=<sp/>img_path_.string()<sp/>+<sp/>&quot;/depth&quot;;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>conf_path<sp/>=<sp/>img_path_.string()<sp/>+<sp/>&quot;/conf&quot;;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="54"><highlight class="normal"></highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1zed__capture_1_1files_1abe34d8fdebdb4151446056d1a6635c3f" kindref="member">data_file_</ref><sp/>=<sp/><ref refid="classILLIXR_1_1zed__capture_1_1files_1a54db20b630b9a2953087b7172fc19d16" kindref="member">data_path_</ref>.string()<sp/>+<sp/><ref refid="files_8cpp_1a4fc5b06d4ff6d361f0f95feaf947b87d" kindref="member">d_file</ref>;</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1zed__capture_1_1files_1a0796cdf4beb71381df6ebb1789f701bb" kindref="member">camL_file_</ref><sp/>=<sp/><ref refid="classILLIXR_1_1zed__capture_1_1files_1a2977298968c9b139df165e165e5c2efe" kindref="member">camL_path_</ref>.string()<sp/>+<sp/><ref refid="files_8cpp_1a4fc5b06d4ff6d361f0f95feaf947b87d" kindref="member">d_file</ref>;</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1zed__capture_1_1files_1a1ea23720866295d100f510b66aadebab" kindref="member">camR_file_</ref><sp/>=<sp/><ref refid="classILLIXR_1_1zed__capture_1_1files_1a6180980c4ca5f2ba345c5399bd3f9569" kindref="member">camR_path_</ref>.string()<sp/>+<sp/><ref refid="files_8cpp_1a4fc5b06d4ff6d361f0f95feaf947b87d" kindref="member">d_file</ref>;</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>depth_file<sp/>=<sp/>depth_path.string()<sp/>+<sp/>d_file;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>conf_file<sp/>=<sp/>conf_path.string()<sp/>+<sp/>d_file;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1zed__capture_1_1files_1a8b897d9181c559cb24ea166a8cc0bdd3" kindref="member">cam_file_</ref><sp/>=<sp/><ref refid="classILLIXR_1_1zed__capture_1_1files_1a54db20b630b9a2953087b7172fc19d16" kindref="member">data_path_</ref>.string()<sp/>+<sp/></highlight><highlight class="stringliteral">&quot;/cam.csv&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"></highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/>boost::filesystem::create_directories(<ref refid="classILLIXR_1_1zed__capture_1_1files_1a54db20b630b9a2953087b7172fc19d16" kindref="member">data_path_</ref>);</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/>boost::filesystem::create_directories(<ref refid="classILLIXR_1_1zed__capture_1_1files_1a2977298968c9b139df165e165e5c2efe" kindref="member">camL_path_</ref>);</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/>boost::filesystem::create_directories(<ref refid="classILLIXR_1_1zed__capture_1_1files_1a6180980c4ca5f2ba345c5399bd3f9569" kindref="member">camR_path_</ref>);</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>boost::filesystem::create_directories(depth_path);</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>boost::filesystem::create_directories(conf_path);</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="67"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"></highlight></codeline>
+<codeline lineno="69"><highlight class="normal">std::ostream&amp;<sp/><ref refid="namespaceILLIXR_1a2799a40ef7c819000b0c30b0fe7d9ebd" kindref="member">operator&lt;&lt;</ref>(std::ostream&amp;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">os</ref>,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1head__pose__type" kindref="compound">ILLIXR::data_format::pose::head_pose_type</ref>&amp;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">dt</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">os</ref><sp/>&lt;&lt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">dt</ref>.sensor_time.time_since_epoch().count()<sp/>&lt;&lt;<sp/><ref refid="files_8cpp_1aa2f49001be13949a16a57e6c99ab00ad" kindref="member">COMMA</ref><sp/>&lt;&lt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">dt</ref>.position.x()<sp/>&lt;&lt;<sp/><ref refid="files_8cpp_1aa2f49001be13949a16a57e6c99ab00ad" kindref="member">COMMA</ref><sp/>&lt;&lt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">dt</ref>.position.y()<sp/>&lt;&lt;<sp/><ref refid="files_8cpp_1aa2f49001be13949a16a57e6c99ab00ad" kindref="member">COMMA</ref></highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">dt</ref>.position.z()<sp/>&lt;&lt;<sp/><ref refid="files_8cpp_1aa2f49001be13949a16a57e6c99ab00ad" kindref="member">COMMA</ref><sp/>&lt;&lt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">dt</ref>.orientation.w()<sp/>&lt;&lt;<sp/><ref refid="files_8cpp_1aa2f49001be13949a16a57e6c99ab00ad" kindref="member">COMMA</ref><sp/>&lt;&lt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">dt</ref>.orientation.x()<sp/>&lt;&lt;<sp/><ref refid="files_8cpp_1aa2f49001be13949a16a57e6c99ab00ad" kindref="member">COMMA</ref><sp/>&lt;&lt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">dt</ref>.orientation.y()<sp/>&lt;&lt;<sp/><ref refid="files_8cpp_1aa2f49001be13949a16a57e6c99ab00ad" kindref="member">COMMA</ref></highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">dt</ref>.orientation.z();</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">os</ref>;</highlight></codeline>
+<codeline lineno="74"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"></highlight></codeline>
+<codeline lineno="76"><highlight class="normal">std::ostream&amp;<sp/><ref refid="namespaceILLIXR_1a2799a40ef7c819000b0c30b0fe7d9ebd" kindref="member">operator&lt;&lt;</ref>(std::ostream&amp;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">os</ref>,<sp/><ref refid="structILLIXR_1_1data__format_1_1ccd__data" kindref="compound">ILLIXR::data_format::ccd_data</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">&amp;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cd</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">os</ref><sp/>&lt;&lt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cd</ref>.center_x<sp/>&lt;&lt;<sp/><ref refid="files_8cpp_1aa2f49001be13949a16a57e6c99ab00ad" kindref="member">COMMA</ref><sp/>&lt;&lt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cd</ref>.center_y<sp/>&lt;&lt;<sp/><ref refid="files_8cpp_1aa2f49001be13949a16a57e6c99ab00ad" kindref="member">COMMA</ref><sp/>&lt;&lt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cd</ref>.vertical_fov<sp/>&lt;&lt;<sp/><ref refid="files_8cpp_1aa2f49001be13949a16a57e6c99ab00ad" kindref="member">COMMA</ref><sp/>&lt;&lt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cd</ref>.horizontal_fov;</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">os</ref>;</highlight></codeline>
+<codeline lineno="79"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"></highlight></codeline>
+<codeline lineno="81"><highlight class="normal">std::ostream&amp;<sp/><ref refid="namespaceILLIXR_1a2799a40ef7c819000b0c30b0fe7d9ebd" kindref="member">operator&lt;&lt;</ref>(std::ostream&amp;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">os</ref>,<sp/><ref refid="structILLIXR_1_1data__format_1_1camera__data" kindref="compound">ILLIXR::data_format::camera_data</ref><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">&amp;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cc</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">os</ref><sp/>&lt;&lt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cc</ref>.width<sp/>&lt;&lt;<sp/><ref refid="files_8cpp_1aa2f49001be13949a16a57e6c99ab00ad" kindref="member">COMMA</ref><sp/>&lt;&lt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cc</ref>.height<sp/>&lt;&lt;<sp/><ref refid="files_8cpp_1aa2f49001be13949a16a57e6c99ab00ad" kindref="member">COMMA</ref><sp/>&lt;&lt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cc</ref>.fps<sp/>&lt;&lt;<sp/><ref refid="files_8cpp_1aa2f49001be13949a16a57e6c99ab00ad" kindref="member">COMMA</ref><sp/>&lt;&lt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cc</ref>.baseline<sp/>&lt;&lt;<sp/><ref refid="files_8cpp_1aa2f49001be13949a16a57e6c99ab00ad" kindref="member">COMMA</ref></highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cc</ref>.ccds.at(</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keyword">const<sp/></highlight><highlight class="normal">ILLIXR::data_format::units::eyes</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(<ref refid="files_8hpp_1a95dc6d7c96009c205e58b05786f4f6e6" kindref="member">LEFT_EYE</ref>))<sp/>&lt;&lt;<sp/><ref refid="files_8cpp_1aa2f49001be13949a16a57e6c99ab00ad" kindref="member">COMMA</ref></highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cc</ref>.ccds.at(</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keyword">const<sp/></highlight><highlight class="normal">ILLIXR::data_format::units::eyes</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(<ref refid="files_8hpp_1a945d720a8994e06ae068b02b96054083" kindref="member">RIGHT_EYE</ref>));</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">os</ref>;</highlight></codeline>
+<codeline lineno="86"><highlight class="normal">}</highlight></codeline>
+    </programlisting>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/zed/capture/files.cpp"/>
+  </compounddef>
+</doxygen>

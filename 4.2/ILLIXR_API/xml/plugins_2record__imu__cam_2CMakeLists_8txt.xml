@@ -1,0 +1,71 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="plugins_2record__imu__cam_2CMakeLists_8txt" kind="file" language="C++">
+    <compoundname>CMakeLists.txt</compoundname>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="plugins_2record__imu__cam_2CMakeLists_8txt_1a09507476bf987e857696208f6c8e1add" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>if</definition>
+        <argsstring>(WIN32 OR MSVC OR ANDROID) message(WARNING &quot;record_imu_cam is not yet available for Windows or Android&quot;) set(USE_RECORD_IMU_CAM OFF) return() endif() set(PLUGIN_NAME plugin.record_imu_cam$</argsstring>
+        <name>if</name>
+        <param>
+          <type>WIN32 OR MSVC OR</type>
+          <declname>ANDROID</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/record_imu_cam/CMakeLists.txt" line="2" column="1" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/record_imu_cam/CMakeLists.txt" bodystart="2" bodyend="8"/>
+      </memberdef>
+      <memberdef kind="function" id="plugins_2record__imu__cam_2CMakeLists_8txt_1ae2be4cd4ad298837211a0db8032900b1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>add_library</definition>
+        <argsstring>(${PLUGIN_NAME} SHARED plugin.cpp plugin.hpp ${CMAKE_SOURCE_DIR}/include/illixr/plugin.hpp ${CMAKE_SOURCE_DIR}/include/illixr/data_format/imu.hpp ${CMAKE_SOURCE_DIR}/include/illixr/data_format/opencv_data_types.hpp ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp) target_include_directories($</argsstring>
+        <name>add_library</name>
+        <param>
+          <declname>${PLUGIN_NAME} SHARED plugin.cpp plugin.hpp ${CMAKE_SOURCE_DIR}/include/illixr/plugin.hpp ${CMAKE_SOURCE_DIR}/include/illixr/data_format/imu.hpp ${CMAKE_SOURCE_DIR}/include/illixr/data_format/opencv_data_types.hpp ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/record_imu_cam/CMakeLists.txt" line="11" column="1" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/record_imu_cam/CMakeLists.txt" bodystart="11" bodyend="19"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#<sp/>module<sp/>to<sp/>build<sp/>and<sp/>install<sp/>the<sp/>record_imu_cam<sp/>ILLIXR<sp/>plugin</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(WIN32<sp/>OR<sp/>MSVC<sp/>OR<sp/>ANDROID)</highlight></codeline>
+<codeline lineno="3"><highlight class="normal"><sp/><sp/><sp/><sp/>message(WARNING<sp/></highlight><highlight class="stringliteral">&quot;record_imu_cam<sp/>is<sp/>not<sp/>yet<sp/>available<sp/>for<sp/>Windows<sp/>or<sp/>Android&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="4"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="plugins_2ada_2device__rx_2CMakeLists_8txt_1ad344f05efd50cbd4cc06614001f1e236" kindref="member">set</ref>(USE_RECORD_IMU_CAM<sp/>OFF)</highlight></codeline>
+<codeline lineno="5"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">()</highlight></codeline>
+<codeline lineno="6"><highlight class="normal"><ref refid="plugins_2hand__tracking_2viewer_2CMakeLists_8txt_1a0148257e63112c2b25e0c020039c3ce9" kindref="member">endif</ref>()</highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"><ref refid="plugins_2ada_2device__rx_2CMakeLists_8txt_1ad344f05efd50cbd4cc06614001f1e236" kindref="member">set</ref>(PLUGIN_NAME<sp/>plugin.record_imu_cam${ILLIXR_BUILD_SUFFIX})</highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal">#<sp/>source<sp/>files,<sp/>listed<sp/>individually<sp/>so<sp/>that<sp/>any<sp/>changes<sp/>will<sp/>trigger<sp/>a<sp/>rebuild</highlight></codeline>
+<codeline lineno="11"><highlight class="normal"><ref refid="plugins_2ada_2device__rx_2CMakeLists_8txt_1a01a41021f28d6a6f1f0894dc5a7bc38a" kindref="member">add_library</ref>(${PLUGIN_NAME}<sp/>SHARED<sp/>plugin.cpp</highlight></codeline>
+<codeline lineno="12"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>plugin.hpp</highlight></codeline>
+<codeline lineno="13"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/plugin.hpp</highlight></codeline>
+<codeline lineno="14"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/data_format/imu.hpp</highlight></codeline>
+<codeline lineno="15"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/data_format/opencv_data_types.hpp</highlight></codeline>
+<codeline lineno="16"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp</highlight></codeline>
+<codeline lineno="17"><highlight class="normal">)</highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"><ref refid="plugins_2ground__truth__slam_2CMakeLists_8txt_1a82fc0be41f2f49c1e7e89ae2ba5ff2dc" kindref="member">target_include_directories</ref>(${PLUGIN_NAME}<sp/>PRIVATE<sp/>${BOOST_INCLUDE_DIRS}<sp/>${OpenCV_INCLUDE_DIRS}<sp/>${ILLIXR_SOURCE_DIR}/include)</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"><ref refid="plugins_2boba__immersive_2CMakeLists_8txt_1a1f264771ca69b8cd57cd3a75e9c34929" kindref="member">target_link_libraries</ref>(${PLUGIN_NAME}<sp/>${OpenCV_LIBRARIES}<sp/>boost_filesystem<sp/>Eigen3::Eigen)</highlight></codeline>
+<codeline lineno="21"><highlight class="normal">target_compile_features(${PLUGIN_NAME}<sp/>PRIVATE<sp/>cxx_std_17)</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><ref refid="plugins_2boba__immersive_2CMakeLists_8txt_1a9e36ef4899162218fcaad48fe7924893" kindref="member">install</ref>(TARGETS<sp/>${PLUGIN_NAME}<sp/>DESTINATION<sp/>lib)</highlight></codeline>
+    </programlisting>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/record_imu_cam/CMakeLists.txt"/>
+  </compounddef>
+</doxygen>

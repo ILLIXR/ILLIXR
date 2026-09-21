@@ -1,0 +1,161 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structILLIXR_1_1data__format_1_1pose_1_1hand__interaction__poses" kind="struct" language="C++" prot="public">
+    <compoundname>ILLIXR::data_format::pose::hand_interaction_poses</compoundname>
+    <includes refid="poses_2hand__interaction__pose_8hpp" local="no">hand_interaction_pose.hpp</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1pose_1_1hand__interaction__poses_1a41a8487af8059ddd9b6b4c214fbf6f4d" prot="public" static="no" mutable="no">
+        <type>std::map&lt; <ref refid="namespaceILLIXR_1_1data__format_1_1pose_1afb7c1587b19b7ce9629d9acaaf97b752" kindref="member">interaction_pose_type</ref>, <ref refid="structILLIXR_1_1data__format_1_1pose_1_1hand__interaction__pose" kindref="compound">hand_interaction_pose</ref> &gt;</type>
+        <definition>std::map&lt;interaction_pose_type, hand_interaction_pose&gt; ILLIXR::data_format::pose::hand_interaction_poses::poses</definition>
+        <argsstring></argsstring>
+        <name>poses</name>
+        <qualifiedname>ILLIXR::data_format::pose::hand_interaction_poses::poses</qualifiedname>
+        <briefdescription>
+<para>Interaction poses keyed by type. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/hand_interaction_pose.hpp" line="141" column="14" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/hand_interaction_pose.hpp" bodystart="141" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1pose_1_1hand__interaction__poses_1a33bdc73978079475fa8894bc5fd6298b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::pose::hand_interaction_poses::hand_interaction_poses</definition>
+        <argsstring>()</argsstring>
+        <name>hand_interaction_poses</name>
+        <qualifiedname>ILLIXR::data_format::pose::hand_interaction_poses::hand_interaction_poses</qualifiedname>
+        <briefdescription>
+<para>Default constructor. All poses default-constructed; hand is not tracked. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/hand_interaction_pose.hpp" line="146" column="5" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/hand_interaction_pose.hpp" bodystart="146" bodyend="152"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1pose_1_1hand__interaction__poses_1a63359ece44998a7d5ef9446a1c6235d0" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::pose::hand_interaction_poses::hand_interaction_poses</definition>
+        <argsstring>(std::map&lt; interaction_pose_type, hand_interaction_pose &gt; poses_)</argsstring>
+        <name>hand_interaction_poses</name>
+        <qualifiedname>ILLIXR::data_format::pose::hand_interaction_poses::hand_interaction_poses</qualifiedname>
+        <param>
+          <type>std::map&lt; <ref refid="namespaceILLIXR_1_1data__format_1_1pose_1afb7c1587b19b7ce9629d9acaaf97b752" kindref="member">interaction_pose_type</ref>, <ref refid="structILLIXR_1_1data__format_1_1pose_1_1hand__interaction__pose" kindref="compound">hand_interaction_pose</ref> &gt;</type>
+          <declname>poses_</declname>
+        </param>
+        <briefdescription>
+<para>Construct from explicit components. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>poses_</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Map from interaction type to pose data </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/hand_interaction_pose.hpp" line="158" column="14" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/hand_interaction_pose.hpp" bodystart="158" bodyend="159"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1pose_1_1hand__interaction__poses_1ab6b57ef35c0cb51332f4a96d54a55d83" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structILLIXR_1_1data__format_1_1pose_1_1hand__interaction__pose" kindref="compound">hand_interaction_pose</ref> &amp;</type>
+        <definition>hand_interaction_pose &amp; ILLIXR::data_format::pose::hand_interaction_poses::operator[]</definition>
+        <argsstring>(interaction_pose_type type)</argsstring>
+        <name>operator[]</name>
+        <qualifiedname>ILLIXR::data_format::pose::hand_interaction_poses::operator[]</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1_1data__format_1_1pose_1afb7c1587b19b7ce9629d9acaaf97b752" kindref="member">interaction_pose_type</ref></type>
+          <declname>type</declname>
+        </param>
+        <briefdescription>
+<para>Access an interaction pose by type. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The interaction pose type to access </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Reference to the corresponding <computeroutput>hand_interaction_pose_data</computeroutput> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/hand_interaction_pose.hpp" line="166" column="27" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/hand_interaction_pose.hpp" bodystart="166" bodyend="168"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1pose_1_1hand__interaction__poses_1a37ca8eec3542d20196357917dd87b398" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const <ref refid="structILLIXR_1_1data__format_1_1pose_1_1hand__interaction__pose" kindref="compound">hand_interaction_pose</ref> &amp;</type>
+        <definition>const hand_interaction_pose &amp; ILLIXR::data_format::pose::hand_interaction_poses::at</definition>
+        <argsstring>(interaction_pose_type type) const</argsstring>
+        <name>at</name>
+        <qualifiedname>ILLIXR::data_format::pose::hand_interaction_poses::at</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1_1data__format_1_1pose_1afb7c1587b19b7ce9629d9acaaf97b752" kindref="member">interaction_pose_type</ref></type>
+          <declname>type</declname>
+        </param>
+        <briefdescription>
+<para>Access an interaction pose by type (const overload). </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The interaction pose type to access </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Const reference to the corresponding <computeroutput>hand_interaction_pose_data</computeroutput> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/hand_interaction_pose.hpp" line="175" column="34" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/hand_interaction_pose.hpp" bodystart="175" bodyend="177"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1pose_1_1hand__interaction__poses_1ab3e8ce5e918526dc436bb1bc0df4ad76" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool ILLIXR::data_format::pose::hand_interaction_poses::is_valid</definition>
+        <argsstring>() const</argsstring>
+        <name>is_valid</name>
+        <qualifiedname>ILLIXR::data_format::pose::hand_interaction_poses::is_valid</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/hand_interaction_pose.hpp" line="179" column="11" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/hand_interaction_pose.hpp" bodystart="179" bodyend="181"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>All interaction poses for one hand. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Stores one <computeroutput>hand_interaction_pose_data</computeroutput> for each <computeroutput>interaction_pose_type</computeroutput>. The gesture-strength value and readiness flag for each pose are carried on the <computeroutput>hand_interaction_pose_data</computeroutput> itself rather than at this level, since they are semantically bound to their corresponding pose type. </para>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/hand_interaction_pose.hpp" line="140" column="1" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/hand_interaction_pose.hpp" bodystart="140" bodyend="182"/>
+    <listofallmembers>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1hand__interaction__poses_1a37ca8eec3542d20196357917dd87b398" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::pose::hand_interaction_poses</scope><name>at</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1hand__interaction__poses_1a33bdc73978079475fa8894bc5fd6298b" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::pose::hand_interaction_poses</scope><name>hand_interaction_poses</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1hand__interaction__poses_1a63359ece44998a7d5ef9446a1c6235d0" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::pose::hand_interaction_poses</scope><name>hand_interaction_poses</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1hand__interaction__poses_1ab3e8ce5e918526dc436bb1bc0df4ad76" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::pose::hand_interaction_poses</scope><name>is_valid</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1hand__interaction__poses_1ab6b57ef35c0cb51332f4a96d54a55d83" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::pose::hand_interaction_poses</scope><name>operator[]</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1hand__interaction__poses_1a41a8487af8059ddd9b6b4c214fbf6f4d" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::pose::hand_interaction_poses</scope><name>poses</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

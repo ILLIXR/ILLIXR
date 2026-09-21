@@ -1,0 +1,103 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structILLIXR_1_1server__params" kind="struct" language="C++" prot="public">
+    <compoundname>ILLIXR::server_params</compoundname>
+    <includes refid="headset__fov_8hpp" local="no">headset_fov.hpp</includes>
+    <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="structILLIXR_1_1server__params_1a3d6e664a3c1187b8191bda38a8e4a831" prot="public" static="yes" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> std::string</type>
+        <definition>const std::string ILLIXR::server_params::headset</definition>
+        <argsstring></argsstring>
+        <name>headset</name>
+        <qualifiedname>ILLIXR::server_params::headset</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1acb2a3d547d445ded38a6ff83aa92edaf" kindref="member">configured_headset</ref>()</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/headset_fov.hpp" line="49" column="46" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/headset_fov.hpp" bodystart="49" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1server__params_1a77329d330228ca2bb17b6180a759bad9" prot="public" static="yes" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> std::array&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">float</ref>, 2 &gt;</type>
+        <definition>const std::array&lt;float, 2&gt; ILLIXR::server_params::fov_left</definition>
+        <argsstring></argsstring>
+        <name>fov_left</name>
+        <qualifiedname>ILLIXR::server_params::fov_left</qualifiedname>
+        <initializer>= {
+        <ref refid="structILLIXR_1_1server__params_1a3d6e664a3c1187b8191bda38a8e4a831" kindref="member">headset</ref> == &quot;index&quot; ? index_params::fov_left[0] : quest3_params::fov_left[0],
+        <ref refid="structILLIXR_1_1server__params_1a3d6e664a3c1187b8191bda38a8e4a831" kindref="member">headset</ref> == &quot;index&quot; ? index_params::fov_left[1] : quest3_params::fov_left[1]}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/headset_fov.hpp" line="50" column="36" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/headset_fov.hpp" bodystart="50" bodyend="52"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1server__params_1af23cd85832da03f19493acb9a7022df3" prot="public" static="yes" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> std::array&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">float</ref>, 2 &gt;</type>
+        <definition>const std::array&lt;float, 2&gt; ILLIXR::server_params::fov_right</definition>
+        <argsstring></argsstring>
+        <name>fov_right</name>
+        <qualifiedname>ILLIXR::server_params::fov_right</qualifiedname>
+        <initializer>= {
+        <ref refid="structILLIXR_1_1server__params_1a3d6e664a3c1187b8191bda38a8e4a831" kindref="member">headset</ref> == &quot;index&quot; ? index_params::fov_right[0] : quest3_params::fov_right[0],
+        <ref refid="structILLIXR_1_1server__params_1a3d6e664a3c1187b8191bda38a8e4a831" kindref="member">headset</ref> == &quot;index&quot; ? index_params::fov_right[1] : quest3_params::fov_right[1]}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/headset_fov.hpp" line="53" column="36" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/headset_fov.hpp" bodystart="53" bodyend="55"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1server__params_1adb5cd0aa7495a915726bc850a416384d" prot="public" static="yes" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> std::array&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">float</ref>, 2 &gt;</type>
+        <definition>const std::array&lt;float, 2&gt; ILLIXR::server_params::fov_up</definition>
+        <argsstring></argsstring>
+        <name>fov_up</name>
+        <qualifiedname>ILLIXR::server_params::fov_up</qualifiedname>
+        <initializer>= {<ref refid="structILLIXR_1_1server__params_1a3d6e664a3c1187b8191bda38a8e4a831" kindref="member">headset</ref> == &quot;index&quot; ? index_params::fov_up[0] : quest3_params::fov_up[0],
+                                                       <ref refid="structILLIXR_1_1server__params_1a3d6e664a3c1187b8191bda38a8e4a831" kindref="member">headset</ref> == &quot;index&quot; ? index_params::fov_up[1] : quest3_params::fov_up[1]}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/headset_fov.hpp" line="56" column="36" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/headset_fov.hpp" bodystart="56" bodyend="57"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1server__params_1a62d9315a4011a26ab7a9fab25b293626" prot="public" static="yes" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> std::array&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">float</ref>, 2 &gt;</type>
+        <definition>const std::array&lt;float, 2&gt; ILLIXR::server_params::fov_down</definition>
+        <argsstring></argsstring>
+        <name>fov_down</name>
+        <qualifiedname>ILLIXR::server_params::fov_down</qualifiedname>
+        <initializer>= {
+        <ref refid="structILLIXR_1_1server__params_1a3d6e664a3c1187b8191bda38a8e4a831" kindref="member">headset</ref> == &quot;index&quot; ? index_params::fov_down[0] : quest3_params::fov_down[0],
+        <ref refid="structILLIXR_1_1server__params_1a3d6e664a3c1187b8191bda38a8e4a831" kindref="member">headset</ref> == &quot;index&quot; ? index_params::fov_down[1] : quest3_params::fov_down[1]}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/headset_fov.hpp" line="58" column="36" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/headset_fov.hpp" bodystart="58" bodyend="60"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/headset_fov.hpp" line="48" column="1" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/headset_fov.hpp" bodystart="48" bodyend="61"/>
+    <listofallmembers>
+      <member refid="structILLIXR_1_1server__params_1a62d9315a4011a26ab7a9fab25b293626" prot="public" virt="non-virtual"><scope>ILLIXR::server_params</scope><name>fov_down</name></member>
+      <member refid="structILLIXR_1_1server__params_1a77329d330228ca2bb17b6180a759bad9" prot="public" virt="non-virtual"><scope>ILLIXR::server_params</scope><name>fov_left</name></member>
+      <member refid="structILLIXR_1_1server__params_1af23cd85832da03f19493acb9a7022df3" prot="public" virt="non-virtual"><scope>ILLIXR::server_params</scope><name>fov_right</name></member>
+      <member refid="structILLIXR_1_1server__params_1adb5cd0aa7495a915726bc850a416384d" prot="public" virt="non-virtual"><scope>ILLIXR::server_params</scope><name>fov_up</name></member>
+      <member refid="structILLIXR_1_1server__params_1a3d6e664a3c1187b8191bda38a8e4a831" prot="public" virt="non-virtual"><scope>ILLIXR::server_params</scope><name>headset</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

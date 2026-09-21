@@ -1,0 +1,570 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classcxxopts_1_1Value" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>cxxopts::Value</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">std::enable_shared_from_this&lt; Value &gt;</basecompoundref>
+    <basecompoundref prot="public" virt="non-virtual">std::enable_shared_from_this&lt; Value &gt;</basecompoundref>
+    <derivedcompoundref refid="classcxxopts_1_1values_1_1abstract__value" prot="public" virt="non-virtual">cxxopts::values::abstract_value&lt; bool &gt;</derivedcompoundref>
+    <derivedcompoundref refid="classcxxopts_1_1values_1_1abstract__value" prot="public" virt="non-virtual">cxxopts::values::abstract_value&lt; bool &gt;</derivedcompoundref>
+    <derivedcompoundref refid="classcxxopts_1_1values_1_1abstract__value" prot="public" virt="non-virtual">cxxopts::values::abstract_value&lt; T &gt;</derivedcompoundref>
+    <derivedcompoundref refid="classcxxopts_1_1values_1_1abstract__value" prot="public" virt="non-virtual">cxxopts::values::abstract_value&lt; T &gt;</derivedcompoundref>
+    <includes refid="plugins_2zed_2capture_2cxxopts_8hpp" local="no">cxxopts.hpp</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classcxxopts_1_1Value_1afbbfc1c371d0b8bab3548be76523d12c" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>virtual cxxopts::Value::~Value</definition>
+        <argsstring>()=default</argsstring>
+        <name>~Value</name>
+        <qualifiedname>cxxopts::Value::~Value</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="294" column="13"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1Value_1a17916d6a48e57c999c2dc23fa6b22539" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>std::shared_ptr&lt; <ref refid="classcxxopts_1_1Value" kindref="compound">Value</ref> &gt;</type>
+        <definition>virtual std::shared_ptr&lt; Value &gt; cxxopts::Value::clone</definition>
+        <argsstring>() const =0</argsstring>
+        <name>clone</name>
+        <qualifiedname>cxxopts::Value::clone</qualifiedname>
+        <reimplementedby refid="classcxxopts_1_1values_1_1standard__value_1acf40716827c2c2dfab62154db42bfe9a">clone</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1standard__value_3_01bool_01_4_1a046e7e94db4d7ec50c031a3078733f67">clone</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1standard__value_1acf40716827c2c2dfab62154db42bfe9a">clone</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1standard__value_3_01bool_01_4_1a046e7e94db4d7ec50c031a3078733f67">clone</reimplementedby>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="296" column="29"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1Value_1a3c962e4ff3294721f5c9f6ac3fc00cc7" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>void</type>
+        <definition>virtual void cxxopts::Value::parse</definition>
+        <argsstring>(const std::string &amp;text) const =0</argsstring>
+        <name>parse</name>
+        <qualifiedname>cxxopts::Value::parse</qualifiedname>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1ad6599c6a72ae7903a7a9b6dda2f828cf">parse</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1ad6599c6a72ae7903a7a9b6dda2f828cf">parse</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1ad6599c6a72ae7903a7a9b6dda2f828cf">parse</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1ad6599c6a72ae7903a7a9b6dda2f828cf">parse</reimplementedby>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>text</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="298" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1Value_1a9246a55e299ea5ef34346af46977fab4" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>void</type>
+        <definition>virtual void cxxopts::Value::parse</definition>
+        <argsstring>() const =0</argsstring>
+        <name>parse</name>
+        <qualifiedname>cxxopts::Value::parse</qualifiedname>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1aa8dfcbbfb1f9b28261a3e4fa564a02c1">parse</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1aa8dfcbbfb1f9b28261a3e4fa564a02c1">parse</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1aa8dfcbbfb1f9b28261a3e4fa564a02c1">parse</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1aa8dfcbbfb1f9b28261a3e4fa564a02c1">parse</reimplementedby>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="300" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1Value_1aac3233a0414ac39d54ed0b98365afc7e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>bool</type>
+        <definition>virtual bool cxxopts::Value::has_default</definition>
+        <argsstring>() const =0</argsstring>
+        <name>has_default</name>
+        <qualifiedname>cxxopts::Value::has_default</qualifiedname>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1a8ab35d0f85ed76406651b442f4094cb9">has_default</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1a8ab35d0f85ed76406651b442f4094cb9">has_default</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1a8ab35d0f85ed76406651b442f4094cb9">has_default</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1a8ab35d0f85ed76406651b442f4094cb9">has_default</reimplementedby>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="302" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1Value_1a632f3263dd598e30999a6bcff0652132" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>bool</type>
+        <definition>virtual bool cxxopts::Value::is_container</definition>
+        <argsstring>() const =0</argsstring>
+        <name>is_container</name>
+        <qualifiedname>cxxopts::Value::is_container</qualifiedname>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1a1b7954bea9d4db388125d3427203dba8">is_container</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1a1b7954bea9d4db388125d3427203dba8">is_container</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1a1b7954bea9d4db388125d3427203dba8">is_container</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1a1b7954bea9d4db388125d3427203dba8">is_container</reimplementedby>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="304" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1Value_1aac3425b87db8ef41157892449999b183" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>bool</type>
+        <definition>virtual bool cxxopts::Value::has_implicit</definition>
+        <argsstring>() const =0</argsstring>
+        <name>has_implicit</name>
+        <qualifiedname>cxxopts::Value::has_implicit</qualifiedname>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1af832b3696ce245e5b4c402ffc5af6155">has_implicit</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1af832b3696ce245e5b4c402ffc5af6155">has_implicit</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1af832b3696ce245e5b4c402ffc5af6155">has_implicit</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1af832b3696ce245e5b4c402ffc5af6155">has_implicit</reimplementedby>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="306" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1Value_1a25ac95c499771a6f5ca295e01452f380" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>std::string</type>
+        <definition>virtual std::string cxxopts::Value::get_default_value</definition>
+        <argsstring>() const =0</argsstring>
+        <name>get_default_value</name>
+        <qualifiedname>cxxopts::Value::get_default_value</qualifiedname>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1a901928871ef3566e74f081d5ab9020aa">get_default_value</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1a901928871ef3566e74f081d5ab9020aa">get_default_value</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1a901928871ef3566e74f081d5ab9020aa">get_default_value</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1a901928871ef3566e74f081d5ab9020aa">get_default_value</reimplementedby>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="308" column="25"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1Value_1a436f0a8a6621de420088839f4c728230" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>std::string</type>
+        <definition>virtual std::string cxxopts::Value::get_implicit_value</definition>
+        <argsstring>() const =0</argsstring>
+        <name>get_implicit_value</name>
+        <qualifiedname>cxxopts::Value::get_implicit_value</qualifiedname>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1a5e5aa0e29056c3daa7e5a1defd69f20f">get_implicit_value</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1a5e5aa0e29056c3daa7e5a1defd69f20f">get_implicit_value</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1a5e5aa0e29056c3daa7e5a1defd69f20f">get_implicit_value</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1a5e5aa0e29056c3daa7e5a1defd69f20f">get_implicit_value</reimplementedby>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="310" column="25"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1Value_1a96cc46d76d458baf37099cd94cf4e857" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>std::shared_ptr&lt; <ref refid="classcxxopts_1_1Value" kindref="compound">Value</ref> &gt;</type>
+        <definition>virtual std::shared_ptr&lt; Value &gt; cxxopts::Value::default_value</definition>
+        <argsstring>(const std::string &amp;value)=0</argsstring>
+        <name>default_value</name>
+        <qualifiedname>cxxopts::Value::default_value</qualifiedname>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1a3bc6dc59f9bec5811bda3ca86a5ba22e">default_value</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1a3bc6dc59f9bec5811bda3ca86a5ba22e">default_value</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1a3bc6dc59f9bec5811bda3ca86a5ba22e">default_value</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1a3bc6dc59f9bec5811bda3ca86a5ba22e">default_value</reimplementedby>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="312" column="29"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1Value_1adf963773eb53a7af1bc8cb97a517b27e" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>std::shared_ptr&lt; <ref refid="classcxxopts_1_1Value" kindref="compound">Value</ref> &gt;</type>
+        <definition>virtual std::shared_ptr&lt; Value &gt; cxxopts::Value::implicit_value</definition>
+        <argsstring>(const std::string &amp;value)=0</argsstring>
+        <name>implicit_value</name>
+        <qualifiedname>cxxopts::Value::implicit_value</qualifiedname>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1aac9bc16b6695a1b1aca9d87ed2c3261a">implicit_value</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1aac9bc16b6695a1b1aca9d87ed2c3261a">implicit_value</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1aac9bc16b6695a1b1aca9d87ed2c3261a">implicit_value</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1aac9bc16b6695a1b1aca9d87ed2c3261a">implicit_value</reimplementedby>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="314" column="29"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1Value_1a4bba2137fbc7ee9c670a64e552ac05fe" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>std::shared_ptr&lt; <ref refid="classcxxopts_1_1Value" kindref="compound">Value</ref> &gt;</type>
+        <definition>virtual std::shared_ptr&lt; Value &gt; cxxopts::Value::no_implicit_value</definition>
+        <argsstring>()=0</argsstring>
+        <name>no_implicit_value</name>
+        <qualifiedname>cxxopts::Value::no_implicit_value</qualifiedname>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1a286d315daba090046b6c72a6711d389d">no_implicit_value</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1a286d315daba090046b6c72a6711d389d">no_implicit_value</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1a286d315daba090046b6c72a6711d389d">no_implicit_value</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1a286d315daba090046b6c72a6711d389d">no_implicit_value</reimplementedby>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="316" column="29"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1Value_1a77a4a731bcbbd95afca43f82affe5aaa" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>bool</type>
+        <definition>virtual bool cxxopts::Value::is_boolean</definition>
+        <argsstring>() const =0</argsstring>
+        <name>is_boolean</name>
+        <qualifiedname>cxxopts::Value::is_boolean</qualifiedname>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1ac4a5f57c63086de1eac4cbefe09d99ce">is_boolean</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1ac4a5f57c63086de1eac4cbefe09d99ce">is_boolean</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1ac4a5f57c63086de1eac4cbefe09d99ce">is_boolean</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1ac4a5f57c63086de1eac4cbefe09d99ce">is_boolean</reimplementedby>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="318" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1Value_1afbbfc1c371d0b8bab3548be76523d12c" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>virtual cxxopts::Value::~Value</definition>
+        <argsstring>()=default</argsstring>
+        <name>~Value</name>
+        <qualifiedname>cxxopts::Value::~Value</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/cxxopts.hpp" line="296" column="13"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1Value_1a17916d6a48e57c999c2dc23fa6b22539" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>std::shared_ptr&lt; <ref refid="classcxxopts_1_1Value" kindref="compound">Value</ref> &gt;</type>
+        <definition>virtual std::shared_ptr&lt; Value &gt; cxxopts::Value::clone</definition>
+        <argsstring>() const =0</argsstring>
+        <name>clone</name>
+        <qualifiedname>cxxopts::Value::clone</qualifiedname>
+        <reimplementedby refid="classcxxopts_1_1values_1_1standard__value_1acf40716827c2c2dfab62154db42bfe9a">clone</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1standard__value_3_01bool_01_4_1a046e7e94db4d7ec50c031a3078733f67">clone</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1standard__value_1acf40716827c2c2dfab62154db42bfe9a">clone</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1standard__value_3_01bool_01_4_1a046e7e94db4d7ec50c031a3078733f67">clone</reimplementedby>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/cxxopts.hpp" line="298" column="29"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1Value_1a3c962e4ff3294721f5c9f6ac3fc00cc7" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>void</type>
+        <definition>virtual void cxxopts::Value::parse</definition>
+        <argsstring>(const std::string &amp;text) const =0</argsstring>
+        <name>parse</name>
+        <qualifiedname>cxxopts::Value::parse</qualifiedname>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1ad6599c6a72ae7903a7a9b6dda2f828cf">parse</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1ad6599c6a72ae7903a7a9b6dda2f828cf">parse</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1ad6599c6a72ae7903a7a9b6dda2f828cf">parse</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1ad6599c6a72ae7903a7a9b6dda2f828cf">parse</reimplementedby>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>text</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/cxxopts.hpp" line="300" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1Value_1a9246a55e299ea5ef34346af46977fab4" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>void</type>
+        <definition>virtual void cxxopts::Value::parse</definition>
+        <argsstring>() const =0</argsstring>
+        <name>parse</name>
+        <qualifiedname>cxxopts::Value::parse</qualifiedname>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1aa8dfcbbfb1f9b28261a3e4fa564a02c1">parse</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1aa8dfcbbfb1f9b28261a3e4fa564a02c1">parse</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1aa8dfcbbfb1f9b28261a3e4fa564a02c1">parse</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1aa8dfcbbfb1f9b28261a3e4fa564a02c1">parse</reimplementedby>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/cxxopts.hpp" line="302" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1Value_1aac3233a0414ac39d54ed0b98365afc7e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>bool</type>
+        <definition>virtual bool cxxopts::Value::has_default</definition>
+        <argsstring>() const =0</argsstring>
+        <name>has_default</name>
+        <qualifiedname>cxxopts::Value::has_default</qualifiedname>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1a8ab35d0f85ed76406651b442f4094cb9">has_default</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1a8ab35d0f85ed76406651b442f4094cb9">has_default</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1a8ab35d0f85ed76406651b442f4094cb9">has_default</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1a8ab35d0f85ed76406651b442f4094cb9">has_default</reimplementedby>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/cxxopts.hpp" line="304" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1Value_1a632f3263dd598e30999a6bcff0652132" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>bool</type>
+        <definition>virtual bool cxxopts::Value::is_container</definition>
+        <argsstring>() const =0</argsstring>
+        <name>is_container</name>
+        <qualifiedname>cxxopts::Value::is_container</qualifiedname>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1a1b7954bea9d4db388125d3427203dba8">is_container</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1a1b7954bea9d4db388125d3427203dba8">is_container</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1a1b7954bea9d4db388125d3427203dba8">is_container</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1a1b7954bea9d4db388125d3427203dba8">is_container</reimplementedby>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/cxxopts.hpp" line="306" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1Value_1aac3425b87db8ef41157892449999b183" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>bool</type>
+        <definition>virtual bool cxxopts::Value::has_implicit</definition>
+        <argsstring>() const =0</argsstring>
+        <name>has_implicit</name>
+        <qualifiedname>cxxopts::Value::has_implicit</qualifiedname>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1af832b3696ce245e5b4c402ffc5af6155">has_implicit</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1af832b3696ce245e5b4c402ffc5af6155">has_implicit</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1af832b3696ce245e5b4c402ffc5af6155">has_implicit</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1af832b3696ce245e5b4c402ffc5af6155">has_implicit</reimplementedby>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/cxxopts.hpp" line="308" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1Value_1a25ac95c499771a6f5ca295e01452f380" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>std::string</type>
+        <definition>virtual std::string cxxopts::Value::get_default_value</definition>
+        <argsstring>() const =0</argsstring>
+        <name>get_default_value</name>
+        <qualifiedname>cxxopts::Value::get_default_value</qualifiedname>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1a901928871ef3566e74f081d5ab9020aa">get_default_value</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1a901928871ef3566e74f081d5ab9020aa">get_default_value</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1a901928871ef3566e74f081d5ab9020aa">get_default_value</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1a901928871ef3566e74f081d5ab9020aa">get_default_value</reimplementedby>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/cxxopts.hpp" line="310" column="25"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1Value_1a436f0a8a6621de420088839f4c728230" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>std::string</type>
+        <definition>virtual std::string cxxopts::Value::get_implicit_value</definition>
+        <argsstring>() const =0</argsstring>
+        <name>get_implicit_value</name>
+        <qualifiedname>cxxopts::Value::get_implicit_value</qualifiedname>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1a5e5aa0e29056c3daa7e5a1defd69f20f">get_implicit_value</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1a5e5aa0e29056c3daa7e5a1defd69f20f">get_implicit_value</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1a5e5aa0e29056c3daa7e5a1defd69f20f">get_implicit_value</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1a5e5aa0e29056c3daa7e5a1defd69f20f">get_implicit_value</reimplementedby>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/cxxopts.hpp" line="312" column="25"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1Value_1a96cc46d76d458baf37099cd94cf4e857" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>std::shared_ptr&lt; <ref refid="classcxxopts_1_1Value" kindref="compound">Value</ref> &gt;</type>
+        <definition>virtual std::shared_ptr&lt; Value &gt; cxxopts::Value::default_value</definition>
+        <argsstring>(const std::string &amp;value)=0</argsstring>
+        <name>default_value</name>
+        <qualifiedname>cxxopts::Value::default_value</qualifiedname>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1a3bc6dc59f9bec5811bda3ca86a5ba22e">default_value</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1a3bc6dc59f9bec5811bda3ca86a5ba22e">default_value</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1a3bc6dc59f9bec5811bda3ca86a5ba22e">default_value</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1a3bc6dc59f9bec5811bda3ca86a5ba22e">default_value</reimplementedby>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/cxxopts.hpp" line="314" column="29"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1Value_1adf963773eb53a7af1bc8cb97a517b27e" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>std::shared_ptr&lt; <ref refid="classcxxopts_1_1Value" kindref="compound">Value</ref> &gt;</type>
+        <definition>virtual std::shared_ptr&lt; Value &gt; cxxopts::Value::implicit_value</definition>
+        <argsstring>(const std::string &amp;value)=0</argsstring>
+        <name>implicit_value</name>
+        <qualifiedname>cxxopts::Value::implicit_value</qualifiedname>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1aac9bc16b6695a1b1aca9d87ed2c3261a">implicit_value</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1aac9bc16b6695a1b1aca9d87ed2c3261a">implicit_value</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1aac9bc16b6695a1b1aca9d87ed2c3261a">implicit_value</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1aac9bc16b6695a1b1aca9d87ed2c3261a">implicit_value</reimplementedby>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/cxxopts.hpp" line="316" column="29"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1Value_1a4bba2137fbc7ee9c670a64e552ac05fe" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>std::shared_ptr&lt; <ref refid="classcxxopts_1_1Value" kindref="compound">Value</ref> &gt;</type>
+        <definition>virtual std::shared_ptr&lt; Value &gt; cxxopts::Value::no_implicit_value</definition>
+        <argsstring>()=0</argsstring>
+        <name>no_implicit_value</name>
+        <qualifiedname>cxxopts::Value::no_implicit_value</qualifiedname>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1a286d315daba090046b6c72a6711d389d">no_implicit_value</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1a286d315daba090046b6c72a6711d389d">no_implicit_value</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1a286d315daba090046b6c72a6711d389d">no_implicit_value</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1a286d315daba090046b6c72a6711d389d">no_implicit_value</reimplementedby>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/cxxopts.hpp" line="318" column="29"/>
+      </memberdef>
+      <memberdef kind="function" id="classcxxopts_1_1Value_1a77a4a731bcbbd95afca43f82affe5aaa" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>bool</type>
+        <definition>virtual bool cxxopts::Value::is_boolean</definition>
+        <argsstring>() const =0</argsstring>
+        <name>is_boolean</name>
+        <qualifiedname>cxxopts::Value::is_boolean</qualifiedname>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1ac4a5f57c63086de1eac4cbefe09d99ce">is_boolean</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1ac4a5f57c63086de1eac4cbefe09d99ce">is_boolean</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1ac4a5f57c63086de1eac4cbefe09d99ce">is_boolean</reimplementedby>
+        <reimplementedby refid="classcxxopts_1_1values_1_1abstract__value_1ac4a5f57c63086de1eac4cbefe09d99ce">is_boolean</reimplementedby>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/src/cxxopts.hpp" line="320" column="18"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>cxxopts::values::abstract_value&lt; bool &gt;</label>
+        <link refid="classcxxopts_1_1values_1_1abstract__value"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>cxxopts::Value</label>
+        <link refid="classcxxopts_1_1Value"/>
+      </node>
+      <node id="4">
+        <label>cxxopts::values::abstract_value&lt; T &gt;</label>
+        <link refid="classcxxopts_1_1values_1_1abstract__value"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>cxxopts::values::standard_value&lt; T &gt;</label>
+        <link refid="classcxxopts_1_1values_1_1standard__value"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>cxxopts::values::standard_value&lt; bool &gt;</label>
+        <link refid="classcxxopts_1_1values_1_1standard__value_3_01bool_01_4"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/zed/capture/cxxopts.hpp" line="292" column="1" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/zed/capture/cxxopts.hpp" bodystart="292" bodyend="319"/>
+    <listofallmembers>
+      <member refid="classcxxopts_1_1Value_1a17916d6a48e57c999c2dc23fa6b22539" prot="public" virt="pure-virtual"><scope>cxxopts::Value</scope><name>clone</name></member>
+      <member refid="classcxxopts_1_1Value_1a17916d6a48e57c999c2dc23fa6b22539" prot="public" virt="pure-virtual"><scope>cxxopts::Value</scope><name>clone</name></member>
+      <member refid="classcxxopts_1_1Value_1a96cc46d76d458baf37099cd94cf4e857" prot="public" virt="pure-virtual"><scope>cxxopts::Value</scope><name>default_value</name></member>
+      <member refid="classcxxopts_1_1Value_1a96cc46d76d458baf37099cd94cf4e857" prot="public" virt="pure-virtual"><scope>cxxopts::Value</scope><name>default_value</name></member>
+      <member refid="classcxxopts_1_1Value_1a25ac95c499771a6f5ca295e01452f380" prot="public" virt="pure-virtual"><scope>cxxopts::Value</scope><name>get_default_value</name></member>
+      <member refid="classcxxopts_1_1Value_1a25ac95c499771a6f5ca295e01452f380" prot="public" virt="pure-virtual"><scope>cxxopts::Value</scope><name>get_default_value</name></member>
+      <member refid="classcxxopts_1_1Value_1a436f0a8a6621de420088839f4c728230" prot="public" virt="pure-virtual"><scope>cxxopts::Value</scope><name>get_implicit_value</name></member>
+      <member refid="classcxxopts_1_1Value_1a436f0a8a6621de420088839f4c728230" prot="public" virt="pure-virtual"><scope>cxxopts::Value</scope><name>get_implicit_value</name></member>
+      <member refid="classcxxopts_1_1Value_1aac3233a0414ac39d54ed0b98365afc7e" prot="public" virt="pure-virtual"><scope>cxxopts::Value</scope><name>has_default</name></member>
+      <member refid="classcxxopts_1_1Value_1aac3233a0414ac39d54ed0b98365afc7e" prot="public" virt="pure-virtual"><scope>cxxopts::Value</scope><name>has_default</name></member>
+      <member refid="classcxxopts_1_1Value_1aac3425b87db8ef41157892449999b183" prot="public" virt="pure-virtual"><scope>cxxopts::Value</scope><name>has_implicit</name></member>
+      <member refid="classcxxopts_1_1Value_1aac3425b87db8ef41157892449999b183" prot="public" virt="pure-virtual"><scope>cxxopts::Value</scope><name>has_implicit</name></member>
+      <member refid="classcxxopts_1_1Value_1adf963773eb53a7af1bc8cb97a517b27e" prot="public" virt="pure-virtual"><scope>cxxopts::Value</scope><name>implicit_value</name></member>
+      <member refid="classcxxopts_1_1Value_1adf963773eb53a7af1bc8cb97a517b27e" prot="public" virt="pure-virtual"><scope>cxxopts::Value</scope><name>implicit_value</name></member>
+      <member refid="classcxxopts_1_1Value_1a77a4a731bcbbd95afca43f82affe5aaa" prot="public" virt="pure-virtual"><scope>cxxopts::Value</scope><name>is_boolean</name></member>
+      <member refid="classcxxopts_1_1Value_1a77a4a731bcbbd95afca43f82affe5aaa" prot="public" virt="pure-virtual"><scope>cxxopts::Value</scope><name>is_boolean</name></member>
+      <member refid="classcxxopts_1_1Value_1a632f3263dd598e30999a6bcff0652132" prot="public" virt="pure-virtual"><scope>cxxopts::Value</scope><name>is_container</name></member>
+      <member refid="classcxxopts_1_1Value_1a632f3263dd598e30999a6bcff0652132" prot="public" virt="pure-virtual"><scope>cxxopts::Value</scope><name>is_container</name></member>
+      <member refid="classcxxopts_1_1Value_1a4bba2137fbc7ee9c670a64e552ac05fe" prot="public" virt="pure-virtual"><scope>cxxopts::Value</scope><name>no_implicit_value</name></member>
+      <member refid="classcxxopts_1_1Value_1a4bba2137fbc7ee9c670a64e552ac05fe" prot="public" virt="pure-virtual"><scope>cxxopts::Value</scope><name>no_implicit_value</name></member>
+      <member refid="classcxxopts_1_1Value_1a3c962e4ff3294721f5c9f6ac3fc00cc7" prot="public" virt="pure-virtual"><scope>cxxopts::Value</scope><name>parse</name></member>
+      <member refid="classcxxopts_1_1Value_1a9246a55e299ea5ef34346af46977fab4" prot="public" virt="pure-virtual"><scope>cxxopts::Value</scope><name>parse</name></member>
+      <member refid="classcxxopts_1_1Value_1a3c962e4ff3294721f5c9f6ac3fc00cc7" prot="public" virt="pure-virtual"><scope>cxxopts::Value</scope><name>parse</name></member>
+      <member refid="classcxxopts_1_1Value_1a9246a55e299ea5ef34346af46977fab4" prot="public" virt="pure-virtual"><scope>cxxopts::Value</scope><name>parse</name></member>
+      <member refid="classcxxopts_1_1Value_1afbbfc1c371d0b8bab3548be76523d12c" prot="public" virt="virtual"><scope>cxxopts::Value</scope><name>~Value</name></member>
+      <member refid="classcxxopts_1_1Value_1afbbfc1c371d0b8bab3548be76523d12c" prot="public" virt="virtual"><scope>cxxopts::Value</scope><name>~Value</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

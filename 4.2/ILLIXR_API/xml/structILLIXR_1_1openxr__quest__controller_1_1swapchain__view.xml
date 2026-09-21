@@ -1,0 +1,79 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structILLIXR_1_1openxr__quest__controller_1_1swapchain__view" kind="struct" language="C++" prot="private">
+    <compoundname>ILLIXR::openxr_quest_controller::swapchain_view</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structILLIXR_1_1openxr__quest__controller_1_1swapchain__view_1a36e719da9204f704110092c3d6d431b8" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrSwapchain</ref></type>
+        <definition>XrSwapchain ILLIXR::openxr_quest_controller::swapchain_view::handle</definition>
+        <argsstring></argsstring>
+        <name>handle</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::swapchain_view::handle</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_NULL_HANDLE</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="86" column="48" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="86" bodyend="86"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1openxr__quest__controller_1_1swapchain__view_1a90e0150923d4d952cceb3a477daf1446" prot="public" static="no" mutable="no">
+        <type>std::uint32_t</type>
+        <definition>std::uint32_t ILLIXR::openxr_quest_controller::swapchain_view::width</definition>
+        <argsstring></argsstring>
+        <name>width</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::swapchain_view::width</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="87" column="48" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="87" bodyend="87"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1openxr__quest__controller_1_1swapchain__view_1a4195550600cb85f7a466dc388b4d6ed0" prot="public" static="no" mutable="no">
+        <type>std::uint32_t</type>
+        <definition>std::uint32_t ILLIXR::openxr_quest_controller::swapchain_view::height</definition>
+        <argsstring></argsstring>
+        <name>height</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::swapchain_view::height</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="88" column="48" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="88" bodyend="88"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1openxr__quest__controller_1_1swapchain__view_1af9a8bb3db2a8363939b64a636d6f47c3" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrSwapchainImageOpenGLKHR</ref> &gt;</type>
+        <definition>std::vector&lt;XrSwapchainImageOpenGLKHR&gt; ILLIXR::openxr_quest_controller::swapchain_view::images</definition>
+        <argsstring></argsstring>
+        <name>images</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::swapchain_view::images</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="89" column="21" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="89" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>One per-eye OpenXR swapchain and its runtime-owned OpenGL images. </para>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="85" column="5" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="85" bodyend="90"/>
+    <listofallmembers>
+      <member refid="structILLIXR_1_1openxr__quest__controller_1_1swapchain__view_1a36e719da9204f704110092c3d6d431b8" prot="public" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller::swapchain_view</scope><name>handle</name></member>
+      <member refid="structILLIXR_1_1openxr__quest__controller_1_1swapchain__view_1a4195550600cb85f7a466dc388b4d6ed0" prot="public" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller::swapchain_view</scope><name>height</name></member>
+      <member refid="structILLIXR_1_1openxr__quest__controller_1_1swapchain__view_1af9a8bb3db2a8363939b64a636d6f47c3" prot="public" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller::swapchain_view</scope><name>images</name></member>
+      <member refid="structILLIXR_1_1openxr__quest__controller_1_1swapchain__view_1a90e0150923d4d952cceb3a477daf1446" prot="public" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller::swapchain_view</scope><name>width</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

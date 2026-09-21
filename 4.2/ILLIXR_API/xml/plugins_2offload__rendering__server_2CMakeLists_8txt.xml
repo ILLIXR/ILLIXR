@@ -1,0 +1,402 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="plugins_2offload__rendering__server_2CMakeLists_8txt" kind="file" language="C++">
+    <compoundname>CMakeLists.txt</compoundname>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="plugins_2offload__rendering__server_2CMakeLists_8txt_1a27b73f47556ba660c92bcd9a3ff89d2b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>if</definition>
+        <argsstring>(ANDROID) message(WARNING &quot;offload_rendering_server is not available for Android&quot;) set(USE_OFFLOAD_RENDERING_SERVER OFF) return() endif() option(USE_NVENC_ENCODER &quot;Use direct NVENC encoder instead of FFmpeg&quot; OFF) option(USE_OPENXR_DEFINITIONS &quot;Use the OpenXR pose definitions&quot; OFF) if(WIN32 OR MSVC) set(USE_NVENC_ENCODER ON) endif() option(USE_COMBINED_ENCODING &quot;Encode both eyes in one side-by-side NVENC color stream&quot; $</argsstring>
+        <name>if</name>
+        <param>
+          <type>ANDROID</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/offload_rendering_server/CMakeLists.txt" line="1" column="1" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/offload_rendering_server/CMakeLists.txt" bodystart="1" bodyend="16"/>
+      </memberdef>
+      <memberdef kind="function" id="plugins_2offload__rendering__server_2CMakeLists_8txt_1abff6d7b945a8e071646fb99a0cc802a9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>if</definition>
+        <argsstring>(USE_COMBINED_ENCODING AND NOT USE_NVENC_ENCODER) message(FATAL_ERROR &quot;USE_COMBINED_ENCODING &quot;) endif() if(USE_NVENC_ENCODER) enable_language(CUDA) set(CMAKE_CUDA_STANDARD 17) set(CMAKE_CUDA_STANDARD_REQUIRED ON) find_package(CUDAToolkit REQUIRED) option(USE_AV1_ENCODING &quot;Use AV1 encoding for offload rendering&quot; OFF) option(USE_HEVC_ENCODING &quot;Use HEVC encoding for offload rendering&quot; OFF) if(USE_AV1_ENCODING AND USE_HEVC_ENCODING) message(FATAL_ERROR &quot;Only one of USE_AV1_ENCODING or USE_HEVC_ENCODING can be specified</argsstring>
+        <name>if</name>
+        <param>
+          <type>USE_COMBINED_ENCODING AND NOT</type>
+          <declname>USE_NVENC_ENCODER</declname>
+        </param>
+    <requiresclause>USE_NVENC_ENCODER    </requiresclause>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/offload_rendering_server/CMakeLists.txt" line="17" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="plugins_2offload__rendering__server_2CMakeLists_8txt_1ad64a5c457c85f863303d94d615bfb4a3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>not both</type>
+        <definition>not both endif</definition>
+        <argsstring>() if(NOT USE_AV1_ENCODING AND NOT USE_HEVC_ENCODING) set(USE_AV1_ENCODING ON) endif() endif() if(MSVC) string(REPLACE &quot;/RTC1&quot; &quot;&quot; CMAKE_CXX_FLAGS_DEBUG &quot;$</argsstring>
+        <name>endif</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/offload_rendering_server/CMakeLists.txt" line="32" column="5" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/offload_rendering_server/CMakeLists.txt" bodystart="32" bodyend="41"/>
+      </memberdef>
+      <memberdef kind="function" id="plugins_2offload__rendering__server_2CMakeLists_8txt_1a5a320a78f5d255e59cead61a98c7cbea" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>string</definition>
+        <argsstring>(REPLACE &quot;/RTC1&quot; &quot;&quot; CMAKE_C_FLAGS_DEBUG &quot;${CMAKE_C_FLAGS_DEBUG}&quot;) set(SKIP_OPENXR_APP ON) endif() get_external_for_plugin(Monado_vk) set(PLUGIN_NAME &quot;plugin.offload_rendering_server$</argsstring>
+        <name>string</name>
+        <param>
+          <type>REPLACE &quot;/RTC1&quot; &quot;&quot; CMAKE_C_FLAGS_DEBUG &quot;${CMAKE_C_FLAGS_DEBUG}&quot;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/offload_rendering_server/CMakeLists.txt" line="42" column="5" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/offload_rendering_server/CMakeLists.txt" bodystart="42" bodyend="48"/>
+      </memberdef>
+      <memberdef kind="function" id="plugins_2offload__rendering__server_2CMakeLists_8txt_1afb816cac680d68b3f16dd39bd175ce97" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>set</definition>
+        <argsstring>(CMAKE_CXX_STANDARD 17) set(CMAKE_CXX_STANDARD_REQUIRED ON) set(COMMON_SOURCES plugin.cpp offload_rendering_server.cpp pose_relay.cpp $</argsstring>
+        <name>set</name>
+        <param>
+          <type>CMAKE_CXX_STANDARD</type>
+          <declname>17</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/offload_rendering_server/CMakeLists.txt" line="50" column="1" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/offload_rendering_server/CMakeLists.txt" bodystart="50" bodyend="58"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="keywordflow">if</highlight><highlight class="normal">(ANDROID)</highlight></codeline>
+<codeline lineno="2"><highlight class="normal"><sp/><sp/><sp/><sp/>message(WARNING<sp/></highlight><highlight class="stringliteral">&quot;offload_rendering_server<sp/>is<sp/>not<sp/>available<sp/>for<sp/>Android&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="3"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="plugins_2ada_2device__rx_2CMakeLists_8txt_1ad344f05efd50cbd4cc06614001f1e236" kindref="member">set</ref>(USE_OFFLOAD_RENDERING_SERVER<sp/>OFF)</highlight></codeline>
+<codeline lineno="4"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">()</highlight></codeline>
+<codeline lineno="5"><highlight class="normal"><ref refid="plugins_2hand__tracking_2viewer_2CMakeLists_8txt_1a0148257e63112c2b25e0c020039c3ce9" kindref="member">endif</ref>()</highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#set(DUMP_FRAMES<sp/>ON)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/>Enable<sp/>CUDA<sp/>language<sp/>only<sp/>if<sp/>using<sp/>NVENC<sp/>encoder</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal">option(USE_NVENC_ENCODER<sp/></highlight><highlight class="stringliteral">&quot;Use<sp/>direct<sp/>NVENC<sp/>encoder<sp/>instead<sp/>of<sp/>FFmpeg&quot;</highlight><highlight class="normal"><sp/>OFF)</highlight></codeline>
+<codeline lineno="9"><highlight class="normal">option(USE_OPENXR_DEFINITIONS<sp/></highlight><highlight class="stringliteral">&quot;Use<sp/>the<sp/>OpenXR<sp/>pose<sp/>definitions&quot;</highlight><highlight class="normal"><sp/>OFF)</highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/>NVENC<sp/>is<sp/>required<sp/>for<sp/>windows,<sp/>ffmpeg<sp/>is<sp/>not<sp/>supported<sp/>on<sp/>that<sp/>platform.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(WIN32<sp/>OR<sp/>MSVC)</highlight></codeline>
+<codeline lineno="13"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="plugins_2ada_2device__rx_2CMakeLists_8txt_1ad344f05efd50cbd4cc06614001f1e236" kindref="member">set</ref>(USE_NVENC_ENCODER<sp/>ON)</highlight></codeline>
+<codeline lineno="14"><highlight class="normal"><ref refid="plugins_2hand__tracking_2viewer_2CMakeLists_8txt_1a0148257e63112c2b25e0c020039c3ce9" kindref="member">endif</ref>()</highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal">option(USE_COMBINED_ENCODING<sp/>&quot;Encode<sp/>both<sp/>eyes<sp/>in<sp/>one<sp/>side-by-side<sp/>NVENC<sp/>color<sp/>stream&quot;<sp/>${WIN32})</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(USE_COMBINED_ENCODING<sp/>AND<sp/>NOT<sp/>USE_NVENC_ENCODER)</highlight></codeline>
+<codeline lineno="18"><highlight class="normal"><sp/><sp/><sp/><sp/>message(FATAL_ERROR<sp/></highlight><highlight class="stringliteral">&quot;USE_COMBINED_ENCODING<sp/>requires<sp/>USE_NVENC_ENCODER&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="19"><highlight class="normal"><ref refid="plugins_2hand__tracking_2viewer_2CMakeLists_8txt_1a0148257e63112c2b25e0c020039c3ce9" kindref="member">endif</ref>()</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"><ref refid="plugins_2hand__tracking_2viewer_2CMakeLists_8txt_1ac8041c71a8e1783e44e7fd9865fa62bb" kindref="member">if</ref>(USE_NVENC_ENCODER)</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/>enable_language(CUDA)</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="plugins_2ada_2device__rx_2CMakeLists_8txt_1ad344f05efd50cbd4cc06614001f1e236" kindref="member">set</ref>(CMAKE_CUDA_STANDARD<sp/>17)</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="plugins_2ada_2device__rx_2CMakeLists_8txt_1ad344f05efd50cbd4cc06614001f1e236" kindref="member">set</ref>(CMAKE_CUDA_STANDARD_REQUIRED<sp/>ON)</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="plugins_2zed_2capture_2CMakeLists_8txt_1a08ebbc1c0ad7f3cedb877f38bfda207e" kindref="member">find_package</ref>(CUDAToolkit<sp/>REQUIRED)</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/>option(USE_AV1_ENCODING<sp/>&quot;Use<sp/>AV1<sp/>encoding<sp/>for<sp/>offload<sp/>rendering&quot;<sp/>OFF)</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/>option(USE_HEVC_ENCODING<sp/>&quot;Use<sp/>HEVC<sp/>encoding<sp/>for<sp/>offload<sp/>rendering&quot;<sp/>OFF)</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="plugins_2hand__tracking_2viewer_2CMakeLists_8txt_1ac8041c71a8e1783e44e7fd9865fa62bb" kindref="member">if</ref>(USE_AV1_ENCODING<sp/>AND<sp/>USE_HEVC_ENCODING)</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>message(FATAL_ERROR<sp/>&quot;Only<sp/>one<sp/>of<sp/>USE_AV1_ENCODING<sp/>or<sp/>USE_HEVC_ENCODING<sp/>can<sp/>be<sp/>specified,<sp/>not<sp/>both&quot;)</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="plugins_2hand__tracking_2viewer_2CMakeLists_8txt_1a0148257e63112c2b25e0c020039c3ce9" kindref="member">endif</ref>()</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="plugins_2hand__tracking_2viewer_2CMakeLists_8txt_1ac8041c71a8e1783e44e7fd9865fa62bb" kindref="member">if</ref>(NOT<sp/>USE_AV1_ENCODING<sp/>AND<sp/>NOT<sp/>USE_HEVC_ENCODING)</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="plugins_2ada_2device__rx_2CMakeLists_8txt_1ad344f05efd50cbd4cc06614001f1e236" kindref="member">set</ref>(USE_AV1_ENCODING<sp/>ON)</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="plugins_2hand__tracking_2viewer_2CMakeLists_8txt_1a0148257e63112c2b25e0c020039c3ce9" kindref="member">endif</ref>()</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><ref refid="plugins_2hand__tracking_2viewer_2CMakeLists_8txt_1a0148257e63112c2b25e0c020039c3ce9" kindref="member">endif</ref>()</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><ref refid="plugins_2hand__tracking_2viewer_2CMakeLists_8txt_1ac8041c71a8e1783e44e7fd9865fa62bb" kindref="member">if</ref>(MSVC)</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="preprocessor">#<sp/>Remove<sp/>/RTC1<sp/>from<sp/>debug<sp/>flags<sp/>-<sp/>incompatible<sp/>with<sp/>optimization<sp/>flags<sp/>in<sp/>CUDA</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="plugins_2offload__rendering__server_2CMakeLists_8txt_1a5a320a78f5d255e59cead61a98c7cbea" kindref="member">string</ref>(REPLACE<sp/></highlight><highlight class="stringliteral">&quot;/RTC1&quot;</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;&quot;</highlight><highlight class="normal"><sp/>CMAKE_CXX_FLAGS_DEBUG<sp/></highlight><highlight class="stringliteral">&quot;${CMAKE_CXX_FLAGS_DEBUG}&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="plugins_2offload__rendering__server_2CMakeLists_8txt_1a5a320a78f5d255e59cead61a98c7cbea" kindref="member">string</ref>(REPLACE<sp/></highlight><highlight class="stringliteral">&quot;/RTC1&quot;</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;&quot;</highlight><highlight class="normal"><sp/>CMAKE_C_FLAGS_DEBUG<sp/></highlight><highlight class="stringliteral">&quot;${CMAKE_C_FLAGS_DEBUG}&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="plugins_2ada_2device__rx_2CMakeLists_8txt_1ad344f05efd50cbd4cc06614001f1e236" kindref="member">set</ref>(SKIP_OPENXR_APP<sp/>ON)</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><ref refid="plugins_2hand__tracking_2viewer_2CMakeLists_8txt_1a0148257e63112c2b25e0c020039c3ce9" kindref="member">endif</ref>()</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"></highlight></codeline>
+<codeline lineno="46"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/>Note<sp/>that<sp/>the<sp/>offload<sp/>rendering<sp/>server<sp/>only<sp/>supports<sp/>Monado<sp/>(not<sp/>native)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><ref refid="plugins_2timewarp__vk_2monado_2CMakeLists_8txt_1a167e7adf52662f161cdd1ea498ee7bd4" kindref="member">get_external_for_plugin</ref>(Monado_vk)</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><ref refid="plugins_2ada_2device__rx_2CMakeLists_8txt_1ad344f05efd50cbd4cc06614001f1e236" kindref="member">set</ref>(PLUGIN_NAME<sp/></highlight><highlight class="stringliteral">&quot;plugin.offload_rendering_server${ILLIXR_BUILD_SUFFIX}&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"></highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><ref refid="plugins_2ada_2device__rx_2CMakeLists_8txt_1ad344f05efd50cbd4cc06614001f1e236" kindref="member">set</ref>(CMAKE_CXX_STANDARD<sp/>17)</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><ref refid="plugins_2ada_2device__rx_2CMakeLists_8txt_1ad344f05efd50cbd4cc06614001f1e236" kindref="member">set</ref>(CMAKE_CXX_STANDARD_REQUIRED<sp/>ON)</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"></highlight></codeline>
+<codeline lineno="53"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/>Common<sp/>source<sp/>files</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><ref refid="plugins_2ada_2device__rx_2CMakeLists_8txt_1ad344f05efd50cbd4cc06614001f1e236" kindref="member">set</ref>(COMMON_SOURCES</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/>plugin.cpp</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/>offload_rendering_server.cpp</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/>pose_relay.cpp</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/utils/serialization/misc.cpp</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/utils/serialization/<ref refid="namespaceILLIXR_1_1coordinates_1a5cb820c67b0dc2c7dc6107573fca4e46" kindref="member">frame</ref>.cpp</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/utils/serialization/combined_pose.cpp</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/utils/serialization/hand_pose.cpp</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/utils/serialization/hand_interaction_pose.cpp</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/utils/serialization/head_pose.cpp</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/utils/serialization/palm_pose.cpp</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/utils/serialization/<ref refid="structhmd__config" kindref="compound">hmd_config</ref>.cpp</highlight></codeline>
+<codeline lineno="66"><highlight class="normal">)</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"></highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><ref refid="plugins_2ada_2device__rx_2CMakeLists_8txt_1ad344f05efd50cbd4cc06614001f1e236" kindref="member">set</ref>(COMMON_HEADERS</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/>plugin.hpp</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/>offload_rendering_server.hpp</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/>pose_relay.hpp</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/data_format/<ref refid="namespaceILLIXR_1_1coordinates_1a5cb820c67b0dc2c7dc6107573fca4e46" kindref="member">frame</ref>.hpp</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/data_format/<ref refid="structhmd__config" kindref="compound">hmd_config</ref>.hpp</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/data_format/latency_data.hpp</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/data_format/pose_prediction.hpp</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/data_format/poses/combined_pose.hpp</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/data_format/poses/hand_pose.hpp</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/data_format/poses/hand_interaction_pose.hpp</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/data_format/poses/head_pose.hpp</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/data_format/poses/palm_pose.hpp</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/data_format/poses/pose_base.hpp</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization/<ref refid="namespaceILLIXR_1_1coordinates_1a5cb820c67b0dc2c7dc6107573fca4e46" kindref="member">frame</ref>.hpp</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization/misc.hpp</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization/combined_pose.hpp</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization/hand_pose.hpp</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization/hand_interaction_pose.hpp</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization/head_pose.hpp</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization/<ref refid="structhmd__config" kindref="compound">hmd_config</ref>.hpp</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization/palm_pose.hpp</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/data_format/serialization/pose_base.hpp</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/phonebook.hpp</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/threadloop.hpp</highlight></codeline>
+<codeline lineno="94"><highlight class="normal">)</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"></highlight></codeline>
+<codeline lineno="96"><highlight class="normal"></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(USE_NVENC_ENCODER)</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="preprocessor">#<sp/>NVENC<sp/>encoder<sp/>sources</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="plugins_2ada_2device__rx_2CMakeLists_8txt_1ad344f05efd50cbd4cc06614001f1e236" kindref="member">set</ref>(NVENC_SOURCES</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>nvenc/nvenc_encoder.cpp</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>nvenc/color_convert.cu</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/>)</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="plugins_2hand__tracking_2viewer_2CMakeLists_8txt_1ac8041c71a8e1783e44e7fd9865fa62bb" kindref="member">if</ref>(DUMP_FRAMES)</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="plugins_2ada_2device__rx_2CMakeLists_8txt_1ad344f05efd50cbd4cc06614001f1e236" kindref="member">set</ref>(FRAME_DUMPER_FILES</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>nvenc/frame_saver.cpp</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>nvenc/frame_saver.hpp</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>nvenc/frame_saver_integration.hpp</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>)</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="src_2CMakeLists_8txt_1a2fe45b90145f6e2cbf05a107cde87135" kindref="member">else</ref>()</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="plugins_2ada_2device__rx_2CMakeLists_8txt_1ad344f05efd50cbd4cc06614001f1e236" kindref="member">set</ref>(FRAME_DUMPER_FILES<sp/>&quot;&quot;)</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="plugins_2hand__tracking_2viewer_2CMakeLists_8txt_1a0148257e63112c2b25e0c020039c3ce9" kindref="member">endif</ref>()</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="plugins_2ada_2device__rx_2CMakeLists_8txt_1ad344f05efd50cbd4cc06614001f1e236" kindref="member">set</ref>(NVENC_HEADERS</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>nvenc/nvenc_encoder.hpp</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"><sp/><sp/><sp/><sp/>)</highlight></codeline>
+<codeline lineno="114"><highlight class="normal"></highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="plugins_2ada_2device__rx_2CMakeLists_8txt_1a01a41021f28d6a6f1f0894dc5a7bc38a" kindref="member">add_library</ref>(${PLUGIN_NAME}<sp/>SHARED</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${COMMON_SOURCES}</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${COMMON_HEADERS}</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${NVENC_SOURCES}</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${NVENC_HEADERS}</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${FRAME_DUMPER_FILES}</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/>)</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"></highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/>#<sp/>Define<sp/>NVENC_ENCODER<sp/>macro</highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/><sp/><sp/>target_compile_definitions(${PLUGIN_NAME}<sp/>PRIVATE<sp/>NVENC_ENCODER<sp/><ref refid="pose__relay_8hpp_1ad64e1d0b801227f102e19be3c355abf3" kindref="member">ENABLE_MONADO</ref>)</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"></highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(DUMP_FRAMES)</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>target_compile_definitions(${PLUGIN_NAME}<sp/>PRIVATE<sp/>DUMP_FRAMES)</highlight></codeline>
+<codeline lineno="128"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="plugins_2hand__tracking_2viewer_2CMakeLists_8txt_1a0148257e63112c2b25e0c020039c3ce9" kindref="member">endif</ref>()</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="preprocessor">#<sp/>Set<sp/>CUDA<sp/>properties</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="130"><highlight class="normal"></highlight><highlight class="preprocessor"><sp/><sp/><sp/><sp/>#<sp/>Set<sp/>CUDA<sp/>architectures<sp/>(75=Turing,<sp/>86=Ampere,<sp/>89=Ada)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/>set_target_properties(${PLUGIN_NAME}<sp/>PROPERTIES</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>CUDA_SEPARABLE_COMPILATION<sp/>ON</highlight></codeline>
+<codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>CUDA_RESOLVE_DEVICE_SYMBOLS<sp/>ON</highlight></codeline>
+<codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>CUDA_ARCHITECTURES<sp/></highlight><highlight class="stringliteral">&quot;75;86;89&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/>)</highlight></codeline>
+<codeline lineno="136"><highlight class="normal"></highlight></codeline>
+<codeline lineno="137"><highlight class="normal"><sp/><sp/><sp/><sp/>#<sp/>CXX-only<sp/>compile<sp/>options<sp/>(not<sp/>CUDA)</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(WIN32<sp/>OR<sp/>MSVC)</highlight></codeline>
+<codeline lineno="139"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(MSVC)</highlight></codeline>
+<codeline lineno="140"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>target_compile_options(${PLUGIN_NAME}<sp/>PRIVATE</highlight></codeline>
+<codeline lineno="141"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>$&lt;$&lt;COMPILE_LANGUAGE:CXX&gt;:/W3&gt;</highlight></codeline>
+<codeline lineno="142"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>$&lt;$&lt;COMPILE_LANGUAGE:CXX&gt;:/EHsc&gt;</highlight></codeline>
+<codeline lineno="143"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>$&lt;$&lt;COMPILE_LANGUAGE:CXX&gt;:${MSVC_RUNTIME_FLAG}&gt;</highlight></codeline>
+<codeline lineno="144"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>$&lt;$&lt;COMPILE_LANGUAGE:CXX&gt;:/DNOMINMAX&gt;</highlight></codeline>
+<codeline lineno="145"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>$&lt;$&lt;COMPILE_LANGUAGE:CXX&gt;:/DWIN32_LEAN_AND_MEAN&gt;</highlight></codeline>
+<codeline lineno="146"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>)</highlight></codeline>
+<codeline lineno="147"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal">()</highlight></codeline>
+<codeline lineno="148"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>target_compile_options(${PLUGIN_NAME}<sp/>PRIVATE</highlight></codeline>
+<codeline lineno="149"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>$&lt;$&lt;COMPILE_LANGUAGE:CXX&gt;:-DNOMINMAX&gt;</highlight></codeline>
+<codeline lineno="150"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>$&lt;$&lt;COMPILE_LANGUAGE:CXX&gt;:-DWIN32_LEAN_AND_MEAN&gt;</highlight></codeline>
+<codeline lineno="151"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>)</highlight></codeline>
+<codeline lineno="152"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="plugins_2hand__tracking_2viewer_2CMakeLists_8txt_1a0148257e63112c2b25e0c020039c3ce9" kindref="member">endif</ref>()</highlight></codeline>
+<codeline lineno="153"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="plugins_2hand__tracking_2viewer_2CMakeLists_8txt_1a0148257e63112c2b25e0c020039c3ce9" kindref="member">endif</ref>()</highlight></codeline>
+<codeline lineno="154"><highlight class="normal"></highlight></codeline>
+<codeline lineno="155"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="plugins_2ada_2device__rx_2CMakeLists_8txt_1ad344f05efd50cbd4cc06614001f1e236" kindref="member">set</ref>(CODEC_SDK_FOUND<sp/>false)</highlight></codeline>
+<codeline lineno="156"><highlight class="normal"></highlight></codeline>
+<codeline lineno="157"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="plugins_2hand__tracking_2viewer_2CMakeLists_8txt_1ac8041c71a8e1783e44e7fd9865fa62bb" kindref="member">if</ref>(DEFINED<sp/>ENV{VIDEO_CODEC_SDK_PATH})</highlight></codeline>
+<codeline lineno="158"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(IS_DIRECTORY<sp/>$ENV{VIDEO_CODEC_SDK_PATH})</highlight></codeline>
+<codeline lineno="159"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="plugins_2ground__truth__slam_2CMakeLists_8txt_1a82fc0be41f2f49c1e7e89ae2ba5ff2dc" kindref="member">target_include_directories</ref>(${PLUGIN_NAME}<sp/>PUBLIC</highlight></codeline>
+<codeline lineno="160"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>$ENV{VIDEO_CODEC_SDK_PATH}/Interface</highlight></codeline>
+<codeline lineno="161"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>)</highlight></codeline>
+<codeline lineno="162"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="plugins_2ada_2device__rx_2CMakeLists_8txt_1ad344f05efd50cbd4cc06614001f1e236" kindref="member">set</ref>(CODEC_SDK_FOUND<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="163"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal">()</highlight></codeline>
+<codeline lineno="164"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>message(WARNING<sp/></highlight><highlight class="stringliteral">&quot;The<sp/>VIDEO_CODEC_SDK_PATH<sp/>environment<sp/>variable<sp/>was<sp/>set,<sp/>but<sp/>is<sp/>not<sp/>a<sp/>valid<sp/>directory.&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="165"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="plugins_2hand__tracking_2viewer_2CMakeLists_8txt_1a0148257e63112c2b25e0c020039c3ce9" kindref="member">endif</ref>()</highlight></codeline>
+<codeline lineno="166"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="plugins_2hand__tracking_2viewer_2CMakeLists_8txt_1a0148257e63112c2b25e0c020039c3ce9" kindref="member">endif</ref>()</highlight></codeline>
+<codeline lineno="167"><highlight class="normal"></highlight></codeline>
+<codeline lineno="168"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="plugins_2hand__tracking_2viewer_2CMakeLists_8txt_1ac8041c71a8e1783e44e7fd9865fa62bb" kindref="member">if</ref>(NOT<sp/>CODEC_SDK_FOUND<sp/>AND<sp/>VIDEO_CODEC_SDK_PATH)</highlight></codeline>
+<codeline lineno="169"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="plugins_2hand__tracking_2viewer_2CMakeLists_8txt_1ac8041c71a8e1783e44e7fd9865fa62bb" kindref="member">if</ref>(IS_DIRECTORY<sp/>${VIDEO_CODEC_SDK_PATH})</highlight></codeline>
+<codeline lineno="170"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="plugins_2ground__truth__slam_2CMakeLists_8txt_1a82fc0be41f2f49c1e7e89ae2ba5ff2dc" kindref="member">target_include_directories</ref>(${PLUGIN_NAME}<sp/>PUBLIC</highlight></codeline>
+<codeline lineno="171"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${VIDEO_CODEC_SDK_PATH}/Interface</highlight></codeline>
+<codeline lineno="172"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>)</highlight></codeline>
+<codeline lineno="173"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="plugins_2ada_2device__rx_2CMakeLists_8txt_1ad344f05efd50cbd4cc06614001f1e236" kindref="member">set</ref>(CODEC_SDK_FOUND<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="174"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal">()</highlight></codeline>
+<codeline lineno="175"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>message(WARNING<sp/></highlight><highlight class="stringliteral">&quot;The<sp/>VIDEO_CODEC_SDK_PATH<sp/>was<sp/>given<sp/>on<sp/>the<sp/>command<sp/>line,<sp/>but<sp/>it<sp/>is<sp/>not<sp/>a<sp/>directory.&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="176"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="plugins_2hand__tracking_2viewer_2CMakeLists_8txt_1a0148257e63112c2b25e0c020039c3ce9" kindref="member">endif</ref>()</highlight></codeline>
+<codeline lineno="177"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="plugins_2hand__tracking_2viewer_2CMakeLists_8txt_1a0148257e63112c2b25e0c020039c3ce9" kindref="member">endif</ref>()</highlight></codeline>
+<codeline lineno="178"><highlight class="normal"></highlight></codeline>
+<codeline lineno="179"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="plugins_2hand__tracking_2viewer_2CMakeLists_8txt_1ac8041c71a8e1783e44e7fd9865fa62bb" kindref="member">if</ref>(UNIX)</highlight></codeline>
+<codeline lineno="180"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>find_path(NVENC_INCLUDE_DIR<sp/>nvEncodeAPI.h</highlight></codeline>
+<codeline lineno="181"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>PATHS</highlight></codeline>
+<codeline lineno="182"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>/usr/local/cuda/include</highlight></codeline>
+<codeline lineno="183"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>/opt/nvidia/video-codec-sdk/Interface</highlight></codeline>
+<codeline lineno="184"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${CMAKE_CURRENT_SOURCE_DIR}/../external/Video_Codec_SDK/Interface</highlight></codeline>
+<codeline lineno="185"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>$ENV{VIDEO_CODEC_SDK_PATH}/Interface</highlight></codeline>
+<codeline lineno="186"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${VIDEO_CODEC_SDK_PATH}/Interface</highlight></codeline>
+<codeline lineno="187"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>)</highlight></codeline>
+<codeline lineno="188"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(NVENC_INCLUDE_DIR)</highlight></codeline>
+<codeline lineno="189"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="plugins_2ground__truth__slam_2CMakeLists_8txt_1a82fc0be41f2f49c1e7e89ae2ba5ff2dc" kindref="member">target_include_directories</ref>(${PLUGIN_NAME}<sp/>PUBLIC<sp/>${NVENC_INCLUDE_DIR})</highlight></codeline>
+<codeline lineno="190"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="plugins_2ada_2device__rx_2CMakeLists_8txt_1ad344f05efd50cbd4cc06614001f1e236" kindref="member">set</ref>(CODEC_SDK_FOUND<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="191"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal">()</highlight></codeline>
+<codeline lineno="192"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>message(FATAL_ERROR<sp/></highlight><highlight class="stringliteral">&quot;NVENC<sp/>headers<sp/>not<sp/>found.<sp/>Set<sp/>VIDEO_CODEC_SDK_PATH<sp/>environment<sp/>variable.&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="193"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="plugins_2hand__tracking_2viewer_2CMakeLists_8txt_1a0148257e63112c2b25e0c020039c3ce9" kindref="member">endif</ref>()</highlight></codeline>
+<codeline lineno="194"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="plugins_2hand__tracking_2viewer_2CMakeLists_8txt_1a0148257e63112c2b25e0c020039c3ce9" kindref="member">endif</ref>()</highlight></codeline>
+<codeline lineno="195"><highlight class="normal"></highlight></codeline>
+<codeline lineno="196"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="plugins_2hand__tracking_2viewer_2CMakeLists_8txt_1ac8041c71a8e1783e44e7fd9865fa62bb" kindref="member">if</ref>(NOT<sp/>CODEC_SDK_FOUND)</highlight></codeline>
+<codeline lineno="197"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>message(FATAL_ERROR<sp/>&quot;VIDEO_CODEC_SDK_PATH<sp/>not<sp/><ref refid="plugins_2ada_2device__rx_2CMakeLists_8txt_1ad344f05efd50cbd4cc06614001f1e236" kindref="member">set</ref>.<sp/>Set<sp/>it<sp/>to<sp/>your<sp/>Video<sp/>Codec<sp/>SDK<sp/>location.&quot;)</highlight></codeline>
+<codeline lineno="198"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="plugins_2hand__tracking_2viewer_2CMakeLists_8txt_1a0148257e63112c2b25e0c020039c3ce9" kindref="member">endif</ref>()</highlight></codeline>
+<codeline lineno="199"><highlight class="normal"></highlight></codeline>
+<codeline lineno="200"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="plugins_2ground__truth__slam_2CMakeLists_8txt_1a82fc0be41f2f49c1e7e89ae2ba5ff2dc" kindref="member">target_include_directories</ref>(${PLUGIN_NAME}<sp/>PUBLIC</highlight></codeline>
+<codeline lineno="201"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${CUDAToolkit_INCLUDE_DIRS}</highlight></codeline>
+<codeline lineno="202"><highlight class="normal"><sp/><sp/><sp/><sp/>)</highlight></codeline>
+<codeline lineno="203"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="plugins_2boba__immersive_2CMakeLists_8txt_1a1f264771ca69b8cd57cd3a75e9c34929" kindref="member">target_link_libraries</ref>(${PLUGIN_NAME}<sp/>PUBLIC</highlight></codeline>
+<codeline lineno="204"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>CUDA::cudart</highlight></codeline>
+<codeline lineno="205"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>CUDA::cuda_driver</highlight></codeline>
+<codeline lineno="206"><highlight class="normal"><sp/><sp/><sp/><sp/>)</highlight></codeline>
+<codeline lineno="207"><highlight class="normal"><sp/><sp/><sp/><sp/>message(STATUS<sp/></highlight><highlight class="stringliteral">&quot;Building<sp/>offload_rendering_server<sp/>with<sp/>NVENC<sp/>encoder<sp/>(no<sp/>FFmpeg)&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="208"><highlight class="normal"><sp/><sp/><sp/><sp/>add_compile_definitions(USING_MONADO)</highlight></codeline>
+<codeline lineno="209"><highlight class="normal"></highlight><highlight class="keywordflow">else</highlight><highlight class="normal">()</highlight></codeline>
+<codeline lineno="210"><highlight class="normal"></highlight><highlight class="preprocessor"><sp/><sp/><sp/><sp/>#<sp/>ffmpeg</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="211"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="plugins_2timewarp__vk_2monado_2CMakeLists_8txt_1a167e7adf52662f161cdd1ea498ee7bd4" kindref="member">get_external_for_plugin</ref>(ILLIXR_FFmpeg)</highlight></codeline>
+<codeline lineno="212"><highlight class="normal"></highlight></codeline>
+<codeline lineno="213"><highlight class="normal"><sp/><sp/><sp/><sp/>add_compile_definitions(ILLIXR_LIBAV)</highlight></codeline>
+<codeline lineno="214"><highlight class="normal"></highlight></codeline>
+<codeline lineno="215"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="plugins_2ada_2device__rx_2CMakeLists_8txt_1a01a41021f28d6a6f1f0894dc5a7bc38a" kindref="member">add_library</ref>(${PLUGIN_NAME}<sp/>SHARED</highlight></codeline>
+<codeline lineno="216"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${COMMON_SOURCES}</highlight></codeline>
+<codeline lineno="217"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${COMMON_HEADERS}</highlight></codeline>
+<codeline lineno="218"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/vk/display_provider.hpp</highlight></codeline>
+<codeline lineno="219"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/vk/ffmpeg_utils.hpp</highlight></codeline>
+<codeline lineno="220"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/vk/render_pass.hpp</highlight></codeline>
+<codeline lineno="221"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/vk/vulkan_utils.hpp</highlight></codeline>
+<codeline lineno="222"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${CMAKE_SOURCE_DIR}/include/illixr/vk/vk_extension_request.hpp</highlight></codeline>
+<codeline lineno="223"><highlight class="normal"><sp/><sp/><sp/><sp/>)</highlight></codeline>
+<codeline lineno="224"><highlight class="normal"></highlight></codeline>
+<codeline lineno="225"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(TARGET<sp/>ILLIXR_FFmpeg_ext)</highlight></codeline>
+<codeline lineno="226"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>add_dependencies(${PLUGIN_NAME}<sp/>ILLIXR_FFmpeg_ext)</highlight></codeline>
+<codeline lineno="227"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="plugins_2hand__tracking_2viewer_2CMakeLists_8txt_1a0148257e63112c2b25e0c020039c3ce9" kindref="member">endif</ref>()</highlight></codeline>
+<codeline lineno="228"><highlight class="normal"></highlight></codeline>
+<codeline lineno="229"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="plugins_2boba__immersive_2CMakeLists_8txt_1a1f264771ca69b8cd57cd3a75e9c34929" kindref="member">target_link_libraries</ref>(${PLUGIN_NAME}<sp/>PUBLIC</highlight></codeline>
+<codeline lineno="230"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${libavdevice_illixr_LIBRARIES}</highlight></codeline>
+<codeline lineno="231"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${libavformat_illixr_LIBRARIES}</highlight></codeline>
+<codeline lineno="232"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${libavcodec_illixr_LIBRARIES}</highlight></codeline>
+<codeline lineno="233"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${libavutil_illixr_LIBRARIES}</highlight></codeline>
+<codeline lineno="234"><highlight class="normal"><sp/><sp/><sp/><sp/>)</highlight></codeline>
+<codeline lineno="235"><highlight class="normal"></highlight></codeline>
+<codeline lineno="236"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="plugins_2ground__truth__slam_2CMakeLists_8txt_1a82fc0be41f2f49c1e7e89ae2ba5ff2dc" kindref="member">target_include_directories</ref>(${PLUGIN_NAME}<sp/>PUBLIC<sp/>${libavcodec_illixr_INCLUDE_DIRS})</highlight></codeline>
+<codeline lineno="237"><highlight class="normal"></highlight></codeline>
+<codeline lineno="238"><highlight class="normal"><sp/><sp/><sp/><sp/>message(STATUS<sp/></highlight><highlight class="stringliteral">&quot;Building<sp/>offload_rendering_server<sp/>with<sp/>FFmpeg<sp/>encoder&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="239"><highlight class="normal"><ref refid="plugins_2hand__tracking_2viewer_2CMakeLists_8txt_1a0148257e63112c2b25e0c020039c3ce9" kindref="member">endif</ref>()</highlight></codeline>
+<codeline lineno="240"><highlight class="normal"></highlight></codeline>
+<codeline lineno="241"><highlight class="normal"><ref refid="plugins_2boba__immersive_2CMakeLists_8txt_1a1f264771ca69b8cd57cd3a75e9c34929" kindref="member">target_link_libraries</ref>(${PLUGIN_NAME}<sp/>PUBLIC</highlight></codeline>
+<codeline lineno="242"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>spdlog::spdlog</highlight></codeline>
+<codeline lineno="243"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>illixr_vulkan_utils</highlight></codeline>
+<codeline lineno="244"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Eigen3::Eigen</highlight></codeline>
+<codeline lineno="245"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${Vulkan_LIBRARIES}</highlight></codeline>
+<codeline lineno="246"><highlight class="normal">)</highlight></codeline>
+<codeline lineno="247"><highlight class="normal"></highlight></codeline>
+<codeline lineno="248"><highlight class="normal">target_compile_definitions(${PLUGIN_NAME}<sp/>PRIVATE<sp/>MONADO_REQUIRED)</highlight></codeline>
+<codeline lineno="249"><highlight class="normal"></highlight></codeline>
+<codeline lineno="250"><highlight class="normal"></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(USE_NVENC_ENCODER<sp/>AND<sp/>USE_AV1_ENCODING)</highlight></codeline>
+<codeline lineno="251"><highlight class="normal"><sp/><sp/><sp/><sp/>target_compile_definitions(${PLUGIN_NAME}<sp/>PRIVATE<sp/>USE_AV1)</highlight></codeline>
+<codeline lineno="252"><highlight class="normal"><ref refid="plugins_2hand__tracking_2viewer_2CMakeLists_8txt_1a0148257e63112c2b25e0c020039c3ce9" kindref="member">endif</ref>()</highlight></codeline>
+<codeline lineno="253"><highlight class="normal"></highlight></codeline>
+<codeline lineno="254"><highlight class="normal"><ref refid="plugins_2ground__truth__slam_2CMakeLists_8txt_1a82fc0be41f2f49c1e7e89ae2ba5ff2dc" kindref="member">target_include_directories</ref>(${PLUGIN_NAME}<sp/>BEFORE<sp/>PUBLIC</highlight></codeline>
+<codeline lineno="255"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${Vulkan_INCLUDE_DIRS}</highlight></codeline>
+<codeline lineno="256"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${ILLIXR_SOURCE_DIR}/include</highlight></codeline>
+<codeline lineno="257"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${XRT_SOURCE_DIR}/src/xrt</highlight></codeline>
+<codeline lineno="258"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${XRT_SOURCE_DIR}/src/xrt/include</highlight></codeline>
+<codeline lineno="259"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>${XRT_SOURCE_DIR}/src/xrt/auxiliary</highlight></codeline>
+<codeline lineno="260"><highlight class="normal">)</highlight></codeline>
+<codeline lineno="261"><highlight class="normal"></highlight></codeline>
+<codeline lineno="262"><highlight class="normal"><ref refid="plugins_2ground__truth__slam_2CMakeLists_8txt_1a82fc0be41f2f49c1e7e89ae2ba5ff2dc" kindref="member">target_include_directories</ref>(${PLUGIN_NAME}<sp/>PUBLIC<sp/>${CMAKE_CURRENT_SOURCE_DIR})</highlight></codeline>
+<codeline lineno="263"><highlight class="normal">set_target_properties(${PLUGIN_NAME}<sp/>PROPERTIES<sp/>OUTPUT_NAME<sp/>${PLUGIN_NAME})</highlight></codeline>
+<codeline lineno="264"><highlight class="normal"></highlight></codeline>
+<codeline lineno="265"><highlight class="normal"></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(USE_COMBINED_ENCODING)</highlight></codeline>
+<codeline lineno="266"><highlight class="normal"><sp/><sp/><sp/><sp/>target_compile_definitions(${PLUGIN_NAME}<sp/>PRIVATE<sp/>COMBINED_ENCODING)</highlight></codeline>
+<codeline lineno="267"><highlight class="normal"><ref refid="plugins_2hand__tracking_2viewer_2CMakeLists_8txt_1a0148257e63112c2b25e0c020039c3ce9" kindref="member">endif</ref>()</highlight></codeline>
+<codeline lineno="268"><highlight class="normal"></highlight></codeline>
+<codeline lineno="269"><highlight class="normal"><ref refid="plugins_2hand__tracking_2viewer_2CMakeLists_8txt_1ac8041c71a8e1783e44e7fd9865fa62bb" kindref="member">if</ref>(WIN32<sp/>OR<sp/>MSVC)</highlight></codeline>
+<codeline lineno="270"><highlight class="normal"><sp/><sp/><sp/><sp/>target_compile_definitions(${PLUGIN_NAME}<sp/>PRIVATE</highlight></codeline>
+<codeline lineno="271"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>BUILDING_LIBRARY</highlight></codeline>
+<codeline lineno="272"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>VK_USE_PLATFORM_WIN32_KHR</highlight></codeline>
+<codeline lineno="273"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>WIN32_LEAN_AND_MEAN</highlight></codeline>
+<codeline lineno="274"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>NOMINMAX</highlight></codeline>
+<codeline lineno="275"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>NVENC_ENCODER</highlight></codeline>
+<codeline lineno="276"><highlight class="normal"><sp/><sp/><sp/><sp/>)</highlight></codeline>
+<codeline lineno="277"><highlight class="normal"></highlight><highlight class="keywordflow">else</highlight><highlight class="normal">()</highlight></codeline>
+<codeline lineno="278"><highlight class="normal"><sp/><sp/><sp/><sp/>target_compile_definitions(${PLUGIN_NAME}<sp/>PRIVATE</highlight></codeline>
+<codeline lineno="279"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>VK_USE_PLATFORM_XLIB_KHR</highlight></codeline>
+<codeline lineno="280"><highlight class="normal"><sp/><sp/><sp/><sp/>)</highlight></codeline>
+<codeline lineno="281"><highlight class="normal"></highlight></codeline>
+<codeline lineno="282"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="plugins_2boba__immersive_2CMakeLists_8txt_1a1f264771ca69b8cd57cd3a75e9c34929" kindref="member">target_link_libraries</ref>(${PLUGIN_NAME}<sp/>PUBLIC</highlight></codeline>
+<codeline lineno="283"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dl</highlight></codeline>
+<codeline lineno="284"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>pthread</highlight></codeline>
+<codeline lineno="285"><highlight class="normal"><sp/><sp/><sp/><sp/>)</highlight></codeline>
+<codeline lineno="286"><highlight class="normal"></highlight></codeline>
+<codeline lineno="287"><highlight class="normal"><sp/><sp/><sp/><sp/>set_property(TARGET<sp/>${PLUGIN_NAME}<sp/>PROPERTY<sp/>POSITION_INDEPENDENT_CODE<sp/>ON)</highlight></codeline>
+<codeline lineno="288"><highlight class="normal"><ref refid="plugins_2hand__tracking_2viewer_2CMakeLists_8txt_1a0148257e63112c2b25e0c020039c3ce9" kindref="member">endif</ref>()</highlight></codeline>
+<codeline lineno="289"><highlight class="normal"></highlight></codeline>
+<codeline lineno="290"><highlight class="normal">target_compile_definitions(${PLUGIN_NAME}<sp/>PUBLIC<sp/><ref refid="pose__relay_8hpp_1ad64e1d0b801227f102e19be3c355abf3" kindref="member">ENABLE_MONADO</ref>)</highlight></codeline>
+<codeline lineno="291"><highlight class="normal"></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(USE_OPENXR_DEFINITIONS)</highlight></codeline>
+<codeline lineno="292"><highlight class="normal"><sp/><sp/><sp/><sp/>target_compile_definitions(${PLUGIN_NAME}<sp/>PUBLIC<sp/><ref refid="oxr__relay_8hpp_1a82ae08f7d4c0bddfe4e1ee581c0c2086" kindref="member">USING_OPENXR</ref><sp/>OPENXR_CLIENT)</highlight></codeline>
+<codeline lineno="293"><highlight class="normal"><ref refid="plugins_2hand__tracking_2viewer_2CMakeLists_8txt_1a0148257e63112c2b25e0c020039c3ce9" kindref="member">endif</ref>()</highlight></codeline>
+<codeline lineno="294"><highlight class="normal">get_target_property(INC_DIRS<sp/>${PLUGIN_NAME}<sp/>INCLUDE_DIRECTORIES)</highlight></codeline>
+<codeline lineno="295"><highlight class="normal"><ref refid="plugins_2boba__immersive_2CMakeLists_8txt_1a9e36ef4899162218fcaad48fe7924893" kindref="member">install</ref>(TARGETS<sp/>${PLUGIN_NAME}<sp/>DESTINATION<sp/>lib)</highlight></codeline>
+<codeline lineno="296"><highlight class="normal"></highlight></codeline>
+<codeline lineno="297"><highlight class="normal">#<sp/>Print<sp/>configuration<sp/>summary</highlight></codeline>
+<codeline lineno="298"><highlight class="normal">message(STATUS<sp/></highlight><highlight class="stringliteral">&quot;===<sp/>offload_rendering_server<sp/>Configuration<sp/>===&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="299"><highlight class="normal">message(STATUS<sp/></highlight><highlight class="stringliteral">&quot;<sp/><sp/>Encoder<sp/>backend:<sp/>${USE_NVENC_ENCODER}&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="300"><highlight class="normal">message(STATUS<sp/></highlight><highlight class="stringliteral">&quot;<sp/><sp/>Combined<sp/>encoding:<sp/>${USE_COMBINED_ENCODING}&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="301"><highlight class="normal"></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(USE_NVENC_ENCODER)</highlight></codeline>
+<codeline lineno="302"><highlight class="normal"><sp/><sp/><sp/><sp/>message(STATUS<sp/></highlight><highlight class="stringliteral">&quot;<sp/><sp/><sp/><sp/>-<sp/>Using<sp/>direct<sp/>NVENC<sp/>(no<sp/>FFmpeg)&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="303"><highlight class="normal"></highlight><highlight class="keywordflow">else</highlight><highlight class="normal">()</highlight></codeline>
+<codeline lineno="304"><highlight class="normal"><sp/><sp/><sp/><sp/>message(STATUS<sp/></highlight><highlight class="stringliteral">&quot;<sp/><sp/><sp/><sp/>-<sp/>Using<sp/>FFmpeg<sp/>with<sp/>NVENC&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="305"><highlight class="normal"><ref refid="plugins_2hand__tracking_2viewer_2CMakeLists_8txt_1a0148257e63112c2b25e0c020039c3ce9" kindref="member">endif</ref>()</highlight></codeline>
+<codeline lineno="306"><highlight class="normal">message(STATUS<sp/>&quot;<sp/><sp/>Platform:<sp/>${CMAKE_SYSTEM_NAME}</highlight><highlight class="stringliteral">&quot;)</highlight></codeline>
+<codeline lineno="307"><highlight class="stringliteral">message(STATUS<sp/>&quot;</highlight><highlight class="normal">=============================================</highlight><highlight class="stringliteral">&quot;)</highlight></codeline>
+    </programlisting>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/offload_rendering_server/CMakeLists.txt"/>
+  </compounddef>
+</doxygen>

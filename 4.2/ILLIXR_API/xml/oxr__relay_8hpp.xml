@@ -1,0 +1,757 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="oxr__relay_8hpp" kind="file" language="C++">
+    <compoundname>oxr_relay.hpp</compoundname>
+    <includes refid="latency__data_8hpp" local="yes">illixr/data_format/latency_data.hpp</includes>
+    <includes refid="poses_2combined__pose_8hpp" local="yes">illixr/data_format/poses/combined_pose.hpp</includes>
+    <includes refid="switchboard_8hpp" local="yes">illixr/switchboard.hpp</includes>
+    <includes refid="threadloop_8hpp" local="yes">illixr/threadloop.hpp</includes>
+    <includes local="no">array</includes>
+    <includes local="no">atomic</includes>
+    <includes local="no">map</includes>
+    <includes local="no">mutex</includes>
+    <includes local="no">openxr/openxr.h</includes>
+    <includedby refid="oxr__relay_8cpp" local="yes">/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.cpp</includedby>
+    <incdepgraph>
+      <node id="41">
+        <label>cpu_timer.hpp</label>
+        <link refid="cpu__timer_8hpp"/>
+        <childnode refid="42" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="51" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>illixr/data_format/latency_data.hpp</label>
+        <link refid="latency__data_8hpp"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="38" relation="include">
+        </childnode>
+      </node>
+      <node id="39">
+        <label>illixr/data_format/poses/combined_pose.hpp</label>
+        <link refid="poses_2combined__pose_8hpp"/>
+      </node>
+      <node id="42">
+        <label>error_util.hpp</label>
+        <link refid="error__util_8hpp"/>
+        <childnode refid="43" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>export.hpp</label>
+        <link refid="export_8hpp"/>
+      </node>
+      <node id="43">
+        <label>global_module_defs.hpp</label>
+        <link refid="global__module__defs_8hpp"/>
+        <childnode refid="44" relation="include">
+        </childnode>
+        <childnode refid="47" relation="include">
+        </childnode>
+        <childnode refid="49" relation="include">
+        </childnode>
+        <childnode refid="50" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+      </node>
+      <node id="44">
+        <label>headset_fov.hpp</label>
+        <link refid="headset__fov_8hpp"/>
+        <childnode refid="45" relation="include">
+        </childnode>
+        <childnode refid="46" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>managed_thread.hpp</label>
+        <link refid="managed__thread_8hpp"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>network/network_backend.hpp</label>
+        <link refid="network__backend_8hpp"/>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+      </node>
+      <node id="22">
+        <label>topic_config.hpp</label>
+        <link refid="topic__config_8hpp"/>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>illixr/phonebook.hpp</label>
+        <link refid="phonebook_8hpp"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+      </node>
+      <node id="52">
+        <label>plugin.hpp</label>
+        <link refid="include_2illixr_2plugin_8hpp"/>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="53" relation="include">
+        </childnode>
+        <childnode refid="54" relation="include">
+        </childnode>
+        <childnode refid="55" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="56" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="26">
+        <label>record_logger.hpp</label>
+        <link refid="record__logger_8hpp"/>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+      </node>
+      <node id="47">
+        <label>relative_clock.hpp</label>
+        <link refid="relative__clock_8hpp"/>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="48" relation="include">
+        </childnode>
+      </node>
+      <node id="57">
+        <label>stoplight.hpp</label>
+        <link refid="stoplight_8hpp"/>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="58" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>illixr/switchboard.hpp</label>
+        <link refid="switchboard_8hpp"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+      </node>
+      <node id="40">
+        <label>illixr/threadloop.hpp</label>
+        <link refid="threadloop_8hpp"/>
+        <childnode refid="41" relation="include">
+        </childnode>
+        <childnode refid="42" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="52" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="57" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp</label>
+        <link refid="oxr__relay_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="39" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="40" relation="include">
+        </childnode>
+        <childnode refid="45" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="59" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="60" relation="include">
+        </childnode>
+      </node>
+      <node id="49">
+        <label>algorithm</label>
+      </node>
+      <node id="27">
+        <label>any</label>
+      </node>
+      <node id="45">
+        <label>array</label>
+      </node>
+      <node id="7">
+        <label>atomic</label>
+      </node>
+      <node id="33">
+        <label>boost/archive/binary_iarchive.hpp</label>
+      </node>
+      <node id="34">
+        <label>boost/archive/binary_oarchive.hpp</label>
+      </node>
+      <node id="35">
+        <label>boost/iostreams/device/back_inserter.hpp</label>
+      </node>
+      <node id="36">
+        <label>boost/iostreams/stream.hpp</label>
+      </node>
+      <node id="37">
+        <label>boost/serialization/shared_ptr.hpp</label>
+      </node>
+      <node id="8">
+        <label>cassert</label>
+      </node>
+      <node id="23">
+        <label>chrono</label>
+      </node>
+      <node id="50">
+        <label>cmath</label>
+      </node>
+      <node id="4">
+        <label>concurrentqueue/blockingconcurrentqueue.hpp</label>
+      </node>
+      <node id="58">
+        <label>condition_variable</label>
+      </node>
+      <node id="38">
+        <label>cstdint</label>
+      </node>
+      <node id="46">
+        <label>cstdlib</label>
+      </node>
+      <node id="51">
+        <label>cstring</label>
+      </node>
+      <node id="30">
+        <label>eigen3/Eigen/Core</label>
+      </node>
+      <node id="31">
+        <label>eigen3/Eigen/Geometry</label>
+      </node>
+      <node id="9">
+        <label>functional</label>
+      </node>
+      <node id="15">
+        <label>iostream</label>
+      </node>
+      <node id="32">
+        <label>list</label>
+      </node>
+      <node id="59">
+        <label>map</label>
+      </node>
+      <node id="16">
+        <label>memory</label>
+      </node>
+      <node id="17">
+        <label>mutex</label>
+      </node>
+      <node id="60">
+        <label>openxr/openxr.h</label>
+      </node>
+      <node id="24">
+        <label>optional</label>
+      </node>
+      <node id="48">
+        <label>ratio</label>
+      </node>
+      <node id="18">
+        <label>shared_mutex</label>
+      </node>
+      <node id="53">
+        <label>spdlog/common.h</label>
+      </node>
+      <node id="54">
+        <label>spdlog/sinks/basic_file_sink.h</label>
+      </node>
+      <node id="55">
+        <label>spdlog/sinks/stdout_color_sinks.h</label>
+      </node>
+      <node id="21">
+        <label>spdlog/spdlog.h</label>
+      </node>
+      <node id="29">
+        <label>sstream</label>
+      </node>
+      <node id="10">
+        <label>stdexcept</label>
+      </node>
+      <node id="28">
+        <label>string</label>
+      </node>
+      <node id="11">
+        <label>thread</label>
+      </node>
+      <node id="19">
+        <label>typeindex</label>
+      </node>
+      <node id="56">
+        <label>typeinfo</label>
+      </node>
+      <node id="20">
+        <label>unordered_map</label>
+      </node>
+      <node id="12">
+        <label>utility</label>
+      </node>
+      <node id="25">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="2">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.cpp</label>
+        <link refid="oxr__relay_8cpp"/>
+      </node>
+      <node id="1">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp</label>
+        <link refid="oxr__relay_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="structILLIXR_1_1pose__history__entry" prot="public">ILLIXR::pose_history_entry</innerclass>
+    <innerclass refid="classILLIXR_1_1oxr__relay" prot="public">ILLIXR::oxr_relay</innerclass>
+    <innernamespace refid="namespaceILLIXR">ILLIXR</innernamespace>
+    <sectiondef kind="define">
+      <memberdef kind="define" id="oxr__relay_8hpp_1a82ae08f7d4c0bddfe4e1ee581c0c2086" prot="public" static="no">
+        <name>USING_OPENXR</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="3" column="13" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" bodystart="3" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="oxr__relay_8hpp_1ac4317238b4d98a92ade6310b629342d3" prot="public" static="no">
+        <name>DOUBLE_INCLUDE</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="6" column="9" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" bodystart="6" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="oxr__relay_8hpp_1a1ae548f172465f758571bf0db832657b" prot="public" static="no">
+        <name>OXR_CheckErrors</name>
+        <param><defname>cmd</defname></param>
+        <param><defname>pfunc</defname></param>
+        <initializer>    do {                                                                                                                \
+        XrResult res = cmd;                                                                                             \
+        <ref refid="plugins_2hand__tracking_2viewer_2CMakeLists_8txt_1ac8041c71a8e1783e44e7fd9865fa62bb" kindref="member">if</ref> (XR_FAILED(res)) {                                                                                           \
+            spdlog::get(&quot;illixr&quot;)-&gt;error(&quot;OpenXR error {} at {}:{} from {}&quot;, static_cast&lt;int&gt;(res), __FILE__, __LINE__, \
+                                         #pfunc);                                                                       \
+            throw std::runtime_error(&quot;Call failed&quot;);                                                                    \
+        }                                                                                                               \
+    } while (0)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="29" column="9" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" bodystart="29" bodyend="37"/>
+      </memberdef>
+      <memberdef kind="define" id="oxr__relay_8hpp_1aa1436adfd1d957b16522854e7c2bf67a" prot="public" static="no">
+        <name>OXR</name>
+        <param><defname>func</defname></param>
+        <initializer><ref refid="oxr__relay_8hpp_1a1ae548f172465f758571bf0db832657b" kindref="member">OXR_CheckErrors</ref>(func, #func);</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" line="38" column="9" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp" bodystart="38" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="preprocessor">#ifndef<sp/>USING_OPENXR</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3" refid="oxr__relay_8hpp_1a82ae08f7d4c0bddfe4e1ee581c0c2086" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>define<sp/>USING_OPENXR</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight></codeline>
+<codeline lineno="6" refid="oxr__relay_8hpp_1ac4317238b4d98a92ade6310b629342d3" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>DOUBLE_INCLUDE</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="latency__data_8hpp" kindref="compound">illixr/data_format/latency_data.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>ILLIXR_ENABLE_BOBA</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>include<sp/>&quot;<ref refid="openxr__view__frame_8hpp" kindref="compound">illixr/data_format/openxr_view_frame.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="poses_2combined__pose_8hpp" kindref="compound">illixr/data_format/poses/combined_pose.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>ILLIXR_ENABLE_QUEST_CONTROLLERS</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>include<sp/>&quot;<ref refid="quest__controller_8hpp" kindref="compound">illixr/data_format/quest_controller.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>ILLIXR_ENABLE_BOBA</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>include<sp/>&quot;<ref refid="serialization_2openxr__view__frame_8hpp" kindref="compound">illixr/data_format/serialization/openxr_view_frame.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>include<sp/>&quot;<ref refid="serialization_2quest__controller_8hpp" kindref="compound">illixr/data_format/serialization/quest_controller.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="switchboard_8hpp" kindref="compound">illixr/switchboard.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="threadloop_8hpp" kindref="compound">illixr/threadloop.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight><highlight class="preprocessor">#undef<sp/>DOUBLE_INCLUDE</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;array&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;atomic&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;map&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;mutex&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;openxr/openxr.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight></codeline>
+<codeline lineno="29" refid="oxr__relay_8hpp_1a1ae548f172465f758571bf0db832657b" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>OXR_CheckErrors(cmd,<sp/>pfunc)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="30"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>do<sp/>{<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="31"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>XrResult<sp/>res<sp/>=<sp/>cmd;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="32"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(XR_FAILED(res))<sp/>{<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="33"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>spdlog::get(&quot;illixr&quot;)-&gt;error(&quot;OpenXR<sp/>error<sp/>{}<sp/>at<sp/>{}:{}<sp/>from<sp/>{}&quot;,<sp/>static_cast&lt;int&gt;(res),<sp/>__FILE__,<sp/>__LINE__,<sp/>\</highlight></codeline>
+<codeline lineno="34"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>#pfunc);<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="35"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>throw<sp/>std::runtime_error(&quot;Call<sp/>failed&quot;);<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="36"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="37"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>}<sp/>while<sp/>(0)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="38" refid="oxr__relay_8hpp_1aa1436adfd1d957b16522854e7c2bf67a" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>OXR(func)<sp/>OXR_CheckErrors(func,<sp/>#func);</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceILLIXR" kindref="compound">ILLIXR</ref><sp/>{</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight></codeline>
+<codeline lineno="42"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal">oxr_interface;</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"></highlight></codeline>
+<codeline lineno="46" refid="structILLIXR_1_1pose__history__entry" refkind="compound"><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structILLIXR_1_1pose__history__entry" kindref="compound">pose_history_entry</ref><sp/>{</highlight></codeline>
+<codeline lineno="47" refid="structILLIXR_1_1pose__history__entry_1a86911120f5b435ff07aefae56847f29e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>data_format::pose::xrt_space_relation<sp/><ref refid="structILLIXR_1_1pose__history__entry_1a86911120f5b435ff07aefae56847f29e" kindref="member">pose</ref>;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="48" refid="structILLIXR_1_1pose__history__entry_1a12397465c9b8803ee6beb0aaf2b6daf0" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1time__point" kindref="compound">time_point</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1pose__history__entry_1a12397465c9b8803ee6beb0aaf2b6daf0" kindref="member">generated_time</ref>;<sp/></highlight></codeline>
+<codeline lineno="49" refid="structILLIXR_1_1pose__history__entry_1a6e552608bf99de248058f8269eca9551" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="pose__relay_8hpp_1afc70e0010cc8c79eeadfce48f0b60920" kindref="member">XrTime</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1pose__history__entry_1a6e552608bf99de248058f8269eca9551" kindref="member">xr_time</ref>;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="50"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"></highlight></codeline>
+<codeline lineno="52" refid="classILLIXR_1_1oxr__relay" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classILLIXR_1_1oxr__relay" kindref="compound">oxr_relay</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1threadloop" kindref="compound">threadloop</ref><sp/>{</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1oxr__relay" kindref="compound">oxr_relay</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>name,<sp/><ref refid="classILLIXR_1_1phonebook" kindref="compound">phonebook</ref>*<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">pb</ref>);</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"></highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1oxr__relay_1a17fd2244a46cc21c03b7acf9969bd0e5" kindref="member">~oxr_relay</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"></highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1oxr__relay_1ad1a28c8d6667eedc9a2e701b57453dd4" kindref="member">get_pose_history</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint64_t</ref><sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">,<sp/><ref refid="structILLIXR_1_1pose__history__entry" kindref="compound">pose_history_entry</ref>&amp;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">out_entry</ref>)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"></highlight></codeline>
+<codeline lineno="63"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>ILLIXR_ENABLE_BOBA</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">publish_boba_input</ref>(<ref refid="pose__relay_8hpp_1afc70e0010cc8c79eeadfce48f0b60920" kindref="member">XrTime</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">predicted_time</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrDuration</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">predicted_period</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrBool32</ref><sp/>should_render,</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrViewStateFlags</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">view_flags</ref>,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrView</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">views</ref>[2],<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrViewConfigurationView</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">view_configs</ref>[2]);</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"></highlight></codeline>
+<codeline lineno="68"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="69"><highlight class="normal"></highlight></codeline>
+<codeline lineno="70"><highlight class="normal"></highlight><highlight class="keyword">protected</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1threadloop_1a26c08942158dc019cbc78c9880417652" kindref="member">skip_option</ref><sp/><ref refid="classILLIXR_1_1oxr__relay_1a20a79f9d31abbdbcf4173df7e81e8376" kindref="member">_p_should_skip</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"></highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1oxr__relay_1ac16ce8379479fbb2dc0ce6ba74cd3545" kindref="member">_p_one_iteration</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"></highlight></codeline>
+<codeline lineno="75"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="76" refid="classILLIXR_1_1oxr__relay_1a1a62727d8f470856801a3cd7913cfbca" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">friend</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1oxr__relay_1a1a62727d8f470856801a3cd7913cfbca" kindref="member">oxr_interface</ref>;</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"></highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1oxr__relay_1a16db63737563e9df54866f0f9f86031b" kindref="member">initialize</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrInstance</ref><sp/>instance,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrSession</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">session</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrSpace</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">local</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrSpace</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">view</ref>);</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"></highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1oxr__relay_1a8972e78479a28d8a34683ab160a1f125" kindref="member">destroy</ref>();</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"></highlight></codeline>
+<codeline lineno="82" refid="classILLIXR_1_1oxr__relay_1a4d10ea4a4a4f2d428a29364e6261eeb2" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1oxr__relay_1a4d10ea4a4a4f2d428a29364e6261eeb2" kindref="member">update_time</ref>(<ref refid="pose__relay_8hpp_1afc70e0010cc8c79eeadfce48f0b60920" kindref="member">XrTime</ref><sp/>time)<sp/>{</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1oxr__relay_1ad34e8e3b2914976218bc04cf102ee800" kindref="member">predicted_time_</ref>.store(time);</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"></highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Pose<sp/>tracking</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrResult</ref><sp/><ref refid="classILLIXR_1_1oxr__relay_1a190b9b1cc074362fd99adb173d83a98d" kindref="member">get_head_pose</ref>(<ref refid="pose__relay_8hpp_1afc70e0010cc8c79eeadfce48f0b60920" kindref="member">XrTime</ref><sp/>time,<sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1head__pose__type" kindref="compound">data_format::pose::head_pose_type</ref>*<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">out_pose</ref>);</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>====================<sp/>Time<sp/>offset<sp/>calibration<sp/>====================</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="89"><highlight class="normal"></highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1oxr__relay_1aaaab57cd4e3af4f4e2c0bd1db9f63c3a" kindref="member">calibrate_time_offsets</ref>();</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>====================<sp/>Hand<sp/>Tracking<sp/>====================</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="105"><highlight class="normal"></highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1oxr__relay_1a2586b076437ba1eeedc57fd6b31ac1d7" kindref="member">init_hand_tracking</ref>();</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"></highlight></codeline>
+<codeline lineno="119"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1oxr__relay_1af612f8ca7443ca775a6030e77f615feb" kindref="member">destroy_hand_tracking</ref>();</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"></highlight></codeline>
+<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1oxr__relay_1a68f53557f35602b8c899f33490999e11" kindref="member">update_hand_tracking</ref>(<ref refid="pose__relay_8hpp_1afc70e0010cc8c79eeadfce48f0b60920" kindref="member">XrTime</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">predicted_time</ref>);</highlight></codeline>
+<codeline lineno="130"><highlight class="normal"></highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>====================<sp/>Hand<sp/>Interaction<sp/>====================</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="132"><highlight class="normal"></highlight></codeline>
+<codeline lineno="146"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1oxr__relay_1ad6112aa1d43af2e4edfcf66e2bdd977b" kindref="member">init_hand_interaction</ref>();</highlight></codeline>
+<codeline lineno="147"><highlight class="normal"></highlight></codeline>
+<codeline lineno="151"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1oxr__relay_1a7d174b3410d19100d98017337f377224" kindref="member">destroy_hand_interaction</ref>();</highlight></codeline>
+<codeline lineno="152"><highlight class="normal"></highlight></codeline>
+<codeline lineno="164"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1oxr__relay_1a6698a87a5ca05847e4f24595a409f35c" kindref="member">update_hand_interaction</ref>(<ref refid="pose__relay_8hpp_1afc70e0010cc8c79eeadfce48f0b60920" kindref="member">XrTime</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">predicted_time</ref>);</highlight></codeline>
+<codeline lineno="165"><highlight class="normal"></highlight></codeline>
+<codeline lineno="166"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>ILLIXR_ENABLE_QUEST_CONTROLLERS</highlight></codeline>
+<codeline lineno="168"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">create_controller_actions</ref>();</highlight></codeline>
+<codeline lineno="169"><highlight class="normal"></highlight></codeline>
+<codeline lineno="171"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">suggest_controller_bindings</ref>();</highlight></codeline>
+<codeline lineno="172"><highlight class="normal"></highlight></codeline>
+<codeline lineno="174"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">refresh_controller_profiles</ref>();</highlight></codeline>
+<codeline lineno="175"><highlight class="normal"></highlight></codeline>
+<codeline lineno="177"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">query_controller_hand</ref>(std::size_t<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">hand_index</ref>,<sp/><ref refid="pose__relay_8hpp_1afc70e0010cc8c79eeadfce48f0b60920" kindref="member">XrTime</ref><sp/>sample_time,<sp/><ref refid="structILLIXR_1_1data__format_1_1quest__hand__controller" kindref="compound">data_format::quest_hand_controller</ref>*<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">hand</ref>);</highlight></codeline>
+<codeline lineno="178"><highlight class="normal"></highlight></codeline>
+<codeline lineno="180"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">query_controller_pose</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrAction</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">action</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrSpace</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">space</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrPath</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">hand_path</ref>,<sp/><ref refid="pose__relay_8hpp_1afc70e0010cc8c79eeadfce48f0b60920" kindref="member">XrTime</ref><sp/>sample_time,</highlight></codeline>
+<codeline lineno="181"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1quest__controller__pose" kindref="compound">data_format::quest_controller_pose</ref>*<sp/>pose);</highlight></codeline>
+<codeline lineno="182"><highlight class="normal"></highlight></codeline>
+<codeline lineno="184"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">query_controller_boolean</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrAction</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">action</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrPath</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">hand_path</ref>,<sp/><ref refid="structILLIXR_1_1data__format_1_1quest__controller__button" kindref="compound">data_format::quest_controller_button</ref>*<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">button</ref>);</highlight></codeline>
+<codeline lineno="185"><highlight class="normal"></highlight></codeline>
+<codeline lineno="187"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">query_controller_float</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrAction</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">action</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrPath</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">hand_path</ref>,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">threshold</ref>,</highlight></codeline>
+<codeline lineno="188"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1quest__controller__button" kindref="compound">data_format::quest_controller_button</ref>*<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">button</ref>);</highlight></codeline>
+<codeline lineno="189"><highlight class="normal"></highlight></codeline>
+<codeline lineno="191"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">query_controller_axis</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrAction</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">action</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrPath</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">hand_path</ref>,<sp/><ref refid="structILLIXR_1_1data__format_1_1quest__controller__axis2d" kindref="compound">data_format::quest_controller_axis2d</ref>*<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">axis</ref>);</highlight></codeline>
+<codeline lineno="192"><highlight class="normal"></highlight></codeline>
+<codeline lineno="194"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">merge_controller_button</ref>(<ref refid="structILLIXR_1_1data__format_1_1quest__controller__button" kindref="compound">data_format::quest_controller_button</ref>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">destination</ref>,</highlight></codeline>
+<codeline lineno="195"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structILLIXR_1_1data__format_1_1quest__controller__button" kindref="compound">data_format::quest_controller_button</ref>&amp;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">source</ref>);</highlight></codeline>
+<codeline lineno="196"><highlight class="normal"></highlight></codeline>
+<codeline lineno="197"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="198"><highlight class="normal"></highlight></codeline>
+<codeline lineno="200"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1oxr__relay_1a7e7386cddb896b10b2ac644ba537c7f7" kindref="member">sync_actions</ref>();</highlight></codeline>
+<codeline lineno="201"><highlight class="normal"></highlight></codeline>
+<codeline lineno="211"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1oxr__relay_1a8100a02b20e3bc1739de90d0db184b8b" kindref="member">push_poses</ref>(<ref refid="pose__relay_8hpp_1afc70e0010cc8c79eeadfce48f0b60920" kindref="member">XrTime</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">predicted_time</ref>);</highlight></codeline>
+<codeline lineno="212"><highlight class="normal"></highlight></codeline>
+<codeline lineno="213"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>==================<sp/>Member<sp/>Variables<sp/>====================</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="214" refid="classILLIXR_1_1oxr__relay_1a57560d3ccf9f4d4f8bd06227bf0e25cb" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::shared_ptr&lt;switchboard&gt;<sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1oxr__relay_1a57560d3ccf9f4d4f8bd06227bf0e25cb" kindref="member">switchboard_</ref>;</highlight></codeline>
+<codeline lineno="215" refid="classILLIXR_1_1oxr__relay_1ac8b5f5cf1ee2e2a03277216b5fd5c074" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::shared_ptr&lt;relative_clock&gt;<sp/><ref refid="classILLIXR_1_1oxr__relay_1ac8b5f5cf1ee2e2a03277216b5fd5c074" kindref="member">clock_</ref>;</highlight></codeline>
+<codeline lineno="216"><highlight class="normal"></highlight></codeline>
+<codeline lineno="223" refid="classILLIXR_1_1oxr__relay_1abd79c9cc36d284b05e7d6b0b33a28653" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1switchboard_1_1network__writer" kindref="compound">switchboard::network_writer&lt;data_format::pose::combined_pose&gt;</ref><sp/><ref refid="classILLIXR_1_1oxr__relay_1abd79c9cc36d284b05e7d6b0b33a28653" kindref="member">combined_pose_writer_</ref>;</highlight></codeline>
+<codeline lineno="224"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>ILLIXR_ENABLE_BOBA</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="225"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1switchboard_1_1network__writer" kindref="compound">switchboard::network_writer&lt;data_format::quest_controller_input&gt;</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">quest_controller_writer_</ref>;</highlight></codeline>
+<codeline lineno="226"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1switchboard_1_1network__writer" kindref="compound">switchboard::network_writer&lt;data_format::openxr_view_frame&gt;</ref><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">openxr_view_writer_</ref>;</highlight></codeline>
+<codeline lineno="227"><highlight class="normal"></highlight></codeline>
+<codeline lineno="228"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="229"><highlight class="normal"></highlight></codeline>
+<codeline lineno="233" refid="classILLIXR_1_1oxr__relay_1a0658d6760bfbb01bcce4d694ba8741a1" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1switchboard_1_1reader" kindref="compound">switchboard::reader&lt;data_format::network_latency_result&gt;</ref><sp/><ref refid="classILLIXR_1_1oxr__relay_1a0658d6760bfbb01bcce4d694ba8741a1" kindref="member">latency_reader_</ref>;</highlight></codeline>
+<codeline lineno="234"><highlight class="normal"></highlight></codeline>
+<codeline lineno="235" refid="classILLIXR_1_1oxr__relay_1a6728e4dd6e56a7ace9f6136713c86ff8" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1head__pose__type" kindref="compound">data_format::pose::head_pose_type</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1oxr__relay_1a6728e4dd6e56a7ace9f6136713c86ff8" kindref="member">current_head_pose_</ref>;</highlight></codeline>
+<codeline lineno="236" refid="classILLIXR_1_1oxr__relay_1a203bf6bd95732ac17c320ebf4b705181" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>data_format::pose::hand_joint_poses_pair<sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1oxr__relay_1a203bf6bd95732ac17c320ebf4b705181" kindref="member">current_hand_poses_</ref>;</highlight></codeline>
+<codeline lineno="237" refid="classILLIXR_1_1oxr__relay_1a9926cff6fc4505db8a7756cf80dd4f75" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>data_format::pose::hand_interaction_poses_pair<sp/><ref refid="classILLIXR_1_1oxr__relay_1a9926cff6fc4505db8a7756cf80dd4f75" kindref="member">current_hand_interactions_</ref>;</highlight></codeline>
+<codeline lineno="238" refid="classILLIXR_1_1oxr__relay_1a36aaceab025822f5c1e0e339c4cd40f1" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>data_format::pose::palm_poses_pair<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1oxr__relay_1a36aaceab025822f5c1e0e339c4cd40f1" kindref="member">current_palm_poses_</ref>;</highlight></codeline>
+<codeline lineno="239"><highlight class="normal"></highlight></codeline>
+<codeline lineno="240" refid="classILLIXR_1_1oxr__relay_1afa13e01040442f76625767988e411374" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrInstance</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1oxr__relay_1afa13e01040442f76625767988e411374" kindref="member">instance_</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_NULL_HANDLE</ref>;</highlight></codeline>
+<codeline lineno="241" refid="classILLIXR_1_1oxr__relay_1ad2c526235dacd6d981d2dff351475153" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrSession</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1oxr__relay_1ad2c526235dacd6d981d2dff351475153" kindref="member">session_</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_NULL_HANDLE</ref>;</highlight></codeline>
+<codeline lineno="242" refid="classILLIXR_1_1oxr__relay_1a79fcee1f4ba4b1ded8ffc87b2cdec5c8" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrSpace</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1oxr__relay_1a79fcee1f4ba4b1ded8ffc87b2cdec5c8" kindref="member">local_space_</ref><sp/><sp/><sp/><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_NULL_HANDLE</ref>;</highlight></codeline>
+<codeline lineno="243" refid="classILLIXR_1_1oxr__relay_1a3628c163da57e4742f1981b726ed949b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrSpace</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1oxr__relay_1a3628c163da57e4742f1981b726ed949b" kindref="member">view_space_</ref><sp/><sp/><sp/><sp/><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_NULL_HANDLE</ref>;</highlight></codeline>
+<codeline lineno="244" refid="classILLIXR_1_1oxr__relay_1ad34e8e3b2914976218bc04cf102ee800" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::atomic&lt;XrTime&gt;<sp/><ref refid="classILLIXR_1_1oxr__relay_1ad34e8e3b2914976218bc04cf102ee800" kindref="member">predicted_time_</ref><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="245"><highlight class="normal"></highlight></codeline>
+<codeline lineno="247" refid="classILLIXR_1_1oxr__relay_1a1e975fd0058627374719f9d5bf337408" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrHandTrackerEXT</ref><sp/><ref refid="classILLIXR_1_1oxr__relay_1a1e975fd0058627374719f9d5bf337408" kindref="member">left_hand_tracker_</ref>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_NULL_HANDLE</ref>};</highlight></codeline>
+<codeline lineno="248"><highlight class="normal"></highlight></codeline>
+<codeline lineno="250" refid="classILLIXR_1_1oxr__relay_1afbd7cd9fcf8f6f17e0040f76ed194cea" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrHandTrackerEXT</ref><sp/><ref refid="classILLIXR_1_1oxr__relay_1afbd7cd9fcf8f6f17e0040f76ed194cea" kindref="member">right_hand_tracker_</ref>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_NULL_HANDLE</ref>};</highlight></codeline>
+<codeline lineno="251"><highlight class="normal"></highlight></codeline>
+<codeline lineno="253" refid="classILLIXR_1_1oxr__relay_1a2d615930e83fbdd293c756c4695cba56" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">PFN_xrCreateHandTrackerEXT</ref><sp/><ref refid="classILLIXR_1_1oxr__relay_1a2d615930e83fbdd293c756c4695cba56" kindref="member">xr_create_hand_tracker_</ref>{</highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">};</highlight></codeline>
+<codeline lineno="254"><highlight class="normal"></highlight></codeline>
+<codeline lineno="256" refid="classILLIXR_1_1oxr__relay_1a8b3fcf4a577df0eb30b255409a09369e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">PFN_xrDestroyHandTrackerEXT</ref><sp/><ref refid="classILLIXR_1_1oxr__relay_1a8b3fcf4a577df0eb30b255409a09369e" kindref="member">xr_destroy_hand_tracker_</ref>{</highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">};</highlight></codeline>
+<codeline lineno="257"><highlight class="normal"></highlight></codeline>
+<codeline lineno="259" refid="classILLIXR_1_1oxr__relay_1a6d7578ef4f411759e0337644be014c13" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">PFN_xrLocateHandJointsEXT</ref><sp/><ref refid="classILLIXR_1_1oxr__relay_1a6d7578ef4f411759e0337644be014c13" kindref="member">xr_locate_hand_joints_</ref>{</highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">};</highlight></codeline>
+<codeline lineno="260"><highlight class="normal"></highlight></codeline>
+<codeline lineno="261"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>====================<sp/>Hand<sp/>Interaction<sp/>State<sp/>====================</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="262"><highlight class="normal"></highlight></codeline>
+<codeline lineno="264" refid="classILLIXR_1_1oxr__relay_1a7fb9cf0747e06d3bafcd451a53add346" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1oxr__relay_1a7fb9cf0747e06d3bafcd451a53add346" kindref="member">hand_interaction_supported_</ref>{</highlight><highlight class="keyword">false</highlight><highlight class="normal">};</highlight></codeline>
+<codeline lineno="265"><highlight class="normal"></highlight></codeline>
+<codeline lineno="266"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>====================<sp/>Hand<sp/>Tracking<sp/>State<sp/>====================</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="267"><highlight class="normal"></highlight></codeline>
+<codeline lineno="269" refid="classILLIXR_1_1oxr__relay_1a36180976e85b170a47218a3a2cd03932" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1oxr__relay_1a36180976e85b170a47218a3a2cd03932" kindref="member">hand_tracking_supported_</ref>{</highlight><highlight class="keyword">false</highlight><highlight class="normal">};</highlight></codeline>
+<codeline lineno="270"><highlight class="normal"></highlight></codeline>
+<codeline lineno="274" refid="classILLIXR_1_1oxr__relay_1a52079514f258fc1284b805aabd3ef71a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrActionSet</ref><sp/><ref refid="classILLIXR_1_1oxr__relay_1a52079514f258fc1284b805aabd3ef71a" kindref="member">hand_interaction_action_set_</ref>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_NULL_HANDLE</ref>};</highlight></codeline>
+<codeline lineno="275"><highlight class="normal"></highlight></codeline>
+<codeline lineno="282" refid="classILLIXR_1_1oxr__relay_1a7a74b4f73ce1fc47467e364d776d40e6" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrPath</ref><sp/><ref refid="classILLIXR_1_1oxr__relay_1a7a74b4f73ce1fc47467e364d776d40e6" kindref="member">hand_subaction_paths_</ref>[2]{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_NULL_PATH</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_NULL_PATH</ref>};</highlight></codeline>
+<codeline lineno="283"><highlight class="normal"></highlight></codeline>
+<codeline lineno="292" refid="classILLIXR_1_1oxr__relay_1a42da871735d7daa92a3b8e3dfb08789e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrAction</ref><sp/><ref refid="classILLIXR_1_1oxr__relay_1a42da871735d7daa92a3b8e3dfb08789e" kindref="member">interaction_pose_actions_</ref>[data_format::pose::NUM_INTERACTION_POSES]{};</highlight></codeline>
+<codeline lineno="293"><highlight class="normal"></highlight></codeline>
+<codeline lineno="301" refid="classILLIXR_1_1oxr__relay_1acf79d66c33ab82aa088cf256fb2c7910" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrSpace</ref><sp/><ref refid="classILLIXR_1_1oxr__relay_1acf79d66c33ab82aa088cf256fb2c7910" kindref="member">interaction_pose_spaces_</ref>[2][data_format::pose::NUM_INTERACTION_POSES]{};</highlight></codeline>
+<codeline lineno="302"><highlight class="normal"></highlight></codeline>
+<codeline lineno="309" refid="classILLIXR_1_1oxr__relay_1a8e7db6a74f3852f43c0e4f27585f2510" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrAction</ref><sp/><ref refid="classILLIXR_1_1oxr__relay_1a8e7db6a74f3852f43c0e4f27585f2510" kindref="member">interaction_value_actions_</ref>[3]{};</highlight></codeline>
+<codeline lineno="310"><highlight class="normal"></highlight></codeline>
+<codeline lineno="316" refid="classILLIXR_1_1oxr__relay_1ade9fc3dcc0d65807a6966760b96b0d2c" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrAction</ref><sp/><ref refid="classILLIXR_1_1oxr__relay_1ade9fc3dcc0d65807a6966760b96b0d2c" kindref="member">interaction_ready_actions_</ref>[3]{};</highlight></codeline>
+<codeline lineno="317"><highlight class="normal"></highlight></codeline>
+<codeline lineno="326" refid="classILLIXR_1_1oxr__relay_1adf568d3d3b727d39e50d6b74ad784ca0" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrAction</ref><sp/><ref refid="classILLIXR_1_1oxr__relay_1adf568d3d3b727d39e50d6b74ad784ca0" kindref="member">palm_pose_action_</ref>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_NULL_HANDLE</ref>};</highlight></codeline>
+<codeline lineno="327"><highlight class="normal"></highlight></codeline>
+<codeline lineno="333" refid="classILLIXR_1_1oxr__relay_1abfefe85c0c81a8d51773188916ffaa80" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrSpace</ref><sp/><ref refid="classILLIXR_1_1oxr__relay_1abfefe85c0c81a8d51773188916ffaa80" kindref="member">palm_pose_spaces_</ref>[2]{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_NULL_HANDLE</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_NULL_HANDLE</ref>};</highlight></codeline>
+<codeline lineno="334"><highlight class="normal"></highlight></codeline>
+<codeline lineno="335"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>ILLIXR_ENABLE_QUEST_CONTROLLERS</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="336"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Quest<sp/>Touch<sp/>inputs<sp/>share<sp/>hand_interaction_action_set_<sp/>so<sp/>the<sp/>session<sp/>has</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="337"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>exactly<sp/>one<sp/>xrAttachSessionActionSets<sp/>call.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="338"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrAction</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">controller_trigger_click_action_</ref>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_NULL_HANDLE</ref>};</highlight></codeline>
+<codeline lineno="339"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrAction</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">controller_trigger_value_action_</ref>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_NULL_HANDLE</ref>};</highlight></codeline>
+<codeline lineno="340"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrAction</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">controller_squeeze_value_action_</ref>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_NULL_HANDLE</ref>};</highlight></codeline>
+<codeline lineno="341"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrAction</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">controller_primary_click_action_</ref>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_NULL_HANDLE</ref>};</highlight></codeline>
+<codeline lineno="342"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrAction</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">controller_secondary_click_action_</ref>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_NULL_HANDLE</ref>};</highlight></codeline>
+<codeline lineno="343"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrAction</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">controller_thumbstick_click_action_</ref>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_NULL_HANDLE</ref>};</highlight></codeline>
+<codeline lineno="344"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrAction</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">controller_thumbstick_axis_action_</ref>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_NULL_HANDLE</ref>};</highlight></codeline>
+<codeline lineno="345"><highlight class="normal"><sp/><sp/><sp/><sp/>std::array&lt;data_format::quest_controller_profile,<sp/>2&gt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">controller_profiles_</ref>{<ref refid="namespaceILLIXR_1_1data__format_1a199659f655d737a8ff3be7944e54507ba334c4a4c42fdb79d7ebc3e73b517e6f8" kindref="member">data_format::quest_controller_profile::none</ref>,</highlight></codeline>
+<codeline lineno="346"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1_1data__format_1a199659f655d737a8ff3be7944e54507ba334c4a4c42fdb79d7ebc3e73b517e6f8" kindref="member">data_format::quest_controller_profile::none</ref>};</highlight></codeline>
+<codeline lineno="347"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">controller_actions_initialized_</ref>{</highlight><highlight class="keyword">false</highlight><highlight class="normal">};</highlight></codeline>
+<codeline lineno="348"><highlight class="normal"></highlight></codeline>
+<codeline lineno="349"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="350"><highlight class="normal"></highlight></codeline>
+<codeline lineno="351" refid="classILLIXR_1_1oxr__relay_1aafeaa4afcc198e880fea46795d1b4837" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::mutex<sp/><ref refid="classILLIXR_1_1oxr__relay_1aafeaa4afcc198e880fea46795d1b4837" kindref="member">actions_mutex_</ref>;</highlight></codeline>
+<codeline lineno="352"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>ILLIXR_ENABLE_BOBA</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="353"><highlight class="normal"><sp/><sp/><sp/><sp/>std::atomic&lt;std::uint64_t&gt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">boba_input_sequence_</ref>{0};</highlight></codeline>
+<codeline lineno="354"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="355"><highlight class="normal"></highlight></codeline>
+<codeline lineno="356" refid="classILLIXR_1_1oxr__relay_1a83aba4ff0eb37870b2ce27ef968180f2" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1oxr__relay_1a83aba4ff0eb37870b2ce27ef968180f2" kindref="member">initialized_</ref>{</highlight><highlight class="keyword">false</highlight><highlight class="normal">};</highlight></codeline>
+<codeline lineno="357" refid="classILLIXR_1_1oxr__relay_1abead2419abd608c140614ec825dfa6ec" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1oxr__relay_1abead2419abd608c140614ec825dfa6ec" kindref="member">xr_time_verified_</ref>{</highlight><highlight class="keyword">false</highlight><highlight class="normal">};</highlight></codeline>
+<codeline lineno="358" refid="classILLIXR_1_1oxr__relay_1a35979affc52e8a29b8c99e943ede5166" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1oxr__relay_1a35979affc52e8a29b8c99e943ede5166" kindref="member">time_offsets_calibrated_</ref>{</highlight><highlight class="keyword">false</highlight><highlight class="normal">};</highlight></codeline>
+<codeline lineno="359" refid="classILLIXR_1_1oxr__relay_1a4c56e6bbc9e18a9f3f03091f09744298" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::chrono::steady_clock::time_point<sp/><ref refid="classILLIXR_1_1oxr__relay_1a4c56e6bbc9e18a9f3f03091f09744298" kindref="member">last_offset_calibration_</ref>{};</highlight></codeline>
+<codeline lineno="360" refid="classILLIXR_1_1oxr__relay_1abc68b7a97cad461841d0c23e09cb14ad" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="pose__relay_8hpp_1afc70e0010cc8c79eeadfce48f0b60920" kindref="member">XrTime</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1oxr__relay_1abc68b7a97cad461841d0c23e09cb14ad" kindref="member">monotonic_to_system_offset_ns_</ref>{0};</highlight></codeline>
+<codeline lineno="361" refid="classILLIXR_1_1oxr__relay_1a062d600806c8b921db9e9641bbc4e8d8" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="pose__relay_8hpp_1afc70e0010cc8c79eeadfce48f0b60920" kindref="member">XrTime</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1oxr__relay_1a062d600806c8b921db9e9641bbc4e8d8" kindref="member">xr_to_monotonic_offset_ns_</ref>{0};</highlight></codeline>
+<codeline lineno="362" refid="classILLIXR_1_1oxr__relay_1afa6d401bffa7cc5100da814b7e2a0229" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint64_t</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1oxr__relay_1afa6d401bffa7cc5100da814b7e2a0229" kindref="member">counter_</ref>{0};</highlight></codeline>
+<codeline lineno="363" refid="classILLIXR_1_1oxr__relay_1afda98e1319b40e8c5aaa296427bbb30c" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1head__pose__type" kindref="compound">data_format::pose::head_pose_type</ref><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1oxr__relay_1afda98e1319b40e8c5aaa296427bbb30c" kindref="member">last_pose_</ref>{};</highlight></codeline>
+<codeline lineno="364"><highlight class="normal"></highlight></codeline>
+<codeline lineno="365"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Map<sp/>from<sp/>combined_pose<sp/>id<sp/>to<sp/>the<sp/>pose<sp/>that<sp/>was<sp/>sent<sp/>with<sp/>that<sp/>id.</highlight></codeline>
+<codeline lineno="368" refid="classILLIXR_1_1oxr__relay_1ae9b295b1118916e09a98ebd86c32da3b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::map&lt;uint64_t,<sp/>pose_history_entry&gt;<sp/><ref refid="classILLIXR_1_1oxr__relay_1ae9b295b1118916e09a98ebd86c32da3b" kindref="member">pose_history_</ref>;</highlight></codeline>
+<codeline lineno="369" refid="classILLIXR_1_1oxr__relay_1a1714ad7248175ff3c76db27367643e08" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">mutable</highlight><highlight class="normal"><sp/>std::mutex<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1oxr__relay_1a1714ad7248175ff3c76db27367643e08" kindref="member">pose_history_mutex_</ref>;</highlight></codeline>
+<codeline lineno="370" refid="classILLIXR_1_1oxr__relay_1a8845ec1c82896448690fbf9305827fa2" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1oxr__relay_1a8845ec1c82896448690fbf9305827fa2" kindref="member">MAX_POSE_HISTORY</ref><sp/>=<sp/>240;</highlight></codeline>
+<codeline lineno="371"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="372"><highlight class="normal"></highlight></codeline>
+<codeline lineno="373"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>ILLIXR</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/oxr_relay.hpp"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,257 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structILLIXR_1_1data__format_1_1pose_1_1xrt__space__relation" kind="struct" language="C++" prot="public">
+    <compoundname>ILLIXR::data_format::pose::xrt_space_relation</compoundname>
+    <derivedcompoundref refid="structILLIXR_1_1data__format_1_1pose_1_1hand__interaction__pose" prot="public" virt="non-virtual">ILLIXR::data_format::pose::hand_interaction_pose</derivedcompoundref>
+    <derivedcompoundref refid="structILLIXR_1_1data__format_1_1pose_1_1palm__pose" prot="public" virt="non-virtual">ILLIXR::data_format::pose::palm_pose</derivedcompoundref>
+    <includes refid="openxr__defines_8hpp" local="no">openxr_defines.hpp</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1pose_1_1xrt__space__relation_1a02955255368097b3cdd49ca8651a5eab" prot="public" static="no" mutable="no">
+        <type>uint32_t</type>
+        <definition>uint32_t ILLIXR::data_format::pose::xrt_space_relation::relation_flags</definition>
+        <argsstring></argsstring>
+        <name>relation_flags</name>
+        <qualifiedname>ILLIXR::data_format::pose::xrt_space_relation::relation_flags</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1_1data__format_1_1pose_1ad3869eb29690430b63a54e860a3937e5a6364c3fed3e8a9cffc99299d76e94420" kindref="member">XRT_SPACE_RELATION_BITMASK_NONE</ref>}</initializer>
+        <briefdescription>
+<para>validity flags </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/openxr_defines.hpp" line="38" column="23" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/openxr_defines.hpp" bodystart="38" bodyend="38"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1pose_1_1xrt__space__relation_1a0cff14cc81cd5dd27151dce0bb0632b9" prot="public" static="no" mutable="no">
+        <type>struct XrPosef</type>
+        <definition>struct XrPosef ILLIXR::data_format::pose::xrt_space_relation::pose</definition>
+        <argsstring></argsstring>
+        <name>pose</name>
+        <qualifiedname>ILLIXR::data_format::pose::xrt_space_relation::pose</qualifiedname>
+        <briefdescription>
+<para>current pose </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/openxr_defines.hpp" line="39" column="18" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/openxr_defines.hpp" bodystart="39" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1pose_1_1xrt__space__relation_1a67fc9e6e7fc117dd5a393794b9d1df50" prot="public" static="no" mutable="no">
+        <type>struct XrVector3f</type>
+        <definition>struct XrVector3f ILLIXR::data_format::pose::xrt_space_relation::linear_velocity</definition>
+        <argsstring></argsstring>
+        <name>linear_velocity</name>
+        <qualifiedname>ILLIXR::data_format::pose::xrt_space_relation::linear_velocity</qualifiedname>
+        <briefdescription>
+<para>instantaneous linear velocity of the pose </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/openxr_defines.hpp" line="40" column="21" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/openxr_defines.hpp" bodystart="40" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1pose_1_1xrt__space__relation_1a3ef1fdf58723fd642b5bbdff4c54645d" prot="public" static="no" mutable="no">
+        <type>struct XrVector3f</type>
+        <definition>struct XrVector3f ILLIXR::data_format::pose::xrt_space_relation::angular_velocity</definition>
+        <argsstring></argsstring>
+        <name>angular_velocity</name>
+        <qualifiedname>ILLIXR::data_format::pose::xrt_space_relation::angular_velocity</qualifiedname>
+        <briefdescription>
+<para>instantaneous angular velocity of the pose </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/openxr_defines.hpp" line="41" column="21" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/openxr_defines.hpp" bodystart="41" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1pose_1_1xrt__space__relation_1a0b8644408a512e4f983fb8d56ccb841c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void ILLIXR::data_format::pose::xrt_space_relation::set_flags</definition>
+        <argsstring>(const XrSpaceLocationFlags location_flags)</argsstring>
+        <name>set_flags</name>
+        <qualifiedname>ILLIXR::data_format::pose::xrt_space_relation::set_flags</qualifiedname>
+        <param>
+          <type>const XrSpaceLocationFlags</type>
+          <declname>location_flags</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Set the flags to the given value <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>location_flags</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The value to set </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/openxr_defines.hpp" line="47" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/openxr_defines.hpp" bodystart="47" bodyend="57"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1pose_1_1xrt__space__relation_1aabc7b9783ea1003a4facf7c40440b324" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void ILLIXR::data_format::pose::xrt_space_relation::set_flags</definition>
+        <argsstring>(const XrSpaceLocationFlags location_flags, const XrSpaceVelocityFlags velocity_flags)</argsstring>
+        <name>set_flags</name>
+        <qualifiedname>ILLIXR::data_format::pose::xrt_space_relation::set_flags</qualifiedname>
+        <param>
+          <type>const XrSpaceLocationFlags</type>
+          <declname>location_flags</declname>
+        </param>
+        <param>
+          <type>const XrSpaceVelocityFlags</type>
+          <declname>velocity_flags</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Set the flags from a combination of location and velocity based flags <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>location_flags</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The location based flags to use </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>velocity_flags</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The velocity based flags to use </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/openxr_defines.hpp" line="64" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/openxr_defines.hpp" bodystart="64" bodyend="78"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1pose_1_1xrt__space__relation_1a74f652484d296234ab31f51b4ce8c27e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::pose::xrt_space_relation::xrt_space_relation</definition>
+        <argsstring>()</argsstring>
+        <name>xrt_space_relation</name>
+        <qualifiedname>ILLIXR::data_format::pose::xrt_space_relation::xrt_space_relation</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Default constructor </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/openxr_defines.hpp" line="83" column="5" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/openxr_defines.hpp" bodystart="83" bodyend="87"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1pose_1_1xrt__space__relation_1ab065bafa0c9f4ea396b2e496fffa4cf1" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::pose::xrt_space_relation::xrt_space_relation</definition>
+        <argsstring>(XrSpaceLocation location, XrSpaceVelocity velocity)</argsstring>
+        <name>xrt_space_relation</name>
+        <qualifiedname>ILLIXR::data_format::pose::xrt_space_relation::xrt_space_relation</qualifiedname>
+        <param>
+          <type>XrSpaceLocation</type>
+          <declname>location</declname>
+        </param>
+        <param>
+          <type>XrSpaceVelocity</type>
+          <declname>velocity</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Constructor <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>location</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The location information to use </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>velocity</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The velocity information to use </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/openxr_defines.hpp" line="94" column="6" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/openxr_defines.hpp" bodystart="94" bodyend="99"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1pose_1_1xrt__space__relation_1ae7be657315a0b3685b067606c73619ff" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>bool</type>
+        <definition>virtual bool ILLIXR::data_format::pose::xrt_space_relation::valid</definition>
+        <argsstring>() const</argsstring>
+        <name>valid</name>
+        <qualifiedname>ILLIXR::data_format::pose::xrt_space_relation::valid</qualifiedname>
+        <reimplementedby refid="structILLIXR_1_1data__format_1_1pose_1_1hand__interaction__pose_1a8cd2325996c54e703125222cbf1655b1">valid</reimplementedby>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Returns whether the location is considered valid <simplesect kind="return"><para>True if both position and orientation are valid, False otherwise. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/openxr_defines.hpp" line="106" column="9" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/openxr_defines.hpp" bodystart="106" bodyend="109"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>A pose with linear and angular velocities and validity flags</para>
+<para><simplesect kind="see"><para>XrPosef </para>
+</simplesect>
+<simplesect kind="see"><para>XrVector3f </para>
+</simplesect>
+<simplesect kind="see"><para><ref refid="namespaceILLIXR_1_1data__format_1_1pose_1ad3869eb29690430b63a54e860a3937e5" kindref="member">xrt_space_relation_flags</ref> </para>
+</simplesect>
+</para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>ILLIXR::data_format::pose::hand_interaction_pose</label>
+        <link refid="structILLIXR_1_1data__format_1_1pose_1_1hand__interaction__pose"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>ILLIXR::data_format::pose::palm_pose</label>
+        <link refid="structILLIXR_1_1data__format_1_1pose_1_1palm__pose"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>ILLIXR::data_format::pose::xrt_space_relation</label>
+        <link refid="structILLIXR_1_1data__format_1_1pose_1_1xrt__space__relation"/>
+      </node>
+    </inheritancegraph>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/openxr_defines.hpp" line="37" column="1" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/openxr_defines.hpp" bodystart="37" bodyend="110"/>
+    <listofallmembers>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1xrt__space__relation_1a3ef1fdf58723fd642b5bbdff4c54645d" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::pose::xrt_space_relation</scope><name>angular_velocity</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1xrt__space__relation_1a67fc9e6e7fc117dd5a393794b9d1df50" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::pose::xrt_space_relation</scope><name>linear_velocity</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1xrt__space__relation_1a0cff14cc81cd5dd27151dce0bb0632b9" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::pose::xrt_space_relation</scope><name>pose</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1xrt__space__relation_1a02955255368097b3cdd49ca8651a5eab" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::pose::xrt_space_relation</scope><name>relation_flags</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1xrt__space__relation_1a0b8644408a512e4f983fb8d56ccb841c" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::pose::xrt_space_relation</scope><name>set_flags</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1xrt__space__relation_1aabc7b9783ea1003a4facf7c40440b324" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::pose::xrt_space_relation</scope><name>set_flags</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1xrt__space__relation_1ae7be657315a0b3685b067606c73619ff" prot="public" virt="virtual"><scope>ILLIXR::data_format::pose::xrt_space_relation</scope><name>valid</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1xrt__space__relation_1a74f652484d296234ab31f51b4ce8c27e" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::pose::xrt_space_relation</scope><name>xrt_space_relation</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1xrt__space__relation_1ab065bafa0c9f4ea396b2e496fffa4cf1" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::pose::xrt_space_relation</scope><name>xrt_space_relation</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

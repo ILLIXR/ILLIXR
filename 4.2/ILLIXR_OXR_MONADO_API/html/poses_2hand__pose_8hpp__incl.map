@@ -1,0 +1,18 @@
+<map id="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/hand_pose.hpp" name="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/hand_pose.hpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="311,5,495,89"/>
+<area shape="rect" id="Node000002" href="$poses_2pose__base_8hpp.html" title=" " alt="" coords="65,137,231,177"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="311,90,206,134,204,130,309,85"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="5,225,56,251"/>
+<area shape="poly" id="edge7_Node000001_Node000003" title=" " alt="" coords="311,64,237,76,162,93,97,115,72,126,55,139,44,155,37,174,32,212,27,211,32,173,39,153,51,135,69,122,95,110,160,88,236,71,310,58"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="255,145,417,170"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="379,91,353,134,348,131,375,88"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="441,145,497,170"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="431,88,457,131,453,134,426,91"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="521,145,588,170"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="462,87,529,135,526,139,459,92"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="613,145,673,170"/>
+<area shape="poly" id="edge8_Node000001_Node000008" title=" " alt="" coords="495,87,606,137,604,142,493,92"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="121,180,61,220,58,216,118,175"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="83,225,213,251"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="151,178,151,211,145,211,145,178"/>
+</map>

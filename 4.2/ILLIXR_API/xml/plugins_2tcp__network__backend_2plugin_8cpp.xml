@@ -1,0 +1,699 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="plugins_2tcp__network__backend_2plugin_8cpp" kind="file" language="C++">
+    <compoundname>plugin.cpp</compoundname>
+    <includes refid="plugins_2tcp__network__backend_2plugin_8hpp" local="yes">plugin.hpp</includes>
+    <includes local="no">cstring</includes>
+    <incdepgraph>
+      <node id="12">
+        <label>illixr/export.hpp</label>
+        <link refid="export_8hpp"/>
+      </node>
+      <node id="40">
+        <label>managed_thread.hpp</label>
+        <link refid="managed__thread_8hpp"/>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="41" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="42" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>illixr/network/network_backend.hpp</label>
+        <link refid="network__backend_8hpp"/>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>illixr/network/tcpsocket.hpp</label>
+        <link refid="tcpsocket_8hpp"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="24">
+        <label>topic_config.hpp</label>
+        <link refid="topic__config_8hpp"/>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+      </node>
+      <node id="15">
+        <label>illixr/phonebook.hpp</label>
+        <link refid="phonebook_8hpp"/>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+      </node>
+      <node id="28">
+        <label>illixr/plugin.hpp</label>
+        <link refid="include_2illixr_2plugin_8hpp"/>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+      </node>
+      <node id="29">
+        <label>record_logger.hpp</label>
+        <link refid="record__logger_8hpp"/>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+      </node>
+      <node id="38">
+        <label>illixr/switchboard.hpp</label>
+        <link refid="switchboard_8hpp"/>
+        <childnode refid="39" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="40" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="43" relation="include">
+        </childnode>
+        <childnode refid="44" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="45" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="46" relation="include">
+        </childnode>
+        <childnode refid="47" relation="include">
+        </childnode>
+        <childnode refid="48" relation="include">
+        </childnode>
+        <childnode refid="49" relation="include">
+        </childnode>
+        <childnode refid="50" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/tcp_network_backend/plugin.cpp</label>
+        <link refid="plugins_2tcp__network__backend_2plugin_8cpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>plugin.hpp</label>
+        <link refid="plugins_2tcp__network__backend_2plugin_8hpp"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="38" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="42" relation="include">
+        </childnode>
+      </node>
+      <node id="30">
+        <label>any</label>
+      </node>
+      <node id="5">
+        <label>arpa/inet.h</label>
+      </node>
+      <node id="31">
+        <label>atomic</label>
+      </node>
+      <node id="46">
+        <label>boost/archive/binary_iarchive.hpp</label>
+      </node>
+      <node id="47">
+        <label>boost/archive/binary_oarchive.hpp</label>
+      </node>
+      <node id="48">
+        <label>boost/iostreams/device/back_inserter.hpp</label>
+      </node>
+      <node id="49">
+        <label>boost/iostreams/stream.hpp</label>
+      </node>
+      <node id="50">
+        <label>boost/serialization/shared_ptr.hpp</label>
+      </node>
+      <node id="16">
+        <label>cassert</label>
+      </node>
+      <node id="6">
+        <label>cerrno</label>
+      </node>
+      <node id="25">
+        <label>chrono</label>
+      </node>
+      <node id="39">
+        <label>concurrentqueue/blockingconcurrentqueue.hpp</label>
+      </node>
+      <node id="7">
+        <label>cstring</label>
+      </node>
+      <node id="43">
+        <label>eigen3/Eigen/Core</label>
+      </node>
+      <node id="44">
+        <label>eigen3/Eigen/Geometry</label>
+      </node>
+      <node id="41">
+        <label>functional</label>
+      </node>
+      <node id="17">
+        <label>iostream</label>
+      </node>
+      <node id="45">
+        <label>list</label>
+      </node>
+      <node id="18">
+        <label>memory</label>
+      </node>
+      <node id="19">
+        <label>mutex</label>
+      </node>
+      <node id="8">
+        <label>netinet/in.h</label>
+      </node>
+      <node id="9">
+        <label>netinet/tcp.h</label>
+      </node>
+      <node id="26">
+        <label>optional</label>
+      </node>
+      <node id="20">
+        <label>shared_mutex</label>
+      </node>
+      <node id="34">
+        <label>spdlog/common.h</label>
+      </node>
+      <node id="35">
+        <label>spdlog/sinks/basic_file_sink.h</label>
+      </node>
+      <node id="36">
+        <label>spdlog/sinks/stdout_color_sinks.h</label>
+      </node>
+      <node id="23">
+        <label>spdlog/spdlog.h</label>
+      </node>
+      <node id="33">
+        <label>sstream</label>
+      </node>
+      <node id="4">
+        <label>stdexcept</label>
+      </node>
+      <node id="13">
+        <label>string</label>
+      </node>
+      <node id="10">
+        <label>sys/socket.h</label>
+      </node>
+      <node id="42">
+        <label>thread</label>
+      </node>
+      <node id="21">
+        <label>typeindex</label>
+      </node>
+      <node id="37">
+        <label>typeinfo</label>
+      </node>
+      <node id="11">
+        <label>unistd.h</label>
+      </node>
+      <node id="22">
+        <label>unordered_map</label>
+      </node>
+      <node id="32">
+        <label>utility</label>
+      </node>
+      <node id="27">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <sectiondef kind="var">
+      <memberdef kind="variable" id="plugins_2tcp__network__backend_2plugin_8cpp_1a80a10ab263b90268f89415da8d4fbb07" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr uint32_t</type>
+        <definition>constexpr uint32_t MAX_PACKET_BYTES</definition>
+        <argsstring></argsstring>
+        <name>MAX_PACKET_BYTES</name>
+        <initializer>= 256u * 1024u * 1024u</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/tcp_network_backend/plugin.cpp" line="5" column="27" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/tcp_network_backend/plugin.cpp" bodystart="5" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="plugins_2tcp__network__backend_2plugin_8cpp_1ac0297c1fa2ac807affad45a2aae29918" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="export_8hpp_1a8416b8eb692dba7a7e17a8b9a5ac2fd7" kindref="member">MY_EXPORT_API</ref> <ref refid="classILLIXR_1_1plugin" kindref="compound">plugin</ref> *</type>
+        <definition>MY_EXPORT_API plugin * this_plugin_factory</definition>
+        <argsstring>(phonebook *pb)</argsstring>
+        <name>this_plugin_factory</name>
+        <param>
+          <type><ref refid="classILLIXR_1_1phonebook" kindref="compound">phonebook</ref> *</type>
+          <declname>pb</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/tcp_network_backend/plugin.cpp" line="309" column="33" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/tcp_network_backend/plugin.cpp" bodystart="309" bodyend="316"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#include<sp/>&quot;<ref refid="plugins_2zed_2plugin_8hpp" kindref="compound">plugin.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstring&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint32_t</ref><sp/><ref refid="plugins_2tcp__network__backend_2plugin_8cpp_1a80a10ab263b90268f89415da8d4fbb07" kindref="member">MAX_PACKET_BYTES</ref><sp/>=<sp/>256u<sp/>*<sp/>1024u<sp/>*<sp/>1024u;</highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceILLIXR" kindref="compound">ILLIXR</ref>;</highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"><ref refid="classILLIXR_1_1tcp__network__backend_1aa647459f49f690bb2722155803ed9a5d" kindref="member">tcp_network_backend::tcp_network_backend</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>name_,<sp/><ref refid="classILLIXR_1_1phonebook" kindref="compound">phonebook</ref>*<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">pb_</ref>)</highlight></codeline>
+<codeline lineno="10"><highlight class="normal"><sp/><sp/><sp/><sp/>:<sp/><ref refid="classILLIXR_1_1plugin" kindref="compound">plugin</ref>(name_,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">pb_</ref>)</highlight></codeline>
+<codeline lineno="11"><highlight class="normal"><sp/><sp/><sp/><sp/>,<sp/>switchboard_{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">pb_</ref>-&gt;lookup_impl&lt;<ref refid="classILLIXR_1_1switchboard" kindref="compound">switchboard</ref>&gt;()}<sp/>{</highlight></codeline>
+<codeline lineno="12"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>read<sp/>environment<sp/>variables</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(switchboard_-&gt;get_env_char(</highlight><highlight class="stringliteral">&quot;ILLIXR_SERVER_IP&quot;</highlight><highlight class="normal">))<sp/>{</highlight></codeline>
+<codeline lineno="14"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>server_ip_<sp/>=<sp/>switchboard_-&gt;<ref refid="classILLIXR_1_1switchboard_1a039d11d26042d5a7c1286956e37354fe" kindref="member">get_env_char</ref>(</highlight><highlight class="stringliteral">&quot;ILLIXR_SERVER_IP&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="15"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>spdlog::get(</highlight><highlight class="stringliteral">&quot;illixr&quot;</highlight><highlight class="normal">)-&gt;info(</highlight><highlight class="stringliteral">&quot;[tcp_network_backend]<sp/>Using<sp/>server<sp/>IP<sp/>{}&quot;</highlight><highlight class="normal">,<sp/>server_ip_);</highlight></codeline>
+<codeline lineno="16"><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(switchboard_-&gt;get_env_char(</highlight><highlight class="stringliteral">&quot;ILLIXR_TCP_SERVER_IP&quot;</highlight><highlight class="normal">))<sp/>{</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>server_ip_<sp/>=<sp/>switchboard_-&gt;get_env_char(</highlight><highlight class="stringliteral">&quot;ILLIXR_TCP_SERVER_IP&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="18"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>spdlog::get(</highlight><highlight class="stringliteral">&quot;illixr&quot;</highlight><highlight class="normal">)-&gt;info(</highlight><highlight class="stringliteral">&quot;[tcp_network_backend]<sp/>Using<sp/>TCP<sp/>server<sp/>IP<sp/>{}&quot;</highlight><highlight class="normal">,<sp/>server_ip_);</highlight></codeline>
+<codeline lineno="19"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(switchboard_-&gt;get_env_char(</highlight><highlight class="stringliteral">&quot;ILLIXR_TCP_SERVER_PORT&quot;</highlight><highlight class="normal">))<sp/>{</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>server_port_<sp/>=<sp/>std::stoi(switchboard_-&gt;get_env_char(</highlight><highlight class="stringliteral">&quot;ILLIXR_TCP_SERVER_PORT&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>spdlog::get(</highlight><highlight class="stringliteral">&quot;illixr&quot;</highlight><highlight class="normal">)-&gt;info(</highlight><highlight class="stringliteral">&quot;[tcp_network_backend]<sp/>Using<sp/>TCP<sp/>server<sp/>port<sp/>{}&quot;</highlight><highlight class="normal">,<sp/>server_port_);</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(switchboard_-&gt;get_env_char(</highlight><highlight class="stringliteral">&quot;ILLIXR_CLIENT_IP&quot;</highlight><highlight class="normal">))<sp/>{</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>client_ip_<sp/>=<sp/>switchboard_-&gt;get_env_char(</highlight><highlight class="stringliteral">&quot;ILLIXR_CLIENT_IP&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>spdlog::get(</highlight><highlight class="stringliteral">&quot;illixr&quot;</highlight><highlight class="normal">)-&gt;info(</highlight><highlight class="stringliteral">&quot;[tcp_network_backend]<sp/>Using<sp/>client<sp/>IP<sp/>{}&quot;</highlight><highlight class="normal">,<sp/>client_ip_);</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(switchboard_-&gt;get_env_char(</highlight><highlight class="stringliteral">&quot;ILLIXR_TCP_CLIENT_IP&quot;</highlight><highlight class="normal">))<sp/>{</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>client_ip_<sp/>=<sp/>switchboard_-&gt;get_env_char(</highlight><highlight class="stringliteral">&quot;ILLIXR_TCP_CLIENT_IP&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>spdlog::get(</highlight><highlight class="stringliteral">&quot;illixr&quot;</highlight><highlight class="normal">)-&gt;info(</highlight><highlight class="stringliteral">&quot;[tcp_network_backend]<sp/>Using<sp/>TCP<sp/>client<sp/>IP<sp/>{}&quot;</highlight><highlight class="normal">,<sp/>client_ip_);</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(switchboard_-&gt;get_env_char(</highlight><highlight class="stringliteral">&quot;ILLIXR_TCP_CLIENT_PORT&quot;</highlight><highlight class="normal">))<sp/>{</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>client_port_<sp/>=<sp/>std::stoi(switchboard_-&gt;get_env_char(</highlight><highlight class="stringliteral">&quot;ILLIXR_TCP_CLIENT_PORT&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>spdlog::get(</highlight><highlight class="stringliteral">&quot;illixr&quot;</highlight><highlight class="normal">)-&gt;info(</highlight><highlight class="stringliteral">&quot;[tcp_network_backend]<sp/>Using<sp/>TCP<sp/>client<sp/>port<sp/>{}&quot;</highlight><highlight class="normal">,<sp/>client_port_);</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(switchboard_-&gt;get_env_char(</highlight><highlight class="stringliteral">&quot;ILLIXR_IS_CLIENT&quot;</highlight><highlight class="normal">))<sp/>{</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>is_client_<sp/>=<sp/>std::stoi(switchboard_-&gt;get_env_char(</highlight><highlight class="stringliteral">&quot;ILLIXR_IS_CLIENT&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>spdlog::get(</highlight><highlight class="stringliteral">&quot;illixr&quot;</highlight><highlight class="normal">)-&gt;info(</highlight><highlight class="stringliteral">&quot;[tcp_network_backend]<sp/>Is<sp/>client<sp/>{}&quot;</highlight><highlight class="normal">,<sp/>is_client_);</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>is_client_<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"></highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(is_client_)<sp/>{</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>client<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>__ANDROID__</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>The<sp/>Quest<sp/>may<sp/>launch<sp/>before<sp/>desktop<sp/>ILLIXR.<sp/>Keep<sp/>the<sp/>app<sp/>resident<sp/>and</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>retry<sp/>until<sp/>the<sp/>host<sp/>starts<sp/>listening<sp/>or<sp/>shutdown<sp/>is<sp/>requested.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">while</highlight><highlight class="normal"><sp/>(running_)<sp/>{</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">*<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">socket</ref><sp/>=<sp/></highlight><highlight class="keyword">new</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1network_1_1TCPSocket" kindref="compound">network::TCPSocket</ref>();</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">socket</ref>-&gt;socket_set_reuseaddr();</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(switchboard_-&gt;get_env_char(</highlight><highlight class="stringliteral">&quot;ILLIXR_TCP_CLIENT_IP&quot;</highlight><highlight class="normal">)<sp/>&amp;&amp;</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>switchboard_-&gt;get_env_char(</highlight><highlight class="stringliteral">&quot;ILLIXR_TCP_CLIENT_PORT&quot;</highlight><highlight class="normal">))<sp/>{</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">socket</ref>-&gt;socket_bind(client_ip_,<sp/>client_port_);</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"></highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>spdlog::get(</highlight><highlight class="stringliteral">&quot;illixr&quot;</highlight><highlight class="normal">)-&gt;info(</highlight><highlight class="stringliteral">&quot;[tcp_network_backend]<sp/>Connecting<sp/>to<sp/>{}:{}&quot;</highlight><highlight class="normal">,<sp/>server_ip_,<sp/>server_port_);</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">socket</ref>-&gt;socket_connect(server_ip_,<sp/>server_port_);</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">socket</ref>-&gt;enable_no_delay();</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>peer_socket_<sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">socket</ref>;</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>spdlog::get(</highlight><highlight class="stringliteral">&quot;illixr&quot;</highlight><highlight class="normal">)-&gt;info(</highlight><highlight class="stringliteral">&quot;[tcp_network_backend]<sp/>Connected;<sp/>TCP_NODELAY={}&quot;</highlight><highlight class="normal">,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">socket</ref>-&gt;is_no_delay());</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">catch</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::exception&amp;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">error</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">socket</ref>;</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>spdlog::get(</highlight><highlight class="stringliteral">&quot;illixr&quot;</highlight><highlight class="normal">)-&gt;warn(</highlight><highlight class="stringliteral">&quot;[tcp_network_backend]<sp/>Desktop<sp/>is<sp/>not<sp/>ready<sp/>({});<sp/>retrying&quot;</highlight><highlight class="normal">,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">error</ref>.what());</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::this_thread::sleep_for(std::chrono::milliseconds(500));</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>io_thread_<sp/>=<sp/>std::thread([</highlight><highlight class="keyword">this</highlight><highlight class="normal">]()<sp/>{</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>start_client();</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>});</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"></highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>wait<sp/>till<sp/>we<sp/>are<sp/>connected</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">while</highlight><highlight class="normal"><sp/>(!ready_)<sp/>{</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::this_thread::sleep_for(std::chrono::milliseconds(100));</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>client<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>__ANDROID__</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">server_socket_</ref>.socket_set_reuseaddr();</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">server_socket_</ref>.socket_bind(server_ip_,<sp/>server_port_);</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">server_socket_</ref>.enable_no_delay();</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">server_socket_</ref>.socket_listen();</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"></highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">*<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">client_socket</ref><sp/>=<sp/></highlight><highlight class="keyword">new</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1network_1_1TCPSocket" kindref="compound">network::TCPSocket</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">server_socket_</ref>.socket_accept());</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Set<sp/>linger-zero<sp/>on<sp/>the<sp/>accepted<sp/>socket<sp/>so<sp/>it<sp/>sends<sp/>RST<sp/>on<sp/>close</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>rather<sp/>than<sp/>entering<sp/>TIME_WAIT<sp/>after<sp/>a<sp/>force-quit.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">client_socket</ref>-&gt;socket_set_linger_zero();</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>spdlog::get(</highlight><highlight class="stringliteral">&quot;illixr&quot;</highlight><highlight class="normal">)-&gt;debug(</highlight><highlight class="stringliteral">&quot;Accepted<sp/>connection<sp/>from<sp/>client:<sp/>&quot;</highlight><highlight class="normal"><sp/>+<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">client_socket</ref>-&gt;peer_address());</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>peer_socket_<sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">client_socket</ref>;</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>io_thread_<sp/>=<sp/>std::thread([</highlight><highlight class="keyword">this</highlight><highlight class="normal">]()<sp/>{</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>start_server();</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>});</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"></highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">while</highlight><highlight class="normal"><sp/>(!ready_)<sp/>{</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::this_thread::sleep_for(std::chrono::milliseconds(100));</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="106"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"></highlight></codeline>
+<codeline lineno="108"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>__ANDROID__</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="109"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>tcp_network_backend::start()<sp/>{</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1plugin_1a30d7294817fc5e8a8216fbfbca233cdc" kindref="member">plugin::start</ref>();</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1tcp__network__backend_1abe4d9228e145e48dbf9b037a35438fc4" kindref="member">io_thread_</ref><sp/>=<sp/>std::thread([</highlight><highlight class="keyword">this</highlight><highlight class="normal">]()<sp/>{</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1tcp__network__backend_1aa49e7ceeb20ff0a48b330ef50c056061" kindref="member">read_loop</ref>(<ref refid="classILLIXR_1_1tcp__network__backend_1a2ae56e40e498e17028038ce9ab717fd3" kindref="member">peer_socket_</ref>);</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"><sp/><sp/><sp/><sp/>});</highlight></codeline>
+<codeline lineno="114"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"></highlight></codeline>
+<codeline lineno="116"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="117"><highlight class="normal"></highlight></codeline>
+<codeline lineno="118"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1tcp__network__backend_1aca75fffa0e12e511dbcf9395c2df47cc" kindref="member">tcp_network_backend::start_client</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">*<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">socket</ref><sp/>=<sp/></highlight><highlight class="keyword">new</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1network_1_1TCPSocket" kindref="compound">network::TCPSocket</ref>();</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classILLIXR_1_1tcp__network__backend_1ab0ce80807d252704497c44fd57c405bc" kindref="member">switchboard_</ref>-&gt;get_env_char(</highlight><highlight class="stringliteral">&quot;ILLIXR_TCP_CLIENT_IP&quot;</highlight><highlight class="normal">)<sp/>&amp;&amp;<sp/><ref refid="classILLIXR_1_1tcp__network__backend_1ab0ce80807d252704497c44fd57c405bc" kindref="member">switchboard_</ref>-&gt;get_env_char(</highlight><highlight class="stringliteral">&quot;ILLIXR_TCP_CLIENT_PORT&quot;</highlight><highlight class="normal">))<sp/>{</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>socket_bind()<sp/>sets<sp/>SO_REUSEADDR,<sp/>SO_REUSEPORT,<sp/>and<sp/>SO_LINGER=0<sp/>internally.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">socket</ref>-&gt;socket_bind(<ref refid="classILLIXR_1_1tcp__network__backend_1a9e55224fc2bfddb05fb4191363c8484f" kindref="member">client_ip_</ref>,<sp/><ref refid="classILLIXR_1_1tcp__network__backend_1a2127495fe9204458e396dbe6e4c181fe" kindref="member">client_port_</ref>);</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">socket</ref>-&gt;socket_set_linger_zero();</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">socket</ref>-&gt;socket_set_reuseaddr();</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">socket</ref>-&gt;enable_no_delay();</highlight></codeline>
+<codeline lineno="128"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1tcp__network__backend_1a2ae56e40e498e17028038ce9ab717fd3" kindref="member">peer_socket_</ref><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">socket</ref>;</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"></highlight></codeline>
+<codeline lineno="130"><highlight class="normal"><sp/><sp/><sp/><sp/>std::cout<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;Connecting<sp/>to<sp/>&quot;</highlight><highlight class="normal"><sp/>+<sp/><ref refid="classILLIXR_1_1tcp__network__backend_1aaeba6dfa9adc081fd0aee1ca6805c3c9" kindref="member">server_ip_</ref><sp/>+<sp/></highlight><highlight class="stringliteral">&quot;<sp/>at<sp/>port<sp/>&quot;</highlight><highlight class="normal"><sp/>+<sp/>std::to_string(<ref refid="classILLIXR_1_1tcp__network__backend_1a79a7a6215f62168b189153c572e75640" kindref="member">server_port_</ref>)<sp/>&lt;&lt;<sp/>std::endl;</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">socket</ref>-&gt;<ref refid="classILLIXR_1_1network_1_1TCPSocket_1a206e88ccb22479edf8142ac84f545ed1" kindref="member">socket_connect</ref>(<ref refid="classILLIXR_1_1tcp__network__backend_1aaeba6dfa9adc081fd0aee1ca6805c3c9" kindref="member">server_ip_</ref>,<sp/><ref refid="classILLIXR_1_1tcp__network__backend_1a79a7a6215f62168b189153c572e75640" kindref="member">server_port_</ref>);</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/>std::cout<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;Connected<sp/>to<sp/>server&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/>std::endl;</highlight></codeline>
+<codeline lineno="133"><highlight class="normal"></highlight></codeline>
+<codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1tcp__network__backend_1a6a2d0801ec00f2f1214d0c7f2a86249e" kindref="member">ready_</ref><sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1tcp__network__backend_1aa49e7ceeb20ff0a48b330ef50c056061" kindref="member">read_loop</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">socket</ref>);</highlight></codeline>
+<codeline lineno="136"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"></highlight></codeline>
+<codeline lineno="138"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1tcp__network__backend_1a7a9f0e2321f5ff34b2b016cfdef62fa2" kindref="member">tcp_network_backend::start_server</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="139"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1network_1_1TCPSocket" kindref="compound">network::TCPSocket</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">server_socket</ref>;</highlight></codeline>
+<codeline lineno="140"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">server_socket</ref>.<ref refid="classILLIXR_1_1network_1_1TCPSocket_1a15ae6b3c8bb5b0fe020c11910b75b99b" kindref="member">socket_set_reuseaddr</ref>();</highlight></codeline>
+<codeline lineno="141"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">server_socket</ref>.socket_bind(<ref refid="classILLIXR_1_1tcp__network__backend_1aaeba6dfa9adc081fd0aee1ca6805c3c9" kindref="member">server_ip_</ref>,<sp/><ref refid="classILLIXR_1_1tcp__network__backend_1a79a7a6215f62168b189153c572e75640" kindref="member">server_port_</ref>);</highlight></codeline>
+<codeline lineno="142"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">server_socket</ref>.enable_no_delay();</highlight></codeline>
+<codeline lineno="143"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">server_socket</ref>.socket_listen();</highlight></codeline>
+<codeline lineno="144"><highlight class="normal"></highlight></codeline>
+<codeline lineno="145"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">*<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">client_socket</ref><sp/>=<sp/></highlight><highlight class="keyword">new</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1network_1_1TCPSocket" kindref="compound">network::TCPSocket</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">server_socket</ref>.socket_accept());</highlight></codeline>
+<codeline lineno="146"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">client_socket</ref>-&gt;socket_set_linger_zero();</highlight></codeline>
+<codeline lineno="147"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">client_socket</ref>-&gt;enable_no_delay();</highlight></codeline>
+<codeline lineno="148"><highlight class="normal"><sp/><sp/><sp/><sp/>spdlog::get(</highlight><highlight class="stringliteral">&quot;illixr&quot;</highlight><highlight class="normal">)-&gt;info(</highlight><highlight class="stringliteral">&quot;[tcp_network_backend]<sp/>TCP_NODELAY<sp/>verified<sp/>=<sp/>{}&quot;</highlight><highlight class="normal">,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">client_socket</ref>-&gt;is_no_delay());</highlight></codeline>
+<codeline lineno="149"><highlight class="normal"><sp/><sp/><sp/><sp/>std::cout<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;Accepted<sp/>connection<sp/>from<sp/>client:<sp/>&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">client_socket</ref>-&gt;peer_address()<sp/>&lt;&lt;<sp/>std::endl;</highlight></codeline>
+<codeline lineno="150"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1tcp__network__backend_1a2ae56e40e498e17028038ce9ab717fd3" kindref="member">peer_socket_</ref><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">client_socket</ref>;</highlight></codeline>
+<codeline lineno="151"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1tcp__network__backend_1a6a2d0801ec00f2f1214d0c7f2a86249e" kindref="member">ready_</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="152"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1tcp__network__backend_1aa49e7ceeb20ff0a48b330ef50c056061" kindref="member">read_loop</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">client_socket</ref>);</highlight></codeline>
+<codeline lineno="153"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="154"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="155"><highlight class="normal"></highlight></codeline>
+<codeline lineno="156"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1tcp__network__backend_1aa49e7ceeb20ff0a48b330ef50c056061" kindref="member">tcp_network_backend::read_loop</ref>(<ref refid="classILLIXR_1_1network_1_1TCPSocket" kindref="compound">network::TCPSocket</ref>*<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">socket</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="157"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">buffer</ref>;</highlight></codeline>
+<codeline lineno="158"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">while</highlight><highlight class="normal"><sp/>(<ref refid="classILLIXR_1_1tcp__network__backend_1a3e0657177affa7a15cf008d2ee05aeb5" kindref="member">running_</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="159"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>read<sp/>from<sp/>socket</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="160"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>packet<sp/>are<sp/>in<sp/>the<sp/>format</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="161"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>total_length:4bytes|topic_name_length:4bytes|topic_name|message</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="162"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>__ANDROID__</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="163"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::string<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">packet</ref><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">socket</ref>-&gt;read_data(10000);</highlight></codeline>
+<codeline lineno="164"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="165"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::string<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">packet</ref><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">socket</ref>-&gt;read_data();</highlight></codeline>
+<codeline lineno="166"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="167"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">packet</ref>.empty())<sp/>{</highlight></codeline>
+<codeline lineno="168"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classILLIXR_1_1tcp__network__backend_1a3e0657177affa7a15cf008d2ee05aeb5" kindref="member">running_</ref>.exchange(</highlight><highlight class="keyword">false</highlight><highlight class="normal">))<sp/>{</highlight></codeline>
+<codeline lineno="169"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>spdlog::get(</highlight><highlight class="stringliteral">&quot;illixr&quot;</highlight><highlight class="normal">)-&gt;error(</highlight><highlight class="stringliteral">&quot;[tcp_network_backend]<sp/>TCP<sp/>connection<sp/>closed<sp/>or<sp/>read<sp/>failed;<sp/>restart<sp/>the<sp/>session&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="170"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="171"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="172"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="173"><highlight class="normal"></highlight></codeline>
+<codeline lineno="174"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">buffer</ref><sp/>+=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">packet</ref>;</highlight></codeline>
+<codeline lineno="175"><highlight class="normal"></highlight></codeline>
+<codeline lineno="176"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>check<sp/>if<sp/>we<sp/>have<sp/>a<sp/>complete<sp/>packet</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="177"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">while</highlight><highlight class="normal"><sp/>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">buffer</ref>.size()<sp/>&gt;=<sp/>8)<sp/>{</highlight></codeline>
+<codeline lineno="178"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint32_t</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">total_length</ref>;</highlight></codeline>
+<codeline lineno="179"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint32_t</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">topic_name_length</ref>;</highlight></codeline>
+<codeline lineno="180"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::memcpy(&amp;<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">total_length</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">buffer</ref>.data(),<sp/></highlight><highlight class="keyword">sizeof</highlight><highlight class="normal">(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">total_length</ref>));</highlight></codeline>
+<codeline lineno="181"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::memcpy(&amp;<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">topic_name_length</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">buffer</ref>.data()<sp/>+<sp/>4,<sp/></highlight><highlight class="keyword">sizeof</highlight><highlight class="normal">(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">topic_name_length</ref>));</highlight></codeline>
+<codeline lineno="182"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">total_length &lt; 8 || total_length &gt;</ref><sp/><ref refid="plugins_2tcp__network__backend_2plugin_8cpp_1a80a10ab263b90268f89415da8d4fbb07" kindref="member">MAX_PACKET_BYTES</ref><sp/>||<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">topic_name_length</ref><sp/>&gt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">total_length</ref><sp/>-<sp/>8)<sp/>{</highlight></codeline>
+<codeline lineno="183"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>spdlog::get(</highlight><highlight class="stringliteral">&quot;illixr&quot;</highlight><highlight class="normal">)-&gt;error(</highlight><highlight class="stringliteral">&quot;[tcp_network_backend]<sp/>malformed<sp/>packet<sp/>header<sp/>(total_length={},<sp/>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="184"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;topic_name_length={},<sp/>buffered={}<sp/>B)<sp/>--<sp/>stream<sp/>is<sp/>desynced,<sp/>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="185"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;closing<sp/>the<sp/>read<sp/>loop&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="186"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">total_length</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">topic_name_length</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">buffer</ref>.size());</highlight></codeline>
+<codeline lineno="187"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1tcp__network__backend_1a3e0657177affa7a15cf008d2ee05aeb5" kindref="member">running_</ref><sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="188"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="189"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="190"><highlight class="normal"></highlight></codeline>
+<codeline lineno="191"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">buffer</ref>.size()<sp/>&gt;=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">total_length</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="192"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::string<sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">topic_name</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">buffer</ref>.data()<sp/>+<sp/>8,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">topic_name_length</ref>);</highlight></codeline>
+<codeline lineno="193"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;char&gt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">message</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">buffer</ref>.begin()<sp/>+<sp/>8<sp/>+<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">topic_name_length</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">buffer</ref>.begin()<sp/>+<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">total_length</ref>);</highlight></codeline>
+<codeline lineno="194"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="195"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1tcp__network__backend_1a63728d5f98a04ecd4dd93e2c0dfaa4fb" kindref="member">topic_receive</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">topic_name</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">message</ref>);</highlight></codeline>
+<codeline lineno="196"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">catch</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::exception&amp;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">error</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="197"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>spdlog::get(</highlight><highlight class="stringliteral">&quot;illixr&quot;</highlight><highlight class="normal">)-&gt;error(</highlight></codeline>
+<codeline lineno="198"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;[tcp_network_backend]<sp/>Failed<sp/>to<sp/>deserialize<sp/>topic={}<sp/>bytes={}:<sp/>{};<sp/>restart<sp/>the<sp/>session&quot;</highlight><highlight class="normal">,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">topic_name</ref>,</highlight></codeline>
+<codeline lineno="199"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">message</ref>.size(),<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">error</ref>.what());</highlight></codeline>
+<codeline lineno="200"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1tcp__network__backend_1a3e0657177affa7a15cf008d2ee05aeb5" kindref="member">running_</ref><sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="201"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="202"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="203"><highlight class="normal"></highlight></codeline>
+<codeline lineno="204"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">buffer</ref>.erase(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">buffer</ref>.begin(),<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">buffer</ref>.begin()<sp/>+<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">total_length</ref>);</highlight></codeline>
+<codeline lineno="205"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="206"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="207"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="208"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="209"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="210"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="211"><highlight class="normal"></highlight></codeline>
+<codeline lineno="212"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1tcp__network__backend_1a1f6dabdb276b51452d48745f328e992d" kindref="member">tcp_network_backend::topic_create</ref>(std::string<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">topic_name</ref>,<sp/><ref refid="structILLIXR_1_1network_1_1topic__config" kindref="compound">network::topic_config</ref>&amp;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">config</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="213"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1tcp__network__backend_1ad1782db197d7a3a55416c8f056056a98" kindref="member">networked_topics_</ref>.push_back(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">topic_name</ref>);</highlight></codeline>
+<codeline lineno="214"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1tcp__network__backend_1afea0d13f0cefa00a6df1c372b5ab5aa0" kindref="member">networked_topics_configs_</ref>[<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">topic_name</ref>]<sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">config</ref>;</highlight></codeline>
+<codeline lineno="215"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/>serialization;</highlight></codeline>
+<codeline lineno="216"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">config</ref>.serialization_method<sp/>==<sp/><ref refid="structILLIXR_1_1network_1_1topic__config_1a01b1f8db0598cbf2ad886c76e88d2046abb4f8e721ff23d33ba07c895410de1a9" kindref="member">network::topic_config::SerializationMethod::BOOST</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="217"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>serialization<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;BOOST&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="218"><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="219"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>serialization<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;PROTOBUF&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="220"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="221"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">message</ref><sp/>=<sp/></highlight><highlight class="stringliteral">&quot;create_topic&quot;</highlight><highlight class="normal"><sp/>+<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">topic_name</ref><sp/>+<sp/><ref refid="classILLIXR_1_1tcp__network__backend_1abbb3a0f29708edb22c965b5b7869993d" kindref="member">delimiter_</ref><sp/>+<sp/>serialization;</highlight></codeline>
+<codeline lineno="222"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1tcp__network__backend_1a14022fe23e9e5f2eaa4cb8c056b2af87" kindref="member">send_to_peer</ref>(</highlight><highlight class="stringliteral">&quot;illixr_control&quot;</highlight><highlight class="normal">,<sp/>std::move(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">message</ref>));</highlight></codeline>
+<codeline lineno="223"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="224"><highlight class="normal"></highlight></codeline>
+<codeline lineno="225"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1tcp__network__backend_1a20f0e13e6d610f9382d843ad3766b94a" kindref="member">tcp_network_backend::is_topic_networked</ref>(std::string<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">topic_name</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="226"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>std::find(<ref refid="classILLIXR_1_1tcp__network__backend_1ad1782db197d7a3a55416c8f056056a98" kindref="member">networked_topics_</ref>.begin(),<sp/><ref refid="classILLIXR_1_1tcp__network__backend_1ad1782db197d7a3a55416c8f056056a98" kindref="member">networked_topics_</ref>.end(),<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">topic_name</ref>)<sp/>!=<sp/><ref refid="classILLIXR_1_1tcp__network__backend_1ad1782db197d7a3a55416c8f056056a98" kindref="member">networked_topics_</ref>.end();</highlight></codeline>
+<codeline lineno="227"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="228"><highlight class="normal"></highlight></codeline>
+<codeline lineno="229"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1tcp__network__backend_1a2b6ca4503a8ba0198cf6c2f7a242c867" kindref="member">tcp_network_backend::topic_send</ref>(std::string<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">topic_name</ref>,<sp/>std::string&amp;&amp;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">message</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="230"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!<ref refid="classILLIXR_1_1tcp__network__backend_1a20f0e13e6d610f9382d843ad3766b94a" kindref="member">is_topic_networked</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">topic_name</ref>))<sp/>{</highlight></codeline>
+<codeline lineno="231"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::cout<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;Topic<sp/>not<sp/>networked&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/>std::endl;</highlight></codeline>
+<codeline lineno="232"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="233"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="234"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1tcp__network__backend_1a14022fe23e9e5f2eaa4cb8c056b2af87" kindref="member">send_to_peer</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">topic_name</ref>,<sp/>std::move(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">message</ref>));</highlight></codeline>
+<codeline lineno="235"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="236"><highlight class="normal"></highlight></codeline>
+<codeline lineno="237"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Helper<sp/>function<sp/>to<sp/>queue<sp/>a<sp/>received<sp/>message<sp/>into<sp/>the<sp/>corresponding<sp/>topic</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="238"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1tcp__network__backend_1a63728d5f98a04ecd4dd93e2c0dfaa4fb" kindref="member">tcp_network_backend::topic_receive</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">topic_name</ref>,<sp/>std::vector&lt;char&gt;&amp;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">message</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="239"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">topic_name</ref><sp/>==<sp/></highlight><highlight class="stringliteral">&quot;illixr_control&quot;</highlight><highlight class="normal">)<sp/>{</highlight></codeline>
+<codeline lineno="240"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::string<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">message_str</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">message</ref>.begin(),<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">message</ref>.end());</highlight></codeline>
+<codeline lineno="241"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>check<sp/>if<sp/>message<sp/>starts<sp/>with<sp/>&quot;create_topic&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="242"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">message_str</ref>.find(</highlight><highlight class="stringliteral">&quot;create_topic&quot;</highlight><highlight class="normal">)<sp/>==<sp/>0)<sp/>{</highlight></codeline>
+<codeline lineno="243"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">d_pos</ref><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">message_str</ref>.find(<ref refid="classILLIXR_1_1tcp__network__backend_1abbb3a0f29708edb22c965b5b7869993d" kindref="member">delimiter_</ref>);</highlight></codeline>
+<codeline lineno="244"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">assert</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">d_pos</ref><sp/>!=<sp/>std::string::npos);</highlight></codeline>
+<codeline lineno="245"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::string<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">l_topic_name</ref><sp/><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">message_str</ref>.substr(12,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">d_pos</ref><sp/>-<sp/>12);</highlight></codeline>
+<codeline lineno="246"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::string<sp/>serialization<sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">message_str</ref>.substr(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">d_pos</ref><sp/>+<sp/>1);</highlight></codeline>
+<codeline lineno="247"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1tcp__network__backend_1ad1782db197d7a3a55416c8f056056a98" kindref="member">networked_topics_</ref>.push_back(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">l_topic_name</ref>);</highlight></codeline>
+<codeline lineno="248"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1network_1_1topic__config" kindref="compound">network::topic_config</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">config</ref>;</highlight></codeline>
+<codeline lineno="249"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(serialization<sp/>==<sp/></highlight><highlight class="stringliteral">&quot;BOOST&quot;</highlight><highlight class="normal">)<sp/>{</highlight></codeline>
+<codeline lineno="250"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">config</ref>.<ref refid="structILLIXR_1_1network_1_1topic__config_1ae06e8e74da0737d520bba1f7072695f4" kindref="member">serialization_method</ref><sp/>=<sp/><ref refid="structILLIXR_1_1network_1_1topic__config_1a01b1f8db0598cbf2ad886c76e88d2046abb4f8e721ff23d33ba07c895410de1a9" kindref="member">network::topic_config::SerializationMethod::BOOST</ref>;</highlight></codeline>
+<codeline lineno="251"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="252"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">config</ref>.serialization_method<sp/>=<sp/><ref refid="structILLIXR_1_1network_1_1topic__config_1a01b1f8db0598cbf2ad886c76e88d2046a8edf17e12ebf451dcd9263d7ec544ee4" kindref="member">network::topic_config::SerializationMethod::PROTOBUF</ref>;</highlight></codeline>
+<codeline lineno="253"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="254"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1tcp__network__backend_1afea0d13f0cefa00a6df1c372b5ab5aa0" kindref="member">networked_topics_configs_</ref>[<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">l_topic_name</ref>]<sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">config</ref>;</highlight></codeline>
+<codeline lineno="255"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::cout<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;Received<sp/>create_topic<sp/>for<sp/>&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">l_topic_name</ref><sp/>&lt;&lt;<sp/>std::endl;</highlight></codeline>
+<codeline lineno="256"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="257"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="258"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="259"><highlight class="normal"></highlight></codeline>
+<codeline lineno="260"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!<ref refid="classILLIXR_1_1tcp__network__backend_1ab0ce80807d252704497c44fd57c405bc" kindref="member">switchboard_</ref>-&gt;topic_exists(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">topic_name</ref>))<sp/>{</highlight></codeline>
+<codeline lineno="261"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="262"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="263"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1tcp__network__backend_1ab0ce80807d252704497c44fd57c405bc" kindref="member">switchboard_</ref>-&gt;get_topic(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">topic_name</ref>).deserialize_and_put(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">message</ref>,<sp/><ref refid="classILLIXR_1_1tcp__network__backend_1afea0d13f0cefa00a6df1c372b5ab5aa0" kindref="member">networked_topics_configs_</ref>[<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">topic_name</ref>]);</highlight></codeline>
+<codeline lineno="264"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="265"><highlight class="normal"></highlight></codeline>
+<codeline lineno="266"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1tcp__network__backend_1a9180a91ffb15c3ae0f865a6b5a418216" kindref="member">tcp_network_backend::stop</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="267"><highlight class="normal"><sp/><sp/><sp/><sp/>std::lock_guard&lt;std::mutex&gt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">lock</ref>{<ref refid="classILLIXR_1_1tcp__network__backend_1a35fd47a70d89e60d186c4579334f6332" kindref="member">stop_mutex_</ref>};</highlight></codeline>
+<codeline lineno="268"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>shutdown()<sp/>wakes<sp/>read_loop<sp/>without<sp/>invalidating<sp/>the<sp/>descriptor;<sp/>deletion</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="269"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>is<sp/>deferred<sp/>until<sp/>the<sp/>owning<sp/>thread<sp/>has<sp/>returned.<sp/>A<sp/>read/send<sp/>failure<sp/>may</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="270"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>already<sp/>have<sp/>cleared<sp/>running_,<sp/>but<sp/>its<sp/>worker<sp/>still<sp/>needs<sp/>to<sp/>be<sp/>joined.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="271"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1tcp__network__backend_1a3e0657177affa7a15cf008d2ee05aeb5" kindref="member">running_</ref>.store(</highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="272"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classILLIXR_1_1tcp__network__backend_1a2ae56e40e498e17028038ce9ab717fd3" kindref="member">peer_socket_</ref><sp/>!=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">)<sp/>{</highlight></codeline>
+<codeline lineno="273"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1tcp__network__backend_1a2ae56e40e498e17028038ce9ab717fd3" kindref="member">peer_socket_</ref>-&gt;<ref refid="classILLIXR_1_1network_1_1TCPSocket_1a8015896c523bb7f791c915f567d0e8ab" kindref="member">socket_shutdown</ref>();</highlight></codeline>
+<codeline lineno="274"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="275"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classILLIXR_1_1tcp__network__backend_1abe4d9228e145e48dbf9b037a35438fc4" kindref="member">io_thread_</ref>.joinable()<sp/>&amp;&amp;<sp/><ref refid="classILLIXR_1_1tcp__network__backend_1abe4d9228e145e48dbf9b037a35438fc4" kindref="member">io_thread_</ref>.get_id()<sp/>!=<sp/>std::this_thread::get_id())<sp/>{</highlight></codeline>
+<codeline lineno="276"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1tcp__network__backend_1abe4d9228e145e48dbf9b037a35438fc4" kindref="member">io_thread_</ref>.join();</highlight></codeline>
+<codeline lineno="277"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="278"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1tcp__network__backend_1a2ae56e40e498e17028038ce9ab717fd3" kindref="member">peer_socket_</ref>;</highlight></codeline>
+<codeline lineno="279"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1tcp__network__backend_1a2ae56e40e498e17028038ce9ab717fd3" kindref="member">peer_socket_</ref><sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="280"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1plugin_1a2cefabfb6dd9800b1ebc8b07031661c4" kindref="member">plugin::stop</ref>();</highlight></codeline>
+<codeline lineno="281"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="282"><highlight class="normal"></highlight></codeline>
+<codeline lineno="283"><highlight class="normal"><ref refid="classILLIXR_1_1tcp__network__backend_1a09e3b9300dbd2d0700bb778256b26a98" kindref="member">tcp_network_backend::~tcp_network_backend</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="284"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1tcp__network__backend_1a9180a91ffb15c3ae0f865a6b5a418216" kindref="member">stop</ref>();</highlight></codeline>
+<codeline lineno="285"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="286"><highlight class="normal"></highlight></codeline>
+<codeline lineno="287"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1tcp__network__backend_1a14022fe23e9e5f2eaa4cb8c056b2af87" kindref="member">tcp_network_backend::send_to_peer</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">topic_name</ref>,<sp/>std::string&amp;&amp;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">message</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="288"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>packet<sp/>are<sp/>in<sp/>the<sp/>format</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="289"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>total_length:4bytes|topic_name_length:4bytes|topic_name|message</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="290"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint32_t</ref><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">total_length</ref><sp/>=<sp/>8<sp/>+<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">topic_name</ref>.size()<sp/>+<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">message</ref>.size();</highlight></codeline>
+<codeline lineno="291"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">packet</ref>;</highlight></codeline>
+<codeline lineno="292"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">packet</ref>.append(</highlight><highlight class="keyword">reinterpret_cast&lt;</highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(&amp;<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">total_length</ref>),<sp/>4);</highlight></codeline>
+<codeline lineno="293"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint32_t</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">topic_name_length</ref><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">topic_name</ref>.size();</highlight></codeline>
+<codeline lineno="294"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">packet</ref>.append(</highlight><highlight class="keyword">reinterpret_cast&lt;</highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(&amp;<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">topic_name_length</ref>),<sp/>4);</highlight></codeline>
+<codeline lineno="295"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">packet</ref>.append(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">topic_name</ref>);</highlight></codeline>
+<codeline lineno="296"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">packet</ref>.append(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">message</ref>.begin(),<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">message</ref>.end());</highlight></codeline>
+<codeline lineno="297"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!<ref refid="classILLIXR_1_1tcp__network__backend_1a3e0657177affa7a15cf008d2ee05aeb5" kindref="member">running_</ref>)</highlight></codeline>
+<codeline lineno="298"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="299"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="300"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::lock_guard&lt;std::mutex&gt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">lock</ref>{<ref refid="classILLIXR_1_1tcp__network__backend_1a9e15c8b1639818651a037f8bbd08fd39" kindref="member">send_mutex_</ref>};</highlight></codeline>
+<codeline lineno="301"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1tcp__network__backend_1a2ae56e40e498e17028038ce9ab717fd3" kindref="member">peer_socket_</ref>-&gt;<ref refid="classILLIXR_1_1network_1_1TCPSocket_1a04707c50686783f521964b52abde3fe8" kindref="member">write_data</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">packet</ref>);</highlight></codeline>
+<codeline lineno="302"><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">catch</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::exception&amp;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">error</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="303"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1tcp__network__backend_1a3e0657177affa7a15cf008d2ee05aeb5" kindref="member">running_</ref><sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="304"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>spdlog::get(</highlight><highlight class="stringliteral">&quot;illixr&quot;</highlight><highlight class="normal">)-&gt;error(</highlight><highlight class="stringliteral">&quot;[tcp_network_backend]<sp/>TCP<sp/>send<sp/>failed<sp/>for<sp/>topic={}:<sp/>{};<sp/>restart<sp/>the<sp/>session&quot;</highlight><highlight class="normal">,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">topic_name</ref>,</highlight></codeline>
+<codeline lineno="305"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">error</ref>.what());</highlight></codeline>
+<codeline lineno="306"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="307"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="308"><highlight class="normal"></highlight></codeline>
+<codeline lineno="309"><highlight class="normal"></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;C&quot;</highlight><highlight class="normal"><sp/><ref refid="export_8hpp_1a8416b8eb692dba7a7e17a8b9a5ac2fd7" kindref="member">MY_EXPORT_API</ref><sp/><ref refid="classILLIXR_1_1plugin" kindref="compound">plugin</ref>*<sp/><ref refid="plugins_2tcp__network__backend_2plugin_8cpp_1ac0297c1fa2ac807affad45a2aae29918" kindref="member">this_plugin_factory</ref>(<ref refid="classILLIXR_1_1phonebook" kindref="compound">phonebook</ref>*<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">pb</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="310"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">*<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">obj</ref><sp/>=<sp/></highlight><highlight class="keyword">new</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1tcp__network__backend" kindref="compound">tcp_network_backend</ref>(</highlight><highlight class="stringliteral">&quot;tcp_network_backend&quot;</highlight><highlight class="normal">,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">pb</ref>);</highlight></codeline>
+<codeline lineno="311"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>The<sp/>runtime<sp/>owns<sp/>the<sp/>plugin<sp/>returned<sp/>by<sp/>this<sp/>factory.<sp/>Register<sp/>a<sp/>non-owning</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="312"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>service<sp/>alias<sp/>so<sp/>the<sp/>phonebook<sp/>does<sp/>not<sp/>try<sp/>to<sp/>delete<sp/>the<sp/>same<sp/>object<sp/>again.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="313"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">pb</ref>-&gt;register_impl&lt;<ref refid="structILLIXR_1_1network_1_1tcp__backend" kindref="compound">network::tcp_backend</ref>&gt;(</highlight></codeline>
+<codeline lineno="314"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::shared_ptr&lt;network::tcp_backend&gt;(</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="normal"><ref refid="structILLIXR_1_1network_1_1tcp__backend" kindref="compound">network::tcp_backend</ref>*</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">obj</ref>),<sp/>[](<ref refid="structILLIXR_1_1network_1_1tcp__backend" kindref="compound">network::tcp_backend</ref>*)<sp/>{<sp/>}));</highlight></codeline>
+<codeline lineno="315"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">obj</ref>;</highlight></codeline>
+<codeline lineno="316"><highlight class="normal">}</highlight></codeline>
+    </programlisting>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/tcp_network_backend/plugin.cpp"/>
+  </compounddef>
+</doxygen>

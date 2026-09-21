@@ -1,0 +1,83 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structILLIXR_1_1py__semantic__data__reader" kind="struct" language="C++" prot="public">
+    <compoundname>ILLIXR::py_semantic_data_reader</compoundname>
+    <includes refid="switchboard__bindings_8hpp" local="no">switchboard_bindings.hpp</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structILLIXR_1_1py__semantic__data__reader_1a02b3a53fb3228cc2692aae04f9d92610" prot="public" static="no" mutable="no">
+        <type><ref refid="classILLIXR_1_1decode_1_1decoded__frame__cache" kindref="compound">decode::decoded_frame_cache</ref> *</type>
+        <definition>decode::decoded_frame_cache* ILLIXR::py_semantic_data_reader::cache</definition>
+        <argsstring></argsstring>
+        <name>cache</name>
+        <qualifiedname>ILLIXR::py_semantic_data_reader::cache</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/switchboard_bindings.hpp" line="125" column="37" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/switchboard_bindings.hpp" bodystart="125" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1py__semantic__data__reader_1a24cd125a6b4c01c4676c8a563058dd18" prot="public" static="no" mutable="no">
+        <type><ref refid="classILLIXR_1_1decode_1_1semantic__metadata__cache" kindref="compound">decode::semantic_metadata_cache</ref> *</type>
+        <definition>decode::semantic_metadata_cache* ILLIXR::py_semantic_data_reader::metadata_cache</definition>
+        <argsstring></argsstring>
+        <name>metadata_cache</name>
+        <qualifiedname>ILLIXR::py_semantic_data_reader::metadata_cache</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/switchboard_bindings.hpp" line="126" column="37" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/switchboard_bindings.hpp" bodystart="126" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structILLIXR_1_1py__semantic__data__reader_1ae9aaad631dbf6920f6424c9c47abdb9d" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>pybind11::object</type>
+        <definition>pybind11::object ILLIXR::py_semantic_data_reader::get</definition>
+        <argsstring>() const</argsstring>
+        <name>get</name>
+        <qualifiedname>ILLIXR::py_semantic_data_reader::get</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/switchboard_bindings.hpp" line="128" column="23" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/switchboard_bindings.hpp" bodystart="128" bodyend="159"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="2">
+        <label>ILLIXR::decode::decoded_frame_cache</label>
+        <link refid="classILLIXR_1_1decode_1_1decoded__frame__cache"/>
+      </node>
+      <node id="3">
+        <label>ILLIXR::decode::semantic_metadata_cache</label>
+        <link refid="classILLIXR_1_1decode_1_1semantic__metadata__cache"/>
+      </node>
+      <node id="1">
+        <label>ILLIXR::py_semantic_data_reader</label>
+        <link refid="structILLIXR_1_1py__semantic__data__reader"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>cache</edgelabel>
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>metadata_cache</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/switchboard_bindings.hpp" line="124" column="1" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/switchboard_bindings.hpp" bodystart="124" bodyend="160"/>
+    <listofallmembers>
+      <member refid="structILLIXR_1_1py__semantic__data__reader_1a02b3a53fb3228cc2692aae04f9d92610" prot="public" virt="non-virtual"><scope>ILLIXR::py_semantic_data_reader</scope><name>cache</name></member>
+      <member refid="structILLIXR_1_1py__semantic__data__reader_1ae9aaad631dbf6920f6424c9c47abdb9d" prot="public" virt="non-virtual"><scope>ILLIXR::py_semantic_data_reader</scope><name>get</name></member>
+      <member refid="structILLIXR_1_1py__semantic__data__reader_1a24cd125a6b4c01c4676c8a563058dd18" prot="public" virt="non-virtual"><scope>ILLIXR::py_semantic_data_reader</scope><name>metadata_cache</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

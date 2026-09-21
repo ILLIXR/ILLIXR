@@ -1,0 +1,423 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classILLIXR_1_1semantic__python" kind="class" language="C++" prot="public">
+    <compoundname>ILLIXR::semantic_python</compoundname>
+    <basecompoundref refid="classILLIXR_1_1plugin" prot="public" virt="non-virtual">ILLIXR::plugin</basecompoundref>
+    <includes refid="plugins_2semantic__python_2plugin_8hpp" local="no">plugin.hpp</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1semantic__python_1aedf9b4ff51f6b6168aa5586254d38096" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> std::shared_ptr&lt; <ref refid="classILLIXR_1_1switchboard" kindref="compound">switchboard</ref> &gt;</type>
+        <definition>const std::shared_ptr&lt;switchboard&gt; ILLIXR::semantic_python::switchboard_</definition>
+        <argsstring></argsstring>
+        <name>switchboard_</name>
+        <qualifiedname>ILLIXR::semantic_python::switchboard_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/plugin.hpp" line="52" column="62" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/plugin.hpp" bodystart="52" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1semantic__python_1a6f0389858f0e82909bf50962e8e3c62f" prot="private" static="no" mutable="no">
+        <type><ref refid="classILLIXR_1_1switchboard_1_1reader" kindref="compound">switchboard::reader</ref>&lt; <ref refid="structILLIXR_1_1data__format_1_1semantic__xr_1_1voice__query" kindref="compound">data_format::semantic_xr::voice_query</ref> &gt;</type>
+        <definition>switchboard::reader&lt;data_format::semantic_xr::voice_query&gt; ILLIXR::semantic_python::voice_query_reader_</definition>
+        <argsstring></argsstring>
+        <name>voice_query_reader_</name>
+        <qualifiedname>ILLIXR::semantic_python::voice_query_reader_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/plugin.hpp" line="53" column="36" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/plugin.hpp" bodystart="53" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1semantic__python_1a81f1324fd0cf754b401fd0ba2e9735e1" prot="private" static="no" mutable="no">
+        <type><ref refid="classILLIXR_1_1switchboard_1_1network__writer" kindref="compound">switchboard::network_writer</ref>&lt; <ref refid="structILLIXR_1_1data__format_1_1semantic__xr_1_1query__response" kindref="compound">data_format::semantic_xr::query_response</ref> &gt;</type>
+        <definition>switchboard::network_writer&lt;data_format::semantic_xr::query_response&gt; ILLIXR::semantic_python::response_writer_</definition>
+        <argsstring></argsstring>
+        <name>response_writer_</name>
+        <qualifiedname>ILLIXR::semantic_python::response_writer_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/plugin.hpp" line="54" column="33" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/plugin.hpp" bodystart="54" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1semantic__python_1a09b0434398ef65dd5163929d10caf836" prot="private" static="no" mutable="no">
+        <type>pybind11::scoped_interpreter</type>
+        <definition>pybind11::scoped_interpreter ILLIXR::semantic_python::guard_</definition>
+        <argsstring></argsstring>
+        <name>guard_</name>
+        <qualifiedname>ILLIXR::semantic_python::guard_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/plugin.hpp" line="56" column="50" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/plugin.hpp" bodystart="56" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1semantic__python_1a927c90dfd147a44fe4c0e8b5020730cf" prot="private" static="no" mutable="no">
+        <type>pybind11::gil_scoped_release</type>
+        <definition>pybind11::gil_scoped_release ILLIXR::semantic_python::release_</definition>
+        <argsstring></argsstring>
+        <name>release_</name>
+        <qualifiedname>ILLIXR::semantic_python::release_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/plugin.hpp" line="57" column="50" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/plugin.hpp" bodystart="57" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1semantic__python_1a7bf7a75c9aa8a0ec675d182b53309888" prot="private" static="no" mutable="no">
+        <type>std::thread</type>
+        <definition>std::thread ILLIXR::semantic_python::py_thread_</definition>
+        <argsstring></argsstring>
+        <name>py_thread_</name>
+        <qualifiedname>ILLIXR::semantic_python::py_thread_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/plugin.hpp" line="58" column="50" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/plugin.hpp" bodystart="58" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1semantic__python_1a34b52663360154a0dcaec13daf825e6e" prot="private" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+        <definition>std::unordered_map&lt;std::string, std::string&gt; ILLIXR::semantic_python::py_args_</definition>
+        <argsstring></argsstring>
+        <name>py_args_</name>
+        <qualifiedname>ILLIXR::semantic_python::py_args_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/plugin.hpp" line="59" column="24" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/plugin.hpp" bodystart="59" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1semantic__python_1ac8056c1cdbcf31bf95f0a47c3ce50e73" prot="private" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string ILLIXR::semantic_python::py_exe_</definition>
+        <argsstring></argsstring>
+        <name>py_exe_</name>
+        <qualifiedname>ILLIXR::semantic_python::py_exe_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/plugin.hpp" line="60" column="50" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/plugin.hpp" bodystart="60" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1semantic__python_1acec766f1aaaf03d47bde7c0c9f736c13" prot="private" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classILLIXR_1_1nvdec__decoder" kindref="compound">nvdec_decoder</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;nvdec_decoder&gt; ILLIXR::semantic_python::decoder_</definition>
+        <argsstring></argsstring>
+        <name>decoder_</name>
+        <qualifiedname>ILLIXR::semantic_python::decoder_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/plugin.hpp" line="64" column="21" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/plugin.hpp" bodystart="64" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1semantic__python_1a671d421ecd0d6fafcc040a5b48d1da37" prot="private" static="no" mutable="no">
+        <type>std::mutex</type>
+        <definition>std::mutex ILLIXR::semantic_python::decoder_init_mutex_</definition>
+        <argsstring></argsstring>
+        <name>decoder_init_mutex_</name>
+        <qualifiedname>ILLIXR::semantic_python::decoder_init_mutex_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/plugin.hpp" line="65" column="36" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/plugin.hpp" bodystart="65" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1semantic__python_1aa45b870e4b71f7575e05559c03b479c2" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::semantic_python::decoder_initialized_</definition>
+        <argsstring></argsstring>
+        <name>decoder_initialized_</name>
+        <qualifiedname>ILLIXR::semantic_python::decoder_initialized_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">false</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/plugin.hpp" line="66" column="36" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/plugin.hpp" bodystart="66" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1semantic__python_1a24bf91009a08a50eec6be79987983c67" prot="private" static="no" mutable="no">
+        <type><ref refid="classILLIXR_1_1decode_1_1decoded__frame__cache" kindref="compound">decode::decoded_frame_cache</ref></type>
+        <definition>decode::decoded_frame_cache ILLIXR::semantic_python::decoded_frames_</definition>
+        <argsstring></argsstring>
+        <name>decoded_frames_</name>
+        <qualifiedname>ILLIXR::semantic_python::decoded_frames_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/plugin.hpp" line="69" column="33" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/plugin.hpp" bodystart="69" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1semantic__python_1a5779fc7f80117fb53507c75e04696737" prot="private" static="no" mutable="no">
+        <type><ref refid="classILLIXR_1_1decode_1_1semantic__metadata__cache" kindref="compound">decode::semantic_metadata_cache</ref></type>
+        <definition>decode::semantic_metadata_cache ILLIXR::semantic_python::frame_metadata_</definition>
+        <argsstring></argsstring>
+        <name>frame_metadata_</name>
+        <qualifiedname>ILLIXR::semantic_python::frame_metadata_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/plugin.hpp" line="74" column="37" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/plugin.hpp" bodystart="74" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classILLIXR_1_1semantic__python_1aa5be58d7c7ded550c348c18cf1eb38d4" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>semantic_python::semantic_python</definition>
+        <argsstring>(const std::string &amp;name, phonebook *pb)</argsstring>
+        <name>semantic_python</name>
+        <qualifiedname>ILLIXR::semantic_python::semantic_python</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> std::string &amp;</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type><ref refid="classILLIXR_1_1phonebook" kindref="compound">phonebook</ref> *</type>
+          <declname>pb</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/plugin.hpp" line="27" column="15" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/plugin.cpp" bodystart="27" bodyend="86"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1semantic__python_1a459606e82920525ef011270d60465855" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>semantic_python::~semantic_python</definition>
+        <argsstring>() override</argsstring>
+        <name>~semantic_python</name>
+        <qualifiedname>ILLIXR::semantic_python::~semantic_python</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/plugin.hpp" line="28" column="5" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/plugin.cpp" bodystart="88" bodyend="91"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1semantic__python_1af39523783ed08394e1711313ff0580c1" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void semantic_python::start</definition>
+        <argsstring>() override</argsstring>
+        <name>start</name>
+        <qualifiedname>ILLIXR::semantic_python::start</qualifiedname>
+        <reimplements refid="classILLIXR_1_1plugin_1a30d7294817fc5e8a8216fbfbca233cdc">start</reimplements>
+        <briefdescription>
+<para>A method which Spindle calls when it starts the component. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This is necessary because a constructor can&apos;t call derived virtual methods (due to structure of C++). See <computeroutput>threadloop</computeroutput> for an example of this use-case. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/plugin.hpp" line="30" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/plugin.cpp" bodystart="93" bodyend="96"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classILLIXR_1_1semantic__python_1a03c36ece21a18af2cc39b2eca2655193" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void semantic_python::run_python_thread</definition>
+        <argsstring>()</argsstring>
+        <name>run_python_thread</name>
+        <qualifiedname>ILLIXR::semantic_python::run_python_thread</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/plugin.hpp" line="33" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/plugin.cpp" bodystart="98" bodyend="146"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1semantic__python_1a34786ff197567c00ad91158cddcd4f77" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void semantic_python::parse_py_args</definition>
+        <argsstring>(const std::string &amp;input)</argsstring>
+        <name>parse_py_args</name>
+        <qualifiedname>ILLIXR::semantic_python::parse_py_args</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> std::string &amp;</type>
+          <declname>input</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/plugin.hpp" line="43" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/plugin.cpp" bodystart="148" bodyend="168"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1semantic__python_1a6d07e79ee64842b725e22a5a0ffb1458" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void semantic_python::on_semantic_data</definition>
+        <argsstring>(const switchboard::ptr&lt; const data_format::semantic_frame &gt; &amp;frame, std::size_t idx)</argsstring>
+        <name>on_semantic_data</name>
+        <qualifiedname>ILLIXR::semantic_python::on_semantic_data</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="classILLIXR_1_1switchboard_1af91c1b9436918512e95e5fa8553846a7" kindref="member">switchboard::ptr</ref>&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="structILLIXR_1_1data__format_1_1semantic__frame" kindref="compound">data_format::semantic_frame</ref> &gt; &amp;</type>
+          <declname>frame</declname>
+        </param>
+        <param>
+          <type>std::size_t</type>
+          <declname>idx</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/plugin.hpp" line="50" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/plugin.cpp" bodystart="170" bodyend="230"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>ILLIXR::plugin</label>
+        <link refid="classILLIXR_1_1plugin"/>
+      </node>
+      <node id="1">
+        <label>ILLIXR::semantic_python</label>
+        <link refid="classILLIXR_1_1semantic__python"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="9">
+        <label>ILLIXR::decode::decoded_frame_cache</label>
+        <link refid="classILLIXR_1_1decode_1_1decoded__frame__cache"/>
+      </node>
+      <node id="10">
+        <label>ILLIXR::decode::semantic_metadata_cache</label>
+        <link refid="classILLIXR_1_1decode_1_1semantic__metadata__cache"/>
+      </node>
+      <node id="8">
+        <label>ILLIXR::network::topic_config</label>
+        <link refid="structILLIXR_1_1network_1_1topic__config"/>
+      </node>
+      <node id="3">
+        <label>ILLIXR::phonebook</label>
+        <link refid="classILLIXR_1_1phonebook"/>
+      </node>
+      <node id="2">
+        <label>ILLIXR::plugin</label>
+        <link refid="classILLIXR_1_1plugin"/>
+        <childnode refid="3" relation="usage">
+          <edgelabel>phonebook_</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>ILLIXR::semantic_python</label>
+        <link refid="classILLIXR_1_1semantic__python"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>voice_query_reader_</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>response_writer_</edgelabel>
+        </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>decoded_frames_</edgelabel>
+        </childnode>
+        <childnode refid="10" relation="usage">
+          <edgelabel>frame_metadata_</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>ILLIXR::switchboard::topic</label>
+        <link refid="classILLIXR_1_1switchboard_1_1topic"/>
+      </node>
+      <node id="7">
+        <label>ILLIXR::switchboard::writer&lt; Specific_event &gt;</label>
+        <link refid="classILLIXR_1_1switchboard_1_1writer"/>
+        <childnode refid="5" relation="usage">
+          <edgelabel>topic_</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>ILLIXR::switchboard::network_writer&lt; ILLIXR::data_format::semantic_xr::query_response &gt;</label>
+        <link refid="classILLIXR_1_1switchboard_1_1network__writer"/>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>config_</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>ILLIXR::switchboard::reader&lt; ILLIXR::data_format::semantic_xr::voice_query &gt;</label>
+        <link refid="classILLIXR_1_1switchboard_1_1reader"/>
+        <childnode refid="5" relation="usage">
+          <edgelabel>topic_</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/plugin.hpp" line="25" column="1" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/plugin.hpp" bodystart="25" bodyend="75"/>
+    <listofallmembers>
+      <member refid="classILLIXR_1_1semantic__python_1a24bf91009a08a50eec6be79987983c67" prot="private" virt="non-virtual"><scope>ILLIXR::semantic_python</scope><name>decoded_frames_</name></member>
+      <member refid="classILLIXR_1_1semantic__python_1acec766f1aaaf03d47bde7c0c9f736c13" prot="private" virt="non-virtual"><scope>ILLIXR::semantic_python</scope><name>decoder_</name></member>
+      <member refid="classILLIXR_1_1semantic__python_1a671d421ecd0d6fafcc040a5b48d1da37" prot="private" virt="non-virtual"><scope>ILLIXR::semantic_python</scope><name>decoder_init_mutex_</name></member>
+      <member refid="classILLIXR_1_1semantic__python_1aa45b870e4b71f7575e05559c03b479c2" prot="private" virt="non-virtual"><scope>ILLIXR::semantic_python</scope><name>decoder_initialized_</name></member>
+      <member refid="classILLIXR_1_1semantic__python_1a5779fc7f80117fb53507c75e04696737" prot="private" virt="non-virtual"><scope>ILLIXR::semantic_python</scope><name>frame_metadata_</name></member>
+      <member refid="classILLIXR_1_1plugin_1aebda022998bd35983e83f391dc0e5193" prot="public" virt="non-virtual"><scope>ILLIXR::semantic_python</scope><name>get_name</name></member>
+      <member refid="classILLIXR_1_1semantic__python_1a09b0434398ef65dd5163929d10caf836" prot="private" virt="non-virtual"><scope>ILLIXR::semantic_python</scope><name>guard_</name></member>
+      <member refid="classILLIXR_1_1plugin_1aaedb3f9178bdd11e53815e158454aaf3" prot="protected" virt="non-virtual"><scope>ILLIXR::semantic_python</scope><name>id_</name></member>
+      <member refid="classILLIXR_1_1plugin_1aa963c518af83966173840a8558490888" prot="protected" virt="non-virtual"><scope>ILLIXR::semantic_python</scope><name>name_</name></member>
+      <member refid="classILLIXR_1_1semantic__python_1a6d07e79ee64842b725e22a5a0ffb1458" prot="private" virt="non-virtual"><scope>ILLIXR::semantic_python</scope><name>on_semantic_data</name></member>
+      <member refid="classILLIXR_1_1semantic__python_1a34786ff197567c00ad91158cddcd4f77" prot="private" virt="non-virtual"><scope>ILLIXR::semantic_python</scope><name>parse_py_args</name></member>
+      <member refid="classILLIXR_1_1plugin_1a6f7a2a9012350591c00d67a5bc0fd5a6" prot="protected" virt="non-virtual"><scope>ILLIXR::semantic_python</scope><name>phonebook_</name></member>
+      <member refid="classILLIXR_1_1plugin_1abc91c0e5be180a8e0bbeaf114a127f17" prot="public" virt="non-virtual"><scope>ILLIXR::semantic_python</scope><name>plugin</name></member>
+      <member refid="classILLIXR_1_1plugin_1a8d40c2421cde09079372d12bfe7d45fe" prot="protected" virt="non-virtual"><scope>ILLIXR::semantic_python</scope><name>plugin_logger_</name></member>
+      <member refid="classILLIXR_1_1semantic__python_1a34b52663360154a0dcaec13daf825e6e" prot="private" virt="non-virtual"><scope>ILLIXR::semantic_python</scope><name>py_args_</name></member>
+      <member refid="classILLIXR_1_1semantic__python_1ac8056c1cdbcf31bf95f0a47c3ce50e73" prot="private" virt="non-virtual"><scope>ILLIXR::semantic_python</scope><name>py_exe_</name></member>
+      <member refid="classILLIXR_1_1semantic__python_1a7bf7a75c9aa8a0ec675d182b53309888" prot="private" virt="non-virtual"><scope>ILLIXR::semantic_python</scope><name>py_thread_</name></member>
+      <member refid="classILLIXR_1_1plugin_1aef671d0cd9b6de45d3ade16dedbf4974" prot="protected" virt="non-virtual"><scope>ILLIXR::semantic_python</scope><name>record_logger_</name></member>
+      <member refid="classILLIXR_1_1semantic__python_1a927c90dfd147a44fe4c0e8b5020730cf" prot="private" virt="non-virtual"><scope>ILLIXR::semantic_python</scope><name>release_</name></member>
+      <member refid="classILLIXR_1_1semantic__python_1a81f1324fd0cf754b401fd0ba2e9735e1" prot="private" virt="non-virtual"><scope>ILLIXR::semantic_python</scope><name>response_writer_</name></member>
+      <member refid="classILLIXR_1_1semantic__python_1a03c36ece21a18af2cc39b2eca2655193" prot="private" virt="non-virtual"><scope>ILLIXR::semantic_python</scope><name>run_python_thread</name></member>
+      <member refid="classILLIXR_1_1semantic__python_1aa5be58d7c7ded550c348c18cf1eb38d4" prot="public" virt="non-virtual"><scope>ILLIXR::semantic_python</scope><name>semantic_python</name></member>
+      <member refid="classILLIXR_1_1plugin_1a7c1c7c1a0ec2e43bfa1118586a28932f" prot="public" virt="non-virtual"><scope>ILLIXR::semantic_python</scope><name>spd_add_file_sink</name></member>
+      <member refid="classILLIXR_1_1plugin_1a569297189ef365cf93f6a95202c76d76" prot="public" virt="non-virtual"><scope>ILLIXR::semantic_python</scope><name>spdlogger</name></member>
+      <member refid="classILLIXR_1_1semantic__python_1af39523783ed08394e1711313ff0580c1" prot="public" virt="virtual"><scope>ILLIXR::semantic_python</scope><name>start</name></member>
+      <member refid="classILLIXR_1_1plugin_1a2cefabfb6dd9800b1ebc8b07031661c4" prot="public" virt="virtual"><scope>ILLIXR::semantic_python</scope><name>stop</name></member>
+      <member refid="classILLIXR_1_1semantic__python_1aedf9b4ff51f6b6168aa5586254d38096" prot="private" virt="non-virtual"><scope>ILLIXR::semantic_python</scope><name>switchboard_</name></member>
+      <member refid="classILLIXR_1_1semantic__python_1a6f0389858f0e82909bf50962e8e3c62f" prot="private" virt="non-virtual"><scope>ILLIXR::semantic_python</scope><name>voice_query_reader_</name></member>
+      <member refid="classILLIXR_1_1plugin_1a44d7b00c86e227bbc1a0b221da43d454" prot="public" virt="virtual"><scope>ILLIXR::semantic_python</scope><name>~plugin</name></member>
+      <member refid="classILLIXR_1_1semantic__python_1a459606e82920525ef011270d60465855" prot="public" virt="non-virtual"><scope>ILLIXR::semantic_python</scope><name>~semantic_python</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

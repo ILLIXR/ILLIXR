@@ -1,0 +1,90 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="udp__packet_8hpp" kind="file" language="C++">
+    <compoundname>udp_packet.hpp</compoundname>
+    <includes local="no">cstdint</includes>
+    <includes local="no">cstring</includes>
+    <includes local="no">string_view</includes>
+    <includedby refid="plugins_2udp__network__backend_2plugin_8cpp" local="yes">/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/udp_network_backend/plugin.cpp</includedby>
+    <incdepgraph>
+      <node id="1">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/network/udp_packet.hpp</label>
+        <link refid="udp__packet_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>cstdint</label>
+      </node>
+      <node id="3">
+        <label>cstring</label>
+      </node>
+      <node id="4">
+        <label>string_view</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="1">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/network/udp_packet.hpp</label>
+        <link refid="udp__packet_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/udp_network_backend/plugin.cpp</label>
+        <link refid="plugins_2udp__network__backend_2plugin_8cpp"/>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="structILLIXR_1_1network_1_1udp__packet__view" prot="public">ILLIXR::network::udp_packet_view</innerclass>
+    <innernamespace refid="namespaceILLIXR">ILLIXR</innernamespace>
+    <innernamespace refid="namespaceILLIXR_1_1network">ILLIXR::network</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstdint&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstring&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;string_view&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceILLIXR_1_1network" kindref="compound">ILLIXR::network</ref><sp/>{</highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight></codeline>
+<codeline lineno="9" refid="namespaceILLIXR_1_1network_1a0eaad688288e5e9fb2a7e1598667c803" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>std::size_t<sp/><ref refid="namespaceILLIXR_1_1network_1a0eaad688288e5e9fb2a7e1598667c803" kindref="member">max_udp_payload_bytes</ref><sp/>=<sp/>65507;</highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight></codeline>
+<codeline lineno="11" refid="structILLIXR_1_1network_1_1udp__packet__view" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structILLIXR_1_1network_1_1udp__packet__view" kindref="compound">udp_packet_view</ref><sp/>{</highlight></codeline>
+<codeline lineno="12" refid="structILLIXR_1_1network_1_1udp__packet__view_1ae68c21808486e79073445dccb7e4d719" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string_view<sp/><ref refid="structILLIXR_1_1network_1_1udp__packet__view_1ae68c21808486e79073445dccb7e4d719" kindref="member">topic</ref>;</highlight></codeline>
+<codeline lineno="13" refid="structILLIXR_1_1network_1_1udp__packet__view_1a4f7cade6c2c47229b11ee380cbbb2322" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string_view<sp/><ref refid="structILLIXR_1_1network_1_1udp__packet__view_1a4f7cade6c2c47229b11ee380cbbb2322" kindref="member">payload</ref>;</highlight></codeline>
+<codeline lineno="14"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Decode<sp/>the<sp/>original<sp/>single-datagram<sp/>envelope<sp/>without<sp/>unaligned<sp/>integer<sp/>loads.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Views<sp/>borrow<sp/>the<sp/>packet<sp/>storage<sp/>and<sp/>are<sp/>valid<sp/>only<sp/>while<sp/>that<sp/>storage<sp/>lives.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="18" refid="namespaceILLIXR_1_1network_1a53898fda11d4bf0898e8461650adb597" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1_1network_1a53898fda11d4bf0898e8461650adb597" kindref="member">decode_udp_packet</ref>(std::string_view<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">packet</ref>,<sp/><ref refid="structILLIXR_1_1network_1_1udp__packet__view" kindref="compound">udp_packet_view</ref>&amp;<sp/>result)<sp/></highlight><highlight class="keyword">noexcept</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="19"><highlight class="normal"><sp/><sp/><sp/><sp/>result<sp/>=<sp/>{};</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">packet</ref>.size()<sp/>&lt;<sp/>8<sp/>||<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">packet</ref>.size()<sp/>&gt;<sp/><ref refid="namespaceILLIXR_1_1network_1a0eaad688288e5e9fb2a7e1598667c803" kindref="member">max_udp_payload_bytes</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/>std::uint32_t<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">total_length</ref>{};</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/>std::uint32_t<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">topic_length</ref>{};</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/><sp/><sp/>std::memcpy(&amp;<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">total_length</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">packet</ref>.data(),<sp/></highlight><highlight class="keyword">sizeof</highlight><highlight class="normal">(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">total_length</ref>));</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/>std::memcpy(&amp;<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">topic_length</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">packet</ref>.data()<sp/>+<sp/></highlight><highlight class="keyword">sizeof</highlight><highlight class="normal">(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">total_length</ref>),<sp/></highlight><highlight class="keyword">sizeof</highlight><highlight class="normal">(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">topic_length</ref>));</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Subtract<sp/>after<sp/>checking<sp/>the<sp/>header<sp/>size;<sp/>adding<sp/>an<sp/>untrusted<sp/>topic<sp/>length</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>to<sp/>the<sp/>header<sp/>size<sp/>could<sp/>wrap<sp/>and<sp/>allow<sp/>an<sp/>out-of-bounds<sp/>read.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">total_length</ref><sp/>!=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">packet</ref>.size()<sp/>||<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">topic_length</ref><sp/>&gt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">total_length</ref><sp/>-<sp/>8)<sp/>{</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/>result.topic<sp/><sp/><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">packet</ref>.substr(8,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">topic_length</ref>);</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/>result.payload<sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">packet</ref>.substr(8<sp/>+<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">topic_length</ref>);</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="35"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>ILLIXR::network</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/network/udp_packet.hpp"/>
+  </compounddef>
+</doxygen>

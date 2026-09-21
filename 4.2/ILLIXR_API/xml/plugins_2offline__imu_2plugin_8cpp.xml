@@ -1,0 +1,587 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="plugins_2offline__imu_2plugin_8cpp" kind="file" language="C++">
+    <compoundname>plugin.cpp</compoundname>
+    <includes refid="plugins_2offline__imu_2plugin_8hpp" local="yes">plugin.hpp</includes>
+    <includes refid="data__loading_8hpp" local="yes">illixr/data_loading.hpp</includes>
+    <includes local="yes">illixr/iterators/csv_iterator.hpp</includes>
+    <includes local="no">chrono</includes>
+    <incdepgraph>
+      <node id="45">
+        <label>cpu_timer.hpp</label>
+        <link refid="cpu__timer_8hpp"/>
+        <childnode refid="46" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="53" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>illixr/data_format/imu.hpp</label>
+        <link refid="imu_8hpp"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="39" relation="include">
+        </childnode>
+      </node>
+      <node id="40">
+        <label>illixr/data_format/misc.hpp</label>
+        <link refid="misc_8hpp"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="41" relation="include">
+        </childnode>
+      </node>
+      <node id="62">
+        <label>illixr/data_loading.hpp</label>
+        <link refid="data__loading_8hpp"/>
+        <childnode refid="40" relation="include">
+        </childnode>
+        <childnode refid="46" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="39" relation="include">
+        </childnode>
+        <childnode refid="63" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="61" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+      </node>
+      <node id="46">
+        <label>error_util.hpp</label>
+        <link refid="error__util_8hpp"/>
+        <childnode refid="47" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>export.hpp</label>
+        <link refid="export_8hpp"/>
+      </node>
+      <node id="47">
+        <label>global_module_defs.hpp</label>
+        <link refid="global__module__defs_8hpp"/>
+        <childnode refid="48" relation="include">
+        </childnode>
+        <childnode refid="42" relation="include">
+        </childnode>
+        <childnode refid="51" relation="include">
+        </childnode>
+        <childnode refid="52" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+      </node>
+      <node id="48">
+        <label>headset_fov.hpp</label>
+        <link refid="headset__fov_8hpp"/>
+        <childnode refid="49" relation="include">
+        </childnode>
+        <childnode refid="50" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>managed_thread.hpp</label>
+        <link refid="managed__thread_8hpp"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>network/network_backend.hpp</label>
+        <link refid="network__backend_8hpp"/>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+      </node>
+      <node id="23">
+        <label>topic_config.hpp</label>
+        <link refid="topic__config_8hpp"/>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+      </node>
+      <node id="15">
+        <label>illixr/phonebook.hpp</label>
+        <link refid="phonebook_8hpp"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+      </node>
+      <node id="54">
+        <label>plugin.hpp</label>
+        <link refid="include_2illixr_2plugin_8hpp"/>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="55" relation="include">
+        </childnode>
+        <childnode refid="56" relation="include">
+        </childnode>
+        <childnode refid="57" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="58" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="27">
+        <label>record_logger.hpp</label>
+        <link refid="record__logger_8hpp"/>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+      </node>
+      <node id="42">
+        <label>illixr/relative_clock.hpp</label>
+        <link refid="relative__clock_8hpp"/>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="43" relation="include">
+        </childnode>
+      </node>
+      <node id="59">
+        <label>stoplight.hpp</label>
+        <link refid="stoplight_8hpp"/>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="60" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>illixr/switchboard.hpp</label>
+        <link refid="switchboard_8hpp"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+        <childnode refid="38" relation="include">
+        </childnode>
+      </node>
+      <node id="44">
+        <label>illixr/threadloop.hpp</label>
+        <link refid="threadloop_8hpp"/>
+        <childnode refid="45" relation="include">
+        </childnode>
+        <childnode refid="46" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="54" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="59" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/offline_imu/plugin.cpp</label>
+        <link refid="plugins_2offline__imu_2plugin_8cpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="62" relation="include">
+        </childnode>
+        <childnode refid="64" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>plugin.hpp</label>
+        <link refid="plugins_2offline__imu_2plugin_8hpp"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="40" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="42" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="44" relation="include">
+        </childnode>
+        <childnode refid="61" relation="include">
+        </childnode>
+      </node>
+      <node id="41">
+        <label>GL/glu.h</label>
+      </node>
+      <node id="51">
+        <label>algorithm</label>
+      </node>
+      <node id="28">
+        <label>any</label>
+      </node>
+      <node id="49">
+        <label>array</label>
+      </node>
+      <node id="8">
+        <label>atomic</label>
+      </node>
+      <node id="34">
+        <label>boost/archive/binary_iarchive.hpp</label>
+      </node>
+      <node id="35">
+        <label>boost/archive/binary_oarchive.hpp</label>
+      </node>
+      <node id="36">
+        <label>boost/iostreams/device/back_inserter.hpp</label>
+      </node>
+      <node id="37">
+        <label>boost/iostreams/stream.hpp</label>
+      </node>
+      <node id="38">
+        <label>boost/serialization/shared_ptr.hpp</label>
+      </node>
+      <node id="9">
+        <label>cassert</label>
+      </node>
+      <node id="24">
+        <label>chrono</label>
+      </node>
+      <node id="52">
+        <label>cmath</label>
+      </node>
+      <node id="5">
+        <label>concurrentqueue/blockingconcurrentqueue.hpp</label>
+      </node>
+      <node id="60">
+        <label>condition_variable</label>
+      </node>
+      <node id="50">
+        <label>cstdlib</label>
+      </node>
+      <node id="53">
+        <label>cstring</label>
+      </node>
+      <node id="31">
+        <label>eigen3/Eigen/Core</label>
+      </node>
+      <node id="39">
+        <label>eigen3/Eigen/Dense</label>
+      </node>
+      <node id="32">
+        <label>eigen3/Eigen/Geometry</label>
+      </node>
+      <node id="63">
+        <label>fstream</label>
+      </node>
+      <node id="10">
+        <label>functional</label>
+      </node>
+      <node id="64">
+        <label>illixr/iterators/csv_iterator.hpp</label>
+      </node>
+      <node id="16">
+        <label>iostream</label>
+      </node>
+      <node id="33">
+        <label>list</label>
+      </node>
+      <node id="61">
+        <label>map</label>
+      </node>
+      <node id="17">
+        <label>memory</label>
+      </node>
+      <node id="18">
+        <label>mutex</label>
+      </node>
+      <node id="25">
+        <label>optional</label>
+      </node>
+      <node id="43">
+        <label>ratio</label>
+      </node>
+      <node id="19">
+        <label>shared_mutex</label>
+      </node>
+      <node id="55">
+        <label>spdlog/common.h</label>
+      </node>
+      <node id="56">
+        <label>spdlog/sinks/basic_file_sink.h</label>
+      </node>
+      <node id="57">
+        <label>spdlog/sinks/stdout_color_sinks.h</label>
+      </node>
+      <node id="22">
+        <label>spdlog/spdlog.h</label>
+      </node>
+      <node id="30">
+        <label>sstream</label>
+      </node>
+      <node id="11">
+        <label>stdexcept</label>
+      </node>
+      <node id="29">
+        <label>string</label>
+      </node>
+      <node id="12">
+        <label>thread</label>
+      </node>
+      <node id="20">
+        <label>typeindex</label>
+      </node>
+      <node id="58">
+        <label>typeinfo</label>
+      </node>
+      <node id="21">
+        <label>unordered_map</label>
+      </node>
+      <node id="13">
+        <label>utility</label>
+      </node>
+      <node id="26">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="plugins_2offline__imu_2plugin_8cpp_1aa5203ff0829961f25f31dda68854303a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::map&lt; <ref refid="misc_8hpp_1a389d2ab33cbce94847a01e0b75f29627" kindref="member">ullong</ref>, <ref refid="structILLIXR_1_1sensor__types" kindref="compound">sensor_types</ref> &gt;</type>
+        <definition>std::map&lt; ullong, sensor_types &gt; read_data</definition>
+        <argsstring>(std::ifstream &amp;gt_file, const std::string &amp;file_name)</argsstring>
+        <name>read_data</name>
+        <param>
+          <type>std::ifstream &amp;</type>
+          <declname>gt_file</declname>
+        </param>
+        <param>
+          <type>const <ref refid="plugins_2offload__rendering__server_2CMakeLists_8txt_1a5a320a78f5d255e59cead61a98c7cbea" kindref="member">std::string</ref> &amp;</type>
+          <declname>file_name</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/offline_imu/plugin.cpp" line="11" column="17" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/offline_imu/plugin.cpp" bodystart="11" bodyend="22"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#include<sp/>&quot;<ref refid="plugins_2zed_2plugin_8hpp" kindref="compound">plugin.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="data__loading_8hpp" kindref="compound">illixr/data_loading.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;illixr/iterators/csv_iterator.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;chrono&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceILLIXR" kindref="compound">ILLIXR</ref>;</highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceILLIXR_1_1data__format" kindref="compound">ILLIXR::data_format</ref>;</highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>std::map&lt;ullong,<sp/>sensor_types&gt;<sp/><ref refid="plugins_2offline__imu_2plugin_8cpp_1aa5203ff0829961f25f31dda68854303a" kindref="member">read_data</ref>(std::ifstream&amp;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">gt_file</ref>,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">file_name</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="12"><highlight class="normal"><sp/><sp/><sp/><sp/>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref>)<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">file_name</ref>;</highlight></codeline>
+<codeline lineno="13"><highlight class="normal"><sp/><sp/><sp/><sp/>std::map&lt;ullong,<sp/>sensor_types&gt;<sp/>data;</highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">csv_iterator</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">row</ref>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">gt_file</ref>,<sp/>1};<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">row</ref><sp/>!=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">csv_iterator</ref>{};<sp/>++<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">row</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="16"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="misc_8hpp_1a389d2ab33cbce94847a01e0b75f29627" kindref="member">ullong</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">t</ref><sp/>=<sp/>std::stoull(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">row</ref>[0]);</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Eigen::Vector3d<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">av</ref>{std::stod(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">row</ref>[1]),<sp/>std::stod(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">row</ref>[2]),<sp/>std::stod(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">row</ref>[3])};</highlight></codeline>
+<codeline lineno="18"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Eigen::Vector3d<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">la</ref>{std::stod(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">row</ref>[4]),<sp/>std::stod(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">row</ref>[5]),<sp/>std::stod(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">row</ref>[6])};</highlight></codeline>
+<codeline lineno="19"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>data[<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">t</ref>].imu0<sp/>=<sp/>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">av</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">la</ref>};</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>data;</highlight></codeline>
+<codeline lineno="22"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal">[[<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">maybe_unused</ref>]]<sp/><ref refid="classILLIXR_1_1offline__imu_1abae3009f38047361d0b24c3cb5ebea76" kindref="member">offline_imu::offline_imu</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>name,<sp/><ref refid="classILLIXR_1_1phonebook" kindref="compound">phonebook</ref>*<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">pb</ref>)</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/><sp/><sp/>:<sp/><ref refid="classILLIXR_1_1threadloop" kindref="compound">threadloop</ref>{name,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">pb</ref>}</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/>,<sp/>switchboard_{phonebook_-&gt;lookup_impl&lt;<ref refid="classILLIXR_1_1switchboard" kindref="compound">switchboard</ref>&gt;()}</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/>,<sp/>sensor_data_{<ref refid="data__loading_8hpp_1afd1e5f09a7bed948a0a477f7fd57d946" kindref="member">load_data</ref>&lt;<ref refid="structILLIXR_1_1sensor__types" kindref="compound">sensor_types</ref>&gt;(</highlight><highlight class="stringliteral">&quot;imu0&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;offline_imu&quot;</highlight><highlight class="normal">,<sp/>&amp;<ref refid="plugins_2offline__imu_2plugin_8cpp_1aa5203ff0829961f25f31dda68854303a" kindref="member">read_data</ref>,<sp/>switchboard_)}</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/>,<sp/>sensor_data_it_{sensor_data_.<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cbegin</ref>()}</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/>,<sp/>imu_{switchboard_-&gt;get_writer&lt;<ref refid="structILLIXR_1_1data__format_1_1imu__type" kindref="compound">imu_type</ref>&gt;(</highlight><highlight class="stringliteral">&quot;imu&quot;</highlight><highlight class="normal">)}</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/>,<sp/>dataset_first_time_{sensor_data_it_-&gt;<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">first</ref>}</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/>,<sp/>dataset_now_{0}</highlight></codeline>
+<codeline lineno="32"><highlight class="normal">#<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">ifndef</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">__ANDROID__</ref></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/>,<sp/>imu_cam_log_{record_logger_}</highlight></codeline>
+<codeline lineno="34"><highlight class="normal">#<ref refid="plugins_2hand__tracking_2viewer_2CMakeLists_8txt_1a0148257e63112c2b25e0c020039c3ce9" kindref="member">endif</ref></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/>,<sp/>clock_{phonebook_-&gt;lookup_impl&lt;<ref refid="classILLIXR_1_1relative__clock" kindref="compound">relative_clock</ref>&gt;()}<sp/>{</highlight></codeline>
+<codeline lineno="36"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><ref refid="classILLIXR_1_1threadloop_1a26c08942158dc019cbc78c9880417652" kindref="member">ILLIXR::threadloop::skip_option</ref><sp/><ref refid="classILLIXR_1_1offline__imu_1aea3fd028f407dc77f44f8058f2071d69" kindref="member">offline_imu::_p_should_skip</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classILLIXR_1_1offline__imu_1a3fec0c1738a2e1a56c8f7ef09cf577c8" kindref="member">sensor_data_it_</ref><sp/>!=<sp/><ref refid="classILLIXR_1_1offline__imu_1a4891db71f678b80766cc1f8a6382f45c" kindref="member">sensor_data_</ref>.end())<sp/>{</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">assert</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">dataset_now_ &lt; sensor_data_it_-&gt;</ref><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">first</ref>);</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1offline__imu_1a80227d6a551a57410f974308932ade81" kindref="member">dataset_now_</ref><sp/>=<sp/><ref refid="classILLIXR_1_1offline__imu_1a3fec0c1738a2e1a56c8f7ef09cf577c8" kindref="member">sensor_data_it_</ref>-&gt;first;</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Sleep<sp/>for<sp/>the<sp/>difference<sp/>between<sp/>the<sp/>current<sp/>IMU<sp/>vs<sp/>1st<sp/>IMU<sp/>and<sp/>current<sp/>UNIX<sp/>time<sp/>vs<sp/>UNIX<sp/>time<sp/>the<sp/>component<sp/>was</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>init</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::this_thread::sleep_for(std::chrono::nanoseconds{<ref refid="classILLIXR_1_1offline__imu_1a80227d6a551a57410f974308932ade81" kindref="member">dataset_now_</ref><sp/>-<sp/><ref refid="classILLIXR_1_1offline__imu_1ad3b7461cc68d8d9e89cf5f1defa93666" kindref="member">dataset_first_time_</ref>}<sp/>-</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1offline__imu_1aa48162f46e5d5afe4a3febd0477e9d97" kindref="member">clock_</ref>-&gt;now().time_since_epoch());</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"></highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1threadloop_1a26c08942158dc019cbc78c9880417652aa53108f7543b75adbb34afc035d4cdf6" kindref="member">skip_option::run</ref>;</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"></highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1threadloop_1a26c08942158dc019cbc78c9880417652aef399b2d446bb37b7c32ad2cc1b6045b" kindref="member">skip_option::stop</ref>;</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="52"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"></highlight></codeline>
+<codeline lineno="54"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1offline__imu_1a8fa55149305dc10d3fb663ebef95edf0" kindref="member">offline_imu::_p_one_iteration</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">assert</ref>(<ref refid="classILLIXR_1_1offline__imu_1a3fec0c1738a2e1a56c8f7ef09cf577c8" kindref="member">sensor_data_it_</ref><sp/>!=<sp/><ref refid="classILLIXR_1_1offline__imu_1a4891db71f678b80766cc1f8a6382f45c" kindref="member">sensor_data_</ref>.end());</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1time__point" kindref="compound">time_point</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">real_now</ref>(std::chrono::duration&lt;long<sp/>long,<sp/>std::nano&gt;{<ref refid="classILLIXR_1_1offline__imu_1a80227d6a551a57410f974308932ade81" kindref="member">dataset_now_</ref><sp/>-<sp/><ref refid="classILLIXR_1_1offline__imu_1ad3b7461cc68d8d9e89cf5f1defa93666" kindref="member">dataset_first_time_</ref>});</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structILLIXR_1_1sensor__types" kindref="compound">sensor_types</ref>&amp;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">sensor_datum</ref><sp/>=<sp/><ref refid="classILLIXR_1_1offline__imu_1a3fec0c1738a2e1a56c8f7ef09cf577c8" kindref="member">sensor_data_it_</ref>-&gt;second;</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"></highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1offline__imu_1af77cb651e7a9a72543a9f3e4b1836f40" kindref="member">imu_</ref>.put(<ref refid="classILLIXR_1_1offline__imu_1af77cb651e7a9a72543a9f3e4b1836f40" kindref="member">imu_</ref>.allocate&lt;<ref refid="structILLIXR_1_1data__format_1_1imu__type" kindref="compound">imu_type</ref>&gt;(<ref refid="structILLIXR_1_1data__format_1_1imu__type" kindref="compound">imu_type</ref>{real_now,<sp/>(sensor_datum.imu0.angular_v),<sp/>(sensor_datum.imu0.linear_a)}));</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/>++<ref refid="classILLIXR_1_1offline__imu_1a3fec0c1738a2e1a56c8f7ef09cf577c8" kindref="member">sensor_data_it_</ref>;</highlight></codeline>
+<codeline lineno="61"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"></highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><ref refid="include_2illixr_2plugin_8hpp_1aa29023b17f5259cc4186f4627e1d9b5c" kindref="member">PLUGIN_MAIN</ref>(<ref refid="classILLIXR_1_1offline__imu" kindref="compound">offline_imu</ref>)</highlight></codeline>
+    </programlisting>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/offline_imu/plugin.cpp"/>
+  </compounddef>
+</doxygen>

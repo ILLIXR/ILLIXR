@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_d7b550354d68badc1c8c7c75587f32f2" kind="dir">
+    <compoundname>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses</compoundname>
+    <innerfile refid="poses_2combined__pose_8hpp">combined_pose.hpp</innerfile>
+    <innerfile refid="poses_2hand__interaction__pose_8hpp">hand_interaction_pose.hpp</innerfile>
+    <innerfile refid="poses_2hand__pose_8hpp">hand_pose.hpp</innerfile>
+    <innerfile refid="poses_2head__pose_8hpp">head_pose.hpp</innerfile>
+    <innerfile refid="openxr__defines_8hpp">openxr_defines.hpp</innerfile>
+    <innerfile refid="poses_2palm__pose_8hpp">palm_pose.hpp</innerfile>
+    <innerfile refid="poses_2pose__base_8hpp">pose_base.hpp</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/"/>
+  </compounddef>
+</doxygen>

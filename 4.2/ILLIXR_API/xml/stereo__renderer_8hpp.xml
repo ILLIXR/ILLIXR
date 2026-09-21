@@ -1,0 +1,649 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="stereo__renderer_8hpp" kind="file" language="C++">
+    <compoundname>stereo_renderer.hpp</compoundname>
+    <includes refid="frame_8hpp" local="yes">illixr/data_format/frame.hpp</includes>
+    <includes refid="quest3__params_8hpp" local="yes">illixr/quest3_params.hpp</includes>
+    <includes local="no">android/hardware_buffer.h</includes>
+    <includes local="no">array</includes>
+    <includes local="no">cstddef</includes>
+    <includes local="no">cstdint</includes>
+    <includes local="no">memory</includes>
+    <includes local="no">unordered_map</includes>
+    <includes local="no">vector</includes>
+    <includes local="no">vulkan/vulkan.h</includes>
+    <includes local="no">vulkan/vulkan_android.h</includes>
+    <includedby refid="stereo__renderer_8cpp" local="yes">/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.cpp</includedby>
+    <incdepgraph>
+      <node id="2">
+        <label>illixr/data_format/frame.hpp</label>
+        <link refid="frame_8hpp"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="42" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="44" relation="include">
+        </childnode>
+        <childnode refid="45" relation="include">
+        </childnode>
+        <childnode refid="43" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="46" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>illixr/data_format/poses/head_pose.hpp</label>
+        <link refid="poses_2head__pose_8hpp"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>illixr/data_format/poses/pose_base.hpp</label>
+        <link refid="poses_2pose__base_8hpp"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="42">
+        <label>illixr/data_format/stereo_presentation.hpp</label>
+        <link refid="stereo__presentation_8hpp"/>
+        <childnode refid="43" relation="include">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>export.hpp</label>
+        <link refid="export_8hpp"/>
+      </node>
+      <node id="11">
+        <label>managed_thread.hpp</label>
+        <link refid="managed__thread_8hpp"/>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="17">
+        <label>network/network_backend.hpp</label>
+        <link refid="network__backend_8hpp"/>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+      </node>
+      <node id="26">
+        <label>topic_config.hpp</label>
+        <link refid="topic__config_8hpp"/>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+      </node>
+      <node id="18">
+        <label>illixr/phonebook.hpp</label>
+        <link refid="phonebook_8hpp"/>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+      </node>
+      <node id="47">
+        <label>illixr/quest3_params.hpp</label>
+        <link refid="quest3__params_8hpp"/>
+      </node>
+      <node id="30">
+        <label>record_logger.hpp</label>
+        <link refid="record__logger_8hpp"/>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>illixr/switchboard.hpp</label>
+        <link refid="switchboard_8hpp"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+        <childnode refid="38" relation="include">
+        </childnode>
+        <childnode refid="39" relation="include">
+        </childnode>
+        <childnode refid="40" relation="include">
+        </childnode>
+        <childnode refid="41" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp</label>
+        <link refid="stereo__renderer_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="47" relation="include">
+        </childnode>
+        <childnode refid="48" relation="include">
+        </childnode>
+        <childnode refid="44" relation="include">
+        </childnode>
+        <childnode refid="49" relation="include">
+        </childnode>
+        <childnode refid="43" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="50" relation="include">
+        </childnode>
+        <childnode refid="51" relation="include">
+        </childnode>
+      </node>
+      <node id="46">
+        <label>GL/gl.h</label>
+      </node>
+      <node id="48">
+        <label>android/hardware_buffer.h</label>
+      </node>
+      <node id="31">
+        <label>any</label>
+      </node>
+      <node id="44">
+        <label>array</label>
+      </node>
+      <node id="12">
+        <label>atomic</label>
+      </node>
+      <node id="37">
+        <label>boost/archive/binary_iarchive.hpp</label>
+      </node>
+      <node id="38">
+        <label>boost/archive/binary_oarchive.hpp</label>
+      </node>
+      <node id="39">
+        <label>boost/iostreams/device/back_inserter.hpp</label>
+      </node>
+      <node id="40">
+        <label>boost/iostreams/stream.hpp</label>
+      </node>
+      <node id="45">
+        <label>boost/serialization/export.hpp</label>
+      </node>
+      <node id="41">
+        <label>boost/serialization/shared_ptr.hpp</label>
+      </node>
+      <node id="13">
+        <label>cassert</label>
+      </node>
+      <node id="27">
+        <label>chrono</label>
+      </node>
+      <node id="9">
+        <label>concurrentqueue/blockingconcurrentqueue.hpp</label>
+      </node>
+      <node id="49">
+        <label>cstddef</label>
+      </node>
+      <node id="43">
+        <label>cstdint</label>
+      </node>
+      <node id="34">
+        <label>eigen3/Eigen/Core</label>
+      </node>
+      <node id="6">
+        <label>eigen3/Eigen/Dense</label>
+      </node>
+      <node id="35">
+        <label>eigen3/Eigen/Geometry</label>
+      </node>
+      <node id="14">
+        <label>functional</label>
+      </node>
+      <node id="19">
+        <label>iostream</label>
+      </node>
+      <node id="36">
+        <label>list</label>
+      </node>
+      <node id="5">
+        <label>map</label>
+      </node>
+      <node id="20">
+        <label>memory</label>
+      </node>
+      <node id="21">
+        <label>mutex</label>
+      </node>
+      <node id="28">
+        <label>optional</label>
+      </node>
+      <node id="22">
+        <label>shared_mutex</label>
+      </node>
+      <node id="25">
+        <label>spdlog/spdlog.h</label>
+      </node>
+      <node id="33">
+        <label>sstream</label>
+      </node>
+      <node id="15">
+        <label>stdexcept</label>
+      </node>
+      <node id="32">
+        <label>string</label>
+      </node>
+      <node id="16">
+        <label>thread</label>
+      </node>
+      <node id="23">
+        <label>typeindex</label>
+      </node>
+      <node id="24">
+        <label>unordered_map</label>
+      </node>
+      <node id="7">
+        <label>utility</label>
+      </node>
+      <node id="29">
+        <label>vector</label>
+      </node>
+      <node id="50">
+        <label>vulkan/vulkan.h</label>
+      </node>
+      <node id="51">
+        <label>vulkan/vulkan_android.h</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="2">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.cpp</label>
+        <link refid="stereo__renderer_8cpp"/>
+      </node>
+      <node id="1">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp</label>
+        <link refid="stereo__renderer_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="classILLIXR_1_1stereo__renderer" prot="public">ILLIXR::stereo_renderer</innerclass>
+    <innerclass refid="structILLIXR_1_1stereo__renderer_1_1imported__image" prot="private">ILLIXR::stereo_renderer::imported_image</innerclass>
+    <innernamespace refid="namespaceILLIXR">ILLIXR</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="frame_8hpp" kindref="compound">illixr/data_format/frame.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="quest3__params_8hpp" kindref="compound">illixr/quest3_params.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;android/hardware_buffer.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;array&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstddef&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstdint&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;memory&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;unordered_map&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vector&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vulkan/vulkan.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vulkan/vulkan_android.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceILLIXR" kindref="compound">ILLIXR</ref><sp/>{</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight></codeline>
+<codeline lineno="42" refid="classILLIXR_1_1stereo__renderer" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classILLIXR_1_1stereo__renderer" kindref="compound">stereo_renderer</ref><sp/>{</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="44" refid="classILLIXR_1_1stereo__renderer_1a813dc6af859bced80e5f0daec5b67241" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1stereo__renderer_1a813dc6af859bced80e5f0daec5b67241" kindref="member">stereo_renderer</ref>()<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1stereo__renderer_1a11f408f3bf8f062ceb02f87d9697969c" kindref="member">~stereo_renderer</ref>();</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"></highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Non-copyable</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="48" refid="classILLIXR_1_1stereo__renderer_1abc6af2a26c89edc07c52c1d6e2bd49a9" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1stereo__renderer_1abc6af2a26c89edc07c52c1d6e2bd49a9" kindref="member">stereo_renderer</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1stereo__renderer" kindref="compound">stereo_renderer</ref>&amp;)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="49" refid="classILLIXR_1_1stereo__renderer_1a4e779a68b53070d9b308a587111c5e26" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1stereo__renderer" kindref="compound">stereo_renderer</ref>&amp;<sp/><ref refid="classILLIXR_1_1stereo__renderer_1a4e779a68b53070d9b308a587111c5e26" kindref="member">operator=</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1stereo__renderer" kindref="compound">stereo_renderer</ref>&amp;)<sp/>=<sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"></highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1stereo__renderer_1aec749e1a527771f4abedc87346a29484" kindref="member">initialize</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkInstance</ref><sp/>instance,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkPhysicalDevice</ref><sp/>physical_device,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkDevice</ref><sp/>device,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkQueue</ref><sp/>queue,</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint32_t</ref><sp/>queue_family,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkFormat</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">swapchain_format</ref>);</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"></highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1stereo__renderer_1a3819bbc7c61d406deb08c76a97347566" kindref="member">receive_frame</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structILLIXR_1_1data__format_1_1dual__frames" kindref="compound">data_format::dual_frames</ref>&amp;<sp/>frame);</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"></highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1stereo__renderer_1a863734f7124f7390893632a630b18cf6" kindref="member">render_eye</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">eye</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkImage</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">swapchain_image</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint32_t</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">swapchain_width</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint32_t</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">swapchain_height</ref>,</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkSemaphore</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">signal_semaphore</ref><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>);</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"></highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1stereo__renderer_1a2c30c4b2f770b549ecf54804362633ff" kindref="member">render_eye_depth</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">eye</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkImage</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">depth_swapchain_image</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkFormat</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">depth_format</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint32_t</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">swapchain_width</ref>,</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint32_t</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">swapchain_height</ref>);</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1stereo__renderer_1a85dae4573d4f470c1bca933f115ae8c3" kindref="member">render_eye_motion_vec</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">eye</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkImage</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">mv_swapchain_image</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint32_t</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">swapchain_width</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint32_t</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">swapchain_height</ref>);</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1stereo__renderer_1a0be62a8c9dec988a77659689cbd6006b" kindref="member">wait_idle</ref>();</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"></highlight></codeline>
+<codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Check<sp/>if<sp/>renderer<sp/>is<sp/>initialized</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="134" refid="classILLIXR_1_1stereo__renderer_1ac05033e2336dc716e4ab010883f5eb93" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>[[<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">nodiscard</ref>]]<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1stereo__renderer_1ac05033e2336dc716e4ab010883f5eb93" kindref="member">is_initialized</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1stereo__renderer_1aec43dec944758186e3e29cac0a54955e" kindref="member">initialized_</ref>;</highlight></codeline>
+<codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"></highlight></codeline>
+<codeline lineno="138"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Check<sp/>if<sp/>we<sp/>have<sp/>a<sp/>valid<sp/>frame<sp/>to<sp/>render</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="139" refid="classILLIXR_1_1stereo__renderer_1a5c14320878dd0d13c3c24ea5e9f2b5f0" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>[[<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">nodiscard</ref>]]<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1stereo__renderer_1a5c14320878dd0d13c3c24ea5e9f2b5f0" kindref="member">has_frame</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="140"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1stereo__renderer_1a8ef5f8faabc16581667615f6e17250af" kindref="member">has_valid_frame_</ref>;</highlight></codeline>
+<codeline lineno="141"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="142"><highlight class="normal"></highlight></codeline>
+<codeline lineno="143"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1stereo__renderer_1a6938394e3d6dc228b215708df8574706" kindref="member">cleanup</ref>();</highlight></codeline>
+<codeline lineno="144"><highlight class="normal"></highlight></codeline>
+<codeline lineno="145"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Set<sp/>the<sp/>crop<sp/>dimensions<sp/>(original<sp/>size<sp/>before<sp/>padding)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="146"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Call<sp/>this<sp/>before<sp/>initialize()<sp/>or<sp/>after<sp/>receiving<sp/>frame<sp/>metadata</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="147"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1stereo__renderer_1ad9d7a43ab370485a736326f9a649a155" kindref="member">set_crop_region</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">original_width</ref>,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">original_height</ref>,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">padded_width</ref>,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">padded_height</ref>);</highlight></codeline>
+<codeline lineno="148"><highlight class="normal"></highlight></codeline>
+<codeline lineno="149"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>COMBINED_ENCODING</highlight></codeline>
+<codeline lineno="165"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">set_combined_encoding</ref>(</highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">enabled</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="166"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">combined_encoding_</ref><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">enabled</ref>;</highlight></codeline>
+<codeline lineno="167"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="168"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="169"><highlight class="normal"></highlight></codeline>
+<codeline lineno="170"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="171"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>──<sp/>Imported<sp/>decoder<sp/>image<sp/>(one<sp/>per<sp/>unique<sp/>AHardwareBuffer<sp/>pointer)<sp/>────────</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="172" refid="structILLIXR_1_1stereo__renderer_1_1imported__image" refkind="compound"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structILLIXR_1_1stereo__renderer_1_1imported__image" kindref="compound">imported_image</ref><sp/>{</highlight></codeline>
+<codeline lineno="173" refid="structILLIXR_1_1stereo__renderer_1_1imported__image_1ac15dc711dc306fc00c29cea64e41618a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkImage</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1stereo__renderer_1_1imported__image_1ac15dc711dc306fc00c29cea64e41618a" kindref="member">image</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>;</highlight></codeline>
+<codeline lineno="174" refid="structILLIXR_1_1stereo__renderer_1_1imported__image_1a6c1d88794807a26bacafdd5d8b950e6e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkDeviceMemory</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1stereo__renderer_1_1imported__image_1a6c1d88794807a26bacafdd5d8b950e6e" kindref="member">memory</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>;</highlight></codeline>
+<codeline lineno="175" refid="structILLIXR_1_1stereo__renderer_1_1imported__image_1aa619c3fac0fb86da7ab83312605ed259" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkImageView</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1stereo__renderer_1_1imported__image_1aa619c3fac0fb86da7ab83312605ed259" kindref="member">image_view</ref><sp/><sp/><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>;</highlight></codeline>
+<codeline lineno="176" refid="structILLIXR_1_1stereo__renderer_1_1imported__image_1a2c50e5f348902fd1522c774ee49d1cd0" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkSamplerYcbcrConversion</ref><sp/><ref refid="structILLIXR_1_1stereo__renderer_1_1imported__image_1a2c50e5f348902fd1522c774ee49d1cd0" kindref="member">ycbcr_conv</ref><sp/><sp/><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>;</highlight></codeline>
+<codeline lineno="177" refid="structILLIXR_1_1stereo__renderer_1_1imported__image_1a5afa6e580991a8e34d824059b9512cb9" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkSampler</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1stereo__renderer_1_1imported__image_1a5afa6e580991a8e34d824059b9512cb9" kindref="member">sampler</ref><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>;</highlight></codeline>
+<codeline lineno="178" refid="structILLIXR_1_1stereo__renderer_1_1imported__image_1a7c821a7d03dd56c3c0c1510a84761171" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint64_t</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1stereo__renderer_1_1imported__image_1a7c821a7d03dd56c3c0c1510a84761171" kindref="member">external_fmt</ref><sp/>=<sp/>0;<sp/></highlight><highlight class="comment">//<sp/>from<sp/>AHardwareBufferProperties</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="179" refid="structILLIXR_1_1stereo__renderer_1_1imported__image_1a6b9691722a9a02d0a6d7bebe844abc18" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">AHardwareBuffer</ref>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1stereo__renderer_1_1imported__image_1a6b9691722a9a02d0a6d7bebe844abc18" kindref="member">hw_buffer</ref><sp/><sp/><sp/><sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="180"><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
+<codeline lineno="181"><highlight class="normal"></highlight></codeline>
+<codeline lineno="182"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>──<sp/>Shader<sp/>compilation<sp/>────────────────────────────────────────────────────</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="183"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkShaderModule</ref><sp/><ref refid="classILLIXR_1_1stereo__renderer_1a13bb956a36f87785384178e5702a3c67" kindref="member">create_shader_module</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkDevice</ref><sp/>device,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint32_t</ref>*<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">spv</ref>,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">word_count</ref>);</highlight></codeline>
+<codeline lineno="184"><highlight class="normal"></highlight></codeline>
+<codeline lineno="185"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>──<sp/>Per-eye<sp/>descriptor<sp/>setup<sp/>───────────────────────────────────────────────</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="186"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1stereo__renderer_1ab6b936b9364233793d0554168090e469" kindref="member">update_descriptor_set</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">eye</ref>,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structILLIXR_1_1stereo__renderer_1_1imported__image" kindref="compound">imported_image</ref>&amp;<sp/>img);</highlight></codeline>
+<codeline lineno="187"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1stereo__renderer_1a2318e07cbe64d9551f3a7e8fb662e330" kindref="member">update_depth_descriptor_set</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">eye</ref>,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structILLIXR_1_1stereo__renderer_1_1imported__image" kindref="compound">imported_image</ref>&amp;<sp/>img);</highlight></codeline>
+<codeline lineno="188"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1stereo__renderer_1a888ee64584fca0740425e7b0ea3f0177" kindref="member">update_mv_descriptor_set</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">eye</ref>,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structILLIXR_1_1stereo__renderer_1_1imported__image" kindref="compound">imported_image</ref>&amp;<sp/>img);</highlight></codeline>
+<codeline lineno="189"><highlight class="normal"></highlight></codeline>
+<codeline lineno="190"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>──<sp/>AHardwareBuffer<sp/>→<sp/>Vulkan<sp/>import<sp/>────────────────────────────────────────</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="191"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1stereo__renderer_1_1imported__image" kindref="compound">imported_image</ref>*<sp/><ref refid="classILLIXR_1_1stereo__renderer_1a970b04d70221a9ab83cbdc3736ae2900" kindref="member">import_hardware_buffer</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">AHardwareBuffer</ref>*<sp/>hw_buffer);</highlight></codeline>
+<codeline lineno="192"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1stereo__renderer_1a1280f5821fa5d69204313053c0298b5a" kindref="member">destroy_imported_image</ref>(<ref refid="structILLIXR_1_1stereo__renderer_1_1imported__image" kindref="compound">imported_image</ref>&amp;<sp/>img);</highlight></codeline>
+<codeline lineno="193"><highlight class="normal"></highlight></codeline>
+<codeline lineno="194"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1stereo__renderer_1_1imported__image" kindref="compound">imported_image</ref>*<sp/><ref refid="classILLIXR_1_1stereo__renderer_1a5276fc290b8a6d1c430e531ddcaeef90" kindref="member">import_mv_hardware_buffer</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">AHardwareBuffer</ref>*<sp/>hw_buffer);</highlight></codeline>
+<codeline lineno="195"><highlight class="normal"></highlight></codeline>
+<codeline lineno="196"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>──<sp/>Color<sp/>pipeline<sp/>helpers<sp/>─────────────────────────────────────────────────</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="197"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1stereo__renderer_1a96e47f9ffb84338e80febdf55cb69c58" kindref="member">create_render_pass</ref>();</highlight></codeline>
+<codeline lineno="198"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1stereo__renderer_1a796abaa77578417b63bf0bb2d889031a" kindref="member">create_pipeline</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structILLIXR_1_1stereo__renderer_1_1imported__image" kindref="compound">imported_image</ref>&amp;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">prototype</ref>);</highlight></codeline>
+<codeline lineno="199"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1stereo__renderer_1af8723c1ec0c86f40d7dd1bade1ede16e" kindref="member">create_command_pool</ref>();</highlight></codeline>
+<codeline lineno="200"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1stereo__renderer_1abdd7fa9350360238881801036f6f217f" kindref="member">allocate_command_buffers</ref>();</highlight></codeline>
+<codeline lineno="201"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1stereo__renderer_1adffacdc01d5cfc86668f43940c3c8ece" kindref="member">create_descriptor_pool</ref>();</highlight></codeline>
+<codeline lineno="202"><highlight class="normal"></highlight></codeline>
+<codeline lineno="203"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>ILLIXR_ENABLE_BOBA</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="204"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>──<sp/>Boba<sp/>vector/modal<sp/>overlay<sp/>helpers<sp/>────────────────────────────────────</highlight></codeline>
+<codeline lineno="206"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">overlay_vertex</ref><sp/>{</highlight></codeline>
+<codeline lineno="207"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>x;</highlight></codeline>
+<codeline lineno="208"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>y;</highlight></codeline>
+<codeline lineno="209"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>red;</highlight></codeline>
+<codeline lineno="210"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>green;</highlight></codeline>
+<codeline lineno="211"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>blue;</highlight></codeline>
+<codeline lineno="212"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>alpha;</highlight></codeline>
+<codeline lineno="213"><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
+<codeline lineno="214"><highlight class="normal"></highlight></codeline>
+<codeline lineno="216"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">modal_vertex</ref><sp/>{</highlight></codeline>
+<codeline lineno="217"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>x;</highlight></codeline>
+<codeline lineno="218"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>y;</highlight></codeline>
+<codeline lineno="219"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>u;</highlight></codeline>
+<codeline lineno="220"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>v;</highlight></codeline>
+<codeline lineno="221"><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
+<codeline lineno="222"><highlight class="normal"></highlight></codeline>
+<codeline lineno="224"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">create_boba_overlay_resources</ref>();</highlight></codeline>
+<codeline lineno="225"><highlight class="normal"></highlight></codeline>
+<codeline lineno="227"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">create_overlay_pipeline</ref>();</highlight></codeline>
+<codeline lineno="228"><highlight class="normal"></highlight></codeline>
+<codeline lineno="230"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">create_modal_pipeline</ref>();</highlight></codeline>
+<codeline lineno="231"><highlight class="normal"></highlight></codeline>
+<codeline lineno="233"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">create_host_visible_buffer</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkDeviceSize</ref><sp/>size,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkBufferUsageFlags</ref><sp/>usage,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkBuffer</ref>*<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">buffer</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkDeviceMemory</ref>*<sp/>memory,</highlight></codeline>
+<codeline lineno="234"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">**<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">mapped</ref>);</highlight></codeline>
+<codeline lineno="235"><highlight class="normal"></highlight></codeline>
+<codeline lineno="237"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">upload_modal_texture</ref>(std::uint64_t<sp/>texture_id,<sp/>std::uint32_t<sp/>width,<sp/>std::uint32_t<sp/>height,</highlight></codeline>
+<codeline lineno="238"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::vector&lt;std::uint8_t&gt;&amp;<sp/>rgba);</highlight></codeline>
+<codeline lineno="239"><highlight class="normal"></highlight></codeline>
+<codeline lineno="241"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">destroy_modal_texture</ref>();</highlight></codeline>
+<codeline lineno="242"><highlight class="normal"></highlight></codeline>
+<codeline lineno="244"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">update_boba_overlay_state</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>data_format::dual_frames&amp;<sp/>frame);</highlight></codeline>
+<codeline lineno="245"><highlight class="normal"></highlight></codeline>
+<codeline lineno="247"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">record_boba_overlays</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkCommandBuffer</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">command_buffer</ref>,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">eye</ref>);</highlight></codeline>
+<codeline lineno="248"><highlight class="normal"></highlight></codeline>
+<codeline lineno="250"><highlight class="normal"><sp/><sp/><sp/><sp/>std::uint32_t<sp/>find_memory_type(std::uint32_t<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">type_filter</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkMemoryPropertyFlags</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">properties</ref>)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="251"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="252"><highlight class="normal"></highlight></codeline>
+<codeline lineno="253"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>──<sp/>Depth<sp/>pipeline<sp/>helpers<sp/>─────────────────────────────────────────────────</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="254"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1stereo__renderer_1aaeaa5233d979d69bd2d32a79e892c6a1" kindref="member">create_depth_render_pass</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkFormat</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">depth_format</ref>);</highlight></codeline>
+<codeline lineno="255"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1stereo__renderer_1a7b2b566706d5e338ad43909c490107ae" kindref="member">create_depth_pipeline</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>imported_image&amp;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">prototype</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkFormat</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">depth_format</ref>);</highlight></codeline>
+<codeline lineno="256"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1stereo__renderer_1a22d00eb55f2cde4c2aa9987c016324c9" kindref="member">create_depth_descriptor_pool</ref>();</highlight></codeline>
+<codeline lineno="257"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1stereo__renderer_1af579cf2c219c597a1a01f3978d591e03" kindref="member">allocate_depth_command_buffers</ref>();</highlight></codeline>
+<codeline lineno="258"><highlight class="normal"></highlight></codeline>
+<codeline lineno="259"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>──<sp/>Motion-vector<sp/>pipeline<sp/>helpers<sp/>────────────────────────────────────────</highlight></codeline>
+<codeline lineno="262"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1stereo__renderer_1ad31f9f2b1591eb8a4b38dd9cb7473519" kindref="member">create_mv_render_pass</ref>();</highlight></codeline>
+<codeline lineno="263"><highlight class="normal"></highlight></codeline>
+<codeline lineno="268"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1stereo__renderer_1ac0a8229c8fb4159a5c658aca498d3453" kindref="member">create_mv_pipeline</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>imported_image&amp;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">prototype</ref>);</highlight></codeline>
+<codeline lineno="269"><highlight class="normal"></highlight></codeline>
+<codeline lineno="270"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1stereo__renderer_1aab0054ec8d9322a9c355fca945e1c8c9" kindref="member">create_mv_descriptor_pool</ref>();</highlight></codeline>
+<codeline lineno="271"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1stereo__renderer_1ac6278b5917e35e9f5c84ffc3fc91cbd3" kindref="member">allocate_mv_command_buffers</ref>();</highlight></codeline>
+<codeline lineno="272"><highlight class="normal"></highlight></codeline>
+<codeline lineno="273"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Vulkan<sp/>device<sp/>objects<sp/>(not<sp/>owned<sp/>—<sp/>owned<sp/>by<sp/>oxr_interface)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="274" refid="classILLIXR_1_1stereo__renderer_1a378671c9e8aef771e67e44e5ddd8904a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkInstance</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1stereo__renderer_1a378671c9e8aef771e67e44e5ddd8904a" kindref="member">instance_</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>;</highlight></codeline>
+<codeline lineno="275" refid="classILLIXR_1_1stereo__renderer_1a5f79c722b1b35558a070a6085abdf431" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkPhysicalDevice</ref><sp/><ref refid="classILLIXR_1_1stereo__renderer_1a5f79c722b1b35558a070a6085abdf431" kindref="member">physical_device_</ref><sp/><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>;</highlight></codeline>
+<codeline lineno="276" refid="classILLIXR_1_1stereo__renderer_1a40c661dc269754f308add08c63f21d33" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkDevice</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1stereo__renderer_1a40c661dc269754f308add08c63f21d33" kindref="member">device_</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>;</highlight></codeline>
+<codeline lineno="277" refid="classILLIXR_1_1stereo__renderer_1a8a968bc28a8670bc3cdcda337248348f" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkQueue</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1stereo__renderer_1a8a968bc28a8670bc3cdcda337248348f" kindref="member">queue_</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>;</highlight></codeline>
+<codeline lineno="278" refid="classILLIXR_1_1stereo__renderer_1a2f70f20813d2b493310c4f643ee9a769" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint32_t</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1stereo__renderer_1a2f70f20813d2b493310c4f643ee9a769" kindref="member">queue_family_</ref><sp/><sp/><sp/><sp/><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="279" refid="classILLIXR_1_1stereo__renderer_1a457ff8005929f8589952843e2ba449cc" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkFormat</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1stereo__renderer_1a457ff8005929f8589952843e2ba449cc" kindref="member">swapchain_format_</ref><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_FORMAT_R8G8B8A8_UNORM</ref>;</highlight></codeline>
+<codeline lineno="280"><highlight class="normal"></highlight></codeline>
+<codeline lineno="281"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Color<sp/>rendering<sp/>resources<sp/>(owned)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="282" refid="classILLIXR_1_1stereo__renderer_1a408594063ff8a8c037ec4e441b25fc2a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkRenderPass</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1stereo__renderer_1a408594063ff8a8c037ec4e441b25fc2a" kindref="member">render_pass_</ref><sp/><sp/><sp/><sp/><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>;</highlight></codeline>
+<codeline lineno="283" refid="classILLIXR_1_1stereo__renderer_1a8eef835679a2eb2cbbf81056f431975b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkPipelineLayout</ref><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1stereo__renderer_1a8eef835679a2eb2cbbf81056f431975b" kindref="member">pipeline_layout_</ref><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>;</highlight></codeline>
+<codeline lineno="284" refid="classILLIXR_1_1stereo__renderer_1a0ce2138983a65a24abc61e6e3b427e3d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkPipeline</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1stereo__renderer_1a0ce2138983a65a24abc61e6e3b427e3d" kindref="member">pipeline_</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>;</highlight></codeline>
+<codeline lineno="285" refid="classILLIXR_1_1stereo__renderer_1a8066997eea5a7a28b5201e3970fd5048" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkDescriptorPool</ref><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1stereo__renderer_1a8066997eea5a7a28b5201e3970fd5048" kindref="member">descriptor_pool_</ref><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>;</highlight></codeline>
+<codeline lineno="286" refid="classILLIXR_1_1stereo__renderer_1adadd77309bfc7d60b9fb8db236818f1a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkDescriptorSetLayout</ref><sp/><ref refid="classILLIXR_1_1stereo__renderer_1adadd77309bfc7d60b9fb8db236818f1a" kindref="member">desc_set_layout_</ref><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>;</highlight></codeline>
+<codeline lineno="287" refid="classILLIXR_1_1stereo__renderer_1a96260800b17a8a43fe90f8797b077866" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkCommandPool</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1stereo__renderer_1a96260800b17a8a43fe90f8797b077866" kindref="member">command_pool_</ref><sp/><sp/><sp/><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>;</highlight></codeline>
+<codeline lineno="288"><highlight class="normal"></highlight></codeline>
+<codeline lineno="289"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Per-eye<sp/>color<sp/>resources</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="290" refid="classILLIXR_1_1stereo__renderer_1af785985141bc47029dd0c25eadfb3ae7" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::array&lt;VkDescriptorSet,<sp/>2&gt;<sp/><ref refid="classILLIXR_1_1stereo__renderer_1af785985141bc47029dd0c25eadfb3ae7" kindref="member">descriptor_sets_</ref>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>};</highlight></codeline>
+<codeline lineno="291" refid="classILLIXR_1_1stereo__renderer_1a5a6ec2d3a6f28d3a3977ac4656668872" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::array&lt;VkCommandBuffer,<sp/>2&gt;<sp/><ref refid="classILLIXR_1_1stereo__renderer_1a5a6ec2d3a6f28d3a3977ac4656668872" kindref="member">command_buffers_</ref>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>};</highlight></codeline>
+<codeline lineno="292" refid="classILLIXR_1_1stereo__renderer_1af3b4364ecc8963c12195423f97c73c7f" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::array&lt;VkFence,<sp/>2&gt;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1stereo__renderer_1af3b4364ecc8963c12195423f97c73c7f" kindref="member">render_fences_</ref>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>};</highlight></codeline>
+<codeline lineno="293"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Transient<sp/>per-frame<sp/>objects<sp/>from<sp/>the<sp/>previous<sp/>render_eye()<sp/>call.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="294"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Destroyed<sp/>at<sp/>the<sp/>top<sp/>of<sp/>the<sp/>next<sp/>call,<sp/>after<sp/>the<sp/>fence<sp/>has<sp/>signalled,</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="295"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>because<sp/>Vulkan<sp/>requires<sp/>them<sp/>to<sp/>outlive<sp/>their<sp/>command<sp/>buffer<sp/>submission.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="296" refid="classILLIXR_1_1stereo__renderer_1a69ea446454e18e2dda2609f295d5344d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::array&lt;VkFramebuffer,<sp/>2&gt;<sp/><ref refid="classILLIXR_1_1stereo__renderer_1a69ea446454e18e2dda2609f295d5344d" kindref="member">prev_framebuffers_</ref>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>};</highlight></codeline>
+<codeline lineno="297" refid="classILLIXR_1_1stereo__renderer_1a5273735f96c41ce1a32624f419d3959d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::array&lt;VkImageView,<sp/>2&gt;<sp/><sp/><sp/><ref refid="classILLIXR_1_1stereo__renderer_1a5273735f96c41ce1a32624f419d3959d" kindref="member">prev_swapchain_views_</ref>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>};</highlight></codeline>
+<codeline lineno="298"><highlight class="normal"></highlight></codeline>
+<codeline lineno="299"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>ILLIXR_ENABLE_BOBA</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="300"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Boba<sp/>vector<sp/>overlays<sp/>(controller<sp/>rays,<sp/>placement<sp/>rectangle,<sp/>markers).</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="301"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkPipelineLayout</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">overlay_pipeline_layout_</ref><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>;</highlight></codeline>
+<codeline lineno="302"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkPipeline</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">overlay_pipeline_</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>;</highlight></codeline>
+<codeline lineno="303"><highlight class="normal"><sp/><sp/><sp/><sp/>std::array&lt;VkBuffer,<sp/>2&gt;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">overlay_vertex_buffers_</ref>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>};</highlight></codeline>
+<codeline lineno="304"><highlight class="normal"><sp/><sp/><sp/><sp/>std::array&lt;VkDeviceMemory,<sp/>2&gt;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">overlay_vertex_memories_</ref>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>};</highlight></codeline>
+<codeline lineno="305"><highlight class="normal"><sp/><sp/><sp/><sp/>std::array&lt;void*,<sp/>2&gt;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">overlay_vertex_mapped_</ref>{</highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">,<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">};</highlight></codeline>
+<codeline lineno="306"><highlight class="normal"><sp/><sp/><sp/><sp/>std::array&lt;std::vector&lt;overlay_vertex&gt;,<sp/>2&gt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">overlay_vertices_</ref>{};</highlight></codeline>
+<codeline lineno="307"><highlight class="normal"></highlight></codeline>
+<codeline lineno="308"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Boba<sp/>modal<sp/>bitmap<sp/>card.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="309"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkDescriptorSetLayout</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">modal_desc_set_layout_</ref><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>;</highlight></codeline>
+<codeline lineno="310"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkDescriptorPool</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">modal_descriptor_pool_</ref><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>;</highlight></codeline>
+<codeline lineno="311"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkDescriptorSet</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">modal_descriptor_set_</ref><sp/><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>;</highlight></codeline>
+<codeline lineno="312"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkPipelineLayout</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">modal_pipeline_layout_</ref><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>;</highlight></codeline>
+<codeline lineno="313"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkPipeline</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">modal_pipeline_</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>;</highlight></codeline>
+<codeline lineno="314"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkSampler</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">modal_sampler_</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>;</highlight></codeline>
+<codeline lineno="315"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkImage</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">modal_image_</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>;</highlight></codeline>
+<codeline lineno="316"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkDeviceMemory</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">modal_image_memory_</ref><sp/><sp/><sp/><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>;</highlight></codeline>
+<codeline lineno="317"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkImageView</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">modal_image_view_</ref><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>;</highlight></codeline>
+<codeline lineno="318"><highlight class="normal"><sp/><sp/><sp/><sp/>std::array&lt;VkBuffer,<sp/>2&gt;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">modal_vertex_buffers_</ref>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>};</highlight></codeline>
+<codeline lineno="319"><highlight class="normal"><sp/><sp/><sp/><sp/>std::array&lt;VkDeviceMemory,<sp/>2&gt;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">modal_vertex_memories_</ref>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>};</highlight></codeline>
+<codeline lineno="320"><highlight class="normal"><sp/><sp/><sp/><sp/>std::array&lt;void*,<sp/>2&gt;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">modal_vertex_mapped_</ref>{</highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">,<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">};</highlight></codeline>
+<codeline lineno="321"><highlight class="normal"><sp/><sp/><sp/><sp/>std::array&lt;std::array&lt;modal_vertex,<sp/>6&gt;,<sp/>2&gt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">modal_vertices_</ref>{};</highlight></codeline>
+<codeline lineno="322"><highlight class="normal"><sp/><sp/><sp/><sp/>std::array&lt;std::uint32_t,<sp/>2&gt;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">modal_vertex_counts_</ref>{0,<sp/>0};</highlight></codeline>
+<codeline lineno="323"><highlight class="normal"><sp/><sp/><sp/><sp/>data_format::boba_modal_overlay<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>active_modal_{};</highlight></codeline>
+<codeline lineno="324"><highlight class="normal"><sp/><sp/><sp/><sp/>std::uint64_t<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">modal_texture_id_</ref>{0};</highlight></codeline>
+<codeline lineno="325"><highlight class="normal"><sp/><sp/><sp/><sp/>std::uint32_t<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">overlay_source_width_</ref>{0};</highlight></codeline>
+<codeline lineno="326"><highlight class="normal"><sp/><sp/><sp/><sp/>std::uint32_t<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">overlay_source_height_</ref>{0};</highlight></codeline>
+<codeline lineno="327"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">render_boba_overlays_</ref>{</highlight><highlight class="keyword">false</highlight><highlight class="normal">};</highlight></codeline>
+<codeline lineno="328"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="329"><highlight class="normal"></highlight></codeline>
+<codeline lineno="330"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Depth<sp/>pipeline<sp/>resources<sp/>(owned)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="331" refid="classILLIXR_1_1stereo__renderer_1a0427cd98fd5697a7d7f39ea45224d8bd" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkRenderPass</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1stereo__renderer_1a0427cd98fd5697a7d7f39ea45224d8bd" kindref="member">depth_render_pass_</ref><sp/><sp/><sp/><sp/><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>;</highlight></codeline>
+<codeline lineno="332" refid="classILLIXR_1_1stereo__renderer_1ab218ea51de6968c2b54ebcb3471f8c54" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkPipelineLayout</ref><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1stereo__renderer_1ab218ea51de6968c2b54ebcb3471f8c54" kindref="member">depth_pipeline_layout_</ref><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>;</highlight></codeline>
+<codeline lineno="333" refid="classILLIXR_1_1stereo__renderer_1adc3ef85eb55a11d5d7ba630ba0938b9f" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkPipeline</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1stereo__renderer_1adc3ef85eb55a11d5d7ba630ba0938b9f" kindref="member">depth_pipeline_</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>;</highlight></codeline>
+<codeline lineno="334" refid="classILLIXR_1_1stereo__renderer_1a152000ccfd9c3a3789e719a2b73afdb5" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkDescriptorPool</ref><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1stereo__renderer_1a152000ccfd9c3a3789e719a2b73afdb5" kindref="member">depth_descriptor_pool_</ref><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>;</highlight></codeline>
+<codeline lineno="335" refid="classILLIXR_1_1stereo__renderer_1a0455a4c968b0e122b74408c6b84ee2b4" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkDescriptorSetLayout</ref><sp/><ref refid="classILLIXR_1_1stereo__renderer_1a0455a4c968b0e122b74408c6b84ee2b4" kindref="member">depth_desc_set_layout_</ref><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>;</highlight></codeline>
+<codeline lineno="336"><highlight class="normal"></highlight></codeline>
+<codeline lineno="337"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Per-eye<sp/>depth<sp/>resources</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="338" refid="classILLIXR_1_1stereo__renderer_1aa4e8cdef30cb5f16d264fa4e595bbe41" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::array&lt;VkDescriptorSet,<sp/>2&gt;<sp/><ref refid="classILLIXR_1_1stereo__renderer_1aa4e8cdef30cb5f16d264fa4e595bbe41" kindref="member">depth_descriptor_sets_</ref>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>};</highlight></codeline>
+<codeline lineno="339" refid="classILLIXR_1_1stereo__renderer_1af697735063b799ec7ba0b1b999cf84e2" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::array&lt;VkCommandBuffer,<sp/>2&gt;<sp/><ref refid="classILLIXR_1_1stereo__renderer_1af697735063b799ec7ba0b1b999cf84e2" kindref="member">depth_command_buffers_</ref>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>};</highlight></codeline>
+<codeline lineno="340" refid="classILLIXR_1_1stereo__renderer_1a7fd40398ec99b2c5e7bfe0bc0e333477" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::array&lt;VkFence,<sp/>2&gt;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1stereo__renderer_1a7fd40398ec99b2c5e7bfe0bc0e333477" kindref="member">depth_fences_</ref>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>};</highlight></codeline>
+<codeline lineno="341" refid="classILLIXR_1_1stereo__renderer_1a8bbf2bbfc4c65ab315a30adb31dccac5" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::array&lt;VkFramebuffer,<sp/>2&gt;<sp/><sp/><sp/><ref refid="classILLIXR_1_1stereo__renderer_1a8bbf2bbfc4c65ab315a30adb31dccac5" kindref="member">prev_depth_framebuffers_</ref>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>};</highlight></codeline>
+<codeline lineno="342" refid="classILLIXR_1_1stereo__renderer_1a414caf6d20dca6c2e6b2bafae834fa58" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::array&lt;VkImageView,<sp/>2&gt;<sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1stereo__renderer_1a414caf6d20dca6c2e6b2bafae834fa58" kindref="member">prev_depth_views_</ref>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>};</highlight></codeline>
+<codeline lineno="343"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Immutable<sp/>sampler<sp/>embedded<sp/>in<sp/>depth_desc_set_layout_.<sp/><sp/>Must<sp/>outlive<sp/>the</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="344"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>layout<sp/>(and<sp/>therefore<sp/>the<sp/>pipeline).<sp/><sp/>Created<sp/>in<sp/>create_depth_pipeline(),</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="345"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>destroyed<sp/>in<sp/>cleanup().</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="346" refid="classILLIXR_1_1stereo__renderer_1a10da56338199d36aa5453f22c659f6a5" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkSampler</ref><sp/><ref refid="classILLIXR_1_1stereo__renderer_1a10da56338199d36aa5453f22c659f6a5" kindref="member">depth_immutable_sampler_</ref><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>;</highlight></codeline>
+<codeline lineno="347"><highlight class="normal"></highlight></codeline>
+<codeline lineno="348"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Motion-vector<sp/>pipeline<sp/>resources<sp/>(owned)</highlight></codeline>
+<codeline lineno="350" refid="classILLIXR_1_1stereo__renderer_1a8c9290ab2a223f3ca130a3b889425ed4" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkRenderPass</ref><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1stereo__renderer_1a8c9290ab2a223f3ca130a3b889425ed4" kindref="member">mv_render_pass_</ref><sp/><sp/><sp/><sp/><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>;</highlight></codeline>
+<codeline lineno="351" refid="classILLIXR_1_1stereo__renderer_1a41c1c698006045e491c359fbf3997464" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkPipelineLayout</ref><sp/><ref refid="classILLIXR_1_1stereo__renderer_1a41c1c698006045e491c359fbf3997464" kindref="member">mv_pipeline_layout_</ref><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>;</highlight></codeline>
+<codeline lineno="352" refid="classILLIXR_1_1stereo__renderer_1abfdf9094457b04a044df6cb0f6a68397" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkPipeline</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1stereo__renderer_1abfdf9094457b04a044df6cb0f6a68397" kindref="member">mv_pipeline_</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>;</highlight></codeline>
+<codeline lineno="356" refid="classILLIXR_1_1stereo__renderer_1a7b1f2a14cbe5f53e6b25671c16cb83a2" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkDescriptorPool</ref><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1stereo__renderer_1a7b1f2a14cbe5f53e6b25671c16cb83a2" kindref="member">mv_descriptor_pool_</ref><sp/><sp/><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>;</highlight></codeline>
+<codeline lineno="357" refid="classILLIXR_1_1stereo__renderer_1a8d8fceebb7b5a4ec0d9fcc52acf2375e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkDescriptorSetLayout</ref><sp/><ref refid="classILLIXR_1_1stereo__renderer_1a8d8fceebb7b5a4ec0d9fcc52acf2375e" kindref="member">mv_desc_set_layout_</ref><sp/><sp/><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>;</highlight></codeline>
+<codeline lineno="358" refid="classILLIXR_1_1stereo__renderer_1ac519be47dd578e896ee12110b37c8bb1" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VkSampler</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1stereo__renderer_1ac519be47dd578e896ee12110b37c8bb1" kindref="member">mv_immutable_sampler_</ref><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>;</highlight></codeline>
+<codeline lineno="359"><highlight class="normal"></highlight></codeline>
+<codeline lineno="360" refid="classILLIXR_1_1stereo__renderer_1ad8e8c739db78fdee3f1a1c4f28bdd2b3" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::array&lt;VkDescriptorSet,<sp/>2&gt;<sp/><ref refid="classILLIXR_1_1stereo__renderer_1ad8e8c739db78fdee3f1a1c4f28bdd2b3" kindref="member">mv_descriptor_sets_</ref>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>};</highlight></codeline>
+<codeline lineno="361" refid="classILLIXR_1_1stereo__renderer_1ac0a059c289ac753eec3f92f38abac9c4" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::array&lt;VkCommandBuffer,<sp/>2&gt;<sp/><ref refid="classILLIXR_1_1stereo__renderer_1ac0a059c289ac753eec3f92f38abac9c4" kindref="member">mv_command_buffers_</ref>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>};</highlight></codeline>
+<codeline lineno="362" refid="classILLIXR_1_1stereo__renderer_1acd7e9b5c5a371498a386d1e375c1f0ca" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::array&lt;VkFence,<sp/>2&gt;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1stereo__renderer_1acd7e9b5c5a371498a386d1e375c1f0ca" kindref="member">mv_fences_</ref>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>};</highlight></codeline>
+<codeline lineno="363" refid="classILLIXR_1_1stereo__renderer_1a2fa28158dc4b44e8498ed63371e2212b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::array&lt;VkFramebuffer,<sp/>2&gt;<sp/><sp/><sp/><ref refid="classILLIXR_1_1stereo__renderer_1a2fa28158dc4b44e8498ed63371e2212b" kindref="member">prev_mv_framebuffers_</ref>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>};</highlight></codeline>
+<codeline lineno="364" refid="classILLIXR_1_1stereo__renderer_1a759986a38a3e4799320160aaa13dd6fb" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::array&lt;VkImageView,<sp/>2&gt;<sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1stereo__renderer_1a759986a38a3e4799320160aaa13dd6fb" kindref="member">prev_mv_swapchain_views_</ref>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_NULL_HANDLE</ref>};</highlight></codeline>
+<codeline lineno="365"><highlight class="normal"></highlight></codeline>
+<codeline lineno="366"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Cached<sp/>color<sp/>imported<sp/>images<sp/>keyed<sp/>by<sp/>AHardwareBuffer<sp/>pointer.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="367" refid="classILLIXR_1_1stereo__renderer_1a6549e72463c586e5311ee07e37393150" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::unordered_map&lt;AHardwareBuffer*,<sp/>std::unique_ptr&lt;imported_image&gt;&gt;<sp/><ref refid="classILLIXR_1_1stereo__renderer_1a6549e72463c586e5311ee07e37393150" kindref="member">image_cache_</ref>;</highlight></codeline>
+<codeline lineno="368"><highlight class="normal"></highlight></codeline>
+<codeline lineno="369"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Cached<sp/>depth<sp/>imported<sp/>images<sp/>(separate<sp/>cache<sp/>—<sp/>different<sp/>AHardwareBuffers).</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="370" refid="classILLIXR_1_1stereo__renderer_1a9abda4a5756150796b2f8ec60d561730" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::unordered_map&lt;AHardwareBuffer*,<sp/>std::unique_ptr&lt;imported_image&gt;&gt;<sp/><ref refid="classILLIXR_1_1stereo__renderer_1a9abda4a5756150796b2f8ec60d561730" kindref="member">depth_image_cache_</ref>;</highlight></codeline>
+<codeline lineno="371"><highlight class="normal"></highlight></codeline>
+<codeline lineno="374" refid="classILLIXR_1_1stereo__renderer_1af14a901e936e70f10d194f4f7062da11" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::unordered_map&lt;AHardwareBuffer*,<sp/>std::unique_ptr&lt;imported_image&gt;&gt;<sp/><ref refid="classILLIXR_1_1stereo__renderer_1af14a901e936e70f10d194f4f7062da11" kindref="member">mv_image_cache_</ref>;</highlight></codeline>
+<codeline lineno="375"><highlight class="normal"></highlight></codeline>
+<codeline lineno="376"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Current<sp/>frame&apos;s<sp/>per-eye<sp/>imported<sp/>image<sp/>pointers<sp/>(stable<sp/>—<sp/>heap-allocated<sp/>in<sp/>image_cache_).</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="377" refid="classILLIXR_1_1stereo__renderer_1a8087068112ac3a6b0c79908fc925532f" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::array&lt;imported_image*,<sp/>2&gt;<sp/><ref refid="classILLIXR_1_1stereo__renderer_1a8087068112ac3a6b0c79908fc925532f" kindref="member">current_images_</ref>{</highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">,<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">};</highlight></codeline>
+<codeline lineno="378"><highlight class="normal"></highlight></codeline>
+<codeline lineno="379"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Current<sp/>frame&apos;s<sp/>per-eye<sp/>depth<sp/>imported<sp/>image<sp/>pointers<sp/>(into<sp/>depth_image_cache_).</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="380" refid="classILLIXR_1_1stereo__renderer_1a58df7b3b461ab8c0463d0708ea320c84" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::array&lt;imported_image*,<sp/>2&gt;<sp/><ref refid="classILLIXR_1_1stereo__renderer_1a58df7b3b461ab8c0463d0708ea320c84" kindref="member">current_depth_images_</ref>{</highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">,<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">};</highlight></codeline>
+<codeline lineno="381"><highlight class="normal"></highlight></codeline>
+<codeline lineno="382" refid="classILLIXR_1_1stereo__renderer_1a723d67f13bc4ad9c24c0e22b694b3cce" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::array&lt;imported_image*,<sp/>2&gt;<sp/><ref refid="classILLIXR_1_1stereo__renderer_1a723d67f13bc4ad9c24c0e22b694b3cce" kindref="member">current_mv_images_</ref>{</highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">,<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">};</highlight></codeline>
+<codeline lineno="383"><highlight class="normal"></highlight></codeline>
+<codeline lineno="384"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Crop<sp/>scale<sp/>factors</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="385" refid="classILLIXR_1_1stereo__renderer_1a5cb9bdf00afd9cac6d582918a41d8313" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1stereo__renderer_1a5cb9bdf00afd9cac6d582918a41d8313" kindref="member">crop_scale_x_</ref>{1.0f};</highlight></codeline>
+<codeline lineno="386" refid="classILLIXR_1_1stereo__renderer_1aecbb6f46f6a55a164373e3fa29e29ee3" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1stereo__renderer_1aecbb6f46f6a55a164373e3fa29e29ee3" kindref="member">crop_scale_y_</ref>{1.0f};</highlight></codeline>
+<codeline lineno="387"><highlight class="normal"></highlight></codeline>
+<codeline lineno="388"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Extension<sp/>function<sp/>pointers</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="389" refid="classILLIXR_1_1stereo__renderer_1aa5f6c42d02130483d1995ab83f56e03c" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">PFN_vkGetAndroidHardwareBufferPropertiesANDROID</ref><sp/><ref refid="classILLIXR_1_1stereo__renderer_1aa5f6c42d02130483d1995ab83f56e03c" kindref="member">vk_get_ahb_properties_</ref><sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="390"><highlight class="normal"></highlight></codeline>
+<codeline lineno="391" refid="classILLIXR_1_1stereo__renderer_1aec43dec944758186e3e29cac0a54955e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1stereo__renderer_1aec43dec944758186e3e29cac0a54955e" kindref="member">initialized_</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="392" refid="classILLIXR_1_1stereo__renderer_1a8ef5f8faabc16581667615f6e17250af" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1stereo__renderer_1a8ef5f8faabc16581667615f6e17250af" kindref="member">has_valid_frame_</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="393" refid="classILLIXR_1_1stereo__renderer_1a87465fcfcd91658e51840cedae1b9152" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1stereo__renderer_1a87465fcfcd91658e51840cedae1b9152" kindref="member">pipeline_created_</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="394" refid="classILLIXR_1_1stereo__renderer_1ab2c030e182bc1c7c0edb49ad36f4c1cb" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1stereo__renderer_1ab2c030e182bc1c7c0edb49ad36f4c1cb" kindref="member">depth_pipeline_created_</ref><sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="395" refid="classILLIXR_1_1stereo__renderer_1abf6de6a7919a40a5398571f15b0987f8" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1stereo__renderer_1abf6de6a7919a40a5398571f15b0987f8" kindref="member">mv_pipeline_created_</ref><sp/><sp/><sp/><sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="396" refid="classILLIXR_1_1stereo__renderer_1a48d31bb41095a9b4acaf11396b6122af" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1stereo__renderer_1a48d31bb41095a9b4acaf11396b6122af" kindref="member">has_depth_frame_</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="397" refid="classILLIXR_1_1stereo__renderer_1acde21bf12293d2a2c153b374ee852c4f" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1stereo__renderer_1acde21bf12293d2a2c153b374ee852c4f" kindref="member">has_mv_frame_</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="398"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>COMBINED_ENCODING</highlight></codeline>
+<codeline lineno="400"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">combined_encoding_</ref><sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="401"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="402"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="403"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>ILLIXR</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp"/>
+  </compounddef>
+</doxygen>

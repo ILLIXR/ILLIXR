@@ -1,0 +1,114 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structILLIXR_1_1data__format_1_1boba__frame__overlay" kind="struct" language="C++" prot="public">
+    <compoundname>ILLIXR::data_format::boba_frame_overlay</compoundname>
+    <includes refid="frame_8hpp" local="no">frame.hpp</includes>
+    <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1boba__frame__overlay_1a4a79b41c49fd24f9e0c9bed78bb5cdae" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">constexpr</ref> std::uint32_t</type>
+        <definition>constexpr std::uint32_t ILLIXR::data_format::boba_frame_overlay::command_stride_floats</definition>
+        <argsstring></argsstring>
+        <name>command_stride_floats</name>
+        <qualifiedname>ILLIXR::data_format::boba_frame_overlay::command_stride_floats</qualifiedname>
+        <initializer>= 14</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" line="69" column="36" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" bodystart="69" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1boba__frame__overlay_1a9c6ed1eca104a4479c2daeb461cefa92" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">constexpr</ref> std::uint32_t</type>
+        <definition>constexpr std::uint32_t ILLIXR::data_format::boba_frame_overlay::max_commands_per_eye</definition>
+        <argsstring></argsstring>
+        <name>max_commands_per_eye</name>
+        <qualifiedname>ILLIXR::data_format::boba_frame_overlay::max_commands_per_eye</qualifiedname>
+        <initializer>= 256</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" line="70" column="36" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" bodystart="70" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1boba__frame__overlay_1a8c652222b97c8ed2da794c6f4fbbfc60" prot="public" static="no" mutable="no">
+        <type>std::uint32_t</type>
+        <definition>std::uint32_t ILLIXR::data_format::boba_frame_overlay::source_width</definition>
+        <argsstring></argsstring>
+        <name>source_width</name>
+        <qualifiedname>ILLIXR::data_format::boba_frame_overlay::source_width</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Coordinate extent used to normalize the per-eye source-pixel commands. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" line="73" column="24" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" bodystart="73" bodyend="73"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1boba__frame__overlay_1afeb1af532b97f43e8c157c1655c271aa" prot="public" static="no" mutable="no">
+        <type>std::uint32_t</type>
+        <definition>std::uint32_t ILLIXR::data_format::boba_frame_overlay::source_height</definition>
+        <argsstring></argsstring>
+        <name>source_height</name>
+        <qualifiedname>ILLIXR::data_format::boba_frame_overlay::source_height</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" line="74" column="24" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" bodystart="74" bodyend="74"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1boba__frame__overlay_1a4e8f665fa48135f1ce2fc3648af9e942" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">float</ref> &gt;</type>
+        <definition>std::vector&lt;float&gt; ILLIXR::data_format::boba_frame_overlay::left_commands</definition>
+        <argsstring></argsstring>
+        <name>left_commands</name>
+        <qualifiedname>ILLIXR::data_format::boba_frame_overlay::left_commands</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" line="75" column="17" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" bodystart="75" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1boba__frame__overlay_1ae7c6399dadb09c8e4c7370f9950be3d3" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">float</ref> &gt;</type>
+        <definition>std::vector&lt;float&gt; ILLIXR::data_format::boba_frame_overlay::right_commands</definition>
+        <argsstring></argsstring>
+        <name>right_commands</name>
+        <qualifiedname>ILLIXR::data_format::boba_frame_overlay::right_commands</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" line="76" column="17" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" bodystart="76" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Boba&apos;s lightweight per-eye viewer overlays. Each command retains the producer&apos;s 14-float layout and is interpreted in source-image pixels. Keeping these commands out of the video bitstream lets the Quest render controller rays and placement markers at the OpenXR swapchain resolution. </para>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" line="68" column="1" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" bodystart="68" bodyend="77"/>
+    <listofallmembers>
+      <member refid="structILLIXR_1_1data__format_1_1boba__frame__overlay_1a4a79b41c49fd24f9e0c9bed78bb5cdae" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::boba_frame_overlay</scope><name>command_stride_floats</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1boba__frame__overlay_1a4e8f665fa48135f1ce2fc3648af9e942" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::boba_frame_overlay</scope><name>left_commands</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1boba__frame__overlay_1a9c6ed1eca104a4479c2daeb461cefa92" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::boba_frame_overlay</scope><name>max_commands_per_eye</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1boba__frame__overlay_1ae7c6399dadb09c8e4c7370f9950be3d3" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::boba_frame_overlay</scope><name>right_commands</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1boba__frame__overlay_1afeb1af532b97f43e8c157c1655c271aa" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::boba_frame_overlay</scope><name>source_height</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1boba__frame__overlay_1a8c652222b97c8ed2da794c6f4fbbfc60" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::boba_frame_overlay</scope><name>source_width</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

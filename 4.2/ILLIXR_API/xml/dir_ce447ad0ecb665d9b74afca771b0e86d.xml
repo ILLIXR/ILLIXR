@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_ce447ad0ecb665d9b74afca771b0e86d" kind="dir">
+    <compoundname>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization</compoundname>
+    <innerfile refid="serialization_2combined__pose_8hpp">combined_pose.hpp</innerfile>
+    <innerfile refid="serialization_2frame_8hpp">frame.hpp</innerfile>
+    <innerfile refid="serialization_2hand__interaction__pose_8hpp">hand_interaction_pose.hpp</innerfile>
+    <innerfile refid="serialization_2hand__pose_8hpp">hand_pose.hpp</innerfile>
+    <innerfile refid="serialization_2head__pose_8hpp">head_pose.hpp</innerfile>
+    <innerfile refid="serialization_2hmd__config_8hpp">hmd_config.hpp</innerfile>
+    <innerfile refid="latency_8hpp">latency.hpp</innerfile>
+    <innerfile refid="serialization_2misc_8hpp">misc.hpp</innerfile>
+    <innerfile refid="openxr_8hpp">openxr.hpp</innerfile>
+    <innerfile refid="serialization_2openxr__view__frame_8hpp">openxr_view_frame.hpp</innerfile>
+    <innerfile refid="serialization_2palm__pose_8hpp">palm_pose.hpp</innerfile>
+    <innerfile refid="serialization_2point__cloud_8hpp">point_cloud.hpp</innerfile>
+    <innerfile refid="serialization_2pose__base_8hpp">pose_base.hpp</innerfile>
+    <innerfile refid="serialization_2query__response_8hpp">query_response.hpp</innerfile>
+    <innerfile refid="serialization_2quest__controller_8hpp">quest_controller.hpp</innerfile>
+    <innerfile refid="serialization_2semantics_8hpp">semantics.hpp</innerfile>
+    <innerfile refid="serialization_2voice__query_8hpp">voice_query.hpp</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/"/>
+  </compounddef>
+</doxygen>

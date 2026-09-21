@@ -1,0 +1,606 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="pose__prediction_2service_8cpp" kind="file" language="C++">
+    <compoundname>service.cpp</compoundname>
+    <includes refid="pose__prediction_2service_8hpp" local="yes">service.hpp</includes>
+    <includes refid="runge-kutta_8hpp" local="yes">illixr/runge-kutta.hpp</includes>
+    <includes local="no">eigen3/Eigen/Dense</includes>
+    <includes local="no">filesystem</includes>
+    <includes local="no">shared_mutex</includes>
+    <incdepgraph>
+      <node id="3">
+        <label>illixr/data_format/imu.hpp</label>
+        <link refid="imu_8hpp"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="39" relation="include">
+        </childnode>
+      </node>
+      <node id="40">
+        <label>illixr/data_format/pose_prediction.hpp</label>
+        <link refid="pose__prediction_8hpp"/>
+        <childnode refid="41" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="44" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+      </node>
+      <node id="41">
+        <label>illixr/data_format/poses/head_pose.hpp</label>
+        <link refid="poses_2head__pose_8hpp"/>
+        <childnode refid="42" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="39" relation="include">
+        </childnode>
+        <childnode refid="43" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="42">
+        <label>illixr/data_format/poses/pose_base.hpp</label>
+        <link refid="poses_2pose__base_8hpp"/>
+        <childnode refid="43" relation="include">
+        </childnode>
+        <childnode refid="39" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="52">
+        <label>data_format/proper_quaternion.hpp</label>
+        <link refid="proper__quaternion_8hpp"/>
+        <childnode refid="39" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>export.hpp</label>
+        <link refid="export_8hpp"/>
+      </node>
+      <node id="7">
+        <label>managed_thread.hpp</label>
+        <link refid="managed__thread_8hpp"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>network/network_backend.hpp</label>
+        <link refid="network__backend_8hpp"/>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+      </node>
+      <node id="23">
+        <label>topic_config.hpp</label>
+        <link refid="topic__config_8hpp"/>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+      </node>
+      <node id="15">
+        <label>illixr/phonebook.hpp</label>
+        <link refid="phonebook_8hpp"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+      </node>
+      <node id="46">
+        <label>illixr/plugin.hpp</label>
+        <link refid="include_2illixr_2plugin_8hpp"/>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="47" relation="include">
+        </childnode>
+        <childnode refid="48" relation="include">
+        </childnode>
+        <childnode refid="49" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="50" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="27">
+        <label>record_logger.hpp</label>
+        <link refid="record__logger_8hpp"/>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+      </node>
+      <node id="44">
+        <label>illixr/relative_clock.hpp</label>
+        <link refid="relative__clock_8hpp"/>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="45" relation="include">
+        </childnode>
+      </node>
+      <node id="51">
+        <label>illixr/runge-kutta.hpp</label>
+        <link refid="runge-kutta_8hpp"/>
+        <childnode refid="52" relation="include">
+        </childnode>
+        <childnode refid="39" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>illixr/switchboard.hpp</label>
+        <link refid="switchboard_8hpp"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+        <childnode refid="38" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/services/pose_prediction/service.cpp</label>
+        <link refid="pose__prediction_2service_8cpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="51" relation="include">
+        </childnode>
+        <childnode refid="39" relation="include">
+        </childnode>
+        <childnode refid="53" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>service.hpp</label>
+        <link refid="pose__prediction_2service_8hpp"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="40" relation="include">
+        </childnode>
+        <childnode refid="41" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="46" relation="include">
+        </childnode>
+      </node>
+      <node id="28">
+        <label>any</label>
+      </node>
+      <node id="8">
+        <label>atomic</label>
+      </node>
+      <node id="34">
+        <label>boost/archive/binary_iarchive.hpp</label>
+      </node>
+      <node id="35">
+        <label>boost/archive/binary_oarchive.hpp</label>
+      </node>
+      <node id="36">
+        <label>boost/iostreams/device/back_inserter.hpp</label>
+      </node>
+      <node id="37">
+        <label>boost/iostreams/stream.hpp</label>
+      </node>
+      <node id="38">
+        <label>boost/serialization/shared_ptr.hpp</label>
+      </node>
+      <node id="9">
+        <label>cassert</label>
+      </node>
+      <node id="24">
+        <label>chrono</label>
+      </node>
+      <node id="5">
+        <label>concurrentqueue/blockingconcurrentqueue.hpp</label>
+      </node>
+      <node id="31">
+        <label>eigen3/Eigen/Core</label>
+      </node>
+      <node id="39">
+        <label>eigen3/Eigen/Dense</label>
+      </node>
+      <node id="32">
+        <label>eigen3/Eigen/Geometry</label>
+      </node>
+      <node id="53">
+        <label>filesystem</label>
+      </node>
+      <node id="10">
+        <label>functional</label>
+      </node>
+      <node id="16">
+        <label>iostream</label>
+      </node>
+      <node id="33">
+        <label>list</label>
+      </node>
+      <node id="43">
+        <label>map</label>
+      </node>
+      <node id="17">
+        <label>memory</label>
+      </node>
+      <node id="18">
+        <label>mutex</label>
+      </node>
+      <node id="25">
+        <label>optional</label>
+      </node>
+      <node id="45">
+        <label>ratio</label>
+      </node>
+      <node id="19">
+        <label>shared_mutex</label>
+      </node>
+      <node id="47">
+        <label>spdlog/common.h</label>
+      </node>
+      <node id="48">
+        <label>spdlog/sinks/basic_file_sink.h</label>
+      </node>
+      <node id="49">
+        <label>spdlog/sinks/stdout_color_sinks.h</label>
+      </node>
+      <node id="22">
+        <label>spdlog/spdlog.h</label>
+      </node>
+      <node id="30">
+        <label>sstream</label>
+      </node>
+      <node id="11">
+        <label>stdexcept</label>
+      </node>
+      <node id="29">
+        <label>string</label>
+      </node>
+      <node id="12">
+        <label>thread</label>
+      </node>
+      <node id="20">
+        <label>typeindex</label>
+      </node>
+      <node id="50">
+        <label>typeinfo</label>
+      </node>
+      <node id="21">
+        <label>unordered_map</label>
+      </node>
+      <node id="13">
+        <label>utility</label>
+      </node>
+      <node id="26">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <innerclass refid="classpose__prediction__plugin" prot="public">pose_prediction_plugin</innerclass>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#include<sp/>&quot;<ref refid="vkdemo_2service_8hpp" kindref="compound">service.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="runge-kutta_8hpp" kindref="compound">illixr/runge-kutta.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>__ANDROID__</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>include<sp/>&lt;Eigen/Dense&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/><sp/>include<sp/>&lt;eigen3/Eigen/Dense&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;filesystem&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;shared_mutex&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceILLIXR" kindref="compound">ILLIXR</ref>;</highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceILLIXR_1_1data__format" kindref="compound">ILLIXR::data_format</ref>;</highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"><ref refid="classILLIXR_1_1pose__prediction__impl_1a88348d4e85db3d963112dd6e679125da" kindref="member">pose_prediction_impl::pose_prediction_impl</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1phonebook" kindref="compound">phonebook</ref>*<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">pb</ref>)</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"><sp/><sp/><sp/><sp/>:<sp/>switchboard_{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">pb</ref>-&gt;lookup_impl&lt;<ref refid="classILLIXR_1_1switchboard" kindref="compound">switchboard</ref>&gt;()}</highlight></codeline>
+<codeline lineno="18"><highlight class="normal"><sp/><sp/><sp/><sp/>,<sp/>clock_{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">pb</ref>-&gt;lookup_impl&lt;<ref refid="classILLIXR_1_1relative__clock" kindref="compound">relative_clock</ref>&gt;()}</highlight></codeline>
+<codeline lineno="19"><highlight class="normal"><sp/><sp/><sp/><sp/>,<sp/>slow_pose_{switchboard_-&gt;get_reader&lt;pose::head_pose_type&gt;(</highlight><highlight class="stringliteral">&quot;slow_pose&quot;</highlight><highlight class="normal">)}</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"><sp/><sp/><sp/><sp/>,<sp/>imu_raw_{switchboard_-&gt;get_reader&lt;<ref refid="structILLIXR_1_1data__format_1_1imu__raw__type" kindref="compound">imu_raw_type</ref>&gt;(</highlight><highlight class="stringliteral">&quot;imu_raw&quot;</highlight><highlight class="normal">)}</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"><sp/><sp/><sp/><sp/>,<sp/>true_pose_{switchboard_-&gt;get_reader&lt;pose::head_pose_type&gt;(</highlight><highlight class="stringliteral">&quot;true_pose&quot;</highlight><highlight class="normal">)}</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"><sp/><sp/><sp/><sp/>,<sp/>ground_truth_offset_{switchboard_-&gt;get_reader&lt;<ref refid="classILLIXR_1_1switchboard" kindref="compound">switchboard</ref>::event_wrapper&lt;Eigen::<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">Vector3f</ref>&gt;&gt;(</highlight><highlight class="stringliteral">&quot;ground_truth_offset&quot;</highlight><highlight class="normal">)}</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/>,<sp/>vsync_estimate_{switchboard_-&gt;get_reader&lt;<ref refid="classILLIXR_1_1switchboard" kindref="compound">switchboard</ref>::event_wrapper&lt;<ref refid="classILLIXR_1_1time__point" kindref="compound">time_point</ref>&gt;&gt;(</highlight><highlight class="stringliteral">&quot;vsync_estimate&quot;</highlight><highlight class="normal">)}</highlight></codeline>
+<codeline lineno="24"><highlight class="normal">#<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">ifdef</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">__ANDROID__</ref></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/><sp/><sp/>,<sp/>using_lighthouse_{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">false</ref>}<sp/>{}</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/>,<sp/>using_lighthouse_{switchboard_-&gt;get_env_bool(</highlight><highlight class="stringliteral">&quot;ILLIXR_LIGHTHOUSE&quot;</highlight><highlight class="normal">)}<sp/>{</highlight></codeline>
+<codeline lineno="28"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>No<sp/>parameter<sp/>get_fast_pose()<sp/>should<sp/>just<sp/>predict<sp/>to<sp/>the<sp/>next<sp/>vsync</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>However,<sp/>we<sp/>don&apos;t<sp/>have<sp/>vsync<sp/>estimation<sp/>yet.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>So<sp/>we<sp/>will<sp/>predict<sp/>to<sp/>`now()`,<sp/>as<sp/>a<sp/>temporary<sp/>approximation</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1fast__head__pose__type" kindref="compound">pose::fast_head_pose_type</ref><sp/><ref refid="classILLIXR_1_1pose__prediction__impl_1ae27a2457e2eaf652a9ffdb9d068fe62b" kindref="member">pose_prediction_impl::get_fast_pose</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1switchboard_1af91c1b9436918512e95e5fa8553846a7" kindref="member">switchboard::ptr&lt;const switchboard::event_wrapper&lt;time_point&gt;</ref>&gt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">vsync_estimate</ref><sp/>=<sp/><ref refid="classILLIXR_1_1pose__prediction__impl_1af6c57baa7eb3a22b6b99721d17ff380e" kindref="member">vsync_estimate_</ref>.get_ro_nullable();</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">vsync_estimate</ref><sp/>==<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">)<sp/>{</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1pose__prediction__impl_1ae27a2457e2eaf652a9ffdb9d068fe62b" kindref="member">get_fast_pose</ref>(<ref refid="classILLIXR_1_1pose__prediction__impl_1a72cf02d49712bc926c64ddbd13a7f0a0" kindref="member">clock_</ref>-&gt;now());</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1pose__prediction__impl_1ae27a2457e2eaf652a9ffdb9d068fe62b" kindref="member">get_fast_pose</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">vsync_estimate</ref>.get()-&gt;operator<sp/><ref refid="classILLIXR_1_1time__point" kindref="compound">time_point</ref>());</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="42"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"></highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><ref refid="structILLIXR_1_1data__format_1_1pose_1_1head__pose__type" kindref="compound">pose::head_pose_type</ref><sp/><ref refid="classILLIXR_1_1pose__prediction__impl_1a2f3a60b5516508f8346efd34b0ecc44b" kindref="member">pose_prediction_impl::get_true_pose</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1switchboard_1af91c1b9436918512e95e5fa8553846a7" kindref="member">switchboard::ptr&lt;const pose::head_pose_type&gt;</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">pose_ptr</ref><sp/><sp/><sp/>=<sp/><ref refid="classILLIXR_1_1pose__prediction__impl_1a2a657f08fea0107e9bdcd0c220afd2d9" kindref="member">true_pose_</ref>.get_ro_nullable();</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1switchboard_1af91c1b9436918512e95e5fa8553846a7" kindref="member">switchboard::ptr&lt;const switchboard::event_wrapper&lt;Eigen::Vector3f&gt;</ref>&gt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">offset_ptr</ref><sp/>=<sp/><ref refid="classILLIXR_1_1pose__prediction__impl_1ae2a6cbc6ae2a8440c870e54b4eff732b" kindref="member">ground_truth_offset_</ref>.get_ro_nullable();</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"></highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1head__pose__type" kindref="compound">pose::head_pose_type</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">offset_pose</ref>;</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"></highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Subtract<sp/>offset<sp/>if<sp/>valid<sp/>pose<sp/>and<sp/>offset,<sp/>otherwise<sp/>use<sp/>zero<sp/>pose.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Checking<sp/>that<sp/>pose<sp/>and<sp/>offset<sp/>are<sp/>both<sp/>valid<sp/>is<sp/>safer<sp/>than<sp/>just</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>checking<sp/>one<sp/>or<sp/>the<sp/>other<sp/>because<sp/>it<sp/>assumes<sp/>nothing<sp/>about<sp/>the</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>ordering<sp/>of<sp/>writes<sp/>on<sp/>the<sp/>producer&apos;s<sp/>end<sp/>or<sp/>about<sp/>the<sp/>producer</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>actually<sp/>writing<sp/>to<sp/>both<sp/>streams.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">pose_ptr</ref><sp/>!=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal"><sp/>&amp;&amp;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">offset_ptr</ref><sp/>!=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">)<sp/>{</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">offset_pose</ref><sp/>=<sp/>*<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">pose_ptr</ref>;</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">offset_pose</ref>.<ref refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base_1a1ca6c892b6a46a99ef309f8858a703b6" kindref="member">position</ref><sp/>-=<sp/>**<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">offset_ptr</ref>;</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">offset_pose</ref>.sensor_time<sp/>=<sp/><ref refid="classILLIXR_1_1pose__prediction__impl_1a72cf02d49712bc926c64ddbd13a7f0a0" kindref="member">clock_</ref>-&gt;now();</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">offset_pose</ref>.position<sp/><sp/><sp/><sp/>=<sp/>Eigen::Vector3f{0,<sp/>0,<sp/>0};</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">offset_pose</ref>.orientation<sp/>=<sp/>Eigen::Quaternionf{1,<sp/>0,<sp/>0,<sp/>0};</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"></highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1pose__prediction__impl_1ac124a0bda95999d0b385aa89f26d36fd" kindref="member">correct_pose</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">offset_pose</ref>);</highlight></codeline>
+<codeline lineno="65"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"></highlight></codeline>
+<codeline lineno="67"><highlight class="normal"></highlight><highlight class="comment">//<sp/>future_time:<sp/>An<sp/>absolute<sp/>timepoint<sp/>in<sp/>the<sp/>future</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><ref refid="structILLIXR_1_1data__format_1_1pose_1_1fast__head__pose__type" kindref="compound">pose::fast_head_pose_type</ref><sp/><ref refid="classILLIXR_1_1pose__prediction__impl_1ae27a2457e2eaf652a9ffdb9d068fe62b" kindref="member">pose_prediction_impl::get_fast_pose</ref>(<ref refid="classILLIXR_1_1time__point" kindref="compound">time_point</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">future_timestamp</ref>)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1switchboard_1af91c1b9436918512e95e5fa8553846a7" kindref="member">switchboard::ptr&lt;const pose::head_pose_type&gt;</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">slow_pose</ref><sp/>=<sp/><ref refid="classILLIXR_1_1pose__prediction__impl_1acdd2f5ae21b5343c7dbd9ce152af9551" kindref="member">slow_pose_</ref>.get_ro_nullable();</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">slow_pose</ref><sp/>==<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">)<sp/>{</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>No<sp/>slow<sp/>pose,<sp/>return<sp/>0</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1fast__head__pose__type" kindref="compound">pose::fast_head_pose_type</ref>{</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1pose__prediction__impl_1ac124a0bda95999d0b385aa89f26d36fd" kindref="member">correct_pose</ref>(<ref refid="structILLIXR_1_1data__format_1_1pose_1_1head__pose__type" kindref="compound">pose::head_pose_type</ref>{}),</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1pose__prediction__impl_1a72cf02d49712bc926c64ddbd13a7f0a0" kindref="member">clock_</ref>-&gt;now(),</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">future_timestamp</ref>,</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>};</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"></highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1switchboard_1af91c1b9436918512e95e5fa8553846a7" kindref="member">switchboard::ptr&lt;const imu_raw_type&gt;</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">imu_raw</ref><sp/>=<sp/><ref refid="classILLIXR_1_1pose__prediction__impl_1aa394d2959047b98d81d1af0c4bd3954b" kindref="member">imu_raw_</ref>.get_ro_nullable();</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">imu_raw</ref><sp/>==<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">)<sp/>{</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!<ref refid="classILLIXR_1_1pose__prediction__impl_1a1b9fa2ddcc7392919fa332ebd8587a74" kindref="member">using_lighthouse_</ref>)</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>spdlog::get(</highlight><highlight class="stringliteral">&quot;illixr&quot;</highlight><highlight class="normal">)-&gt;debug(</highlight><highlight class="stringliteral">&quot;[POSEPREDICTION]<sp/>FAST<sp/>POSE<sp/>IS<sp/>SLOW<sp/>POSE!&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"></highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>No<sp/>imu_raw,<sp/>return<sp/>slow_pose</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1fast__head__pose__type" kindref="compound">pose::fast_head_pose_type</ref>{</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1pose__prediction__impl_1ac124a0bda95999d0b385aa89f26d36fd" kindref="member">correct_pose</ref>(*<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">slow_pose</ref>),</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1pose__prediction__impl_1a72cf02d49712bc926c64ddbd13a7f0a0" kindref="member">clock_</ref>-&gt;now(),</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">future_timestamp</ref>,</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>};</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"></highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>slow_pose<sp/>and<sp/>imu_raw,<sp/>do<sp/>pose<sp/>prediction</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="93"><highlight class="normal"></highlight></codeline>
+<codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">dt</ref><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/><ref refid="namespaceILLIXR_1ab9eee51bf9fb91254d2f9b243fdd566e" kindref="member">duration_to_double</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">future_timestamp</ref><sp/>-<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">imu_raw</ref>-&gt;imu_time);</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1state__plus" kindref="compound">state_plus</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">state_p</ref><sp/>=<sp/><ref refid="namespaceILLIXR_1a2877edb6b96154ae5d478c6d98a0b7c0" kindref="member">::ILLIXR::predict_mean_rk4</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">dt</ref>,<sp/><ref refid="structILLIXR_1_1state__plus" kindref="compound">state_plus</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">imu_raw</ref>-&gt;quat,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">imu_raw</ref>-&gt;vel,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">imu_raw</ref>-&gt;pos),<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">imu_raw</ref>-&gt;w_hat,</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">imu_raw</ref>-&gt;a_hat,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">imu_raw</ref>-&gt;w_hat2,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">imu_raw</ref>-&gt;a_hat2);</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"></highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>predictor_imu_time<sp/>is<sp/>the<sp/>most<sp/>recent<sp/>IMU<sp/>sample<sp/>that<sp/>was<sp/>used<sp/>to<sp/>compute<sp/>the<sp/>prediction.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">predictor_imu_time</ref><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">imu_raw</ref>-&gt;imu_time;</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"></highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1head__pose__type" kindref="compound">pose::head_pose_type</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">predicted_pose</ref><sp/>=</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1pose__prediction__impl_1ac124a0bda95999d0b385aa89f26d36fd" kindref="member">correct_pose</ref>({<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">predictor_imu_time</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">state_p</ref>.position.cast&lt;</highlight><highlight class="keywordtype">float</highlight><highlight class="normal">&gt;(),<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">state_p</ref>.orientation.cast&lt;</highlight><highlight class="keywordtype">float</highlight><highlight class="normal">&gt;()});</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"></highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Make<sp/>the<sp/>first<sp/>valid<sp/>fast<sp/>pose<sp/>be<sp/>straight<sp/>ahead.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classILLIXR_1_1pose__prediction__impl_1afddf0c10e04dcd640d61eae4e0b40702" kindref="member">first_time_</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::unique_lock<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">lock</ref>{<ref refid="classILLIXR_1_1pose__prediction__impl_1a89054bb00445beacf3ea37c1ee777943" kindref="member">offset_mutex_</ref>};</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>check<sp/>again,<sp/>now<sp/>that<sp/>we<sp/>have<sp/>mutual<sp/>exclusion</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classILLIXR_1_1pose__prediction__impl_1afddf0c10e04dcd640d61eae4e0b40702" kindref="member">first_time_</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1pose__prediction__impl_1afddf0c10e04dcd640d61eae4e0b40702" kindref="member">first_time_</ref><sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1pose__prediction__impl_1a534b10748d35e72df498f0fe3df3809c" kindref="member">offset_</ref><sp/><sp/><sp/><sp/><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">predicted_pose</ref>.<ref refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base_1a558ab50ec1a11773056fef096f829163" kindref="member">orientation</ref>.inverse();</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"></highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Several<sp/>timestamps<sp/>are<sp/>logged:</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/>-<sp/>the<sp/>prediction<sp/>compute<sp/>time<sp/>(time<sp/>when<sp/>this<sp/>prediction<sp/>was<sp/>computed,<sp/>i.e.,<sp/>now)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/>-<sp/>the<sp/>prediction<sp/>target<sp/>(the<sp/>time<sp/>that<sp/>was<sp/>requested<sp/>for<sp/>this<sp/>pose.)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1fast__head__pose__type" kindref="compound">pose::fast_head_pose_type</ref>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">predicted_pose</ref>,<sp/><ref refid="classILLIXR_1_1pose__prediction__impl_1a72cf02d49712bc926c64ddbd13a7f0a0" kindref="member">clock_</ref>-&gt;now(),<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">future_timestamp</ref>};</highlight></codeline>
+<codeline lineno="118"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"></highlight></codeline>
+<codeline lineno="120"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1pose__prediction__impl_1a6349fc76584fb98e19cd415f1c8094cc" kindref="member">pose_prediction_impl::set_offset</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Eigen::Quaternionf&amp;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">raw_o_times_offset</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/>std::unique_lock<sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">lock</ref>{<ref refid="classILLIXR_1_1pose__prediction__impl_1a89054bb00445beacf3ea37c1ee777943" kindref="member">offset_mutex_</ref>};</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/><sp/><sp/>Eigen::Quaternionf<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">raw_o</ref><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">raw_o_times_offset</ref><sp/>*<sp/><ref refid="classILLIXR_1_1pose__prediction__impl_1a534b10748d35e72df498f0fe3df3809c" kindref="member">offset_</ref>.inverse();</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1pose__prediction__impl_1a534b10748d35e72df498f0fe3df3809c" kindref="member">offset_</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">raw_o</ref>.inverse();</highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="125"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/>Now,<sp/>`raw_o`<sp/>is<sp/>maps<sp/>to<sp/>the<sp/>identity<sp/>quaternion.</highlight></codeline>
+<codeline lineno="126"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/>Proof:</highlight></codeline>
+<codeline lineno="127"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/>apply_offset(raw_o)</highlight></codeline>
+<codeline lineno="128"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>raw_o<sp/>*<sp/>offset_</highlight></codeline>
+<codeline lineno="129"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>raw_o<sp/>*<sp/>raw_o.inverse()</highlight></codeline>
+<codeline lineno="130"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>Identity.</highlight></codeline>
+<codeline lineno="131"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="132"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="133"><highlight class="normal"></highlight></codeline>
+<codeline lineno="134"><highlight class="normal">Eigen::Quaternionf<sp/><ref refid="classILLIXR_1_1pose__prediction__impl_1a80bd2044b1cdc4166d8d6f20b7bb6896" kindref="member">pose_prediction_impl::apply_offset</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Eigen::Quaternionf&amp;<sp/>orientation)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_lock<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">lock</ref>{<ref refid="classILLIXR_1_1pose__prediction__impl_1a89054bb00445beacf3ea37c1ee777943" kindref="member">offset_mutex_</ref>};</highlight></codeline>
+<codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>orientation<sp/>*<sp/><ref refid="classILLIXR_1_1pose__prediction__impl_1a534b10748d35e72df498f0fe3df3809c" kindref="member">offset_</ref>;</highlight></codeline>
+<codeline lineno="137"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"></highlight></codeline>
+<codeline lineno="139"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1pose__prediction__impl_1a8cdc02d1284409b163a9f0386bc7b011" kindref="member">pose_prediction_impl::fast_pose_reliable</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="140"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classILLIXR_1_1pose__prediction__impl_1a1b9fa2ddcc7392919fa332ebd8587a74" kindref="member">using_lighthouse_</ref>)</highlight></codeline>
+<codeline lineno="141"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="142"><highlight class="normal"></highlight></codeline>
+<codeline lineno="143"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1pose__prediction__impl_1acdd2f5ae21b5343c7dbd9ce152af9551" kindref="member">slow_pose_</ref>.get_ro_nullable()<sp/>&amp;&amp;<sp/><ref refid="classILLIXR_1_1pose__prediction__impl_1aa394d2959047b98d81d1af0c4bd3954b" kindref="member">imu_raw_</ref>.get_ro_nullable();</highlight></codeline>
+<codeline lineno="144"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="145"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/>SLAM<sp/>takes<sp/>some<sp/>time<sp/>to<sp/>initialize,<sp/>so<sp/>initially<sp/>fast_pose</highlight></codeline>
+<codeline lineno="146"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/>is<sp/>unreliable.</highlight></codeline>
+<codeline lineno="147"><highlight class="comment"></highlight></codeline>
+<codeline lineno="148"><highlight class="comment"><sp/><sp/>In<sp/>such<sp/>cases,<sp/>we<sp/>might<sp/>return<sp/>a<sp/>fast_pose<sp/>based<sp/>only<sp/>on<sp/>the</highlight></codeline>
+<codeline lineno="149"><highlight class="comment"><sp/><sp/>IMU<sp/>data<sp/>(currently,<sp/>we<sp/>just<sp/>return<sp/>a<sp/>zero-pose).,<sp/>and<sp/>mark</highlight></codeline>
+<codeline lineno="150"><highlight class="comment"><sp/><sp/>it<sp/>as<sp/>&quot;unreliable&quot;</highlight></codeline>
+<codeline lineno="151"><highlight class="comment"></highlight></codeline>
+<codeline lineno="152"><highlight class="comment"><sp/><sp/>This<sp/>way,<sp/>there<sp/>always<sp/>a<sp/>pose<sp/>coming<sp/>out<sp/>of<sp/>pose_prediction,</highlight></codeline>
+<codeline lineno="153"><highlight class="comment"><sp/><sp/>representing<sp/>our<sp/>best<sp/>guess<sp/>at<sp/>that<sp/>time,<sp/>and<sp/>we<sp/>indicate</highlight></codeline>
+<codeline lineno="154"><highlight class="comment"><sp/><sp/>how<sp/>reliable<sp/>that<sp/>guess<sp/>is<sp/>here.</highlight></codeline>
+<codeline lineno="155"><highlight class="comment"></highlight></codeline>
+<codeline lineno="156"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="157"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="158"><highlight class="normal"></highlight></codeline>
+<codeline lineno="159"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1pose__prediction__impl_1ae9247d5b9042041a80f91f37097526cd" kindref="member">pose_prediction_impl::true_pose_reliable</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="160"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>return<sp/>true_pose_.valid();</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="161"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="162"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/>We<sp/>do<sp/>not<sp/>have<sp/>a<sp/>&quot;ground<sp/>truth&quot;<sp/>available<sp/>in<sp/>all<sp/>cases,<sp/>such</highlight></codeline>
+<codeline lineno="163"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/>as<sp/>when<sp/>reading<sp/>live<sp/>data.</highlight></codeline>
+<codeline lineno="164"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="165"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref>(<ref refid="classILLIXR_1_1pose__prediction__impl_1a2a657f08fea0107e9bdcd0c220afd2d9" kindref="member">true_pose_</ref>.get_ro_nullable());</highlight></codeline>
+<codeline lineno="166"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="167"><highlight class="normal"></highlight></codeline>
+<codeline lineno="168"><highlight class="normal">Eigen::Quaternionf<sp/><ref refid="classILLIXR_1_1pose__prediction__impl_1a165d412516480614df14f4bff162abf9" kindref="member">pose_prediction_impl::get_offset</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="169"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1pose__prediction__impl_1a534b10748d35e72df498f0fe3df3809c" kindref="member">offset_</ref>;</highlight></codeline>
+<codeline lineno="170"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="171"><highlight class="normal"></highlight></codeline>
+<codeline lineno="172"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Correct<sp/>the<sp/>orientation<sp/>of<sp/>the<sp/>pose<sp/>due<sp/>to<sp/>the<sp/>lopsided<sp/>IMU<sp/>in<sp/>the</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="173"><highlight class="normal"></highlight><highlight class="comment">//<sp/>current<sp/>Dataset<sp/>we<sp/>are<sp/>using<sp/>(EuRoC)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="174"><highlight class="normal"><ref refid="structILLIXR_1_1data__format_1_1pose_1_1head__pose__type" kindref="compound">pose::head_pose_type</ref><sp/><ref refid="classILLIXR_1_1pose__prediction__impl_1ac124a0bda95999d0b385aa89f26d36fd" kindref="member">pose_prediction_impl::correct_pose</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1head__pose__type" kindref="compound">pose::head_pose_type</ref>&amp;<sp/>pose)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="175"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classILLIXR_1_1pose__prediction__impl_1a1b9fa2ddcc7392919fa332ebd8587a74" kindref="member">using_lighthouse_</ref>)<sp/></highlight><highlight class="comment">//<sp/>The<sp/>lighthouse<sp/>plugin<sp/>should<sp/>already<sp/>apply<sp/>the<sp/>correct<sp/>pose.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="176"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>pose;</highlight></codeline>
+<codeline lineno="177"><highlight class="normal"></highlight></codeline>
+<codeline lineno="178"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1head__pose__type" kindref="compound">pose::head_pose_type</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">swapped_pose</ref><sp/>=<sp/>pose;</highlight></codeline>
+<codeline lineno="179"><highlight class="normal"></highlight></codeline>
+<codeline lineno="180"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Make<sp/>any<sp/>changes<sp/>to<sp/>the<sp/>axes<sp/>direction<sp/>below</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="181"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>This<sp/>is<sp/>a<sp/>mapping<sp/>between<sp/>the<sp/>coordinate<sp/>system<sp/>of<sp/>the<sp/>current</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="182"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>SLAM<sp/>(OpenVINS)<sp/>we<sp/>are<sp/>using<sp/>and<sp/>the<sp/>OpenGL<sp/>system.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="183"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">swapped_pose</ref>.<ref refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base_1a1ca6c892b6a46a99ef309f8858a703b6" kindref="member">position</ref>.x()<sp/>=<sp/>-pose.<ref refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base_1a1ca6c892b6a46a99ef309f8858a703b6" kindref="member">position</ref>.y();</highlight></codeline>
+<codeline lineno="184"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">swapped_pose</ref>.position.y()<sp/>=<sp/>pose.<ref refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base_1a1ca6c892b6a46a99ef309f8858a703b6" kindref="member">position</ref>.z();</highlight></codeline>
+<codeline lineno="185"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">swapped_pose</ref>.position.z()<sp/>=<sp/>-pose.<ref refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base_1a1ca6c892b6a46a99ef309f8858a703b6" kindref="member">position</ref>.x();</highlight></codeline>
+<codeline lineno="186"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>swapped_pose.linear_velocity.x()<sp/>=<sp/>-pose.linear_velocity.y();</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="187"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>swapped_pose.linear_velocity.y()<sp/>=<sp/>pose.linear_velocity.z();</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="188"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>swapped_pose.linear_velocity.z()<sp/>=<sp/>-pose.linear_velocity.x();</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="189"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>swapped_pose.angular_velocity<sp/>=<sp/>pose.angular_velocity;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="190"><highlight class="normal"></highlight></codeline>
+<codeline lineno="191"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Make<sp/>any<sp/>changes<sp/>to<sp/>orientation<sp/>of<sp/>the<sp/>output<sp/>below</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="192"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>For<sp/>the<sp/>dataset<sp/>were<sp/>currently<sp/>using<sp/>(EuRoC),<sp/>the<sp/>output<sp/>orientation<sp/>acts<sp/>as<sp/>though</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="193"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>the<sp/>&quot;top<sp/>of<sp/>the<sp/>head&quot;<sp/>is<sp/>the<sp/>forward<sp/>direction,<sp/>and<sp/>the<sp/>&quot;eye<sp/>direction&quot;<sp/>is<sp/>the<sp/>up<sp/>direction.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="194"><highlight class="normal"><sp/><sp/><sp/><sp/>Eigen::Quaternionf<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">raw_o</ref>(pose.<ref refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base_1a558ab50ec1a11773056fef096f829163" kindref="member">orientation</ref>.w(),<sp/>-pose.<ref refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base_1a558ab50ec1a11773056fef096f829163" kindref="member">orientation</ref>.y(),<sp/>pose.<ref refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base_1a558ab50ec1a11773056fef096f829163" kindref="member">orientation</ref>.z(),<sp/>-pose.<ref refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base_1a558ab50ec1a11773056fef096f829163" kindref="member">orientation</ref>.x());</highlight></codeline>
+<codeline lineno="195"><highlight class="normal"></highlight></codeline>
+<codeline lineno="196"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">swapped_pose</ref>.orientation<sp/>=<sp/><ref refid="classILLIXR_1_1pose__prediction__impl_1a80bd2044b1cdc4166d8d6f20b7bb6896" kindref="member">apply_offset</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">raw_o</ref>);</highlight></codeline>
+<codeline lineno="197"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">swapped_pose</ref>.sensor_time<sp/>=<sp/>pose.<ref refid="structILLIXR_1_1data__format_1_1pose_1_1head__pose__type_1a38a4041c43eda8d2521140358b9e776a" kindref="member">sensor_time</ref>;</highlight></codeline>
+<codeline lineno="198"><highlight class="normal"></highlight></codeline>
+<codeline lineno="199"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">swapped_pose</ref>;</highlight></codeline>
+<codeline lineno="200"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="201"><highlight class="normal"></highlight></codeline>
+<codeline lineno="202" refid="classpose__prediction__plugin" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classpose__prediction__plugin" kindref="compound">pose_prediction_plugin</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1plugin" kindref="compound">plugin</ref><sp/>{</highlight></codeline>
+<codeline lineno="203"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="204"><highlight class="normal"><sp/><sp/><sp/><sp/>[[<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">maybe_unused</ref>]]<sp/><ref refid="classpose__prediction__plugin" kindref="compound">pose_prediction_plugin</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>name,<sp/><ref refid="classILLIXR_1_1phonebook" kindref="compound">phonebook</ref>*<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">pb</ref>)</highlight></codeline>
+<codeline lineno="205"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/><ref refid="classILLIXR_1_1plugin" kindref="compound">plugin</ref>{name,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">pb</ref>}<sp/>{</highlight></codeline>
+<codeline lineno="206"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">pb</ref>-&gt;register_impl&lt;<ref refid="classILLIXR_1_1data__format_1_1pose__prediction" kindref="compound">pose_prediction</ref>&gt;(</highlight></codeline>
+<codeline lineno="207"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::static_pointer_cast&lt;pose_prediction&gt;(std::make_shared&lt;pose_prediction_impl&gt;(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">pb</ref>)));</highlight></codeline>
+<codeline lineno="208"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="209"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="210"><highlight class="normal"></highlight></codeline>
+<codeline lineno="211"><highlight class="normal"><ref refid="include_2illixr_2plugin_8hpp_1aa29023b17f5259cc4186f4627e1d9b5c" kindref="member">PLUGIN_MAIN</ref>(<ref refid="classpose__prediction__plugin" kindref="compound">pose_prediction_plugin</ref>)</highlight></codeline>
+    </programlisting>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/services/pose_prediction/service.cpp"/>
+  </compounddef>
+</doxygen>

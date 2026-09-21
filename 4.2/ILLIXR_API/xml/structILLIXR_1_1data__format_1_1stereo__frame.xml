@@ -1,0 +1,388 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structILLIXR_1_1data__format_1_1stereo__frame" kind="struct" language="C++" prot="public">
+    <compoundname>ILLIXR::data_format::stereo_frame</compoundname>
+    <basecompoundref refid="classILLIXR_1_1switchboard_1_1event" prot="public" virt="non-virtual">ILLIXR::switchboard::event</basecompoundref>
+    <includes refid="stereo__frame_8hpp" local="no">stereo_frame.hpp</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1stereo__frame_1a3d366d5ae6bf2a16f18dd985147a42d3" prot="public" static="no" mutable="no">
+        <type>std::uint64_t</type>
+        <definition>std::uint64_t ILLIXR::data_format::stereo_frame::sequence</definition>
+        <argsstring></argsstring>
+        <name>sequence</name>
+        <qualifiedname>ILLIXR::data_format::stereo_frame::sequence</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Producer sequence and capture time; source_frame_id is the ring generation. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_frame.hpp" line="101" column="19" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_frame.hpp" bodystart="101" bodyend="101"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1stereo__frame_1aebb5deb3e43b0ec569f0d5212e3d3ee4" prot="public" static="no" mutable="no">
+        <type><ref refid="classILLIXR_1_1time__point" kindref="compound">time_point</ref></type>
+        <definition>time_point ILLIXR::data_format::stereo_frame::sample_time</definition>
+        <argsstring></argsstring>
+        <name>sample_time</name>
+        <qualifiedname>ILLIXR::data_format::stereo_frame::sample_time</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_frame.hpp" line="102" column="19" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_frame.hpp" bodystart="102" bodyend="102"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1stereo__frame_1af6d80a84cef4393ba523e932bc0b7d32" prot="public" static="no" mutable="no">
+        <type>std::uint64_t</type>
+        <definition>std::uint64_t ILLIXR::data_format::stereo_frame::source_frame_id</definition>
+        <argsstring></argsstring>
+        <name>source_frame_id</name>
+        <qualifiedname>ILLIXR::data_format::stereo_frame::source_frame_id</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_frame.hpp" line="103" column="19" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_frame.hpp" bodystart="103" bodyend="103"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1stereo__frame_1afb018f1bbd6a2604d097908896c53c86" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1_1data__format_1a3f789bfd811ac701d8972c8e6caed5d5" kindref="member">stereo_pixel_format</ref></type>
+        <definition>stereo_pixel_format ILLIXR::data_format::stereo_frame::format</definition>
+        <argsstring></argsstring>
+        <name>format</name>
+        <qualifiedname>ILLIXR::data_format::stereo_frame::format</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1_1data__format_1a3f789bfd811ac701d8972c8e6caed5d5a9c30a57b56cc2f3d801bdba7abba4407" kindref="member">stereo_pixel_format::rgba8_unorm</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_frame.hpp" line="105" column="30" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_frame.hpp" bodystart="105" bodyend="105"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1stereo__frame_1a959199b9a4e4635c80b4db9f4713b2d8" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1_1data__format_1ab8fe7a6fb1855357a2d98a776b6a2203" kindref="member">stereo_image_origin</ref></type>
+        <definition>stereo_image_origin ILLIXR::data_format::stereo_frame::origin</definition>
+        <argsstring></argsstring>
+        <name>origin</name>
+        <qualifiedname>ILLIXR::data_format::stereo_frame::origin</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1_1data__format_1ab8fe7a6fb1855357a2d98a776b6a2203a3f34ebfdc06155d551b08c312bcbb887" kindref="member">stereo_image_origin::upper_left</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_frame.hpp" line="106" column="30" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_frame.hpp" bodystart="106" bodyend="106"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1stereo__frame_1a300b062f403acaac0de14ce979b662ce" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1_1data__format_1a18a9f759f201d5d2aa0639e6ef46d9b1" kindref="member">stereo_presentation_mode</ref></type>
+        <definition>stereo_presentation_mode ILLIXR::data_format::stereo_frame::presentation_mode</definition>
+        <argsstring></argsstring>
+        <name>presentation_mode</name>
+        <qualifiedname>ILLIXR::data_format::stereo_frame::presentation_mode</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1_1data__format_1a18a9f759f201d5d2aa0639e6ef46d9b1a89e98582edfdcf1c49ac755abbdb1a28" kindref="member">stereo_presentation_mode::stereo_fullscreen</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_frame.hpp" line="107" column="30" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_frame.hpp" bodystart="107" bodyend="107"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1stereo__frame_1a5a4ae0ce3e40ccbdc2d4a5512ae812f3" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string ILLIXR::data_format::stereo_frame::pixel_buffer_path</definition>
+        <argsstring></argsstring>
+        <name>pixel_buffer_path</name>
+        <qualifiedname>ILLIXR::data_format::stereo_frame::pixel_buffer_path</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Required pixel ring and generation marker for the selected slot. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_frame.hpp" line="110" column="25" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_frame.hpp" bodystart="110" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1stereo__frame_1ab6b36e7163b591ce34bc100545b95f0c" prot="public" static="no" mutable="no">
+        <type>std::uint64_t</type>
+        <definition>std::uint64_t ILLIXR::data_format::stereo_frame::pixel_generation_offset</definition>
+        <argsstring></argsstring>
+        <name>pixel_generation_offset</name>
+        <qualifiedname>ILLIXR::data_format::stereo_frame::pixel_generation_offset</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_frame.hpp" line="111" column="25" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_frame.hpp" bodystart="111" bodyend="111"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1stereo__frame_1afdd4873f856aae1bcd52a1ac4e3ef594" prot="public" static="no" mutable="no">
+        <type><ref refid="structILLIXR_1_1data__format_1_1stereo__shared__image" kindref="compound">stereo_shared_image</ref></type>
+        <definition>stereo_shared_image ILLIXR::data_format::stereo_frame::left</definition>
+        <argsstring></argsstring>
+        <name>left</name>
+        <qualifiedname>ILLIXR::data_format::stereo_frame::left</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_frame.hpp" line="112" column="25" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_frame.hpp" bodystart="112" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1stereo__frame_1aee991c03dff5b93c841c9e671d66d7b1" prot="public" static="no" mutable="no">
+        <type><ref refid="structILLIXR_1_1data__format_1_1stereo__shared__image" kindref="compound">stereo_shared_image</ref></type>
+        <definition>stereo_shared_image ILLIXR::data_format::stereo_frame::right</definition>
+        <argsstring></argsstring>
+        <name>right</name>
+        <qualifiedname>ILLIXR::data_format::stereo_frame::right</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_frame.hpp" line="113" column="25" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_frame.hpp" bodystart="113" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1stereo__frame_1a1e65d60c24fec70ac3798b41376267e0" prot="public" static="no" mutable="no">
+        <type><ref refid="structILLIXR_1_1data__format_1_1stereo__render__view" kindref="compound">stereo_render_view</ref></type>
+        <definition>stereo_render_view ILLIXR::data_format::stereo_frame::left_render_view</definition>
+        <argsstring></argsstring>
+        <name>left_render_view</name>
+        <qualifiedname>ILLIXR::data_format::stereo_frame::left_render_view</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_frame.hpp" line="114" column="25" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_frame.hpp" bodystart="114" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1stereo__frame_1a40f70910bf4b90b726bcbb906303ceb2" prot="public" static="no" mutable="no">
+        <type><ref refid="structILLIXR_1_1data__format_1_1stereo__render__view" kindref="compound">stereo_render_view</ref></type>
+        <definition>stereo_render_view ILLIXR::data_format::stereo_frame::right_render_view</definition>
+        <argsstring></argsstring>
+        <name>right_render_view</name>
+        <qualifiedname>ILLIXR::data_format::stereo_frame::right_render_view</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_frame.hpp" line="115" column="25" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_frame.hpp" bodystart="115" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1stereo__frame_1a14014cbf7cf560b477a1ee4efa646a4b" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string ILLIXR::data_format::stereo_frame::overlay_buffer_path</definition>
+        <argsstring></argsstring>
+        <name>overlay_buffer_path</name>
+        <qualifiedname>ILLIXR::data_format::stereo_frame::overlay_buffer_path</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Optional vector-overlay ring synchronized to <computeroutput>source_frame_id</computeroutput>. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_frame.hpp" line="118" column="34" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_frame.hpp" bodystart="118" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1stereo__frame_1aa87de1461ef336c35e547bfeeef63255" prot="public" static="no" mutable="no">
+        <type>std::uint64_t</type>
+        <definition>std::uint64_t ILLIXR::data_format::stereo_frame::overlay_generation_offset</definition>
+        <argsstring></argsstring>
+        <name>overlay_generation_offset</name>
+        <qualifiedname>ILLIXR::data_format::stereo_frame::overlay_generation_offset</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_frame.hpp" line="119" column="34" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_frame.hpp" bodystart="119" bodyend="119"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1stereo__frame_1aae7e4816e4373053a392a78f53171b39" prot="public" static="no" mutable="no">
+        <type><ref refid="structILLIXR_1_1data__format_1_1stereo__overlay__command__range" kindref="compound">stereo_overlay_command_range</ref></type>
+        <definition>stereo_overlay_command_range ILLIXR::data_format::stereo_frame::left_overlay_commands</definition>
+        <argsstring></argsstring>
+        <name>left_overlay_commands</name>
+        <qualifiedname>ILLIXR::data_format::stereo_frame::left_overlay_commands</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_frame.hpp" line="120" column="34" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_frame.hpp" bodystart="120" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1stereo__frame_1a1c58d1cdc911b0aa0a793afe762b6a0e" prot="public" static="no" mutable="no">
+        <type><ref refid="structILLIXR_1_1data__format_1_1stereo__overlay__command__range" kindref="compound">stereo_overlay_command_range</ref></type>
+        <definition>stereo_overlay_command_range ILLIXR::data_format::stereo_frame::right_overlay_commands</definition>
+        <argsstring></argsstring>
+        <name>right_overlay_commands</name>
+        <qualifiedname>ILLIXR::data_format::stereo_frame::right_overlay_commands</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_frame.hpp" line="121" column="34" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_frame.hpp" bodystart="121" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1stereo__frame_1a9968eb31b8e52795d204a80b40787800" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string ILLIXR::data_format::stereo_frame::modal_buffer_path</definition>
+        <argsstring></argsstring>
+        <name>modal_buffer_path</name>
+        <qualifiedname>ILLIXR::data_format::stereo_frame::modal_buffer_path</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Optional modal-bitmap ring synchronized to <computeroutput>source_frame_id</computeroutput>. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_frame.hpp" line="124" column="26" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_frame.hpp" bodystart="124" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1stereo__frame_1a3586cf3b3ce3b6e1baf3ac97fed4bd73" prot="public" static="no" mutable="no">
+        <type>std::uint64_t</type>
+        <definition>std::uint64_t ILLIXR::data_format::stereo_frame::modal_generation_offset</definition>
+        <argsstring></argsstring>
+        <name>modal_generation_offset</name>
+        <qualifiedname>ILLIXR::data_format::stereo_frame::modal_generation_offset</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_frame.hpp" line="125" column="26" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_frame.hpp" bodystart="125" bodyend="125"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1stereo__frame_1ac458d715bed39d21771f4eec19a77c63" prot="public" static="no" mutable="no">
+        <type><ref refid="structILLIXR_1_1data__format_1_1stereo__modal__overlay" kindref="compound">stereo_modal_overlay</ref></type>
+        <definition>stereo_modal_overlay ILLIXR::data_format::stereo_frame::modal</definition>
+        <argsstring></argsstring>
+        <name>modal</name>
+        <qualifiedname>ILLIXR::data_format::stereo_frame::modal</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_frame.hpp" line="126" column="26" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_frame.hpp" bodystart="126" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Stereo render result published on the <computeroutput><ref refid="structILLIXR_1_1data__format_1_1stereo__frame" kindref="compound">stereo_frame</ref></computeroutput> switchboard topic.</para>
+<para>Plugins exchanging this event must use the same pose representation (<computeroutput>USING_OPENXR</computeroutput> in the Boba pipeline), since switchboard passes it in memory.</para>
+<para>To avoid retaining hundreds of multi-megabyte image copies in switchboard&apos;s history, the images are zero-copy references into a producer-owned mmap ring. A consumer should map <computeroutput>pixel_buffer_path</computeroutput> once, verify that the uint64 value at <computeroutput>pixel_generation_offset</computeroutput> equals <computeroutput>source_frame_id</computeroutput>, consume the image promptly, and verify it again afterward. A mismatch means the ring slot was recycled and the frame must be dropped. Overlay and modal rings use the same rule. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>ILLIXR::data_format::stereo_frame</label>
+        <link refid="structILLIXR_1_1data__format_1_1stereo__frame"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ILLIXR::switchboard::event</label>
+        <link refid="classILLIXR_1_1switchboard_1_1event"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="6">
+        <label>ILLIXR::data_format::pose::pose_base</label>
+        <link refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base"/>
+      </node>
+      <node id="1">
+        <label>ILLIXR::data_format::stereo_frame</label>
+        <link refid="structILLIXR_1_1data__format_1_1stereo__frame"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>sample_time</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>left</edgelabel>
+          <edgelabel>right</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>left_render_view</edgelabel>
+          <edgelabel>right_render_view</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>left_overlay_commands</edgelabel>
+          <edgelabel>right_overlay_commands</edgelabel>
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>modal</edgelabel>
+        </childnode>
+      </node>
+      <node id="8">
+        <label>ILLIXR::data_format::stereo_modal_overlay</label>
+        <link refid="structILLIXR_1_1data__format_1_1stereo__modal__overlay"/>
+      </node>
+      <node id="7">
+        <label>ILLIXR::data_format::stereo_overlay_command_range</label>
+        <link refid="structILLIXR_1_1data__format_1_1stereo__overlay__command__range"/>
+      </node>
+      <node id="5">
+        <label>ILLIXR::data_format::stereo_render_view</label>
+        <link refid="structILLIXR_1_1data__format_1_1stereo__render__view"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>ILLIXR::data_format::stereo_shared_image</label>
+        <link refid="structILLIXR_1_1data__format_1_1stereo__shared__image"/>
+      </node>
+      <node id="2">
+        <label>ILLIXR::switchboard::event</label>
+        <link refid="classILLIXR_1_1switchboard_1_1event"/>
+      </node>
+      <node id="3">
+        <label>ILLIXR::time_point</label>
+        <link refid="classILLIXR_1_1time__point"/>
+      </node>
+    </collaborationgraph>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_frame.hpp" line="99" column="1" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_frame.hpp" bodystart="99" bodyend="127"/>
+    <listofallmembers>
+      <member refid="structILLIXR_1_1data__format_1_1stereo__frame_1afb018f1bbd6a2604d097908896c53c86" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::stereo_frame</scope><name>format</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1stereo__frame_1afdd4873f856aae1bcd52a1ac4e3ef594" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::stereo_frame</scope><name>left</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1stereo__frame_1aae7e4816e4373053a392a78f53171b39" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::stereo_frame</scope><name>left_overlay_commands</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1stereo__frame_1a1e65d60c24fec70ac3798b41376267e0" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::stereo_frame</scope><name>left_render_view</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1stereo__frame_1ac458d715bed39d21771f4eec19a77c63" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::stereo_frame</scope><name>modal</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1stereo__frame_1a9968eb31b8e52795d204a80b40787800" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::stereo_frame</scope><name>modal_buffer_path</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1stereo__frame_1a3586cf3b3ce3b6e1baf3ac97fed4bd73" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::stereo_frame</scope><name>modal_generation_offset</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1stereo__frame_1a959199b9a4e4635c80b4db9f4713b2d8" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::stereo_frame</scope><name>origin</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1stereo__frame_1a14014cbf7cf560b477a1ee4efa646a4b" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::stereo_frame</scope><name>overlay_buffer_path</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1stereo__frame_1aa87de1461ef336c35e547bfeeef63255" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::stereo_frame</scope><name>overlay_generation_offset</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1stereo__frame_1a5a4ae0ce3e40ccbdc2d4a5512ae812f3" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::stereo_frame</scope><name>pixel_buffer_path</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1stereo__frame_1ab6b36e7163b591ce34bc100545b95f0c" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::stereo_frame</scope><name>pixel_generation_offset</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1stereo__frame_1a300b062f403acaac0de14ce979b662ce" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::stereo_frame</scope><name>presentation_mode</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1stereo__frame_1aee991c03dff5b93c841c9e671d66d7b1" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::stereo_frame</scope><name>right</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1stereo__frame_1a1c58d1cdc911b0aa0a793afe762b6a0e" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::stereo_frame</scope><name>right_overlay_commands</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1stereo__frame_1a40f70910bf4b90b726bcbb906303ceb2" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::stereo_frame</scope><name>right_render_view</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1stereo__frame_1aebb5deb3e43b0ec569f0d5212e3d3ee4" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::stereo_frame</scope><name>sample_time</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1stereo__frame_1a3d366d5ae6bf2a16f18dd985147a42d3" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::stereo_frame</scope><name>sequence</name></member>
+      <member refid="classILLIXR_1_1switchboard_1_1event_1a55399aaf47bc0d3943fd89d7afb55624" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::stereo_frame</scope><name>serialize</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1stereo__frame_1af6d80a84cef4393ba523e932bc0b7d32" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::stereo_frame</scope><name>source_frame_id</name></member>
+      <member refid="classILLIXR_1_1switchboard_1_1event_1a01fb51a03e9025d71087de76823e449e" prot="public" virt="virtual"><scope>ILLIXR::data_format::stereo_frame</scope><name>~event</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

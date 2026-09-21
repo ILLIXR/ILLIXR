@@ -1,0 +1,2521 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classILLIXR_1_1openxr__quest__controller" kind="class" language="C++" prot="public" final="yes">
+    <compoundname>ILLIXR::openxr_quest_controller</compoundname>
+    <basecompoundref refid="classILLIXR_1_1plugin" prot="public" virt="non-virtual">ILLIXR::plugin</basecompoundref>
+    <includes refid="plugins_2quest3_2controller_2plugin_8hpp" local="no">plugin.hpp</includes>
+    <innerclass refid="structILLIXR_1_1openxr__quest__controller_1_1mapped__file" prot="private">ILLIXR::openxr_quest_controller::mapped_file</innerclass>
+    <innerclass refid="structILLIXR_1_1openxr__quest__controller_1_1swapchain__view" prot="private">ILLIXR::openxr_quest_controller::swapchain_view</innerclass>
+    <sectiondef kind="private-type">
+      <memberdef kind="typedef" id="classILLIXR_1_1openxr__quest__controller_1a9757d9752d86b5f0230f93e3282447db" prot="private" static="no">
+        <type><ref refid="structILLIXR_1_1data__format_1_1quest__controller__input" kindref="compound">data_format::quest_controller_input</ref></type>
+        <definition>using ILLIXR::openxr_quest_controller::controller_input =  data_format::quest_controller_input</definition>
+        <argsstring></argsstring>
+        <name>controller_input</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::controller_input</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="58" column="5" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="58" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="classILLIXR_1_1openxr__quest__controller_1a10d0e608d44429e9b90ada67385dfaf1" prot="private" static="no">
+        <type><ref refid="structILLIXR_1_1data__format_1_1quest__hand__controller" kindref="compound">data_format::quest_hand_controller</ref></type>
+        <definition>using ILLIXR::openxr_quest_controller::hand_controller =  data_format::quest_hand_controller</definition>
+        <argsstring></argsstring>
+        <name>hand_controller</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::hand_controller</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="59" column="5" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="59" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="classILLIXR_1_1openxr__quest__controller_1a51e844392aad66b3e4e9c5d2a8c05bba" prot="private" static="no">
+        <type><ref refid="structILLIXR_1_1data__format_1_1quest__controller__pose" kindref="compound">data_format::quest_controller_pose</ref></type>
+        <definition>using ILLIXR::openxr_quest_controller::controller_pose =  data_format::quest_controller_pose</definition>
+        <argsstring></argsstring>
+        <name>controller_pose</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::controller_pose</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="60" column="5" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="60" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="classILLIXR_1_1openxr__quest__controller_1ab3a0c097b70524846aa80861e642f970" prot="private" static="no">
+        <type><ref refid="structILLIXR_1_1data__format_1_1quest__controller__button" kindref="compound">data_format::quest_controller_button</ref></type>
+        <definition>using ILLIXR::openxr_quest_controller::controller_button =  data_format::quest_controller_button</definition>
+        <argsstring></argsstring>
+        <name>controller_button</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::controller_button</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="61" column="5" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="61" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="classILLIXR_1_1openxr__quest__controller_1a4345fea6ed57ebe1b9c32597ad77b03e" prot="private" static="no">
+        <type><ref refid="structILLIXR_1_1data__format_1_1quest__controller__axis2d" kindref="compound">data_format::quest_controller_axis2d</ref></type>
+        <definition>using ILLIXR::openxr_quest_controller::controller_axis2d =  data_format::quest_controller_axis2d</definition>
+        <argsstring></argsstring>
+        <name>controller_axis2d</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::controller_axis2d</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="62" column="5" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="62" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="classILLIXR_1_1openxr__quest__controller_1a02cfad9c0f2be4d838ce6fadf56b9e17" prot="private" static="no">
+        <type><ref refid="namespaceILLIXR_1_1data__format_1a199659f655d737a8ff3be7944e54507b" kindref="member">data_format::quest_controller_profile</ref></type>
+        <definition>using ILLIXR::openxr_quest_controller::controller_profile =  data_format::quest_controller_profile</definition>
+        <argsstring></argsstring>
+        <name>controller_profile</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::controller_profile</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="63" column="5" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="63" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="classILLIXR_1_1openxr__quest__controller_1a10a3dfb7b170f0af6fb653c66ac0f93b" prot="private" static="no">
+        <type><ref refid="structILLIXR_1_1data__format_1_1openxr__view__frame" kindref="compound">data_format::openxr_view_frame</ref></type>
+        <definition>using ILLIXR::openxr_quest_controller::view_frame =  data_format::openxr_view_frame</definition>
+        <argsstring></argsstring>
+        <name>view_frame</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::view_frame</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="64" column="5" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="64" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="classILLIXR_1_1openxr__quest__controller_1a217b79e8b1bd95d95b00502deb5346cf" prot="private" static="no">
+        <type><ref refid="structILLIXR_1_1data__format_1_1openxr__eye__view" kindref="compound">data_format::openxr_eye_view</ref></type>
+        <definition>using ILLIXR::openxr_quest_controller::eye_view =  data_format::openxr_eye_view</definition>
+        <argsstring></argsstring>
+        <name>eye_view</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::eye_view</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="65" column="5" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="65" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="classILLIXR_1_1openxr__quest__controller_1a842ad5710065a3a53a1a20b29534d8d3" prot="private" static="no">
+        <type><ref refid="structILLIXR_1_1data__format_1_1stereo__frame" kindref="compound">data_format::stereo_frame</ref></type>
+        <definition>using ILLIXR::openxr_quest_controller::stereo_frame =  data_format::stereo_frame</definition>
+        <argsstring></argsstring>
+        <name>stereo_frame</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::stereo_frame</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="66" column="5" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="66" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1a1f729b8d7949f8acf5a07687ca467e16" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> std::shared_ptr&lt; <ref refid="classILLIXR_1_1switchboard" kindref="compound">switchboard</ref> &gt;</type>
+        <definition>const std::shared_ptr&lt;switchboard&gt; ILLIXR::openxr_quest_controller::switchboard_</definition>
+        <argsstring></argsstring>
+        <name>switchboard_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::switchboard_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="158" column="36" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="158" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1aae3a55785b17edf5ddea07742ae670e9" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> std::shared_ptr&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="classILLIXR_1_1relative__clock" kindref="compound">relative_clock</ref> &gt;</type>
+        <definition>const std::shared_ptr&lt;const relative_clock&gt; ILLIXR::openxr_quest_controller::clock_</definition>
+        <argsstring></argsstring>
+        <name>clock_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::clock_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="159" column="27" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="159" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1ae35282201ba78079936db435bc040373" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> std::shared_ptr&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="classILLIXR_1_1stoplight" kindref="compound">stoplight</ref> &gt;</type>
+        <definition>const std::shared_ptr&lt;const stoplight&gt; ILLIXR::openxr_quest_controller::stoplight_</definition>
+        <argsstring></argsstring>
+        <name>stoplight_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::stoplight_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="160" column="32" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="160" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1a75d7636b99a6e1ea3196ad0976fb8973" prot="private" static="no" mutable="no">
+        <type><ref refid="classILLIXR_1_1switchboard_1_1writer" kindref="compound">switchboard::writer</ref>&lt; <ref refid="classILLIXR_1_1openxr__quest__controller_1a9757d9752d86b5f0230f93e3282447db" kindref="member">controller_input</ref> &gt;</type>
+        <definition>switchboard::writer&lt;controller_input&gt; ILLIXR::openxr_quest_controller::controller_writer_</definition>
+        <argsstring></argsstring>
+        <name>controller_writer_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::controller_writer_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="161" column="31" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="161" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1a955dae9a1a5d5542c6892bc1b1a53f8d" prot="private" static="no" mutable="no">
+        <type><ref refid="classILLIXR_1_1switchboard_1_1writer" kindref="compound">switchboard::writer</ref>&lt; <ref refid="classILLIXR_1_1openxr__quest__controller_1a10a3dfb7b170f0af6fb653c66ac0f93b" kindref="member">view_frame</ref> &gt;</type>
+        <definition>switchboard::writer&lt;view_frame&gt; ILLIXR::openxr_quest_controller::view_writer_</definition>
+        <argsstring></argsstring>
+        <name>view_writer_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::view_writer_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="162" column="37" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="162" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1a2f603050fa7c53adfee2dd5f7f3d92a6" prot="private" static="no" mutable="no">
+        <type><ref refid="classILLIXR_1_1switchboard_1_1reader" kindref="compound">switchboard::reader</ref>&lt; <ref refid="classILLIXR_1_1openxr__quest__controller_1a842ad5710065a3a53a1a20b29534d8d3" kindref="member">stereo_frame</ref> &gt;</type>
+        <definition>switchboard::reader&lt;stereo_frame&gt; ILLIXR::openxr_quest_controller::stereo_reader_</definition>
+        <argsstring></argsstring>
+        <name>stereo_reader_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::stereo_reader_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="163" column="35" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="163" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1afa8b03b853f73eb785bdec90c4bfb383" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::openxr_quest_controller::log_input_</definition>
+        <argsstring></argsstring>
+        <name>log_input_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::log_input_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">true</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="166" column="23" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="166" bodyend="166"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1a310e2496390eca2bb7293e25e39504ec" prot="private" static="no" mutable="no">
+        <type>std::atomic&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref> &gt;</type>
+        <definition>std::atomic&lt;bool&gt; ILLIXR::openxr_quest_controller::stop_requested_</definition>
+        <argsstring></argsstring>
+        <name>stop_requested_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::stop_requested_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">false</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="167" column="17" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="167" bodyend="167"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1a4ce53b33efe582833ffa9382fcc77e30" prot="private" static="no" mutable="no">
+        <type>std::thread</type>
+        <definition>std::thread ILLIXR::openxr_quest_controller::worker_</definition>
+        <argsstring></argsstring>
+        <name>worker_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::worker_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="168" column="23" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="168" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1a754c5eb417de94877b66eae78a94065f" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::openxr_quest_controller::glfw_initialized_</definition>
+        <argsstring></argsstring>
+        <name>glfw_initialized_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::glfw_initialized_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">false</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="171" column="19" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="171" bodyend="171"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1a392f17809ab8a067b323325c8a25c6c7" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">GLFWwindow</ref> *</type>
+        <definition>GLFWwindow* ILLIXR::openxr_quest_controller::window_</definition>
+        <argsstring></argsstring>
+        <name>window_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::window_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">nullptr</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="172" column="18" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="172" bodyend="172"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1ad4cb7d959aeda3113b904af320ed271f" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">Display</ref> *</type>
+        <definition>Display* ILLIXR::openxr_quest_controller::x_display_</definition>
+        <argsstring></argsstring>
+        <name>x_display_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::x_display_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">nullptr</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="173" column="18" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="173" bodyend="173"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1a0f53d24a294320d421846b6d4af29102" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">GLXFBConfig</ref></type>
+        <definition>GLXFBConfig ILLIXR::openxr_quest_controller::glx_fb_config_</definition>
+        <argsstring></argsstring>
+        <name>glx_fb_config_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::glx_fb_config_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">nullptr</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="174" column="19" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="174" bodyend="174"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1a6e45c3db53ccba1409fa6b35c1a99708" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">GLXDrawable</ref></type>
+        <definition>GLXDrawable ILLIXR::openxr_quest_controller::glx_drawable_</definition>
+        <argsstring></argsstring>
+        <name>glx_drawable_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::glx_drawable_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="175" column="19" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="175" bodyend="175"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1ab159c2ef74caf6ed183206791c12f326" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">GLXContext</ref></type>
+        <definition>GLXContext ILLIXR::openxr_quest_controller::glx_context_</definition>
+        <argsstring></argsstring>
+        <name>glx_context_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::glx_context_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">nullptr</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="176" column="19" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="176" bodyend="176"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1ac6a7150ba9e571ce16d0e42af8ba3923" prot="private" static="no" mutable="no">
+        <type>std::uint32_t</type>
+        <definition>std::uint32_t ILLIXR::openxr_quest_controller::visual_id_</definition>
+        <argsstring></argsstring>
+        <name>visual_id_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::visual_id_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="177" column="19" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="177" bodyend="177"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1a8940697cb182244616d1e135939d9ebe" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrInstance</ref></type>
+        <definition>XrInstance ILLIXR::openxr_quest_controller::instance_</definition>
+        <argsstring></argsstring>
+        <name>instance_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::instance_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_NULL_HANDLE</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="180" column="16" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="180" bodyend="180"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1a68e8418ad4843a96ec48b1775eccac8a" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrSystemId</ref></type>
+        <definition>XrSystemId ILLIXR::openxr_quest_controller::system_id_</definition>
+        <argsstring></argsstring>
+        <name>system_id_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::system_id_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_NULL_SYSTEM_ID</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="181" column="16" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="181" bodyend="181"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1a58d697840881d0918a8894667dead721" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrSession</ref></type>
+        <definition>XrSession ILLIXR::openxr_quest_controller::session_</definition>
+        <argsstring></argsstring>
+        <name>session_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::session_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_NULL_HANDLE</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="182" column="16" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="182" bodyend="182"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1a82135b3263c3e6b586eff7957a8e0785" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrSpace</ref></type>
+        <definition>XrSpace ILLIXR::openxr_quest_controller::local_space_</definition>
+        <argsstring></argsstring>
+        <name>local_space_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::local_space_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_NULL_HANDLE</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="183" column="16" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="183" bodyend="183"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1a1799952d305ec690da70771cf2f3ef4a" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrActionSet</ref></type>
+        <definition>XrActionSet ILLIXR::openxr_quest_controller::action_set_</definition>
+        <argsstring></argsstring>
+        <name>action_set_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::action_set_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_NULL_HANDLE</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="186" column="17" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="186" bodyend="186"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1a0d413b711ff092951be9122b258b0b61" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrAction</ref></type>
+        <definition>XrAction ILLIXR::openxr_quest_controller::grip_pose_action_</definition>
+        <argsstring></argsstring>
+        <name>grip_pose_action_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::grip_pose_action_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_NULL_HANDLE</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="187" column="17" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="187" bodyend="187"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1ab1837ca9239e3f7524c75a0134d40081" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrAction</ref></type>
+        <definition>XrAction ILLIXR::openxr_quest_controller::aim_pose_action_</definition>
+        <argsstring></argsstring>
+        <name>aim_pose_action_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::aim_pose_action_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_NULL_HANDLE</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="188" column="17" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="188" bodyend="188"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1aefed094183c263ee5b12613f665dcccc" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrAction</ref></type>
+        <definition>XrAction ILLIXR::openxr_quest_controller::trigger_click_action_</definition>
+        <argsstring></argsstring>
+        <name>trigger_click_action_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::trigger_click_action_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_NULL_HANDLE</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="189" column="17" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="189" bodyend="189"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1afe527af6dd449a3ae0a9544cd8b7db52" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrAction</ref></type>
+        <definition>XrAction ILLIXR::openxr_quest_controller::trigger_value_action_</definition>
+        <argsstring></argsstring>
+        <name>trigger_value_action_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::trigger_value_action_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_NULL_HANDLE</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="190" column="17" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="190" bodyend="190"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1a148a591814987773437a9d0ae1cc10b3" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrAction</ref></type>
+        <definition>XrAction ILLIXR::openxr_quest_controller::primary_click_action_</definition>
+        <argsstring></argsstring>
+        <name>primary_click_action_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::primary_click_action_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_NULL_HANDLE</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="191" column="17" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="191" bodyend="191"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1a7faf3a796c846c6ebb23c85c24667f25" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrAction</ref></type>
+        <definition>XrAction ILLIXR::openxr_quest_controller::secondary_click_action_</definition>
+        <argsstring></argsstring>
+        <name>secondary_click_action_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::secondary_click_action_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_NULL_HANDLE</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="192" column="17" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="192" bodyend="192"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1a654f0724ea162a0972befac9674d232e" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrAction</ref></type>
+        <definition>XrAction ILLIXR::openxr_quest_controller::thumbstick_click_action_</definition>
+        <argsstring></argsstring>
+        <name>thumbstick_click_action_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::thumbstick_click_action_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_NULL_HANDLE</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="193" column="17" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="193" bodyend="193"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1a0a257f59227a3bf4205fd68205a45eca" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrAction</ref></type>
+        <definition>XrAction ILLIXR::openxr_quest_controller::thumbstick_axis_action_</definition>
+        <argsstring></argsstring>
+        <name>thumbstick_axis_action_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::thumbstick_axis_action_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_NULL_HANDLE</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="194" column="17" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="194" bodyend="194"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1ab0bdd654d6b7e7e04a8aab756be4e7aa" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrAction</ref></type>
+        <definition>XrAction ILLIXR::openxr_quest_controller::squeeze_value_action_</definition>
+        <argsstring></argsstring>
+        <name>squeeze_value_action_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::squeeze_value_action_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_NULL_HANDLE</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="195" column="17" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="195" bodyend="195"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1a359ca4a7d4a6057d0b3a7f236a08e228" prot="private" static="no" mutable="no">
+        <type>std::array&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrPath</ref>, 2 &gt;</type>
+        <definition>std::array&lt;XrPath, 2&gt; ILLIXR::openxr_quest_controller::hand_paths_</definition>
+        <argsstring></argsstring>
+        <name>hand_paths_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::hand_paths_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_NULL_PATH</ref>, <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_NULL_PATH</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="198" column="28" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="198" bodyend="198"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1ae445df402b5e90f2f2c8c220454d81ff" prot="private" static="no" mutable="no">
+        <type>std::array&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrSpace</ref>, 2 &gt;</type>
+        <definition>std::array&lt;XrSpace, 2&gt; ILLIXR::openxr_quest_controller::grip_spaces_</definition>
+        <argsstring></argsstring>
+        <name>grip_spaces_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::grip_spaces_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_NULL_HANDLE</ref>, <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_NULL_HANDLE</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="199" column="27" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="199" bodyend="199"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1ad91f082250ff14a3ce4ee5eea7976323" prot="private" static="no" mutable="no">
+        <type>std::array&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrSpace</ref>, 2 &gt;</type>
+        <definition>std::array&lt;XrSpace, 2&gt; ILLIXR::openxr_quest_controller::aim_spaces_</definition>
+        <argsstring></argsstring>
+        <name>aim_spaces_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::aim_spaces_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_NULL_HANDLE</ref>, <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_NULL_HANDLE</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="200" column="27" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="200" bodyend="200"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1ad6df297ebb173c16e512bd5f67401537" prot="private" static="no" mutable="no">
+        <type>std::array&lt; <ref refid="namespaceILLIXR_1_1data__format_1a199659f655d737a8ff3be7944e54507b" kindref="member">controller_profile</ref>, 2 &gt;</type>
+        <definition>std::array&lt;controller_profile, 2&gt; ILLIXR::openxr_quest_controller::interaction_profiles_</definition>
+        <argsstring></argsstring>
+        <name>interaction_profiles_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::interaction_profiles_</qualifiedname>
+        <initializer>{controller_profile::none, controller_profile::none}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="201" column="16" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="201" bodyend="201"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1a104fdd9a02c890cd8724e3c2a47a0695" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrViewConfigurationType</ref></type>
+        <definition>XrViewConfigurationType ILLIXR::openxr_quest_controller::view_configuration_type_</definition>
+        <argsstring></argsstring>
+        <name>view_configuration_type_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::view_configuration_type_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="204" column="44" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="204" bodyend="204"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1a721bd45f0b6c9e189a89dd1471f7474b" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrEnvironmentBlendMode</ref></type>
+        <definition>XrEnvironmentBlendMode ILLIXR::openxr_quest_controller::blend_mode_</definition>
+        <argsstring></argsstring>
+        <name>blend_mode_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::blend_mode_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_ENVIRONMENT_BLEND_MODE_OPAQUE</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="205" column="44" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="205" bodyend="205"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1a1f2441d4276e4a7488ffd35f65b5ddaa" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrSessionState</ref></type>
+        <definition>XrSessionState ILLIXR::openxr_quest_controller::session_state_</definition>
+        <argsstring></argsstring>
+        <name>session_state_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::session_state_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XR_SESSION_STATE_UNKNOWN</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="206" column="44" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="206" bodyend="206"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1aa72d8f82405b2b77897d7f29c09ca511" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::openxr_quest_controller::session_running_</definition>
+        <argsstring></argsstring>
+        <name>session_running_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::session_running_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">false</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="207" column="44" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="207" bodyend="207"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1af2c257d8edf0f80e752d0d737ed467f4" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::openxr_quest_controller::exit_requested_</definition>
+        <argsstring></argsstring>
+        <name>exit_requested_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::exit_requested_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">false</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="208" column="44" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="208" bodyend="208"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1aa87f934eb4b98cc351bb6bd61d25ab7f" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::openxr_quest_controller::interaction_profiles_dirty_</definition>
+        <argsstring></argsstring>
+        <name>interaction_profiles_dirty_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::interaction_profiles_dirty_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">true</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="209" column="44" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="209" bodyend="209"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1a63d519d882e1196e86f639fe952e07b2" prot="private" static="no" mutable="no">
+        <type>std::array&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrViewConfigurationView</ref>, 2 &gt;</type>
+        <definition>std::array&lt;XrViewConfigurationView, 2&gt; ILLIXR::openxr_quest_controller::view_configuration_views_</definition>
+        <argsstring></argsstring>
+        <name>view_configuration_views_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::view_configuration_views_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="210" column="16" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="210" bodyend="210"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1acaeccbd7422117785d885aafcbdacb5d" prot="private" static="no" mutable="no">
+        <type>std::array&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrView</ref>, 2 &gt;</type>
+        <definition>std::array&lt;XrView, 2&gt; ILLIXR::openxr_quest_controller::located_views_</definition>
+        <argsstring></argsstring>
+        <name>located_views_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::located_views_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="211" column="33" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="211" bodyend="211"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1a0cf2a86007bd1ae84ed4c6ba1035ae34" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::openxr_quest_controller::located_views_valid_</definition>
+        <argsstring></argsstring>
+        <name>located_views_valid_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::located_views_valid_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">false</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="212" column="44" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="212" bodyend="212"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1a2862513ae2ef9fdd384decaa9e57cd82" prot="private" static="no" mutable="no">
+        <type>std::array&lt; <ref refid="structILLIXR_1_1openxr__quest__controller_1_1swapchain__view" kindref="compound">swapchain_view</ref>, 2 &gt;</type>
+        <definition>std::array&lt;swapchain_view, 2&gt; ILLIXR::openxr_quest_controller::swapchain_views_</definition>
+        <argsstring></argsstring>
+        <name>swapchain_views_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::swapchain_views_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="215" column="16" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="215" bodyend="215"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1a13cbc5c0abbef950162aab2b9b660dd9" prot="private" static="no" mutable="no">
+        <type>std::int64_t</type>
+        <definition>std::int64_t ILLIXR::openxr_quest_controller::swapchain_format_</definition>
+        <argsstring></argsstring>
+        <name>swapchain_format_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::swapchain_format_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="216" column="35" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="216" bodyend="216"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1a04e531051767a980072f4d3cc6c95db5" prot="private" static="no" mutable="no">
+        <type><ref refid="structILLIXR_1_1openxr__quest__controller_1_1mapped__file" kindref="compound">mapped_file</ref></type>
+        <definition>mapped_file ILLIXR::openxr_quest_controller::pixel_mapping_</definition>
+        <argsstring></argsstring>
+        <name>pixel_mapping_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::pixel_mapping_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="219" column="17" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="219" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1a7fa9f922f3f5f76a5fd6ab885b226e19" prot="private" static="no" mutable="no">
+        <type><ref refid="structILLIXR_1_1openxr__quest__controller_1_1mapped__file" kindref="compound">mapped_file</ref></type>
+        <definition>mapped_file ILLIXR::openxr_quest_controller::overlay_mapping_</definition>
+        <argsstring></argsstring>
+        <name>overlay_mapping_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::overlay_mapping_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="220" column="17" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="220" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1a18e3573deb15df08eca940c45b512c73" prot="private" static="no" mutable="no">
+        <type><ref refid="structILLIXR_1_1openxr__quest__controller_1_1mapped__file" kindref="compound">mapped_file</ref></type>
+        <definition>mapped_file ILLIXR::openxr_quest_controller::modal_mapping_</definition>
+        <argsstring></argsstring>
+        <name>modal_mapping_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::modal_mapping_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="221" column="17" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="221" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1aad1f4699e33746e8e127131fdaefc9a0" prot="private" static="no" mutable="no">
+        <type>std::array&lt; std::array&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">GLuint</ref>, 2 &gt;, 2 &gt;</type>
+        <definition>std::array&lt;std::array&lt;GLuint, 2&gt;, 2&gt; ILLIXR::openxr_quest_controller::source_textures_</definition>
+        <argsstring></argsstring>
+        <name>source_textures_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::source_textures_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="224" column="17" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="224" bodyend="224"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1ad4a4c6e7d2e3457c44463fc6cb01d643" prot="private" static="no" mutable="no">
+        <type>std::array&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">GLuint</ref>, 2 &gt;</type>
+        <definition>std::array&lt;GLuint, 2&gt; ILLIXR::openxr_quest_controller::modal_textures_</definition>
+        <argsstring></argsstring>
+        <name>modal_textures_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::modal_textures_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="225" column="32" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="225" bodyend="225"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1a6718aa360e163fa9cb282ef71ff213d3" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+        <definition>int ILLIXR::openxr_quest_controller::active_texture_set_</definition>
+        <argsstring></argsstring>
+        <name>active_texture_set_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::active_texture_set_</qualifiedname>
+        <initializer>{-1}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="226" column="43" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="226" bodyend="226"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1aec46fc94fdaf298ba027740d7b4585f8" prot="private" static="no" mutable="no">
+        <type>std::uint32_t</type>
+        <definition>std::uint32_t ILLIXR::openxr_quest_controller::source_width_</definition>
+        <argsstring></argsstring>
+        <name>source_width_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::source_width_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="227" column="43" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="227" bodyend="227"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1a3eb107d8311e63b2dc4f729e13c1954b" prot="private" static="no" mutable="no">
+        <type>std::uint32_t</type>
+        <definition>std::uint32_t ILLIXR::openxr_quest_controller::source_height_</definition>
+        <argsstring></argsstring>
+        <name>source_height_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::source_height_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="228" column="43" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="228" bodyend="228"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1a286a03612df1dd67ae126e2d481fc1c3" prot="private" static="no" mutable="no">
+        <type>std::uint64_t</type>
+        <definition>std::uint64_t ILLIXR::openxr_quest_controller::active_stereo_frame_id_</definition>
+        <argsstring></argsstring>
+        <name>active_stereo_frame_id_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::active_stereo_frame_id_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="229" column="43" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="229" bodyend="229"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1aafc054145cdd5756bcab413369d95344" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::openxr_quest_controller::active_stereo_frame_valid_</definition>
+        <argsstring></argsstring>
+        <name>active_stereo_frame_valid_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::active_stereo_frame_valid_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">false</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="230" column="43" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="230" bodyend="230"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1a27a3340b1966342de02f12ec3e55e698" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1_1data__format_1ab8fe7a6fb1855357a2d98a776b6a2203" kindref="member">data_format::stereo_image_origin</ref></type>
+        <definition>data_format::stereo_image_origin ILLIXR::openxr_quest_controller::active_origin_</definition>
+        <argsstring></argsstring>
+        <name>active_origin_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::active_origin_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1_1data__format_1ab8fe7a6fb1855357a2d98a776b6a2203a3f34ebfdc06155d551b08c312bcbb887" kindref="member">data_format::stereo_image_origin::upper_left</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="231" column="43" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="231" bodyend="231"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1a76ce0344677d3789d8e068fa6efd95e8" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1_1data__format_1a18a9f759f201d5d2aa0639e6ef46d9b1" kindref="member">data_format::stereo_presentation_mode</ref></type>
+        <definition>data_format::stereo_presentation_mode ILLIXR::openxr_quest_controller::active_presentation_mode_</definition>
+        <argsstring></argsstring>
+        <name>active_presentation_mode_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::active_presentation_mode_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1_1data__format_1a18a9f759f201d5d2aa0639e6ef46d9b1a89e98582edfdcf1c49ac755abbdb1a28" kindref="member">data_format::stereo_presentation_mode::stereo_fullscreen</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="232" column="43" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="232" bodyend="232"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1a37685898e5a99b14eb5c9a140f998035" prot="private" static="no" mutable="no">
+        <type>std::array&lt; <ref refid="structILLIXR_1_1data__format_1_1stereo__render__view" kindref="compound">data_format::stereo_render_view</ref>, 2 &gt;</type>
+        <definition>std::array&lt;data_format::stereo_render_view, 2&gt; ILLIXR::openxr_quest_controller::active_render_views_</definition>
+        <argsstring></argsstring>
+        <name>active_render_views_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::active_render_views_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="233" column="16" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="233" bodyend="233"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1ac3f77cb551d100981bf4f3a3fdd6225b" prot="private" static="no" mutable="no">
+        <type>std::array&lt; std::vector&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">float</ref> &gt;, 2 &gt;</type>
+        <definition>std::array&lt;std::vector&lt;float&gt;, 2&gt; ILLIXR::openxr_quest_controller::active_overlay_commands_</definition>
+        <argsstring></argsstring>
+        <name>active_overlay_commands_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::active_overlay_commands_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="234" column="29" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="234" bodyend="234"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1a57b91c84a626a11770bc938196d9eb1a" prot="private" static="no" mutable="no">
+        <type><ref refid="structILLIXR_1_1data__format_1_1stereo__modal__overlay" kindref="compound">data_format::stereo_modal_overlay</ref></type>
+        <definition>data_format::stereo_modal_overlay ILLIXR::openxr_quest_controller::active_modal_</definition>
+        <argsstring></argsstring>
+        <name>active_modal_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::active_modal_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="235" column="52" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="235" bodyend="235"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1a1b067fecfdf8c018f7c7d5f1a4ae54a7" prot="private" static="no" mutable="no">
+        <type>std::array&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">float</ref>, 16 &gt;</type>
+        <definition>std::array&lt;float, 16&gt; ILLIXR::openxr_quest_controller::world_panel_model_</definition>
+        <argsstring></argsstring>
+        <name>world_panel_model_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::world_panel_model_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="236" column="41" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="236" bodyend="236"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1a4c880af9bf0de6052ebde5f52a2ef606" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::openxr_quest_controller::world_panel_initialized_</definition>
+        <argsstring></argsstring>
+        <name>world_panel_initialized_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::world_panel_initialized_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">false</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="237" column="52" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="237" bodyend="237"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1a942448f1b922fa3e52652c8c611d902e" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">GLuint</ref></type>
+        <definition>GLuint ILLIXR::openxr_quest_controller::framebuffer_</definition>
+        <argsstring></argsstring>
+        <name>framebuffer_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::framebuffer_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="240" column="12" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="240" bodyend="240"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1a68543997613d9f35be288856d94e9b3c" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">GLuint</ref></type>
+        <definition>GLuint ILLIXR::openxr_quest_controller::panel_program_</definition>
+        <argsstring></argsstring>
+        <name>panel_program_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::panel_program_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="241" column="12" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="241" bodyend="241"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1aed8cb64242644945253e2d29ad21468b" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">GLuint</ref></type>
+        <definition>GLuint ILLIXR::openxr_quest_controller::panel_vao_</definition>
+        <argsstring></argsstring>
+        <name>panel_vao_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::panel_vao_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="242" column="12" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="242" bodyend="242"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1aef4b23c87f8ac18e60f511454343545d" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">GLint</ref></type>
+        <definition>GLint ILLIXR::openxr_quest_controller::panel_source_location_</definition>
+        <argsstring></argsstring>
+        <name>panel_source_location_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::panel_source_location_</qualifiedname>
+        <initializer>{-1}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="243" column="12" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="243" bodyend="243"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1ad15bfa23920ca1ea87f426d5582b717b" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">GLint</ref></type>
+        <definition>GLint ILLIXR::openxr_quest_controller::panel_mvp_location_</definition>
+        <argsstring></argsstring>
+        <name>panel_mvp_location_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::panel_mvp_location_</qualifiedname>
+        <initializer>{-1}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="244" column="12" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="244" bodyend="244"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1ac5b481013cb17f9e84a2feab2225f411" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">GLint</ref></type>
+        <definition>GLint ILLIXR::openxr_quest_controller::panel_flip_y_location_</definition>
+        <argsstring></argsstring>
+        <name>panel_flip_y_location_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::panel_flip_y_location_</qualifiedname>
+        <initializer>{-1}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="245" column="12" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="245" bodyend="245"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1a7f276a5376f6b7b374a2d40637e98f98" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">GLuint</ref></type>
+        <definition>GLuint ILLIXR::openxr_quest_controller::overlay_program_</definition>
+        <argsstring></argsstring>
+        <name>overlay_program_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::overlay_program_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="246" column="12" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="246" bodyend="246"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1a08eead0469dad0e3e2dbd1a804013cc7" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">GLuint</ref></type>
+        <definition>GLuint ILLIXR::openxr_quest_controller::overlay_vao_</definition>
+        <argsstring></argsstring>
+        <name>overlay_vao_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::overlay_vao_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="247" column="12" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="247" bodyend="247"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1a85233f73dbdd7985f55162e23822c5e9" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">GLuint</ref></type>
+        <definition>GLuint ILLIXR::openxr_quest_controller::overlay_vbo_</definition>
+        <argsstring></argsstring>
+        <name>overlay_vbo_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::overlay_vbo_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="248" column="12" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="248" bodyend="248"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1a3252331a9e7a2cbdea4bccf542091b5b" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">GLint</ref></type>
+        <definition>GLint ILLIXR::openxr_quest_controller::overlay_source_size_location_</definition>
+        <argsstring></argsstring>
+        <name>overlay_source_size_location_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::overlay_source_size_location_</qualifiedname>
+        <initializer>{-1}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="249" column="12" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="249" bodyend="249"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1a14788ee509971655b738e0a9914d76ad" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">GLuint</ref></type>
+        <definition>GLuint ILLIXR::openxr_quest_controller::modal_program_</definition>
+        <argsstring></argsstring>
+        <name>modal_program_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::modal_program_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="250" column="12" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="250" bodyend="250"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1aa13593a72a34aacce884e3b48f07ed7c" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">GLuint</ref></type>
+        <definition>GLuint ILLIXR::openxr_quest_controller::modal_vao_</definition>
+        <argsstring></argsstring>
+        <name>modal_vao_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::modal_vao_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="251" column="12" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="251" bodyend="251"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1ada9e2cea11355cc7fc49f943970fcabb" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">GLuint</ref></type>
+        <definition>GLuint ILLIXR::openxr_quest_controller::modal_vbo_</definition>
+        <argsstring></argsstring>
+        <name>modal_vbo_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::modal_vbo_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="252" column="12" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="252" bodyend="252"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1aed27b0d8bf9bc266a82a30a86640374e" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">GLint</ref></type>
+        <definition>GLint ILLIXR::openxr_quest_controller::modal_source_size_location_</definition>
+        <argsstring></argsstring>
+        <name>modal_source_size_location_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::modal_source_size_location_</qualifiedname>
+        <initializer>{-1}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="253" column="12" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="253" bodyend="253"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1a76114df0bbdbc4306c483735fdbbd0d4" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">GLint</ref></type>
+        <definition>GLint ILLIXR::openxr_quest_controller::modal_texture_location_</definition>
+        <argsstring></argsstring>
+        <name>modal_texture_location_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::modal_texture_location_</qualifiedname>
+        <initializer>{-1}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="254" column="12" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="254" bodyend="254"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1ac66b429363f3072c0ce7d39c45cbfa55" prot="private" static="no" mutable="no">
+        <type>std::uint64_t</type>
+        <definition>std::uint64_t ILLIXR::openxr_quest_controller::sequence_</definition>
+        <argsstring></argsstring>
+        <name>sequence_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::sequence_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="257" column="22" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="257" bodyend="257"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1a4367a9e0ff429255d5b77966794c9a6e" prot="private" static="no" mutable="no">
+        <type><ref refid="classILLIXR_1_1openxr__quest__controller_1a9757d9752d86b5f0230f93e3282447db" kindref="member">controller_input</ref></type>
+        <definition>controller_input ILLIXR::openxr_quest_controller::previous_input_</definition>
+        <argsstring></argsstring>
+        <name>previous_input_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::previous_input_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="258" column="22" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="258" bodyend="258"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1openxr__quest__controller_1ad06d9a2f81d0004a973a113985c3d034" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::openxr_quest_controller::have_previous_input_</definition>
+        <argsstring></argsstring>
+        <name>have_previous_input_</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::have_previous_input_</qualifiedname>
+        <initializer>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">false</ref>}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="259" column="22" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="259" bodyend="259"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classILLIXR_1_1openxr__quest__controller_1ac7aedc1734a173fc0e4498eccbcb5fd4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::openxr_quest_controller::openxr_quest_controller</definition>
+        <argsstring>(const std::string &amp;name, phonebook *pb)</argsstring>
+        <name>openxr_quest_controller</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::openxr_quest_controller</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> std::string &amp;</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type><ref refid="classILLIXR_1_1phonebook" kindref="compound">phonebook</ref> *</type>
+          <declname>pb</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Bind switchboard endpoints and read logging configuration. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="47" column="5" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.cpp" bodystart="443" bodyend="453"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1openxr__quest__controller_1aa7d4cc19930e6267a566d5675d6e95db" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::openxr_quest_controller::~openxr_quest_controller</definition>
+        <argsstring>() override</argsstring>
+        <name>~openxr_quest_controller</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::~openxr_quest_controller</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Stop the worker before destroying OpenXR/OpenGL member state. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="49" column="5" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.cpp" bodystart="455" bodyend="461"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1openxr__quest__controller_1acad6908dad3e7de34df48b7d89dc70d1" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void ILLIXR::openxr_quest_controller::start</definition>
+        <argsstring>() override</argsstring>
+        <name>start</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::start</qualifiedname>
+        <reimplements refid="classILLIXR_1_1plugin_1a30d7294817fc5e8a8216fbfbca233cdc">start</reimplements>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Create the graphics binding and start the OpenXR worker. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="52" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.cpp" bodystart="463" bodyend="471"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1openxr__quest__controller_1af0918912bac2549147721e4dfa0fbcf1" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void ILLIXR::openxr_quest_controller::stop</definition>
+        <argsstring>() override</argsstring>
+        <name>stop</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::stop</qualifiedname>
+        <reimplements refid="classILLIXR_1_1plugin_1a2cefabfb6dd9800b1ebc8b07031661c4">stop</reimplements>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Stop the session thread and destroy all OpenXR/OpenGL resources. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="55" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.cpp" bodystart="473" bodyend="480"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classILLIXR_1_1openxr__quest__controller_1ab8f80bf1df5b50ffb185e6a277de05b7" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void ILLIXR::openxr_quest_controller::initialize_graphics</definition>
+        <argsstring>()</argsstring>
+        <name>initialize_graphics</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::initialize_graphics</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="93" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.cpp" bodystart="482" bodyend="531"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1openxr__quest__controller_1a0d379ccdb83c1e4c0dcaa98488889f18" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void ILLIXR::openxr_quest_controller::destroy_graphics</definition>
+        <argsstring>()</argsstring>
+        <name>destroy_graphics</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::destroy_graphics</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="94" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.cpp" bodystart="533" bodyend="548"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1openxr__quest__controller_1a2b3a9d475880860b344e563acf9884d7" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::openxr_quest_controller::resolve_glx_binding</definition>
+        <argsstring>()</argsstring>
+        <name>resolve_glx_binding</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::resolve_glx_binding</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="95" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.cpp" bodystart="550" bodyend="586"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1openxr__quest__controller_1a99a8e446be478fe2a52cbd6012ef6375" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void ILLIXR::openxr_quest_controller::run</definition>
+        <argsstring>()</argsstring>
+        <name>run</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::run</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="98" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.cpp" bodystart="590" bodyend="615"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1openxr__quest__controller_1ab2e2ed84ca941102ef82b05523b6d2b7" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::openxr_quest_controller::initialize_openxr</definition>
+        <argsstring>()</argsstring>
+        <name>initialize_openxr</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::initialize_openxr</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="99" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.cpp" bodystart="617" bodyend="744"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1openxr__quest__controller_1a8fb876e7d14940a78dcfe3051fe4b095" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void ILLIXR::openxr_quest_controller::destroy_openxr</definition>
+        <argsstring>()</argsstring>
+        <name>destroy_openxr</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::destroy_openxr</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="100" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.cpp" bodystart="1898" bodyend="1944"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1openxr__quest__controller_1aad985c91f929613f2001128e4c97a2fd" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::openxr_quest_controller::pump_events</definition>
+        <argsstring>()</argsstring>
+        <name>pump_events</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::pump_events</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="101" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.cpp" bodystart="896" bodyend="949"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1openxr__quest__controller_1aaf2d863245fe8586fd6b2f5629219708" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::openxr_quest_controller::process_frame</definition>
+        <argsstring>()</argsstring>
+        <name>process_frame</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::process_frame</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="102" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.cpp" bodystart="953" bodyend="1031"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1openxr__quest__controller_1a5568d319aded9aa1430d3ecaf5c06d4f" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::openxr_quest_controller::enumerate_view_configuration</definition>
+        <argsstring>()</argsstring>
+        <name>enumerate_view_configuration</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::enumerate_view_configuration</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Query the runtime&apos;s two-eye configuration and recommended dimensions. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="105" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.cpp" bodystart="1033" bodyend="1056"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1openxr__quest__controller_1a342338d02690596283cf1407db2c4dd9" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::openxr_quest_controller::query_views</definition>
+        <argsstring>(XrTime sample_time, view_frame *views)</argsstring>
+        <name>query_views</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::query_views</qualifiedname>
+        <param>
+          <type><ref refid="pose__relay_8hpp_1afc70e0010cc8c79eeadfce48f0b60920" kindref="member">XrTime</ref></type>
+          <declname>sample_time</declname>
+        </param>
+        <param>
+          <type><ref refid="classILLIXR_1_1openxr__quest__controller_1a10a3dfb7b170f0af6fb653c66ac0f93b" kindref="member">view_frame</ref> *</type>
+          <declname>views</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Locate both eyes at the same predicted display time used for controller poses. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="108" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.cpp" bodystart="1648" bodyend="1695"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1openxr__quest__controller_1a78d6df07dfd6e5864af2424f901b6e80" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::openxr_quest_controller::create_swapchains</definition>
+        <argsstring>()</argsstring>
+        <name>create_swapchains</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::create_swapchains</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="111" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.cpp" bodystart="1058" bodyend="1132"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1openxr__quest__controller_1a0a0b00d105892b2e61f146f1587b3542" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void ILLIXR::openxr_quest_controller::destroy_swapchains</definition>
+        <argsstring>()</argsstring>
+        <name>destroy_swapchains</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::destroy_swapchains</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="112" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.cpp" bodystart="1136" bodyend="1147"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1openxr__quest__controller_1a50d62a1eaa854a647985c1163c35e95d" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::openxr_quest_controller::initialize_stereo_renderer</definition>
+        <argsstring>()</argsstring>
+        <name>initialize_stereo_renderer</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::initialize_stereo_renderer</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="113" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.cpp" bodystart="1149" bodyend="1206"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1openxr__quest__controller_1ad125ab45ac130ae0145b53e93e26e243" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void ILLIXR::openxr_quest_controller::destroy_stereo_renderer</definition>
+        <argsstring>()</argsstring>
+        <name>destroy_stereo_renderer</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::destroy_stereo_renderer</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="114" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.cpp" bodystart="1208" bodyend="1264"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1openxr__quest__controller_1a77ac3d947330e7c3abffd425f38eb09b" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::openxr_quest_controller::update_stereo_frame</definition>
+        <argsstring>()</argsstring>
+        <name>update_stereo_frame</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::update_stereo_frame</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Atomically snapshot the newest frame/overlay/modal generations into GL textures. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="116" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.cpp" bodystart="1330" bodyend="1511"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1openxr__quest__controller_1a306b3eb21878db4e9d37103cfd452f2c" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::openxr_quest_controller::ensure_mapped</definition>
+        <argsstring>(const std::string &amp;path, mapped_file *mapping)</argsstring>
+        <name>ensure_mapped</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::ensure_mapped</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> std::string &amp;</type>
+          <declname>path</declname>
+        </param>
+        <param>
+          <type><ref refid="structILLIXR_1_1openxr__quest__controller_1_1mapped__file" kindref="compound">mapped_file</ref> *</type>
+          <declname>mapping</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="117" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.cpp" bodystart="1266" bodyend="1294"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1openxr__quest__controller_1a365a490592da2b5e0a2ab2c945b7d018" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::openxr_quest_controller::ensure_source_textures</definition>
+        <argsstring>(std::uint32_t width, std::uint32_t height)</argsstring>
+        <name>ensure_source_textures</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::ensure_source_textures</qualifiedname>
+        <param>
+          <type>std::uint32_t</type>
+          <declname>width</declname>
+        </param>
+        <param>
+          <type>std::uint32_t</type>
+          <declname>height</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="118" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.cpp" bodystart="1296" bodyend="1328"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1openxr__quest__controller_1ab53943591b0839531b96e9edeba3e048" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::openxr_quest_controller::render_projection_layer</definition>
+        <argsstring>(XrCompositionLayerProjection *layer, std::array&lt; XrCompositionLayerProjectionView, 2 &gt; *projection_views)</argsstring>
+        <name>render_projection_layer</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::render_projection_layer</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrCompositionLayerProjection</ref> *</type>
+          <declname>layer</declname>
+        </param>
+        <param>
+          <type>std::array&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrCompositionLayerProjectionView</ref>, 2 &gt; *</type>
+          <declname>projection_views</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="119" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.cpp" bodystart="1589" bodyend="1644"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1openxr__quest__controller_1a14a566a6888ee14f73533c88754dfe56" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::openxr_quest_controller::render_eye</definition>
+        <argsstring>(std::size_t eye_index, GLuint swapchain_image)</argsstring>
+        <name>render_eye</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::render_eye</qualifiedname>
+        <param>
+          <type>std::size_t</type>
+          <declname>eye_index</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">GLuint</ref></type>
+          <declname>swapchain_image</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="121" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.cpp" bodystart="1513" bodyend="1587"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1openxr__quest__controller_1a4482dbde282e88f140c471b0a90b43d7" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::openxr_quest_controller::create_actions</definition>
+        <argsstring>()</argsstring>
+        <name>create_actions</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::create_actions</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="124" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.cpp" bodystart="748" bodyend="794"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1openxr__quest__controller_1a8f31c1d966e4bf3cacc43bb25280609d" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::openxr_quest_controller::suggest_bindings</definition>
+        <argsstring>()</argsstring>
+        <name>suggest_bindings</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::suggest_bindings</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="125" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.cpp" bodystart="806" bodyend="855"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1openxr__quest__controller_1a04a3aa0984d809876d402ae33db723a7" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::openxr_quest_controller::create_action</definition>
+        <argsstring>(XrActionType type, const char *name, const char *localized_name, XrAction *action)</argsstring>
+        <name>create_action</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::create_action</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrActionType</ref></type>
+          <declname>type</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">char</ref> *</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">char</ref> *</type>
+          <declname>localized_name</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrAction</ref> *</type>
+          <declname>action</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="126" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.cpp" bodystart="796" bodyend="804"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1openxr__quest__controller_1a570f033dac625e0d25dcaa5a74ec10b6" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::openxr_quest_controller::create_action_space</definition>
+        <argsstring>(XrAction action, XrPath hand_path, XrSpace *space, const char *label)</argsstring>
+        <name>create_action_space</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::create_action_space</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrAction</ref></type>
+          <declname>action</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrPath</ref></type>
+          <declname>hand_path</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrSpace</ref> *</type>
+          <declname>space</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">char</ref> *</type>
+          <declname>label</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="127" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.cpp" bodystart="888" bodyend="894"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1openxr__quest__controller_1ad1e5b8df1abe6bb7658e4d168a193e0c" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::openxr_quest_controller::add_binding</definition>
+        <argsstring>(std::vector&lt; XrActionSuggestedBinding &gt; *bindings, XrAction action, const char *path_string)</argsstring>
+        <name>add_binding</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::add_binding</qualifiedname>
+        <param>
+          <type>std::vector&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrActionSuggestedBinding</ref> &gt; *</type>
+          <declname>bindings</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrAction</ref></type>
+          <declname>action</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">char</ref> *</type>
+          <declname>path_string</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="128" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.cpp" bodystart="857" bodyend="865"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1openxr__quest__controller_1a6ce7944c6a794b74dbe4e8fd79bae757" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::openxr_quest_controller::suggest_profile_bindings</definition>
+        <argsstring>(const char *profile_string, const std::vector&lt; XrActionSuggestedBinding &gt; &amp;bindings)</argsstring>
+        <name>suggest_profile_bindings</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::suggest_profile_bindings</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">char</ref> *</type>
+          <declname>profile_string</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> std::vector&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrActionSuggestedBinding</ref> &gt; &amp;</type>
+          <declname>bindings</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="129" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.cpp" bodystart="867" bodyend="886"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1openxr__quest__controller_1a86b8eb860c792b08c5f64cbc24b4f0a6" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::openxr_quest_controller::query_hand</definition>
+        <argsstring>(std::size_t hand_index, XrTime sample_time, hand_controller *hand)</argsstring>
+        <name>query_hand</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::query_hand</qualifiedname>
+        <param>
+          <type>std::size_t</type>
+          <declname>hand_index</declname>
+        </param>
+        <param>
+          <type><ref refid="pose__relay_8hpp_1afc70e0010cc8c79eeadfce48f0b60920" kindref="member">XrTime</ref></type>
+          <declname>sample_time</declname>
+        </param>
+        <param>
+          <type><ref refid="classILLIXR_1_1openxr__quest__controller_1a10d0e608d44429e9b90ada67385dfaf1" kindref="member">hand_controller</ref> *</type>
+          <declname>hand</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="132" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.cpp" bodystart="1697" bodyend="1725"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1openxr__quest__controller_1a35ac6f9830b4c8ce8841829c981e5362" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::openxr_quest_controller::query_pose</definition>
+        <argsstring>(XrAction action, XrSpace action_space, XrPath hand_path, XrTime sample_time, controller_pose *pose)</argsstring>
+        <name>query_pose</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::query_pose</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrAction</ref></type>
+          <declname>action</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrSpace</ref></type>
+          <declname>action_space</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrPath</ref></type>
+          <declname>hand_path</declname>
+        </param>
+        <param>
+          <type><ref refid="pose__relay_8hpp_1afc70e0010cc8c79eeadfce48f0b60920" kindref="member">XrTime</ref></type>
+          <declname>sample_time</declname>
+        </param>
+        <param>
+          <type><ref refid="classILLIXR_1_1openxr__quest__controller_1a51e844392aad66b3e4e9c5d2a8c05bba" kindref="member">controller_pose</ref> *</type>
+          <declname>pose</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="133" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.cpp" bodystart="1727" bodyend="1760"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1openxr__quest__controller_1afc5163d6b22ebfacf63fb4f359da031b" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::openxr_quest_controller::query_boolean</definition>
+        <argsstring>(XrAction action, XrPath hand_path, controller_button *button)</argsstring>
+        <name>query_boolean</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::query_boolean</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrAction</ref></type>
+          <declname>action</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrPath</ref></type>
+          <declname>hand_path</declname>
+        </param>
+        <param>
+          <type><ref refid="classILLIXR_1_1openxr__quest__controller_1ab3a0c097b70524846aa80861e642f970" kindref="member">controller_button</ref> *</type>
+          <declname>button</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="134" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.cpp" bodystart="1762" bodyend="1778"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1openxr__quest__controller_1a660b2b690ce7e0d18a2e037c10b88cdb" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::openxr_quest_controller::query_float</definition>
+        <argsstring>(XrAction action, XrPath hand_path, float pressed_threshold, controller_button *button)</argsstring>
+        <name>query_float</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::query_float</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrAction</ref></type>
+          <declname>action</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrPath</ref></type>
+          <declname>hand_path</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">float</ref></type>
+          <declname>pressed_threshold</declname>
+        </param>
+        <param>
+          <type><ref refid="classILLIXR_1_1openxr__quest__controller_1ab3a0c097b70524846aa80861e642f970" kindref="member">controller_button</ref> *</type>
+          <declname>button</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="135" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.cpp" bodystart="1780" bodyend="1797"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1openxr__quest__controller_1a1e63aa4dc7e8fd15c3bb15319b5ce70d" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::openxr_quest_controller::query_axis2d</definition>
+        <argsstring>(XrAction action, XrPath hand_path, controller_axis2d *axis)</argsstring>
+        <name>query_axis2d</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::query_axis2d</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrAction</ref></type>
+          <declname>action</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrPath</ref></type>
+          <declname>hand_path</declname>
+        </param>
+        <param>
+          <type><ref refid="classILLIXR_1_1openxr__quest__controller_1a4345fea6ed57ebe1b9c32597ad77b03e" kindref="member">controller_axis2d</ref> *</type>
+          <declname>axis</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="136" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.cpp" bodystart="1799" bodyend="1816"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1openxr__quest__controller_1aef5fbcff988628509dba0d9f9218d921" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::openxr_quest_controller::refresh_interaction_profiles</definition>
+        <argsstring>()</argsstring>
+        <name>refresh_interaction_profiles</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::refresh_interaction_profiles</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="137" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.cpp" bodystart="1818" bodyend="1840"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1openxr__quest__controller_1a44e8fed8df7457403b7e2bcad43a1f08" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void ILLIXR::openxr_quest_controller::log_input_changes</definition>
+        <argsstring>(const controller_input &amp;input)</argsstring>
+        <name>log_input_changes</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::log_input_changes</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="classILLIXR_1_1openxr__quest__controller_1a9757d9752d86b5f0230f93e3282447db" kindref="member">controller_input</ref> &amp;</type>
+          <declname>input</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="140" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.cpp" bodystart="1844" bodyend="1853"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1openxr__quest__controller_1a61d64cf4bc3a8b4ba00121fb0482c91d" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void ILLIXR::openxr_quest_controller::log_hand_changes</definition>
+        <argsstring>(const char *hand_name, bool left, const hand_controller &amp;current, const hand_controller &amp;previous, bool first_sample)</argsstring>
+        <name>log_hand_changes</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::log_hand_changes</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">char</ref> *</type>
+          <declname>hand_name</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+          <declname>left</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="classILLIXR_1_1openxr__quest__controller_1a10d0e608d44429e9b90ada67385dfaf1" kindref="member">hand_controller</ref> &amp;</type>
+          <declname>current</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="classILLIXR_1_1openxr__quest__controller_1a10d0e608d44429e9b90ada67385dfaf1" kindref="member">hand_controller</ref> &amp;</type>
+          <declname>previous</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+          <declname>first_sample</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="141" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.cpp" bodystart="1855" bodyend="1887"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1openxr__quest__controller_1ab9597034773fbccdee2d12a87e269d08" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void ILLIXR::openxr_quest_controller::log_button_change</definition>
+        <argsstring>(const char *hand_name, const char *button_name, const controller_button &amp;current, const controller_button &amp;previous, bool first_sample)</argsstring>
+        <name>log_button_change</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::log_button_change</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">char</ref> *</type>
+          <declname>hand_name</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">char</ref> *</type>
+          <declname>button_name</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="classILLIXR_1_1openxr__quest__controller_1ab3a0c097b70524846aa80861e642f970" kindref="member">controller_button</ref> &amp;</type>
+          <declname>current</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="classILLIXR_1_1openxr__quest__controller_1ab3a0c097b70524846aa80861e642f970" kindref="member">controller_button</ref> &amp;</type>
+          <declname>previous</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+          <declname>first_sample</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="143" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.cpp" bodystart="1889" bodyend="1896"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1openxr__quest__controller_1aead39f75e64349b84001af7b0e964274" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::openxr_quest_controller::check_xr</definition>
+        <argsstring>(XrResult result, const char *operation) const</argsstring>
+        <name>check_xr</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::check_xr</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrResult</ref></type>
+          <declname>result</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">char</ref> *</type>
+          <declname>operation</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="147" column="17" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.cpp" bodystart="1946" bodyend="1952"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1openxr__quest__controller_1aa5b9b665e9ee24ca3df3d1ee9a0f3231" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string ILLIXR::openxr_quest_controller::xr_result_string</definition>
+        <argsstring>(XrResult result) const</argsstring>
+        <name>xr_result_string</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::xr_result_string</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrResult</ref></type>
+          <declname>result</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="148" column="17" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.cpp" bodystart="1954" bodyend="1962"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1openxr__quest__controller_1afd8ab0d9806562c7b0c3dbf3cffa45a0" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string ILLIXR::openxr_quest_controller::path_string</definition>
+        <argsstring>(XrPath path) const</argsstring>
+        <name>path_string</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::path_string</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrPath</ref></type>
+          <declname>path</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="149" column="17" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.cpp" bodystart="1964" bodyend="1978"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-static-func">
+      <memberdef kind="function" id="classILLIXR_1_1openxr__quest__controller_1acf987df1db4be3044ce712e19a3c12aa" prot="private" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1_1data__format_1a199659f655d737a8ff3be7944e54507b" kindref="member">controller_profile</ref></type>
+        <definition>openxr_quest_controller::controller_profile ILLIXR::openxr_quest_controller::profile_from_path</definition>
+        <argsstring>(const std::string &amp;path)</argsstring>
+        <name>profile_from_path</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::profile_from_path</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> std::string &amp;</type>
+          <declname>path</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="152" column="31" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.cpp" bodystart="1980" bodyend="2000"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1openxr__quest__controller_1a0f3c4f3248d2ecf3e11bc7a2f1b9736f" prot="private" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">char</ref> *</type>
+        <definition>const char * ILLIXR::openxr_quest_controller::profile_label</definition>
+        <argsstring>(controller_profile profile)</argsstring>
+        <name>profile_label</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::profile_label</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1_1data__format_1a199659f655d737a8ff3be7944e54507b" kindref="member">controller_profile</ref></type>
+          <declname>profile</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="153" column="30" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.cpp" bodystart="2002" bodyend="2020"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1openxr__quest__controller_1aec8aea6efd9560f93ae4eb1f22ce891c" prot="private" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">char</ref> *</type>
+        <definition>const char * ILLIXR::openxr_quest_controller::session_state_label</definition>
+        <argsstring>(XrSessionState state)</argsstring>
+        <name>session_state_label</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::session_state_label</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">XrSessionState</ref></type>
+          <declname>state</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="154" column="30" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.cpp" bodystart="2022" bodyend="2046"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1openxr__quest__controller_1a7462b112712f992a8c7a645a687fa771" prot="private" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void ILLIXR::openxr_quest_controller::merge_button</definition>
+        <argsstring>(controller_button *destination, const controller_button &amp;source)</argsstring>
+        <name>merge_button</name>
+        <qualifiedname>ILLIXR::openxr_quest_controller::merge_button</qualifiedname>
+        <param>
+          <type><ref refid="classILLIXR_1_1openxr__quest__controller_1ab3a0c097b70524846aa80861e642f970" kindref="member">controller_button</ref> *</type>
+          <declname>destination</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="classILLIXR_1_1openxr__quest__controller_1ab3a0c097b70524846aa80861e642f970" kindref="member">controller_button</ref> &amp;</type>
+          <declname>source</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="155" column="31" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.cpp" bodystart="2048" bodyend="2054"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Own a desktop OpenXR session for the ALVR/SteamVR compatibility profile.</para>
+<para>Each OpenXR frame produces sequence-matched <computeroutput>quest_controller</computeroutput> and <computeroutput>openxr_view</computeroutput> snapshots for Boba. In the opposite direction, the plugin consumes mmap-backed <computeroutput>stereo_frame</computeroutput> output and submits it to the runtime, including Boba&apos;s vector and modal overlays. The native Quest profile uses the Quest-side <computeroutput>openxr_interface</computeroutput> instead, but both paths share the same data contracts. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>ILLIXR::openxr_quest_controller</label>
+        <link refid="classILLIXR_1_1openxr__quest__controller"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ILLIXR::plugin</label>
+        <link refid="classILLIXR_1_1plugin"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="15">
+        <label>ILLIXR::data_format::pose::pose_base</label>
+        <link refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base"/>
+      </node>
+      <node id="17">
+        <label>ILLIXR::data_format::quest_controller_axis2d</label>
+        <link refid="structILLIXR_1_1data__format_1_1quest__controller__axis2d"/>
+      </node>
+      <node id="16">
+        <label>ILLIXR::data_format::quest_controller_button</label>
+        <link refid="structILLIXR_1_1data__format_1_1quest__controller__button"/>
+      </node>
+      <node id="10">
+        <label>ILLIXR::data_format::quest_controller_input</label>
+        <link refid="structILLIXR_1_1data__format_1_1quest__controller__input"/>
+        <childnode refid="11" relation="public-inheritance">
+        </childnode>
+        <childnode refid="12" relation="usage">
+          <edgelabel>sample_time</edgelabel>
+        </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>left</edgelabel>
+          <edgelabel>right</edgelabel>
+        </childnode>
+      </node>
+      <node id="14">
+        <label>ILLIXR::data_format::quest_controller_pose</label>
+        <link refid="structILLIXR_1_1data__format_1_1quest__controller__pose"/>
+        <childnode refid="15" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>ILLIXR::data_format::quest_hand_controller</label>
+        <link refid="structILLIXR_1_1data__format_1_1quest__hand__controller"/>
+        <childnode refid="14" relation="usage">
+          <edgelabel>aim_pose</edgelabel>
+          <edgelabel>grip_pose</edgelabel>
+        </childnode>
+        <childnode refid="16" relation="usage">
+          <edgelabel>primary</edgelabel>
+          <edgelabel>secondary</edgelabel>
+          <edgelabel>squeeze</edgelabel>
+          <edgelabel>thumbstick_click</edgelabel>
+          <edgelabel>trigger</edgelabel>
+        </childnode>
+        <childnode refid="17" relation="usage">
+          <edgelabel>thumbstick</edgelabel>
+        </childnode>
+      </node>
+      <node id="9">
+        <label>ILLIXR::data_format::stereo_modal_overlay</label>
+        <link refid="structILLIXR_1_1data__format_1_1stereo__modal__overlay"/>
+      </node>
+      <node id="1">
+        <label>ILLIXR::openxr_quest_controller</label>
+        <link refid="classILLIXR_1_1openxr__quest__controller"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>controller_writer_</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>view_writer_</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>stereo_reader_</edgelabel>
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>modal_mapping_</edgelabel>
+          <edgelabel>overlay_mapping_</edgelabel>
+          <edgelabel>pixel_mapping_</edgelabel>
+        </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>active_modal_</edgelabel>
+        </childnode>
+        <childnode refid="10" relation="usage">
+          <edgelabel>previous_input_</edgelabel>
+        </childnode>
+      </node>
+      <node id="8">
+        <label>ILLIXR::openxr_quest_controller::mapped_file</label>
+        <link refid="structILLIXR_1_1openxr__quest__controller_1_1mapped__file"/>
+      </node>
+      <node id="3">
+        <label>ILLIXR::phonebook</label>
+        <link refid="classILLIXR_1_1phonebook"/>
+      </node>
+      <node id="2">
+        <label>ILLIXR::plugin</label>
+        <link refid="classILLIXR_1_1plugin"/>
+        <childnode refid="3" relation="usage">
+          <edgelabel>phonebook_</edgelabel>
+        </childnode>
+      </node>
+      <node id="11">
+        <label>ILLIXR::switchboard::event</label>
+        <link refid="classILLIXR_1_1switchboard_1_1event"/>
+      </node>
+      <node id="5">
+        <label>ILLIXR::switchboard::topic</label>
+        <link refid="classILLIXR_1_1switchboard_1_1topic"/>
+      </node>
+      <node id="12">
+        <label>ILLIXR::time_point</label>
+        <link refid="classILLIXR_1_1time__point"/>
+      </node>
+      <node id="7">
+        <label>ILLIXR::switchboard::reader&lt; ILLIXR::data_format::stereo_frame &gt;</label>
+        <link refid="classILLIXR_1_1switchboard_1_1reader"/>
+        <childnode refid="5" relation="usage">
+          <edgelabel>topic_</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>ILLIXR::switchboard::writer&lt; ILLIXR::data_format::openxr_view_frame &gt;</label>
+        <link refid="classILLIXR_1_1switchboard_1_1writer"/>
+        <childnode refid="5" relation="usage">
+          <edgelabel>topic_</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>ILLIXR::switchboard::writer&lt; ILLIXR::data_format::quest_controller_input &gt;</label>
+        <link refid="classILLIXR_1_1switchboard_1_1writer"/>
+        <childnode refid="5" relation="usage">
+          <edgelabel>topic_</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" line="44" column="1" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp" bodystart="44" bodyend="260"/>
+    <listofallmembers>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a1799952d305ec690da70771cf2f3ef4a" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>action_set_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a57b91c84a626a11770bc938196d9eb1a" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>active_modal_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a27a3340b1966342de02f12ec3e55e698" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>active_origin_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1ac3f77cb551d100981bf4f3a3fdd6225b" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>active_overlay_commands_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a76ce0344677d3789d8e068fa6efd95e8" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>active_presentation_mode_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a37685898e5a99b14eb5c9a140f998035" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>active_render_views_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a286a03612df1dd67ae126e2d481fc1c3" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>active_stereo_frame_id_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1aafc054145cdd5756bcab413369d95344" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>active_stereo_frame_valid_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a6718aa360e163fa9cb282ef71ff213d3" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>active_texture_set_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1ad1e5b8df1abe6bb7658e4d168a193e0c" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>add_binding</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1ab1837ca9239e3f7524c75a0134d40081" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>aim_pose_action_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1ad91f082250ff14a3ce4ee5eea7976323" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>aim_spaces_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a721bd45f0b6c9e189a89dd1471f7474b" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>blend_mode_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1aead39f75e64349b84001af7b0e964274" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>check_xr</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1aae3a55785b17edf5ddea07742ae670e9" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>clock_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a4345fea6ed57ebe1b9c32597ad77b03e" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>controller_axis2d</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1ab3a0c097b70524846aa80861e642f970" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>controller_button</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a9757d9752d86b5f0230f93e3282447db" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>controller_input</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a51e844392aad66b3e4e9c5d2a8c05bba" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>controller_pose</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a02cfad9c0f2be4d838ce6fadf56b9e17" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>controller_profile</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a75d7636b99a6e1ea3196ad0976fb8973" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>controller_writer_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a04a3aa0984d809876d402ae33db723a7" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>create_action</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a570f033dac625e0d25dcaa5a74ec10b6" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>create_action_space</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a4482dbde282e88f140c471b0a90b43d7" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>create_actions</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a78d6df07dfd6e5864af2424f901b6e80" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>create_swapchains</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a0d379ccdb83c1e4c0dcaa98488889f18" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>destroy_graphics</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a8fb876e7d14940a78dcfe3051fe4b095" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>destroy_openxr</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1ad125ab45ac130ae0145b53e93e26e243" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>destroy_stereo_renderer</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a0a0b00d105892b2e61f146f1587b3542" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>destroy_swapchains</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a306b3eb21878db4e9d37103cfd452f2c" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>ensure_mapped</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a365a490592da2b5e0a2ab2c945b7d018" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>ensure_source_textures</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a5568d319aded9aa1430d3ecaf5c06d4f" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>enumerate_view_configuration</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1af2c257d8edf0f80e752d0d737ed467f4" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>exit_requested_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a217b79e8b1bd95d95b00502deb5346cf" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>eye_view</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a942448f1b922fa3e52652c8c611d902e" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>framebuffer_</name></member>
+      <member refid="classILLIXR_1_1plugin_1aebda022998bd35983e83f391dc0e5193" prot="public" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>get_name</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a754c5eb417de94877b66eae78a94065f" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>glfw_initialized_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1ab159c2ef74caf6ed183206791c12f326" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>glx_context_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a6e45c3db53ccba1409fa6b35c1a99708" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>glx_drawable_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a0f53d24a294320d421846b6d4af29102" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>glx_fb_config_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a0d413b711ff092951be9122b258b0b61" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>grip_pose_action_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1ae445df402b5e90f2f2c8c220454d81ff" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>grip_spaces_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a10d0e608d44429e9b90ada67385dfaf1" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>hand_controller</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a359ca4a7d4a6057d0b3a7f236a08e228" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>hand_paths_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1ad06d9a2f81d0004a973a113985c3d034" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>have_previous_input_</name></member>
+      <member refid="classILLIXR_1_1plugin_1aaedb3f9178bdd11e53815e158454aaf3" prot="protected" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>id_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1ab8f80bf1df5b50ffb185e6a277de05b7" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>initialize_graphics</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1ab2e2ed84ca941102ef82b05523b6d2b7" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>initialize_openxr</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a50d62a1eaa854a647985c1163c35e95d" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>initialize_stereo_renderer</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a8940697cb182244616d1e135939d9ebe" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>instance_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1ad6df297ebb173c16e512bd5f67401537" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>interaction_profiles_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1aa87f934eb4b98cc351bb6bd61d25ab7f" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>interaction_profiles_dirty_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a82135b3263c3e6b586eff7957a8e0785" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>local_space_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1acaeccbd7422117785d885aafcbdacb5d" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>located_views_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a0cf2a86007bd1ae84ed4c6ba1035ae34" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>located_views_valid_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1ab9597034773fbccdee2d12a87e269d08" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>log_button_change</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a61d64cf4bc3a8b4ba00121fb0482c91d" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>log_hand_changes</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1afa8b03b853f73eb785bdec90c4bfb383" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>log_input_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a44e8fed8df7457403b7e2bcad43a1f08" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>log_input_changes</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a7462b112712f992a8c7a645a687fa771" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>merge_button</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a18e3573deb15df08eca940c45b512c73" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>modal_mapping_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a14788ee509971655b738e0a9914d76ad" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>modal_program_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1aed27b0d8bf9bc266a82a30a86640374e" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>modal_source_size_location_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a76114df0bbdbc4306c483735fdbbd0d4" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>modal_texture_location_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1ad4a4c6e7d2e3457c44463fc6cb01d643" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>modal_textures_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1aa13593a72a34aacce884e3b48f07ed7c" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>modal_vao_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1ada9e2cea11355cc7fc49f943970fcabb" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>modal_vbo_</name></member>
+      <member refid="classILLIXR_1_1plugin_1aa963c518af83966173840a8558490888" prot="protected" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>name_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1ac7aedc1734a173fc0e4498eccbcb5fd4" prot="public" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>openxr_quest_controller</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a7fa9f922f3f5f76a5fd6ab885b226e19" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>overlay_mapping_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a7f276a5376f6b7b374a2d40637e98f98" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>overlay_program_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a3252331a9e7a2cbdea4bccf542091b5b" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>overlay_source_size_location_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a08eead0469dad0e3e2dbd1a804013cc7" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>overlay_vao_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a85233f73dbdd7985f55162e23822c5e9" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>overlay_vbo_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1ac5b481013cb17f9e84a2feab2225f411" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>panel_flip_y_location_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1ad15bfa23920ca1ea87f426d5582b717b" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>panel_mvp_location_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a68543997613d9f35be288856d94e9b3c" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>panel_program_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1aef4b23c87f8ac18e60f511454343545d" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>panel_source_location_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1aed8cb64242644945253e2d29ad21468b" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>panel_vao_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1afd8ab0d9806562c7b0c3dbf3cffa45a0" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>path_string</name></member>
+      <member refid="classILLIXR_1_1plugin_1a6f7a2a9012350591c00d67a5bc0fd5a6" prot="protected" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>phonebook_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a04e531051767a980072f4d3cc6c95db5" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>pixel_mapping_</name></member>
+      <member refid="classILLIXR_1_1plugin_1abc91c0e5be180a8e0bbeaf114a127f17" prot="public" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>plugin</name></member>
+      <member refid="classILLIXR_1_1plugin_1a8d40c2421cde09079372d12bfe7d45fe" prot="protected" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>plugin_logger_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a4367a9e0ff429255d5b77966794c9a6e" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>previous_input_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a148a591814987773437a9d0ae1cc10b3" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>primary_click_action_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1aaf2d863245fe8586fd6b2f5629219708" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>process_frame</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1acf987df1db4be3044ce712e19a3c12aa" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>profile_from_path</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a0f3c4f3248d2ecf3e11bc7a2f1b9736f" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>profile_label</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1aad985c91f929613f2001128e4c97a2fd" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>pump_events</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a1e63aa4dc7e8fd15c3bb15319b5ce70d" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>query_axis2d</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1afc5163d6b22ebfacf63fb4f359da031b" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>query_boolean</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a660b2b690ce7e0d18a2e037c10b88cdb" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>query_float</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a86b8eb860c792b08c5f64cbc24b4f0a6" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>query_hand</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a35ac6f9830b4c8ce8841829c981e5362" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>query_pose</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a342338d02690596283cf1407db2c4dd9" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>query_views</name></member>
+      <member refid="classILLIXR_1_1plugin_1aef671d0cd9b6de45d3ade16dedbf4974" prot="protected" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>record_logger_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1aef5fbcff988628509dba0d9f9218d921" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>refresh_interaction_profiles</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a14a566a6888ee14f73533c88754dfe56" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>render_eye</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1ab53943591b0839531b96e9edeba3e048" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>render_projection_layer</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a2b3a9d475880860b344e563acf9884d7" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>resolve_glx_binding</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a99a8e446be478fe2a52cbd6012ef6375" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>run</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a7faf3a796c846c6ebb23c85c24667f25" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>secondary_click_action_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1ac66b429363f3072c0ce7d39c45cbfa55" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>sequence_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a58d697840881d0918a8894667dead721" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>session_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1aa72d8f82405b2b77897d7f29c09ca511" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>session_running_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a1f2441d4276e4a7488ffd35f65b5ddaa" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>session_state_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1aec8aea6efd9560f93ae4eb1f22ce891c" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>session_state_label</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a3eb107d8311e63b2dc4f729e13c1954b" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>source_height_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1aad1f4699e33746e8e127131fdaefc9a0" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>source_textures_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1aec46fc94fdaf298ba027740d7b4585f8" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>source_width_</name></member>
+      <member refid="classILLIXR_1_1plugin_1a7c1c7c1a0ec2e43bfa1118586a28932f" prot="public" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>spd_add_file_sink</name></member>
+      <member refid="classILLIXR_1_1plugin_1a569297189ef365cf93f6a95202c76d76" prot="public" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>spdlogger</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1ab0bdd654d6b7e7e04a8aab756be4e7aa" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>squeeze_value_action_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1acad6908dad3e7de34df48b7d89dc70d1" prot="public" virt="virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>start</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a842ad5710065a3a53a1a20b29534d8d3" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>stereo_frame</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a2f603050fa7c53adfee2dd5f7f3d92a6" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>stereo_reader_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1af0918912bac2549147721e4dfa0fbcf1" prot="public" virt="virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>stop</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a310e2496390eca2bb7293e25e39504ec" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>stop_requested_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1ae35282201ba78079936db435bc040373" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>stoplight_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a8f31c1d966e4bf3cacc43bb25280609d" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>suggest_bindings</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a6ce7944c6a794b74dbe4e8fd79bae757" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>suggest_profile_bindings</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a13cbc5c0abbef950162aab2b9b660dd9" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>swapchain_format_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a2862513ae2ef9fdd384decaa9e57cd82" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>swapchain_views_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a1f729b8d7949f8acf5a07687ca467e16" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>switchboard_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a68e8418ad4843a96ec48b1775eccac8a" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>system_id_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a0a257f59227a3bf4205fd68205a45eca" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>thumbstick_axis_action_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a654f0724ea162a0972befac9674d232e" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>thumbstick_click_action_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1aefed094183c263ee5b12613f665dcccc" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>trigger_click_action_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1afe527af6dd449a3ae0a9544cd8b7db52" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>trigger_value_action_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a77ac3d947330e7c3abffd425f38eb09b" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>update_stereo_frame</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a104fdd9a02c890cd8724e3c2a47a0695" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>view_configuration_type_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a63d519d882e1196e86f639fe952e07b2" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>view_configuration_views_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a10a3dfb7b170f0af6fb653c66ac0f93b" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>view_frame</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a955dae9a1a5d5542c6892bc1b1a53f8d" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>view_writer_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1ac6a7150ba9e571ce16d0e42af8ba3923" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>visual_id_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a392f17809ab8a067b323325c8a25c6c7" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>window_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a4ce53b33efe582833ffa9382fcc77e30" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>worker_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a4c880af9bf0de6052ebde5f52a2ef606" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>world_panel_initialized_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1a1b067fecfdf8c018f7c7d5f1a4ae54a7" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>world_panel_model_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1ad4cb7d959aeda3113b904af320ed271f" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>x_display_</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1aa5b9b665e9ee24ca3df3d1ee9a0f3231" prot="private" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>xr_result_string</name></member>
+      <member refid="classILLIXR_1_1openxr__quest__controller_1aa7d4cc19930e6267a566d5675d6e95db" prot="public" virt="non-virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>~openxr_quest_controller</name></member>
+      <member refid="classILLIXR_1_1plugin_1a44d7b00c86e227bbc1a0b221da43d454" prot="public" virt="virtual"><scope>ILLIXR::openxr_quest_controller</scope><name>~plugin</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

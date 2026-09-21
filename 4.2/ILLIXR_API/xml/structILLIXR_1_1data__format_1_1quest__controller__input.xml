@@ -1,0 +1,172 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structILLIXR_1_1data__format_1_1quest__controller__input" kind="struct" language="C++" prot="public">
+    <compoundname>ILLIXR::data_format::quest_controller_input</compoundname>
+    <basecompoundref refid="classILLIXR_1_1switchboard_1_1event" prot="public" virt="non-virtual">ILLIXR::switchboard::event</basecompoundref>
+    <includes refid="quest__controller_8hpp" local="no">quest_controller.hpp</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1quest__controller__input_1a27f8ab1853079968216216aec99c7281" prot="public" static="no" mutable="no">
+        <type>std::uint64_t</type>
+        <definition>std::uint64_t ILLIXR::data_format::quest_controller_input::sequence</definition>
+        <argsstring></argsstring>
+        <name>sequence</name>
+        <qualifiedname>ILLIXR::data_format::quest_controller_input::sequence</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Monotonic ID shared with the corresponding <computeroutput>openxr_view</computeroutput> event. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/quest_controller.hpp" line="99" column="19" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/quest_controller.hpp" bodystart="99" bodyend="99"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1quest__controller__input_1ab2a1a1f5e3a0f27c210156e6b48d5878" prot="public" static="no" mutable="no">
+        <type><ref refid="classILLIXR_1_1time__point" kindref="compound">time_point</ref></type>
+        <definition>time_point ILLIXR::data_format::quest_controller_input::sample_time</definition>
+        <argsstring></argsstring>
+        <name>sample_time</name>
+        <qualifiedname>ILLIXR::data_format::quest_controller_input::sample_time</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Host and OpenXR timestamps for the same controller-pose sample. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/quest_controller.hpp" line="101" column="18" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/quest_controller.hpp" bodystart="101" bodyend="101"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1quest__controller__input_1a91b989cad53831c4a2f3326e07e97be8" prot="public" static="no" mutable="no">
+        <type>std::int64_t</type>
+        <definition>std::int64_t ILLIXR::data_format::quest_controller_input::xr_sample_time</definition>
+        <argsstring></argsstring>
+        <name>xr_sample_time</name>
+        <qualifiedname>ILLIXR::data_format::quest_controller_input::xr_sample_time</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/quest_controller.hpp" line="102" column="18" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/quest_controller.hpp" bodystart="102" bodyend="102"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1quest__controller__input_1a4cab1354f0d68f4d9f5de8365aa1366d" prot="public" static="no" mutable="no">
+        <type><ref refid="structILLIXR_1_1data__format_1_1quest__hand__controller" kindref="compound">quest_hand_controller</ref></type>
+        <definition>quest_hand_controller ILLIXR::data_format::quest_controller_input::left</definition>
+        <argsstring></argsstring>
+        <name>left</name>
+        <qualifiedname>ILLIXR::data_format::quest_controller_input::left</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/quest_controller.hpp" line="104" column="27" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/quest_controller.hpp" bodystart="104" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1quest__controller__input_1a635c3afbb52b7c3b71453b75dfec4614" prot="public" static="no" mutable="no">
+        <type><ref refid="structILLIXR_1_1data__format_1_1quest__hand__controller" kindref="compound">quest_hand_controller</ref></type>
+        <definition>quest_hand_controller ILLIXR::data_format::quest_controller_input::right</definition>
+        <argsstring></argsstring>
+        <name>right</name>
+        <qualifiedname>ILLIXR::data_format::quest_controller_input::right</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/quest_controller.hpp" line="105" column="27" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/quest_controller.hpp" bodystart="105" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Complete Quest controller snapshot published on the <computeroutput>quest_controller</computeroutput> switchboard topic.</para>
+<para>Both hand slots are always present. An absent controller has <computeroutput>available == false</computeroutput>, invalid poses, inactive controls, and neutral values. <computeroutput>xr_sample_time</computeroutput> is the OpenXR predicted display time used to locate the poses; <computeroutput>sample_time</computeroutput> is the corresponding <ref refid="namespaceILLIXR" kindref="compound">ILLIXR</ref> clock timestamp. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>ILLIXR::data_format::quest_controller_input</label>
+        <link refid="structILLIXR_1_1data__format_1_1quest__controller__input"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ILLIXR::switchboard::event</label>
+        <link refid="classILLIXR_1_1switchboard_1_1event"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="6">
+        <label>ILLIXR::data_format::pose::pose_base</label>
+        <link refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base"/>
+      </node>
+      <node id="8">
+        <label>ILLIXR::data_format::quest_controller_axis2d</label>
+        <link refid="structILLIXR_1_1data__format_1_1quest__controller__axis2d"/>
+      </node>
+      <node id="7">
+        <label>ILLIXR::data_format::quest_controller_button</label>
+        <link refid="structILLIXR_1_1data__format_1_1quest__controller__button"/>
+      </node>
+      <node id="1">
+        <label>ILLIXR::data_format::quest_controller_input</label>
+        <link refid="structILLIXR_1_1data__format_1_1quest__controller__input"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>sample_time</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>left</edgelabel>
+          <edgelabel>right</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>ILLIXR::data_format::quest_controller_pose</label>
+        <link refid="structILLIXR_1_1data__format_1_1quest__controller__pose"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>ILLIXR::data_format::quest_hand_controller</label>
+        <link refid="structILLIXR_1_1data__format_1_1quest__hand__controller"/>
+        <childnode refid="5" relation="usage">
+          <edgelabel>aim_pose</edgelabel>
+          <edgelabel>grip_pose</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>primary</edgelabel>
+          <edgelabel>secondary</edgelabel>
+          <edgelabel>squeeze</edgelabel>
+          <edgelabel>thumbstick_click</edgelabel>
+          <edgelabel>trigger</edgelabel>
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>thumbstick</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ILLIXR::switchboard::event</label>
+        <link refid="classILLIXR_1_1switchboard_1_1event"/>
+      </node>
+      <node id="3">
+        <label>ILLIXR::time_point</label>
+        <link refid="classILLIXR_1_1time__point"/>
+      </node>
+    </collaborationgraph>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/quest_controller.hpp" line="97" column="1" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/quest_controller.hpp" bodystart="97" bodyend="106"/>
+    <listofallmembers>
+      <member refid="structILLIXR_1_1data__format_1_1quest__controller__input_1a4cab1354f0d68f4d9f5de8365aa1366d" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::quest_controller_input</scope><name>left</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1quest__controller__input_1a635c3afbb52b7c3b71453b75dfec4614" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::quest_controller_input</scope><name>right</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1quest__controller__input_1ab2a1a1f5e3a0f27c210156e6b48d5878" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::quest_controller_input</scope><name>sample_time</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1quest__controller__input_1a27f8ab1853079968216216aec99c7281" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::quest_controller_input</scope><name>sequence</name></member>
+      <member refid="classILLIXR_1_1switchboard_1_1event_1a55399aaf47bc0d3943fd89d7afb55624" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::quest_controller_input</scope><name>serialize</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1quest__controller__input_1a91b989cad53831c4a2f3326e07e97be8" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::quest_controller_input</scope><name>xr_sample_time</name></member>
+      <member refid="classILLIXR_1_1switchboard_1_1event_1a01fb51a03e9025d71087de76823e449e" prot="public" virt="virtual"><scope>ILLIXR::data_format::quest_controller_input</scope><name>~event</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

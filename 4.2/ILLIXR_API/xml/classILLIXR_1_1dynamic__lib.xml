@@ -1,0 +1,212 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classILLIXR_1_1dynamic__lib" kind="class" language="C++" prot="public">
+    <compoundname>ILLIXR::dynamic_lib</compoundname>
+    <includes refid="dynamic__lib_8hpp" local="no">dynamic_lib.hpp</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1dynamic__lib_1a9beb2bbd4fed477ecfaa12f8a6ef2eb9" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a2947c02ad28d8cf173856c9fd1b04e04" kindref="member">void_ptr</ref></type>
+        <definition>void_ptr ILLIXR::dynamic_lib::handle_</definition>
+        <argsstring></argsstring>
+        <name>handle_</name>
+        <qualifiedname>ILLIXR::dynamic_lib::handle_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/dynamic_lib.hpp" line="135" column="17" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/dynamic_lib.hpp" bodystart="135" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1dynamic__lib_1ad8da2cb75779f5b7ee1799f279cf1bf6" prot="private" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string ILLIXR::dynamic_lib::library_path_</definition>
+        <argsstring></argsstring>
+        <name>library_path_</name>
+        <qualifiedname>ILLIXR::dynamic_lib::library_path_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/dynamic_lib.hpp" line="136" column="17" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/dynamic_lib.hpp" bodystart="136" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classILLIXR_1_1dynamic__lib_1af9a2507ec525a6b50587c3fb7e575a32" prot="public" static="no" const="no" explicit="no" inline="yes" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::dynamic_lib::dynamic_lib</definition>
+        <argsstring>(dynamic_lib &amp;&amp;other) noexcept</argsstring>
+        <name>dynamic_lib</name>
+        <qualifiedname>ILLIXR::dynamic_lib::dynamic_lib</qualifiedname>
+        <param>
+          <type><ref refid="classILLIXR_1_1dynamic__lib" kindref="compound">dynamic_lib</ref> &amp;&amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/dynamic_lib.hpp" line="32" column="5" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/dynamic_lib.hpp" bodystart="32" bodyend="34"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1dynamic__lib_1a6801b7d463fbe1177d4ebb579d9e1886" prot="public" static="no" const="no" explicit="no" inline="yes" noexcept="yes" virt="non-virtual">
+        <type><ref refid="classILLIXR_1_1dynamic__lib" kindref="compound">dynamic_lib</ref> &amp;</type>
+        <definition>dynamic_lib &amp; ILLIXR::dynamic_lib::operator=</definition>
+        <argsstring>(dynamic_lib &amp;&amp;other) noexcept</argsstring>
+        <name>operator=</name>
+        <qualifiedname>ILLIXR::dynamic_lib::operator=</qualifiedname>
+        <param>
+          <type><ref refid="classILLIXR_1_1dynamic__lib" kindref="compound">dynamic_lib</ref> &amp;&amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/dynamic_lib.hpp" line="36" column="17" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/dynamic_lib.hpp" bodystart="36" bodyend="42"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1dynamic__lib_1ac6d97c0774d0146b7d8a30272a867359" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::dynamic_lib::~dynamic_lib</definition>
+        <argsstring>()</argsstring>
+        <name>~dynamic_lib</name>
+        <qualifiedname>ILLIXR::dynamic_lib::~dynamic_lib</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+<para>NDEBUG</para>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/dynamic_lib.hpp" line="44" column="5" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/dynamic_lib.hpp" bodystart="44" bodyend="50"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1dynamic__lib_1a5f48c5a75a158ad02d622f37cfdda016" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref> *</type>
+        <definition>const void * ILLIXR::dynamic_lib::operator[]</definition>
+        <argsstring>(const std::string &amp;symbol_name) const</argsstring>
+        <name>operator[]</name>
+        <qualifiedname>ILLIXR::dynamic_lib::operator[]</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> std::string &amp;</type>
+          <declname>symbol_name</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/dynamic_lib.hpp" line="104" column="16" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/dynamic_lib.hpp" bodystart="104" bodyend="121"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1dynamic__lib_1a5a4455724a3bb32277f6600500841dca" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">typename</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">T</ref></type>
+          </param>
+        </templateparamlist>
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">T</ref></type>
+        <definition>T ILLIXR::dynamic_lib::get</definition>
+        <argsstring>(const std::string &amp;symbol_name) const</argsstring>
+        <name>get</name>
+        <qualifiedname>ILLIXR::dynamic_lib::get</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> std::string &amp;</type>
+          <declname>symbol_name</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/dynamic_lib.hpp" line="124" column="7" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/dynamic_lib.hpp" bodystart="124" bodyend="128"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classILLIXR_1_1dynamic__lib_1a721f13feae90c4b5b7141b405fdfed84" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classILLIXR_1_1dynamic__lib" kindref="compound">dynamic_lib</ref></type>
+        <definition>static dynamic_lib ILLIXR::dynamic_lib::create</definition>
+        <argsstring>(const std::string &amp;path)</argsstring>
+        <name>create</name>
+        <qualifiedname>ILLIXR::dynamic_lib::create</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> std::string &amp;</type>
+          <declname>path</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/dynamic_lib.hpp" line="52" column="24" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/dynamic_lib.hpp" bodystart="52" bodyend="54"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1dynamic__lib_1a488ab93b3743bbd764f705052ed2e7ca" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classILLIXR_1_1dynamic__lib" kindref="compound">dynamic_lib</ref></type>
+        <definition>static dynamic_lib ILLIXR::dynamic_lib::create</definition>
+        <argsstring>(const std::string_view &amp;path)</argsstring>
+        <name>create</name>
+        <qualifiedname>ILLIXR::dynamic_lib::create</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> std::string_view &amp;</type>
+          <declname>path</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+<para>Keep the dynamic lib name for debugging</para>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/dynamic_lib.hpp" line="56" column="24" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/dynamic_lib.hpp" bodystart="56" bodyend="102"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classILLIXR_1_1dynamic__lib_1a110fc1e4f46e057346e11d6b18edf274" prot="private" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::dynamic_lib::dynamic_lib</definition>
+        <argsstring>(void_ptr &amp;&amp;handle, std::string lib_path=&quot;&quot;)</argsstring>
+        <name>dynamic_lib</name>
+        <qualifiedname>ILLIXR::dynamic_lib::dynamic_lib</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a2947c02ad28d8cf173856c9fd1b04e04" kindref="member">void_ptr</ref> &amp;&amp;</type>
+          <declname>handle</declname>
+        </param>
+        <param>
+          <type>std::string</type>
+          <declname>lib_path</declname>
+          <defval>&quot;&quot;</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/dynamic_lib.hpp" line="131" column="14" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/dynamic_lib.hpp" bodystart="131" bodyend="133"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/dynamic_lib.hpp" line="30" column="1" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/dynamic_lib.hpp" bodystart="30" bodyend="137"/>
+    <listofallmembers>
+      <member refid="classILLIXR_1_1dynamic__lib_1a721f13feae90c4b5b7141b405fdfed84" prot="public" virt="non-virtual"><scope>ILLIXR::dynamic_lib</scope><name>create</name></member>
+      <member refid="classILLIXR_1_1dynamic__lib_1a488ab93b3743bbd764f705052ed2e7ca" prot="public" virt="non-virtual"><scope>ILLIXR::dynamic_lib</scope><name>create</name></member>
+      <member refid="classILLIXR_1_1dynamic__lib_1af9a2507ec525a6b50587c3fb7e575a32" prot="public" virt="non-virtual"><scope>ILLIXR::dynamic_lib</scope><name>dynamic_lib</name></member>
+      <member refid="classILLIXR_1_1dynamic__lib_1a110fc1e4f46e057346e11d6b18edf274" prot="private" virt="non-virtual"><scope>ILLIXR::dynamic_lib</scope><name>dynamic_lib</name></member>
+      <member refid="classILLIXR_1_1dynamic__lib_1a5a4455724a3bb32277f6600500841dca" prot="public" virt="non-virtual"><scope>ILLIXR::dynamic_lib</scope><name>get</name></member>
+      <member refid="classILLIXR_1_1dynamic__lib_1a9beb2bbd4fed477ecfaa12f8a6ef2eb9" prot="private" virt="non-virtual"><scope>ILLIXR::dynamic_lib</scope><name>handle_</name></member>
+      <member refid="classILLIXR_1_1dynamic__lib_1ad8da2cb75779f5b7ee1799f279cf1bf6" prot="private" virt="non-virtual"><scope>ILLIXR::dynamic_lib</scope><name>library_path_</name></member>
+      <member refid="classILLIXR_1_1dynamic__lib_1a6801b7d463fbe1177d4ebb579d9e1886" prot="public" virt="non-virtual"><scope>ILLIXR::dynamic_lib</scope><name>operator=</name></member>
+      <member refid="classILLIXR_1_1dynamic__lib_1a5f48c5a75a158ad02d622f37cfdda016" prot="public" virt="non-virtual"><scope>ILLIXR::dynamic_lib</scope><name>operator[]</name></member>
+      <member refid="classILLIXR_1_1dynamic__lib_1ac6d97c0774d0146b7d8a30272a867359" prot="public" virt="non-virtual"><scope>ILLIXR::dynamic_lib</scope><name>~dynamic_lib</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

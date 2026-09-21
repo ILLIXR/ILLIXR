@@ -1,0 +1,125 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classILLIXR_1_1decode_1_1semantic__metadata__cache" kind="class" language="C++" prot="public">
+    <compoundname>ILLIXR::decode::semantic_metadata_cache</compoundname>
+    <includes refid="decoder__cache_8hpp" local="no">decoder_cache.hpp</includes>
+    <innerclass refid="structILLIXR_1_1decode_1_1semantic__metadata__cache_1_1Entry" prot="public">ILLIXR::decode::semantic_metadata_cache::Entry</innerclass>
+    <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1decode_1_1semantic__metadata__cache_1a8b398cfb17352416ca7df15ace9d26a4" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">constexpr</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">size_t</ref></type>
+        <definition>constexpr size_t ILLIXR::decode::semantic_metadata_cache::CAPACITY</definition>
+        <argsstring></argsstring>
+        <name>CAPACITY</name>
+        <qualifiedname>ILLIXR::decode::semantic_metadata_cache::CAPACITY</qualifiedname>
+        <initializer>= 256</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/decoder_cache.hpp" line="98" column="29" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/decoder_cache.hpp" bodystart="98" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1decode_1_1semantic__metadata__cache_1a271401effbba3d2cdccd4c3d57a37319" prot="private" static="no" mutable="yes">
+        <type>std::mutex</type>
+        <definition>std::mutex ILLIXR::decode::semantic_metadata_cache::mutex_</definition>
+        <argsstring></argsstring>
+        <name>mutex_</name>
+        <qualifiedname>ILLIXR::decode::semantic_metadata_cache::mutex_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/decoder_cache.hpp" line="128" column="33" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/decoder_cache.hpp" bodystart="128" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1decode_1_1semantic__metadata__cache_1ac27791b9e2b17202cc705b2ed7d7d4b3" prot="private" static="no" mutable="no">
+        <type>std::array&lt; <ref refid="structILLIXR_1_1decode_1_1semantic__metadata__cache_1_1Entry" kindref="compound">Entry</ref>, <ref refid="classILLIXR_1_1decode_1_1semantic__metadata__cache_1a8b398cfb17352416ca7df15ace9d26a4" kindref="member">CAPACITY</ref> &gt;</type>
+        <definition>std::array&lt;Entry, CAPACITY&gt; ILLIXR::decode::semantic_metadata_cache::entries_</definition>
+        <argsstring></argsstring>
+        <name>entries_</name>
+        <qualifiedname>ILLIXR::decode::semantic_metadata_cache::entries_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/decoder_cache.hpp" line="129" column="16" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/decoder_cache.hpp" bodystart="129" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1decode_1_1semantic__metadata__cache_1aced366f8ce96f4d80ecb19b5670ac3e3" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">size_t</ref></type>
+        <definition>size_t ILLIXR::decode::semantic_metadata_cache::next_slot_</definition>
+        <argsstring></argsstring>
+        <name>next_slot_</name>
+        <qualifiedname>ILLIXR::decode::semantic_metadata_cache::next_slot_</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/decoder_cache.hpp" line="130" column="33" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/decoder_cache.hpp" bodystart="130" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classILLIXR_1_1decode_1_1semantic__metadata__cache_1aaee79f977aa5b7c87cd7d6d787a85071" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void ILLIXR::decode::semantic_metadata_cache::store</definition>
+        <argsstring>(int32_t frame_number, const switchboard::ptr&lt; const data_format::semantic_frame &gt; &amp;frame)</argsstring>
+        <name>store</name>
+        <qualifiedname>ILLIXR::decode::semantic_metadata_cache::store</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int32_t</ref></type>
+          <declname>frame_number</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="classILLIXR_1_1switchboard_1af91c1b9436918512e95e5fa8553846a7" kindref="member">switchboard::ptr</ref>&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="structILLIXR_1_1data__format_1_1semantic__frame" kindref="compound">data_format::semantic_frame</ref> &gt; &amp;</type>
+          <declname>frame</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/decoder_cache.hpp" line="107" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/decoder_cache.hpp" bodystart="107" bodyend="114"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1decode_1_1semantic__metadata__cache_1a2df7ba3c22fd0ad2e64ce747aa522975" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::optional&lt; <ref refid="structILLIXR_1_1decode_1_1semantic__metadata__cache_1_1Entry" kindref="compound">Entry</ref> &gt;</type>
+        <definition>std::optional&lt; Entry &gt; ILLIXR::decode::semantic_metadata_cache::find</definition>
+        <argsstring>(int32_t frame_number) const</argsstring>
+        <name>find</name>
+        <qualifiedname>ILLIXR::decode::semantic_metadata_cache::find</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int32_t</ref></type>
+          <declname>frame_number</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/decoder_cache.hpp" line="118" column="19" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/decoder_cache.hpp" bodystart="118" bodyend="125"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/decoder_cache.hpp" line="96" column="1" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/decoder_cache.hpp" bodystart="96" bodyend="131"/>
+    <listofallmembers>
+      <member refid="classILLIXR_1_1decode_1_1semantic__metadata__cache_1a8b398cfb17352416ca7df15ace9d26a4" prot="public" virt="non-virtual"><scope>ILLIXR::decode::semantic_metadata_cache</scope><name>CAPACITY</name></member>
+      <member refid="classILLIXR_1_1decode_1_1semantic__metadata__cache_1ac27791b9e2b17202cc705b2ed7d7d4b3" prot="private" virt="non-virtual"><scope>ILLIXR::decode::semantic_metadata_cache</scope><name>entries_</name></member>
+      <member refid="classILLIXR_1_1decode_1_1semantic__metadata__cache_1a2df7ba3c22fd0ad2e64ce747aa522975" prot="public" virt="non-virtual"><scope>ILLIXR::decode::semantic_metadata_cache</scope><name>find</name></member>
+      <member refid="classILLIXR_1_1decode_1_1semantic__metadata__cache_1a271401effbba3d2cdccd4c3d57a37319" prot="private" virt="non-virtual"><scope>ILLIXR::decode::semantic_metadata_cache</scope><name>mutex_</name></member>
+      <member refid="classILLIXR_1_1decode_1_1semantic__metadata__cache_1aced366f8ce96f4d80ecb19b5670ac3e3" prot="private" virt="non-virtual"><scope>ILLIXR::decode::semantic_metadata_cache</scope><name>next_slot_</name></member>
+      <member refid="classILLIXR_1_1decode_1_1semantic__metadata__cache_1aaee79f977aa5b7c87cd7d6d787a85071" prot="public" virt="non-virtual"><scope>ILLIXR::decode::semantic_metadata_cache</scope><name>store</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

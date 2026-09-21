@@ -1,0 +1,154 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structILLIXR_1_1data__format_1_1pose_1_1head__pose__data" kind="struct" language="C++" prot="public">
+    <compoundname>ILLIXR::data_format::pose::head_pose_data</compoundname>
+    <basecompoundref refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base" prot="public" virt="non-virtual">ILLIXR::data_format::pose::pose_base</basecompoundref>
+    <derivedcompoundref refid="structILLIXR_1_1data__format_1_1pose_1_1head__pose__type" prot="public" virt="non-virtual">ILLIXR::data_format::pose::head_pose_type</derivedcompoundref>
+    <includes refid="poses_2head__pose_8hpp" local="no">head_pose.hpp</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1pose_1_1head__pose__data_1a3cab156f14c58495f244b1bd6b0f2c6d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::pose::head_pose_data::head_pose_data</definition>
+        <argsstring>()=default</argsstring>
+        <name>head_pose_data</name>
+        <qualifiedname>ILLIXR::data_format::pose::head_pose_data::head_pose_data</qualifiedname>
+        <briefdescription>
+<para>Default constructor. Produces an invalid, zero-translation, identity-rotation pose. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/head_pose.hpp" line="40" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1pose_1_1head__pose__data_1ae1b621fb9dedcf4bff4cce82b6a639f3" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::pose::head_pose_data::head_pose_data</definition>
+        <argsstring>(Eigen::Vector3f position_, Eigen::Quaternionf orientation_, bool valid_=true, const float confidence_=0.)</argsstring>
+        <name>head_pose_data</name>
+        <qualifiedname>ILLIXR::data_format::pose::head_pose_data::head_pose_data</qualifiedname>
+        <param>
+          <type>Eigen::Vector3f</type>
+          <declname>position_</declname>
+        </param>
+        <param>
+          <type>Eigen::Quaternionf</type>
+          <declname>orientation_</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+          <declname>valid_</declname>
+          <defval><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">true</ref></defval>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">float</ref></type>
+          <declname>confidence_</declname>
+          <defval>0.</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Create an instance based on the given data <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>position_</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The positional part of the pose </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>orientation_</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>RThe rotational part of the pose </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>valid_</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The validity of the pose, default is true </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>frm</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The reference frame, default is RIGHT_HANDED_Y_UP </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>ref</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The reference space, default is VIEWER </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>confidence_</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The confidence of the pose (0..1, where 0 means no confidence) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/head_pose.hpp" line="51" column="5" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/head_pose.hpp" bodystart="51" bodyend="52"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>ILLIXR::data_format::pose::head_pose_data</label>
+        <link refid="structILLIXR_1_1data__format_1_1pose_1_1head__pose__data"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>ILLIXR::data_format::pose::head_pose_type</label>
+        <link refid="structILLIXR_1_1data__format_1_1pose_1_1head__pose__type"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ILLIXR::data_format::pose::pose_base</label>
+        <link refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>ILLIXR::data_format::pose::head_pose_data</label>
+        <link refid="structILLIXR_1_1data__format_1_1pose_1_1head__pose__data"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ILLIXR::data_format::pose::pose_base</label>
+        <link refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base"/>
+      </node>
+    </collaborationgraph>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/head_pose.hpp" line="36" column="1" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/head_pose.hpp" bodystart="36" bodyend="53"/>
+    <listofallmembers>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base_1a9b80e3d93ddc6cbd7f3da881c2eaa9e1" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::pose::head_pose_data</scope><name>confidence</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1head__pose__data_1a3cab156f14c58495f244b1bd6b0f2c6d" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::pose::head_pose_data</scope><name>head_pose_data</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1head__pose__data_1ae1b621fb9dedcf4bff4cce82b6a639f3" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::pose::head_pose_data</scope><name>head_pose_data</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base_1a558ab50ec1a11773056fef096f829163" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::pose::head_pose_data</scope><name>orientation</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base_1a14436a8d00a4b0dcb980c11b336ee309" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::pose::head_pose_data</scope><name>pose_base</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base_1a40db7332956eb7aba9c1a0c145acb8f1" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::pose::head_pose_data</scope><name>pose_base</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base_1a1ca6c892b6a46a99ef309f8858a703b6" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::pose::head_pose_data</scope><name>position</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base_1aea4c9c210ee8b52c1e0326b662553f4d" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::pose::head_pose_data</scope><name>update</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base_1ab7511efb54fbb7835cfb69d95c2b2d87" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::pose::head_pose_data</scope><name>valid</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

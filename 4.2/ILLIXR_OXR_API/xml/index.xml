@@ -1,0 +1,294 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygenindex xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="index.xsd" version="1.9.8" xml:lang="en-US">
+  <compound refid="structILLIXR_1_1data__format_1_1pose_1_1combined__pose" kind="struct"><name>ILLIXR::data_format::pose::combined_pose</name>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1combined__pose_1affc470af8ba907c4cee1e46d8da83feb" kind="variable"><name>head_pose</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1combined__pose_1a86ffcc94bfbbe9fd277524a4ca5277a3" kind="variable"><name>hand_poses</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1combined__pose_1af487b5f8a8e704503997d4193f959cfe" kind="variable"><name>palm_poses</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1combined__pose_1a391722c7045cefa197b77d449f319a0b" kind="variable"><name>hand_interactions</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1combined__pose_1ae16bf2bce8f6233378e0e1851afc2c4e" kind="variable"><name>valid_data</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1combined__pose_1a85872a98edd38b7a5737d5484a5bc485" kind="variable"><name>id</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1combined__pose_1ad33f93a244d95621967e5f78ef2e7e3a" kind="variable"><name>pose_xr_time_ns</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1combined__pose_1a9fc86421ed11e3a3f75ec5fef177e50a" kind="variable"><name>xr_to_monotonic_offset_ns</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1combined__pose_1a2a98202be8d396f3e9bcc31e73706070" kind="variable"><name>monotonic_to_system_offset_ns</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1combined__pose_1a6328639b097fe847b4967b30b3e366a9" kind="variable"><name>smoothed_clock_offset_ns</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1combined__pose_1abe9510118332fcd82c297ea0b5f5812d" kind="variable"><name>smoothed_rtt_ns</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1combined__pose_1aaa888ccf1298fff18785c468c7c7bdf2" kind="function"><name>combined_pose</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1combined__pose_1a4cb707733796d4a11f1c53f67abe463a" kind="function"><name>combined_pose</name></member>
+  </compound>
+  <compound refid="structILLIXR_1_1data__format_1_1pose_1_1fast__head__pose__type" kind="struct"><name>ILLIXR::data_format::pose::fast_head_pose_type</name>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1fast__head__pose__type_1adf0c2095e1dc3e7c714edfe315341f59" kind="variable"><name>pose</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1fast__head__pose__type_1a326e9365e74a3f508dbd3a3a4fff8aef" kind="variable"><name>predict_computed_time</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1fast__head__pose__type_1ae300ff7522e8858be0a16f6473fef66f" kind="variable"><name>predict_target_time</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1fast__head__pose__type_1a1d29754cc365af5ffe0f6d77170c5c9b" kind="function"><name>fast_head_pose_type</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1fast__head__pose__type_1ae9915e8e1fb417bee0e0e2f2bb2f1e74" kind="function"><name>fast_head_pose_type</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1fast__head__pose__type_1a6eecf9389acd3ee2807cdaaf9454b312" kind="function"><name>is_valid</name></member>
+  </compound>
+  <compound refid="structILLIXR_1_1data__format_1_1pose_1_1hand__interaction__pose" kind="struct"><name>ILLIXR::data_format::pose::hand_interaction_pose</name>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1hand__interaction__pose_1aa400f35a13b9128eca7345161c47f5f4" kind="variable"><name>value</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1hand__interaction__pose_1a1b06a17a16bddc019f433c4682f8062a" kind="variable"><name>ready</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1hand__interaction__pose_1a0ee8f313b748aab0390f5955137ca5ae" kind="variable"><name>predicted_time</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1hand__interaction__pose_1a9e545cf72bbd857b4686c0f573ebf4b4" kind="function"><name>hand_interaction_pose</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1hand__interaction__pose_1a75983e5dc49b206939b20cb102444ceb" kind="function"><name>hand_interaction_pose</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1hand__interaction__pose_1a2472b4f1eba267f6f369bc52a7b6c167" kind="function"><name>hand_interaction_pose</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1hand__interaction__pose_1a0011416b47e419de2375193624841902" kind="function"><name>update</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1hand__interaction__pose_1a8cd2325996c54e703125222cbf1655b1" kind="function"><name>valid</name></member>
+  </compound>
+  <compound refid="structILLIXR_1_1data__format_1_1pose_1_1hand__interaction__poses" kind="struct"><name>ILLIXR::data_format::pose::hand_interaction_poses</name>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1hand__interaction__poses_1a41a8487af8059ddd9b6b4c214fbf6f4d" kind="variable"><name>poses</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1hand__interaction__poses_1a33bdc73978079475fa8894bc5fd6298b" kind="function"><name>hand_interaction_poses</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1hand__interaction__poses_1a63359ece44998a7d5ef9446a1c6235d0" kind="function"><name>hand_interaction_poses</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1hand__interaction__poses_1ab6b57ef35c0cb51332f4a96d54a55d83" kind="function"><name>operator[]</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1hand__interaction__poses_1a37ca8eec3542d20196357917dd87b398" kind="function"><name>at</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1hand__interaction__poses_1ab3e8ce5e918526dc436bb1bc0df4ad76" kind="function"><name>is_valid</name></member>
+  </compound>
+  <compound refid="structILLIXR_1_1data__format_1_1pose_1_1hand__interaction__poses__pair" kind="struct"><name>ILLIXR::data_format::pose::hand_interaction_poses_pair</name>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1hand__interaction__poses__pair_1ab3e09d506bcef29f1c929587931d2119" kind="variable"><name>hands</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1hand__interaction__poses__pair_1a66cc002979bed3fd139e84ca11ce7f15" kind="variable"><name>sensor_time</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1hand__interaction__poses__pair_1ad8502078e3c490308b3cf960b7fd071d" kind="function"><name>hand_interaction_poses_pair</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1hand__interaction__poses__pair_1a9f475f7b33020185d7d88cd0190ffbbc" kind="function"><name>hand_interaction_poses_pair</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1hand__interaction__poses__pair_1a3dd33627e295ffed014d88013b07f2f5" kind="function"><name>is_valid</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1hand__interaction__poses__pair_1a26821d96a1e2fbb50c80b293d0ecdad5" kind="function"><name>operator[]</name></member>
+  </compound>
+  <compound refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__pose" kind="struct"><name>ILLIXR::data_format::pose::hand_joint_pose</name>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__pose_1ac6a3188e1181760314c53fe9c9174cf2" kind="variable"><name>relation</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__pose_1a36cf86323b4b8586b1e848320aac05cf" kind="variable"><name>radius</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__pose_1a4ecb42de4c1a905e530b2e7955e40a0e" kind="function"><name>hand_joint_pose</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__pose_1a423b84118b44d6a6132f5a6db395876a" kind="function"><name>hand_joint_pose</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__pose_1a5ce21c11448af8c324d2d72bc00679f1" kind="function"><name>hand_joint_pose</name></member>
+  </compound>
+  <compound refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses" kind="struct"><name>ILLIXR::data_format::pose::hand_joint_poses</name>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses_1aee831378be972fed45380e5dda6a1b8c" kind="variable"><name>joints</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses_1ab1e94f6298426bf927b59451408c7f66" kind="variable"><name>is_active</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses_1a5e6dd3ba892d1c4680efc751105f6d29" kind="function"><name>hand_joint_poses</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses_1ab5ae7b89fa4b23230f19544d3197f17f" kind="function"><name>update</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses_1ab7c3f515f6afceeb2212cc75f10a8c1d" kind="function"><name>hand_joint_poses</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses_1a1617a260fffc91068a32a221a7030abb" kind="function"><name>operator[]</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses_1a56ccb571c592ed37d38fc01a13344edd" kind="function"><name>operator[]</name></member>
+  </compound>
+  <compound refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses__pair" kind="struct"><name>ILLIXR::data_format::pose::hand_joint_poses_pair</name>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses__pair_1ac07c74438ddb0768ca077e3c464f36a2" kind="variable"><name>hands</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses__pair_1a098a561877bcd1cc167fd9e07963b010" kind="variable"><name>sensor_time</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses__pair_1af829f4b76c008199cf9c4a001dd61825" kind="function"><name>hand_joint_poses_pair</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses__pair_1a769d0c34b6a9f984452a920337a95dc0" kind="function"><name>hand_joint_poses_pair</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses__pair_1ab30557903750217c9f8d0aea4fff54ee" kind="function"><name>has_hands</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__poses__pair_1a53c924e7c34efb6c78afed3d9155387b" kind="function"><name>operator[]</name></member>
+  </compound>
+  <compound refid="structILLIXR_1_1data__format_1_1pose_1_1palm__pose" kind="struct"><name>ILLIXR::data_format::pose::palm_pose</name>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1palm__pose_1a5cb4f5060f2b3b3f4589d48a77641177" kind="function"><name>is_valid</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1palm__pose_1a4556e89afc1c9105de4a8d91cb73aa2c" kind="function"><name>update</name></member>
+  </compound>
+  <compound refid="structILLIXR_1_1data__format_1_1pose_1_1palm__poses__pair" kind="struct"><name>ILLIXR::data_format::pose::palm_poses_pair</name>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1palm__poses__pair_1a14aa0846503e188d9da7f95e47207c7f" kind="variable"><name>hands</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1palm__poses__pair_1ab17717b488a254f201e2ce2f9a2ee090" kind="variable"><name>sensor_time</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1palm__poses__pair_1aae18f083ad3d0876c214522a1dbe398a" kind="function"><name>palm_poses_pair</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1palm__poses__pair_1aff8a979a399e446e842cc5084e8059ff" kind="function"><name>palm_poses_pair</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1palm__poses__pair_1a5e02a5cd3916340640919a710508004a" kind="function"><name>is_valid</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1palm__poses__pair_1a3eaa4506ab62c201c47699bbcc1f7944" kind="function"><name>operator[]</name></member>
+  </compound>
+  <compound refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base" kind="struct"><name>ILLIXR::data_format::pose::pose_base</name>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base_1a14436a8d00a4b0dcb980c11b336ee309" kind="function"><name>pose_base</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base_1a417cca128b6008fca6b552e50746a5cc" kind="function"><name>pose_base</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base_1a3af798f8e0976537ee01382b3e44910b" kind="function"><name>pose_base</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base_1ac1e915c344612a6ba033883a461490ef" kind="function"><name>update</name></member>
+  </compound>
+  <compound refid="structILLIXR_1_1data__format_1_1pose_1_1texture__pose" kind="struct"><name>ILLIXR::data_format::pose::texture_pose</name>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1texture__pose_1ad1f21267db33045eb979ffd908ee217e" kind="variable"><name>offload_duration</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1texture__pose_1ae3c941089c7194e97b634779f8bd59fb" kind="variable"><name>image</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1texture__pose_1a78e0daf4211d87d67442744830bf4e1f" kind="variable"><name>pose_time</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1texture__pose_1a32186dd4acc4077b65316d355a3f7794" kind="variable"><name>position</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1texture__pose_1a58898f4e552400b80ed2fefc7635f26f" kind="variable"><name>latest_quaternion</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1texture__pose_1a8671d997c521b432b32367d8bbe4b6f1" kind="variable"><name>render_quaternion</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1texture__pose_1a5a2378d9474e20c6f958ba3e760dc298" kind="function"><name>texture_pose</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1texture__pose_1a9fa5cbea18fd604c07d75e4dbe72df77" kind="function"><name>texture_pose</name></member>
+  </compound>
+  <compound refid="structILLIXR_1_1data__format_1_1pose_1_1xrt__space__relation" kind="struct"><name>ILLIXR::data_format::pose::xrt_space_relation</name>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1xrt__space__relation_1a02955255368097b3cdd49ca8651a5eab" kind="variable"><name>relation_flags</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1xrt__space__relation_1a0cff14cc81cd5dd27151dce0bb0632b9" kind="variable"><name>pose</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1xrt__space__relation_1a67fc9e6e7fc117dd5a393794b9d1df50" kind="variable"><name>linear_velocity</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1xrt__space__relation_1a3ef1fdf58723fd642b5bbdff4c54645d" kind="variable"><name>angular_velocity</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1xrt__space__relation_1a0b8644408a512e4f983fb8d56ccb841c" kind="function"><name>set_flags</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1xrt__space__relation_1aabc7b9783ea1003a4facf7c40440b324" kind="function"><name>set_flags</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1xrt__space__relation_1a74f652484d296234ab31f51b4ce8c27e" kind="function"><name>xrt_space_relation</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1xrt__space__relation_1ab065bafa0c9f4ea396b2e496fffa4cf1" kind="function"><name>xrt_space_relation</name></member>
+    <member refid="structILLIXR_1_1data__format_1_1pose_1_1xrt__space__relation_1ae7be657315a0b3685b067606c73619ff" kind="function"><name>valid</name></member>
+  </compound>
+  <compound refid="namespaceboost" kind="namespace"><name>boost</name>
+  </compound>
+  <compound refid="namespaceboost_1_1serialization" kind="namespace"><name>boost::serialization</name>
+    <member refid="namespaceboost_1_1serialization_1ad190099ace7813108c601872bfa3d086" kind="function"><name>serialize</name></member>
+    <member refid="namespaceboost_1_1serialization_1a8e02c5b551703b9b67779c8ed0b005c1" kind="function"><name>save</name></member>
+    <member refid="namespaceboost_1_1serialization_1a6d6545471ef9816bd958cdd2e4952830" kind="function"><name>load</name></member>
+    <member refid="namespaceboost_1_1serialization_1a25d2ed04ca161e374bea644691ebaacf" kind="function"><name>serialize</name></member>
+    <member refid="namespaceboost_1_1serialization_1aafbc6df294a5543163fa2dd650066c1f" kind="function"><name>save</name></member>
+    <member refid="namespaceboost_1_1serialization_1a02ea3227bc87ee954381d8a7d8777bb7" kind="function"><name>load</name></member>
+    <member refid="namespaceboost_1_1serialization_1ab4805e16f6e5473051e48ef1b9e72d95" kind="function"><name>serialize</name></member>
+    <member refid="namespaceboost_1_1serialization_1aaa06099168db58cf49711a439d3d9116" kind="function"><name>serialize</name></member>
+    <member refid="namespaceboost_1_1serialization_1aee279cf0c57f154de7354b16d573bef2" kind="function"><name>serialize</name></member>
+    <member refid="namespaceboost_1_1serialization_1a29391818420bd9bfadffcd3b6d72b742" kind="function"><name>serialize</name></member>
+    <member refid="namespaceboost_1_1serialization_1adf8c97c222b376f291097adcc6dc1843" kind="function"><name>serialize</name></member>
+    <member refid="namespaceboost_1_1serialization_1a25d12b1337df195d1775296c8984d0ee" kind="function"><name>serialize</name></member>
+    <member refid="namespaceboost_1_1serialization_1a781d1791e35ed9fbca7bf81d10c7e2bb" kind="function"><name>serialize</name></member>
+    <member refid="namespaceboost_1_1serialization_1afe9c743d0976a97430e9582c60c79618" kind="function"><name>serialize</name></member>
+    <member refid="namespaceboost_1_1serialization_1a653de6a591ed42e0c4cc69b53015d5a3" kind="function"><name>serialize</name></member>
+    <member refid="namespaceboost_1_1serialization_1a381b473bd1c1172933a9f4de6ee1bf74" kind="function"><name>serialize</name></member>
+    <member refid="namespaceboost_1_1serialization_1a1c092987e16925cc12a1a1d40f84a24b" kind="function"><name>serialize</name></member>
+    <member refid="namespaceboost_1_1serialization_1a1ce922d5115eb160937c434ead07eb35" kind="function"><name>serialize</name></member>
+    <member refid="namespaceboost_1_1serialization_1a7569e70d7812ba39e64bbe555c931fb9" kind="function"><name>serialize</name></member>
+    <member refid="namespaceboost_1_1serialization_1a1bdd2b745c6e223cab5587e9bae7f455" kind="function"><name>serialize</name></member>
+    <member refid="namespaceboost_1_1serialization_1a882d0c82b875783807a68b8c1894e335" kind="function"><name>serialize</name></member>
+    <member refid="namespaceboost_1_1serialization_1a390a498ca2226767de74afeffeee255e" kind="function"><name>serialize</name></member>
+    <member refid="namespaceboost_1_1serialization_1a31449b05924111669cc53902201e631d" kind="function"><name>serialize</name></member>
+    <member refid="namespaceboost_1_1serialization_1acd51f0a77398949a4025a0dd57b4cdff" kind="function"><name>serialize</name></member>
+    <member refid="namespaceboost_1_1serialization_1a10b811a04d29670d26792002d9076f96" kind="function"><name>serialize</name></member>
+    <member refid="namespaceboost_1_1serialization_1a68f006db6b01827d7c3c128237a8328f" kind="function"><name>serialize</name></member>
+    <member refid="namespaceboost_1_1serialization_1a1a71c00959bd27ac9a6f11b83aaede87" kind="function"><name>serialize</name></member>
+    <member refid="namespaceboost_1_1serialization_1a0873e98a142dacd9fabc77b5c0226c55" kind="function"><name>serialize</name></member>
+    <member refid="namespaceboost_1_1serialization_1a9ab9c194ac7a5f6e4a04d52f26be1466" kind="function"><name>serialize</name></member>
+    <member refid="namespaceboost_1_1serialization_1a3f83f33cae636b211c9ce0c7c4917148" kind="function"><name>serialize</name></member>
+    <member refid="namespaceboost_1_1serialization_1ae4d76cb5d11ec898693c9774671ad254" kind="function"><name>serialize</name></member>
+    <member refid="namespaceboost_1_1serialization_1a468c6a9b9513946f8c0138510d89af70" kind="function"><name>serialize</name></member>
+    <member refid="namespaceboost_1_1serialization_1a85e566f4f6f290f123f716229cc9071e" kind="function"><name>serialize</name></member>
+    <member refid="namespaceboost_1_1serialization_1a5c9e365d8a645892b280e475a0e30d5d" kind="function"><name>serialize</name></member>
+    <member refid="namespaceboost_1_1serialization_1a1e0b3a341bd5bb5f6c97121e3eebab38" kind="function"><name>serialize</name></member>
+    <member refid="namespaceboost_1_1serialization_1a41f25c7fe7b0ff8833abd9924d282351" kind="function"><name>serialize</name></member>
+    <member refid="namespaceboost_1_1serialization_1acfdd49c62a35d8311ca5237e1f516349" kind="function"><name>serialize</name></member>
+  </compound>
+  <compound refid="namespaceILLIXR" kind="namespace"><name>ILLIXR</name>
+  </compound>
+  <compound refid="namespaceILLIXR_1_1data__format" kind="namespace"><name>ILLIXR::data_format</name>
+  </compound>
+  <compound refid="namespaceILLIXR_1_1data__format_1_1pose" kind="namespace"><name>ILLIXR::data_format::pose</name>
+    <member refid="namespaceILLIXR_1_1data__format_1_1pose_1afb7c1587b19b7ce9629d9acaaf97b752" kind="enum"><name>interaction_pose_type</name></member>
+    <member refid="namespaceILLIXR_1_1data__format_1_1pose_1afb7c1587b19b7ce9629d9acaaf97b752a7a3b6319700511fdad2462e988c6c4f8" kind="enumvalue"><name>AIM</name></member>
+    <member refid="namespaceILLIXR_1_1data__format_1_1pose_1afb7c1587b19b7ce9629d9acaaf97b752a0e17124f0349a79aa9e1385ce12a6188" kind="enumvalue"><name>GRIP</name></member>
+    <member refid="namespaceILLIXR_1_1data__format_1_1pose_1afb7c1587b19b7ce9629d9acaaf97b752a29f6ff1faa0faf795922d37feb8f9211" kind="enumvalue"><name>PINCH</name></member>
+    <member refid="namespaceILLIXR_1_1data__format_1_1pose_1afb7c1587b19b7ce9629d9acaaf97b752abac7c1ba5e66baa8ec2450d70752deb4" kind="enumvalue"><name>POKE</name></member>
+    <member refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3" kind="enum"><name>joint</name></member>
+    <member refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3accd55f74826c585687441d270077c4c4" kind="enumvalue"><name>PALM</name></member>
+    <member refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3ad1e2a641a69f763b16c13a8d0b41c14a" kind="enumvalue"><name>WRIST</name></member>
+    <member refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3acedc309f8a9263d0cfedc743b9e84d65" kind="enumvalue"><name>THUMB_METACARPAL</name></member>
+    <member refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3ac11a5e74be9e743ac5708c372d9065c3" kind="enumvalue"><name>THUMB_PROXIMAL</name></member>
+    <member refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3ab0da229a7517bdb47416add8c2398c9a" kind="enumvalue"><name>THUMB_DISTAL</name></member>
+    <member refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3a60517c9a8daaa4d8aa6bbb570d759adb" kind="enumvalue"><name>THUMB_TIP</name></member>
+    <member refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3a931a292ae631dffeec3d6fd39326e5fc" kind="enumvalue"><name>INDEX_METACARPAL</name></member>
+    <member refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3add954522bd403367045b2971e7dcc66d" kind="enumvalue"><name>INDEX_PROXIMAL</name></member>
+    <member refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3aac8c45dcadf468397017516b6c47dc2b" kind="enumvalue"><name>INDEX_INTERMEDIATE</name></member>
+    <member refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3a4ddfab3dea0c7ab2508e8083866fa3b3" kind="enumvalue"><name>INDEX_DISTAL</name></member>
+    <member refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3aa82f40fd50ac68be09728ba3d64d5d43" kind="enumvalue"><name>INDEX_TIP</name></member>
+    <member refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3a2aa614267a9b60f41f98cd0f9317a569" kind="enumvalue"><name>MIDDLE_METACARPAL</name></member>
+    <member refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3a0179c4d67653bb4f8314f7675b6ed42f" kind="enumvalue"><name>MIDDLE_PROXIMAL</name></member>
+    <member refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3a4955fbc468e242b391352264ec435c99" kind="enumvalue"><name>MIDDLE_INTERMEDIATE</name></member>
+    <member refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3aaa64b6e384b8d52888a592586c08eef1" kind="enumvalue"><name>MIDDLE_DISTAL</name></member>
+    <member refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3a70e9ca5dd46d92f6c0348b845447f8e1" kind="enumvalue"><name>MIDDLE_TIP</name></member>
+    <member refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3a1e27bd179064c3a2fb898d9aa023e772" kind="enumvalue"><name>RING_METACARPAL</name></member>
+    <member refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3a5d56f8a1da31ca4fd9d845f32c4bca8d" kind="enumvalue"><name>RING_PROXIMAL</name></member>
+    <member refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3aac965c033d7e3fbc2bf029a5cb2c54d7" kind="enumvalue"><name>RING_INTERMEDIATE</name></member>
+    <member refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3ab97de1d50ae49ac92904dd3ec6ea108a" kind="enumvalue"><name>RING_DISTAL</name></member>
+    <member refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3af7393a74cf63282e7d44038ceac5fba3" kind="enumvalue"><name>RING_TIP</name></member>
+    <member refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3aec5a32fac9f52014a7f82714c1d5af6a" kind="enumvalue"><name>LITTLE_METACARPAL</name></member>
+    <member refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3a445bb8db2edb3e2bf363a9356c86a26c" kind="enumvalue"><name>LITTLE_PROXIMAL</name></member>
+    <member refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3a9ed99ee037f2a3c45acd0e212b8edde4" kind="enumvalue"><name>LITTLE_INTERMEDIATE</name></member>
+    <member refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3ab2f1a27c9e9f4da0404c990f8064a6ef" kind="enumvalue"><name>LITTLE_DISTAL</name></member>
+    <member refid="namespaceILLIXR_1_1data__format_1_1pose_1a21a1c59bb108acae49c573db5220b0b3a6392b675c500f3c737a9b429ed38485d" kind="enumvalue"><name>LITTLE_TIP</name></member>
+    <member refid="namespaceILLIXR_1_1data__format_1_1pose_1ad3869eb29690430b63a54e860a3937e5" kind="enum"><name>xrt_space_relation_flags</name></member>
+    <member refid="namespaceILLIXR_1_1data__format_1_1pose_1ad3869eb29690430b63a54e860a3937e5a403d24106a062c580e623632ee582436" kind="enumvalue"><name>XRT_SPACE_RELATION_ORIENTATION_VALID_BIT</name></member>
+    <member refid="namespaceILLIXR_1_1data__format_1_1pose_1ad3869eb29690430b63a54e860a3937e5ac915b3662518b269623ea104c6592e70" kind="enumvalue"><name>XRT_SPACE_RELATION_POSITION_VALID_BIT</name></member>
+    <member refid="namespaceILLIXR_1_1data__format_1_1pose_1ad3869eb29690430b63a54e860a3937e5a2c8c3ea1f4013244530ef6446018c30b" kind="enumvalue"><name>XRT_SPACE_RELATION_LINEAR_VELOCITY_VALID_BIT</name></member>
+    <member refid="namespaceILLIXR_1_1data__format_1_1pose_1ad3869eb29690430b63a54e860a3937e5a5ef7e8f4f5da3be8fb80258dc8a644db" kind="enumvalue"><name>XRT_SPACE_RELATION_ANGULAR_VELOCITY_VALID_BIT</name></member>
+    <member refid="namespaceILLIXR_1_1data__format_1_1pose_1ad3869eb29690430b63a54e860a3937e5a741337fa263cf6f597c5d7873eeb2fbb" kind="enumvalue"><name>XRT_SPACE_RELATION_ORIENTATION_TRACKED_BIT</name></member>
+    <member refid="namespaceILLIXR_1_1data__format_1_1pose_1ad3869eb29690430b63a54e860a3937e5a3d563e842274ef99db1ab8abb0ad13a1" kind="enumvalue"><name>XRT_SPACE_RELATION_POSITION_TRACKED_BIT</name></member>
+    <member refid="namespaceILLIXR_1_1data__format_1_1pose_1ad3869eb29690430b63a54e860a3937e5a3e18530e5be7f7aadc90ecf860907d16" kind="enumvalue"><name>XRT_SPACE_RELATION_BITMASK_ALL</name></member>
+    <member refid="namespaceILLIXR_1_1data__format_1_1pose_1ad3869eb29690430b63a54e860a3937e5a6364c3fed3e8a9cffc99299d76e94420" kind="enumvalue"><name>XRT_SPACE_RELATION_BITMASK_NONE</name></member>
+    <member refid="namespaceILLIXR_1_1data__format_1_1pose_1a32b031315a1ac6a41a1033c10c02f372" kind="enum"><name>side</name></member>
+    <member refid="namespaceILLIXR_1_1data__format_1_1pose_1a32b031315a1ac6a41a1033c10c02f372a362edc549a08e94007634bdf2dd5274f" kind="enumvalue"><name>LEFT</name></member>
+    <member refid="namespaceILLIXR_1_1data__format_1_1pose_1a32b031315a1ac6a41a1033c10c02f372a2ff363d8128801252a0b35d81d98dd85" kind="enumvalue"><name>RIGHT</name></member>
+    <member refid="namespaceILLIXR_1_1data__format_1_1pose_1a35bce4e4fdcff8b5199df49927ec2182" kind="typedef"><name>head_pose_data</name></member>
+    <member refid="namespaceILLIXR_1_1data__format_1_1pose_1aef5b9b48867d32c8aa1820d030fdfc9a" kind="typedef"><name>head_pose_type</name></member>
+    <member refid="namespaceILLIXR_1_1data__format_1_1pose_1a6a6cd747f1ffb6125c8d50d5bc6261a8" kind="typedef"><name>head_pose_map</name></member>
+    <member refid="namespaceILLIXR_1_1data__format_1_1pose_1a17cd753c6f1c8544993eb65dacd942f5" kind="typedef"><name>multi_pose_map</name></member>
+    <member refid="namespaceILLIXR_1_1data__format_1_1pose_1ab2459ef33faed4f17886dca210803a37" kind="variable"><name>HEAD_TRACKED</name></member>
+    <member refid="namespaceILLIXR_1_1data__format_1_1pose_1a7118c3f30d19f3bde81feaa8ac2b1cd3" kind="variable"><name>HANDS_TRACKED</name></member>
+    <member refid="namespaceILLIXR_1_1data__format_1_1pose_1a2f1d5d2ebd2c31530634c79367473af0" kind="variable"><name>PALMS_TRACKED</name></member>
+    <member refid="namespaceILLIXR_1_1data__format_1_1pose_1aeeb43641376240fe91a4ff59d8f081bf" kind="variable"><name>INTERACTIONS_TRACKED</name></member>
+    <member refid="namespaceILLIXR_1_1data__format_1_1pose_1a16603d70ecde3f84f24c9a3418c078b2" kind="variable"><name>NUM_INTERACTION_POSES</name></member>
+    <member refid="namespaceILLIXR_1_1data__format_1_1pose_1a73483787c721e44ca3491338928b3e6c" kind="function"><name>non_primary</name></member>
+  </compound>
+  <compound refid="namespaceILLIXR_1_1detail" kind="namespace"><name>ILLIXR::detail</name>
+    <member refid="namespaceILLIXR_1_1detail_1ac14530c9d83051e42880c34e5f5b8745" kind="variable"><name>kMaxBobaOverlayFloats</name></member>
+    <member refid="namespaceILLIXR_1_1detail_1a83dba0acc4e6f9cf8c044883fbabd002" kind="variable"><name>kMaxBobaModalTextureBytes</name></member>
+    <member refid="namespaceILLIXR_1_1detail_1a270a53e63d20e59579fd2fece6d8d2cc" kind="function"><name>save_sized_vector</name></member>
+    <member refid="namespaceILLIXR_1_1detail_1a208d908f07c8301ff1dca6d715a70114" kind="function"><name>load_sized_vector</name></member>
+    <member refid="namespaceILLIXR_1_1detail_1a836e8afbe3c0a51e8011812851d5f3e1" kind="function"><name>save_boba_metadata</name></member>
+    <member refid="namespaceILLIXR_1_1detail_1a4df568a1d396dcc2aad7a56a71e7039f" kind="function"><name>load_boba_metadata</name></member>
+  </compound>
+  <compound refid="namespaceswitchboard" kind="namespace"><name>switchboard</name>
+  </compound>
+  <compound refid="poses_2combined__pose_8hpp" kind="file"><name>combined_pose.hpp</name>
+  </compound>
+  <compound refid="serialization_2combined__pose_8hpp" kind="file"><name>combined_pose.hpp</name>
+  </compound>
+  <compound refid="poses_2hand__interaction__pose_8hpp" kind="file"><name>hand_interaction_pose.hpp</name>
+    <member refid="poses_2hand__interaction__pose_8hpp_1a70de1f515cde67471b66026ff0013a50" kind="define"><name>INTERACTION_POSE_TYPE</name></member>
+  </compound>
+  <compound refid="serialization_2hand__interaction__pose_8hpp" kind="file"><name>hand_interaction_pose.hpp</name>
+  </compound>
+  <compound refid="poses_2hand__pose_8hpp" kind="file"><name>hand_pose.hpp</name>
+    <member refid="poses_2hand__pose_8hpp_1ad40bf8e7390ccca5291933835793f11d" kind="define"><name>HAND_JOINT_COUNT</name></member>
+  </compound>
+  <compound refid="serialization_2hand__pose_8hpp" kind="file"><name>hand_pose.hpp</name>
+  </compound>
+  <compound refid="poses_2head__pose_8hpp" kind="file"><name>head_pose.hpp</name>
+    <member refid="poses_2head__pose_8hpp_1a9eb845d6ce33fed0dcd669a50b1bce3b" kind="define"><name>TIME_POINT</name></member>
+  </compound>
+  <compound refid="serialization_2head__pose_8hpp" kind="file"><name>head_pose.hpp</name>
+  </compound>
+  <compound refid="openxr__defines_8hpp" kind="file"><name>openxr_defines.hpp</name>
+  </compound>
+  <compound refid="poses_2palm__pose_8hpp" kind="file"><name>palm_pose.hpp</name>
+  </compound>
+  <compound refid="serialization_2palm__pose_8hpp" kind="file"><name>palm_pose.hpp</name>
+  </compound>
+  <compound refid="poses_2pose__base_8hpp" kind="file"><name>pose_base.hpp</name>
+    <member refid="poses_2pose__base_8hpp_1a58e86e2f8fc4ca9aa28a39cc0617dbee" kind="define"><name>POSE_DATA_TYPE</name></member>
+  </compound>
+  <compound refid="serialization_2pose__base_8hpp" kind="file"><name>pose_base.hpp</name>
+  </compound>
+  <compound refid="frame_8hpp" kind="file"><name>frame.hpp</name>
+  </compound>
+  <compound refid="hmd__config_8hpp" kind="file"><name>hmd_config.hpp</name>
+  </compound>
+  <compound refid="latency_8hpp" kind="file"><name>latency.hpp</name>
+  </compound>
+  <compound refid="misc_8hpp" kind="file"><name>misc.hpp</name>
+    <member refid="misc_8hpp_1a3009dd8f782315d678015f5083093989" kind="define"><name>THREE_VECTOR_TYPE</name></member>
+    <member refid="misc_8hpp_1a8bc3bac5757609822e568dc98245afcb" kind="define"><name>QUATERNION_TYPE</name></member>
+    <member refid="misc_8hpp_1a1cae93df20d80cb3499cb1b3108fb93f" kind="define"><name>POSE_BASE_TYPE</name></member>
+    <member refid="misc_8hpp_1a246d10afc6639c6f3325ec9c697b2c82" kind="define"><name>HAND_JOINT_SET</name></member>
+    <member refid="misc_8hpp_1a50b00946d19a39dd3171b6b4fe923c69" kind="define"><name>HAND_JOINT_TYPE</name></member>
+    <member refid="misc_8hpp_1a58e86e2f8fc4ca9aa28a39cc0617dbee" kind="define"><name>POSE_DATA_TYPE</name></member>
+  </compound>
+  <compound refid="openxr_8hpp" kind="file"><name>openxr.hpp</name>
+  </compound>
+  <compound refid="openxr__view__frame_8hpp" kind="file"><name>openxr_view_frame.hpp</name>
+  </compound>
+  <compound refid="point__cloud_8hpp" kind="file"><name>point_cloud.hpp</name>
+  </compound>
+  <compound refid="query__response_8hpp" kind="file"><name>query_response.hpp</name>
+  </compound>
+  <compound refid="quest__controller_8hpp" kind="file"><name>quest_controller.hpp</name>
+  </compound>
+  <compound refid="semantics_8hpp" kind="file"><name>semantics.hpp</name>
+  </compound>
+  <compound refid="voice__query_8hpp" kind="file"><name>voice_query.hpp</name>
+  </compound>
+  <compound refid="dir_1d3c6769330bfebb870e950d8a9389ac" kind="dir"><name>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format</name>
+  </compound>
+  <compound refid="dir_896702a6becdb992133bce403d5f6094" kind="dir"><name>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr</name>
+  </compound>
+  <compound refid="dir_d44c64559bbebec7f509842c48db8b23" kind="dir"><name>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include</name>
+  </compound>
+  <compound refid="dir_d7b550354d68badc1c8c7c75587f32f2" kind="dir"><name>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses</name>
+  </compound>
+  <compound refid="dir_ce447ad0ecb665d9b74afca771b0e86d" kind="dir"><name>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization</name>
+  </compound>
+</doxygenindex>

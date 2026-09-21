@@ -1,0 +1,163 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__pose" kind="struct" language="C++" prot="public">
+    <compoundname>ILLIXR::data_format::pose::hand_joint_pose</compoundname>
+    <includes refid="poses_2hand__pose_8hpp" local="no">hand_pose.hpp</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__pose_1ac6a3188e1181760314c53fe9c9174cf2" prot="public" static="no" mutable="no">
+        <type><ref refid="structILLIXR_1_1data__format_1_1pose_1_1xrt__space__relation" kindref="compound">xrt_space_relation</ref></type>
+        <definition>xrt_space_relation ILLIXR::data_format::pose::hand_joint_pose::relation</definition>
+        <argsstring></argsstring>
+        <name>relation</name>
+        <qualifiedname>ILLIXR::data_format::pose::hand_joint_pose::relation</qualifiedname>
+        <briefdescription>
+<para>The pose, velocity, and flag data for the joint. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/hand_pose.hpp" line="77" column="24" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/hand_pose.hpp" bodystart="77" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__pose_1a36cf86323b4b8586b1e848320aac05cf" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float ILLIXR::data_format::pose::hand_joint_pose::radius</definition>
+        <argsstring></argsstring>
+        <name>radius</name>
+        <qualifiedname>ILLIXR::data_format::pose::hand_joint_pose::radius</qualifiedname>
+        <briefdescription>
+<para>The radius of the joint. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/hand_pose.hpp" line="78" column="24" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/hand_pose.hpp" bodystart="78" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__pose_1a4ecb42de4c1a905e530b2e7955e40a0e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::pose::hand_joint_pose::hand_joint_pose</definition>
+        <argsstring>()</argsstring>
+        <name>hand_joint_pose</name>
+        <qualifiedname>ILLIXR::data_format::pose::hand_joint_pose::hand_joint_pose</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/hand_pose.hpp" line="80" column="5" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/hand_pose.hpp" bodystart="80" bodyend="81"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__pose_1a423b84118b44d6a6132f5a6db395876a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::pose::hand_joint_pose::hand_joint_pose</definition>
+        <argsstring>(xrt_space_relation rel, float r)</argsstring>
+        <name>hand_joint_pose</name>
+        <qualifiedname>ILLIXR::data_format::pose::hand_joint_pose::hand_joint_pose</qualifiedname>
+        <param>
+          <type><ref refid="structILLIXR_1_1data__format_1_1pose_1_1xrt__space__relation" kindref="compound">xrt_space_relation</ref></type>
+          <declname>rel</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>r</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Constructor using an <ref refid="structILLIXR_1_1data__format_1_1pose_1_1xrt__space__relation" kindref="compound">xrt_space_relation</ref> and radius <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>rel</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>r</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/hand_pose.hpp" line="88" column="5" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/hand_pose.hpp" bodystart="88" bodyend="90"/>
+      </memberdef>
+      <memberdef kind="function" id="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__pose_1a5ce21c11448af8c324d2d72bc00679f1" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::data_format::pose::hand_joint_pose::hand_joint_pose</definition>
+        <argsstring>(XrHandJointLocationEXT pose, XrHandJointVelocityEXT vel)</argsstring>
+        <name>hand_joint_pose</name>
+        <qualifiedname>ILLIXR::data_format::pose::hand_joint_pose::hand_joint_pose</qualifiedname>
+        <param>
+          <type>XrHandJointLocationEXT</type>
+          <declname>pose</declname>
+        </param>
+        <param>
+          <type>XrHandJointVelocityEXT</type>
+          <declname>vel</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Constructor using an OpenXR based hand joint and velocity <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>pose</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The pose for the joint </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>vel</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The velocity data for the joint </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/hand_pose.hpp" line="97" column="5" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/hand_pose.hpp" bodystart="97" bodyend="103"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Full 6-DOF pose for a single hand joint. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Extends <computeroutput><ref refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base" kindref="compound">pose_base</ref></computeroutput> with per-joint <computeroutput>joint_location_flags</computeroutput>, a linear velocity, and a joint-sphere radius.</para>
+<para><computeroutput>pose_base::valid</computeroutput> is set to <computeroutput>true</computeroutput> when both ORIENTATION_VALID and POSITION_VALID are set in <computeroutput>location_flags</computeroutput>, providing a single &quot;is this usable?&quot; check for consumers that do not need the finer-grained distinction. Consumers that do need it (e.g. physics that should only apply velocity when POSITION_TRACKED is set) should read <computeroutput>location_flags</computeroutput> directly. </para>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>ILLIXR::data_format::pose::hand_joint_pose</label>
+        <link refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__pose"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>relation</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ILLIXR::data_format::pose::xrt_space_relation</label>
+        <link refid="structILLIXR_1_1data__format_1_1pose_1_1xrt__space__relation"/>
+      </node>
+    </collaborationgraph>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/hand_pose.hpp" line="76" column="1" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/poses/hand_pose.hpp" bodystart="76" bodyend="104"/>
+    <listofallmembers>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__pose_1a4ecb42de4c1a905e530b2e7955e40a0e" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::pose::hand_joint_pose</scope><name>hand_joint_pose</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__pose_1a423b84118b44d6a6132f5a6db395876a" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::pose::hand_joint_pose</scope><name>hand_joint_pose</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__pose_1a5ce21c11448af8c324d2d72bc00679f1" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::pose::hand_joint_pose</scope><name>hand_joint_pose</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__pose_1a36cf86323b4b8586b1e848320aac05cf" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::pose::hand_joint_pose</scope><name>radius</name></member>
+      <member refid="structILLIXR_1_1data__format_1_1pose_1_1hand__joint__pose_1ac6a3188e1181760314c53fe9c9174cf2" prot="public" virt="non-virtual"><scope>ILLIXR::data_format::pose::hand_joint_pose</scope><name>relation</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

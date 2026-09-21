@@ -1,0 +1,456 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="stereo__frame_8hpp" kind="file" language="C++">
+    <compoundname>stereo_frame.hpp</compoundname>
+    <includes refid="poses_2pose__base_8hpp" local="yes">illixr/data_format/poses/pose_base.hpp</includes>
+    <includes refid="stereo__presentation_8hpp" local="yes">illixr/data_format/stereo_presentation.hpp</includes>
+    <includes refid="switchboard_8hpp" local="yes">illixr/switchboard.hpp</includes>
+    <includes local="no">array</includes>
+    <includes local="no">cstddef</includes>
+    <includes local="no">cstdint</includes>
+    <includes local="no">Eigen/Core</includes>
+    <includes local="no">Eigen/Geometry</includes>
+    <includes local="no">string</includes>
+    <includedby refid="plugins_2boba__immersive_2plugin_8hpp" local="yes">/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_immersive/plugin.hpp</includedby>
+    <includedby refid="plugins_2boba__streaming__server_2plugin_8hpp" local="yes">/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp</includedby>
+    <includedby refid="plugins_2quest3_2controller_2plugin_8hpp" local="yes">/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp</includedby>
+    <incdepgraph>
+      <node id="2">
+        <label>illixr/data_format/poses/pose_base.hpp</label>
+        <link refid="poses_2pose__base_8hpp"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_frame.hpp</label>
+        <link refid="stereo__frame_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="42" relation="include">
+        </childnode>
+        <childnode refid="43" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="44" relation="include">
+        </childnode>
+        <childnode refid="45" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>illixr/data_format/stereo_presentation.hpp</label>
+        <link refid="stereo__presentation_8hpp"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>export.hpp</label>
+        <link refid="export_8hpp"/>
+      </node>
+      <node id="11">
+        <label>managed_thread.hpp</label>
+        <link refid="managed__thread_8hpp"/>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="17">
+        <label>network/network_backend.hpp</label>
+        <link refid="network__backend_8hpp"/>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+      </node>
+      <node id="26">
+        <label>topic_config.hpp</label>
+        <link refid="topic__config_8hpp"/>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+      </node>
+      <node id="18">
+        <label>illixr/phonebook.hpp</label>
+        <link refid="phonebook_8hpp"/>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+      </node>
+      <node id="30">
+        <label>record_logger.hpp</label>
+        <link refid="record__logger_8hpp"/>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>illixr/switchboard.hpp</label>
+        <link refid="switchboard_8hpp"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+        <childnode refid="38" relation="include">
+        </childnode>
+        <childnode refid="39" relation="include">
+        </childnode>
+        <childnode refid="40" relation="include">
+        </childnode>
+        <childnode refid="41" relation="include">
+        </childnode>
+      </node>
+      <node id="44">
+        <label>Eigen/Core</label>
+      </node>
+      <node id="45">
+        <label>Eigen/Geometry</label>
+      </node>
+      <node id="31">
+        <label>any</label>
+      </node>
+      <node id="42">
+        <label>array</label>
+      </node>
+      <node id="12">
+        <label>atomic</label>
+      </node>
+      <node id="37">
+        <label>boost/archive/binary_iarchive.hpp</label>
+      </node>
+      <node id="38">
+        <label>boost/archive/binary_oarchive.hpp</label>
+      </node>
+      <node id="39">
+        <label>boost/iostreams/device/back_inserter.hpp</label>
+      </node>
+      <node id="40">
+        <label>boost/iostreams/stream.hpp</label>
+      </node>
+      <node id="41">
+        <label>boost/serialization/shared_ptr.hpp</label>
+      </node>
+      <node id="13">
+        <label>cassert</label>
+      </node>
+      <node id="27">
+        <label>chrono</label>
+      </node>
+      <node id="9">
+        <label>concurrentqueue/blockingconcurrentqueue.hpp</label>
+      </node>
+      <node id="43">
+        <label>cstddef</label>
+      </node>
+      <node id="7">
+        <label>cstdint</label>
+      </node>
+      <node id="34">
+        <label>eigen3/Eigen/Core</label>
+      </node>
+      <node id="4">
+        <label>eigen3/Eigen/Dense</label>
+      </node>
+      <node id="35">
+        <label>eigen3/Eigen/Geometry</label>
+      </node>
+      <node id="14">
+        <label>functional</label>
+      </node>
+      <node id="19">
+        <label>iostream</label>
+      </node>
+      <node id="36">
+        <label>list</label>
+      </node>
+      <node id="3">
+        <label>map</label>
+      </node>
+      <node id="20">
+        <label>memory</label>
+      </node>
+      <node id="21">
+        <label>mutex</label>
+      </node>
+      <node id="28">
+        <label>optional</label>
+      </node>
+      <node id="22">
+        <label>shared_mutex</label>
+      </node>
+      <node id="25">
+        <label>spdlog/spdlog.h</label>
+      </node>
+      <node id="33">
+        <label>sstream</label>
+      </node>
+      <node id="15">
+        <label>stdexcept</label>
+      </node>
+      <node id="32">
+        <label>string</label>
+      </node>
+      <node id="16">
+        <label>thread</label>
+      </node>
+      <node id="23">
+        <label>typeindex</label>
+      </node>
+      <node id="24">
+        <label>unordered_map</label>
+      </node>
+      <node id="5">
+        <label>utility</label>
+      </node>
+      <node id="29">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="1">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_frame.hpp</label>
+        <link refid="stereo__frame_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_immersive/plugin.cpp</label>
+        <link refid="plugins_2boba__immersive_2plugin_8cpp"/>
+      </node>
+      <node id="2">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_immersive/plugin.hpp</label>
+        <link refid="plugins_2boba__immersive_2plugin_8hpp"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.cpp</label>
+        <link refid="plugins_2boba__streaming__server_2plugin_8cpp"/>
+      </node>
+      <node id="4">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp</label>
+        <link refid="plugins_2boba__streaming__server_2plugin_8hpp"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.cpp</label>
+        <link refid="plugins_2quest3_2controller_2plugin_8cpp"/>
+      </node>
+      <node id="6">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/quest3/controller/plugin.hpp</label>
+        <link refid="plugins_2quest3_2controller_2plugin_8hpp"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="structILLIXR_1_1data__format_1_1stereo__shared__image" prot="public">ILLIXR::data_format::stereo_shared_image</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1stereo__render__view" prot="public">ILLIXR::data_format::stereo_render_view</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1stereo__overlay__command__range" prot="public">ILLIXR::data_format::stereo_overlay_command_range</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1stereo__modal__overlay" prot="public">ILLIXR::data_format::stereo_modal_overlay</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1stereo__frame" prot="public">ILLIXR::data_format::stereo_frame</innerclass>
+    <innernamespace refid="namespaceILLIXR">ILLIXR</innernamespace>
+    <innernamespace refid="namespaceILLIXR_1_1data__format">ILLIXR::data_format</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="poses_2pose__base_8hpp" kindref="compound">illixr/data_format/poses/pose_base.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="stereo__presentation_8hpp" kindref="compound">illixr/data_format/stereo_presentation.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="switchboard_8hpp" kindref="compound">illixr/switchboard.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;array&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstddef&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstdint&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;Eigen/Core&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;Eigen/Geometry&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;string&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceILLIXR_1_1data__format" kindref="compound">ILLIXR::data_format</ref><sp/>{</highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight></codeline>
+<codeline lineno="17" refid="namespaceILLIXR_1_1data__format_1a3f789bfd811ac701d8972c8e6caed5d5" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">enum<sp/>class</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1_1data__format_1a3f789bfd811ac701d8972c8e6caed5d5" kindref="member">stereo_pixel_format</ref><sp/>:<sp/>std::uint8_t<sp/>{</highlight></codeline>
+<codeline lineno="18"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1_1data__format_1a3f789bfd811ac701d8972c8e6caed5d5a9c30a57b56cc2f3d801bdba7abba4407" kindref="member">rgba8_unorm</ref>,</highlight></codeline>
+<codeline lineno="19"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22" refid="namespaceILLIXR_1_1data__format_1ab8fe7a6fb1855357a2d98a776b6a2203" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">enum<sp/>class</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1_1data__format_1ab8fe7a6fb1855357a2d98a776b6a2203" kindref="member">stereo_image_origin</ref><sp/>:<sp/>std::uint8_t<sp/>{</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1_1data__format_1ab8fe7a6fb1855357a2d98a776b6a2203a3f34ebfdc06155d551b08c312bcbb887" kindref="member">upper_left</ref>,</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1_1data__format_1ab8fe7a6fb1855357a2d98a776b6a2203a67554c25267171d1850889601cecf8a1" kindref="member">lower_left</ref>,</highlight></codeline>
+<codeline lineno="25"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight></codeline>
+<codeline lineno="28" refid="structILLIXR_1_1data__format_1_1stereo__shared__image" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structILLIXR_1_1data__format_1_1stereo__shared__image" kindref="compound">stereo_shared_image</ref><sp/>{</highlight></codeline>
+<codeline lineno="30" refid="structILLIXR_1_1data__format_1_1stereo__shared__image_1ae4c35a29888dfed690085d63db9661d0" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::uint64_t<sp/><ref refid="structILLIXR_1_1data__format_1_1stereo__shared__image_1ae4c35a29888dfed690085d63db9661d0" kindref="member">byte_offset</ref>{0};</highlight></codeline>
+<codeline lineno="31" refid="structILLIXR_1_1data__format_1_1stereo__shared__image_1ab425ad21c137ec9d6a7b4f572304b577" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::uint64_t<sp/><ref refid="structILLIXR_1_1data__format_1_1stereo__shared__image_1ab425ad21c137ec9d6a7b4f572304b577" kindref="member">byte_count</ref>{0};</highlight></codeline>
+<codeline lineno="32" refid="structILLIXR_1_1data__format_1_1stereo__shared__image_1ad0efbfa71a28326b9c11733b0878992a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::uint32_t<sp/><ref refid="structILLIXR_1_1data__format_1_1stereo__shared__image_1ad0efbfa71a28326b9c11733b0878992a" kindref="member">width</ref>{0};</highlight></codeline>
+<codeline lineno="33" refid="structILLIXR_1_1data__format_1_1stereo__shared__image_1aeaea154ba2bea2d2595ad1aaeb7f31f6" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::uint32_t<sp/><ref refid="structILLIXR_1_1data__format_1_1stereo__shared__image_1aeaea154ba2bea2d2595ad1aaeb7f31f6" kindref="member">height</ref>{0};</highlight></codeline>
+<codeline lineno="34" refid="structILLIXR_1_1data__format_1_1stereo__shared__image_1af0345aeedd236282a8cf3c45d953abfc" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::uint32_t<sp/><ref refid="structILLIXR_1_1data__format_1_1stereo__shared__image_1af0345aeedd236282a8cf3c45d953abfc" kindref="member">row_stride_bytes</ref>{0};</highlight></codeline>
+<codeline lineno="35"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight></codeline>
+<codeline lineno="38" refid="structILLIXR_1_1data__format_1_1stereo__render__view" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structILLIXR_1_1data__format_1_1stereo__render__view" kindref="compound">stereo_render_view</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base" kindref="compound">pose::pose_base</ref><sp/>{</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>USING_OPENXR</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1stereo__render__view" kindref="compound">stereo_render_view</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base_1a558ab50ec1a11773056fef096f829163" kindref="member">orientation</ref>.w<sp/>=<sp/>1.0F;</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="45"><highlight class="normal"></highlight></codeline>
+<codeline lineno="47" refid="structILLIXR_1_1data__format_1_1stereo__render__view_1ae8ceef66eee0e086442c95d76dcf05ba" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/><ref refid="structILLIXR_1_1data__format_1_1stereo__render__view_1ae8ceef66eee0e086442c95d76dcf05ba" kindref="member">angle_left</ref>{0.0F};</highlight></codeline>
+<codeline lineno="48" refid="structILLIXR_1_1data__format_1_1stereo__render__view_1a0033060ac6890d266b0cf2d0d045c194" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/><ref refid="structILLIXR_1_1data__format_1_1stereo__render__view_1a0033060ac6890d266b0cf2d0d045c194" kindref="member">angle_right</ref>{0.0F};</highlight></codeline>
+<codeline lineno="49" refid="structILLIXR_1_1data__format_1_1stereo__render__view_1a01e77b0964c39dcb9442c624f11e84fc" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/><ref refid="structILLIXR_1_1data__format_1_1stereo__render__view_1a01e77b0964c39dcb9442c624f11e84fc" kindref="member">angle_up</ref>{0.0F};</highlight></codeline>
+<codeline lineno="50" refid="structILLIXR_1_1data__format_1_1stereo__render__view_1a4878839f55b59c87a05ef5f10259b7cc" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/><ref refid="structILLIXR_1_1data__format_1_1stereo__render__view_1a4878839f55b59c87a05ef5f10259b7cc" kindref="member">angle_down</ref>{0.0F};</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"></highlight></codeline>
+<codeline lineno="52"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>USING_OPENXR</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base_1ab7511efb54fbb7835cfb69d95c2b2d87" kindref="member">valid</ref>{</highlight><highlight class="keyword">false</highlight><highlight class="normal">};</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="56"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"></highlight></codeline>
+<codeline lineno="59" refid="structILLIXR_1_1data__format_1_1stereo__overlay__command__range" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structILLIXR_1_1data__format_1_1stereo__overlay__command__range" kindref="compound">stereo_overlay_command_range</ref><sp/>{</highlight></codeline>
+<codeline lineno="61" refid="structILLIXR_1_1data__format_1_1stereo__overlay__command__range_1a104f83331c209c72f44e44d64081c106" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::uint64_t<sp/><ref refid="structILLIXR_1_1data__format_1_1stereo__overlay__command__range_1a104f83331c209c72f44e44d64081c106" kindref="member">byte_offset</ref>{0};</highlight></codeline>
+<codeline lineno="62" refid="structILLIXR_1_1data__format_1_1stereo__overlay__command__range_1ae4b3fb32cd763b9f3f345e09683acd42" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::uint32_t<sp/><ref refid="structILLIXR_1_1data__format_1_1stereo__overlay__command__range_1ae4b3fb32cd763b9f3f345e09683acd42" kindref="member">command_count</ref>{0};</highlight></codeline>
+<codeline lineno="63" refid="structILLIXR_1_1data__format_1_1stereo__overlay__command__range_1a2a1a3e8f9bedde849265b6bddb29499a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::uint32_t<sp/><ref refid="structILLIXR_1_1data__format_1_1stereo__overlay__command__range_1a2a1a3e8f9bedde849265b6bddb29499a" kindref="member">command_stride_floats</ref>{0};</highlight></codeline>
+<codeline lineno="64"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"></highlight></codeline>
+<codeline lineno="67" refid="structILLIXR_1_1data__format_1_1stereo__modal__overlay" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structILLIXR_1_1data__format_1_1stereo__modal__overlay" kindref="compound">stereo_modal_overlay</ref><sp/>{</highlight></codeline>
+<codeline lineno="69" refid="structILLIXR_1_1data__format_1_1stereo__modal__overlay_1af89e824464ebea407ca8ff9fcf519947" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="structILLIXR_1_1data__format_1_1stereo__modal__overlay_1af89e824464ebea407ca8ff9fcf519947" kindref="member">visible</ref>{</highlight><highlight class="keyword">false</highlight><highlight class="normal">};</highlight></codeline>
+<codeline lineno="70" refid="structILLIXR_1_1data__format_1_1stereo__modal__overlay_1a322e92b056ddedd852db6ea58990e2b8" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="structILLIXR_1_1data__format_1_1stereo__modal__overlay_1a322e92b056ddedd852db6ea58990e2b8" kindref="member">left_valid</ref>{</highlight><highlight class="keyword">false</highlight><highlight class="normal">};</highlight></codeline>
+<codeline lineno="71" refid="structILLIXR_1_1data__format_1_1stereo__modal__overlay_1a07baf9ba49a70fe236e4ab214ad1a7a4" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="structILLIXR_1_1data__format_1_1stereo__modal__overlay_1a07baf9ba49a70fe236e4ab214ad1a7a4" kindref="member">right_valid</ref>{</highlight><highlight class="keyword">false</highlight><highlight class="normal">};</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"></highlight></codeline>
+<codeline lineno="74" refid="structILLIXR_1_1data__format_1_1stereo__modal__overlay_1a19818eb6d3716b3231a844a4962d8464" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::uint64_t<sp/><ref refid="structILLIXR_1_1data__format_1_1stereo__modal__overlay_1a19818eb6d3716b3231a844a4962d8464" kindref="member">byte_offset</ref>{0};</highlight></codeline>
+<codeline lineno="75" refid="structILLIXR_1_1data__format_1_1stereo__modal__overlay_1a6953bf2d0bac2aac03c539e16d2e1284" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::uint32_t<sp/><ref refid="structILLIXR_1_1data__format_1_1stereo__modal__overlay_1a6953bf2d0bac2aac03c539e16d2e1284" kindref="member">width</ref>{0};</highlight></codeline>
+<codeline lineno="76" refid="structILLIXR_1_1data__format_1_1stereo__modal__overlay_1aa86cef225ac1be0e007e4544277b0645" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::uint32_t<sp/><ref refid="structILLIXR_1_1data__format_1_1stereo__modal__overlay_1aa86cef225ac1be0e007e4544277b0645" kindref="member">height</ref>{0};</highlight></codeline>
+<codeline lineno="77" refid="structILLIXR_1_1data__format_1_1stereo__modal__overlay_1aae3f9f03749a2012fdb63e0fc4901d20" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::uint32_t<sp/><ref refid="structILLIXR_1_1data__format_1_1stereo__modal__overlay_1aae3f9f03749a2012fdb63e0fc4901d20" kindref="member">source_row_stride_bytes</ref>{0};</highlight></codeline>
+<codeline lineno="79" refid="structILLIXR_1_1data__format_1_1stereo__modal__overlay_1ab8dbd4662111f9e236ecfeee01bd0517" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::array&lt;Eigen::Vector2f,<sp/>4&gt;<sp/><ref refid="structILLIXR_1_1data__format_1_1stereo__modal__overlay_1ab8dbd4662111f9e236ecfeee01bd0517" kindref="member">left_quad_pixels</ref>{};</highlight></codeline>
+<codeline lineno="80" refid="structILLIXR_1_1data__format_1_1stereo__modal__overlay_1a9af437b35008921799953b9c1d6ef443" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::array&lt;Eigen::Vector2f,<sp/>4&gt;<sp/><ref refid="structILLIXR_1_1data__format_1_1stereo__modal__overlay_1a9af437b35008921799953b9c1d6ef443" kindref="member">right_quad_pixels</ref>{};</highlight></codeline>
+<codeline lineno="82" refid="structILLIXR_1_1data__format_1_1stereo__modal__overlay_1a90f5720fe5bc731038f3cb32c53179ac" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/><ref refid="structILLIXR_1_1data__format_1_1stereo__modal__overlay_1a90f5720fe5bc731038f3cb32c53179ac" kindref="member">width_m</ref>{0.0F};</highlight></codeline>
+<codeline lineno="83" refid="structILLIXR_1_1data__format_1_1stereo__modal__overlay_1a35ba7a81580838ccffd22610155978d0" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/><ref refid="structILLIXR_1_1data__format_1_1stereo__modal__overlay_1a35ba7a81580838ccffd22610155978d0" kindref="member">height_m</ref>{0.0F};</highlight></codeline>
+<codeline lineno="84"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"></highlight></codeline>
+<codeline lineno="99" refid="structILLIXR_1_1data__format_1_1stereo__frame" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structILLIXR_1_1data__format_1_1stereo__frame" kindref="compound">stereo_frame</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1switchboard_1_1event" kindref="compound">switchboard::event</ref><sp/>{</highlight></codeline>
+<codeline lineno="101" refid="structILLIXR_1_1data__format_1_1stereo__frame_1a3d366d5ae6bf2a16f18dd985147a42d3" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::uint64_t<sp/><ref refid="structILLIXR_1_1data__format_1_1stereo__frame_1a3d366d5ae6bf2a16f18dd985147a42d3" kindref="member">sequence</ref>{0};</highlight></codeline>
+<codeline lineno="102" refid="structILLIXR_1_1data__format_1_1stereo__frame_1aebb5deb3e43b0ec569f0d5212e3d3ee4" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1time__point" kindref="compound">time_point</ref><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1stereo__frame_1aebb5deb3e43b0ec569f0d5212e3d3ee4" kindref="member">sample_time</ref>{};</highlight></codeline>
+<codeline lineno="103" refid="structILLIXR_1_1data__format_1_1stereo__frame_1af6d80a84cef4393ba523e932bc0b7d32" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::uint64_t<sp/><ref refid="structILLIXR_1_1data__format_1_1stereo__frame_1af6d80a84cef4393ba523e932bc0b7d32" kindref="member">source_frame_id</ref>{0};</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"></highlight></codeline>
+<codeline lineno="105" refid="structILLIXR_1_1data__format_1_1stereo__frame_1afb018f1bbd6a2604d097908896c53c86" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1_1data__format_1a3f789bfd811ac701d8972c8e6caed5d5" kindref="member">stereo_pixel_format</ref><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1stereo__frame_1afb018f1bbd6a2604d097908896c53c86" kindref="member">format</ref>{<ref refid="namespaceILLIXR_1_1data__format_1a3f789bfd811ac701d8972c8e6caed5d5a9c30a57b56cc2f3d801bdba7abba4407" kindref="member">stereo_pixel_format::rgba8_unorm</ref>};</highlight></codeline>
+<codeline lineno="106" refid="structILLIXR_1_1data__format_1_1stereo__frame_1a959199b9a4e4635c80b4db9f4713b2d8" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1_1data__format_1ab8fe7a6fb1855357a2d98a776b6a2203" kindref="member">stereo_image_origin</ref><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1stereo__frame_1a959199b9a4e4635c80b4db9f4713b2d8" kindref="member">origin</ref>{<ref refid="namespaceILLIXR_1_1data__format_1ab8fe7a6fb1855357a2d98a776b6a2203a3f34ebfdc06155d551b08c312bcbb887" kindref="member">stereo_image_origin::upper_left</ref>};</highlight></codeline>
+<codeline lineno="107" refid="structILLIXR_1_1data__format_1_1stereo__frame_1a300b062f403acaac0de14ce979b662ce" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1_1data__format_1a18a9f759f201d5d2aa0639e6ef46d9b1" kindref="member">stereo_presentation_mode</ref><sp/><ref refid="structILLIXR_1_1data__format_1_1stereo__frame_1a300b062f403acaac0de14ce979b662ce" kindref="member">presentation_mode</ref>{<ref refid="namespaceILLIXR_1_1data__format_1a18a9f759f201d5d2aa0639e6ef46d9b1a89e98582edfdcf1c49ac755abbdb1a28" kindref="member">stereo_presentation_mode::stereo_fullscreen</ref>};</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"></highlight></codeline>
+<codeline lineno="110" refid="structILLIXR_1_1data__format_1_1stereo__frame_1a5a4ae0ce3e40ccbdc2d4a5512ae812f3" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1stereo__frame_1a5a4ae0ce3e40ccbdc2d4a5512ae812f3" kindref="member">pixel_buffer_path</ref>;</highlight></codeline>
+<codeline lineno="111" refid="structILLIXR_1_1data__format_1_1stereo__frame_1ab6b36e7163b591ce34bc100545b95f0c" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::uint64_t<sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1stereo__frame_1ab6b36e7163b591ce34bc100545b95f0c" kindref="member">pixel_generation_offset</ref>{0};</highlight></codeline>
+<codeline lineno="112" refid="structILLIXR_1_1data__format_1_1stereo__frame_1afdd4873f856aae1bcd52a1ac4e3ef594" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1stereo__shared__image" kindref="compound">stereo_shared_image</ref><sp/><ref refid="structILLIXR_1_1data__format_1_1stereo__frame_1afdd4873f856aae1bcd52a1ac4e3ef594" kindref="member">left</ref>;</highlight></codeline>
+<codeline lineno="113" refid="structILLIXR_1_1data__format_1_1stereo__frame_1aee991c03dff5b93c841c9e671d66d7b1" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1stereo__shared__image" kindref="compound">stereo_shared_image</ref><sp/><ref refid="structILLIXR_1_1data__format_1_1stereo__frame_1aee991c03dff5b93c841c9e671d66d7b1" kindref="member">right</ref>;</highlight></codeline>
+<codeline lineno="114" refid="structILLIXR_1_1data__format_1_1stereo__frame_1a1e65d60c24fec70ac3798b41376267e0" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1stereo__render__view" kindref="compound">stereo_render_view</ref><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1stereo__frame_1a1e65d60c24fec70ac3798b41376267e0" kindref="member">left_render_view</ref>;</highlight></codeline>
+<codeline lineno="115" refid="structILLIXR_1_1data__format_1_1stereo__frame_1a40f70910bf4b90b726bcbb906303ceb2" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1stereo__render__view" kindref="compound">stereo_render_view</ref><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1stereo__frame_1a40f70910bf4b90b726bcbb906303ceb2" kindref="member">right_render_view</ref>;</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"></highlight></codeline>
+<codeline lineno="118" refid="structILLIXR_1_1data__format_1_1stereo__frame_1a14014cbf7cf560b477a1ee4efa646a4b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1stereo__frame_1a14014cbf7cf560b477a1ee4efa646a4b" kindref="member">overlay_buffer_path</ref>;</highlight></codeline>
+<codeline lineno="119" refid="structILLIXR_1_1data__format_1_1stereo__frame_1aa87de1461ef336c35e547bfeeef63255" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::uint64_t<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1stereo__frame_1aa87de1461ef336c35e547bfeeef63255" kindref="member">overlay_generation_offset</ref>{0};</highlight></codeline>
+<codeline lineno="120" refid="structILLIXR_1_1data__format_1_1stereo__frame_1aae7e4816e4373053a392a78f53171b39" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1stereo__overlay__command__range" kindref="compound">stereo_overlay_command_range</ref><sp/><ref refid="structILLIXR_1_1data__format_1_1stereo__frame_1aae7e4816e4373053a392a78f53171b39" kindref="member">left_overlay_commands</ref>;</highlight></codeline>
+<codeline lineno="121" refid="structILLIXR_1_1data__format_1_1stereo__frame_1a1c58d1cdc911b0aa0a793afe762b6a0e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1stereo__overlay__command__range" kindref="compound">stereo_overlay_command_range</ref><sp/><ref refid="structILLIXR_1_1data__format_1_1stereo__frame_1a1c58d1cdc911b0aa0a793afe762b6a0e" kindref="member">right_overlay_commands</ref>;</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"></highlight></codeline>
+<codeline lineno="124" refid="structILLIXR_1_1data__format_1_1stereo__frame_1a9968eb31b8e52795d204a80b40787800" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1stereo__frame_1a9968eb31b8e52795d204a80b40787800" kindref="member">modal_buffer_path</ref>;</highlight></codeline>
+<codeline lineno="125" refid="structILLIXR_1_1data__format_1_1stereo__frame_1a3586cf3b3ce3b6e1baf3ac97fed4bd73" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::uint64_t<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1stereo__frame_1a3586cf3b3ce3b6e1baf3ac97fed4bd73" kindref="member">modal_generation_offset</ref>{0};</highlight></codeline>
+<codeline lineno="126" refid="structILLIXR_1_1data__format_1_1stereo__frame_1ac458d715bed39d21771f4eec19a77c63" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1data__format_1_1stereo__modal__overlay" kindref="compound">stereo_modal_overlay</ref><sp/><ref refid="structILLIXR_1_1data__format_1_1stereo__frame_1ac458d715bed39d21771f4eec19a77c63" kindref="member">modal</ref>;</highlight></codeline>
+<codeline lineno="127"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="128"><highlight class="normal"></highlight></codeline>
+<codeline lineno="129"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>ILLIXR::data_format</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_frame.hpp"/>
+  </compounddef>
+</doxygen>

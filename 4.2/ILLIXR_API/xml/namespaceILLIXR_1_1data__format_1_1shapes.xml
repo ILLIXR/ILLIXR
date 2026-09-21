@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespaceILLIXR_1_1data__format_1_1shapes" kind="namespace" language="C++">
+    <compoundname>ILLIXR::data_format::shapes</compoundname>
+    <innerclass refid="structILLIXR_1_1data__format_1_1shapes_1_1rect" prot="public">ILLIXR::data_format::shapes::rect</innerclass>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/shape.hpp" line="8" column="1"/>
+  </compounddef>
+</doxygen>

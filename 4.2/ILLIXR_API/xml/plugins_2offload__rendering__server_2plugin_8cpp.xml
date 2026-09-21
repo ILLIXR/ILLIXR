@@ -1,0 +1,852 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="plugins_2offload__rendering__server_2plugin_8cpp" kind="file" language="C++">
+    <compoundname>plugin.cpp</compoundname>
+    <includes refid="plugins_2offload__rendering__server_2plugin_8hpp" local="yes">plugin.hpp</includes>
+    <includes refid="pose__prediction_8hpp" local="yes">illixr/data_format/pose_prediction.hpp</includes>
+    <includes refid="render__pass_8hpp" local="yes">illixr/vk/render_pass.hpp</includes>
+    <incdepgraph>
+      <node id="72">
+        <label>cpu_timer.hpp</label>
+        <link refid="cpu__timer_8hpp"/>
+        <childnode refid="73" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="79" relation="include">
+        </childnode>
+        <childnode refid="39" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="40" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+      </node>
+      <node id="31">
+        <label>illixr/data_format/frame.hpp</label>
+        <link refid="frame_8hpp"/>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="51" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+        <childnode refid="53" relation="include">
+        </childnode>
+        <childnode refid="54" relation="include">
+        </childnode>
+        <childnode refid="52" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="55" relation="include">
+        </childnode>
+      </node>
+      <node id="56">
+        <label>illixr/data_format/hmd_config.hpp</label>
+        <link refid="hmd__config_8hpp"/>
+        <childnode refid="57" relation="include">
+        </childnode>
+      </node>
+      <node id="88">
+        <label>illixr/data_format/misc.hpp</label>
+        <link refid="misc_8hpp"/>
+        <childnode refid="36" relation="include">
+        </childnode>
+        <childnode refid="89" relation="include">
+        </childnode>
+      </node>
+      <node id="58">
+        <label>illixr/data_format/pose_id.hpp</label>
+        <link refid="pose__id_8hpp"/>
+        <childnode refid="36" relation="include">
+        </childnode>
+        <childnode refid="52" relation="include">
+        </childnode>
+      </node>
+      <node id="59">
+        <label>illixr/data_format/pose_prediction.hpp</label>
+        <link refid="pose__prediction_8hpp"/>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="60" relation="include">
+        </childnode>
+        <childnode refid="44" relation="include">
+        </childnode>
+      </node>
+      <node id="32">
+        <label>illixr/data_format/poses/head_pose.hpp</label>
+        <link refid="poses_2head__pose_8hpp"/>
+        <childnode refid="33" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+      </node>
+      <node id="33">
+        <label>illixr/data_format/poses/pose_base.hpp</label>
+        <link refid="poses_2pose__base_8hpp"/>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+      </node>
+      <node id="62">
+        <label>illixr/data_format/serialization/frame.hpp</label>
+        <link refid="serialization_2frame_8hpp"/>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="63" relation="include">
+        </childnode>
+        <childnode refid="65" relation="include">
+        </childnode>
+        <childnode refid="66" relation="include">
+        </childnode>
+        <childnode refid="68" relation="include">
+        </childnode>
+        <childnode refid="69" relation="include">
+        </childnode>
+        <childnode refid="70" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="63">
+        <label>illixr/data_format/serialization/head_pose.hpp</label>
+        <link refid="serialization_2head__pose_8hpp"/>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="64" relation="include">
+        </childnode>
+        <childnode refid="65" relation="include">
+        </childnode>
+        <childnode refid="67" relation="include">
+        </childnode>
+      </node>
+      <node id="65">
+        <label>misc.hpp</label>
+        <link refid="serialization_2misc_8hpp"/>
+        <childnode refid="60" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+        <childnode refid="66" relation="include">
+        </childnode>
+        <childnode refid="54" relation="include">
+        </childnode>
+      </node>
+      <node id="64">
+        <label>illixr/data_format/serialization/pose_base.hpp</label>
+        <link refid="serialization_2pose__base_8hpp"/>
+        <childnode refid="33" relation="include">
+        </childnode>
+        <childnode refid="65" relation="include">
+        </childnode>
+      </node>
+      <node id="51">
+        <label>illixr/data_format/stereo_presentation.hpp</label>
+        <link refid="stereo__presentation_8hpp"/>
+        <childnode refid="52" relation="include">
+        </childnode>
+      </node>
+      <node id="73">
+        <label>error_util.hpp</label>
+        <link refid="error__util_8hpp"/>
+        <childnode refid="74" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>export.hpp</label>
+        <link refid="export_8hpp"/>
+      </node>
+      <node id="74">
+        <label>global_module_defs.hpp</label>
+        <link refid="global__module__defs_8hpp"/>
+        <childnode refid="75" relation="include">
+        </childnode>
+        <childnode refid="60" relation="include">
+        </childnode>
+        <childnode refid="77" relation="include">
+        </childnode>
+        <childnode refid="78" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+      </node>
+      <node id="75">
+        <label>headset_fov.hpp</label>
+        <link refid="headset__fov_8hpp"/>
+        <childnode refid="53" relation="include">
+        </childnode>
+        <childnode refid="76" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+      </node>
+      <node id="38">
+        <label>managed_thread.hpp</label>
+        <link refid="managed__thread_8hpp"/>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="39" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="40" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+      </node>
+      <node id="41">
+        <label>network/network_backend.hpp</label>
+        <link refid="network__backend_8hpp"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="42" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+      </node>
+      <node id="42">
+        <label>topic_config.hpp</label>
+        <link refid="topic__config_8hpp"/>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>phonebook.hpp</label>
+        <link refid="phonebook_8hpp"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>illixr/plugin.hpp</label>
+        <link refid="include_2illixr_2plugin_8hpp"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+      </node>
+      <node id="15">
+        <label>record_logger.hpp</label>
+        <link refid="record__logger_8hpp"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+      </node>
+      <node id="60">
+        <label>illixr/relative_clock.hpp</label>
+        <link refid="relative__clock_8hpp"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="61" relation="include">
+        </childnode>
+      </node>
+      <node id="80">
+        <label>stoplight.hpp</label>
+        <link refid="stoplight_8hpp"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="81" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="36">
+        <label>illixr/switchboard.hpp</label>
+        <link refid="switchboard_8hpp"/>
+        <childnode refid="37" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="38" relation="include">
+        </childnode>
+        <childnode refid="41" relation="include">
+        </childnode>
+        <childnode refid="42" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="43" relation="include">
+        </childnode>
+        <childnode refid="44" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="45" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="46" relation="include">
+        </childnode>
+        <childnode refid="47" relation="include">
+        </childnode>
+        <childnode refid="48" relation="include">
+        </childnode>
+        <childnode refid="49" relation="include">
+        </childnode>
+        <childnode refid="50" relation="include">
+        </childnode>
+      </node>
+      <node id="71">
+        <label>illixr/threadloop.hpp</label>
+        <link refid="threadloop_8hpp"/>
+        <childnode refid="72" relation="include">
+        </childnode>
+        <childnode refid="73" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="80" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="39" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="40" relation="include">
+        </childnode>
+      </node>
+      <node id="82">
+        <label>illixr/vk/display_provider.hpp</label>
+        <link refid="display__provider_8hpp"/>
+        <childnode refid="74" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="83" relation="include">
+        </childnode>
+        <childnode refid="52" relation="include">
+        </childnode>
+      </node>
+      <node id="94">
+        <label>illixr/vk/ffmpeg_utils.hpp</label>
+        <link refid="ffmpeg__utils_8hpp"/>
+        <childnode refid="86" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="95" relation="include">
+        </childnode>
+        <childnode refid="96" relation="include">
+        </childnode>
+        <childnode refid="97" relation="include">
+        </childnode>
+        <childnode refid="98" relation="include">
+        </childnode>
+        <childnode refid="99" relation="include">
+        </childnode>
+        <childnode refid="100" relation="include">
+        </childnode>
+      </node>
+      <node id="87">
+        <label>illixr/vk/render_pass.hpp</label>
+        <link refid="render__pass_8hpp"/>
+        <childnode refid="88" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="90" relation="include">
+        </childnode>
+        <childnode refid="92" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+      </node>
+      <node id="90">
+        <label>vulkan_objects.hpp</label>
+        <link refid="vulkan__objects_8hpp"/>
+        <childnode refid="91" relation="include">
+        </childnode>
+        <childnode refid="86" relation="include">
+        </childnode>
+      </node>
+      <node id="83">
+        <label>vulkan_utils.hpp</label>
+        <link refid="vulkan__utils_8hpp"/>
+        <childnode refid="84" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="85" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="86" relation="include">
+        </childnode>
+      </node>
+      <node id="29">
+        <label>offload_rendering_server.hpp</label>
+        <link refid="offload__rendering__server_8hpp"/>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="56" relation="include">
+        </childnode>
+        <childnode refid="58" relation="include">
+        </childnode>
+        <childnode refid="59" relation="include">
+        </childnode>
+        <childnode refid="62" relation="include">
+        </childnode>
+        <childnode refid="63" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+        <childnode refid="71" relation="include">
+        </childnode>
+        <childnode refid="82" relation="include">
+        </childnode>
+        <childnode refid="87" relation="include">
+        </childnode>
+        <childnode refid="83" relation="include">
+        </childnode>
+        <childnode refid="93" relation="include">
+        </childnode>
+        <childnode refid="94" relation="include">
+        </childnode>
+        <childnode refid="81" relation="include">
+        </childnode>
+        <childnode refid="101" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="40" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/offload_rendering_server/plugin.cpp</label>
+        <link refid="plugins_2offload__rendering__server_2plugin_8cpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="59" relation="include">
+        </childnode>
+        <childnode refid="87" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>plugin.hpp</label>
+        <link refid="plugins_2offload__rendering__server_2plugin_8hpp"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+      </node>
+      <node id="93">
+        <label>pose_relay.hpp</label>
+        <link refid="pose__relay_8hpp"/>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="59" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+        <childnode refid="71" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+      </node>
+      <node id="55">
+        <label>GL/gl.h</label>
+      </node>
+      <node id="89">
+        <label>GL/glu.h</label>
+      </node>
+      <node id="92">
+        <label>GLFW/glfw3.h</label>
+      </node>
+      <node id="77">
+        <label>algorithm</label>
+      </node>
+      <node id="16">
+        <label>any</label>
+      </node>
+      <node id="53">
+        <label>array</label>
+      </node>
+      <node id="17">
+        <label>atomic</label>
+      </node>
+      <node id="46">
+        <label>boost/archive/binary_iarchive.hpp</label>
+      </node>
+      <node id="47">
+        <label>boost/archive/binary_oarchive.hpp</label>
+      </node>
+      <node id="48">
+        <label>boost/iostreams/device/back_inserter.hpp</label>
+      </node>
+      <node id="49">
+        <label>boost/iostreams/stream.hpp</label>
+      </node>
+      <node id="67">
+        <label>boost/serialization/base_object.hpp</label>
+      </node>
+      <node id="66">
+        <label>boost/serialization/binary_object.hpp</label>
+      </node>
+      <node id="54">
+        <label>boost/serialization/export.hpp</label>
+      </node>
+      <node id="50">
+        <label>boost/serialization/shared_ptr.hpp</label>
+      </node>
+      <node id="68">
+        <label>boost/serialization/split_free.hpp</label>
+      </node>
+      <node id="69">
+        <label>boost/serialization/vector.hpp</label>
+      </node>
+      <node id="6">
+        <label>cassert</label>
+      </node>
+      <node id="18">
+        <label>chrono</label>
+      </node>
+      <node id="78">
+        <label>cmath</label>
+      </node>
+      <node id="37">
+        <label>concurrentqueue/blockingconcurrentqueue.hpp</label>
+      </node>
+      <node id="81">
+        <label>condition_variable</label>
+      </node>
+      <node id="52">
+        <label>cstdint</label>
+      </node>
+      <node id="76">
+        <label>cstdlib</label>
+      </node>
+      <node id="79">
+        <label>cstring</label>
+      </node>
+      <node id="101">
+        <label>deque</label>
+      </node>
+      <node id="30">
+        <label>drivers/illixr/illixr_framebuffer.h</label>
+      </node>
+      <node id="43">
+        <label>eigen3/Eigen/Core</label>
+      </node>
+      <node id="35">
+        <label>eigen3/Eigen/Dense</label>
+      </node>
+      <node id="44">
+        <label>eigen3/Eigen/Geometry</label>
+      </node>
+      <node id="84">
+        <label>fstream</label>
+      </node>
+      <node id="39">
+        <label>functional</label>
+      </node>
+      <node id="91">
+        <label>illixr/vk/third_party/vk_mem_alloc.h</label>
+      </node>
+      <node id="28">
+        <label>illixr/vk/vk_extension_request.hpp</label>
+      </node>
+      <node id="7">
+        <label>iostream</label>
+      </node>
+      <node id="95">
+        <label>libavcodec_illixr/avcodec.h</label>
+      </node>
+      <node id="96">
+        <label>libavformat_illixr/avformat.h</label>
+      </node>
+      <node id="97">
+        <label>libavutil_illixr/hwcontext.h</label>
+      </node>
+      <node id="98">
+        <label>libavutil_illixr/hwcontext_vulkan.h</label>
+      </node>
+      <node id="99">
+        <label>libavutil_illixr/opt.h</label>
+      </node>
+      <node id="100">
+        <label>libavutil_illixr/pixdesc.h</label>
+      </node>
+      <node id="70">
+        <label>limits</label>
+      </node>
+      <node id="45">
+        <label>list</label>
+      </node>
+      <node id="34">
+        <label>map</label>
+      </node>
+      <node id="8">
+        <label>memory</label>
+      </node>
+      <node id="9">
+        <label>mutex</label>
+      </node>
+      <node id="19">
+        <label>optional</label>
+      </node>
+      <node id="61">
+        <label>ratio</label>
+      </node>
+      <node id="85">
+        <label>set</label>
+      </node>
+      <node id="10">
+        <label>shared_mutex</label>
+      </node>
+      <node id="24">
+        <label>spdlog/common.h</label>
+      </node>
+      <node id="25">
+        <label>spdlog/sinks/basic_file_sink.h</label>
+      </node>
+      <node id="26">
+        <label>spdlog/sinks/stdout_color_sinks.h</label>
+      </node>
+      <node id="14">
+        <label>spdlog/spdlog.h</label>
+      </node>
+      <node id="23">
+        <label>sstream</label>
+      </node>
+      <node id="11">
+        <label>stdexcept</label>
+      </node>
+      <node id="57">
+        <label>stdint.h</label>
+      </node>
+      <node id="20">
+        <label>string</label>
+      </node>
+      <node id="40">
+        <label>thread</label>
+      </node>
+      <node id="12">
+        <label>typeindex</label>
+      </node>
+      <node id="27">
+        <label>typeinfo</label>
+      </node>
+      <node id="13">
+        <label>unordered_map</label>
+      </node>
+      <node id="21">
+        <label>utility</label>
+      </node>
+      <node id="22">
+        <label>vector</label>
+      </node>
+      <node id="86">
+        <label>vulkan/vulkan.h</label>
+      </node>
+    </incdepgraph>
+    <briefdescription>
+<para>Offload Rendering Server Plugin Implementation. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>This plugin implements the server-side component of <ref refid="namespaceILLIXR" kindref="compound">ILLIXR</ref>&apos;s offload rendering system. It captures rendered frames, encodes them using hardware-accelerated H.264/HEVC encoding, and sends them to a remote client for display. The system supports both color and depth frame transmission, with configurable encoding parameters.</para>
+<para>Two encoding backends are supported:<itemizedlist>
+<listitem><para>FFmpeg with NVENC (default): Uses FFmpeg&apos;s Vulkan-CUDA hwaccel pipeline</para>
+</listitem><listitem><para>Direct NVENC (compile with -DNVENC_ENCODER): Uses NVENC directly without FFmpeg </para>
+</listitem></itemizedlist>
+</para>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="plugins_2zed_2plugin_8hpp" kindref="compound">plugin.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="pose__prediction_8hpp" kindref="compound">illixr/data_format/pose_prediction.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="render__pass_8hpp" kindref="compound">illixr/vk/render_pass.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceILLIXR" kindref="compound">ILLIXR</ref>;</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight><highlight class="preprocessor">#ifndef<sp/>NVENC_ENCODER</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceILLIXR_1_1vulkan_1_1ffmpeg__utils" kindref="compound">ILLIXR::vulkan::ffmpeg_utils</ref>;</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal">[[<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">maybe_unused</ref>]]<sp/><ref refid="classILLIXR_1_1offload__rendering__server__loader_1aa8130d622181142b928bea5b81f7a108" kindref="member">offload_rendering_server_loader::offload_rendering_server_loader</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>name,<sp/><ref refid="classILLIXR_1_1phonebook" kindref="compound">phonebook</ref>*<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">pb</ref>)</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/>:<sp/><ref refid="classILLIXR_1_1plugin" kindref="compound">plugin</ref>(name,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">pb</ref>)</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/>,<sp/>offload_rendering_server_plugin_{<ref refid="namespacestd" kindref="compound">std</ref>::<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">make_shared</ref>&lt;<ref refid="classILLIXR_1_1offload__rendering__server" kindref="compound">offload_rendering_server</ref>&gt;(name,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">pb</ref>)}<sp/>{</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">pb</ref>-&gt;register_impl&lt;<ref refid="classILLIXR_1_1vulkan_1_1timewarp" kindref="compound">vulkan::timewarp</ref>&gt;(offload_rendering_server_plugin_);</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">pb</ref>-&gt;register_impl&lt;<ref refid="classILLIXR_1_1data__format_1_1pose__prediction" kindref="compound">data_format::pose_prediction</ref>&gt;(offload_rendering_server_plugin_);</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/>log_-&gt;info(</highlight><highlight class="stringliteral">&quot;Registered<sp/>vulkan::timewarp<sp/>and<sp/>pose_prediction<sp/>implementations&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>NVENC_ENCODER</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/>log_-&gt;info(</highlight><highlight class="stringliteral">&quot;Using<sp/>NVENC<sp/>encoder<sp/>backend<sp/>(no<sp/>FFmpeg<sp/>dependency)&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/>log_-&gt;info(</highlight><highlight class="stringliteral">&quot;Using<sp/>FFmpeg<sp/>encoder<sp/>backend&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight></codeline>
+<codeline lineno="39"><highlight class="normal">std::vector&lt;const<sp/>char*&gt;<sp/><ref refid="classILLIXR_1_1offload__rendering__server__loader_1a3d57258ca4fa6ea173b06638790cccdb" kindref="member">offload_rendering_server_loader::get_required_instance_extensions</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_KHR_EXTERNAL_MEMORY_CAPABILITIES_EXTENSION_NAME</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_KHR_EXTERNAL_SEMAPHORE_CAPABILITIES_EXTENSION_NAME</ref>,</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME</ref>};</highlight></codeline>
+<codeline lineno="42"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"></highlight></codeline>
+<codeline lineno="44"><highlight class="normal">std::vector&lt;const<sp/>char*&gt;<sp/><ref refid="classILLIXR_1_1offload__rendering__server__loader_1a1aa44381caf1500a9d693e4b19a17c7c" kindref="member">offload_rendering_server_loader::get_required_devices_extensions</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;const<sp/>char*&gt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">extensions</ref><sp/>=<sp/>{<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_KHR_EXTERNAL_MEMORY_EXTENSION_NAME</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_KHR_EXTERNAL_SEMAPHORE_EXTENSION_NAME</ref>,</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_KHR_SYNCHRONIZATION_2_EXTENSION_NAME</ref>};</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"></highlight></codeline>
+<codeline lineno="48"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>_WIN32</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Windows-specific<sp/>external<sp/>memory/semaphore<sp/>extensions</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">extensions</ref>.push_back(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_KHR_EXTERNAL_MEMORY_WIN32_EXTENSION_NAME</ref>);</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">extensions</ref>.push_back(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_KHR_EXTERNAL_SEMAPHORE_WIN32_EXTENSION_NAME</ref>);</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Linux/Unix<sp/>external<sp/>memory/semaphore<sp/>extensions</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">extensions</ref>.push_back(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_KHR_EXTERNAL_MEMORY_FD_EXTENSION_NAME</ref>);</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">extensions</ref>.push_back(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">VK_KHR_EXTERNAL_SEMAPHORE_FD_EXTENSION_NAME</ref>);</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="57"><highlight class="normal"></highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">extensions</ref>;</highlight></codeline>
+<codeline lineno="59"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"></highlight></codeline>
+<codeline lineno="61"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1offload__rendering__server__loader_1a3b5d052cda43dde1f63e9cb33fcdb76d" kindref="member">offload_rendering_server_loader::start</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1offload__rendering__server__loader_1ade15fc3c9974d192dc18aedd2c9bc708" kindref="member">offload_rendering_server_plugin_</ref>-&gt;start();</highlight></codeline>
+<codeline lineno="63"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"></highlight></codeline>
+<codeline lineno="65"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1offload__rendering__server__loader_1a8495b481afc10a2e134bf180cb3d9796" kindref="member">offload_rendering_server_loader::stop</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1offload__rendering__server__loader_1ade15fc3c9974d192dc18aedd2c9bc708" kindref="member">offload_rendering_server_plugin_</ref>-&gt;stop();</highlight></codeline>
+<codeline lineno="67"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"></highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><ref refid="include_2illixr_2plugin_8hpp_1aa29023b17f5259cc4186f4627e1d9b5c" kindref="member">PLUGIN_MAIN</ref>(<ref refid="classILLIXR_1_1offload__rendering__server__loader" kindref="compound">offload_rendering_server_loader</ref>)</highlight></codeline>
+    </programlisting>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/offload_rendering_server/plugin.cpp"/>
+  </compounddef>
+</doxygen>

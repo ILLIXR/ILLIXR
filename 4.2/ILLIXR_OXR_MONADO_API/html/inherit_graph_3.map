@@ -1,0 +1,7 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" title=" " alt="" coords="5,45,148,70"/>
+<area shape="rect" id="Node000001" href="$structILLIXR_1_1data__format_1_1pose_1_1hand__interaction__pose.html" title="Pose, gesture&#45;strength value, and readiness flag for a single hand interaction action space." alt="" coords="196,5,412,45"/>
+<area shape="poly" id="edge8_Node000000_Node000001" title=" " alt="" coords="161,43,195,38,196,43,162,48"/>
+<area shape="rect" id="Node000002" href="$structILLIXR_1_1data__format_1_1pose_1_1palm__pose.html" title="Palm pose and velocity information." alt="" coords="229,69,379,109"/>
+<area shape="poly" id="edge9_Node000000_Node000002" title=" " alt="" coords="162,67,229,76,228,81,161,72"/>
+</map>

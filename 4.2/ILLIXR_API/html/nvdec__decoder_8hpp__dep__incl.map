@@ -1,0 +1,13 @@
+<map id="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/nvdec_decoder.hpp" name="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/nvdec_decoder.hpp">
+<area shape="rect" id="Node000001" title="NVDEC hardware H.265 decoder for the semantic_python plugin." alt="" coords="143,5,347,75"/>
+<area shape="rect" id="Node000002" href="$nvdec__decoder_8cpp.html" title=" " alt="" coords="5,123,208,192"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="196,86,149,124,146,120,193,81"/>
+<area shape="rect" id="Node000003" href="$plugins_2semantic__python_2plugin_8cpp.html" title=" " alt="" coords="205,357,387,427"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="255,88,294,357,289,358,250,89"/>
+<area shape="rect" id="Node000004" href="$plugins_2semantic__python_2plugin_8hpp.html" title=" " alt="" coords="283,123,464,192"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="295,82,337,120,334,124,291,86"/>
+<area shape="poly" id="edge4_Node000004_Node000003" title=" " alt="" coords="342,205,324,241,308,302,300,358,295,357,302,301,319,239,338,202"/>
+<area shape="rect" id="Node000005" href="$switchboard__bindings_8hpp.html" title="pybind11 bindings exposing ILLIXR switchboard topics to Python." alt="" coords="333,240,579,309"/>
+<area shape="poly" id="edge5_Node000004_Node000005" title=" " alt="" coords="408,202,434,238,430,241,403,205"/>
+<area shape="poly" id="edge6_Node000005_Node000003" title=" " alt="" coords="400,320,345,359,341,355,397,315"/>
+</map>

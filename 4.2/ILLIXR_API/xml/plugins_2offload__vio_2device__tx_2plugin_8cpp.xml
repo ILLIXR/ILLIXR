@@ -1,0 +1,724 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="plugins_2offload__vio_2device__tx_2plugin_8cpp" kind="file" language="C++">
+    <compoundname>plugin.cpp</compoundname>
+    <includes refid="plugins_2offload__vio_2device__tx_2plugin_8hpp" local="yes">plugin.hpp</includes>
+    <includes refid="topic__config_8hpp" local="yes">illixr/network/topic_config.hpp</includes>
+    <includes refid="plugins_2offload__vio_2device__tx_2video__encoder_8hpp" local="yes">video_encoder.hpp</includes>
+    <includes local="no">cassert</includes>
+    <includes local="no">opencv2/core/mat.hpp</includes>
+    <incdepgraph>
+      <node id="73">
+        <label>../proto/input_stub.hpp</label>
+      </node>
+      <node id="55">
+        <label>cpu_timer.hpp</label>
+        <link refid="cpu__timer_8hpp"/>
+        <childnode refid="56" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="47" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>illixr/data_format/imu.hpp</label>
+        <link refid="imu_8hpp"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="39" relation="include">
+        </childnode>
+      </node>
+      <node id="40">
+        <label>illixr/data_format/opencv_data_types.hpp</label>
+        <link refid="opencv__data__types_8hpp"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="41" relation="include">
+        </childnode>
+        <childnode refid="42" relation="include">
+        </childnode>
+        <childnode refid="43" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="56">
+        <label>error_util.hpp</label>
+        <link refid="error__util_8hpp"/>
+        <childnode refid="57" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>export.hpp</label>
+        <link refid="export_8hpp"/>
+      </node>
+      <node id="57">
+        <label>global_module_defs.hpp</label>
+        <link refid="global__module__defs_8hpp"/>
+        <childnode refid="58" relation="include">
+        </childnode>
+        <childnode refid="61" relation="include">
+        </childnode>
+        <childnode refid="63" relation="include">
+        </childnode>
+        <childnode refid="64" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+      </node>
+      <node id="58">
+        <label>headset_fov.hpp</label>
+        <link refid="headset__fov_8hpp"/>
+        <childnode refid="59" relation="include">
+        </childnode>
+        <childnode refid="60" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>managed_thread.hpp</label>
+        <link refid="managed__thread_8hpp"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>network/network_backend.hpp</label>
+        <link refid="network__backend_8hpp"/>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+      </node>
+      <node id="44">
+        <label>illixr/network/tcpsocket.hpp</label>
+        <link refid="tcpsocket_8hpp"/>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="45" relation="include">
+        </childnode>
+        <childnode refid="46" relation="include">
+        </childnode>
+        <childnode refid="47" relation="include">
+        </childnode>
+        <childnode refid="48" relation="include">
+        </childnode>
+        <childnode refid="49" relation="include">
+        </childnode>
+        <childnode refid="50" relation="include">
+        </childnode>
+        <childnode refid="51" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+      </node>
+      <node id="23">
+        <label>topic_config.hpp</label>
+        <link refid="topic__config_8hpp"/>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+      </node>
+      <node id="15">
+        <label>illixr/phonebook.hpp</label>
+        <link refid="phonebook_8hpp"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+      </node>
+      <node id="65">
+        <label>plugin.hpp</label>
+        <link refid="include_2illixr_2plugin_8hpp"/>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="66" relation="include">
+        </childnode>
+        <childnode refid="67" relation="include">
+        </childnode>
+        <childnode refid="68" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="69" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="27">
+        <label>record_logger.hpp</label>
+        <link refid="record__logger_8hpp"/>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+      </node>
+      <node id="61">
+        <label>relative_clock.hpp</label>
+        <link refid="relative__clock_8hpp"/>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="62" relation="include">
+        </childnode>
+      </node>
+      <node id="52">
+        <label>illixr/stoplight.hpp</label>
+        <link refid="stoplight_8hpp"/>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="53" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>illixr/switchboard.hpp</label>
+        <link refid="switchboard_8hpp"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+        <childnode refid="38" relation="include">
+        </childnode>
+      </node>
+      <node id="54">
+        <label>illixr/threadloop.hpp</label>
+        <link refid="threadloop_8hpp"/>
+        <childnode refid="55" relation="include">
+        </childnode>
+        <childnode refid="56" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="65" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="52" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="71">
+        <label>illixr/video_encoder.hpp</label>
+        <link refid="include_2illixr_2video__encoder_8hpp"/>
+        <childnode refid="72" relation="include">
+        </childnode>
+        <childnode refid="56" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="43" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/offload_vio/device_tx/plugin.cpp</label>
+        <link refid="plugins_2offload__vio_2device__tx_2plugin_8cpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="70" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="43" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>plugin.hpp</label>
+        <link refid="plugins_2offload__vio_2device__tx_2plugin_8hpp"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="40" relation="include">
+        </childnode>
+        <childnode refid="44" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="52" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="54" relation="include">
+        </childnode>
+        <childnode refid="70" relation="include">
+        </childnode>
+        <childnode refid="73" relation="include">
+        </childnode>
+        <childnode refid="74" relation="include">
+        </childnode>
+      </node>
+      <node id="70">
+        <label>video_encoder.hpp</label>
+        <link refid="plugins_2offload__vio_2device__tx_2video__encoder_8hpp"/>
+        <childnode refid="71" relation="include">
+        </childnode>
+        <childnode refid="53" relation="include">
+        </childnode>
+      </node>
+      <node id="63">
+        <label>algorithm</label>
+      </node>
+      <node id="28">
+        <label>any</label>
+      </node>
+      <node id="45">
+        <label>arpa/inet.h</label>
+      </node>
+      <node id="59">
+        <label>array</label>
+      </node>
+      <node id="8">
+        <label>atomic</label>
+      </node>
+      <node id="34">
+        <label>boost/archive/binary_iarchive.hpp</label>
+      </node>
+      <node id="35">
+        <label>boost/archive/binary_oarchive.hpp</label>
+      </node>
+      <node id="36">
+        <label>boost/iostreams/device/back_inserter.hpp</label>
+      </node>
+      <node id="37">
+        <label>boost/iostreams/stream.hpp</label>
+      </node>
+      <node id="74">
+        <label>boost/lockfree/spsc_queue.hpp</label>
+      </node>
+      <node id="38">
+        <label>boost/serialization/shared_ptr.hpp</label>
+      </node>
+      <node id="9">
+        <label>cassert</label>
+      </node>
+      <node id="46">
+        <label>cerrno</label>
+      </node>
+      <node id="24">
+        <label>chrono</label>
+      </node>
+      <node id="64">
+        <label>cmath</label>
+      </node>
+      <node id="5">
+        <label>concurrentqueue/blockingconcurrentqueue.hpp</label>
+      </node>
+      <node id="53">
+        <label>condition_variable</label>
+      </node>
+      <node id="60">
+        <label>cstdlib</label>
+      </node>
+      <node id="47">
+        <label>cstring</label>
+      </node>
+      <node id="31">
+        <label>eigen3/Eigen/Core</label>
+      </node>
+      <node id="39">
+        <label>eigen3/Eigen/Dense</label>
+      </node>
+      <node id="32">
+        <label>eigen3/Eigen/Geometry</label>
+      </node>
+      <node id="41">
+        <label>fstream</label>
+      </node>
+      <node id="10">
+        <label>functional</label>
+      </node>
+      <node id="72">
+        <label>gst/gst.h</label>
+      </node>
+      <node id="16">
+        <label>iostream</label>
+      </node>
+      <node id="33">
+        <label>list</label>
+      </node>
+      <node id="42">
+        <label>map</label>
+      </node>
+      <node id="17">
+        <label>memory</label>
+      </node>
+      <node id="18">
+        <label>mutex</label>
+      </node>
+      <node id="48">
+        <label>netinet/in.h</label>
+      </node>
+      <node id="49">
+        <label>netinet/tcp.h</label>
+      </node>
+      <node id="43">
+        <label>opencv2/core/mat.hpp</label>
+      </node>
+      <node id="25">
+        <label>optional</label>
+      </node>
+      <node id="62">
+        <label>ratio</label>
+      </node>
+      <node id="19">
+        <label>shared_mutex</label>
+      </node>
+      <node id="66">
+        <label>spdlog/common.h</label>
+      </node>
+      <node id="67">
+        <label>spdlog/sinks/basic_file_sink.h</label>
+      </node>
+      <node id="68">
+        <label>spdlog/sinks/stdout_color_sinks.h</label>
+      </node>
+      <node id="22">
+        <label>spdlog/spdlog.h</label>
+      </node>
+      <node id="30">
+        <label>sstream</label>
+      </node>
+      <node id="11">
+        <label>stdexcept</label>
+      </node>
+      <node id="29">
+        <label>string</label>
+      </node>
+      <node id="50">
+        <label>sys/socket.h</label>
+      </node>
+      <node id="12">
+        <label>thread</label>
+      </node>
+      <node id="20">
+        <label>typeindex</label>
+      </node>
+      <node id="69">
+        <label>typeinfo</label>
+      </node>
+      <node id="51">
+        <label>unistd.h</label>
+      </node>
+      <node id="21">
+        <label>unordered_map</label>
+      </node>
+      <node id="13">
+        <label>utility</label>
+      </node>
+      <node id="26">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#include<sp/>&quot;<ref refid="plugins_2zed_2plugin_8hpp" kindref="compound">plugin.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="topic__config_8hpp" kindref="compound">illixr/network/topic_config.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="plugins_2offload__vio_2device__tx_2video__encoder_8hpp" kindref="compound">video_encoder.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cassert&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;opencv2/core/mat.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceILLIXR" kindref="compound">ILLIXR</ref>;</highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceILLIXR_1_1data__format" kindref="compound">ILLIXR::data_format</ref>;</highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="comment">//<sp/>#define<sp/>USE_COMPRESSION</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal">[[<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">maybe_unused</ref>]]<sp/><ref refid="classILLIXR_1_1offload__writer_1aa20c08b089e2f74bf55076b3cd613ddf" kindref="member">offload_writer::offload_writer</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>name,<sp/><ref refid="classILLIXR_1_1phonebook" kindref="compound">phonebook</ref>*<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">pb</ref>)</highlight></codeline>
+<codeline lineno="15"><highlight class="normal"><sp/><sp/><sp/><sp/>:<sp/><ref refid="classILLIXR_1_1threadloop" kindref="compound">threadloop</ref>{name,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">pb</ref>}</highlight></codeline>
+<codeline lineno="16"><highlight class="normal"><sp/><sp/><sp/><sp/>,<sp/>switchboard_{phonebook_-&gt;lookup_impl&lt;<ref refid="classILLIXR_1_1switchboard" kindref="compound">switchboard</ref>&gt;()}</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"><sp/><sp/><sp/><sp/>,<sp/>clock_{phonebook_-&gt;lookup_impl&lt;<ref refid="classILLIXR_1_1relative__clock" kindref="compound">relative_clock</ref>&gt;()}</highlight></codeline>
+<codeline lineno="18"><highlight class="normal"><sp/><sp/><sp/><sp/>,<sp/>stoplight_{phonebook_-&gt;lookup_impl&lt;<ref refid="classILLIXR_1_1stoplight" kindref="compound">stoplight</ref>&gt;()}</highlight></codeline>
+<codeline lineno="19"><highlight class="normal"><sp/><sp/><sp/><sp/>,<sp/>cam_{switchboard_-&gt;get_buffered_reader&lt;<ref refid="structILLIXR_1_1data__format_1_1binocular__cam__type" kindref="compound">binocular_cam_type</ref>&gt;(</highlight><highlight class="stringliteral">&quot;cam&quot;</highlight><highlight class="normal">)}</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"><sp/><sp/><sp/><sp/>,<sp/>imu_cam_writer_{switchboard_-&gt;get_network_writer&lt;<ref refid="classILLIXR_1_1switchboard" kindref="compound">switchboard</ref>::event_wrapper&lt;<ref refid="namespacestd" kindref="compound">std</ref>::<ref refid="plugins_2offload__rendering__server_2CMakeLists_8txt_1a5a320a78f5d255e59cead61a98c7cbea" kindref="member">string</ref>&gt;&gt;(</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;compressed_imu_cam&quot;</highlight><highlight class="normal">,<sp/>network::topic_config{network::topic_config::SerializationMethod::PROTOBUF})}</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"><sp/><sp/><sp/><sp/>,<sp/>log_(<ref refid="runtime__impl_8cpp_1a3ed8ed51ab54dee694d03e15a65758b6" kindref="member">spdlogger</ref>(switchboard_-&gt;get_env_char(</highlight><highlight class="stringliteral">&quot;OFFLOAD_VIO_LOG_LEVEL&quot;</highlight><highlight class="normal">)))<sp/>{</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/>std::srand(std::time(0));</highlight></codeline>
+<codeline lineno="24"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1offload__writer_1a51833c0d2741c0794864e60159601857" kindref="member">offload_writer::start</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1threadloop_1af001e97f74595e18f589f66ac0595bfb" kindref="member">threadloop::start</ref>();</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1offload__writer_1a9139fa3fb9d64cc972b454e3412f05a6" kindref="member">encoder_</ref><sp/>=<sp/>std::make_unique&lt;vio_video_encoder&gt;([</highlight><highlight class="keyword">this</highlight><highlight class="normal">](</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">GstMapInfo</ref>&amp;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">img0</ref>,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">GstMapInfo</ref>&amp;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">img1</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1offload__writer_1ac38bd2aaba6fd0b98a45f6a90e2f6c33" kindref="member">queue_</ref>.consume_one([&amp;](<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint64_t</ref>&amp;<sp/>timestamp)<sp/>{</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref>)<sp/>timestamp;</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint64_t</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">curr</ref><sp/>=</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::chrono::duration_cast&lt;std::chrono::nanoseconds&gt;(std::chrono::system_clock::now().time_since_epoch())</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.count();</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>});</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::lock_guard&lt;std::mutex&gt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">lock</ref>{<ref refid="classILLIXR_1_1offload__writer_1acbd58a2377333f5b11594c8cc666102d" kindref="member">mutex_</ref>};</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;<ref refid="classILLIXR_1_1offload__writer_1a822b3943238d37da0b15eb24890b5726" kindref="member">img0_</ref><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">img0</ref>;</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;<ref refid="classILLIXR_1_1offload__writer_1af045c615968c630ccfcf9c6506548b8d" kindref="member">img1_</ref><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">img1</ref>;</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1offload__writer_1a762c4418c229ab8fef86e4d723bf4a0e" kindref="member">img_ready_</ref><sp/><sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1offload__writer_1aa0ab6979ee01ec6792f3ab3cbdfaf98c" kindref="member">condition_var_</ref>.notify_one();</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/>});</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1offload__writer_1a9139fa3fb9d64cc972b454e3412f05a6" kindref="member">encoder_</ref>-&gt;init();</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"></highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1offload__writer_1a3e8e06520b35febbd2827735bdc31afa" kindref="member">switchboard_</ref>-&gt;schedule&lt;<ref refid="structILLIXR_1_1data__format_1_1imu__type" kindref="compound">imu_type</ref>&gt;(<ref refid="classILLIXR_1_1plugin_1aaedb3f9178bdd11e53815e158454aaf3" kindref="member">id_</ref>,<sp/></highlight><highlight class="stringliteral">&quot;imu&quot;</highlight><highlight class="normal">,<sp/>[</highlight><highlight class="keyword">this</highlight><highlight class="normal">](</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1switchboard_1af91c1b9436918512e95e5fa8553846a7" kindref="member">switchboard::ptr&lt;const imu_type&gt;</ref>&amp;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">datum</ref>,<sp/>std::size_t)<sp/>{</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;<ref refid="classILLIXR_1_1offload__writer_1a01b49b3d24e5c008cdd7c9cd99120833" kindref="member">prepare_imu_cam_data</ref>(datum);</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/>});</highlight></codeline>
+<codeline lineno="49"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"></highlight></codeline>
+<codeline lineno="51"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1offload__writer_1a93f4ef31c83b710cb5d95636416aaa8f" kindref="member">offload_writer::_p_one_iteration</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">while</highlight><highlight class="normal"><sp/>(!<ref refid="classILLIXR_1_1offload__writer_1a75ec7812ee8e691fdee13aa912a2b4f3" kindref="member">stoplight_</ref>-&gt;check_should_stop())<sp/>{</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::this_thread::sleep_for(std::chrono::milliseconds(1000));</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="55"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"></highlight></codeline>
+<codeline lineno="57"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1offload__writer_1a6127d56db37cea1a397cb8dec2bd62ac" kindref="member">offload_writer::send_imu_cam_data</ref>(std::optional&lt;time_point&gt;&amp;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cam_time</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1offload__writer_1a56fd503e03f3c118d6f57dcefd6b6ca3" kindref="member">data_buffer_</ref>-&gt;set_real_timestamp(</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::chrono::duration_cast&lt;std::chrono::nanoseconds&gt;(std::chrono::system_clock::now().time_since_epoch()).count());</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1offload__writer_1a56fd503e03f3c118d6f57dcefd6b6ca3" kindref="member">data_buffer_</ref>-&gt;set_frame_id(<ref refid="classILLIXR_1_1offload__writer_1a247894ef61726a4961d5995877b97990" kindref="member">frame_id_</ref>);</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"></highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">data_to_be_sent</ref><sp/>=<sp/><ref refid="classILLIXR_1_1offload__writer_1a56fd503e03f3c118d6f57dcefd6b6ca3" kindref="member">data_buffer_</ref>-&gt;SerializeAsString();</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/><ref refid="namespaceILLIXR_1a1ee7d9f70024bfd225b53bffc272a430" kindref="member">delimiter</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/></highlight><highlight class="stringliteral">&quot;EEND!&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"></highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1offload__writer_1a11e445c913ae370b177316065e732df2" kindref="member">log_</ref>-&gt;info(</highlight><highlight class="stringliteral">&quot;{},{}&quot;</highlight><highlight class="normal">,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cam_time</ref>.value().time_since_epoch().count(),</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal">)<sp/>(<ref refid="classILLIXR_1_1offload__writer_1abc9a448fbb8212b3341b81a97f4eef2b" kindref="member">clock_</ref>-&gt;now().time_since_epoch().count()<sp/>-<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cam_time</ref>.value().time_since_epoch().count())<sp/>/<sp/>1<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">e6</ref>);</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>socket.write(data_to_be_sent<sp/>+<sp/>delimitter);</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1offload__writer_1a32876f11e72da1c0dd6e19635dab134f" kindref="member">imu_cam_writer_</ref>.<ref refid="classILLIXR_1_1switchboard_1_1network__writer_1af3078d848e91150e0adac5af4c3c11c3" kindref="member">put</ref>(std::make_shared&lt;<ref refid="classILLIXR_1_1switchboard_1_1event__wrapper" kindref="compound">switchboard::event_wrapper&lt;std::string&gt;</ref>&gt;(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">data_to_be_sent</ref><sp/>+<sp/><ref refid="namespaceILLIXR_1a1ee7d9f70024bfd225b53bffc272a430" kindref="member">delimiter</ref>));</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"></highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1offload__writer_1a247894ef61726a4961d5995877b97990" kindref="member">frame_id_</ref>++;</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1offload__writer_1a56fd503e03f3c118d6f57dcefd6b6ca3" kindref="member">data_buffer_</ref>;</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1offload__writer_1a56fd503e03f3c118d6f57dcefd6b6ca3" kindref="member">data_buffer_</ref><sp/>=<sp/></highlight><highlight class="keyword">new</highlight><highlight class="normal"><sp/>vio_input_proto::IMUCamVec();</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cam_time</ref>.reset();</highlight></codeline>
+<codeline lineno="74"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"></highlight></codeline>
+<codeline lineno="76"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1offload__writer_1a01b49b3d24e5c008cdd7c9cd99120833" kindref="member">offload_writer::prepare_imu_cam_data</ref>(<ref refid="classILLIXR_1_1switchboard_1af91c1b9436918512e95e5fa8553846a7" kindref="member">switchboard::ptr&lt;const imu_type&gt;</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">datum</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Ensures<sp/>that<sp/>slam<sp/>doesnt<sp/>start<sp/>before<sp/>valid<sp/>IMU<sp/>readings<sp/>come<sp/>in</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">datum</ref><sp/>==<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">)<sp/>{</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">assert</ref>(!<ref refid="classILLIXR_1_1offload__writer_1a2310fc4b523157e506bfced3ed1195fc" kindref="member">latest_imu_time_</ref>);</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"></highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Ensure<sp/>that<sp/>IMU<sp/>data<sp/>is<sp/>received<sp/>in<sp/>the<sp/>time<sp/>order</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">assert</ref>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">datum</ref>-&gt;time<sp/>&gt;<sp/><ref refid="classILLIXR_1_1offload__writer_1a2310fc4b523157e506bfced3ed1195fc" kindref="member">latest_imu_time_</ref>);</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1offload__writer_1a2310fc4b523157e506bfced3ed1195fc" kindref="member">latest_imu_time_</ref><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">datum</ref>-&gt;time;</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"></highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/>vio_input_proto::IMUData*<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">imu_data</ref><sp/>=<sp/><ref refid="classILLIXR_1_1offload__writer_1a56fd503e03f3c118d6f57dcefd6b6ca3" kindref="member">data_buffer_</ref>-&gt;add_imu_data();</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">imu_data</ref>-&gt;set_timestamp(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">datum</ref>-&gt;time.time_since_epoch().count());</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"></highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">*<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">angular_vel</ref><sp/>=<sp/></highlight><highlight class="keyword">new</highlight><highlight class="normal"><sp/>vio_input_proto::Vec3();</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">angular_vel</ref>-&gt;set_x(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">datum</ref>-&gt;angular_v.x());</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">angular_vel</ref>-&gt;set_y(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">datum</ref>-&gt;angular_v.y());</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">angular_vel</ref>-&gt;set_z(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">datum</ref>-&gt;angular_v.z());</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">imu_data</ref>-&gt;set_allocated_angular_vel(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">angular_vel</ref>);</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"></highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">*<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">linear_accel</ref><sp/>=<sp/></highlight><highlight class="keyword">new</highlight><highlight class="normal"><sp/>vio_input_proto::Vec3();</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">linear_accel</ref>-&gt;set_x(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">datum</ref>-&gt;linear_a.x());</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">linear_accel</ref>-&gt;set_y(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">datum</ref>-&gt;linear_a.y());</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">linear_accel</ref>-&gt;set_z(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">datum</ref>-&gt;linear_a.z());</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">imu_data</ref>-&gt;set_allocated_linear_accel(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">linear_accel</ref>);</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"></highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classILLIXR_1_1offload__writer_1a819adc6817ff950e579c6821eb4d3d21" kindref="member">latest_cam_time_</ref><sp/>&amp;&amp;<sp/><ref refid="classILLIXR_1_1offload__writer_1a2310fc4b523157e506bfced3ed1195fc" kindref="member">latest_imu_time_</ref><sp/>&gt;<sp/><ref refid="classILLIXR_1_1offload__writer_1a819adc6817ff950e579c6821eb4d3d21" kindref="member">latest_cam_time_</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1offload__writer_1a6127d56db37cea1a397cb8dec2bd62ac" kindref="member">send_imu_cam_data</ref>(<ref refid="classILLIXR_1_1offload__writer_1a819adc6817ff950e579c6821eb4d3d21" kindref="member">latest_cam_time_</ref>);</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"></highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1switchboard_1af91c1b9436918512e95e5fa8553846a7" kindref="member">switchboard::ptr&lt;const binocular_cam_type&gt;</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cam</ref>;</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"></highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classILLIXR_1_1offload__writer_1a36b5dedc0b3fb19f16260aef5288b8a9" kindref="member">cam_</ref>.size()<sp/>!=<sp/>0<sp/>&amp;&amp;<sp/>!<ref refid="classILLIXR_1_1offload__writer_1a819adc6817ff950e579c6821eb4d3d21" kindref="member">latest_cam_time_</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cam</ref><sp/>=<sp/><ref refid="classILLIXR_1_1offload__writer_1a36b5dedc0b3fb19f16260aef5288b8a9" kindref="member">cam_</ref>.dequeue();</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"></highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cv::Mat<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cam_img0</ref><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cam</ref>-&gt;at(<ref refid="namespaceILLIXR_1_1data__format_1_1image_1a6284c0d0ee6d8d9e30eeb4ae8cbe4e67ad0058ba605deadd68c7474d31627ad40" kindref="member">image::LEFT_EYE</ref>)).clone();</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cv::Mat<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cam_img1</ref><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cam</ref>-&gt;at(<ref refid="namespaceILLIXR_1_1data__format_1_1image_1a6284c0d0ee6d8d9e30eeb4ae8cbe4e67a1ad399a275b00b6f70026bdb48bde93d" kindref="member">image::RIGHT_EYE</ref>)).clone();</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cam_img0_size</ref><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cam_img0</ref>.rows<sp/>*<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cam_img0</ref>.cols;</highlight></codeline>
+<codeline lineno="114"><highlight class="normal"></highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">*<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cam_data</ref><sp/>=<sp/></highlight><highlight class="keyword">new</highlight><highlight class="normal"><sp/>vio_input_proto::CamData();</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cam_data</ref>-&gt;set_timestamp(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cam</ref>-&gt;time.time_since_epoch().count());</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cam_data</ref>-&gt;set_rows(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cam_img0</ref>.rows);</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cam_data</ref>-&gt;set_cols(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cam_img0</ref>.cols);</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"></highlight></codeline>
+<codeline lineno="120"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>USE_COMPRESSION</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint64_t</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">curr</ref><sp/>=</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::chrono::duration_cast&lt;std::chrono::nanoseconds&gt;(std::chrono::system_clock::now().time_since_epoch()).count();</highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1offload__writer_1ac38bd2aaba6fd0b98a45f6a90e2f6c33" kindref="member">queue_</ref>.push(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">curr</ref>);</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::unique_lock&lt;std::mutex&gt;<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">lock</ref>{<ref refid="classILLIXR_1_1offload__writer_1acbd58a2377333f5b11594c8cc666102d" kindref="member">mutex_</ref>};</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1offload__writer_1a9139fa3fb9d64cc972b454e3412f05a6" kindref="member">encoder_</ref>-&gt;enqueue(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cam_img0</ref>,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cam_img1</ref>);</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1offload__writer_1aa0ab6979ee01ec6792f3ab3cbdfaf98c" kindref="member">condition_var_</ref>.wait(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">lock</ref>,<sp/>[</highlight><highlight class="keyword">this</highlight><highlight class="normal">]()<sp/>{</highlight></codeline>
+<codeline lineno="128"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1offload__writer_1a762c4418c229ab8fef86e4d723bf4a0e" kindref="member">img_ready_</ref>;</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>});</highlight></codeline>
+<codeline lineno="130"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1offload__writer_1a762c4418c229ab8fef86e4d723bf4a0e" kindref="member">img_ready_</ref><sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"></highlight></codeline>
+<codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1offload__writer_1af6092300b0d67117c40b8159f2755f50" kindref="member">sizes_</ref>.push_back((</highlight><highlight class="keywordtype">int</highlight><highlight class="normal">)<sp/>this-&gt;<ref refid="classILLIXR_1_1offload__writer_1a822b3943238d37da0b15eb24890b5726" kindref="member">img0_</ref>.size);</highlight></codeline>
+<codeline lineno="133"><highlight class="normal"></highlight></codeline>
+<codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>calculate<sp/>average<sp/>sizes</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>if<sp/>(sizes_.size()<sp/>&gt;<sp/>100)<sp/>{</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/>int32_t<sp/>sum<sp/>=<sp/>0;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="137"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/>for<sp/>(auto&amp;<sp/>s<sp/>:<sp/>sizes_)<sp/>{</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="138"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>sum<sp/>+=<sp/>s;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="139"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/>}</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="140"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>For<sp/>debugging,<sp/>prints<sp/>out<sp/>average<sp/>image<sp/>size<sp/>after<sp/>compression<sp/>and<sp/>compression<sp/>ratio</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="141"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>std::cout<sp/>&lt;&lt;<sp/>&quot;compression<sp/>ratio:<sp/>&quot;<sp/>&lt;&lt;<sp/>img0_size<sp/>/<sp/>(sum<sp/>/<sp/>sizes_.size())<sp/>&lt;&lt;<sp/>&quot;<sp/>average<sp/>size<sp/>after<sp/>compression<sp/>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="142"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>&lt;&lt;<sp/>sum<sp/>/<sp/>sizes_.size()<sp/>&lt;&lt;<sp/>std::endl;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="143"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//}</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="144"><highlight class="normal"></highlight></codeline>
+<codeline lineno="145"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cam_data</ref>-&gt;set_img0_data((</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*)<sp/>this-&gt;<ref refid="classILLIXR_1_1offload__writer_1a822b3943238d37da0b15eb24890b5726" kindref="member">img0_</ref>.data,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">this</ref>-&gt;img0_.size);</highlight></codeline>
+<codeline lineno="146"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cam_data</ref>-&gt;set_img1_data((</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*)<sp/>this-&gt;<ref refid="classILLIXR_1_1offload__writer_1af045c615968c630ccfcf9c6506548b8d" kindref="member">img1_</ref>.data,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">this</ref>-&gt;img1_.size);</highlight></codeline>
+<codeline lineno="147"><highlight class="normal"></highlight></codeline>
+<codeline lineno="148"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">lock</ref>.unlock();</highlight></codeline>
+<codeline lineno="150"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight></codeline>
+<codeline lineno="152"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cam_data</ref>-&gt;set_img0_data((</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*)<sp/>cam_img0.data,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cam_img0_size</ref>);</highlight></codeline>
+<codeline lineno="153"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cam_data</ref>-&gt;set_img1_data((</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*)<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cam_img1</ref>.data,<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cam_img0_size</ref>);</highlight></codeline>
+<codeline lineno="155"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="156"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1offload__writer_1a56fd503e03f3c118d6f57dcefd6b6ca3" kindref="member">data_buffer_</ref>-&gt;set_allocated_cam_data(<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cam_data</ref>);</highlight></codeline>
+<codeline lineno="157"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1offload__writer_1a819adc6817ff950e579c6821eb4d3d21" kindref="member">latest_cam_time_</ref><sp/>=<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cam</ref>-&gt;time;</highlight></codeline>
+<codeline lineno="158"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classILLIXR_1_1offload__writer_1a2310fc4b523157e506bfced3ed1195fc" kindref="member">latest_imu_time_</ref><sp/>&lt;=<sp/><ref refid="classILLIXR_1_1offload__writer_1a819adc6817ff950e579c6821eb4d3d21" kindref="member">latest_cam_time_</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="159"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="160"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="161"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1offload__writer_1a6127d56db37cea1a397cb8dec2bd62ac" kindref="member">send_imu_cam_data</ref>(<ref refid="classILLIXR_1_1offload__writer_1a819adc6817ff950e579c6821eb4d3d21" kindref="member">latest_cam_time_</ref>);</highlight></codeline>
+<codeline lineno="162"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="163"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="164"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="165"><highlight class="normal"></highlight></codeline>
+<codeline lineno="166"><highlight class="normal"><ref refid="include_2illixr_2plugin_8hpp_1aa29023b17f5259cc4186f4627e1d9b5c" kindref="member">PLUGIN_MAIN</ref>(<ref refid="classILLIXR_1_1offload__writer" kindref="compound">offload_writer</ref>)</highlight></codeline>
+    </programlisting>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/offload_vio/device_tx/plugin.cpp"/>
+  </compounddef>
+</doxygen>

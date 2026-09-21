@@ -1,0 +1,22 @@
+<map id="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/video_decoder.hpp" name="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/video_decoder.hpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="490,5,645,75"/>
+<area shape="rect" id="Node000002" href="$plugins_2ada_2server__rx_2video__decoder_8hpp.html" title=" " alt="" coords="220,123,411,192"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="483,83,390,125,388,120,480,78"/>
+<area shape="rect" id="Node000006" href="$plugins_2offload__vio_2server__rx_2video__decoder_8hpp.html" title=" " alt="" coords="447,123,688,192"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="570,89,570,122,565,122,565,89"/>
+<area shape="rect" id="Node000010" href="$utils_2video__decoder_8cpp.html" title=" " alt="" coords="713,130,937,185"/>
+<area shape="poly" id="edge10_Node000001_Node000010" title=" " alt="" coords="656,78,767,128,765,132,654,83"/>
+<area shape="rect" id="Node000003" href="$plugins_2ada_2server__rx_2plugin_8hpp.html" title=" " alt="" coords="5,240,196,309"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="242,201,165,242,162,237,240,196"/>
+<area shape="rect" id="Node000005" href="$plugins_2ada_2server__rx_2video__decoder_8cpp.html" title=" " alt="" coords="220,240,411,309"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="318,206,318,240,313,240,313,206"/>
+<area shape="rect" id="Node000004" href="$plugins_2ada_2server__rx_2plugin_8cpp.html" title=" " alt="" coords="5,357,196,427"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="103,323,103,357,98,357,98,323"/>
+<area shape="rect" id="Node000007" href="$plugins_2offload__vio_2server__rx_2plugin_8cpp.html" title=" " alt="" coords="421,357,607,427"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="505,203,489,221,476,241,470,270,473,301,482,330,495,356,490,358,477,332,468,302,464,270,472,239,485,218,501,199"/>
+<area shape="rect" id="Node000008" href="$plugins_2offload__vio_2server__rx_2plugin_8hpp.html" title=" " alt="" coords="486,240,673,309"/>
+<area shape="poly" id="edge7_Node000006_Node000008" title=" " alt="" coords="575,206,578,240,573,240,570,206"/>
+<area shape="rect" id="Node000009" href="$plugins_2offload__vio_2server__rx_2video__decoder_8cpp.html" title=" " alt="" coords="697,240,937,309"/>
+<area shape="poly" id="edge9_Node000006_Node000009" title=" " alt="" coords="654,195,745,237,743,242,651,200"/>
+<area shape="poly" id="edge8_Node000008_Node000007" title=" " alt="" coords="556,323,535,358,531,356,551,320"/>
+</map>

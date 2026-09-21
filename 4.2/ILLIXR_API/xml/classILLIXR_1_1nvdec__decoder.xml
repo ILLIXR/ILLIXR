@@ -1,0 +1,355 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classILLIXR_1_1nvdec__decoder" kind="class" language="C++" prot="public">
+    <compoundname>ILLIXR::nvdec_decoder</compoundname>
+    <includes refid="nvdec__decoder_8hpp" local="no">nvdec_decoder.hpp</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1nvdec__decoder_1a891a55e438197a88ff809ed34bb778eb" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cudaVideoCodec</ref></type>
+        <definition>cudaVideoCodec ILLIXR::nvdec_decoder::codec_</definition>
+        <argsstring></argsstring>
+        <name>codec_</name>
+        <qualifiedname>ILLIXR::nvdec_decoder::codec_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/nvdec_decoder.hpp" line="90" column="32" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/nvdec_decoder.hpp" bodystart="90" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1nvdec__decoder_1ac73b9406c32e265bf05bb3864d656b6b" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">CUcontext</ref></type>
+        <definition>CUcontext ILLIXR::nvdec_decoder::cuda_ctx_</definition>
+        <argsstring></argsstring>
+        <name>cuda_ctx_</name>
+        <qualifiedname>ILLIXR::nvdec_decoder::cuda_ctx_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">nullptr</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/nvdec_decoder.hpp" line="91" column="32" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/nvdec_decoder.hpp" bodystart="91" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1nvdec__decoder_1abe00a2f1f56dcebd5c27ccfd3758ea52" prot="private" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">NvDecoder</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;NvDecoder&gt; ILLIXR::nvdec_decoder::decoder_</definition>
+        <argsstring></argsstring>
+        <name>decoder_</name>
+        <qualifiedname>ILLIXR::nvdec_decoder::decoder_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/nvdec_decoder.hpp" line="92" column="21" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/nvdec_decoder.hpp" bodystart="92" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1nvdec__decoder_1a7878ca0510a237a8388b155aeec5599f" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint8_t</ref> *</type>
+        <definition>uint8_t* ILLIXR::nvdec_decoder::pinned_rgb_</definition>
+        <argsstring></argsstring>
+        <name>pinned_rgb_</name>
+        <qualifiedname>ILLIXR::nvdec_decoder::pinned_rgb_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">nullptr</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/nvdec_decoder.hpp" line="94" column="17" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/nvdec_decoder.hpp" bodystart="94" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1nvdec__decoder_1a7da001cf8ac8674c849e7ed9047fb094" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint8_t</ref> *</type>
+        <definition>uint8_t* ILLIXR::nvdec_decoder::device_rgb_</definition>
+        <argsstring></argsstring>
+        <name>device_rgb_</name>
+        <qualifiedname>ILLIXR::nvdec_decoder::device_rgb_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">nullptr</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/nvdec_decoder.hpp" line="95" column="17" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/nvdec_decoder.hpp" bodystart="95" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1nvdec__decoder_1a5324fac63058916a623badb0c0e75c26" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cudaStream_t</ref></type>
+        <definition>cudaStream_t ILLIXR::nvdec_decoder::stream_</definition>
+        <argsstring></argsstring>
+        <name>stream_</name>
+        <qualifiedname>ILLIXR::nvdec_decoder::stream_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">nullptr</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/nvdec_decoder.hpp" line="96" column="18" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/nvdec_decoder.hpp" bodystart="96" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1nvdec__decoder_1a46e29aa3f1ee38700d554d9db7331165" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+        <definition>int ILLIXR::nvdec_decoder::width_</definition>
+        <argsstring></argsstring>
+        <name>width_</name>
+        <qualifiedname>ILLIXR::nvdec_decoder::width_</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/nvdec_decoder.hpp" line="97" column="18" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/nvdec_decoder.hpp" bodystart="97" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1nvdec__decoder_1a44b6bd496b64326b76e2dbd3200ef692" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+        <definition>int ILLIXR::nvdec_decoder::height_</definition>
+        <argsstring></argsstring>
+        <name>height_</name>
+        <qualifiedname>ILLIXR::nvdec_decoder::height_</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/nvdec_decoder.hpp" line="98" column="18" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/nvdec_decoder.hpp" bodystart="98" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classILLIXR_1_1nvdec__decoder_1a659fb595dfba255f6d3f3c7a32a35e2d" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>nvdec_decoder::nvdec_decoder</definition>
+        <argsstring>(cudaVideoCodec codec=cudaVideoCodec_HEVC)</argsstring>
+        <name>nvdec_decoder</name>
+        <qualifiedname>ILLIXR::nvdec_decoder::nvdec_decoder</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cudaVideoCodec</ref></type>
+          <declname>codec</declname>
+          <defval><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">cudaVideoCodec_HEVC</ref></defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/nvdec_decoder.hpp" line="41" column="14" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/nvdec_decoder.cpp" bodystart="10" bodyend="43"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1nvdec__decoder_1a190386836071ed8bb62619c5930edea1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>nvdec_decoder::~nvdec_decoder</definition>
+        <argsstring>()</argsstring>
+        <name>~nvdec_decoder</name>
+        <qualifiedname>ILLIXR::nvdec_decoder::~nvdec_decoder</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/nvdec_decoder.hpp" line="43" column="5" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/nvdec_decoder.cpp" bodystart="45" bodyend="50"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1nvdec__decoder_1a13b53c3e0dff726dbee71961ee5c378a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>ILLIXR::nvdec_decoder::nvdec_decoder</definition>
+        <argsstring>(const nvdec_decoder &amp;)=delete</argsstring>
+        <name>nvdec_decoder</name>
+        <qualifiedname>ILLIXR::nvdec_decoder::nvdec_decoder</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="classILLIXR_1_1nvdec__decoder" kindref="compound">nvdec_decoder</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/nvdec_decoder.hpp" line="46" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1nvdec__decoder_1a109928c5ee97076af794b3aebf82d492" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classILLIXR_1_1nvdec__decoder" kindref="compound">nvdec_decoder</ref> &amp;</type>
+        <definition>nvdec_decoder &amp; ILLIXR::nvdec_decoder::operator=</definition>
+        <argsstring>(const nvdec_decoder &amp;)=delete</argsstring>
+        <name>operator=</name>
+        <qualifiedname>ILLIXR::nvdec_decoder::operator=</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="classILLIXR_1_1nvdec__decoder" kindref="compound">nvdec_decoder</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/nvdec_decoder.hpp" line="47" column="19"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1nvdec__decoder_1aeb8e64d41c32bfcf2e9a54dd04e0dbfc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint8_t</ref> *</type>
+        <definition>const uint8_t * nvdec_decoder::decode</definition>
+        <argsstring>(const uint8_t *data, size_t size, int64_t frame_number, int64_t &amp;out_frame_number)</argsstring>
+        <name>decode</name>
+        <qualifiedname>ILLIXR::nvdec_decoder::decode</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint8_t</ref> *</type>
+          <declname>data</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">size_t</ref></type>
+          <declname>size</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int64_t</ref></type>
+          <declname>frame_number</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int64_t</ref> &amp;</type>
+          <declname>out_frame_number</declname>
+        </param>
+        <briefdescription>
+<para>Decode one H.265 annexb access unit. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Decodes the input bytes and converts the resulting NV12 frame to packed RGB uint8 on the GPU, then copies to a pre-allocated pinned host buffer.</para>
+<para>NVDEC may hand back a different picture than the one just submitted (see the reordering note above), so frame_number is threaded through as the NVDEC picture timestamp and read back via GetFrame(&amp;ts) out_frame_number identifies which picture pinned_rgb_ actually holds.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>data</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Pointer to annexb bytes. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>size</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Byte count. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>frame_number</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Frame number of the packet being submitted; passed through as the NVDEC picture timestamp. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>out_frame_number</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Set to the frame number of the picture actually returned, which may lag frame_number while the reorder buffer is filling. Untouched if nullptr is returned. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Pointer to pinned host RGB buffer (H x W x 3, uint8, RGB order), or nullptr if no frame was output this call (e.g. during decoder init with SPS/PPS only, or while the reorder buffer is filling). The pointer is valid until the next call to decode(). </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/nvdec_decoder.hpp" line="75" column="19" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/nvdec_decoder.cpp" bodystart="52" bodyend="151"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1nvdec__decoder_1a36ea92e653bc12c0957bb4d1c120ad89" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+        <definition>int ILLIXR::nvdec_decoder::width</definition>
+        <argsstring>() const</argsstring>
+        <name>width</name>
+        <qualifiedname>ILLIXR::nvdec_decoder::width</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/nvdec_decoder.hpp" line="77" column="9" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/nvdec_decoder.hpp" bodystart="77" bodyend="79"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1nvdec__decoder_1a1363542e72decc4eec4aa053b69786c9" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+        <definition>int ILLIXR::nvdec_decoder::height</definition>
+        <argsstring>() const</argsstring>
+        <name>height</name>
+        <qualifiedname>ILLIXR::nvdec_decoder::height</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/nvdec_decoder.hpp" line="81" column="9" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/nvdec_decoder.hpp" bodystart="81" bodyend="83"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classILLIXR_1_1nvdec__decoder_1a160ab7ddf26b0d1c837400393b2a0ae1" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void nvdec_decoder::ensure_buffers</definition>
+        <argsstring>(int w, int h)</argsstring>
+        <name>ensure_buffers</name>
+        <qualifiedname>ILLIXR::nvdec_decoder::ensure_buffers</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+          <declname>w</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+          <declname>h</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/nvdec_decoder.hpp" line="86" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/nvdec_decoder.cpp" bodystart="153" bodyend="177"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1nvdec__decoder_1aa52af23013545babab1297d48fd434fd" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void nvdec_decoder::free_pinned</definition>
+        <argsstring>()</argsstring>
+        <name>free_pinned</name>
+        <qualifiedname>ILLIXR::nvdec_decoder::free_pinned</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/nvdec_decoder.hpp" line="88" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/nvdec_decoder.cpp" bodystart="179" bodyend="192"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/nvdec_decoder.hpp" line="39" column="1" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/semantic_python/nvdec_decoder.hpp" bodystart="39" bodyend="99"/>
+    <listofallmembers>
+      <member refid="classILLIXR_1_1nvdec__decoder_1a891a55e438197a88ff809ed34bb778eb" prot="private" virt="non-virtual"><scope>ILLIXR::nvdec_decoder</scope><name>codec_</name></member>
+      <member refid="classILLIXR_1_1nvdec__decoder_1ac73b9406c32e265bf05bb3864d656b6b" prot="private" virt="non-virtual"><scope>ILLIXR::nvdec_decoder</scope><name>cuda_ctx_</name></member>
+      <member refid="classILLIXR_1_1nvdec__decoder_1aeb8e64d41c32bfcf2e9a54dd04e0dbfc" prot="public" virt="non-virtual"><scope>ILLIXR::nvdec_decoder</scope><name>decode</name></member>
+      <member refid="classILLIXR_1_1nvdec__decoder_1abe00a2f1f56dcebd5c27ccfd3758ea52" prot="private" virt="non-virtual"><scope>ILLIXR::nvdec_decoder</scope><name>decoder_</name></member>
+      <member refid="classILLIXR_1_1nvdec__decoder_1a7da001cf8ac8674c849e7ed9047fb094" prot="private" virt="non-virtual"><scope>ILLIXR::nvdec_decoder</scope><name>device_rgb_</name></member>
+      <member refid="classILLIXR_1_1nvdec__decoder_1a160ab7ddf26b0d1c837400393b2a0ae1" prot="private" virt="non-virtual"><scope>ILLIXR::nvdec_decoder</scope><name>ensure_buffers</name></member>
+      <member refid="classILLIXR_1_1nvdec__decoder_1aa52af23013545babab1297d48fd434fd" prot="private" virt="non-virtual"><scope>ILLIXR::nvdec_decoder</scope><name>free_pinned</name></member>
+      <member refid="classILLIXR_1_1nvdec__decoder_1a1363542e72decc4eec4aa053b69786c9" prot="public" virt="non-virtual"><scope>ILLIXR::nvdec_decoder</scope><name>height</name></member>
+      <member refid="classILLIXR_1_1nvdec__decoder_1a44b6bd496b64326b76e2dbd3200ef692" prot="private" virt="non-virtual"><scope>ILLIXR::nvdec_decoder</scope><name>height_</name></member>
+      <member refid="classILLIXR_1_1nvdec__decoder_1a659fb595dfba255f6d3f3c7a32a35e2d" prot="public" virt="non-virtual"><scope>ILLIXR::nvdec_decoder</scope><name>nvdec_decoder</name></member>
+      <member refid="classILLIXR_1_1nvdec__decoder_1a13b53c3e0dff726dbee71961ee5c378a" prot="public" virt="non-virtual"><scope>ILLIXR::nvdec_decoder</scope><name>nvdec_decoder</name></member>
+      <member refid="classILLIXR_1_1nvdec__decoder_1a109928c5ee97076af794b3aebf82d492" prot="public" virt="non-virtual"><scope>ILLIXR::nvdec_decoder</scope><name>operator=</name></member>
+      <member refid="classILLIXR_1_1nvdec__decoder_1a7878ca0510a237a8388b155aeec5599f" prot="private" virt="non-virtual"><scope>ILLIXR::nvdec_decoder</scope><name>pinned_rgb_</name></member>
+      <member refid="classILLIXR_1_1nvdec__decoder_1a5324fac63058916a623badb0c0e75c26" prot="private" virt="non-virtual"><scope>ILLIXR::nvdec_decoder</scope><name>stream_</name></member>
+      <member refid="classILLIXR_1_1nvdec__decoder_1a36ea92e653bc12c0957bb4d1c120ad89" prot="public" virt="non-virtual"><scope>ILLIXR::nvdec_decoder</scope><name>width</name></member>
+      <member refid="classILLIXR_1_1nvdec__decoder_1a46e29aa3f1ee38700d554d9db7331165" prot="private" virt="non-virtual"><scope>ILLIXR::nvdec_decoder</scope><name>width_</name></member>
+      <member refid="classILLIXR_1_1nvdec__decoder_1a190386836071ed8bb62619c5930edea1" prot="public" virt="non-virtual"><scope>ILLIXR::nvdec_decoder</scope><name>~nvdec_decoder</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

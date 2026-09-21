@@ -1,0 +1,128 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="quest3__params_8hpp" kind="file" language="C++">
+    <compoundname>quest3_params.hpp</compoundname>
+    <includedby refid="plugins_2boba__streaming__server_2plugin_8hpp" local="yes">/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp</includedby>
+    <includedby refid="stereo__renderer_8hpp" local="yes">/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp</includedby>
+    <invincdepgraph>
+      <node id="1">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/quest3_params.hpp</label>
+        <link refid="quest3__params_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.cpp</label>
+        <link refid="plugins_2boba__streaming__server_2plugin_8cpp"/>
+      </node>
+      <node id="2">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_streaming_server/plugin.hpp</label>
+        <link refid="plugins_2boba__streaming__server_2plugin_8hpp"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.cpp</label>
+        <link refid="stereo__renderer_8cpp"/>
+      </node>
+      <node id="4">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/openxr_interface/stereo_renderer.hpp</label>
+        <link refid="stereo__renderer_8hpp"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+    </invincdepgraph>
+    <sectiondef kind="define">
+      <memberdef kind="define" id="quest3__params_8hpp_1a782014c60086870e402febaaef015a51" prot="public" static="no">
+        <name>HEADSET_WIDTH</name>
+        <initializer>1680</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/quest3_params.hpp" line="3" column="9" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/quest3_params.hpp" bodystart="3" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="quest3__params_8hpp_1ab627f88120cef567e06b225a333209b6" prot="public" static="no">
+        <name>HEADSET_HEIGHT</name>
+        <initializer>1816</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/quest3_params.hpp" line="5" column="9" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/quest3_params.hpp" bodystart="5" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="quest3__params_8hpp_1ab6fba2d2caf81c4820e201e64640b785" prot="public" static="no">
+        <name>NATIVE_STREAM_EYE_WIDTH</name>
+        <initializer>2144</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/quest3_params.hpp" line="11" column="9" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/quest3_params.hpp" bodystart="11" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="quest3__params_8hpp_1a4db3902ca0f6e2b4a567856929fe94e1" prot="public" static="no">
+        <name>NATIVE_STREAM_EYE_HEIGHT</name>
+        <initializer>2240</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/quest3_params.hpp" line="12" column="9" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/quest3_params.hpp" bodystart="12" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="quest3__params_8hpp_1a232233d80eba9bd52d008f8d40e1b3d4" prot="public" static="no">
+        <name>MOTION_VEC_WIDTH</name>
+        <initializer>432</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/quest3_params.hpp" line="14" column="9" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/quest3_params.hpp" bodystart="14" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="quest3__params_8hpp_1aa67006e4dc302390d838ac8f98e90dad" prot="public" static="no">
+        <name>MOTION_VEC_HEIGHT</name>
+        <initializer>432</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/quest3_params.hpp" line="15" column="9" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/quest3_params.hpp" bodystart="15" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight></codeline>
+<codeline lineno="3" refid="quest3__params_8hpp_1a782014c60086870e402febaaef015a51" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>HEADSET_WIDTH<sp/>1680</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="comment">//<sp/>#define<sp/>HEADSET_WIDTH<sp/><sp/>1344</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5" refid="quest3__params_8hpp_1ab627f88120cef567e06b225a333209b6" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>HEADSET_HEIGHT<sp/>1816</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="comment">//<sp/>#define<sp/>HEADSET_HEIGHT<sp/>1760</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="comment">//<sp/>#define<sp/>HEADSET_HEIGHT<sp/>1408</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Native<sp/>Boba<sp/>streaming<sp/>target.<sp/>These<sp/>match<sp/>the<sp/>active<sp/>ALVR<sp/>Medium<sp/>profile<sp/>on</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="comment">//<sp/>the<sp/>development<sp/>Quest<sp/>3<sp/>(2144x2240<sp/>per<sp/>eye<sp/>/<sp/>4288<sp/>pixels<sp/>combined).</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11" refid="quest3__params_8hpp_1ab6fba2d2caf81c4820e201e64640b785" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>NATIVE_STREAM_EYE_WIDTH<sp/><sp/>2144</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12" refid="quest3__params_8hpp_1a4db3902ca0f6e2b4a567856929fe94e1" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>NATIVE_STREAM_EYE_HEIGHT<sp/>2240</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight></codeline>
+<codeline lineno="14" refid="quest3__params_8hpp_1a232233d80eba9bd52d008f8d40e1b3d4" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>MOTION_VEC_WIDTH<sp/><sp/>432</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15" refid="quest3__params_8hpp_1aa67006e4dc302390d838ac8f98e90dad" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>MOTION_VEC_HEIGHT<sp/>432</highlight></codeline>
+    </programlisting>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/quest3_params.hpp"/>
+  </compounddef>
+</doxygen>

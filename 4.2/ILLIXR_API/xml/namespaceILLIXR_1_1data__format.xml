@@ -1,0 +1,616 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespaceILLIXR_1_1data__format" kind="namespace" language="C++">
+    <compoundname>ILLIXR::data_format</compoundname>
+    <innerclass refid="structILLIXR_1_1data__format_1_1binocular__cam__type" prot="public">ILLIXR::data_format::binocular_cam_type</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1boba__frame__overlay" prot="public">ILLIXR::data_format::boba_frame_overlay</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1boba__modal__overlay" prot="public">ILLIXR::data_format::boba_modal_overlay</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1boba__modal__texture" prot="public">ILLIXR::data_format::boba_modal_texture</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1cam__base__type" prot="public">ILLIXR::data_format::cam_base_type</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1cam__type__zed" prot="public">ILLIXR::data_format::cam_type_zed</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1camera__data" prot="public">ILLIXR::data_format::camera_data</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1camera__intrinsics" prot="public">ILLIXR::data_format::camera_intrinsics</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1ccd__data" prot="public">ILLIXR::data_format::ccd_data</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1compressed__frame" prot="public">ILLIXR::data_format::compressed_frame</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1connection__signal" prot="public">ILLIXR::data_format::connection_signal</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1depth__type" prot="public">ILLIXR::data_format::depth_type</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1draco__type" prot="public">ILLIXR::data_format::draco_type</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1dual__frames" prot="public">ILLIXR::data_format::dual_frames</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1eye__frame" prot="public">ILLIXR::data_format::eye_frame</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1frame__pose__id" prot="public">ILLIXR::data_format::frame_pose_id</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1hmd__physical__info" prot="public">ILLIXR::data_format::hmd_physical_info</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1hologram__input" prot="public">ILLIXR::data_format::hologram_input</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1image__handle" prot="public">ILLIXR::data_format::image_handle</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1imu__integrator__input" prot="public">ILLIXR::data_format::imu_integrator_input</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1imu__params" prot="public">ILLIXR::data_format::imu_params</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1imu__raw__type" prot="public">ILLIXR::data_format::imu_raw_type</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1imu__type" prot="public">ILLIXR::data_format::imu_type</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1latency__ping" prot="public">ILLIXR::data_format::latency_ping</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1latency__pong" prot="public">ILLIXR::data_format::latency_pong</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1mesh__type" prot="public">ILLIXR::data_format::mesh_type</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1monocular__cam__type" prot="public">ILLIXR::data_format::monocular_cam_type</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1network__latency__result" prot="public">ILLIXR::data_format::network_latency_result</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1openxr__eye__view" prot="public">ILLIXR::data_format::openxr_eye_view</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1openxr__view__frame" prot="public">ILLIXR::data_format::openxr_view_frame</innerclass>
+    <innerclass refid="classILLIXR_1_1data__format_1_1pose__prediction" prot="public">ILLIXR::data_format::pose_prediction</innerclass>
+    <innerclass refid="classILLIXR_1_1data__format_1_1proper__quaternion" prot="public">ILLIXR::data_format::proper_quaternion</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1quest__controller__axis2d" prot="public">ILLIXR::data_format::quest_controller_axis2d</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1quest__controller__button" prot="public">ILLIXR::data_format::quest_controller_button</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1quest__controller__input" prot="public">ILLIXR::data_format::quest_controller_input</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1quest__controller__pose" prot="public">ILLIXR::data_format::quest_controller_pose</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1quest__hand__controller" prot="public">ILLIXR::data_format::quest_hand_controller</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1rendered__frame" prot="public">ILLIXR::data_format::rendered_frame</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1rgb__depth__type" prot="public">ILLIXR::data_format::rgb_depth_type</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1scene__recon__path" prot="public">ILLIXR::data_format::scene_recon_path</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1scene__recon__type" prot="public">ILLIXR::data_format::scene_recon_type</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1semantic__frame" prot="public">ILLIXR::data_format::semantic_frame</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1signal__to__quad" prot="public">ILLIXR::data_format::signal_to_quad</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1stereo__frame" prot="public">ILLIXR::data_format::stereo_frame</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1stereo__modal__overlay" prot="public">ILLIXR::data_format::stereo_modal_overlay</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1stereo__overlay__command__range" prot="public">ILLIXR::data_format::stereo_overlay_command_range</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1stereo__render__view" prot="public">ILLIXR::data_format::stereo_render_view</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1stereo__shared__image" prot="public">ILLIXR::data_format::stereo_shared_image</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1vb__type" prot="public">ILLIXR::data_format::vb_type</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1vk__image__handle" prot="public">ILLIXR::data_format::vk_image_handle</innerclass>
+    <innerclass refid="structILLIXR_1_1data__format_1_1vulkan__device__context" prot="public">ILLIXR::data_format::vulkan_device_context</innerclass>
+    <innernamespace refid="namespaceILLIXR_1_1data__format_1_1camera">ILLIXR::data_format::camera</innernamespace>
+    <innernamespace refid="namespaceILLIXR_1_1data__format_1_1image">ILLIXR::data_format::image</innernamespace>
+    <innernamespace refid="namespaceILLIXR_1_1data__format_1_1pose">ILLIXR::data_format::pose</innernamespace>
+    <innernamespace refid="namespaceILLIXR_1_1data__format_1_1semantic__xr">ILLIXR::data_format::semantic_xr</innernamespace>
+    <innernamespace refid="namespaceILLIXR_1_1data__format_1_1shapes">ILLIXR::data_format::shapes</innernamespace>
+    <sectiondef kind="enum">
+      <memberdef kind="enum" id="namespaceILLIXR_1_1data__format_1a51f52e0460a5375ad6e1eee9a90895f8" prot="public" static="no" strong="yes">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint8_t</ref></type>
+        <name>frame_format</name>
+        <qualifiedname>ILLIXR::data_format::frame_format</qualifiedname>
+        <enumvalue id="namespaceILLIXR_1_1data__format_1a51f52e0460a5375ad6e1eee9a90895f8a70d831c8685ddf61857a6d0e41eb5889" prot="public">
+          <name>nv12</name>
+          <briefdescription>
+<para>NV12 (Y plane + interleaved UV plane) </para>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespaceILLIXR_1_1data__format_1a51f52e0460a5375ad6e1eee9a90895f8aaffcf7617521c42b49e1e2929a725e6a" prot="public">
+          <name>rgba8</name>
+          <briefdescription>
+<para>RGBA 8-bit per channel. </para>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespaceILLIXR_1_1data__format_1a51f52e0460a5375ad6e1eee9a90895f8adb01cd6d2fc7e923c507db5d53bf4c1b" prot="public">
+          <name>external_oes</name>
+          <briefdescription>
+<para>GL_TEXTURE_EXTERNAL_OES handle (for zero-copy path) </para>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+<para>Decoded video frame data format. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" line="278" column="1" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/frame.hpp" bodystart="278" bodyend="285"/>
+      </memberdef>
+      <memberdef kind="enum" id="namespaceILLIXR_1_1data__format_1adb4f39f5111686f87d5489182db83d30" prot="public" static="no" strong="yes">
+        <type></type>
+        <name>graphics_api</name>
+        <qualifiedname>ILLIXR::data_format::graphics_api</qualifiedname>
+        <enumvalue id="namespaceILLIXR_1_1data__format_1adb4f39f5111686f87d5489182db83d30ac0ad831a34c4633bee584066cfcc5040" prot="public">
+          <name>OPENGL</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespaceILLIXR_1_1data__format_1adb4f39f5111686f87d5489182db83d30ac60cacb57b9e78f018a9d973bee2f801" prot="public">
+          <name>VULKAN</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespaceILLIXR_1_1data__format_1adb4f39f5111686f87d5489182db83d30ad4908b1e39cc61772e5d74e5fb77d241" prot="public">
+          <name>TBD</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/misc.hpp" line="30" column="1" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/misc.hpp" bodystart="30" bodyend="30"/>
+      </memberdef>
+      <memberdef kind="enum" id="namespaceILLIXR_1_1data__format_1a2bb21bd5685c68f893f8ef8837cdba8b" prot="public" static="no" strong="yes">
+        <type></type>
+        <name>swapchain_usage</name>
+        <qualifiedname>ILLIXR::data_format::swapchain_usage</qualifiedname>
+        <enumvalue id="namespaceILLIXR_1_1data__format_1a2bb21bd5685c68f893f8ef8837cdba8baf4b748d04f97e0149fe74c25f097c364" prot="public">
+          <name>LEFT_SWAPCHAIN</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespaceILLIXR_1_1data__format_1a2bb21bd5685c68f893f8ef8837cdba8ba951646e00a475190432e69a3c36382f2" prot="public">
+          <name>RIGHT_SWAPCHAIN</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespaceILLIXR_1_1data__format_1a2bb21bd5685c68f893f8ef8837cdba8ba4d4e3a0aa14078dde19595ff502bc651" prot="public">
+          <name>LEFT_RENDER</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespaceILLIXR_1_1data__format_1a2bb21bd5685c68f893f8ef8837cdba8baa0dcfe8741012bf5f9d5c63404a3ae2e" prot="public">
+          <name>RIGHT_RENDER</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespaceILLIXR_1_1data__format_1a2bb21bd5685c68f893f8ef8837cdba8bad4cd0dabcf4caa22ad92fab40844c786" prot="public">
+          <name>NA</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/misc.hpp" line="33" column="1" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/misc.hpp" bodystart="33" bodyend="33"/>
+      </memberdef>
+      <memberdef kind="enum" id="namespaceILLIXR_1_1data__format_1a199659f655d737a8ff3be7944e54507b" prot="public" static="no" strong="yes">
+        <type>std::uint8_t</type>
+        <name>quest_controller_profile</name>
+        <qualifiedname>ILLIXR::data_format::quest_controller_profile</qualifiedname>
+        <enumvalue id="namespaceILLIXR_1_1data__format_1a199659f655d737a8ff3be7944e54507ba334c4a4c42fdb79d7ebc3e73b517e6f8" prot="public">
+          <name>none</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespaceILLIXR_1_1data__format_1a199659f655d737a8ff3be7944e54507baccd9bd9e1abc8ae74f707839dba99ae3" prot="public">
+          <name>simple_controller</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespaceILLIXR_1_1data__format_1a199659f655d737a8ff3be7944e54507baf4f09dcded396dbe3d0eacfddb11b205" prot="public">
+          <name>oculus_touch</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespaceILLIXR_1_1data__format_1a199659f655d737a8ff3be7944e54507bac64d4f9712c5e48e8474759f4959170e" prot="public">
+          <name>htc_vive</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespaceILLIXR_1_1data__format_1a199659f655d737a8ff3be7944e54507baff6edb39596ab0ba69020d2b5c938c35" prot="public">
+          <name>valve_index</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespaceILLIXR_1_1data__format_1a199659f655d737a8ff3be7944e54507ba1ffdfe05d221c142df2ef995762751db" prot="public">
+          <name>microsoft_motion</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespaceILLIXR_1_1data__format_1a199659f655d737a8ff3be7944e54507baad921d60486366258809553a3db49a4a" prot="public">
+          <name>unknown</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Interaction profiles currently suggested by the Quest controller plugin. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/quest_controller.hpp" line="12" column="1" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/quest_controller.hpp" bodystart="12" bodyend="20"/>
+      </memberdef>
+      <memberdef kind="enum" id="namespaceILLIXR_1_1data__format_1a3f789bfd811ac701d8972c8e6caed5d5" prot="public" static="no" strong="yes">
+        <type>std::uint8_t</type>
+        <name>stereo_pixel_format</name>
+        <qualifiedname>ILLIXR::data_format::stereo_pixel_format</qualifiedname>
+        <enumvalue id="namespaceILLIXR_1_1data__format_1a3f789bfd811ac701d8972c8e6caed5d5a9c30a57b56cc2f3d801bdba7abba4407" prot="public">
+          <name>rgba8_unorm</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Pixel storage understood by current Boba frame consumers. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_frame.hpp" line="17" column="1" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_frame.hpp" bodystart="17" bodyend="19"/>
+      </memberdef>
+      <memberdef kind="enum" id="namespaceILLIXR_1_1data__format_1ab8fe7a6fb1855357a2d98a776b6a2203" prot="public" static="no" strong="yes">
+        <type>std::uint8_t</type>
+        <name>stereo_image_origin</name>
+        <qualifiedname>ILLIXR::data_format::stereo_image_origin</qualifiedname>
+        <enumvalue id="namespaceILLIXR_1_1data__format_1ab8fe7a6fb1855357a2d98a776b6a2203a3f34ebfdc06155d551b08c312bcbb887" prot="public">
+          <name>upper_left</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespaceILLIXR_1_1data__format_1ab8fe7a6fb1855357a2d98a776b6a2203a67554c25267171d1850889601cecf8a1" prot="public">
+          <name>lower_left</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Row-zero convention used when uploading a producer image to a GPU texture. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_frame.hpp" line="22" column="1" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_frame.hpp" bodystart="22" bodyend="25"/>
+      </memberdef>
+      <memberdef kind="enum" id="namespaceILLIXR_1_1data__format_1a18a9f759f201d5d2aa0639e6ef46d9b1" prot="public" static="no" strong="yes">
+        <type>std::uint8_t</type>
+        <name>stereo_presentation_mode</name>
+        <qualifiedname>ILLIXR::data_format::stereo_presentation_mode</qualifiedname>
+        <enumvalue id="namespaceILLIXR_1_1data__format_1a18a9f759f201d5d2aa0639e6ef46d9b1a89e98582edfdcf1c49ac755abbdb1a28" prot="public">
+          <name>stereo_fullscreen</name>
+          <initializer>= 0</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+<para>Submit independent left/right images as an OpenXR projection layer. </para>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespaceILLIXR_1_1data__format_1a18a9f759f201d5d2aa0639e6ef46d9b1a4ab1b6344b858a28315d536b5d36cb5a" prot="public">
+          <name>mono_panel</name>
+          <initializer>= 1</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+<para>Place one monoscopic image on a world-anchored compositor quad. </para>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespaceILLIXR_1_1data__format_1a18a9f759f201d5d2aa0639e6ef46d9b1a9ca2b051d85875c62813ed674612b52d" prot="public">
+          <name>head_locked_panel</name>
+          <initializer>= 2</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+<para>Place one monoscopic image on a compositor quad fixed to the viewer. </para>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>How a stereo image pair should be presented by an XR compositor. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_presentation.hpp" line="8" column="1" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/stereo_presentation.hpp" bodystart="8" bodyend="15"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="typedef">
+      <memberdef kind="typedef" id="namespaceILLIXR_1_1data__format_1af028fdccbed543bc9e36f104888e8bff" prot="public" static="no">
+        <type>std::map&lt; <ref refid="namespaceILLIXR_1_1data__format_1_1pose_1a32b031315a1ac6a41a1033c10c02f372" kindref="member">pose::side</ref>, <ref refid="structILLIXR_1_1data__format_1_1ccd__data" kindref="compound">ccd_data</ref> &gt;</type>
+        <definition>typedef std::map&lt;pose::side, ccd_data&gt; ILLIXR::data_format::ccd_map</definition>
+        <argsstring></argsstring>
+        <name>ccd_map</name>
+        <qualifiedname>ILLIXR::data_format::ccd_map</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>mapping of ccd information to the eye it is associated with, for monocular cameras use <computeroutput><ref refid="namespaceILLIXR_1_1data__format_1_1pose_1a32b031315a1ac6a41a1033c10c02f372a362edc549a08e94007634bdf2dd5274f" kindref="member">ILLIXR::data_format::pose::LEFT</ref></computeroutput> </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/camera_data.hpp" line="49" column="18" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/camera_data.hpp" bodystart="49" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="namespaceILLIXR_1_1data__format_1a4e5d9dffa2bc977b072244250e38762e" prot="public" static="no">
+        <type>std::tuple&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref>, <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref>, <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref> &gt;</type>
+        <definition>using ILLIXR::data_format::VoxelBlockIndex = typedef std::tuple&lt;int, int, int&gt;</definition>
+        <argsstring></argsstring>
+        <name>VoxelBlockIndex</name>
+        <qualifiedname>ILLIXR::data_format::VoxelBlockIndex</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/draco.hpp" line="8" column="1" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/draco.hpp" bodystart="8" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="namespaceILLIXR_1_1data__format_1a5e7cfe1e0f99fd2e696d506994dbc8bb" prot="public" static="no">
+        <type>std::tuple&lt; <ref refid="namespaceILLIXR_1_1data__format_1a4e5d9dffa2bc977b072244250e38762e" kindref="member">VoxelBlockIndex</ref>, std::vector&lt; Eigen::Vector3d &gt;, std::vector&lt; Eigen::Vector3d &gt; &gt;</type>
+        <definition>using ILLIXR::data_format::NewVB = typedef std::tuple&lt;VoxelBlockIndex, std::vector&lt;Eigen::Vector3d&gt;, std::vector&lt;Eigen::Vector3d&gt; &gt;</definition>
+        <argsstring></argsstring>
+        <name>NewVB</name>
+        <qualifiedname>ILLIXR::data_format::NewVB</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/draco.hpp" line="9" column="1" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/draco.hpp" bodystart="9" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="namespaceILLIXR_1_1data__format_1a7fb771feeea2841af86e15b9306b8451" prot="public" static="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">struct</ref> <ref refid="structILLIXR_1_1data__format_1_1vk__image__handle" kindref="compound">ILLIXR::data_format::vk_image_handle</ref></type>
+        <definition>typedef struct ILLIXR::data_format::vk_image_handle ILLIXR::data_format::vk_image_handle</definition>
+        <argsstring></argsstring>
+        <name>vk_image_handle</name>
+        <qualifiedname>ILLIXR::data_format::vk_image_handle</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/misc.hpp" line="48" column="17"/>
+      </memberdef>
+      <memberdef kind="typedef" id="namespaceILLIXR_1_1data__format_1a44a2b582cf358d0fcc11f13632688295" prot="public" static="no">
+        <type><ref refid="classILLIXR_1_1data__format_1_1proper__quaternion" kindref="compound">proper_quaternion</ref>&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">double</ref> &gt;</type>
+        <definition>typedef proper_quaternion&lt;double&gt; ILLIXR::data_format::proper_quaterniond</definition>
+        <argsstring></argsstring>
+        <name>proper_quaterniond</name>
+        <qualifiedname>ILLIXR::data_format::proper_quaterniond</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/proper_quaternion.hpp" line="209" column="28" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/proper_quaternion.hpp" bodystart="209" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="namespaceILLIXR_1_1data__format_1ac2e846ae7adbccf5e92a9e1829f824c0" prot="public" static="no">
+        <type><ref refid="classILLIXR_1_1data__format_1_1proper__quaternion" kindref="compound">proper_quaternion</ref>&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">float</ref> &gt;</type>
+        <definition>typedef proper_quaternion&lt;float&gt; ILLIXR::data_format::proper_quaternionf</definition>
+        <argsstring></argsstring>
+        <name>proper_quaternionf</name>
+        <qualifiedname>ILLIXR::data_format::proper_quaternionf</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/proper_quaternion.hpp" line="210" column="29" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/proper_quaternion.hpp" bodystart="210" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="namespaceILLIXR_1_1data__format_1aee1e2187447238dd6dac655aa9a3354a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::data_format::compare</definition>
+        <argsstring>(const std::string &amp;input, const std::string &amp;val)</argsstring>
+        <name>compare</name>
+        <qualifiedname>ILLIXR::data_format::compare</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> std::string &amp;</type>
+          <declname>input</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/misc.hpp" line="148" column="13" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/misc.hpp" bodystart="148" bodyend="154"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceILLIXR_1_1data__format_1a7f17aa6ea8a36dc1f7f60eeaf300aa5c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>std::ostream &amp;</type>
+        <definition>std::ostream &amp; ILLIXR::data_format::operator&lt;&lt;</definition>
+        <argsstring>(std::ostream &amp;os, const proper_quaternion&lt; T &gt; &amp;pq)</argsstring>
+        <name>operator&lt;&lt;</name>
+        <qualifiedname>ILLIXR::data_format::operator&lt;&lt;</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>os</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="classILLIXR_1_1data__format_1_1proper__quaternion" kindref="compound">proper_quaternion</ref>&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">T</ref> &gt; &amp;</type>
+          <declname>pq</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="templateparam"><parameteritem>
+<parameternamelist>
+<parametername>T</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>os</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>pq</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para></para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/proper_quaternion.hpp" line="204" column="1" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/proper_quaternion.hpp" bodystart="204" bodyend="207"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceILLIXR_1_1data__format_1aa5fd561730812371fc06b28c696d4355" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename Scalar_</type>
+          </param>
+        </templateparamlist>
+        <type><ref refid="classILLIXR_1_1data__format_1_1proper__quaternion" kindref="compound">proper_quaternion</ref>&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">Scalar_</ref> &gt;</type>
+        <definition>proper_quaternion&lt; Scalar_ &gt; ILLIXR::data_format::operator*</definition>
+        <argsstring>(Scalar_ x, const proper_quaternion&lt; Scalar_ &gt; &amp;pq)</argsstring>
+        <name>operator*</name>
+        <qualifiedname>ILLIXR::data_format::operator*</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">Scalar_</ref></type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="classILLIXR_1_1data__format_1_1proper__quaternion" kindref="compound">proper_quaternion</ref>&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">Scalar_</ref> &gt; &amp;</type>
+          <declname>pq</declname>
+        </param>
+        <briefdescription>
+<para>Multiplication of scalar and ProperQuaternion. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="templateparam"><parameteritem>
+<parameternamelist>
+<parametername>Scalar_</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>x</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The value to multiply the quaternion by </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>pq</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The quaternion to multiply </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The ProperQuaternion containing the result </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/proper_quaternion.hpp" line="220" column="26" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/proper_quaternion.hpp" bodystart="220" bodyend="222"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceILLIXR_1_1data__format_1a8eee3034806834992f1767c4af71e72b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename Scalar_</type>
+          </param>
+        </templateparamlist>
+        <type><ref refid="classILLIXR_1_1data__format_1_1proper__quaternion" kindref="compound">proper_quaternion</ref>&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">Scalar_</ref> &gt;</type>
+        <definition>proper_quaternion&lt; Scalar_ &gt; ILLIXR::data_format::operator/</definition>
+        <argsstring>(const proper_quaternion&lt; Scalar_ &gt; &amp;pq, Scalar_ x)</argsstring>
+        <name>operator/</name>
+        <qualifiedname>ILLIXR::data_format::operator/</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="classILLIXR_1_1data__format_1_1proper__quaternion" kindref="compound">proper_quaternion</ref>&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">Scalar_</ref> &gt; &amp;</type>
+          <declname>pq</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">Scalar_</ref></type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+<para>Division of a ProperQuaternion by a scalar. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="templateparam"><parameteritem>
+<parameternamelist>
+<parametername>Scalar_</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>pq</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The quaternion to divide </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>x</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The value to divide the Quaternion by </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The ProperQuaternion containing the result </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/proper_quaternion.hpp" line="232" column="26" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/proper_quaternion.hpp" bodystart="232" bodyend="234"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/camera_data.hpp" line="21" column="1"/>
+  </compounddef>
+</doxygen>

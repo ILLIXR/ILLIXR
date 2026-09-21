@@ -1,0 +1,58 @@
+<map id="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/misc.hpp" name="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/data_format/serialization/misc.hpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="1159,5,1350,89"/>
+<area shape="rect" id="Node000002" href="$serialization_2frame_8hpp.html" title=" " alt="" coords="482,401,673,485"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1146,61,1070,72,983,88,894,110,808,140,742,165,690,187,668,200,647,218,626,241,605,271,590,302,581,336,577,401,572,401,576,336,585,300,600,268,622,238,643,214,665,196,688,182,740,160,806,135,893,105,982,83,1069,67,1145,56"/>
+<area shape="rect" id="Node000012" href="$serialization_2head__pose_8hpp.html" title=" " alt="" coords="615,269,806,353"/>
+<area shape="poly" id="edge11_Node000001_Node000012" title=" " alt="" coords="1147,70,1041,97,986,117,933,140,882,169,834,204,754,271,751,267,831,199,879,165,931,135,984,112,1039,92,1146,65"/>
+<area shape="rect" id="Node000014" href="$latency_8hpp.html" title=" " alt="" coords="1159,137,1350,221"/>
+<area shape="poly" id="edge16_Node000001_Node000014" title=" " alt="" coords="1257,103,1257,137,1252,137,1252,103"/>
+<area shape="rect" id="Node000019" href="$openxr_8hpp.html" title=" " alt="" coords="1374,137,1565,221"/>
+<area shape="poly" id="edge21_Node000001_Node000019" title=" " alt="" coords="1336,95,1403,135,1400,139,1333,99"/>
+<area shape="rect" id="Node000020" href="$serialization_2openxr__view__frame_8hpp.html" title=" " alt="" coords="1589,137,1779,221"/>
+<area shape="poly" id="edge22_Node000001_Node000020" title=" " alt="" coords="1364,73,1577,135,1589,139,1587,144,1575,140,1363,79"/>
+<area shape="rect" id="Node000021" href="$serialization_2pose__base_8hpp.html" title=" " alt="" coords="945,137,1135,221"/>
+<area shape="poly" id="edge23_Node000001_Node000021" title=" " alt="" coords="1176,99,1109,139,1106,135,1173,95"/>
+<area shape="rect" id="Node000025" href="$serialization_2quest__controller_8hpp.html" title=" " alt="" coords="1803,137,1994,221"/>
+<area shape="poly" id="edge31_Node000001_Node000025" title=" " alt="" coords="1364,57,1565,86,1679,108,1793,135,1804,138,1802,143,1791,140,1678,113,1564,91,1363,63"/>
+<area shape="rect" id="Node000003" href="$plugins_2boba__streaming__server_2plugin_8hpp.html" title=" " alt="" coords="120,541,347,610"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="470,488,323,543,321,538,469,483"/>
+<area shape="rect" id="Node000005" href="$offload__rendering__client_8hpp.html" title=" " alt="" coords="485,533,669,617"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="580,499,580,533,575,533,575,499"/>
+<area shape="rect" id="Node000008" href="$offload__rendering__server_8hpp.html" title=" " alt="" coords="703,533,892,617"/>
+<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="660,490,729,531,726,535,657,495"/>
+<area shape="rect" id="Node000004" href="$plugins_2boba__streaming__server_2plugin_8cpp.html" title=" " alt="" coords="5,673,232,742"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="196,622,150,674,146,671,192,619"/>
+<area shape="rect" id="Node000006" href="$offload__rendering__client_8cpp.html" title=" " alt="" coords="485,665,669,749"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="580,631,580,665,575,665,575,631"/>
+<area shape="rect" id="Node000007" href="$plugins_2offload__rendering__client_2plugin_8cpp.html" title="Offload Rendering Client Plugin Implementation." alt="" coords="256,673,461,742"/>
+<area shape="poly" id="edge6_Node000005_Node000007" title=" " alt="" coords="498,627,417,675,414,670,495,622"/>
+<area shape="rect" id="Node000009" href="$offload__rendering__server_8cpp.html" title="Offload Rendering Server Implementation." alt="" coords="928,665,1117,749"/>
+<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="882,622,953,663,950,667,879,627"/>
+<area shape="rect" id="Node000010" href="$plugins_2offload__rendering__server_2plugin_8hpp.html" title=" " alt="" coords="693,673,904,742"/>
+<area shape="poly" id="edge9_Node000008_Node000010" title=" " alt="" coords="801,631,801,672,796,672,795,631"/>
+<area shape="rect" id="Node000011" href="$plugins_2offload__rendering__server_2plugin_8cpp.html" title="Offload Rendering Server Plugin Implementation." alt="" coords="693,797,904,867"/>
+<area shape="poly" id="edge10_Node000010_Node000011" title=" " alt="" coords="801,755,801,797,796,797,796,755"/>
+<area shape="poly" id="edge13_Node000012_Node000002" title=" " alt="" coords="661,365,622,403,618,399,657,361"/>
+<area shape="poly" id="edge14_Node000012_Node000005" title=" " alt="" coords="715,367,708,427,699,458,686,487,667,513,644,535,640,531,663,509,682,484,694,456,703,426,709,367"/>
+<area shape="poly" id="edge15_Node000012_Node000008" title=" " alt="" coords="731,365,786,532,781,534,726,367"/>
+<area shape="rect" id="Node000013" href="$serialization_2combined__pose_8hpp.html" title=" " alt="" coords="837,401,1027,485"/>
+<area shape="poly" id="edge12_Node000012_Node000013" title=" " alt="" coords="794,358,863,399,861,403,791,363"/>
+<area shape="rect" id="Node000015" href="$plugins_2network__latency_2rx_2plugin_8hpp.html" title=" " alt="" coords="1683,277,1858,346"/>
+<area shape="poly" id="edge17_Node000014_Node000015" title=" " alt="" coords="1364,219,1450,236,1519,242,1587,249,1671,267,1695,274,1693,279,1670,272,1586,254,1519,247,1450,241,1363,224"/>
+<area shape="rect" id="Node000017" href="$plugins_2network__latency_2tx_2plugin_8hpp.html" title=" " alt="" coords="1485,277,1659,346"/>
+<area shape="poly" id="edge19_Node000014_Node000017" title=" " alt="" coords="1364,222,1491,274,1489,279,1362,227"/>
+<area shape="rect" id="Node000016" href="$plugins_2network__latency_2rx_2plugin_8cpp.html" title=" " alt="" coords="1683,409,1858,478"/>
+<area shape="poly" id="edge18_Node000015_Node000016" title=" " alt="" coords="1773,360,1773,409,1768,409,1768,360"/>
+<area shape="rect" id="Node000018" href="$plugins_2network__latency_2tx_2plugin_8cpp.html" title=" " alt="" coords="1485,409,1659,478"/>
+<area shape="poly" id="edge20_Node000017_Node000018" title=" " alt="" coords="1575,360,1575,409,1569,409,1569,360"/>
+<area shape="poly" id="edge28_Node000021_Node000012" title=" " alt="" coords="933,226,807,275,805,270,931,221"/>
+<area shape="rect" id="Node000022" href="$serialization_2hand__interaction__pose_8hpp.html" title=" " alt="" coords="830,269,1031,353"/>
+<area shape="poly" id="edge24_Node000021_Node000022" title=" " alt="" coords="999,234,967,271,963,267,994,230"/>
+<area shape="rect" id="Node000023" href="$serialization_2hand__pose_8hpp.html" title=" " alt="" coords="1055,269,1246,353"/>
+<area shape="poly" id="edge26_Node000021_Node000023" title=" " alt="" coords="1086,230,1118,267,1113,271,1082,233"/>
+<area shape="rect" id="Node000024" href="$serialization_2palm__pose_8hpp.html" title=" " alt="" coords="1270,269,1461,353"/>
+<area shape="poly" id="edge29_Node000021_Node000024" title=" " alt="" coords="1149,221,1271,270,1269,275,1147,226"/>
+<area shape="poly" id="edge25_Node000022_Node000013" title=" " alt="" coords="934,367,934,401,929,401,929,367"/>
+<area shape="poly" id="edge27_Node000023_Node000013" title=" " alt="" coords="1071,363,1002,403,1000,399,1068,358"/>
+<area shape="poly" id="edge30_Node000024_Node000013" title=" " alt="" coords="1257,356,1134,393,1028,421,1027,416,1133,388,1256,351"/>
+</map>

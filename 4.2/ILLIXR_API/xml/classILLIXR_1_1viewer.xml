@@ -1,0 +1,451 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classILLIXR_1_1viewer" kind="class" language="C++" prot="public">
+    <compoundname>ILLIXR::viewer</compoundname>
+    <basecompoundref refid="classILLIXR_1_1plugin" prot="public" virt="non-virtual">ILLIXR::plugin</basecompoundref>
+    <includes refid="plugins_2hand__tracking_2viewer_2plugin_8hpp" local="no">plugin.hpp</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1viewer_1a2faa34de67b0955542aba7127eeaca2d" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classILLIXR_1_1relative__clock" kindref="compound">relative_clock</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;relative_clock&gt; ILLIXR::viewer::clock_</definition>
+        <argsstring></argsstring>
+        <name>clock_</name>
+        <qualifiedname>ILLIXR::viewer::clock_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/hand_tracking/viewer/plugin.hpp" line="35" column="24" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/hand_tracking/viewer/plugin.hpp" bodystart="35" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1viewer_1ae7d7e5ce255e26cc02c943a2cf1eda8e" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> std::shared_ptr&lt; <ref refid="classILLIXR_1_1switchboard" kindref="compound">switchboard</ref> &gt;</type>
+        <definition>const std::shared_ptr&lt;switchboard&gt; ILLIXR::viewer::switchboard_</definition>
+        <argsstring></argsstring>
+        <name>switchboard_</name>
+        <qualifiedname>ILLIXR::viewer::switchboard_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/hand_tracking/viewer/plugin.hpp" line="36" column="27" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/hand_tracking/viewer/plugin.hpp" bodystart="36" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1viewer_1a342d7f211d0066a5a26e608e7c3df616" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; ht::ht_frame &gt;</type>
+        <definition>std::shared_ptr&lt;ht::ht_frame&gt; ILLIXR::viewer::ht_frame_</definition>
+        <argsstring></argsstring>
+        <name>ht_frame_</name>
+        <qualifiedname>ILLIXR::viewer::ht_frame_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/hand_tracking/viewer/plugin.hpp" line="37" column="26" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/hand_tracking/viewer/plugin.hpp" bodystart="37" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1viewer_1a64e9d8abe14b03109ec255e71ca5e1b2" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base" kindref="compound">data_format::pose::pose_base</ref></type>
+        <definition>const data_format::pose::pose_base ILLIXR::viewer::pose_</definition>
+        <argsstring></argsstring>
+        <name>pose_</name>
+        <qualifiedname>ILLIXR::viewer::pose_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/hand_tracking/viewer/plugin.hpp" line="38" column="40" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/hand_tracking/viewer/plugin.hpp" bodystart="38" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1viewer_1a020bb9c6b07c4e291e369ff1e2bb3cb9" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">GLFWwindow</ref> *</type>
+        <definition>GLFWwindow* ILLIXR::viewer::viewport_</definition>
+        <argsstring></argsstring>
+        <name>viewport_</name>
+        <qualifiedname>ILLIXR::viewer::viewport_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/hand_tracking/viewer/plugin.hpp" line="43" column="16" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/hand_tracking/viewer/plugin.hpp" bodystart="43" bodyend="43"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1viewer_1a9de5f8c0e4c836619370c3cae04240b5" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">GLuint</ref></type>
+        <definition>GLuint ILLIXR::viewer::textures_[2]</definition>
+        <argsstring>[2]</argsstring>
+        <name>textures_</name>
+        <qualifiedname>ILLIXR::viewer::textures_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/hand_tracking/viewer/plugin.hpp" line="45" column="21" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/hand_tracking/viewer/plugin.hpp" bodystart="45" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1viewer_1a9249fcd6f30e59ad293decc26929a1cc" prot="private" static="no" mutable="no">
+        <type>Eigen::Vector2i</type>
+        <definition>Eigen::Vector2i ILLIXR::viewer::raw_size</definition>
+        <argsstring></argsstring>
+        <name>raw_size</name>
+        <qualifiedname>ILLIXR::viewer::raw_size</qualifiedname>
+        <initializer>= Eigen::Vector2i::Zero()</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/hand_tracking/viewer/plugin.hpp" line="46" column="21" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/hand_tracking/viewer/plugin.hpp" bodystart="46" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1viewer_1abd6e1b21c5171e3dedb35a68b00219ba" prot="private" static="no" mutable="no">
+        <type>Eigen::Vector2i</type>
+        <definition>Eigen::Vector2i ILLIXR::viewer::processed_size</definition>
+        <argsstring></argsstring>
+        <name>processed_size</name>
+        <qualifiedname>ILLIXR::viewer::processed_size</qualifiedname>
+        <initializer>= Eigen::Vector2i::Zero()</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/hand_tracking/viewer/plugin.hpp" line="47" column="21" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/hand_tracking/viewer/plugin.hpp" bodystart="47" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1viewer_1a7751faf3c94d8f02324b19ef76e5ea9e" prot="private" static="no" mutable="no">
+        <type>Eigen::Vector2i</type>
+        <definition>Eigen::Vector2i ILLIXR::viewer::combined_size</definition>
+        <argsstring></argsstring>
+        <name>combined_size</name>
+        <qualifiedname>ILLIXR::viewer::combined_size</qualifiedname>
+        <initializer>= Eigen::Vector2i::Zero()</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/hand_tracking/viewer/plugin.hpp" line="48" column="21" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/hand_tracking/viewer/plugin.hpp" bodystart="48" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1viewer_1a99f675d55b98b4b2f6794f4183826e07" prot="private" static="no" mutable="no">
+        <type>Eigen::Matrix4f</type>
+        <definition>Eigen::Matrix4f ILLIXR::viewer::basicProjection_</definition>
+        <argsstring></argsstring>
+        <name>basicProjection_</name>
+        <qualifiedname>ILLIXR::viewer::basicProjection_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/hand_tracking/viewer/plugin.hpp" line="50" column="25" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/hand_tracking/viewer/plugin.hpp" bodystart="50" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1viewer_1aa8cf76211d25c76db5b678cf88aa1fd9" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> ht::ht_frame *</type>
+        <definition>const ht::ht_frame* ILLIXR::viewer::current_frame_</definition>
+        <argsstring></argsstring>
+        <name>current_frame_</name>
+        <qualifiedname>ILLIXR::viewer::current_frame_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/hand_tracking/viewer/plugin.hpp" line="51" column="24" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/hand_tracking/viewer/plugin.hpp" bodystart="51" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1viewer_1a068dd84f0d3c8957265559942d325701" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">ImVec4</ref></type>
+        <definition>ImVec4 ILLIXR::viewer::clear_color_</definition>
+        <argsstring></argsstring>
+        <name>clear_color_</name>
+        <qualifiedname>ILLIXR::viewer::clear_color_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">ImVec4</ref>(0.45<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">f</ref>, 0.55<ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">f</ref>, 0.60f, 1.00f)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/hand_tracking/viewer/plugin.hpp" line="52" column="25" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/hand_tracking/viewer/plugin.hpp" bodystart="52" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1viewer_1a2d739159001f2bf617bc4086fe11ed45" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">bool</ref></type>
+        <definition>bool ILLIXR::viewer::enabled_right_</definition>
+        <argsstring></argsstring>
+        <name>enabled_right_</name>
+        <qualifiedname>ILLIXR::viewer::enabled_right_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">false</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/hand_tracking/viewer/plugin.hpp" line="54" column="57" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/hand_tracking/viewer/plugin.hpp" bodystart="54" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1viewer_1a89e4d335a6f5896214ad712e3a4ba036" prot="private" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string ILLIXR::viewer::tab_label_</definition>
+        <argsstring></argsstring>
+        <name>tab_label_</name>
+        <qualifiedname>ILLIXR::viewer::tab_label_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/hand_tracking/viewer/plugin.hpp" line="55" column="57" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/hand_tracking/viewer/plugin.hpp" bodystart="55" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1viewer_1a016b68bf8cb35d7ca1e098fc32b9d89e" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceILLIXR_1_1data__format_1_1pose_1a32b031315a1ac6a41a1033c10c02f372" kindref="member">data_format::pose::side</ref></type>
+        <definition>data_format::pose::side ILLIXR::viewer::single_eye_</definition>
+        <argsstring></argsstring>
+        <name>single_eye_</name>
+        <qualifiedname>ILLIXR::viewer::single_eye_</qualifiedname>
+        <initializer>= <ref refid="namespaceILLIXR_1_1data__format_1_1pose_1a32b031315a1ac6a41a1033c10c02f372a362edc549a08e94007634bdf2dd5274f" kindref="member">data_format::pose::LEFT</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/hand_tracking/viewer/plugin.hpp" line="56" column="57" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/hand_tracking/viewer/plugin.hpp" bodystart="56" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1viewer_1a345c659ca2353934cb0a52a01db3304d" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="namespaceILLIXR_1_1data__format_1_1image_1a6284c0d0ee6d8d9e30eeb4ae8cbe4e67" kindref="member">ILLIXR::data_format::image::image_type</ref> &gt;</type>
+        <definition>std::vector&lt;ILLIXR::data_format::image::image_type&gt; ILLIXR::viewer::detections_</definition>
+        <argsstring></argsstring>
+        <name>detections_</name>
+        <qualifiedname>ILLIXR::viewer::detections_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/hand_tracking/viewer/plugin.hpp" line="57" column="17" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/hand_tracking/viewer/plugin.hpp" bodystart="57" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1viewer_1a2780fdced299e40b21dffe27f5de6c88" prot="private" static="no" mutable="no">
+        <type>std::map&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">uint64_t</ref>, ht::ht_frame &gt;</type>
+        <definition>std::map&lt;uint64_t, ht::ht_frame&gt; ILLIXR::viewer::ht_frames_</definition>
+        <argsstring></argsstring>
+        <name>ht_frames_</name>
+        <qualifiedname>ILLIXR::viewer::ht_frames_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/hand_tracking/viewer/plugin.hpp" line="59" column="14" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/hand_tracking/viewer/plugin.hpp" bodystart="59" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classILLIXR_1_1viewer_1a90b0dd59e512ad3e8212b64781bc466b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>viewer::viewer</definition>
+        <argsstring>(const std::string &amp;name_, phonebook *pb_)</argsstring>
+        <name>viewer</name>
+        <qualifiedname>ILLIXR::viewer::viewer</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> std::string &amp;</type>
+          <declname>name_</declname>
+        </param>
+        <param>
+          <type><ref refid="classILLIXR_1_1phonebook" kindref="compound">phonebook</ref> *</type>
+          <declname>pb_</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/hand_tracking/viewer/plugin.hpp" line="26" column="5" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/hand_tracking/viewer/plugin.cpp" bodystart="45" bodyend="50"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1viewer_1a8646727aa7b142338ecfa4ca08661e12" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>viewer::~viewer</definition>
+        <argsstring>() override</argsstring>
+        <name>~viewer</name>
+        <qualifiedname>ILLIXR::viewer::~viewer</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/hand_tracking/viewer/plugin.hpp" line="27" column="5" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/hand_tracking/viewer/plugin.cpp" bodystart="119" bodyend="129"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1viewer_1aea9ddcb2c01d6343a9c8e7d6f2c51b1c" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void viewer::start</definition>
+        <argsstring>() override</argsstring>
+        <name>start</name>
+        <qualifiedname>ILLIXR::viewer::start</qualifiedname>
+        <reimplements refid="classILLIXR_1_1plugin_1a30d7294817fc5e8a8216fbfbca233cdc">start</reimplements>
+        <briefdescription>
+<para>A method which Spindle calls when it starts the component. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This is necessary because a constructor can&apos;t call derived virtual methods (due to structure of C++). See <computeroutput>threadloop</computeroutput> for an example of this use-case. </para>
+        </detaileddescription>
+        <inbodydescription>
+<para>Registering error callback for additional debug info</para>
+<para>Enable debug context for glDebugMessageCallback to work</para>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/hand_tracking/viewer/plugin.hpp" line="28" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/hand_tracking/viewer/plugin.cpp" bodystart="52" bodyend="117"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1viewer_1a2d62298c0b74c373f5686c45d334d880" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void viewer::make_gui</definition>
+        <argsstring>(const switchboard::ptr&lt; const ht::ht_frame &gt; &amp;frame)</argsstring>
+        <name>make_gui</name>
+        <qualifiedname>ILLIXR::viewer::make_gui</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="classILLIXR_1_1switchboard_1af91c1b9436918512e95e5fa8553846a7" kindref="member">switchboard::ptr</ref>&lt; <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> ht::ht_frame &gt; &amp;</type>
+          <declname>frame</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/hand_tracking/viewer/plugin.hpp" line="29" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/hand_tracking/viewer/plugin.cpp" bodystart="322" bodyend="448"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classILLIXR_1_1viewer_1ae72bbed7bf66f3f7f4e8e19669e4e902" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void viewer::make_detection_table</definition>
+        <argsstring>(data_format::pose::side eye, int idx, const std::string &amp;label) const</argsstring>
+        <name>make_detection_table</name>
+        <qualifiedname>ILLIXR::viewer::make_detection_table</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1_1data__format_1_1pose_1a32b031315a1ac6a41a1033c10c02f372" kindref="member">data_format::pose::side</ref></type>
+          <declname>eye</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+          <declname>idx</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> std::string &amp;</type>
+          <declname>label</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/hand_tracking/viewer/plugin.hpp" line="32" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/hand_tracking/viewer/plugin.cpp" bodystart="212" bodyend="320"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1viewer_1a014127c7a327c0f4ea75bd611ebbd4bb" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void viewer::make_position_table</definition>
+        <argsstring>() const</argsstring>
+        <name>make_position_table</name>
+        <qualifiedname>ILLIXR::viewer::make_position_table</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/hand_tracking/viewer/plugin.hpp" line="33" column="10" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/hand_tracking/viewer/plugin.cpp" bodystart="131" bodyend="210"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>ILLIXR::plugin</label>
+        <link refid="classILLIXR_1_1plugin"/>
+      </node>
+      <node id="1">
+        <label>ILLIXR::viewer</label>
+        <link refid="classILLIXR_1_1viewer"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="4">
+        <label>ILLIXR::data_format::pose::pose_base</label>
+        <link refid="structILLIXR_1_1data__format_1_1pose_1_1pose__base"/>
+      </node>
+      <node id="3">
+        <label>ILLIXR::phonebook</label>
+        <link refid="classILLIXR_1_1phonebook"/>
+      </node>
+      <node id="2">
+        <label>ILLIXR::plugin</label>
+        <link refid="classILLIXR_1_1plugin"/>
+        <childnode refid="3" relation="usage">
+          <edgelabel>phonebook_</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>ILLIXR::viewer</label>
+        <link refid="classILLIXR_1_1viewer"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>pose_</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/hand_tracking/viewer/plugin.hpp" line="24" column="1" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/hand_tracking/viewer/plugin.hpp" bodystart="24" bodyend="60"/>
+    <listofallmembers>
+      <member refid="classILLIXR_1_1viewer_1a99f675d55b98b4b2f6794f4183826e07" prot="private" virt="non-virtual"><scope>ILLIXR::viewer</scope><name>basicProjection_</name></member>
+      <member refid="classILLIXR_1_1viewer_1a068dd84f0d3c8957265559942d325701" prot="private" virt="non-virtual"><scope>ILLIXR::viewer</scope><name>clear_color_</name></member>
+      <member refid="classILLIXR_1_1viewer_1a2faa34de67b0955542aba7127eeaca2d" prot="private" virt="non-virtual"><scope>ILLIXR::viewer</scope><name>clock_</name></member>
+      <member refid="classILLIXR_1_1viewer_1a7751faf3c94d8f02324b19ef76e5ea9e" prot="private" virt="non-virtual"><scope>ILLIXR::viewer</scope><name>combined_size</name></member>
+      <member refid="classILLIXR_1_1viewer_1aa8cf76211d25c76db5b678cf88aa1fd9" prot="private" virt="non-virtual"><scope>ILLIXR::viewer</scope><name>current_frame_</name></member>
+      <member refid="classILLIXR_1_1viewer_1a345c659ca2353934cb0a52a01db3304d" prot="private" virt="non-virtual"><scope>ILLIXR::viewer</scope><name>detections_</name></member>
+      <member refid="classILLIXR_1_1viewer_1a2d739159001f2bf617bc4086fe11ed45" prot="private" virt="non-virtual"><scope>ILLIXR::viewer</scope><name>enabled_right_</name></member>
+      <member refid="classILLIXR_1_1plugin_1aebda022998bd35983e83f391dc0e5193" prot="public" virt="non-virtual"><scope>ILLIXR::viewer</scope><name>get_name</name></member>
+      <member refid="classILLIXR_1_1viewer_1a342d7f211d0066a5a26e608e7c3df616" prot="private" virt="non-virtual"><scope>ILLIXR::viewer</scope><name>ht_frame_</name></member>
+      <member refid="classILLIXR_1_1viewer_1a2780fdced299e40b21dffe27f5de6c88" prot="private" virt="non-virtual"><scope>ILLIXR::viewer</scope><name>ht_frames_</name></member>
+      <member refid="classILLIXR_1_1plugin_1aaedb3f9178bdd11e53815e158454aaf3" prot="protected" virt="non-virtual"><scope>ILLIXR::viewer</scope><name>id_</name></member>
+      <member refid="classILLIXR_1_1viewer_1ae72bbed7bf66f3f7f4e8e19669e4e902" prot="private" virt="non-virtual"><scope>ILLIXR::viewer</scope><name>make_detection_table</name></member>
+      <member refid="classILLIXR_1_1viewer_1a2d62298c0b74c373f5686c45d334d880" prot="public" virt="non-virtual"><scope>ILLIXR::viewer</scope><name>make_gui</name></member>
+      <member refid="classILLIXR_1_1viewer_1a014127c7a327c0f4ea75bd611ebbd4bb" prot="private" virt="non-virtual"><scope>ILLIXR::viewer</scope><name>make_position_table</name></member>
+      <member refid="classILLIXR_1_1plugin_1aa963c518af83966173840a8558490888" prot="protected" virt="non-virtual"><scope>ILLIXR::viewer</scope><name>name_</name></member>
+      <member refid="classILLIXR_1_1plugin_1a6f7a2a9012350591c00d67a5bc0fd5a6" prot="protected" virt="non-virtual"><scope>ILLIXR::viewer</scope><name>phonebook_</name></member>
+      <member refid="classILLIXR_1_1plugin_1abc91c0e5be180a8e0bbeaf114a127f17" prot="public" virt="non-virtual"><scope>ILLIXR::viewer</scope><name>plugin</name></member>
+      <member refid="classILLIXR_1_1plugin_1a8d40c2421cde09079372d12bfe7d45fe" prot="protected" virt="non-virtual"><scope>ILLIXR::viewer</scope><name>plugin_logger_</name></member>
+      <member refid="classILLIXR_1_1viewer_1a64e9d8abe14b03109ec255e71ca5e1b2" prot="private" virt="non-virtual"><scope>ILLIXR::viewer</scope><name>pose_</name></member>
+      <member refid="classILLIXR_1_1viewer_1abd6e1b21c5171e3dedb35a68b00219ba" prot="private" virt="non-virtual"><scope>ILLIXR::viewer</scope><name>processed_size</name></member>
+      <member refid="classILLIXR_1_1viewer_1a9249fcd6f30e59ad293decc26929a1cc" prot="private" virt="non-virtual"><scope>ILLIXR::viewer</scope><name>raw_size</name></member>
+      <member refid="classILLIXR_1_1plugin_1aef671d0cd9b6de45d3ade16dedbf4974" prot="protected" virt="non-virtual"><scope>ILLIXR::viewer</scope><name>record_logger_</name></member>
+      <member refid="classILLIXR_1_1viewer_1a016b68bf8cb35d7ca1e098fc32b9d89e" prot="private" virt="non-virtual"><scope>ILLIXR::viewer</scope><name>single_eye_</name></member>
+      <member refid="classILLIXR_1_1plugin_1a7c1c7c1a0ec2e43bfa1118586a28932f" prot="public" virt="non-virtual"><scope>ILLIXR::viewer</scope><name>spd_add_file_sink</name></member>
+      <member refid="classILLIXR_1_1plugin_1a569297189ef365cf93f6a95202c76d76" prot="public" virt="non-virtual"><scope>ILLIXR::viewer</scope><name>spdlogger</name></member>
+      <member refid="classILLIXR_1_1viewer_1aea9ddcb2c01d6343a9c8e7d6f2c51b1c" prot="public" virt="virtual"><scope>ILLIXR::viewer</scope><name>start</name></member>
+      <member refid="classILLIXR_1_1plugin_1a2cefabfb6dd9800b1ebc8b07031661c4" prot="public" virt="virtual"><scope>ILLIXR::viewer</scope><name>stop</name></member>
+      <member refid="classILLIXR_1_1viewer_1ae7d7e5ce255e26cc02c943a2cf1eda8e" prot="private" virt="non-virtual"><scope>ILLIXR::viewer</scope><name>switchboard_</name></member>
+      <member refid="classILLIXR_1_1viewer_1a89e4d335a6f5896214ad712e3a4ba036" prot="private" virt="non-virtual"><scope>ILLIXR::viewer</scope><name>tab_label_</name></member>
+      <member refid="classILLIXR_1_1viewer_1a9de5f8c0e4c836619370c3cae04240b5" prot="private" virt="non-virtual"><scope>ILLIXR::viewer</scope><name>textures_</name></member>
+      <member refid="classILLIXR_1_1viewer_1a90b0dd59e512ad3e8212b64781bc466b" prot="public" virt="non-virtual"><scope>ILLIXR::viewer</scope><name>viewer</name></member>
+      <member refid="classILLIXR_1_1viewer_1a020bb9c6b07c4e291e369ff1e2bb3cb9" prot="private" virt="non-virtual"><scope>ILLIXR::viewer</scope><name>viewport_</name></member>
+      <member refid="classILLIXR_1_1plugin_1a44d7b00c86e227bbc1a0b221da43d454" prot="public" virt="virtual"><scope>ILLIXR::viewer</scope><name>~plugin</name></member>
+      <member refid="classILLIXR_1_1viewer_1a8646727aa7b142338ecfa4ca08661e12" prot="public" virt="non-virtual"><scope>ILLIXR::viewer</scope><name>~viewer</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

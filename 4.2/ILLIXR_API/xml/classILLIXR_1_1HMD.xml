@@ -1,0 +1,198 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classILLIXR_1_1HMD" kind="class" language="C++" prot="public">
+    <compoundname>ILLIXR::HMD</compoundname>
+    <includes refid="hmd_8hpp" local="no">hmd.hpp</includes>
+    <innerclass refid="structILLIXR_1_1HMD_1_1hmd__info__t" prot="public">ILLIXR::HMD::hmd_info_t</innerclass>
+    <innerclass refid="structILLIXR_1_1HMD_1_1mesh__coord2d__t" prot="public">ILLIXR::HMD::mesh_coord2d_t</innerclass>
+    <innerclass refid="structILLIXR_1_1HMD_1_1mesh__coord3d__t" prot="public">ILLIXR::HMD::mesh_coord3d_t</innerclass>
+    <innerclass refid="structILLIXR_1_1HMD_1_1uv__coord__t" prot="public">ILLIXR::HMD::uv_coord_t</innerclass>
+    <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="classILLIXR_1_1HMD_1acf308b936efa0c114d8431356677b213" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">constexpr</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+        <definition>constexpr int ILLIXR::HMD::NUM_EYES</definition>
+        <argsstring></argsstring>
+        <name>NUM_EYES</name>
+        <qualifiedname>ILLIXR::HMD::NUM_EYES</qualifiedname>
+        <initializer>= 2</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/hmd.hpp" line="26" column="26" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/hmd.hpp" bodystart="26" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classILLIXR_1_1HMD_1ac0424d94a982dc21230d9c48af71ceb3" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">constexpr</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+        <definition>constexpr int ILLIXR::HMD::NUM_COLOR_CHANNELS</definition>
+        <argsstring></argsstring>
+        <name>NUM_COLOR_CHANNELS</name>
+        <qualifiedname>ILLIXR::HMD::NUM_COLOR_CHANNELS</qualifiedname>
+        <initializer>= 3</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/hmd.hpp" line="27" column="26" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/hmd.hpp" bodystart="27" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classILLIXR_1_1HMD_1a838e4f528d5363dcc1af22b84ce75176" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">float</ref></type>
+        <definition>float HMD::max_float</definition>
+        <argsstring>(float x, float y)</argsstring>
+        <name>max_float</name>
+        <qualifiedname>ILLIXR::HMD::max_float</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">float</ref></type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">float</ref></type>
+          <declname>y</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/hmd.hpp" line="63" column="18" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/utils/hmd.cpp" bodystart="7" bodyend="9"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1HMD_1a2060b43b87214f783e11ad8075eff1a3" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">float</ref></type>
+        <definition>float HMD::min_float</definition>
+        <argsstring>(float x, float y)</argsstring>
+        <name>min_float</name>
+        <qualifiedname>ILLIXR::HMD::min_float</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">float</ref></type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">float</ref></type>
+          <declname>y</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/hmd.hpp" line="64" column="18" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/utils/hmd.cpp" bodystart="11" bodyend="13"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1HMD_1a4f6ccb1f8014eb3ce16651ecf8d6cbe0" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">float</ref></type>
+        <definition>float HMD::evaluate_catmull_rom_spline</definition>
+        <argsstring>(float value, const float *K, int num_knots)</argsstring>
+        <name>evaluate_catmull_rom_spline</name>
+        <qualifiedname>ILLIXR::HMD::evaluate_catmull_rom_spline</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">float</ref></type>
+          <declname>value</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">float</ref> *</type>
+          <declname>K</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+          <declname>num_knots</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/hmd.hpp" line="65" column="18" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/utils/hmd.cpp" bodystart="16" bodyend="52"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1HMD_1a50c0c6cb4a3611a2f233db63aceed6b9" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void HMD::get_default_hmd_info</definition>
+        <argsstring>(const int display_pixels_wide, const int display_pixels_high, const float display_meters_wide, const float display_meters_high, const float lens_separation, const float meters_per_tan_angle, const float aberration[4], hmd_info_t &amp;hmd_info)</argsstring>
+        <name>get_default_hmd_info</name>
+        <qualifiedname>ILLIXR::HMD::get_default_hmd_info</qualifiedname>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+          <declname>display_pixels_wide</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">int</ref></type>
+          <declname>display_pixels_high</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">float</ref></type>
+          <declname>display_meters_wide</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">float</ref></type>
+          <declname>display_meters_high</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">float</ref></type>
+          <declname>lens_separation</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">float</ref></type>
+          <declname>meters_per_tan_angle</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">const</ref> <ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">float</ref></type>
+          <declname>aberration</declname>
+          <array>[4]</array>
+        </param>
+        <param>
+          <type><ref refid="structILLIXR_1_1HMD_1_1hmd__info__t" kindref="compound">hmd_info_t</ref> &amp;</type>
+          <declname>hmd_info</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/hmd.hpp" line="67" column="18" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/utils/hmd.cpp" bodystart="107" bodyend="141"/>
+      </memberdef>
+      <memberdef kind="function" id="classILLIXR_1_1HMD_1aac1d83b857c1e43542a17795f8fcb5b5" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">void</ref></type>
+        <definition>void HMD::build_distortion_meshes</definition>
+        <argsstring>(std::array&lt; std::array&lt; std::vector&lt; mesh_coord2d_t &gt;, NUM_COLOR_CHANNELS &gt;, NUM_EYES &gt; &amp;distort_coords, hmd_info_t &amp;hmd_info)</argsstring>
+        <name>build_distortion_meshes</name>
+        <qualifiedname>ILLIXR::HMD::build_distortion_meshes</qualifiedname>
+        <param>
+          <type>std::array&lt; std::array&lt; std::vector&lt; <ref refid="structILLIXR_1_1HMD_1_1mesh__coord2d__t" kindref="compound">mesh_coord2d_t</ref> &gt;, <ref refid="classILLIXR_1_1HMD_1ac0424d94a982dc21230d9c48af71ceb3" kindref="member">NUM_COLOR_CHANNELS</ref> &gt;, <ref refid="classILLIXR_1_1HMD_1acf308b936efa0c114d8431356677b213" kindref="member">NUM_EYES</ref> &gt; &amp;</type>
+          <declname>distort_coords</declname>
+        </param>
+        <param>
+          <type><ref refid="structILLIXR_1_1HMD_1_1hmd__info__t" kindref="compound">hmd_info_t</ref> &amp;</type>
+          <declname>hmd_info</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/hmd.hpp" line="73" column="5" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/utils/hmd.cpp" bodystart="55" bodyend="105"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/hmd.hpp" line="24" column="1" bodyfile="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/include/illixr/hmd.hpp" bodystart="24" bodyend="75"/>
+    <listofallmembers>
+      <member refid="classILLIXR_1_1HMD_1aac1d83b857c1e43542a17795f8fcb5b5" prot="public" virt="non-virtual"><scope>ILLIXR::HMD</scope><name>build_distortion_meshes</name></member>
+      <member refid="classILLIXR_1_1HMD_1a4f6ccb1f8014eb3ce16651ecf8d6cbe0" prot="public" virt="non-virtual"><scope>ILLIXR::HMD</scope><name>evaluate_catmull_rom_spline</name></member>
+      <member refid="classILLIXR_1_1HMD_1a50c0c6cb4a3611a2f233db63aceed6b9" prot="public" virt="non-virtual"><scope>ILLIXR::HMD</scope><name>get_default_hmd_info</name></member>
+      <member refid="classILLIXR_1_1HMD_1a838e4f528d5363dcc1af22b84ce75176" prot="public" virt="non-virtual"><scope>ILLIXR::HMD</scope><name>max_float</name></member>
+      <member refid="classILLIXR_1_1HMD_1a2060b43b87214f783e11ad8075eff1a3" prot="public" virt="non-virtual"><scope>ILLIXR::HMD</scope><name>min_float</name></member>
+      <member refid="classILLIXR_1_1HMD_1ac0424d94a982dc21230d9c48af71ceb3" prot="public" virt="non-virtual"><scope>ILLIXR::HMD</scope><name>NUM_COLOR_CHANNELS</name></member>
+      <member refid="classILLIXR_1_1HMD_1acf308b936efa0c114d8431356677b213" prot="public" virt="non-virtual"><scope>ILLIXR::HMD</scope><name>NUM_EYES</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

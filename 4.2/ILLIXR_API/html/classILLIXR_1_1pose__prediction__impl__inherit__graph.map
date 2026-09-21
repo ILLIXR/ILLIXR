@@ -1,0 +1,7 @@
+<map id="ILLIXR::pose_prediction_impl" name="ILLIXR::pose_prediction_impl">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,181,215,207"/>
+<area shape="rect" id="Node000002" href="$classILLIXR_1_1data__format_1_1pose__prediction.html" title=" " alt="" coords="35,93,185,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="113,147,113,181,107,181,107,147"/>
+<area shape="rect" id="Node000003" href="$classILLIXR_1_1phonebook_1_1service.html" title="A &#39;service&#39; that can be registered in the phonebook." alt="" coords="35,5,185,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="113,59,113,93,107,93,107,59"/>
+</map>

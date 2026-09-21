@@ -1,0 +1,560 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="plugins_2boba__immersive_2plugin_8hpp" kind="file" language="C++">
+    <compoundname>plugin.hpp</compoundname>
+    <includes refid="openxr__view__frame_8hpp" local="yes">illixr/data_format/openxr_view_frame.hpp</includes>
+    <includes refid="quest__controller_8hpp" local="yes">illixr/data_format/quest_controller.hpp</includes>
+    <includes refid="stereo__frame_8hpp" local="yes">illixr/data_format/stereo_frame.hpp</includes>
+    <includes refid="include_2illixr_2plugin_8hpp" local="yes">illixr/plugin.hpp</includes>
+    <includes refid="relative__clock_8hpp" local="yes">illixr/relative_clock.hpp</includes>
+    <includes refid="stoplight_8hpp" local="yes">illixr/stoplight.hpp</includes>
+    <includes refid="switchboard_8hpp" local="yes">illixr/switchboard.hpp</includes>
+    <includes local="no">atomic</includes>
+    <includes local="no">cstddef</includes>
+    <includes local="no">cstdint</includes>
+    <includes local="no">memory</includes>
+    <includes local="no">optional</includes>
+    <includes local="no">string</includes>
+    <includes local="no">sys/types.h</includes>
+    <includes local="no">thread</includes>
+    <includedby refid="plugins_2boba__immersive_2plugin_8cpp" local="yes">/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_immersive/plugin.cpp</includedby>
+    <incdepgraph>
+      <node id="2">
+        <label>illixr/data_format/openxr_view_frame.hpp</label>
+        <link refid="openxr__view__frame_8hpp"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="41" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>illixr/data_format/poses/pose_base.hpp</label>
+        <link refid="poses_2pose__base_8hpp"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="42">
+        <label>illixr/data_format/quest_controller.hpp</label>
+        <link refid="quest__controller_8hpp"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="41" relation="include">
+        </childnode>
+        <childnode refid="43" relation="include">
+        </childnode>
+      </node>
+      <node id="44">
+        <label>illixr/data_format/stereo_frame.hpp</label>
+        <link refid="stereo__frame_8hpp"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="45" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="46" relation="include">
+        </childnode>
+        <childnode refid="47" relation="include">
+        </childnode>
+        <childnode refid="41" relation="include">
+        </childnode>
+        <childnode refid="43" relation="include">
+        </childnode>
+        <childnode refid="48" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+      </node>
+      <node id="45">
+        <label>illixr/data_format/stereo_presentation.hpp</label>
+        <link refid="stereo__presentation_8hpp"/>
+        <childnode refid="41" relation="include">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>export.hpp</label>
+        <link refid="export_8hpp"/>
+      </node>
+      <node id="10">
+        <label>managed_thread.hpp</label>
+        <link refid="managed__thread_8hpp"/>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="16">
+        <label>network/network_backend.hpp</label>
+        <link refid="network__backend_8hpp"/>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+      </node>
+      <node id="25">
+        <label>topic_config.hpp</label>
+        <link refid="topic__config_8hpp"/>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+      </node>
+      <node id="17">
+        <label>illixr/phonebook.hpp</label>
+        <link refid="phonebook_8hpp"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+      </node>
+      <node id="49">
+        <label>illixr/plugin.hpp</label>
+        <link refid="include_2illixr_2plugin_8hpp"/>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="50" relation="include">
+        </childnode>
+        <childnode refid="51" relation="include">
+        </childnode>
+        <childnode refid="52" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="53" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="29">
+        <label>record_logger.hpp</label>
+        <link refid="record__logger_8hpp"/>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+      </node>
+      <node id="54">
+        <label>illixr/relative_clock.hpp</label>
+        <link refid="relative__clock_8hpp"/>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="55" relation="include">
+        </childnode>
+      </node>
+      <node id="56">
+        <label>illixr/stoplight.hpp</label>
+        <link refid="stoplight_8hpp"/>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="57" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>illixr/switchboard.hpp</label>
+        <link refid="switchboard_8hpp"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+        <childnode refid="38" relation="include">
+        </childnode>
+        <childnode refid="39" relation="include">
+        </childnode>
+        <childnode refid="40" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_immersive/plugin.hpp</label>
+        <link refid="plugins_2boba__immersive_2plugin_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="42" relation="include">
+        </childnode>
+        <childnode refid="44" relation="include">
+        </childnode>
+        <childnode refid="49" relation="include">
+        </childnode>
+        <childnode refid="54" relation="include">
+        </childnode>
+        <childnode refid="56" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="47" relation="include">
+        </childnode>
+        <childnode refid="41" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="58" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+      </node>
+      <node id="43">
+        <label>Eigen/Core</label>
+      </node>
+      <node id="48">
+        <label>Eigen/Geometry</label>
+      </node>
+      <node id="30">
+        <label>any</label>
+      </node>
+      <node id="46">
+        <label>array</label>
+      </node>
+      <node id="11">
+        <label>atomic</label>
+      </node>
+      <node id="36">
+        <label>boost/archive/binary_iarchive.hpp</label>
+      </node>
+      <node id="37">
+        <label>boost/archive/binary_oarchive.hpp</label>
+      </node>
+      <node id="38">
+        <label>boost/iostreams/device/back_inserter.hpp</label>
+      </node>
+      <node id="39">
+        <label>boost/iostreams/stream.hpp</label>
+      </node>
+      <node id="40">
+        <label>boost/serialization/shared_ptr.hpp</label>
+      </node>
+      <node id="12">
+        <label>cassert</label>
+      </node>
+      <node id="26">
+        <label>chrono</label>
+      </node>
+      <node id="8">
+        <label>concurrentqueue/blockingconcurrentqueue.hpp</label>
+      </node>
+      <node id="57">
+        <label>condition_variable</label>
+      </node>
+      <node id="47">
+        <label>cstddef</label>
+      </node>
+      <node id="41">
+        <label>cstdint</label>
+      </node>
+      <node id="33">
+        <label>eigen3/Eigen/Core</label>
+      </node>
+      <node id="5">
+        <label>eigen3/Eigen/Dense</label>
+      </node>
+      <node id="34">
+        <label>eigen3/Eigen/Geometry</label>
+      </node>
+      <node id="13">
+        <label>functional</label>
+      </node>
+      <node id="18">
+        <label>iostream</label>
+      </node>
+      <node id="35">
+        <label>list</label>
+      </node>
+      <node id="4">
+        <label>map</label>
+      </node>
+      <node id="19">
+        <label>memory</label>
+      </node>
+      <node id="20">
+        <label>mutex</label>
+      </node>
+      <node id="27">
+        <label>optional</label>
+      </node>
+      <node id="55">
+        <label>ratio</label>
+      </node>
+      <node id="21">
+        <label>shared_mutex</label>
+      </node>
+      <node id="50">
+        <label>spdlog/common.h</label>
+      </node>
+      <node id="51">
+        <label>spdlog/sinks/basic_file_sink.h</label>
+      </node>
+      <node id="52">
+        <label>spdlog/sinks/stdout_color_sinks.h</label>
+      </node>
+      <node id="24">
+        <label>spdlog/spdlog.h</label>
+      </node>
+      <node id="32">
+        <label>sstream</label>
+      </node>
+      <node id="14">
+        <label>stdexcept</label>
+      </node>
+      <node id="31">
+        <label>string</label>
+      </node>
+      <node id="58">
+        <label>sys/types.h</label>
+      </node>
+      <node id="15">
+        <label>thread</label>
+      </node>
+      <node id="22">
+        <label>typeindex</label>
+      </node>
+      <node id="53">
+        <label>typeinfo</label>
+      </node>
+      <node id="23">
+        <label>unordered_map</label>
+      </node>
+      <node id="6">
+        <label>utility</label>
+      </node>
+      <node id="28">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="2">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_immersive/plugin.cpp</label>
+        <link refid="plugins_2boba__immersive_2plugin_8cpp"/>
+      </node>
+      <node id="1">
+        <label>/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_immersive/plugin.hpp</label>
+        <link refid="plugins_2boba__immersive_2plugin_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="classILLIXR_1_1boba__immersive" prot="public">ILLIXR::boba_immersive</innerclass>
+    <innerclass refid="structILLIXR_1_1boba__immersive_1_1mapped__file" prot="private">ILLIXR::boba_immersive::mapped_file</innerclass>
+    <innernamespace refid="namespaceILLIXR">ILLIXR</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="openxr__view__frame_8hpp" kindref="compound">illixr/data_format/openxr_view_frame.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="quest__controller_8hpp" kindref="compound">illixr/data_format/quest_controller.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="stereo__frame_8hpp" kindref="compound">illixr/data_format/stereo_frame.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="include_2illixr_2plugin_8hpp" kindref="compound">illixr/plugin.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="relative__clock_8hpp" kindref="compound">illixr/relative_clock.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="stoplight_8hpp" kindref="compound">illixr/stoplight.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="switchboard_8hpp" kindref="compound">illixr/switchboard.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;atomic&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstddef&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstdint&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;memory&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;optional&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;string&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;sys/types.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;thread&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceILLIXR" kindref="compound">ILLIXR</ref><sp/>{</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="31" refid="classILLIXR_1_1boba__immersive" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classILLIXR_1_1boba__immersive" kindref="compound">boba_immersive</ref><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">final</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1plugin" kindref="compound">plugin</ref><sp/>{</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1boba__immersive" kindref="compound">boba_immersive</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>name,<sp/><ref refid="classILLIXR_1_1phonebook" kindref="compound">phonebook</ref>*<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">pb</ref>);</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1boba__immersive_1a66e366a398724adcb24e26ce2f15b277" kindref="member">~boba_immersive</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1boba__immersive_1a619ae138324c236ff89d2daf63936353" kindref="member">start</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1boba__immersive_1a93d5dcbbfcf532e2496743d5176577fd" kindref="member">stop</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"></highlight></codeline>
+<codeline lineno="44"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="45" refid="classILLIXR_1_1boba__immersive_1ad4c60013deb88212dc9afcfb2018d978" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="structILLIXR_1_1data__format_1_1quest__controller__input" kindref="compound">controller_input</ref><sp/>=<sp/><ref refid="structILLIXR_1_1data__format_1_1quest__controller__input" kindref="compound">data_format::quest_controller_input</ref>;</highlight></codeline>
+<codeline lineno="46" refid="classILLIXR_1_1boba__immersive_1ac8236b51f51c54c6006e10c4d32565e1" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="structILLIXR_1_1data__format_1_1openxr__view__frame" kindref="compound">view_frame</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/><ref refid="structILLIXR_1_1data__format_1_1openxr__view__frame" kindref="compound">data_format::openxr_view_frame</ref>;</highlight></codeline>
+<codeline lineno="47" refid="classILLIXR_1_1boba__immersive_1a7f50e8e0cc9b85a0c4b85f548d63b603" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="structILLIXR_1_1data__format_1_1stereo__frame" kindref="compound">stereo_frame</ref><sp/><sp/><sp/><sp/><sp/>=<sp/><ref refid="structILLIXR_1_1data__format_1_1stereo__frame" kindref="compound">data_format::stereo_frame</ref>;</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"></highlight></codeline>
+<codeline lineno="50" refid="structILLIXR_1_1boba__immersive_1_1mapped__file" refkind="compound"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structILLIXR_1_1boba__immersive_1_1mapped__file" kindref="compound">mapped_file</ref><sp/>{</highlight></codeline>
+<codeline lineno="51" refid="structILLIXR_1_1boba__immersive_1_1mapped__file_1a91dce3ab69a1aa7ce09f420df153a8ff" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1boba__immersive_1_1mapped__file_1a91dce3ab69a1aa7ce09f420df153a8ff" kindref="member">fd</ref>{-1};</highlight></codeline>
+<codeline lineno="52" refid="structILLIXR_1_1boba__immersive_1_1mapped__file_1a2b7212a1676187835f4a0a4018c3105d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::uint8_t*<sp/><ref refid="structILLIXR_1_1boba__immersive_1_1mapped__file_1a2b7212a1676187835f4a0a4018c3105d" kindref="member">data</ref>{</highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">};</highlight></codeline>
+<codeline lineno="53" refid="structILLIXR_1_1boba__immersive_1_1mapped__file_1af8735bbf06ce9a2c04359ae47f325ba5" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::size_t<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1boba__immersive_1_1mapped__file_1af8735bbf06ce9a2c04359ae47f325ba5" kindref="member">size</ref>{0};</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"></highlight></codeline>
+<codeline lineno="55" refid="structILLIXR_1_1boba__immersive_1_1mapped__file_1a0b9d82447cada607dfc5a419939c4705" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1boba__immersive_1_1mapped__file_1a0b9d82447cada607dfc5a419939c4705" kindref="member">mapped_file</ref>()<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="56" refid="structILLIXR_1_1boba__immersive_1_1mapped__file_1ac5c56ff9e14a96983fdc0ea657100a2b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1boba__immersive_1_1mapped__file_1ac5c56ff9e14a96983fdc0ea657100a2b" kindref="member">mapped_file</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structILLIXR_1_1boba__immersive_1_1mapped__file" kindref="compound">mapped_file</ref>&amp;)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="57" refid="structILLIXR_1_1boba__immersive_1_1mapped__file_1a9ee66902a6d372658e8280d3c3eb7dbd" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1boba__immersive_1_1mapped__file" kindref="compound">mapped_file</ref>&amp;<sp/><ref refid="structILLIXR_1_1boba__immersive_1_1mapped__file_1a9ee66902a6d372658e8280d3c3eb7dbd" kindref="member">operator=</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structILLIXR_1_1boba__immersive_1_1mapped__file" kindref="compound">mapped_file</ref>&amp;)<sp/>=<sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1boba__immersive_1_1mapped__file_1aad40b367ebc95015e2209f86e50a9dc9" kindref="member">~mapped_file</ref>();</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"></highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structILLIXR_1_1boba__immersive_1_1mapped__file_1ac6333e5d8c3f1c1139cdd91746394d0f" kindref="member">reset</ref>();</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"></highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1boba__immersive_1a226c0ca192af11d7eda1350e885dff0b" kindref="member">run</ref>();</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"></highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1boba__immersive_1ac0b0a473ebb3c271d33689dbc7b7627b" kindref="member">create_runtime_directory</ref>();</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"></highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1boba__immersive_1af1d99b6d4eac302aa7ade240b7a219f2" kindref="member">create_input_socket</ref>();</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"></highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1boba__immersive_1a411c865f253cd49795b723e24d556218" kindref="member">launch_boba</ref>();</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"></highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1boba__immersive_1a339d62c33570bb20df1f7b597633217e" kindref="member">terminate_boba</ref>();</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"></highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1boba__immersive_1a6bef9322abcdc1ee66eac2370da70932" kindref="member">cleanup_runtime_directory</ref>();</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"></highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1boba__immersive_1a465fc03ce9a012070f4a3556e58a58e8" kindref="member">send_latest_input</ref>();</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"></highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1boba__immersive_1af3dc5d591958bcdcba3c49d03f98f7b0" kindref="member">map_if_ready</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>path,<sp/><ref refid="structILLIXR_1_1boba__immersive_1_1mapped__file" kindref="compound">mapped_file</ref>*<sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">mapping</ref>);</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"></highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1boba__immersive_1ae80bfb8a6f1ca90f7fae3def5600b047" kindref="member">map_output_files</ref>();</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"></highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1boba__immersive_1a1057b06a17ef80ba4120ff2394c5df80" kindref="member">publish_latest_frame</ref>();</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"></highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classILLIXR_1_1boba__immersive_1aa0d483a6a86f9abb9315d5e20b32d84e" kindref="member">notify_native_client_shutdown</ref>();</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"></highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>ILLIXR<sp/>services<sp/>and<sp/>typed<sp/>endpoints<sp/>used<sp/>by<sp/>the<sp/>bridge.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="98" refid="classILLIXR_1_1boba__immersive_1ac65b3b5c6864922c5fb5bd6342551267" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::shared_ptr&lt;switchboard&gt;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1boba__immersive_1ac65b3b5c6864922c5fb5bd6342551267" kindref="member">switchboard_</ref>;</highlight></codeline>
+<codeline lineno="99" refid="classILLIXR_1_1boba__immersive_1a1c1068dc1f274e62191395fba993384e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::shared_ptr&lt;const<sp/>relative_clock&gt;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1boba__immersive_1a1c1068dc1f274e62191395fba993384e" kindref="member">clock_</ref>;</highlight></codeline>
+<codeline lineno="100" refid="classILLIXR_1_1boba__immersive_1a147b03cef7bd0a5f0bdd43414ff1eb80" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::shared_ptr&lt;stoplight&gt;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1boba__immersive_1a147b03cef7bd0a5f0bdd43414ff1eb80" kindref="member">stoplight_</ref>;</highlight></codeline>
+<codeline lineno="101" refid="classILLIXR_1_1boba__immersive_1afa5d4bc1a8e56ce301fdb908a112daea" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1switchboard_1_1reader" kindref="compound">switchboard::reader&lt;controller_input&gt;</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1boba__immersive_1afa5d4bc1a8e56ce301fdb908a112daea" kindref="member">controller_reader_</ref>;</highlight></codeline>
+<codeline lineno="102" refid="classILLIXR_1_1boba__immersive_1ad210e872358342cd5edea023a0533fca" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1switchboard_1_1reader" kindref="compound">switchboard::reader&lt;view_frame&gt;</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1boba__immersive_1ad210e872358342cd5edea023a0533fca" kindref="member">view_reader_</ref>;</highlight></codeline>
+<codeline lineno="103" refid="classILLIXR_1_1boba__immersive_1ad04d428ff64bb5b65936be1fd1363a60" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1switchboard_1_1writer" kindref="compound">switchboard::writer&lt;stereo_frame&gt;</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1boba__immersive_1ad04d428ff64bb5b65936be1fd1363a60" kindref="member">stereo_writer_</ref>;</highlight></codeline>
+<codeline lineno="104" refid="classILLIXR_1_1boba__immersive_1af89fae31a444eb5391f4df6b4455de71" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::optional&lt;switchboard::network_writer&lt;switchboard::event_wrapper&lt;std::string&gt;&gt;&gt;<sp/><ref refid="classILLIXR_1_1boba__immersive_1af89fae31a444eb5391f4df6b4455de71" kindref="member">native_client_control_writer_</ref>;</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"></highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Per-run<sp/>launcher<sp/>and<sp/>IPC<sp/>paths<sp/>shared<sp/>with<sp/>the<sp/>child<sp/>process.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="107" refid="classILLIXR_1_1boba__immersive_1acabe3a2db0671c64fd2fa16ce937bf64" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/><ref refid="classILLIXR_1_1boba__immersive_1acabe3a2db0671c64fd2fa16ce937bf64" kindref="member">boba_launcher_</ref>;</highlight></codeline>
+<codeline lineno="108" refid="classILLIXR_1_1boba__immersive_1abad85bfa3e63da5e4ba2e1562e76eaa2" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/><ref refid="classILLIXR_1_1boba__immersive_1abad85bfa3e63da5e4ba2e1562e76eaa2" kindref="member">runtime_directory_</ref>;</highlight></codeline>
+<codeline lineno="109" refid="classILLIXR_1_1boba__immersive_1af30a7936a64eff8aff820cf97896908a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/><ref refid="classILLIXR_1_1boba__immersive_1af30a7936a64eff8aff820cf97896908a" kindref="member">input_socket_path_</ref>;</highlight></codeline>
+<codeline lineno="110" refid="classILLIXR_1_1boba__immersive_1a8b7c125d338371cfa963afb059789f38" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/><ref refid="classILLIXR_1_1boba__immersive_1a8b7c125d338371cfa963afb059789f38" kindref="member">frame_path_</ref>;</highlight></codeline>
+<codeline lineno="111" refid="classILLIXR_1_1boba__immersive_1ad093f444758636296e7c59af40b87fb4" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/><ref refid="classILLIXR_1_1boba__immersive_1ad093f444758636296e7c59af40b87fb4" kindref="member">overlay_path_</ref>;</highlight></codeline>
+<codeline lineno="112" refid="classILLIXR_1_1boba__immersive_1af8441cf1a5684d4053677fe811cec3c1" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/><ref refid="classILLIXR_1_1boba__immersive_1af8441cf1a5684d4053677fe811cec3c1" kindref="member">modal_path_</ref>;</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"></highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Native<sp/>resources<sp/>owned<sp/>by<sp/>the<sp/>worker<sp/>thread.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="115" refid="classILLIXR_1_1boba__immersive_1aa2a28860de3fbf90fdc6217a62fbfd72" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><sp/><sp/><ref refid="classILLIXR_1_1boba__immersive_1aa2a28860de3fbf90fdc6217a62fbfd72" kindref="member">input_socket_</ref>{-1};</highlight></codeline>
+<codeline lineno="116" refid="classILLIXR_1_1boba__immersive_1abaec3a269835fd7e8b5a6c8ab08c766e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceILLIXR_1a519c5fa22ffb9588a1c96607155f1ea0" kindref="member">pid_t</ref><sp/><ref refid="classILLIXR_1_1boba__immersive_1abaec3a269835fd7e8b5a6c8ab08c766e" kindref="member">boba_pid_</ref>{-1};</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"></highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Boba<sp/>owns<sp/>and<sp/>writes<sp/>these<sp/>rings;<sp/>ILLIXR<sp/>maps<sp/>them<sp/>read-only.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="119" refid="classILLIXR_1_1boba__immersive_1a3421197c425020f8bbe9f4c25b753711" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1boba__immersive_1_1mapped__file" kindref="compound">mapped_file</ref><sp/><ref refid="classILLIXR_1_1boba__immersive_1a3421197c425020f8bbe9f4c25b753711" kindref="member">frame_mapping_</ref>;</highlight></codeline>
+<codeline lineno="120" refid="classILLIXR_1_1boba__immersive_1a0ac4c66250ecf5334b6522b3c226c830" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1boba__immersive_1_1mapped__file" kindref="compound">mapped_file</ref><sp/><ref refid="classILLIXR_1_1boba__immersive_1a0ac4c66250ecf5334b6522b3c226c830" kindref="member">overlay_mapping_</ref>;</highlight></codeline>
+<codeline lineno="121" refid="classILLIXR_1_1boba__immersive_1acbad571ff0fbd0d83328be0e50a6340f" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structILLIXR_1_1boba__immersive_1_1mapped__file" kindref="compound">mapped_file</ref><sp/><ref refid="classILLIXR_1_1boba__immersive_1acbad571ff0fbd0d83328be0e50a6340f" kindref="member">modal_mapping_</ref>;</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"></highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Worker<sp/>coordination<sp/>and<sp/>monotonic<sp/>producer<sp/>sequence<sp/>tracking.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="124" refid="classILLIXR_1_1boba__immersive_1a33b0d1d347b5e68cf1c5d60a9ebe4979" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::atomic&lt;bool&gt;<sp/><ref refid="classILLIXR_1_1boba__immersive_1a33b0d1d347b5e68cf1c5d60a9ebe4979" kindref="member">stop_requested_</ref>{</highlight><highlight class="keyword">false</highlight><highlight class="normal">};</highlight></codeline>
+<codeline lineno="125" refid="classILLIXR_1_1boba__immersive_1ab7a948dd22fa409e85173e5d50eb399d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::thread<sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1boba__immersive_1ab7a948dd22fa409e85173e5d50eb399d" kindref="member">worker_</ref>;</highlight></codeline>
+<codeline lineno="126" refid="classILLIXR_1_1boba__immersive_1a8e0a21bd9b32bc646875910833a77625" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::uint64_t<sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1boba__immersive_1a8e0a21bd9b32bc646875910833a77625" kindref="member">last_input_sequence_</ref>{0};</highlight></codeline>
+<codeline lineno="127" refid="classILLIXR_1_1boba__immersive_1a151eaf93adad95e71cb5e43a0e10bb84" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::uint64_t<sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1boba__immersive_1a151eaf93adad95e71cb5e43a0e10bb84" kindref="member">last_frame_id_</ref>{0};</highlight></codeline>
+<codeline lineno="128" refid="classILLIXR_1_1boba__immersive_1aecc26afac06ad5da360eed11e9986159" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1boba__immersive_1aecc26afac06ad5da360eed11e9986159" kindref="member">have_input_sequence_</ref>{</highlight><highlight class="keyword">false</highlight><highlight class="normal">};</highlight></codeline>
+<codeline lineno="129" refid="classILLIXR_1_1boba__immersive_1ad71864a7ee82848a8224fc0916ea2919" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classILLIXR_1_1boba__immersive_1ad71864a7ee82848a8224fc0916ea2919" kindref="member">native_client_shutdown_sent_</ref>{</highlight><highlight class="keyword">false</highlight><highlight class="normal">};</highlight></codeline>
+<codeline lineno="130"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"></highlight></codeline>
+<codeline lineno="132"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>ILLIXR</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="/home/friedel/devel/ILLIXR/illixr_release/ILLIXR/plugins/boba_immersive/plugin.hpp"/>
+  </compounddef>
+</doxygen>
