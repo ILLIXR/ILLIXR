@@ -2,7 +2,7 @@
 
 - Release Notes
     - This release marks a major expansion of ILLIXR's platform support, bringing native Windows and Android builds alongside
-      Linux. Windows support [#474](https://github.com/ILLIXR/ILLIXR/pull/474) moves dependency management to vcpkg-based
+      Linux. Windows support [#474](https://github.com/ILLIXR/ILLIXR/pull/474) moves Windows dependency management to vcpkg-based
       source builds, reworks Vulkan initialization for Windows' stricter struct-initialization rules, and updates OS-specific
       code across the build system and a first wave of ported plugins (native_renderer, offline_cam, offline_imu,
       passthrough_integrator, rk4_integrator, timewarp_vk, fauxpose, pose_lookup, pose_prediction, vkdemo, tcp_network_backend).
