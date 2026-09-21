@@ -109,7 +109,7 @@ Topic details:
 
 &nbsp;&nbsp;[**Details**][P10]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C1]
 
-## boba_immersive
+## boba_immersive ![Linux Logo](images/tux.png)
 
 Topic details:
 
@@ -119,7 +119,7 @@ Topic details:
 
 &nbsp;&nbsp;[**Details**][P40]&nbsp;&nbsp;&nbsp;&nbsp;[**Code**][C46]
 
-## boba_streaming_server
+## boba_streaming_server ![Linux Logo](images/tux.png)
 
 Topic details:
 
