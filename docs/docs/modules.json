@@ -118,6 +118,27 @@
       ]
     },
     {
+      "name": "boba_immersive",
+      "cmake_flag": "USE_BOBA_IMMERSIVE=ON",
+      "dependencies": [
+        "openxr"
+      ],
+      "OS": [
+        "linux"
+      ]
+    },
+    {
+      "name": "boba_streaming_server",
+      "cmake_flags": "USE_BOBA_STREAMING_SERVER=ON",
+      "dependencies": [
+        "openxr",
+        "cuda-toolkit"
+      ],
+      "OS": [
+        "linux"
+      ]
+    },
+    {
       "name": "common_lock",
       "cmake_flag": "",
       "dependencies": [],
@@ -501,6 +522,16 @@
         "linux",
         "windows",
         "android"
+      ]
+    },
+    {
+      "name": "quest3.controller",
+      "cmake_flag": "USE_QUEST3.CONTROLLER=ON",
+      "dependencies": [
+        "openxr"
+      ],
+      "OS": [
+        "linux"
       ]
     },
     {

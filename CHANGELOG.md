@@ -1,3 +1,186 @@
+# ILLIXR 4.2 (2026-09-17)
+
+- Release Notes
+    - This release marks a major expansion of ILLIXR's platform support, bringing native Windows and Android builds alongside
+      Linux. Windows support [#474](https://github.com/ILLIXR/ILLIXR/pull/474) moves Windows dependency management to vcpkg-based
+      source builds, reworks Vulkan initialization for Windows' stricter struct-initialization rules, and updates OS-specific
+      code across the build system and a first wave of ported plugins (native_renderer, offline_cam, offline_imu,
+      passthrough_integrator, rk4_integrator, timewarp_vk, fauxpose, pose_lookup, pose_prediction, vkdemo, tcp_network_backend).
+      A companion cleanup removed all symlinks from the codebase, since Windows doesn't support them [#484](https://github.com/ILLIXR/ILLIXR/pull/484).
+
+    - On Android, the previously unreleased Android runtime has been merged into the main ILLIXR
+      tree [#485](https://github.com/ILLIXR/ILLIXR/pull/485) with full Gradle/Java build support, and a broad set of
+      plugins now run on-device: a new android_data capture plugin superseding android_imu_cam [#488](https://github.com/ILLIXR/ILLIXR/pull/488),
+      Android builds of gldemo [#489](https://github.com/ILLIXR/ILLIXR/pull/489), offline_cam/offline_imu [#491](https://github.com/ILLIXR/ILLIXR/pull/491),
+      the TCP and UDP network backends [#492](https://github.com/ILLIXR/ILLIXR/pull/492), rk4_integrator and
+      timewarp_gl [#493](https://github.com/ILLIXR/ILLIXR/pull/493), and a GPU-accelerated offload_rendering_client with
+      HEVC and AV1 decode [#494](https://github.com/ILLIXR/ILLIXR/pull/494). A new openxr_interface plugin
+      suite [#490](https://github.com/ILLIXR/ILLIXR/pull/490) relays head/hand poses and hand-interaction data from the
+      Android OpenXR runtime to a remote server over UDP and renders decoded stereo frames directly into the device's OpenXR
+      swapchain, enabling split/offload rendering on Android hardware. Services plugins gained Android-only common_lock and
+      extended_window components [#486](https://github.com/ILLIXR/ILLIXR/pull/486).
+
+    - Supporting all platforms: a new UDP-based network plugin selectable per-topic alongside
+      TCP [#479](https://github.com/ILLIXR/ILLIXR/pull/479), a latency-tracking plugin for round-trip and one-way client-server
+      measurements on desktop [#481](https://github.com/ILLIXR/ILLIXR/pull/481) and Android [#497](https://github.com/ILLIXR/ILLIXR/pull/497),
+      and a server-side NVENC offload-rendering plugin [#483](https://github.com/ILLIXR/ILLIXR/pull/483) that pairs with the new Android
+      rendering client. Underneath it all, the pose and serialization system has been refactored into a more modular,
+      OpenXR-compliant hierarchy with velocity-aware head poses, enabling prediction from a single pose
+      sample [#480](https://github.com/ILLIXR/ILLIXR/pull/480).
+
+    - The new server-side `semanticxr_python` plugins [#496](https://github.com/ILLIXR/ILLIXR/pull/496) bridge ILLIXR
+      to [SemanticXR](https://arxiv.org/pdf/2606.12849) (ISMAR 2026, TVCG special issue), a device-cloud system for real-time,
+      open-vocabulary semantic mapping and querying ([demo](https://youtu.be/wNirwDF1wNQ)) on power-constrained XR devices.
+      The plugins hand the incoming RGB, depth, and pose stream to the SemanticXR Python backend and return query results
+      to the client. On Meta Quest 3, ILLIXR streams the sensor data up and renders the returned object point clouds as
+      world-aligned overlays. Mapping and perception code stays in the SemanticXR python repository.
+
+    - This release also introduces integration with [Boba](https://jianxiapyh.github.io/Boba-project-page/) (ECCV 2026), a
+      system supporting efficient, power-aware single-instance execution and scalable batched simulation of physics-based
+      Gaussian digital twins, with applications in XR and robotics. The new boba_immersive and boba_streaming_server plugins
+      integrate Boba’s [immersive demo](https://jianxiapyh.github.io/Boba-project-page/#demos) with
+      ILLIXR [#498](https://github.com/ILLIXR/ILLIXR/pull/498). Boba’s simulation and rendering code remains in its own
+      repositories, while ILLIXR delivers Meta Quest 3 headset and controller input to the desktop backend and streams the
+      resulting stereo frames back to the headset.
+- Plugins
+    - Deployed a new UDP based networking plugin. It can be used in parallel with the
+      existing TCP based plugin, or by itself. Each networked topic can choose its
+      own method. This does introduce **breaking** changes, due to updates to the
+      core networking headers. This plugin works on Windows and Linux. by
+      [@astro-friedel](https://github.com/astro-friedel) in PR
+      [#479](https://github.com/ILLIXR/ILLIXR/pull/479)
+    - A new latency tracking plugin has been introduced. It is intended to be used
+      with offload_rendering to monitor the round-trip latency of network
+      connections. This plugin works on Windows and Linux. by
+      [@astro-friedel](https://github.com/astro-friedel) in PR
+      [#481](https://github.com/ILLIXR/ILLIXR/pull/481)
+    - This work enables the use of NVENC encoding to offload_rendering_server;
+      allowing encoding directly with the onboard
+      NVIDIA encoders, without the need of an interface layer (e.g. FFMPEG). This
+      work also brings Windows support to the
+      offload_rendering_server plugin. The NVENC encoding supports both AV1 and HEVC
+      schemes. by
+      [@astro-friedel](https://github.com/astro-friedel) in PR
+      [#483](https://github.com/ILLIXR/ILLIXR/pull/483)
+    - This work enables Android support for most of the existing services plugins
+      (fauxpose, pose_lookup, and pose_prediction),
+      and introduces two new Android-only services plugins: common_lock and
+      extended_window. by
+      [@astro-friedel](https://github.com/astro-friedel), [@Madhuparna04](https://github.com/Madhuparna04) in PR
+      [#486](https://github.com/ILLIXR/ILLIXR/pull/486)
+    - This work updates CMakeLists.txt files for plugins that do not currently work
+      on Android. by
+      [@astro-friedel](https://github.com/astro-friedel) in PR
+      [#487](https://github.com/ILLIXR/ILLIXR/pull/487)
+    - This work introduces the new android_data plugin. This plugin captures imu and
+      image data from an Android device
+      and writes the data to the internal storage. The android_data plugin uses pure
+      Android functions calls and has no
+      reliance on OpenXR. This plugin is the Android equivalent to the record_imu_cam
+      plugin, with the difference that it
+      captures only monocular images. by
+      [@astro-friedel](https://github.com/astro-friedel), [@Madhuparna04](https://github.com/Madhuparna04) in PR
+      [#488](https://github.com/ILLIXR/ILLIXR/pull/488)
+    - This work brings Android support to the gldemo plugin. by
+      [@astro-friedel](https://github.com/astro-friedel) in PR
+      [#489](https://github.com/ILLIXR/ILLIXR/pull/489)
+    - A new plugin designed to connect to OpenXR runtimes on Android systems. It is
+      designed to act as an intermediary between the runtime and ILLIXR, specifically
+      in offload rendering setups. by
+      [@astro-friedel](https://github.com/astro-friedel) in PR
+      [#490](https://github.com/ILLIXR/ILLIXR/pull/490)
+    - This work brings Android support to the offline_cam and offline_imu plugins. by
+      [@astro-friedel](https://github.com/astro-friedel) in PR
+      [#491](https://github.com/ILLIXR/ILLIXR/pull/491)
+    - This work brings Android support to the tcp_network_backend and
+      udp_network_backend plugins. by
+      [@astro-friedel](https://github.com/astro-friedel) in PR
+      [#492](https://github.com/ILLIXR/ILLIXR/pull/492)
+    - This work brings Android support to the rk4_integrator and timewarp_gl plugins. by
+      [@astro-friedel](https://github.com/astro-friedel) in PR
+      [#493](https://github.com/ILLIXR/ILLIXR/pull/493)
+    - This work brings Android support to the offload_rendering_client plugin. The
+      decoding supports both AV1 and HEVC schemes. by
+      [@astro-friedel](https://github.com/astro-friedel) in PR
+      [#494](https://github.com/ILLIXR/ILLIXR/pull/494)
+    - This work brings Android support for the network_latency plugins. by
+      [@astro-friedel](https://github.com/astro-friedel) in PR
+      [#497](https://github.com/ILLIXR/ILLIXR/pull/497)
+    - A new set of plugins adds interactive physics-based Gaussian digital twin support to ILLIXR. by
+      [@jianxiapyh](https://github.com/jianxiapyh) in PR
+      [#498](https://github.com/ILLIXR/ILLIXR/pull/498)
+- Infrastructure
+    - This work introduces Windows support for ILLIXR for the first time. The changes
+      are primarily focussed on the internal ILLIXR systems (e.g., switchboard,
+      common headers, etc.). These changes include:
+        - Fixing definitions that are not pre-defined on Windows (e.g., M_PI)
+        - Clock updates to use OS-specific mechanisms
+        - Dependency installation via vcpkg on Windows
+        - Rework vulkan initialization, as Windows does not allow our current style
+          of struct initialization
+        - Update Gl code to work on Windows
+        - Update CMakeLists.txt files to work with Windows (proper library linking)
+        - Update src files to use OS specific library loading and environment
+          variable retrieval
+        - Removal of all symlinks, which led to some restructuring of the code
+        - Added OS detection to all plugin CMakeLists.txt files, defaulting to not
+          building on Windows. Individual plugins will be enabled as they are updated.
+          Some plugins and serves are also included in this work:
+        - native_renderer
+        - offline_cam
+        - offline_imu
+        - offload_rendering_server, utilizing NVIDIA's NVENC libraries to support
+          HEVC and AV1 encoding as well as both CUDA 12 and 13
+        - passthrough_integrator
+        - rk4_integrator
+        - timewarp_vk
+        - fauxpose
+        - pose_lookup
+        - pose_prediction
+        - vkdemo
+        - tcp_network_backend by
+          [@astro-friedel](https://github.com/astro-friedel) in PR
+          [#474](https://github.com/ILLIXR/ILLIXR/pull/474)
+    - Large **breaking** update to the headers for poses. With the use of poses for
+      things like hand tracking and gesture detection, holding most of the poses in a
+      single header was becoming difficult. The changes in this work break that
+      header into several hierarchical, and smaller headers. Additionally, the boost
+      serialization code was similarly refactored. by
+      [@astro-friedel](https://github.com/astro-friedel) in PR
+      [#480](https://github.com/ILLIXR/ILLIXR/pull/480)
+    - All symlinks in this repo have been removed, due to lack of support on Windows. by
+      [@astro-friedel](https://github.com/astro-friedel) in PR
+      [#484](https://github.com/ILLIXR/ILLIXR/pull/484)
+    - This work formally introduces Android support to ILLIXR. The changes focus on
+      ILLIXR infrastructure. by
+      [@astro-friedel](https://github.com/astro-friedel), [@Madhuparna04](https://github.com/Madhuparna04) in PR
+      [#485](https://github.com/ILLIXR/ILLIXR/pull/485)
+    - This work introduces ILLIXR interfaces for Unity and Python. The interfaces
+      give these platforms access to switchboard
+      readers and writers, enabling them to directly interact with the data topics.
+      The current form of these interfaces is specific to the SemanticXR project, but
+      generic interfaces will be released in the near future. This work also
+      introduces the quest3.unity plugin, which allows ILLIXR to capture RGB images,
+      depth images, and head poses directly from a Quest 3 device, encode
+      the data, and send it to a server. by
+      [@astro-friedel](https://github.com/astro-friedel) in PR
+      [#496](https://github.com/ILLIXR/ILLIXR/pull/496)
+- Misc
+    - No significant changes
+- Issues
+  The following issues have been addressed and closed by this release:
+    - [#463](https://github.com/ILLIXR/ILLIXR/issues/463)
+      Convert ExternalProject to Fetch content
+      by PR [#474](https://github.com/ILLIXR/ILLIXR/pull/474)
+    - [#465](https://github.com/ILLIXR/ILLIXR/issues/465)
+      Re-work the utils cmake file to only build what is actually needed
+      by PR [#494](https://github.com/ILLIXR/ILLIXR/pull/494)
+    - [#52](https://github.com/ILLIXR/ILLIXR/issues/52)
+      Windows support
+      by PR [#474](https://github.com/ILLIXR/ILLIXR/pull/474)
+
+---
+
 # ILLIXR v4.1 (2025-10-06)
 
 - Release Notes:

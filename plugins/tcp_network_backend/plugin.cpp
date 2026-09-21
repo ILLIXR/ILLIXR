@@ -46,27 +46,33 @@ tcp_network_backend::tcp_network_backend(const std::string& name_, phonebook* pb
     if (is_client_) {
         client = true;
 #ifdef __ANDROID__
-        auto* socket = new network::TCPSocket();
-        if (switchboard_->get_env_char("ILLIXR_TCP_CLIENT_IP") && switchboard_->get_env_char("ILLIXR_TCP_CLIENT_PORT")) {
-            // socket_bind() sets SO_REUSEADDR, SO_REUSEPORT, and SO_LINGER=0 internally.
-            socket->socket_bind(client_ip_, client_port_);
-        } else {
-            // Not binding to a specific local port but still need linger-zero
-            // so the connection doesn't hold TIME_WAIT after a force-quit.
-            socket->socket_set_linger_zero();
-        }
-        socket->socket_set_reuseaddr();
-        peer_socket_ = socket;
+        // The Quest may launch before desktop ILLIXR. Keep the app resident and
+        // retry until the host starts listening or shutdown is requested.
+        while (running_) {
+            auto* socket = new network::TCPSocket();
+            try {
+                socket->socket_set_reuseaddr();
+                if (switchboard_->get_env_char("ILLIXR_TCP_CLIENT_IP") &&
+                    switchboard_->get_env_char("ILLIXR_TCP_CLIENT_PORT")) {
+                    socket->socket_bind(client_ip_, client_port_);
+                }
 
-        spdlog::get("illixr")->debug("Connecting to " + server_ip_ + " at port " + std::to_string(server_port_));
-        socket->socket_connect(server_ip_, server_port_);
-        socket->enable_no_delay();
-        spdlog::get("illixr")->info("[tcp_network_backend] TCP_NODELAY verified = {}", socket->is_no_delay());
-        spdlog::get("illixr")->debug("Connected to server");
+                spdlog::get("illixr")->info("[tcp_network_backend] Connecting to {}:{}", server_ip_, server_port_);
+                socket->socket_connect(server_ip_, server_port_);
+                socket->enable_no_delay();
+                peer_socket_ = socket;
+                spdlog::get("illixr")->info("[tcp_network_backend] Connected; TCP_NODELAY={}", socket->is_no_delay());
+                break;
+            } catch (const std::exception& error) {
+                delete socket;
+                spdlog::get("illixr")->warn("[tcp_network_backend] Desktop is not ready ({}); retrying", error.what());
+                std::this_thread::sleep_for(std::chrono::milliseconds(500));
+            }
+        }
 #else
-        std::thread([this]() {
+        io_thread_ = std::thread([this]() {
             start_client();
-        }).detach();
+        });
 
         // wait till we are connected
         while (!ready_) {
@@ -88,9 +94,9 @@ tcp_network_backend::tcp_network_backend(const std::string& name_, phonebook* pb
         spdlog::get("illixr")->debug("Accepted connection from client: " + client_socket->peer_address());
         peer_socket_ = client_socket;
 #else
-        std::thread([this]() {
+        io_thread_ = std::thread([this]() {
             start_server();
-        }).detach();
+        });
 
         while (!ready_) {
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -102,14 +108,11 @@ tcp_network_backend::tcp_network_backend(const std::string& name_, phonebook* pb
 #ifdef __ANDROID__
 void tcp_network_backend::start() {
     plugin::start();
-    std::thread([this]() {
+    io_thread_ = std::thread([this]() {
         read_loop(peer_socket_);
-    }).detach();
+    });
 }
 
-tcp_network_backend::~tcp_network_backend() {
-    spdlog::get("illixr")->debug("Destroying tcp_network");
-}
 #else
 
 void tcp_network_backend::start_client() {
@@ -261,8 +264,24 @@ void tcp_network_backend::topic_receive(const std::string& topic_name, std::vect
 }
 
 void tcp_network_backend::stop() {
-    running_ = false;
+    std::lock_guard<std::mutex> lock{stop_mutex_};
+    // shutdown() wakes read_loop without invalidating the descriptor; deletion
+    // is deferred until the owning thread has returned. A read/send failure may
+    // already have cleared running_, but its worker still needs to be joined.
+    running_.store(false);
+    if (peer_socket_ != nullptr) {
+        peer_socket_->socket_shutdown();
+    }
+    if (io_thread_.joinable() && io_thread_.get_id() != std::this_thread::get_id()) {
+        io_thread_.join();
+    }
     delete peer_socket_;
+    peer_socket_ = nullptr;
+    plugin::stop();
+}
+
+tcp_network_backend::~tcp_network_backend() {
+    stop();
 }
 
 void tcp_network_backend::send_to_peer(const std::string& topic_name, std::string&& message) {
@@ -288,8 +307,10 @@ void tcp_network_backend::send_to_peer(const std::string& topic_name, std::strin
 }
 
 extern "C" MY_EXPORT_API plugin* this_plugin_factory(phonebook* pb) {
-    auto plugin_ptr = std::make_shared<tcp_network_backend>("tcp_network_backend", pb);
-    pb->register_impl<network::tcp_backend>(std::static_pointer_cast<network::tcp_backend>(plugin_ptr));
-    auto* obj = plugin_ptr.get();
+    auto* obj = new tcp_network_backend("tcp_network_backend", pb);
+    // The runtime owns the plugin returned by this factory. Register a non-owning
+    // service alias so the phonebook does not try to delete the same object again.
+    pb->register_impl<network::tcp_backend>(
+        std::shared_ptr<network::tcp_backend>(static_cast<network::tcp_backend*>(obj), [](network::tcp_backend*) { }));
     return obj;
 }

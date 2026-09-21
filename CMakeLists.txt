@@ -41,9 +41,9 @@ endif()
 set(BUILDING_ILLIXR Yes)
 
 set(PACKAGE_NAME "ILLIXR")
-set(PACKAGE_STRING "ILLIXR 4.1.0")
+set(PACKAGE_STRING "ILLIXR 4.2.0")
 set(PACKAGE_VERSION_MAJOR "4")
-set(PACKAGE_VERSION_MINOR "1")
+set(PACKAGE_VERSION_MINOR "2")
 set(PACKAGE_VERSION_PATCH "0")
 set(PACKAGE_VERSION_LABEL "")
 
@@ -119,6 +119,8 @@ option(PIP_LOCATION "The path of the pip script" "")
 mark_as_advanced(FORCE MKDOCS_LOCATION PIP_LOCATION BUILD_DOCS_FOR_RELEASE)
 
 option(USE_MONADO "Build for monado use" OFF)
+option(ILLIXR_ENABLE_BOBA "Enable Boba frame metadata on offload clients (automatic with boba_streaming_server)" OFF)
+option(ILLIXR_ENABLE_QUEST_CONTROLLERS "Enable Quest Touch controller actions" OFF)
 option(NO_GPL "Do not build any code licensed under GPL. This will affect any generated profile files as well." OFF)
 option(NO_LGPL "Do not build any code licensed under LGPL or GPL. This will affect any generated profile files as well." OFF)
 option(NO_ZED "Do not build and ZED related code" OFF)
@@ -201,11 +203,12 @@ elseif(BUILD_ANDROID)
     set(USE_RK4_INTEGRATOR OFF)
     set(USE_TIMEWARP_GL OFF)
     set(USE_TCP_NETWORK_BACKEND ON)
-    set(USE_UDP_NETWORK_BACKEND OFF)
-    set(USE_OPENXR_INTERFACE OFF)
-    set(USE_OFFLOAD_RENDERING_CLIENT OFF)
-    set(USE_NETWORK_LATENCY.TX OFF)
-    set(USE_QUEST3.UNITY ON)
+    set(USE_UDP_NETWORK_BACKEND ON)
+    set(USE_OPENXR_INTERFACE ON)
+    set(USE_OFFLOAD_RENDERING_CLIENT ON)
+    set(USE_NETWORK_LATENCY.TX ON)
+    set(USE_QUEST3.UNITY OFF)
+    set(USE_QUEST3.CONTROLLER OFF)
 endif()
 
 set(ILLIXR_SOURCE_DIR ${CMAKE_SOURCE_DIR})
@@ -276,7 +279,7 @@ if(WIN32 OR MSVC)
     endforeach()
 endif()
 
-set(ILLIXR_VERSION 4.1.0)
+set(ILLIXR_VERSION 4.2.0)
 if(BUILD_ANDROID)
     project(ILLIXR VERSION ${ILLIXR_VERSION} LANGUAGES C CXX)
 else()
@@ -495,6 +498,21 @@ if($ENV{ILLIXR_BUILD_FLAGS})
         list(GET FLAG_LIST 1 VALUE)
         set(${ITEM} ${VALUE} CACHE BOOL "" FORCE)
     endforeach()
+endif()
+
+# The frame serializer is shared by several plugins. Use one definition for the
+# whole build so every sender/receiver agrees on the optional Boba fields.
+if(USE_BOBA_STREAMING_SERVER OR ILLIXR_ENABLE_BOBA)
+    # Keep target source selection and preprocessor guards in agreement.
+    set(ILLIXR_ENABLE_BOBA ON)
+    add_compile_definitions(ILLIXR_ENABLE_BOBA)
+    message(STATUS "Boba frame metadata enabled; the peer must also enable Boba support")
+endif()
+
+# The Boba Quest integration needs controller actions and its optional LAN setup.
+# Generic phone/tablet and offload builds leave these device-specific paths out.
+if(ILLIXR_ENABLE_QUEST_CONTROLLERS OR ILLIXR_ENABLE_BOBA OR USE_BOBA_STREAMING_SERVER)
+    add_compile_definitions(ILLIXR_ENABLE_QUEST_CONTROLLERS)
 endif()
 
 # set any plugins that are being built

@@ -234,6 +234,7 @@ according to those licenses:
 |:-------------------------------------|:-----------------------------------------------------|
 | [abseil-cpp][TPP48]                  | [Apache v2][L48]                                     |
 | [ARM NEON 2 x86 SSE][TPP42]          | [BSD-2 clause][L42][^3]                              |
+| [Boba][TPP52]                        | [Apache v2][L52]                                     |
 | [concurrentqueue][TPP1]              | [BSD-2 clause][L1]                                   |
 | [cxxopts][TPP2]                      | [MIT][L2]                                            |
 | [Depthai Core][TPP3]                 | [MIT][L3]                                            |
@@ -276,7 +277,7 @@ according to those licenses:
 | [yaml-cpp][TPP26]                    | [MIT][L26]                                           |
 | zed_opencv (Sterolabs)               | [MIT][L27]                                           |
 
-[^2]: Current as of March 5, 2025.
+[^2]: Existing entries were current as of March 5, 2025; the Boba entry was added August 29, 2026.
 
 [^3]: Also known as the Simplified BSD License.
 
@@ -544,6 +545,8 @@ request!
 
 [TPP51]:   https://github.com/ILLIXR/draco_illixr
 
+[TPP52]:   https://github.com/ILLIXR/Boba-ILLIXR
+
 [//]: # (- Licenses -)
 
 [L1]:   https://github.com/cameron314/concurrentqueue/blob/master/LICENSE.md
@@ -643,3 +646,5 @@ request!
 [L50]:  https://github.com/ILLIXR/InfiniTAM/blob/master/LICENSE
 
 [L51]:  https://github.com/ILLIXR/draco_illixr/blob/master/LICENSE
+
+[L52]:  https://github.com/ILLIXR/Boba-ILLIXR/blob/main/LICENSE
